@@ -1,6 +1,6 @@
 # Licence
 
-Copyright © Maykin, 2023
+Copyright © Worth Systems, 2024
 
 Licensed under the EUPL
 
