@@ -292,9 +292,9 @@
     <value>The Http Client was initialized for organization:</value>
   </data>
   <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
-    <value>The looked up Environent Variable could not be found or the key is missing / not existing.</value>
+    <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
   </data>
   <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
-    <value>The retrieving of Environment Variable failed. The operation system (OS) is not yet supported.</value>
+    <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
   </data>
 </root>

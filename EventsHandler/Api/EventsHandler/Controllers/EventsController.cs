@@ -101,11 +101,9 @@ namespace EventsHandler.Controllers
                     return LogAndReturnApiResponse(LogLevel.Information,
                         this._responder.GetStandardized_Processing_ActionResult(result, notification.Details));
                 }
-                else
-                {
-                    return LogAndReturnApiResponse(LogLevel.Error,
-                        this._responder.GetStandardized_Processing_Failed_ActionResult(notification.Details));
-                }
+
+                return LogAndReturnApiResponse(LogLevel.Error,
+                    this._responder.GetStandardized_Processing_Failed_ActionResult(notification.Details));
             }
             catch (Exception exception)
             {

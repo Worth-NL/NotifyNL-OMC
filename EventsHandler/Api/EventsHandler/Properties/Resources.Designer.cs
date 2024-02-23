@@ -79,7 +79,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The retrieving of Environment Variable failed. The operation system (OS) is not yet supported..
+        ///   Looks up a localized string similar to The retrieving of Environment Variable failed. The operating system (OS) is not yet supported..
         /// </summary>
         internal static string Configuration_ERROR_EnvironmentNotSupported {
             get {
@@ -88,7 +88,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The looked up Environent Variable could not be found or the key is missing / not existing..
+        ///   Looks up a localized string similar to The looked up Environment Variable could not be found or the key is missing / not existing..
         /// </summary>
         internal static string Configuration_ERROR_EnvironmentVariableGetNull {
             get {

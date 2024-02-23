@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		Documentation\Environment variables.xlsx = Documentation\Environment variables.xlsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3C6C1913-1928-4725-A8A8-45B438E8479B}"
@@ -33,6 +34,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsHandler.IntegrationTests", "EventsHandler\Tests\IntegrationTests\EventsHandler.IntegrationTests\EventsHandler.IntegrationTests.csproj", "{89FD7BFF-A15D-46AA-B834-B3FF158CF9B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsHandler.Utilities", "EventsHandler\Tests\Utilities\EventsHandler.Utilities\EventsHandler.Utilities.csproj", "{FCDF571A-2A86-412B-8F68-175496C4FC75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{4CDA0FA4-7EDE-4970-8AEB-EFAB24B71F14}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Environment variables.xlsx = Documentation\Environment variables.xlsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
