@@ -20,13 +20,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
     public sealed class DataProcessingTests
     {
         private IProcessingService<NotificationEvent>? _processor;
-        private Mock<IScenariosManager>? _mockedScenariosManager;
+        private Mock<IScenariosResolver>? _mockedScenariosManager;
         private Mock<ISendingService<NotificationEvent, NotifyData>>? _mockedSender;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            this._mockedScenariosManager = new Mock<IScenariosManager>(MockBehavior.Strict);
+            this._mockedScenariosManager = new Mock<IScenariosResolver>(MockBehavior.Strict);
             this._mockedSender = new Mock<ISendingService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
             
             this._processor = new NotifyProcessor(_mockedScenariosManager.Object, _mockedSender.Object);

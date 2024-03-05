@@ -4,14 +4,15 @@ using EventsHandler.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.UnitTests.Extensions
 {
     [TestFixture]
     internal sealed class ConfigurationExtensionsTests
     {
-        private const string TestValidPath = "NOTIFY_AUTHORIZATION_JWT_ISSUER";
-        private const string TestInvalidPath = $"{TestValidPath}_INVALID";
+        //private const string TestValidPath = "NOTIFY_AUTHORIZATION_JWT_ISSUER";
+        //private const string TestInvalidPath = $"{TestValidPath}_INVALID";
 
         private IConfiguration? _configuration;
 
@@ -46,7 +47,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtSecret_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = this._configuration!.GetWorthJwtSecret();
+            string actualValue = ConfigurationExtensions.GetWorthJwtSecret();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);
@@ -56,7 +57,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtIssuer_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = this._configuration!.GetWorthJwtIssuer();
+            string actualValue = ConfigurationExtensions.GetWorthJwtIssuer();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);
@@ -66,50 +67,33 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtAudience_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = this._configuration!.GetWorthJwtAudience();
+            string actualValue = ConfigurationExtensions.GetWorthJwtAudience();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);
         }
         #endregion
 
-        #region GetConfigValue<T>
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetConfigValue_Generic_ForExistingPathOrValue_ReturnsExpectedValue(bool validateEmpty)
+        #region NotEmpty<T>
+        [Test]
+        public void GetConfigValue_Generic_ForExistingPathOrValue_ReturnsExpectedValue()
         {
+            // Arrange
+            const string testValue = "Valid";
+
             // Act
-            string actualValue = this._configuration!.GetConfigValue<string>(TestValidPath);
+            string actualValue = testValue.NotEmpty(testValue);
 
             // Assert
-            Assert.That(actualValue, Is.Not.Empty.Or.Null);
+            Assert.That(actualValue, Is.EqualTo(testValue));
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetConfigValue_Generic_ForNotExistingPathOrValue_ThrowsArgumentException(bool validateEmpty)
+        [TestCase("")]
+        [TestCase(" ")]
+        public void GetConfigValue_Generic_ForNotExistingPathOrValue_ThrowsArgumentException(string testValue)
         {
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => this._configuration!.GetConfigValue<string>(TestInvalidPath));
-        }
-        #endregion
-
-        #region GetConfigValue
-        [Test]
-        public void GetConfigValue_ForStrings_ForExistingPathOrValue_ReturnsExpectedValue()
-        {
-            // Act
-            string actualValue = this._configuration!.GetConfigValue(TestValidPath);
-
-            // Assert
-            Assert.That(actualValue, Is.Not.Empty.Or.Null);
-        }
-
-        [Test]
-        public void GetConfigValue_ForStrings_ForNotExistingPathOrValue_ThrowsArgumentException()
-        {
-            // Act & Assert
-            Assert.Throws<ArgumentException>(() => this._configuration!.GetConfigValue(TestInvalidPath));
+            Assert.Throws<ArgumentException>(() => testValue.NotEmpty(testValue));
         }
         #endregion
 

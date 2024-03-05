@@ -14,13 +14,6 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static partial class ConfigurationExtensions  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
-        private const string Separator = ":";
-
-        private static readonly string s_worthJwtPath =
-            $"{nameof(WebApiConfiguration.Notify)}" +
-            $"{GetNodePath(nameof(WebApiConfiguration.Notify.Authorization))}" +
-            $"{GetNodePath(nameof(WebApiConfiguration.Notify.Authorization.JWT))}";
-    
         /// <summary>
         /// Gets the <see cref="LogLevel"/> defined for Application Insights (Azure service).
         /// </summary>
@@ -29,56 +22,34 @@ namespace EventsHandler.Extensions
         ///   The value of <see cref="LogLevel"/>.
         /// </returns>
         internal static LogLevel GetApplicationInsightsLogLevel(this IConfiguration configuration)
-        {
-            return configuration.GetConfigValue<LogLevel>(
-                $"Logging" +
-                $"{GetNodePath("ApplicationInsights")}" +
-                $"{GetNodePath("LogLevel")}" +
-                $"{GetNodePath("Default")}");
-        }
+            => configuration.GetValue<LogLevel>("Logging:ApplicationInsights:LogLevel:Default");
 
-        /// <inheritdoc cref="GetConfigValue(IConfiguration, string)"/>
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
-            => configuration.GetConfigValue<bool>($"Encryption{GetNodePath("IsAsymmetric")}");
+            => configuration.GetValue<bool>("Encryption:IsAsymmetric");
 
-        /// <inheritdoc cref="GetConfigValue(IConfiguration, string)"/>
-        internal static string GetWorthJwtSecret(this IConfiguration configuration) => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_SECRET");
-            //=> configuration.GetConfigValue($"{s_worthJwtPath}{GetNodePath(nameof(WebApiConfiguration.Notify.Authorization.JWT.Secret))}");
+        internal static string GetWorthJwtSecret()
+            => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_SECRET").NotEmpty("Notify JWT secret");
 
-        /// <inheritdoc cref="GetConfigValue(IConfiguration, string)"/>
-        internal static string GetWorthJwtIssuer(this IConfiguration configuration) => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_ISSUER");
-            //=> configuration.GetConfigValue($"{s_worthJwtPath}{GetNodePath(nameof(WebApiConfiguration.Notify.Authorization.JWT.Issuer))}");
+        internal static string GetWorthJwtIssuer()
+            => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_ISSUER").NotEmpty("Notify JWT issuer");
 
-        /// <inheritdoc cref="GetConfigValue(IConfiguration, string)"/>
-        internal static string GetWorthJwtAudience(this IConfiguration configuration) => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_AUDIENCE");
-            //=> configuration.GetConfigValue($"{s_worthJwtPath}{GetNodePath(nameof(WebApiConfiguration.Notify.Authorization.JWT.Audience))}");
-
-        /// <summary>
-        /// Gets the <typeparamref name="T"/> value from the configuration.
-        /// </summary>
-        /// <exception cref="ArgumentException"/>
-        internal static T GetConfigValue<T>(this IConfiguration configuration, string path)
-        {
-            if (typeof(T) == typeof(string))  // NOTE: To cover string value cases however, faster would be dedicated string method
-            {
-                return (T)Convert.ChangeType(configuration.GetConfigValue(path), typeof(T));
-            }
-
-            return configuration.GetValue<T>(path) ??
-                throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(path));
-        }
+        internal static string GetWorthJwtAudience()
+            => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_AUDIENCE").NotEmpty("Notify JWT audience");
 
         /// <summary>
         /// Gets the <see langword="string"/> value from the configuration.
         /// </summary>
         /// <exception cref="ArgumentException"/>
-        internal static string GetConfigValue(this IConfiguration configuration, string path)
+        internal static T NotEmpty<T>(this T? value, string key)
         {
-            string? stringValue = configuration.GetValue<string>(path);
+            if (value is string stringValue)
+            {
+                return string.IsNullOrWhiteSpace(stringValue)
+                    ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
+                    : value;
+            }
 
-            return string.IsNullOrWhiteSpace(stringValue)
-                ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(path))
-                : stringValue;
+            return value ?? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key));
         }
 
         /// <summary>
@@ -117,17 +88,6 @@ namespace EventsHandler.Extensions
                 : throw new ArgumentException(Resources.Configuration_ERROR_InvalidTemplateId + Separated(value));
         }
 
-        private static string Separated(string text) => $" {text}";
-        
-        internal static string GetConfigValueFromPathWithNode(this IConfiguration configuration, string currentPath, string nodeName)
-            => configuration.GetConfigValue(GetPathWithNode(currentPath, nodeName));
-        
-        internal static T GetConfigValueFromPathWithNode<T>(this IConfiguration configuration, string currentPath, string nodeName)
-            => configuration.GetConfigValue<T>(GetPathWithNode(currentPath, nodeName));
-
-        internal static string GetPathWithNode(this string currentPath, string nodeName)
-            => $"{currentPath}{GetNodePath(nodeName)}";
-
-        private static string GetNodePath(string nodeName) => $"{Separator}{nodeName}";
+        internal static string Separated(this string text) => $" {text}";
     }
 }

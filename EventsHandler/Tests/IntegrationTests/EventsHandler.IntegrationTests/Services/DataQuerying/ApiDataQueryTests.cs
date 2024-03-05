@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
+using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
@@ -12,11 +13,10 @@ using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Text.Json;
-using EventsHandler.Services.DataLoading.Interfaces;
-using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.IntegrationTests.Services.DataQuerying
 {
@@ -31,7 +31,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
         {
             // Arrange
             ISerializationService serializer = new SpecificSerializer();
-            WebApiConfiguration configuration = new(ConfigurationHandler.GetConfiguration(), new Mock<ILoadingService>().Object);
+            WebApiConfiguration configuration = new(new Mock<ILoadersContext>().Object);
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);

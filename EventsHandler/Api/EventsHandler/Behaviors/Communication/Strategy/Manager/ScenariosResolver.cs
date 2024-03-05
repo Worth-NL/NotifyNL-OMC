@@ -9,23 +9,23 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Manager
 {
-    /// <inheritdoc cref="IScenariosManager"/>
-    public sealed class ScenariosManager : IScenariosManager
+    /// <inheritdoc cref="IScenariosResolver"/>
+    public sealed class ScenariosResolver : IScenariosResolver
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScenariosManager"/> nested class.
+        /// Initializes a new instance of the <see cref="ScenariosResolver"/> nested class.
         /// </summary>
-        public ScenariosManager(IServiceProvider serviceScope, IDataQueryService<NotificationEvent> dataQuery)
+        public ScenariosResolver(IServiceProvider serviceProvider, IDataQueryService<NotificationEvent> dataQuery)
         {
-            this._serviceProvider = serviceScope;
+            this._serviceProvider = serviceProvider;
             this._dataQuery = dataQuery;
         }
 
-        /// <inheritdoc cref="IScenariosManager.DetermineScenarioAsync(NotificationEvent)"/>
-        async Task<INotifyScenario> IScenariosManager.DetermineScenarioAsync(NotificationEvent notification)
+        /// <inheritdoc cref="IScenariosResolver.DetermineScenarioAsync(NotificationEvent)"/>
+        async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
         {
             // Scenarios for Cases
             if (notification.Action == Actions.Create &&

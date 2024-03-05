@@ -297,4 +297,7 @@
   <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
     <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
   </data>
+  <data name="Processing_ERROR_Loader_NotImplemented" xml:space="preserve">
+    <value>It was not possible to determine the given data provider. It can be not implemented yet.</value>
+  </data>
 </root>

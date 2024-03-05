@@ -5,9 +5,9 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
 {
     /// <summary>
-    /// The <see cref="INotifyScenario"/>s strategies manager determining a specific workflow.
+    /// The strategy manager to control <see cref="INotifyScenario"/>s strategies - determining a specific business workflow.
     /// </summary>
-    internal interface IScenariosManager
+    internal interface IScenariosResolver
     {
         /// <summary>
         /// Determines which workflow scenario should be used based on the delivered <see cref="NotificationEvent"/>.

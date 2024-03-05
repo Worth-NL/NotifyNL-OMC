@@ -7,7 +7,6 @@ using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
-using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.CitizenData;
 using Resources = EventsHandler.Properties.Resources;
@@ -49,29 +48,27 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal virtual async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            string organizationId = notification.GetOrganizationId();
             Case @case = await this.DataQuery.From(notification).GetCaseAsync();
             CitizenData citizen = (await this.DataQuery.From(notification).GetCitizenDetailsAsync()).Citizen;
 
-            // TODO: Introduce flags to make it cleaner (less code)
             // TODO: Introduce unit tests
             // Determine which types of notifications should be published
             if (citizen.DistributionChannel == DistributionChannels.Sms)
             {
-                return new[] { GetSmsNotifyData(organizationId, @case, citizen) };
+                return new[] { GetSmsNotifyData(@case, citizen) };
             }
 
             if (citizen.DistributionChannel == DistributionChannels.Email)
             {
-                return new[] { GetEmailNotifyData(organizationId, @case, citizen) };
+                return new[] { GetEmailNotifyData(@case, citizen) };
             }
 
             if (citizen.DistributionChannel == DistributionChannels.Both)
             {
                 return new[]
                 {
-                    GetSmsNotifyData(organizationId, @case, citizen),
-                    GetEmailNotifyData(organizationId, @case, citizen)
+                    GetSmsNotifyData(@case, citizen),
+                    GetEmailNotifyData(@case, citizen)
                 };
             }
 
@@ -87,13 +84,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="organizationId">The source organization ID.</param>
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
         /// <param name="citizen">The data associated to a specific citizen.</param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web service.
         /// </returns>
-        protected virtual NotifyData GetSmsNotifyData(string organizationId, Case @case, CitizenData citizen)  // TODO: OrganizationId to be removed
+        protected virtual NotifyData GetSmsNotifyData(Case @case, CitizenData citizen)
         {
             return new NotifyData
             (
@@ -107,13 +103,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="organizationId">The source organization ID.</param>
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
         /// <param name="citizen">The data associated to a specific citizen.</param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web service.
         /// </returns>
-        protected virtual NotifyData GetEmailNotifyData(string organizationId, Case @case, CitizenData citizen)  // TODO: OrganizationId to be removed
+        protected virtual NotifyData GetEmailNotifyData(Case @case, CitizenData citizen)
         {
             return new NotifyData
             (

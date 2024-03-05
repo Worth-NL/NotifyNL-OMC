@@ -18,17 +18,17 @@ namespace EventsHandler.Services.DataProcessing
     /// <inheritdoc cref="IProcessingService{TModel}"/>
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
-        private readonly IScenariosManager _manager;
+        private readonly IScenariosResolver _resolver;
         private readonly ISendingService<NotificationEvent, NotifyData> _sender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
         public NotifyProcessor(
-            IScenariosManager manager,
+            IScenariosResolver resolver,
             ISendingService<NotificationEvent, NotifyData> sender)
         {
-            this._manager = manager;
+            this._resolver = resolver;
             this._sender = sender;
         }
 
@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // Choose an adequate business-scenario (strategy) to process the notification
-                INotifyScenario scenario = await this._manager.DetermineScenarioAsync(notification);
+                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);

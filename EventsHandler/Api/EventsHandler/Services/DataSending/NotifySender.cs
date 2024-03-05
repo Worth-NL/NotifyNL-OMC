@@ -53,11 +53,13 @@ namespace EventsHandler.Services.DataSending
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod);
         }
 
+        #region IDisposable
         /// <inheritdoc cref="IDisposable.Dispose"/>>
         void IDisposable.Dispose()
         {
             s_httpClient = null;
         }
+        #endregion
 
         #region Helper methods
         /// <summary>

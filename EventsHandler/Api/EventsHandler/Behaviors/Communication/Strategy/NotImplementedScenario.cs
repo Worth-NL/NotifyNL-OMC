@@ -33,8 +33,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<Task<NotifyData[]>>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(string, Case, CitizenData)"/>
-        protected override NotifyData GetSmsNotifyData(string organizationId, Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(Case, CitizenData)"/>
+        protected override NotifyData GetSmsNotifyData(Case @case, CitizenData citizen)
         {
             return NotImplemented<NotifyData>();
         }
@@ -51,8 +51,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<Dictionary<string, object>>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(string, Case, CitizenData)"/>
-        protected override NotifyData GetEmailNotifyData(string organizationId, Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(Case, CitizenData)"/>
+        protected override NotifyData GetEmailNotifyData(Case @case, CitizenData citizen)
         {
             return NotImplemented<NotifyData>();
         }

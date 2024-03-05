@@ -466,6 +466,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It was not possible to determine the given data provider. It can be not implemented yet..
+        /// </summary>
+        internal static string Processing_ERROR_Loader_NotImplemented {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Loader_NotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification method (&apos;aanmaakkanaal&apos;) is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None..
         /// </summary>
         internal static string Processing_ERROR_Notification_DeliveryMethodUnknown {

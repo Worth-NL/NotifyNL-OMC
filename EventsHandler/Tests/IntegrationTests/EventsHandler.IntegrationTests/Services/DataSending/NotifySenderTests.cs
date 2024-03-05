@@ -8,6 +8,9 @@ using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
+using Notify.Client;
+using Notify.Models;
+using Notify.Models.Responses;
 
 #pragma warning disable IDE0008 // Use explicit type
 
@@ -224,5 +227,47 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             Attributes = new EventAttributes { SourceOrganization = new string('0', 9) }
         };
         #endregion
+
+        // ----------
+        // LOCAL TEST
+        // ----------
+
+        [Test, Ignore("Sending real SMS and Emails")]
+        public void TestNotifyNL()
+        {
+            var notifyClient = new NotificationClient(
+                "https://api.test.notifynl.nl",
+                "thomas_test-a6edc359-2dd5-4e4c-ab09-b9c9b66049b4-ca645f4a-2ab7-4d5c-8448-d0fc32d13198");
+
+            // TEMPLATES
+            List<TemplateResponse> templates = notifyClient.GetAllTemplates().templates;
+
+            // Email template
+            TemplateResponse emailTemplate = templates.First(template => template.type == "email");
+
+            // SMS template
+            TemplateResponse smsTemplate = templates.Last(template => template.type == "sms");
+
+            // Personalization
+            Dictionary<string, dynamic> personalisation = new()
+            {
+                { "name", "Test User" },
+                { "day of week", $"{DateTime.Now.DayOfWeek}" },
+                { "colour", "black"}
+            };
+
+            // Sending email
+            EmailNotificationResponse emailResponse =
+                notifyClient.SendEmail(emailTemplate.created_by, emailTemplate.id, clientReference: "Email local test");
+
+            // Sending SMS
+            // Ernout: +31618758539
+            // Pier:   +31618691140
+            SmsNotificationResponse smsResponse =
+                notifyClient.SendSms("+31618691140", smsTemplate.id, clientReference: "SMS local test");
+
+            // NOTIFICATIONS
+            NotificationList notifications = notifyClient.GetNotifications();
+        }
     }
 }
