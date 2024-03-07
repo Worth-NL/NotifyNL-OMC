@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Configuration;
+using EventsHandler.Constants;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
@@ -70,33 +72,16 @@ namespace EventsHandler.Services.DataReceiving
         {
             try
             {
-                //// HTTPS protocol validation
-                //if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
-                //{
-                //    return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
-                //}
+                // HTTPS protocol validation
+                if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
+                {
+                    return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
+                }
 
-                HttpResponseMessage result = new();
-
-                // Sending the request
-                // TODO REMOVE THIS NON-JWT THING FOR TILBURG HACK
-                if (uri.AbsoluteUri.Contains("gemeentetilburg--uat.sandbox.my.site.com"))
-                {
-                    result = body is null ? await ResolveClient(httpClientType).GetAsync(uri)
-                                          : await ResolveClient(httpClientType).PostAsync(uri, body);
-                }
-                else if (uri.AbsoluteUri.Contains("zac-dev.westeurope.cloudapp.azure.com"))
-                {
-                    string butcheredUri = uri.AbsoluteUri.Replace("https", "http");
-                    result = body is null ? await AuthorizeWithJwt(ResolveClient(httpClientType)).GetAsync(butcheredUri)
-                                          : await AuthorizeWithJwt(ResolveClient(httpClientType)).PostAsync(butcheredUri, body);
-                }
-                else
-                {
-                    result = body is null
-                        ? await AuthorizeWithJwt(ResolveClient(httpClientType)).GetAsync(uri)
-                        : await AuthorizeWithJwt(ResolveClient(httpClientType)).PostAsync(uri, body);
-                }
+                // Determine whether GET or POST call should be sent (depends on if body is required)
+                HttpResponseMessage result = body is null
+                    ? await AuthorizeWithJwt(ResolveClient(httpClientType)).GetAsync(uri)
+                    : await AuthorizeWithJwt(ResolveClient(httpClientType)).PostAsync(uri, body);
 
                 return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());  // Status + JSON response
             }

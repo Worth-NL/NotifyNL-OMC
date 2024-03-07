@@ -27,13 +27,13 @@ namespace EventsHandler.Extensions
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
             => configuration.GetValue<bool>("Encryption:IsAsymmetric");
 
-        internal static string GetWorthJwtSecret()
+        internal static string GetNotifyJwtSecret()
             => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_SECRET").NotEmpty("Notify JWT secret");
 
-        internal static string GetWorthJwtIssuer()
+        internal static string GetNotifyJwtIssuer()
             => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_ISSUER").NotEmpty("Notify JWT issuer");
 
-        internal static string GetWorthJwtAudience()
+        internal static string GetNotifyJwtAudience()
             => Environment.GetEnvironmentVariable("NOTIFY_AUTHORIZATION_JWT_AUDIENCE").NotEmpty("Notify JWT audience");
 
         /// <summary>

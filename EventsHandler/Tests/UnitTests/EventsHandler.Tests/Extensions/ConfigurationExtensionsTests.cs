@@ -47,7 +47,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtSecret_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = ConfigurationExtensions.GetWorthJwtSecret();
+            string actualValue = ConfigurationExtensions.GetNotifyJwtSecret();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);
@@ -57,7 +57,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtIssuer_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = ConfigurationExtensions.GetWorthJwtIssuer();
+            string actualValue = ConfigurationExtensions.GetNotifyJwtIssuer();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);
@@ -67,7 +67,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetWorthJwtAudience_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = ConfigurationExtensions.GetWorthJwtAudience();
+            string actualValue = ConfigurationExtensions.GetNotifyJwtAudience();
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty.Or.Null);

@@ -18,30 +18,36 @@ namespace SecretsManager
             var context = new EncryptionContext(new SymmetricEncryptionStrategy());
 
             // Get security key
-            SecurityKey securityKey = context.GetSecurityKey(
-                "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu");
+            SecurityKey securityKey = context.GetSecurityKey(GetConfigValue("NOTIFY_AUTHORIZATION_JWT_SECRET"));
 
             // Generate JSON Web Token
             string jwtToken = context.GetJwtToken(
                 securityKey,
-                issuer: "https://omc.sandbox.notifynl.nl/",
-                audience: "https://omc.sandbox.notifynl.nl/",
+                issuer: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_ISSUER"),
+                audience: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_AUDIENCE"),
                 expiresAt: validDateTime,
-                userId: "Notify NL (Test)",
-                userRepresentation: "Notify NL (Test)");
+                userId: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_USERID"),
+                userRepresentation: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_USERNAME"));
 
             // Write JWT tokens
             context.SaveJwtToken(jwtToken);
         }
 
-        private static DateTime GetJwtTokenValidity(string[] args)
+        // TODO: Reuse the same DAO service to obtain these configurations from there. Avoid hardcoded variable names
+        private static string GetConfigValue(string key)
+        {
+            return Environment.GetEnvironmentVariable(key)
+                ?? throw new KeyNotFoundException($"The value of environment variable \"{key}\" is empty or missing");
+        }
+
+        private static DateTime GetJwtTokenValidity(IReadOnlyList<string> args)
         {
             double validForNextMinutes = 60;  // NOTE: Standard value, unless specified otherwise
             DateTime currentDateTime = DateTime.UtcNow;
             DateTime futureDateTime;
 
             // Using custom validity for JWT token
-            if (args.Length != 0)
+            if (args.Count != 0)
             {
                 // Variant #1: Use specific validity date (e.g., valid until 31st of December 2023 at 23:59:59)
                 if (DateTime.TryParse(args[0], CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out futureDateTime))

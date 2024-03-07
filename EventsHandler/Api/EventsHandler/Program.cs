@@ -107,9 +107,9 @@ namespace EventsHandler
                                 setup.TokenValidationParameters = new TokenValidationParameters
                                 {
                                     // Validation parameters
-                                    ValidIssuer = ConfigurationExtensions.GetWorthJwtIssuer(),
-                                    ValidAudience = ConfigurationExtensions.GetWorthJwtAudience(),
-                                    IssuerSigningKey = encryptionContext.GetSecurityKey(ConfigurationExtensions.GetWorthJwtSecret()),
+                                    ValidIssuer = ConfigurationExtensions.GetNotifyJwtIssuer(),
+                                    ValidAudience = ConfigurationExtensions.GetNotifyJwtAudience(),
+                                    IssuerSigningKey = encryptionContext.GetSecurityKey(ConfigurationExtensions.GetNotifyJwtSecret()),
 
                                     // Validation criteria
                                     ValidateIssuer = true,

@@ -48,22 +48,22 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetData<T>() mocking
             Dictionary<string /* Key */, string /* Value */> keyValueMapping = new()
             {
-                { "NOTIFY_AUTHORIZATION_JWT_SECRET",       isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_ISSUER",       isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_AUDIENCE",     isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_USERID",       isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_USERNAME",     isValid ? testValue : string.Empty },
+                { "NOTIFY_AUTHORIZATION_JWT_SECRET",   isValid ? testValue : string.Empty },
+                { "NOTIFY_AUTHORIZATION_JWT_ISSUER",   isValid ? testValue : string.Empty },
+                { "NOTIFY_AUTHORIZATION_JWT_AUDIENCE", isValid ? testValue : string.Empty },
+                { "NOTIFY_AUTHORIZATION_JWT_USERID",   isValid ? testValue : string.Empty },
+                { "NOTIFY_AUTHORIZATION_JWT_USERNAME", isValid ? testValue : string.Empty },
                 
-                { "NOTIFY_API_BASEURL_NOTIFYNL",         isValid ? "https://www.test.nl/" : string.Empty },
+                { "NOTIFY_API_BASEURL",                isValid ? "https://www.test.nl/" : string.Empty },
                 
-                { "USER_AUTHORIZATION_JWT_SECRET",       isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_ISSUER",       isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",     isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_USERID",       isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_USERNAME",     isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_SECRET",     isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_ISSUER",     isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_AUDIENCE",   isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_USERID",     isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_USERNAME",   isValid ? testValue : string.Empty },
 
-                { "USER_AUTHORIZATION_KEY_NOTIFYNL",   isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_KEY_OBJECTEN",   isValid ? testValue : string.Empty },
+                { "USER_API_KEY_NOTIFYNL",             isValid ? testValue : string.Empty },
+                { "USER_API_KEY_OBJECTEN",             isValid ? testValue : string.Empty },
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      isValid ? testDomain : string.Empty },
                 { "USER_DOMAIN_OPENZAAK",              isValid ? testDomain : string.Empty },
@@ -76,7 +76,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  isValid ? testTempId : string.Empty },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  isValid ? testTempId : string.Empty }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
@@ -109,9 +109,8 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("NOTIFY_AUTHORIZATION_JWT", "UserId",       "NOTIFY_AUTHORIZATION_JWT_USERID"),
                 ("NOTIFY_AUTHORIZATION_JWT", "UserName",     "NOTIFY_AUTHORIZATION_JWT_USERNAME"),
 
-                ("Notify",             "API",      "NOTIFY_API"),
-                ("NOTIFY_API",         "BaseUrl",  "NOTIFY_API_BASEURL"),
-                ("NOTIFY_API_BASEURL", "NotifyNL", "NOTIFY_API_BASEURL_NOTIFYNL"),
+                ("Notify",     "API",     "NOTIFY_API"),
+                ("NOTIFY_API", "BaseUrl", "NOTIFY_API_BASEURL"),
 
                 ("USER_AUTHORIZATION",     "JWT",          "USER_AUTHORIZATION_JWT"),
                 ("USER_AUTHORIZATION_JWT", "Secret",       "USER_AUTHORIZATION_JWT_SECRET"),
@@ -121,9 +120,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_AUTHORIZATION_JWT", "UserId",       "USER_AUTHORIZATION_JWT_USERID"),
                 ("USER_AUTHORIZATION_JWT", "UserName",     "USER_AUTHORIZATION_JWT_USERNAME"),
 
-                ("USER_AUTHORIZATION",     "Key",      "USER_AUTHORIZATION_KEY"),
-                ("USER_AUTHORIZATION_KEY", "NotifyNL", "USER_AUTHORIZATION_KEY_NOTIFYNL"),
-                ("USER_AUTHORIZATION_KEY", "Objecten", "USER_AUTHORIZATION_KEY_OBJECTEN"),
+                ("User",         "API",      "USER_API"),
+                ("USER_API",     "Key",      "USER_API_KEY"),
+                ("USER_API_KEY", "NotifyNL", "USER_API_KEY_NOTIFYNL"),
+                ("USER_API_KEY", "Objecten", "USER_API_KEY_OBJECTEN"),
 
                 ("User",        "Domain",           "USER_DOMAIN"),
                 ("USER_DOMAIN", "OpenNotificaties", "USER_DOMAIN_OPENNOTIFICATIES"),
@@ -138,10 +138,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_TEMPLATEIDS_SMS",   "ZaakUpdate",  "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
                 ("USER_TEMPLATEIDS_SMS",   "ZaakClose",   "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
 
-                ("USER_TEMPLATEIDS",       "Email",       "USER_TEMPLATEIDS_EMAIL"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakCreate",  "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakUpdate",  "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakClose",   "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS",       "Email",      "USER_TEMPLATEIDS_EMAIL"),
+                ("USER_TEMPLATEIDS_EMAIL", "ZaakCreate", "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
+                ("USER_TEMPLATEIDS_EMAIL", "ZaakUpdate", "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
+                ("USER_TEMPLATEIDS_EMAIL", "ZaakClose",  "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
             };
 
             foreach ((string Path, string Node, string ResultPath) data in testData)

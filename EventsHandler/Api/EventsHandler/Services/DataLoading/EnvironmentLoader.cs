@@ -21,8 +21,10 @@ namespace EventsHandler.Services.DataLoading
                 throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
             }
 
-            // Support for modern Windows OS (e.g., Windows XP, Vista, 7, 8+, 10, 11)
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            // Support for modern Windows OS (e.g., Windows XP, Vista, 7, 8+, 10, 11), macOS, and Unix systems (e.g. Linux)
+            if (Environment.OSVersion.Platform is PlatformID.Win32NT
+                                               or PlatformID.MacOSX
+                                               or PlatformID.Unix)
             {
                 object value = Environment.GetEnvironmentVariable(key)
                     ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());

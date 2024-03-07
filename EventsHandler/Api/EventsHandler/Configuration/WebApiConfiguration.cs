@@ -35,9 +35,9 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// The "Notify" part of the configuration.
+        /// The common base for <see cref="NotifyComponent"/> and <see cref="UserComponent"/>.
         /// </summary>
-        internal record NotifyComponent
+        internal abstract record BaseComponent
         {
             /// <summary>
             /// A thread-safe dictionary, storing cached configuration <see langword="string"/> values.
@@ -54,23 +54,19 @@ namespace EventsHandler.Configuration
             ///   </para>
             /// </para>
             /// </summary>
-            private static readonly ConcurrentDictionary<
+            private protected static readonly ConcurrentDictionary<
                 string /* Config path */,
                 string /* Config value */> s_cachedValues = new();
 
             /// <inheritdoc cref="AuthorizationComponent"/>
             internal AuthorizationComponent Authorization { get; }
 
-            /// <inheritdoc cref="ApiComponent"/>
-            internal ApiComponent API { get; }
-            
             /// <summary>
-            /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
+            /// Initializes a new instance of the <see cref="BaseComponent"/> class.
             /// </summary>
-            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+            protected BaseComponent(ILoadersContext loadersContext, string parentName)
             {
                 this.Authorization = new AuthorizationComponent(loadersContext, parentName);
-                this.API = new ApiComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -81,9 +77,6 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="JwtComponent"/>
                 internal JwtComponent JWT { get; }
 
-                /// <inheritdoc cref="KeyComponent"/>
-                internal KeyComponent Key { get; }
-
                 /// <summary>
                 /// Initializes a new instance of the <see cref="AuthorizationComponent"/> class.
                 /// </summary>
@@ -92,7 +85,6 @@ namespace EventsHandler.Configuration
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Authorization));
 
                     this.JWT = new JwtComponent(loadersContext, currentPath);
-                    this.Key = new KeyComponent(loadersContext, currentPath);
                 }
 
                 /// <summary>
@@ -136,6 +128,91 @@ namespace EventsHandler.Configuration
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(UserName));
                 }
+            }
+        }
+
+        /// <summary>
+        /// The "Notify" part of the configuration.
+        /// </summary>
+        internal record NotifyComponent : BaseComponent
+        {
+            /// <inheritdoc cref="ApiComponent"/>
+            internal ApiComponent API { get; }
+            
+            /// <summary>
+            /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
+            /// </summary>
+            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+                : base(loadersContext, parentName)
+            {
+                this.API = new ApiComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "API" part of the configuration.
+            /// </summary>
+            internal sealed record ApiComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// </summary>
+                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string BaseUrl()
+                    => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(BaseUrl));
+            }
+        }
+
+        /// <summary>
+        /// The "Parent" part of the configuration.
+        /// </summary>
+        internal sealed record UserComponent : BaseComponent
+        {
+            /// <inheritdoc cref="ApiComponent"/>
+            internal ApiComponent API { get; }
+
+            /// <inheritdoc cref="DomainComponent"/>
+            internal DomainComponent Domain { get; }
+
+            /// <inheritdoc cref="TemplateIdsComponent"/>
+            internal TemplateIdsComponent TemplateIds { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="UserComponent"/> class.
+            /// </summary>
+            public UserComponent(ILoadersContext loadersContext, string parentName)
+                : base(loadersContext, parentName)
+            {
+                this.API = new ApiComponent(loadersContext, parentName);
+                this.Domain = new DomainComponent(loadersContext, parentName);
+                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "API" part of the configuration.
+            /// </summary>
+            internal sealed record ApiComponent
+            {
+                /// <inheritdoc cref="KeyComponent"/>
+                internal KeyComponent Key { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// </summary>
+                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+
+                    this.Key = new KeyComponent(loadersContext, currentPath);
+                }
 
                 /// <summary>
                 /// The "Key" part of the configuration.
@@ -160,71 +237,8 @@ namespace EventsHandler.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Objecten()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(NotifyNL));
+                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(Objecten));
                 }
-            }
-
-            /// <summary>
-            /// The "API" part of the configuration.
-            /// </summary>
-            internal sealed record ApiComponent
-            {
-                /// <inheritdoc cref="BaseUrlComponent"/>
-                internal BaseUrlComponent BaseUrl { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
-                /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-
-                    this.BaseUrl = new BaseUrlComponent(loadersContext, currentPath);
-                }
-
-                /// <summary>
-                /// The "BaseUrl" part of the configuration.
-                /// </summary>
-                internal sealed record BaseUrlComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="BaseUrlComponent"/> class.
-                    /// </summary>
-                    internal BaseUrlComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(BaseUrl));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string NotifyNL()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(NotifyNL));
-                }
-            }
-        }
-
-        /// <summary>
-        /// The "Parent" part of the configuration.
-        /// </summary>
-        internal sealed record UserComponent : NotifyComponent
-        {
-            /// <inheritdoc cref="DomainComponent"/>
-            internal DomainComponent Domain { get; }
-
-            /// <inheritdoc cref="TemplateIdsComponent"/>
-            internal TemplateIdsComponent TemplateIds { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="UserComponent"/> class.
-            /// </summary>
-            public UserComponent(ILoadersContext loadersContext, string parentName)
-                : base(loadersContext, parentName)
-            {
-                this.Domain = new DomainComponent(loadersContext, parentName);
-                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
             }
 
             /// <summary>

@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Diagnostics.CodeAnalysis;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Constants;
 using Swashbuckle.AspNetCore.Filters;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {
     /// <summary>
-    /// An example of <see cref="NotificationEvent"/> to be used on Swagger UI.
+    /// An example of <see cref="NotificationEvent"/> to be used in Swagger UI.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
     [ExcludeFromCodeCoverage]
