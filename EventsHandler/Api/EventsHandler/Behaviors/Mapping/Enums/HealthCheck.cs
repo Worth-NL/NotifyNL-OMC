@@ -9,6 +9,8 @@ namespace EventsHandler.Behaviors.Mapping.Enums
     /// </summary>
     internal enum HealthCheck
     {
+        // ReSharper disable InconsistentNaming
+
         /// <summary>
         /// The <see cref="NotificationEvent"/> is valid and consistent. Can be processed.
         /// </summary>

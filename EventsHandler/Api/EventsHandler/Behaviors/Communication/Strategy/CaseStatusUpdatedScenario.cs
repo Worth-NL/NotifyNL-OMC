@@ -64,10 +64,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "status.omschrijving", base.LastCaseStatusType!.Value.Description },
                 { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
                 { "klant.voornaam", citizen.Name },
-                { "klant.achternaam", citizen.Surname }
+                { "klant.achternaam", citizen.Surname },
+                { "status.omschrijving", base.LastCaseStatusType!.Value.Description }
             };
         }
         #endregion

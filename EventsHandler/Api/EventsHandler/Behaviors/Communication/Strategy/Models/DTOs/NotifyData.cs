@@ -14,7 +14,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Models.DTOs
         internal NotifyMethods NotificationMethod { get; }
 
         /// <summary>
-        /// The SMS or e-mail details where the notification should be send.
+        /// The SMS or e-mail details where the notification should be sent.
         /// </summary>
         internal string ContactDetails { get; }
 

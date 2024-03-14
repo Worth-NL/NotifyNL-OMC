@@ -300,4 +300,18 @@
   <data name="Processing_ERROR_Loader_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine the given data provider. It can be not implemented yet.</value>
   </data>
+  <data name="Processing_ERROR_ExecutingContext_UnknownErrorDetails" xml:space="preserve">
+    <value>It wasn't possible to extract human-friendly error message</value>
+  </data>
+  <data name="Processing_ERROR_ExecutingContext_UnregisteredApiController" xml:space="preserve">
+    <value>This controller is not yet registered as handled StandardizeApiResponse</value>
+  </data>
+  <data name="Test_NotifyNL_ERROR_NotSupportedMethod" xml:space="preserve">
+    <value>This notification method is not supported</value>
+    <comment>API Endpoint: TestController/Notify/</comment>
+  </data>
+  <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
+    <value>was successfully send to NotifyNL</value>
+    <comment>API Endpoint: TestController/Notify/</comment>
+  </data>
 </root>

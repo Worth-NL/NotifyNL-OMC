@@ -9,6 +9,8 @@ namespace EventsHandler.Services.DataReceiving.Factories.Interfaces
         where THttpClient : class
         where TParameters : notnull
     {
+        // TODO: Caching IHttpClient on this level
+
         /// <summary>
         /// Gets the <typeparamref name="THttpClient"/> with customized parameters (e.g. Headers).
         /// </summary>
