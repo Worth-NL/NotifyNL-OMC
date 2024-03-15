@@ -6,10 +6,10 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Properties;
 using System.Net;
 
-namespace EventsHandler.Behaviors.Responding.Messages.Models.Informations
+namespace EventsHandler.Behaviors.Responding.Messages.Models.Information
 {
     /// <summary>
-    /// Serialization of <see cref="NotificationEvent"/> was partially successfull.
+    /// Serialization of <see cref="NotificationEvent"/> was partially successful.
     /// </summary>
     /// <seealso cref="BaseEnhancedStandardResponseBody"/>
     internal sealed class DeserializationPartial : BaseEnhancedStandardResponseBody
