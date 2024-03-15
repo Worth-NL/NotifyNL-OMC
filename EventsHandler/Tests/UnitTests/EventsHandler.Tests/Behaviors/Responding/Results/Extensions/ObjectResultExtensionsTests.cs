@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Messages.Models.Informations;
+using EventsHandler.Behaviors.Responding.Messages.Models.Information;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

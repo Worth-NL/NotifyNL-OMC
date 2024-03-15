@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Net;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
-using System.Net;
 
-namespace EventsHandler.Behaviors.Responding.Messages.Models.Informations
+namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
 {
     /// <summary>
     /// Processing of notification was unsuccessful (due to some unexpected reasons).

@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Responding.Messages.Models.Informations;
+using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Properties;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;

@@ -4,7 +4,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using System.Net;
 
-namespace EventsHandler.Behaviors.Responding.Messages.Models.Informations
+namespace EventsHandler.Behaviors.Responding.Messages.Models.Information
 {
     /// <summary>
     /// Processing of notification was skipped (due to some expected reasons).

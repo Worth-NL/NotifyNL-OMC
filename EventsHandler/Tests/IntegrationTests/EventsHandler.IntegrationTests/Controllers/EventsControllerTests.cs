@@ -5,7 +5,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Responding.Messages.Models.Informations;
+using EventsHandler.Behaviors.Responding.Messages.Models.Information;
 using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
 using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Controllers;

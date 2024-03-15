@@ -5,7 +5,7 @@ using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Responding.Messages.Models.Informations;
+using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Properties;

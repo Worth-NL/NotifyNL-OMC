@@ -6,7 +6,7 @@ using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Informations;
+using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Constants;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;

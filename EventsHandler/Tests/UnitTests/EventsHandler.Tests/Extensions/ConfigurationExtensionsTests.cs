@@ -4,7 +4,6 @@ using EventsHandler.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.UnitTests.Extensions
 {
@@ -41,36 +40,6 @@ namespace EventsHandler.UnitTests.Extensions
 
             // Assert
             Assert.That(actualValue, Is.False);
-        }
-
-        [Test]
-        public void GetWorthJwtSecret_ReturnsExpectedValue()
-        {
-            // Act
-            string actualValue = ConfigurationExtensions.GetNotifyJwtSecret();
-
-            // Assert
-            Assert.That(actualValue, Is.Not.Empty.Or.Null);
-        }
-
-        [Test]
-        public void GetWorthJwtIssuer_ReturnsExpectedValue()
-        {
-            // Act
-            string actualValue = ConfigurationExtensions.GetNotifyJwtIssuer();
-
-            // Assert
-            Assert.That(actualValue, Is.Not.Empty.Or.Null);
-        }
-
-        [Test]
-        public void GetWorthJwtAudience_ReturnsExpectedValue()
-        {
-            // Act
-            string actualValue = ConfigurationExtensions.GetNotifyJwtAudience();
-
-            // Assert
-            Assert.That(actualValue, Is.Not.Empty.Or.Null);
         }
         #endregion
 

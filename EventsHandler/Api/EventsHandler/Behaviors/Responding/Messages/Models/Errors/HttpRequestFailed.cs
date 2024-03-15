@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Properties;
 using System.Net;
