@@ -1,11 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Collections.Concurrent;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
+using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
+using EventsHandler.Controllers;
+using EventsHandler.Properties;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Notify.Models.Responses;
 
 namespace EventsHandler.Attributes.Validation
 {
@@ -17,21 +22,40 @@ namespace EventsHandler.Attributes.Validation
     internal sealed class StandardizeApiResponsesAttribute : ActionFilterAttribute
     {
         /// <summary>
+        /// Binding map of API Controllers to IRespondingService{T,...}.
+        /// </summary>
+        private static readonly ConcurrentDictionary<Type, Type> s_controllerToResponderBinding = new();
+
+        /// <summary>
+        /// Initializes the <see cref="StandardizeApiResponsesAttribute"/> class.
+        /// </summary>
+        static StandardizeApiResponsesAttribute()
+        {
+            s_controllerToResponderBinding.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
+            s_controllerToResponderBinding.TryAdd(typeof(TestController), typeof(IRespondingService<NotificationResponse, BaseSimpleDetails>));
+        }
+
+        /// <summary>
         /// Intercepts the <see cref="IActionResult"/> error messages from the validation of
         /// <see cref="NotificationEvent"/> to display <see cref="BaseApiStandardResponseBody"/>.
         /// </summary>
         public override void OnResultExecuting(ResultExecutingContext context)
         {
-            // Intercepting model binding validation issues
+            // Check if validation problems occurred
             if (ContainsValidationProblems(context, out ValidationProblemDetails? details))
             {
-                IRespondingService<NotificationEvent> outputService =
-                    context.HttpContext.RequestServices.GetRequiredService<IRespondingService<NotificationEvent>>();
-
-                // Replacing native error messages by user-friendly API responses
-                if (ContainsErrorMessage(details!.Errors, out string errorMessage))
+                // Check if responder service is registered
+                if (s_controllerToResponderBinding.TryGetValue(context.Controller.GetType(), out Type? serviceType))
                 {
-                    context.Result = outputService.GetStandardized_Exception_ActionResult(errorMessage);
+                    // Resolving which responder service should be used (depends on API Controller)
+                    var responder = context.HttpContext.RequestServices.GetRequiredService(serviceType) as IRespondingService;
+
+                    // Intercepting and replacing native error messages by user-friendly API responses
+                    context = responder?.GetStandardized_Exception_ActionResult(context, details!.Errors) ?? context;
+                }
+                else
+                {
+                    throw new ArgumentException(Resources.Processing_ERROR_ExecutingContext_UnregisteredApiController);
                 }
             }
 
@@ -51,8 +75,7 @@ namespace EventsHandler.Attributes.Validation
         private static bool ContainsValidationProblems(ResultExecutingContext context, out ValidationProblemDetails? validationProblemDetails)
         {
             if (!context.ModelState.IsValid &&
-                context.Result is BadRequestObjectResult result &&
-                result.Value is ValidationProblemDetails details &&
+                context.Result is BadRequestObjectResult { Value: ValidationProblemDetails details } &&
                 details.Title == DefaultValues.Validation.ErrorsOccurred)
             {
                 validationProblemDetails = details;
@@ -61,49 +84,6 @@ namespace EventsHandler.Attributes.Validation
             }
 
             validationProblemDetails = default;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Tries to get valid and meaningful error message from the collection of encountered errors.
-        /// </summary>
-        /// <param name="errorDetails">The error details to be revieved.</param>
-        /// <param name="errorMessage">The error message to be returned.</param>
-        /// <returns>
-        ///   <see langword="true"/> if an error message was found; otherwise, <see langword="false"/>.
-        /// </returns>
-        private static bool ContainsErrorMessage(IDictionary<string, string[]> errorDetails, out string errorMessage)
-        {
-            const int MessageIndex = 0;     // NOTE: Under index 1 the source is stored (where the error encountered: property, object)
-            const string MessageKey = "$";  // NOTE: The data binding validation mechanism is storing error messages under this predefined key + .[source]
-
-            // Known keys where error messages are present for sure
-            if (errorDetails.TryGetValue(MessageKey,                out string[]? errorMessages) ||
-                errorDetails.TryGetValue($"{MessageKey}.kanaal",    out           errorMessages) ||
-                errorDetails.TryGetValue($"{MessageKey}.kenmerken", out           errorMessages))
-            {
-                errorMessage = errorMessages[MessageIndex];
-
-                return true;
-            }
-            // Dynamic fallback strategy, to retrieve an error message anyway
-            else
-            {
-                KeyValuePair<string, string[]>[] errorDetailsPairs = errorDetails.ToArray();
-
-                for (int index = 0; index < errorDetails.Count; index++)
-                {
-                    if (errorDetailsPairs[index].Key.StartsWith(MessageKey))
-                    {
-                        errorMessage = errorDetailsPairs[index].Value[MessageIndex];
-
-                        return true;
-                    }
-                }
-            }
-
-            errorMessage = string.Empty;
 
             return false;
         }

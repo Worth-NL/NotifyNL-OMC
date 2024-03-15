@@ -211,7 +211,7 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private static IRespondingService<NotificationEvent> GetRealResponderService()
         {
-            return new ApiResponder(new DetailsBuilder());
+            return new NotificationResponder(new DetailsBuilder());
         }
 
         private static void AssertWithConditions

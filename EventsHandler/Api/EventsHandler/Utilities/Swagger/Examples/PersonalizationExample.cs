@@ -12,12 +12,15 @@ namespace EventsHandler.Utilities.Swagger.Examples
     [ExcludeFromCodeCoverage]
     internal sealed class PersonalizationExample : IExamplesProvider<Dictionary<string, object>>
     {
+        internal const string Key = "key";
+        internal const string Value = "value";
+
         /// <inheritdoc cref="IExamplesProvider{TModel}.GetExamples"/>
         public Dictionary<string, object> GetExamples()
         {
             return new Dictionary<string, object>
             {
-                { "key", "value" }
+                { Key, Value }
             };
         }
     }

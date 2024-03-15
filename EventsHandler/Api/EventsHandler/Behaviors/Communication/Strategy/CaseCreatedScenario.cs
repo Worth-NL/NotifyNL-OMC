@@ -54,8 +54,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
                 { "klant.voornaam", citizen.Name },
+                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
                 { "klant.achternaam", citizen.Surname }
             };
         }

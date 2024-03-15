@@ -7,8 +7,11 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Details.Base
     /// <summary>
     /// Standard format how to display details about processed notification.
     /// </summary>
-    internal abstract record BaseSimpleDetails
+    public abstract record BaseSimpleDetails
     {
+        /// <summary>
+        /// The message containing a brief summary of the occurred situation.
+        /// </summary>
         [JsonPropertyName(nameof(Message))]
         [JsonPropertyOrder(0)]
         public string Message { get; internal set; } = string.Empty;

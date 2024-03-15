@@ -19,17 +19,17 @@ namespace EventsHandler.Services.DataSending
         private static readonly object s_padlock = new();
         #endregion
 
-        private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
+        private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
         private readonly IFeedbackTelemetryService _telemetry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySender"/> class.
         /// </summary>
         public NotifySender(
-            IHttpClientFactory<INotifyClient, string> notifyClientFactory,
+            IHttpClientFactory<INotifyClient, string> clientFactory,
             IFeedbackTelemetryService telemetry)
         {
-            this._notifyClientFactory = notifyClientFactory;
+            this._clientFactory = clientFactory;
             this._telemetry = telemetry;
         }
 
@@ -62,6 +62,8 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         #region Helper methods
+        // TODO: HttpClient can be cached on service level
+
         /// <summary>
         /// Gets the cached <see cref="INotifyClient"/> or create a new one if not yet existing.
         /// <para>
@@ -74,7 +76,7 @@ namespace EventsHandler.Services.DataSending
             {
                 lock (s_padlock)
                 {
-                    s_httpClient ??= this._notifyClientFactory.GetHttpClient(notification.GetOrganizationId());
+                    s_httpClient ??= this._clientFactory.GetHttpClient(notification.GetOrganizationId());
                 }
             }
 
