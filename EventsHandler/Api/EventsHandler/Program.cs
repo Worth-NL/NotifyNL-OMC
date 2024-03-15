@@ -49,7 +49,6 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
-using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler
 {
@@ -103,14 +102,15 @@ namespace EventsHandler
                             .AddJwtBearer(setup =>
                             {
                                 EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
-                                
+                                WebApiConfiguration configuration = builder.Services.GetRequiredService<WebApiConfiguration>();
+
                                 // Disable some default validations, preventing the JWT token to be recognized as valid
                                 setup.TokenValidationParameters = new TokenValidationParameters
                                 {
                                     // Validation parameters
-                                    ValidIssuer = ConfigurationExtensions.GetNotifyJwtIssuer(),
-                                    ValidAudience = ConfigurationExtensions.GetNotifyJwtAudience(),
-                                    IssuerSigningKey = encryptionContext.GetSecurityKey(ConfigurationExtensions.GetNotifyJwtSecret()),
+                                    ValidIssuer = configuration.Notify.Authorization.JWT.Issuer(),
+                                    ValidAudience = configuration.Notify.Authorization.JWT.Audience(),
+                                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.Notify.Authorization.JWT.Secret()),
 
                                     // Validation criteria
                                     ValidateIssuer = true,
