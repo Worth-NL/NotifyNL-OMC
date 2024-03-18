@@ -16,6 +16,7 @@ using Notify.Client;
 using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Runtime.InteropServices;
 
 namespace EventsHandler.Controllers
@@ -48,7 +49,34 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending Email messages to the NotifyNL API service.
+        /// Checks the status of NotifyNL API web service.
+        /// </summary>
+        [HttpGet]
+        [Route("Notify/HealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // Swagger UI
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> HealthCheckAsync()
+        {
+            // Health Check URL
+            string healthCheckUrl = $"{this._configuration.Notify.API.BaseUrl()}/_status?simple=true";
+
+            // Request
+            using var httpClient = new HttpClient();
+            HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
+
+            // Response
+            return result.IsSuccessStatusCode
+                // HttpStatus Code: 200 OK
+                ? Ok(result)
+                // HttpStatus Code: 500 Internal Server Error
+                : StatusCode((int)HttpStatusCode.InternalServerError, result);
+        }
+
+        /// <summary>
+        /// Sending Email messages to the NotifyNL API web service.
         /// </summary>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
         /// <param name="emailTemplateId">The email template ID (optional) to be used from NotifyNL API service.
@@ -94,7 +122,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending SMS text messages to the NotifyNL API service.
+        /// Sending SMS text messages to the NotifyNL API web service.
         /// </summary>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.</param>
         /// <param name="smsTemplateId">The SMS template ID (optional) to be used from NotifyNL API service.
