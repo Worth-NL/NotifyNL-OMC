@@ -16,16 +16,21 @@ using System.Text.Json;
 
 namespace EventsHandler.Services.Telemetry
 {
-    /// <inheritdoc cref="IFeedbackService"/>
-    internal sealed class NotifyService : IFeedbackService
+    /// <summary>
+    /// <inheritdoc cref="IFeedbackService" />
+    /// <para>
+    ///   Informs external "Contactmomenten" API web service about completion of sending notifications to NotifyNL API web service.
+    /// </para>
+    /// </summary>
+    /// <seealso cref="IFeedbackService" />
+    internal sealed class ContactRegistration : IFeedbackService
     {
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyService"/> class.
+        /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public NotifyService(
-            IDataQueryService<NotificationEvent> dataQuery)
+        public ContactRegistration(IDataQueryService<NotificationEvent> dataQuery)
         {
             this._dataQuery = dataQuery;
         }

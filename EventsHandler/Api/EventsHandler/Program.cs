@@ -202,7 +202,7 @@ namespace EventsHandler
             builder.Services.RegisterClientFactories();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
-            builder.Services.AddSingleton<IFeedbackService, NotifyService>();
+            builder.Services.AddSingleton<IFeedbackService, ContactRegistration>();
             builder.Services.RegisterResponders();
 
             return builder;
