@@ -16,22 +16,22 @@ using System.Text.Json;
 
 namespace EventsHandler.Services.Telemetry
 {
-    /// <inheritdoc cref="IFeedbackTelemetryService"/>
-    internal sealed class NotifyTelemetryService : IFeedbackTelemetryService
+    /// <inheritdoc cref="IFeedbackService"/>
+    internal sealed class NotifyService : IFeedbackService
     {
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyTelemetryService"/> class.
+        /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
-        public NotifyTelemetryService(
+        public NotifyService(
             IDataQueryService<NotificationEvent> dataQuery)
         {
             this._dataQuery = dataQuery;
         }
 
-        /// <inheritdoc cref="IFeedbackTelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods)"/>
-        async Task<string> IFeedbackTelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod)
+        /// <inheritdoc cref="IFeedbackService.ReportCompletionAsync(NotificationEvent, NotifyMethods)"/>
+        async Task<string> IFeedbackService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod)
         {
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
             return await SendFeedbackToOpenZaakAsync(

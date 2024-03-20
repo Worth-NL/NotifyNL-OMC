@@ -94,7 +94,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         public async Task SendSmsAsync_Calls_IFeedbackServiceMethod_ReportCompletionAsync()
         {
             // Arrange
-            Mock<IFeedbackTelemetryService> mockedTelemetry = GetMockedTelemetry();
+            Mock<IFeedbackService> mockedTelemetry = GetMockedTelemetry();
             this._testNotifySender = GetTestSendingService(mockedTelemetry: mockedTelemetry);
             NotificationEvent testNotification = GetTestNotification();
 
@@ -112,7 +112,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         public async Task SendEmailAsync_Calls_IFeedbackServiceMethod_ReportCompletionAsync()
         {
             // Arrange
-            Mock<IFeedbackTelemetryService> mockedTelemetry = GetMockedTelemetry();
+            Mock<IFeedbackService> mockedTelemetry = GetMockedTelemetry();
             this._testNotifySender = GetTestSendingService(mockedTelemetry: mockedTelemetry);
             NotificationEvent testNotification = GetTestNotification();
 
@@ -130,7 +130,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             #region First phase of the test (HttpClient will be just created)
             // Arrange
-            Mock<IFeedbackTelemetryService> mockedTelemetry = GetMockedTelemetry();
+            Mock<IFeedbackService> mockedTelemetry = GetMockedTelemetry();
             Mock<INotifyClient> firstMockedNotifyClient = GetMockedNotifyClient();
             var firstMockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             firstMockedClientFactory
@@ -181,7 +181,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         #region Helper methods
         private static ISendingService<NotificationEvent, NotifyData> GetTestSendingService(
             Mock<INotifyClient>? mockedClient = null,
-            Mock<IFeedbackTelemetryService>? mockedTelemetry = null)
+            Mock<IFeedbackService>? mockedTelemetry = null)
         {
             var mockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             mockedClientFactory.Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
@@ -211,9 +211,9 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             return notificationClientMock;
         }
 
-        private static Mock<IFeedbackTelemetryService> GetMockedTelemetry()
+        private static Mock<IFeedbackService> GetMockedTelemetry()
         {
-            var mockedTelemetry = new Mock<IFeedbackTelemetryService>(MockBehavior.Strict);
+            var mockedTelemetry = new Mock<IFeedbackService>(MockBehavior.Strict);
             mockedTelemetry.Setup(mock => mock.ReportCompletionAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<NotifyMethods>()))

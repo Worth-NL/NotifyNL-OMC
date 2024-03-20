@@ -20,14 +20,14 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
-        private readonly IFeedbackTelemetryService _telemetry;
+        private readonly IFeedbackService _telemetry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySender"/> class.
         /// </summary>
         public NotifySender(
             IHttpClientFactory<INotifyClient, string> clientFactory,
-            IFeedbackTelemetryService telemetry)
+            IFeedbackService telemetry)
         {
             this._clientFactory = clientFactory;
             this._telemetry = telemetry;
