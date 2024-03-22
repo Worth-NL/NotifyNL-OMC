@@ -24,13 +24,13 @@ namespace EventsHandler.Controllers
     /// <summary>
     /// Controller used to test other API services from which NotifyNL OMC is dependent.
     /// </summary>
-    /// <seealso cref="ControllerBase"/>
+    /// <seealso cref="Controller"/>
     [ApiController]
     [Route(DefaultValues.ApiController.Route)]
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
     [ApiVersion(DefaultValues.ApiController.Version)]
-    public sealed class TestController : ControllerBase
+    public sealed class TestController : Controller  // TODO: Use OmcController
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult, string> _responder;
