@@ -18,7 +18,7 @@ using System.ComponentModel.DataAnnotations;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// 
+    /// Controller used to get feedback from "NotifyNL" API web service.
     /// </summary>
     /// <seealso cref="Controller"/>
     [ApiController]
@@ -48,7 +48,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Callback URL listening to feedback that notification was received and/or processed by "NotifyNL" API web service.
+        /// Callback URL listening to delivery receipt send by "NotifyNL" API web service.
         /// </summary>
         /// <param name="json">The delivery receipt from "NotifyNL" Web service (as a plain JSON object).</param>
         [HttpPost]

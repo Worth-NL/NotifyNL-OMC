@@ -565,7 +565,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application handling the workflow between multiple Notify NL components.
+        ///   Looks up a localized string similar to Application handling the workflow between multiple Notify NL components..
         /// </summary>
         internal static string Swagger_Description {
             get {
@@ -592,7 +592,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This notification method is not supported.
+        ///   Looks up a localized string similar to This notification method is not supported..
         /// </summary>
         internal static string Test_NotifyNL_ERROR_NotSupportedMethod {
             get {
@@ -601,7 +601,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to was successfully send to NotifyNL.
+        ///   Looks up a localized string similar to was successfully send to NotifyNL..
         /// </summary>
         internal static string Test_NotifyNL_SUCCESS_NotificationSent {
             get {

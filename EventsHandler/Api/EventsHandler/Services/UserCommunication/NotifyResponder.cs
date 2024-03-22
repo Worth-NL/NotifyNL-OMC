@@ -201,9 +201,7 @@ namespace EventsHandler.Services.UserCommunication
                 // HttpStatus Code: 202 Accepted
                 case ProcessingResult.Success:
                 {
-                    string resultMessage = $"{details} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}";
-
-                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Accepted, resultMessage))
+                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Accepted, details))
                     {
                         StatusCode = (int)HttpStatusCode.Accepted
                     };

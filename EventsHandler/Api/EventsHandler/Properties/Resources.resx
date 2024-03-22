@@ -265,7 +265,7 @@
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Description" xml:space="preserve">
-    <value>Application handling the workflow between multiple Notify NL components</value>
+    <value>Application handling the workflow between multiple Notify NL components.</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Title" xml:space="preserve">
@@ -307,11 +307,11 @@
     <value>This controller is not yet registered as handled StandardizeApiResponse</value>
   </data>
   <data name="Test_NotifyNL_ERROR_NotSupportedMethod" xml:space="preserve">
-    <value>This notification method is not supported</value>
+    <value>This notification method is not supported.</value>
     <comment>API Endpoint: TestController/Notify/</comment>
   </data>
   <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>was successfully send to NotifyNL</value>
+    <value>was successfully send to NotifyNL.</value>
     <comment>API Endpoint: TestController/Notify/</comment>
   </data>
 </root>
