@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
 {
@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
     ///   </code> 
     /// </para>
     /// </summary>
-    internal struct NotifyCallback : IJsonSerializable
+    internal struct DeliveryReceipt : IJsonSerializable
     {
         /// <summary>
         /// Notify’s id for the status receipts.
@@ -122,9 +122,9 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         public int TemplateVersion { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyCallback"/> struct.
+        /// Initializes a new instance of the <see cref="DeliveryReceipt"/> struct.
         /// </summary>
-        public NotifyCallback()
+        public DeliveryReceipt()
         {
         }
     }
