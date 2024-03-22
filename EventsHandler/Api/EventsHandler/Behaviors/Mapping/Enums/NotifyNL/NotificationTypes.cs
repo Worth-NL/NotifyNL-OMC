@@ -8,7 +8,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
     /// <summary>
     /// Notification types returned by "NotifyNL" API web service.
     /// </summary>
-    internal enum NotificationType
+    internal enum NotificationTypes
     {
         /// <inheritdoc cref="DistributionChannels.Email"/>
         [JsonPropertyName("email")]
