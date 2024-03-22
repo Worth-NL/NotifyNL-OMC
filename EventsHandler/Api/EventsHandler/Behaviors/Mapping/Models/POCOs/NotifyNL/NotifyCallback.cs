@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
+using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
 {
@@ -18,7 +19,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
     ///   </code> 
     /// </para>
     /// </summary>
-    internal struct NotifyCallback
+    internal struct NotifyCallback : IJsonSerializable
     {
         /// <summary>
         /// Notify’s id for the status receipts.
