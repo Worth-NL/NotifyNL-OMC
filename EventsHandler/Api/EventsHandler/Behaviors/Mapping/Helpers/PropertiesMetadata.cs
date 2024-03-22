@@ -15,7 +15,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
     /// <seealso cref="IReadOnlyList{T}"/>
     internal sealed class PropertiesMetadata : IReadOnlyList<PropertyInfo>
     {
-        private readonly int _capacity;
+        // ReSharper disable InconsistentNaming
 
         /// <summary>
         /// Gets the collection of properties.
@@ -43,11 +43,11 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
             PropertyInfo[] properties = GetFiltered(GetPublicInstanceProperties(instance), exclusions);
 
             // Initialization
-            this._capacity = properties.Length;
+            this.Count = properties.Length;
 
-            this.Properties = new PropertyInfo[this._capacity];
-            this.English_To_Dutch = new Dictionary<string, (int, string)>(this._capacity);
-            this.Dutch_To_English = new Dictionary<string, (int, string)>(this._capacity);
+            this.Properties = new PropertyInfo[this.Count];
+            this.English_To_Dutch = new Dictionary<string, (int, string)>(this.Count);
+            this.Dutch_To_English = new Dictionary<string, (int, string)>(this.Count);
 
             // Mapping
             MapDictionaries(properties);
@@ -57,7 +57,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <summary>
         /// Retrieves the instance public properties from a specified <see cref="Type"/>.
         /// </summary>
-        private static PropertyInfo[] GetPublicInstanceProperties(object instance)
+        private static IEnumerable<PropertyInfo> GetPublicInstanceProperties(object instance)
         {
             return instance.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
         }
@@ -65,7 +65,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <summary>
         /// Filters the given properties (<see cref="PropertyInfo"/>s) based on the provided properties names.
         /// </summary>
-        private static PropertyInfo[] GetFiltered(PropertyInfo[] properties, params string[] exclusions)
+        private static PropertyInfo[] GetFiltered(IEnumerable<PropertyInfo> properties, params string[] exclusions)
         {
             return properties.Where(property => !exclusions.Contains(property.Name))
                              .ToArray();
@@ -76,17 +76,13 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <summary>
         /// Maps the internal dictionaries.
         /// </summary>
-        private void MapDictionaries(PropertyInfo[] properties)
+        private void MapDictionaries(IReadOnlyList<PropertyInfo> properties)
         {
-            PropertyInfo currentProperty;
-            string englishPropertyName;
-            string dutchPropertyName;
-
-            for (int index = 0; index < properties.Length; index++)
+            for (int index = 0; index < properties.Count; index++)
             {
-                currentProperty = properties[index];
-                englishPropertyName = RetrievePropertyEnglishName(currentProperty);
-                dutchPropertyName = RetrievePropertyDutchName(currentProperty);
+                PropertyInfo currentProperty = properties[index];
+                string englishPropertyName = RetrievePropertyEnglishName(currentProperty);
+                string dutchPropertyName = RetrievePropertyDutchName(currentProperty);
 
                 this.Properties[index] = currentProperty;
                 this.English_To_Dutch.Add(englishPropertyName, (index, dutchPropertyName));
@@ -97,7 +93,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <summary>
         /// Gets the plane C# (English) name of the property (<see cref="PropertyInfo"/>).
         /// </summary>
-        private static string RetrievePropertyEnglishName(PropertyInfo property)
+        private static string RetrievePropertyEnglishName(MemberInfo property)
         {
             return property.Name;
         }
@@ -106,7 +102,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// Gets the custom JSON-associated (Dutch) name of the property (<see cref="PropertyInfo"/>)
         /// retrieved from its <see cref="JsonPropertyNameAttribute"/>.
         /// </summary>
-        private static string RetrievePropertyDutchName(PropertyInfo property)
+        private static string RetrievePropertyDutchName(MemberInfo property)
         {
             return property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name  // Dutch name (if existing)
                    ?? string.Empty;
@@ -123,14 +119,11 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <inheritdoc cref="IEnumerable{TProperty}.GetEnumerator"/>
         public IEnumerator<PropertyInfo> GetEnumerator()
         {
-            for (int index = 0; index < this.Properties.Length; index++)
-            {
-                yield return this.Properties[index];
-            }
+            return ((IEnumerable<PropertyInfo>)this.Properties).GetEnumerator();  // NOTE: Foreach and yield return PropertyInfo elements
         }
 
         /// <inheritdoc cref="IReadOnlyCollection{TProperty}.Count"/>
-        public int Count => this._capacity;
+        public int Count { get; }
 
         /// <summary>
         /// Gets the <see cref="Nullable{PropertyInfo}"/> at the specified index.
@@ -141,9 +134,9 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         /// <param name="index">The index.</param>
         public PropertyInfo this[int index]
         {
-            get => this.Properties[index > this._capacity ? this._capacity  // No exceptions if the index > Length
-                                                          : index < 0 ? 0   // No exceptions if the index < Length
-                                                                      : index];
+            get => this.Properties[index > this.Count ? this.Count     // No exceptions if the index > Length
+                                                      : index < 0 ? 0  // No exceptions if the index < Length
+                                                                  : index];
         }
         #endregion
 
@@ -183,7 +176,7 @@ namespace EventsHandler.Behaviors.Mapping.Helpers
         }
 
         /// <summary>
-        /// Gets the property (<see cref="PropertyInfo"/>) value by its its JSON-associated (Dutch) name.
+        /// Gets the property (<see cref="PropertyInfo"/>) value by its JSON-associated (Dutch) name.
         /// </summary>
         internal bool TryGetPropertyValueByDutchName<TInstance>(string dutchName, TInstance instance, [MaybeNullWhen(false)] out object value)
         {
