@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// Controller used to test other API services from which NotifyNL OMC is dependent.
+    /// Controller used to test other API services from which "NotifyNL" OMC is dependent.
     /// </summary>
     /// <seealso cref="Controller"/>
     [ApiController]
@@ -49,7 +49,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks the status of NotifyNL API web service.
+        /// Checks the status of "NotifyNL" API web service.
         /// </summary>
         [HttpGet]
         [Route("Notify/HealthCheck")]
@@ -76,17 +76,17 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending Email messages to the NotifyNL API web service.
+        /// Sending Email messages to the "NotifyNL" API web service.
         /// </summary>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
-        /// <param name="emailTemplateId">The email template ID (optional) to be used from NotifyNL API service.
+        /// <param name="emailTemplateId">The email template ID (optional) to be used from "NotifyNL" API service.
         ///   <para>
         ///     If empty the ID of a very first looked up email template will be used.
         ///   </para>
         /// </param>
         /// <param name="personalization">The map (optional) of keys and values to be used as message personalization.
         ///   <para>
-        ///     Example of personalization in template from NotifyNL Admin Portal: "This is ((placeholderText)) information".
+        ///     Example of personalization in template from "NotifyNL" Admin Portal: "This is ((placeholderText)) information".
         ///   </para>
         ///   <para>
         ///     Example of personalization values to be provided: { "placeholderText": "good" }
@@ -103,10 +103,10 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to NotifyNL API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the NotifyNL API service side
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
         [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
-        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to NotifyNL API service were incorrect
+        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]    // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error, not yet handled by Notify OMC logic
         public async Task<IActionResult> SendEmailAsync(
@@ -122,10 +122,10 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending SMS text messages to the NotifyNL API web service.
+        /// Sending SMS text messages to the "NotifyNL" API web service.
         /// </summary>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.</param>
-        /// <param name="smsTemplateId">The SMS template ID (optional) to be used from NotifyNL API service.
+        /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "NotifyNL" API service.
         ///   <para>
         ///     If empty the ID of a very first looked up SMS template will be used.
         ///   </para>
@@ -141,10 +141,10 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to NotifyNL API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the NotifyNL API service side
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
         [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
-        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to NotifyNL API service were incorrect
+        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]    // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error, not yet handled by Notify OMC logic
         public async Task<IActionResult> SendSmsAsync(
@@ -180,7 +180,7 @@ namespace EventsHandler.Controllers
         {
             try
             {
-                // Initialize the .NET client of NotifyNL API service
+                // Initialize the .NET client of "NotifyNL" API service
                 var notifyClient = new NotificationClient(    // TODO: Client to be resolved by IClientFactory (to be testable)
                     this._configuration.Notify.API.BaseUrl(),
                     this._configuration.User.API.Key.NotifyNL());

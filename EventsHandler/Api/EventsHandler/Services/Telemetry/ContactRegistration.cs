@@ -19,7 +19,7 @@ namespace EventsHandler.Services.Telemetry
     /// <summary>
     /// <inheritdoc cref="IFeedbackService" />
     /// <para>
-    ///   Informs external "Contactmomenten" API web service about completion of sending notifications to NotifyNL API web service.
+    ///   Informs external "Contactmomenten" API web service about completion of sending notifications to "NotifyNL" API web service.
     /// </para>
     /// </summary>
     /// <seealso cref="IFeedbackService" />

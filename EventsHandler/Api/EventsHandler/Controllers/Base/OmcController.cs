@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventsHandler.Controllers.Base
 {
     /// <summary>
-    /// Parent of all API Controllers in NotifyNL OMC.
+    /// Parent of all API Controllers in "NotifyNL" OMC.
     /// </summary>
     public abstract class OmcController : Controller
     {
