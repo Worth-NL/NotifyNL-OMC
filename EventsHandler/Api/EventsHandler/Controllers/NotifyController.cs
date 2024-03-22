@@ -87,7 +87,7 @@ namespace EventsHandler.Controllers
 
         private static string GetCallbackDetails(DeliveryReceipt callback)
         {
-            return $"The status of notification with ID {callback.Id} is: \"{callback.Status}\"";
+            return $"The status of notification with ID {callback.Id} is: {callback.Status}.";
         }
     }
 }
