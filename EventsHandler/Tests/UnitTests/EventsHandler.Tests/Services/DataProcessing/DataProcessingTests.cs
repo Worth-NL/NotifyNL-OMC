@@ -93,8 +93,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             });
         }
 
-        [TestCase(2, 1, 0)]  // Only: SMS
-        [TestCase(3, 0, 1)]  // Only: email
+        [TestCase(2, 0, 1)]  // Only: email
+        [TestCase(3, 1, 0)]  // Only: SMS
         [TestCase(4, 1, 1)]  // Both: SMS + email
         public async Task ProcessAsync_ForValidNotifyData_WithValidNotifyMethods_CallsExpectedSendMethods_AndReturnsProcessingResult_Success(
             int notifyMethod, int smsSendCount, int emailSendCount)

@@ -80,7 +80,7 @@ namespace EventsHandler.Services.UserCommunication
                     Match match;
 
                     // HttpStatus Code: 403 Forbidden
-                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to NotifyNL API service denied)
+                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to "NotifyNL" API service denied)
                     {
                         message = match.Value;
 
@@ -201,9 +201,7 @@ namespace EventsHandler.Services.UserCommunication
                 // HttpStatus Code: 202 Accepted
                 case ProcessingResult.Success:
                 {
-                    string resultMessage = $"{details} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}";
-
-                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Accepted, resultMessage))
+                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Accepted, details))
                     {
                         StatusCode = (int)HttpStatusCode.Accepted
                     };

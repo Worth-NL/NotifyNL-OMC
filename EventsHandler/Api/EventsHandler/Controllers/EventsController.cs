@@ -5,9 +5,9 @@ using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Constants;
+using EventsHandler.Controllers.Base;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
@@ -23,19 +23,18 @@ namespace EventsHandler.Controllers
     /// Controller handling events workflow between "Notificatie API" events queue, services with citizens personal
     /// data from the municipalities in The Netherlands ("OpenZaak" and "OpenKlaant"), and "Notify NL" API service.
     /// </summary>
-    /// <seealso cref="ControllerBase"/>
+    /// <seealso cref="Controller"/>
     [ApiController]
     [Route(DefaultValues.ApiController.Route)]
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
     [ApiVersion(DefaultValues.ApiController.Version)]
-    public sealed class EventsController : ControllerBase
+    public sealed class EventsController : OmcController
     {
         private readonly ISerializationService _serializer;
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IProcessingService<NotificationEvent> _processor;
         private readonly IRespondingService<NotificationEvent> _responder;
-        private readonly ILogger<EventsController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
@@ -51,12 +50,12 @@ namespace EventsHandler.Controllers
             IProcessingService<NotificationEvent> processor,
             IRespondingService<NotificationEvent> responder,
             ILogger<EventsController> logger)
+            : base(logger)
         {
             this._serializer = serializer;
             this._validator = validator;
             this._processor = processor;
             this._responder = responder;
-            this._logger = logger;
         }
 
         /// <summary>
@@ -111,23 +110,5 @@ namespace EventsHandler.Controllers
                     this._responder.GetStandardized_Exception_ActionResult(exception));
             }
         }
-
-        #region Helper methods
-        private ObjectResult LogAndReturnApiResponse(LogLevel logLevel, ObjectResult objectResult)
-        {
-            DateTime logTime = DateTime.Now;
-            string logMessage = objectResult.Value is BaseEnhancedStandardResponseBody detailedResponseBody
-                ? $"{detailedResponseBody.StatusDescription} | {detailedResponseBody.Details.Message}"
-                : objectResult.Value is BaseApiStandardResponseBody shortResponseBody
-                    ? shortResponseBody.StatusDescription
-                    : $"Not standardized API response | {objectResult.StatusCode} | {nameof(objectResult.Value)}";
-
-            #pragma warning disable CA2254  // The logged message will be dynamic by its nature in this case
-            this._logger.Log(logLevel, $"OMC: {logMessage} | {logTime}");
-            #pragma warning restore CA2254
-
-            return objectResult;
-        }
-        #endregion
     }
 }

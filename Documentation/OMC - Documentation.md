@@ -1,4 +1,4 @@
-# NotifyNL OMC
+# OMC Documentation
 
 v.1.6.2
 
@@ -7,7 +7,7 @@ v.1.6.2
 ---
 # 1. Introduction
 
-NotifyNL OMC (Output Management Component) is a central point and the common hub of the communication workflow between third parties software such as:
+OMC (Output Management Component) is a central point and the common hub of the communication workflow between third parties software such as:
 
 - **Open Notificatie** (API web service)
 
@@ -54,12 +54,12 @@ NotifyNL OMC (Output Management Component) is a central point and the common hub
 | USER_DOMAIN_OBJECTEN                  | string | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                           |
 | USER_DOMAIN_OBJECTTYPEN               | string | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                           |
 | ---                                   | ---    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_TEMPLATEIDS_SMS_ZAAKCREATE       | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
-| USER_TEMPLATEIDS_SMS_ZAAKUPDATE       | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
-| USER_TEMPLATEIDS_SMS_ZAAKCLOSE        | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE     | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
-| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE     | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE      | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from NotifyNL Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_SMS_ZAAKCREATE       | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_SMS_ZAAKUPDATE       | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_SMS_ZAAKCLOSE        | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE     | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE     | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE      | string | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                         |
 
 ---
 # 4. Authorization and authentication
@@ -70,7 +70,7 @@ NotifyNL OMC (Output Management Component) is a central point and the common hub
 ---
 # 6. Errors
 
-List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing `NotifyNL OMC` API endpoints.
+List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing `OMC` API endpoints.
 
 ## 6.1. Events Controller
 
@@ -90,13 +90,13 @@ Endpoints:
 
 #### 6.2.1.1. Possible errors
 
-- Invalid base URL (NotifyNL API service):
+- Invalid base URL ("NotifyNL" API service):
 ![Invalid base URL - Error](../images/test_notify_baseUrl.png)
 
-- Invalid format of API key or it is missing (NotifyNL API service):
+- Invalid format of API key or it is missing ("NotifyNL" API service):
 ![Invalid format of API key - Error](../images/test_notify_apiKeyMissing.png)
 
-- Invalid API key – it was not registered for this NotifyNL API service:
+- Invalid API key – it was not registered for this "NotifyNL" API service:
 ![Invalid API key - Error](../images/test_notify_apiKeyInvalid.png)
 
 - Missing required parameters:

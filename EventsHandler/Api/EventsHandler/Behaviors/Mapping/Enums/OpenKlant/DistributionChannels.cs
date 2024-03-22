@@ -25,16 +25,16 @@ namespace EventsHandler.Behaviors.Mapping.Enums.OpenKlant
         None = 1,
 
         /// <summary>
-        /// Communication method: SMS.
-        /// </summary>
-        [JsonPropertyName("sms")]
-        Sms = 2,
-
-        /// <summary>
         /// Communication method: e-mail.
         /// </summary>
         [JsonPropertyName("email")]
-        Email = 3,
+        Email = 2,
+
+        /// <summary>
+        /// Communication method: SMS.
+        /// </summary>
+        [JsonPropertyName("sms")]
+        Sms = 3,
 
         /// <summary>
         /// Communication method: SMS and e-mail.
