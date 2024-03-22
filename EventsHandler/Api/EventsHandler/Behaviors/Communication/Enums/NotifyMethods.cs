@@ -12,11 +12,11 @@ namespace EventsHandler.Behaviors.Communication.Enums
         /// <inheritdoc cref="DistributionChannels.None"/>
         None = DistributionChannels.None,  // 1
 
-        /// <inheritdoc cref="DistributionChannels.Sms"/>
-        Sms = DistributionChannels.Sms,  // 2
-
         /// <inheritdoc cref="DistributionChannels.Email"/>
-        Email = DistributionChannels.Email,  // 3
+        Email = DistributionChannels.Email,  // 2
+
+        /// <inheritdoc cref="DistributionChannels.Sms"/>
+        Sms = DistributionChannels.Sms,  // 3
 
         /// <inheritdoc cref="DistributionChannels.Both"/>
         Both = DistributionChannels.Both  // 4
