@@ -17,13 +17,13 @@ using System.Text.Json;
 namespace EventsHandler.Services.Telemetry
 {
     /// <summary>
-    /// <inheritdoc cref="IFeedbackService" />
+    /// <inheritdoc cref="ITelemetryService" />
     /// <para>
     ///   Informs external "Contactmomenten" API web service about completion of sending notifications to "NotifyNL" API web service.
     /// </para>
     /// </summary>
-    /// <seealso cref="IFeedbackService" />
-    internal sealed class ContactRegistration : IFeedbackService
+    /// <seealso cref="ITelemetryService" />
+    internal sealed class ContactRegistration : ITelemetryService
     {
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
@@ -35,8 +35,8 @@ namespace EventsHandler.Services.Telemetry
             this._dataQuery = dataQuery;
         }
 
-        /// <inheritdoc cref="IFeedbackService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string)"/>
-        async Task<string> IFeedbackService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
+        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string)"/>
+        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
         {
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
             return await SendFeedbackToOpenZaakAsync(

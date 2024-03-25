@@ -9,7 +9,7 @@ namespace EventsHandler.Services.Telemetry.Interfaces
     /// <summary>
     /// The service to collect and send feedback about the current business activities to the dedicated external API endpoint.
     /// </summary>
-    public interface IFeedbackService
+    public interface ITelemetryService
     {
         /// <summary>
         /// Reports to external API service that notification of type <see cref="NotifyMethods"/> was sent to "Notify NL" service.
