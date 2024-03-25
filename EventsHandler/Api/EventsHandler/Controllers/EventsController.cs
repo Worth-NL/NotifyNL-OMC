@@ -43,7 +43,7 @@ namespace EventsHandler.Controllers
         /// <param name="validator">The input validating service.</param>
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        /// <param name="logger">The logging service.</param>
+        /// <param name="logger">The logging service registering API events.</param>
         public EventsController(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
