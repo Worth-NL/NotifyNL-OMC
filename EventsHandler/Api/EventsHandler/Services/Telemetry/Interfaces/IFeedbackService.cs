@@ -16,10 +16,11 @@ namespace EventsHandler.Services.Telemetry.Interfaces
         /// </summary>
         /// <param name="notification">The notification from "Notificatie API" Web service.</param>
         /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="message">The message to be passed along with the completion report.</param>
         /// <returns>
         ///   The callback URL prepared in response by "OpenKlant" web service.
         /// </returns>
         /// <exception cref="TelemetryException">The completion status could not be sent.</exception>
-        internal Task<string> ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod);
+        internal Task<string> ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message);
     }
 }

@@ -102,7 +102,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             mockedTelemetry.Verify(mock =>
                 mock.ReportCompletionAsync(
                     It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyMethods>()), Times.Once);
+                    It.IsAny<NotifyMethods>(),
+                    It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -119,7 +120,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             // Assert
             mockedTelemetry.Verify(mock => mock.ReportCompletionAsync(
                 It.IsAny<NotificationEvent>(),
-                It.IsAny<NotifyMethods>()), Times.Once);
+                It.IsAny<NotifyMethods>(),
+                It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -213,7 +215,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             var mockedTelemetry = new Mock<IFeedbackService>(MockBehavior.Strict);
             mockedTelemetry.Setup(mock => mock.ReportCompletionAsync(
                     It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyMethods>()))
+                    It.IsAny<NotifyMethods>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(string.Empty);
 
             return mockedTelemetry;
