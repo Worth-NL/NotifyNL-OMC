@@ -95,7 +95,7 @@ namespace EventsHandler.Services.DataQuerying
                 (bool isSuccess, string jsonResult) = await this._httpSupplier.GetAsync(httpsClientType, organizationId, uri);
 
                 return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
-                                 : throw new HttpRequestException(fallbackErrorMessage);
+                                 : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
             }
 
             /// <summary>
@@ -111,7 +111,7 @@ namespace EventsHandler.Services.DataQuerying
                 (bool isSuccess, string jsonResult) = await this._httpSupplier.PostAsync(httpsClientType, organizationId, uri, body);
 
                 return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
-                                 : throw new HttpRequestException(fallbackErrorMessage);
+                                 : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
             }
 
             #region Internal query methods
