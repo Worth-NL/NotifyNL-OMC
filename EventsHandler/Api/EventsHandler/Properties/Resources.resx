@@ -314,4 +314,7 @@
     <value>was successfully send to NotifyNL.</value>
     <comment>API Endpoint: TestController/Notify/</comment>
   </data>
+  <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
+    <value>The notification was passed to NotifyNL API.</value>
+  </data>
 </root>

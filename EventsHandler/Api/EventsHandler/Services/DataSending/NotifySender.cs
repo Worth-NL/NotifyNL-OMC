@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Extensions;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -20,14 +21,14 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
-        private readonly IFeedbackService _telemetry;
+        private readonly ITelemetryService _telemetry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySender"/> class.
         /// </summary>
         public NotifySender(
             IHttpClientFactory<INotifyClient, string> clientFactory,
-            IFeedbackService telemetry)
+            ITelemetryService telemetry)
         {
             this._clientFactory = clientFactory;
             this._telemetry = telemetry;
@@ -39,8 +40,9 @@ namespace EventsHandler.Services.DataSending
             _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
                                                                      templateId:      package.TemplateId,
                                                                      personalisation: package.Personalization);
-            // TODO: Extract some data from Notify NL here
-            _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod);
+
+            _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
+                $"SMS: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
         }
 
         /// <inheritdoc cref="ISendingService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
@@ -49,8 +51,9 @@ namespace EventsHandler.Services.DataSending
             _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
                                                                        templateId:      package.TemplateId,
                                                                        personalisation: package.Personalization);
-            // TODO: Extract some data from Notify NL here
-            _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod);
+
+            _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
+                $"Email: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
         }
 
         #region IDisposable

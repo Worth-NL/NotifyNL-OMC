@@ -17,13 +17,13 @@ using System.Text.Json;
 namespace EventsHandler.Services.Telemetry
 {
     /// <summary>
-    /// <inheritdoc cref="IFeedbackService" />
+    /// <inheritdoc cref="ITelemetryService" />
     /// <para>
     ///   Informs external "Contactmomenten" API web service about completion of sending notifications to "NotifyNL" API web service.
     /// </para>
     /// </summary>
-    /// <seealso cref="IFeedbackService" />
-    internal sealed class ContactRegistration : IFeedbackService
+    /// <seealso cref="ITelemetryService" />
+    internal sealed class ContactRegistration : ITelemetryService
     {
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
@@ -35,20 +35,20 @@ namespace EventsHandler.Services.Telemetry
             this._dataQuery = dataQuery;
         }
 
-        /// <inheritdoc cref="IFeedbackService.ReportCompletionAsync(NotificationEvent, NotifyMethods)"/>
-        async Task<string> IFeedbackService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod)
+        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string)"/>
+        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
         {
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
             return await SendFeedbackToOpenZaakAsync(
                 notification,
-                await SendFeedbackToOpenKlantAsync(notification, notificationMethod));
+                await SendFeedbackToOpenKlantAsync(notification, notificationMethod, message));
         }
 
         #region Helper methods
         /// <summary>
         /// Sends the completion feedback to "OpenKlant" Web service.
         /// </summary>
-        private async Task<ContactMoment> SendFeedbackToOpenKlantAsync(NotificationEvent notification, NotifyMethods notificationMethod)
+        private async Task<ContactMoment> SendFeedbackToOpenKlantAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
         {
             // Prepare the body
             CaseStatus caseStatus = (await this._dataQuery.From(notification).GetCaseStatusesAsync()).LastStatus();  // TODO: Regarding performance, think whether we can store such data in a kind of register
@@ -58,7 +58,7 @@ namespace EventsHandler.Services.Telemetry
                 { "bronorganisatie", notification.GetOrganizationId() },
                 { "registratiedatum", caseStatus.Created },
                 { "kanaal", $"{notificationMethod}" },
-                { "tekst", string.Empty },  // TODO: To be filled
+                { "tekst", message },
                 { "initiatief", "gemeente" }
             });
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);

@@ -3,7 +3,6 @@
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
-using System.Collections.Concurrent;
 
 namespace EventsHandler.Configuration
 {
@@ -39,25 +38,6 @@ namespace EventsHandler.Configuration
         /// </summary>
         internal abstract record BaseComponent
         {
-            /// <summary>
-            /// A thread-safe dictionary, storing cached configuration <see langword="string"/> values.
-            /// <para>
-            ///   The reasons to use such solution are:
-            ///   <para>
-            ///     - Some values are validated during retrieval time, whether they have correct format or range.
-            ///     After being loaded for the first time and then validated, there is no reason to check them again.
-            ///   </para>
-            ///   <para>
-            ///     - The methods used to map specific configurations (like in fluent builder design pattern) is very handy
-            ///     in terms of OOP approach, but might introduce some minimal overhead. Thanks to caching values by their
-            ///     configuration nodes, both - flexibility and convenience as well as better performance can be achieved.
-            ///   </para>
-            /// </para>
-            /// </summary>
-            private protected static readonly ConcurrentDictionary<
-                string /* Config path */,
-                string /* Config value */> s_cachedValues = new();
-
             /// <inheritdoc cref="AuthorizationComponent"/>
             internal AuthorizationComponent Authorization { get; }
 
@@ -106,27 +86,27 @@ namespace EventsHandler.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Secret()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(Secret));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Secret));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Issuer()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(Issuer));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Issuer));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Audience()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(Audience));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Audience));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal ushort ExpiresInMin()
-                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
+                        => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string UserId()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(UserId));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(UserId));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string UserName()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(UserName));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
             }
         }
@@ -167,7 +147,7 @@ namespace EventsHandler.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string BaseUrl()
-                    => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(BaseUrl));
+                    => GetValue(this._loadersContext, this._currentPath, nameof(BaseUrl));
             }
         }
 
@@ -233,11 +213,11 @@ namespace EventsHandler.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string NotifyNL()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(NotifyNL));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Objecten()
-                        => GetCachedValue(this._loadersContext, s_cachedValues, this._currentPath, nameof(Objecten));
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Objecten));
                 }
             }
 
@@ -246,10 +226,6 @@ namespace EventsHandler.Configuration
             /// </summary>
             internal sealed record DomainComponent
             {
-                private static readonly ConcurrentDictionary<
-                    string /* Config path */,
-                    string /* Config value */> s_cachedDomainValues = new();
-                
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
 
@@ -264,23 +240,23 @@ namespace EventsHandler.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenNotificaties()
-                    => GetCachedDomainValue(this._loadersContext, s_cachedDomainValues, this._currentPath, nameof(OpenNotificaties));
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenZaak()
-                    => GetCachedDomainValue(this._loadersContext, s_cachedDomainValues, this._currentPath, nameof(OpenZaak));
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
                     
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenKlant()
-                    => GetCachedDomainValue(this._loadersContext, s_cachedDomainValues, this._currentPath, nameof(OpenKlant));
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string Objecten()
-                    => GetCachedDomainValue(this._loadersContext, s_cachedDomainValues, this._currentPath, nameof(Objecten));
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string ObjectTypen()
-                    => GetCachedDomainValue(this._loadersContext, s_cachedDomainValues, this._currentPath, nameof(ObjectTypen));
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
             }
 
             /// <summary>
@@ -310,10 +286,6 @@ namespace EventsHandler.Configuration
                 /// </summary>
                 internal sealed record SmsComponent
                 {
-                    private static readonly ConcurrentDictionary<
-                        string /* Config path */,
-                        string /* Config value */> s_cachedSmsTemplateValues = new();
-                    
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
@@ -328,15 +300,15 @@ namespace EventsHandler.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakCreate()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedSmsTemplateValues, this._currentPath, nameof(ZaakCreate));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakUpdate()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedSmsTemplateValues, this._currentPath, nameof(ZaakUpdate));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedSmsTemplateValues, this._currentPath, nameof(ZaakClose));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
                 }
 
                 /// <summary>
@@ -344,10 +316,6 @@ namespace EventsHandler.Configuration
                 /// </summary>
                 internal sealed record EmailComponent
                 {
-                    private static readonly ConcurrentDictionary<
-                        string /* Config path */,
-                        string /* Config value */> s_cachedEmailTemplateValues = new();
-
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
@@ -362,15 +330,15 @@ namespace EventsHandler.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakCreate()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedEmailTemplateValues, this._currentPath, nameof(ZaakCreate));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakUpdate()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedEmailTemplateValues, this._currentPath, nameof(ZaakUpdate));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
-                        => GetCachedTemplateIdValue(this._loadersContext, s_cachedEmailTemplateValues, this._currentPath, nameof(ZaakClose));
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
                 }
             }
         }
@@ -379,26 +347,17 @@ namespace EventsHandler.Configuration
         /// <summary>
         /// Retrieves cached configuration value.
         /// </summary>
-        private static string GetCachedValue(
-            ILoadingService loadersContext,
-            ConcurrentDictionary<string, string> cachedValues,
-            string currentPath,
-            string nodeName)
+        private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return cachedValues.GetOrAdd(
-                nodeName,
-                loadersContext.GetData<string>(finalPath));
+            return loadersContext.GetData<string>(finalPath);
         }
 
         /// <summary>
         /// Retrieves cached configuration value.
         /// </summary>
-        private static TData GetCachedValue<TData>(
-            ILoadingService loadersContext,
-            string currentPath,
-            string nodeName)
+        private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
@@ -408,34 +367,22 @@ namespace EventsHandler.Configuration
         /// <summary>
         /// Retrieves cached configuration value, ensuring it will be a domain (without http/s and API endpoint).
         /// </summary>
-        private static string GetCachedDomainValue(
-            ILoadingService loadersContext,
-            ConcurrentDictionary<string, string> cachedValues,
-            string currentPath,
-            string nodeName)
+        private static string GetDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
-            return cachedValues.GetOrAdd(
-                nodeName,
-                GetCachedValue(loadersContext, cachedValues, currentPath, nodeName)
+            return GetValue<string>(loadersContext, currentPath, nodeName)
                 // NOTE: Validate only once when the value is cached
                 .WithoutHttp()
-                .WithoutEndpoint());
+                .WithoutEndpoint();
         }
 
         /// <summary>
         /// Retrieves cached configuration value, ensuring it will be a valid Template Id.
         /// </summary>
-        private static string GetCachedTemplateIdValue(
-            ILoadingService loadersContext,
-            ConcurrentDictionary<string, string> cachedValues,
-            string currentPath,
-            string nodeName)
+        private static string GetTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
-            return cachedValues.GetOrAdd(
-                nodeName,
-                GetCachedValue(loadersContext, cachedValues, currentPath, nodeName)
+            return GetValue<string>(loadersContext, currentPath, nodeName)
                 // NOTE: Validate only once when the value is cached
-                .ValidTemplateId());
+                .ValidTemplateId();
         }
         #endregion
     }

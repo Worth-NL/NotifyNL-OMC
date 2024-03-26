@@ -21,6 +21,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
     /// </summary>
     internal struct DeliveryReceipt : IJsonSerializable
     {
+        internal static DeliveryReceipt Default { get; } = new();
+
         /// <summary>
         /// Notify’s id for the status receipts.
         /// </summary>

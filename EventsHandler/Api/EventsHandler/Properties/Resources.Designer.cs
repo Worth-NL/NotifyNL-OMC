@@ -556,6 +556,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification was passed to NotifyNL API..
+        /// </summary>
+        internal static string Register_NotifyNL_SUCCESS_NotificationSent {
+            get {
+                return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Insert received JWT token here.
         /// </summary>
         internal static string Swagger_Authentication_Description {
