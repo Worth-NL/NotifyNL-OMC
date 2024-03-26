@@ -44,6 +44,8 @@ namespace EventsHandler.Constants
             internal static class OpenApiSecurityScheme
             {
                 internal static string BearerFormat => "JWT";
+
+                internal static string BearerSchema => "Bearer";
             }
         }
         #endregion

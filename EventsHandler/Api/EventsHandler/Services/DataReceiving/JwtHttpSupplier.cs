@@ -118,7 +118,8 @@ namespace EventsHandler.Services.DataReceiving
                 this._configuration.User.Authorization.JWT.UserName());
 
             // Set Authorization header
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
 
             return httpClient;
         }
