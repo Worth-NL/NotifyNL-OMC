@@ -22,7 +22,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
             string securityAlgorithm, string userId, string userRepresentation)
         {
             // Creating JWT token
-            return new JsonWebTokenHandler()
+            return new JsonWebTokenHandler
             {
                 SetDefaultTimesOnTokenCreation = false  // NOTE: Remove for example "nbf"
             }
@@ -46,7 +46,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
             DateTime currentDateTime = DateTime.UtcNow;
 
             // Creating JWT token
-            return new JsonWebTokenHandler()
+            return new JsonWebTokenHandler
             {
                 SetDefaultTimesOnTokenCreation = false  // NOTE: Remove for example "nbf"
             }
@@ -85,7 +85,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
                 SigningCredentials = new SigningCredentials(securityKey, securityAlgorithm)
             };
 
-            // NOTE: Audience should be skipped because "OpenKlant" is not yet ready to receive it
+            // TODO: Audience should be skipped because "OpenKlant" is not yet ready to receive it
             if (!string.IsNullOrWhiteSpace(audience))
             {
                 tokenDescriptor.Audience = audience;  // "aud"

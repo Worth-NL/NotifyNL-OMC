@@ -39,7 +39,7 @@ namespace EventsHandler.Services.DataSending
         {
             _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
                                                                      templateId:      package.TemplateId,
-                                                                     personalisation: package.Personalization);
+                                                                     personalization: package.Personalization);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"SMS: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataSending
         {
             _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
                                                                        templateId:      package.TemplateId,
-                                                                       personalisation: package.Personalization);
+                                                                       personalization: package.Personalization);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"Email: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");

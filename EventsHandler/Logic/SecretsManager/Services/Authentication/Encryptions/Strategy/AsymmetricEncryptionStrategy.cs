@@ -38,10 +38,10 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy
             return privateKeyBytes;
         }
 
-        private static void SavePrivateKey(byte[] prvateKeyBytes)
+        private static void SavePrivateKey(byte[] privateKeyBytes)
         {
             // Save into file
-            File.WriteAllBytes(DefaultValues.FileNames.PrivateKeyPath, prvateKeyBytes);
+            File.WriteAllBytes(DefaultValues.FileNames.PrivateKeyPath, privateKeyBytes);
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.GetJwtToken(SecurityKey, string, string, DateTime, string, string)"/>
