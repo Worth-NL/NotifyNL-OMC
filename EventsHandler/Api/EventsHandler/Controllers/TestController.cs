@@ -34,7 +34,7 @@ namespace EventsHandler.Controllers
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult, string> _responder;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController"/> class.
         /// </summary>

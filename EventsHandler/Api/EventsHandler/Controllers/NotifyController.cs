@@ -2,8 +2,10 @@
 
 using Asp.Versioning;
 using EventsHandler.Attributes.Authorization;
+using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Constants;
@@ -100,6 +102,18 @@ namespace EventsHandler.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("Open/ContactRegistration")]
+        public async Task<IActionResult> RegisterAsync([Required, FromBody] object json)
+        {
+            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
+
+            string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test");
+
+            return Ok(result);
+        }
+
+        #region Helper methods
         private static string GetCallbackDetails(DeliveryReceipt callback)
         {
             return $"The status of notification with ID {callback.Id} is: {callback.Status}.";
@@ -109,5 +123,6 @@ namespace EventsHandler.Controllers
         {
             return $"An unexpected error occurred during processing the notification with ID {callback.Id}: {exception.Message}.";
         }
+        #endregion
     }
 }
