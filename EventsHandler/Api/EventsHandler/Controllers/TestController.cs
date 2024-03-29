@@ -217,7 +217,7 @@ namespace EventsHandler.Controllers
                 }
 
                 return this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Success,
-                    $"{templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}");
+                    $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}");
             }
             catch (Exception exception)
             {
