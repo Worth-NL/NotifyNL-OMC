@@ -59,7 +59,8 @@ namespace EventsHandler.Services.Telemetry
                 { "registratiedatum", caseStatus.Created },
                 { "kanaal", $"{notificationMethod}" },
                 { "tekst", message },
-                { "initiatief", "gemeente" }
+                { "initiatief", "gemeente" },
+                { "medewerker", "https://www.google.com/" }  // TODO: Check if this is the correct one
             });
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
 
