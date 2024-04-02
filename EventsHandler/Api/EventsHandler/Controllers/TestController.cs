@@ -5,10 +5,13 @@ using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
+using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
@@ -33,18 +36,26 @@ namespace EventsHandler.Controllers
     public sealed class TestController : Controller  // TODO: Use OmcController
     {
         private readonly WebApiConfiguration _configuration;
+        private readonly ISerializationService _serializer;
+        private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult, string> _responder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController"/> class.
         /// </summary>
         /// <param name="configuration">The service handling Data Provider (DAO) loading strategies.</param>
+        /// <param name="serializer">The input de(serializing) service.</param>
+        /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestController(
             WebApiConfiguration configuration,
+            ISerializationService serializer,
+            ITelemetryService telemetry,
             IRespondingService<ProcessingResult, string> responder)
         {
             this._configuration = configuration;
+            this._serializer = serializer;
+            this._telemetry = telemetry;
             this._responder = responder;
         }
 
@@ -55,6 +66,8 @@ namespace EventsHandler.Controllers
         [Route("Notify/HealthCheck")]
         // Security
         [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -157,6 +170,29 @@ namespace EventsHandler.Controllers
                 mobileNumber,
                 smsTemplateId,
                 personalization);
+        }
+
+        /// <summary>
+        /// Checks whether feedback can be received by "Contactmomenten" API web service.
+        /// </summary>
+        /// <param name="json">The notification from "Notificatie API" Web service (as a plain JSON object).</param>
+        [HttpPost]
+        [Route("Open/ContactRegistration")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                  // REASON: The registration was successfully sent to "Contactmomenten" API web service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration feedback wasn't sent to "Contactmomenten" API web service
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
+        public async Task<IActionResult> RegisterAsync([Required, FromBody] object json)
+        {
+            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
+
+            string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test");  // TODO: Use notification method and message as parameters
+
+            return Ok(result);  // TODO: Use responder
         }
 
         #region Helper methods

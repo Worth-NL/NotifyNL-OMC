@@ -2,10 +2,9 @@
 
 using Asp.Versioning;
 using EventsHandler.Attributes.Authorization;
-using EventsHandler.Behaviors.Communication.Enums;
+using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Constants;
@@ -62,6 +61,9 @@ namespace EventsHandler.Controllers
         [Route("Confirm")]
         // Security
         [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        // Swagger UI
         [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                // REASON: The delivery receipt with successful status
         [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Detailed))]  // REASON: The delivery receipt with failure status
@@ -100,17 +102,6 @@ namespace EventsHandler.Controllers
             {
                 _ = await this._telemetry.ReportCompletionAsync(default, default, callbackDetails);
             }
-        }
-
-        [HttpPost]
-        [Route("Open/ContactRegistration")]
-        public async Task<IActionResult> RegisterAsync([Required, FromBody] object json)
-        {
-            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
-
-            string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test");
-
-            return Ok(result);
         }
 
         #region Helper methods
