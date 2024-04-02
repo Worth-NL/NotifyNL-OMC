@@ -30,7 +30,12 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces
         internal string GetJwtToken(SecurityKey securityKey, string issuer, string audience, DateTime expiresAt, string userId, string userRepresentation);
 
         /// <inheritdoc cref="GetJwtToken(SecurityKey, string, string, DateTime, string, string)"/>
+        /// <param name="securityKey">JWT: The security key to be used in verify signature.</param>
+        /// <param name="issuer">JWT: The issuer (who created this token).</param>
+        /// <param name="audience">JWT: The audience (who is allowed to receive this token).</param>
         /// <param name="expiresInMinutes">JWT: For how long (in minutes from now) the token should be valid.</param>
+        /// <param name="userId">JWT: The user identifier to be used for logging.</param>
+        /// <param name="userRepresentation">JWT: The user representation to be used for logging.</param>
         internal string GetJwtToken(SecurityKey securityKey, string issuer, string audience, double expiresInMinutes, string userId, string userRepresentation);
 
         /// <summary>

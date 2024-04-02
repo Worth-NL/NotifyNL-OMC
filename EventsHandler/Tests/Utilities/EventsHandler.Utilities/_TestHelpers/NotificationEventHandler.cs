@@ -43,7 +43,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 {
                     { Orphan_FirstProperty, Orphan_FirstValue }
                 },
-                Attributes = new EventAttributes()
+                Attributes = new EventAttributes
                 {
                     // Nested level of EventAttributes subclass
                     Orphans = new Dictionary<string, object>

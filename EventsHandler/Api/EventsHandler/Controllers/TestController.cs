@@ -5,10 +5,14 @@ using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
+using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
+using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
@@ -30,21 +34,32 @@ namespace EventsHandler.Controllers
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
     [ApiVersion(DefaultValues.ApiController.Version)]
-    public sealed class TestController : Controller  // TODO: Use OmcController
+    public sealed class TestController : OmcController
     {
         private readonly WebApiConfiguration _configuration;
+        private readonly ISerializationService _serializer;
+        private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult, string> _responder;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController"/> class.
         /// </summary>
         /// <param name="configuration">The service handling Data Provider (DAO) loading strategies.</param>
+        /// <param name="serializer">The input de(serializing) service.</param>
+        /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
+        /// <param name="logger">The logging service registering API events.</param>
         public TestController(
             WebApiConfiguration configuration,
-            IRespondingService<ProcessingResult, string> responder)
+            ISerializationService serializer,
+            ITelemetryService telemetry,
+            IRespondingService<ProcessingResult, string> responder,
+            ILogger<TestController> logger)
+            : base(logger)
         {
             this._configuration = configuration;
+            this._serializer = serializer;
+            this._telemetry = telemetry;
             this._responder = responder;
         }
 
@@ -55,24 +70,37 @@ namespace EventsHandler.Controllers
         [Route("Notify/HealthCheck")]
         // Security
         [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]                                                               // REASON: The API service is up and running
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]                                                       // REASON: The API service is currently down
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()
         {
-            // Health Check URL
-            string healthCheckUrl = $"{this._configuration.Notify.API.BaseUrl()}/_status?simple=true";
+            try
+            {
+                // Health Check URL
+                string healthCheckUrl = $"{this._configuration.Notify.API.BaseUrl()}/_status?simple=true";
 
-            // Request
-            using var httpClient = new HttpClient();
-            HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
+                // Request
+                using var httpClient = new HttpClient();
+                HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
 
-            // Response
-            return result.IsSuccessStatusCode
-                // HttpStatus Code: 200 OK
-                ? Ok(result)
+                // Response
+                return result.IsSuccessStatusCode  // TODO: Introduce standardized API Responses
+                    // HttpStatus Code: 200 OK
+                    ? Ok(result)
+                    // HttpStatus Code: 400 Bad Request
+                    : StatusCode((int)HttpStatusCode.BadRequest, result);
+            }
+            catch (Exception exception)
+            {
                 // HttpStatus Code: 500 Internal Server Error
-                : StatusCode((int)HttpStatusCode.InternalServerError, result);
+                return LogAndReturnApiResponse(LogLevel.Critical,
+                    this._responder.GetStandardized_Exception_ActionResult(exception));
+            }
         }
 
         /// <summary>
@@ -107,8 +135,9 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
         [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]    // REASON: The JSON structure is invalid
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error, not yet handled by Notify OMC logic
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                       // REASON: Operation is not implemented
         public async Task<IActionResult> SendEmailAsync(
             [Required, FromQuery] string emailAddress,
             [Optional, FromQuery] string? emailTemplateId,
@@ -145,8 +174,9 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
         [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]    // REASON: The JSON structure is invalid
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error, not yet handled by Notify OMC logic
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                       // REASON: Operation is not implemented
         public async Task<IActionResult> SendSmsAsync(
             [Required, FromQuery] string mobileNumber,
             [Optional, FromQuery] string? smsTemplateId,
@@ -157,6 +187,41 @@ namespace EventsHandler.Controllers
                 mobileNumber,
                 smsTemplateId,
                 personalization);
+        }
+
+        /// <summary>
+        /// Checks whether feedback can be received by "Contactmomenten" API web service.
+        /// </summary>
+        /// <param name="json">The notification from "Notificatie API" Web service (as a plain JSON object).</param>
+        [HttpPost]
+        [Route("Open/ContactRegistration")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API web service
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
+        public async Task<IActionResult> RegisterAsync(
+            [Required, FromBody] object json)
+        {
+            try
+            {
+                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
+
+                string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
+                
+                // HttpStatus Code: 200 OK
+                return Ok(result);  // TODO: Use responder to standardize API responses
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogAndReturnApiResponse(LogLevel.Critical,
+                    this._responder.GetStandardized_Exception_ActionResult(exception));
+            }
         }
 
         #region Helper methods
@@ -215,13 +280,22 @@ namespace EventsHandler.Controllers
                         _ => NotImplementedNotifyMethod()
                     };
                 }
-
-                return this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Success,
-                    $"{templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}");
+                
+                // HttpStatus Code: 202 Accepted
+                return LogAndReturnApiResponse(LogLevel.Information,
+                    this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Success,
+                    $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}"));
+            }
+            catch (NotImplementedException exception)
+            {
+                // HttpStatus Code: 501 NotImplementedException
+                return StatusCode((int)HttpStatusCode.NotImplemented, exception.Message);  // TODO: Use responder to standardize API responses
             }
             catch (Exception exception)
             {
-                return this._responder.GetStandardized_Exception_ActionResult(exception);
+                // HttpStatus Code: 500 Internal Server Error
+                return LogAndReturnApiResponse(LogLevel.Critical,
+                    this._responder.GetStandardized_Exception_ActionResult(exception));
             }
         }
 

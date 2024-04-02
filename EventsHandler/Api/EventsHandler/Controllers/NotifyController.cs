@@ -2,6 +2,7 @@
 
 using Asp.Versioning;
 using EventsHandler.Attributes.Authorization;
+using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
@@ -15,6 +16,9 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using EventsHandler.Behaviors.Communication.Enums;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Controllers
 {
@@ -60,11 +64,15 @@ namespace EventsHandler.Controllers
         [Route("Confirm")]
         // Security
         [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        // Swagger UI
         [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                // REASON: The delivery receipt with successful status
-        [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Detailed))]  // REASON: The delivery receipt with failure status
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                     // REASON: JWT Token is invalid or expired
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]                                     // REASON: Internal server error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The delivery receipt with successful status
+        [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Simplified))]         // REASON: The delivery receipt with failure status
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]                                              // REASON: Internal server error (if-else / try-catch-finally handle)
         public async Task<IActionResult> ConfirmAsync([Required, FromBody] object json)
         {
             DeliveryReceipt callback = DeliveryReceipt.Default;
@@ -96,10 +104,17 @@ namespace EventsHandler.Controllers
             }
             finally
             {
-                _ = await this._telemetry.ReportCompletionAsync(default, default, callbackDetails);
+                if (callback.Reference != null)
+                {
+                    NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
+                    NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+                    _ = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);  // TODO: Possible exception
+                }
             }
         }
 
+        #region Helper methods
         private static string GetCallbackDetails(DeliveryReceipt callback)
         {
             return $"The status of notification with ID {callback.Id} is: {callback.Status}.";
@@ -109,5 +124,6 @@ namespace EventsHandler.Controllers
         {
             return $"An unexpected error occurred during processing the notification with ID {callback.Id}: {exception.Message}.";
         }
+        #endregion
     }
 }

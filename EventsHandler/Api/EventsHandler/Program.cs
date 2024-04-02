@@ -94,34 +94,34 @@ namespace EventsHandler
 
             // Authentication using JWT (JSON Web Tokens) Bearer
             builder.Services.AddAuthentication(setup =>
-                            {
-                                setup.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                                setup.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                                setup.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                            })
-                            .AddJwtBearer(setup =>
-                            {
-                                EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
-                                WebApiConfiguration configuration = builder.Services.GetRequiredService<WebApiConfiguration>();
+            {
+                setup.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                setup.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                setup.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(setup =>
+            {
+                EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
+                WebApiConfiguration configuration = builder.Services.GetRequiredService<WebApiConfiguration>();
 
-                                // Disable some default validations, preventing the JWT token to be recognized as valid
-                                setup.TokenValidationParameters = new TokenValidationParameters
-                                {
-                                    // Validation parameters
-                                    ValidIssuer = configuration.Notify.Authorization.JWT.Issuer(),
-                                    ValidAudience = configuration.Notify.Authorization.JWT.Audience(),
-                                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.Notify.Authorization.JWT.Secret()),
+                // Disable some default validations, preventing the JWT token to be recognized as valid
+                setup.TokenValidationParameters = new TokenValidationParameters
+                {
+                    // Validation parameters
+                    ValidIssuer = configuration.Notify.Authorization.JWT.Issuer(),
+                    ValidAudience = configuration.Notify.Authorization.JWT.Audience(),
+                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.Notify.Authorization.JWT.Secret()),
 
-                                    // Validation criteria
-                                    ValidateIssuer = true,
-                                    ValidateAudience = true,
-                                    ValidateLifetime = true,
-                                    ValidateIssuerSigningKey = true
-                                };
+                    // Validation criteria
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
 
-                                // Skip repacking user Claims into Microsoft specific objects
-                                setup.MapInboundClaims = false;
-                            });
+                // Skip repacking user Claims into Microsoft specific objects
+                setup.MapInboundClaims = false;
+            });
 
             // Swagger UI: Configuration
             builder.Services.AddSwaggerGen(setup =>

@@ -7,6 +7,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
 
 namespace EventsHandler.Services.DataSending
@@ -21,6 +22,7 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
+        private readonly ISerializationService _serializer;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
@@ -28,18 +30,23 @@ namespace EventsHandler.Services.DataSending
         /// </summary>
         public NotifySender(
             IHttpClientFactory<INotifyClient, string> clientFactory,
+            ISerializationService serializer,
             ITelemetryService telemetry)
         {
             this._clientFactory = clientFactory;
+            this._serializer = serializer;
             this._telemetry = telemetry;
         }
 
         /// <inheritdoc cref="ISendingService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
         async Task ISendingService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
         {
+            string serializedNotification = this._serializer.Serialize(notification);
+
             _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
                                                                      templateId:      package.TemplateId,
-                                                                     personalisation: package.Personalization);
+                                                                     personalization: package.Personalization,
+                                                                     reference:       serializedNotification);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"SMS: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
@@ -48,9 +55,12 @@ namespace EventsHandler.Services.DataSending
         /// <inheritdoc cref="ISendingService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
         async Task ISendingService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
         {
-            _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
+            string serializedNotification = this._serializer.Serialize(notification);
+            
+            _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    "tkrystyan@worth.systems",//package.ContactDetails,
                                                                        templateId:      package.TemplateId,
-                                                                       personalisation: package.Personalization);
+                                                                       personalization: package.Personalization,
+                                                                       reference:       serializedNotification);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"Email: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
