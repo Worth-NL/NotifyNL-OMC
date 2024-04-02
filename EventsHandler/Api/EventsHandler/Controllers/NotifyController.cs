@@ -65,10 +65,11 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                // REASON: The delivery receipt with successful status
-        [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Detailed))]  // REASON: The delivery receipt with failure status
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                     // REASON: JWT Token is invalid or expired
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]                                     // REASON: Internal server error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The delivery receipt with successful status
+        [ProducesResponseType(StatusCodes.Status400BadRequest,   Type = typeof(ProcessingFailed.Simplified))]         // REASON: The delivery receipt with failure status
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]                                              // REASON: Internal server error (if-else / try-catch-finally handle)
         public async Task<IActionResult> ConfirmAsync([Required, FromBody] object json)
         {
             DeliveryReceipt callback = DeliveryReceipt.Default;
@@ -100,6 +101,7 @@ namespace EventsHandler.Controllers
             }
             finally
             {
+                // TODO: Retrieve notification from reference
                 _ = await this._telemetry.ReportCompletionAsync(default, default, callbackDetails);
             }
         }

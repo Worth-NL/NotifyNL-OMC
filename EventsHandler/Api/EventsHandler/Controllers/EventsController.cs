@@ -75,8 +75,8 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Detailed))]  // REASON: The notification was not sent (e.g., it was invalid due to missing data or improper structure. Retry sending is required)
         [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                     // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Input deserialization error (e.g. model binding of required properties)
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]                                            // REASON: Internal server error (if-else / try-catch-finally handle)
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]                                                 // REASON: Operation is not implemented (a new case is not yet supported)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Internal server error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                     // REASON: Operation is not implemented (a new case is not yet supported)
         public async Task<IActionResult> ListenAsync([Required, FromBody] object json)
         {
             /* Validation #1: The validation of JSON payload structure and model-binding of [Required] properties are
