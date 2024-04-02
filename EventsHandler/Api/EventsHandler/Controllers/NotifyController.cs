@@ -18,6 +18,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Controllers
 {
@@ -106,15 +107,9 @@ namespace EventsHandler.Controllers
                 if (callback.Reference != null)
                 {
                     NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
+                    NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
-                    int notificationTypeValue = (int)callback.Type;
-
-                    if (Enum.IsDefined(typeof(NotifyMethods), notificationTypeValue))
-                    {
-                        var notificationMethod = (NotifyMethods)notificationTypeValue;
-
-                        _ = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);
-                    }
+                    _ = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);  // TODO: Possible exception
                 }
             }
         }

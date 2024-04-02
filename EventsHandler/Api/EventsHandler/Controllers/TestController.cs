@@ -204,7 +204,8 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
-        public async Task<IActionResult> RegisterAsync([Required, FromBody] object json)
+        public async Task<IActionResult> RegisterAsync(
+            [Required, FromBody] object json)
         {
             try
             {
