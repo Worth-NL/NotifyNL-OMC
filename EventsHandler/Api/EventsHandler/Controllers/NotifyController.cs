@@ -16,6 +16,8 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using EventsHandler.Behaviors.Communication.Enums;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Controllers
 {
@@ -101,8 +103,19 @@ namespace EventsHandler.Controllers
             }
             finally
             {
-                // TODO: Retrieve notification from reference
-                _ = await this._telemetry.ReportCompletionAsync(default, default, callbackDetails);
+                if (callback.Reference != null)
+                {
+                    NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
+
+                    int notificationTypeValue = (int)callback.Type;
+
+                    if (Enum.IsDefined(typeof(NotifyMethods), notificationTypeValue))
+                    {
+                        var notificationMethod = (NotifyMethods)notificationTypeValue;
+
+                        _ = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);
+                    }
+                }
             }
         }
 
