@@ -7,6 +7,7 @@ using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
 
 #pragma warning disable IDE0008 // Use explicit type
@@ -30,7 +31,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             // Act
             bool result = await GetMockedNotifyClient().Object
-                .SendSmsAsync("+0000000000", "00000000-0000-0000-0000-000000000000", new Dictionary<string, object>());
+                .SendSmsAsync("+0000000000", "00000000-0000-0000-0000-000000000000", new Dictionary<string, object>(), string.Empty);
 
             // Assert
             Assert.That(result, Is.True);
@@ -41,7 +42,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             // Act
             bool result = await GetMockedNotifyClient().Object
-                .SendEmailAsync("123@gmail.com", "00000000-0000-0000-0000-000000000000", new Dictionary<string, object>());
+                .SendEmailAsync("123@gmail.com", "00000000-0000-0000-0000-000000000000", new Dictionary<string, object>(), string.Empty);
 
             // Assert
             Assert.That(result, Is.True);
@@ -65,7 +66,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 mock.SendSmsAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>()), Times.Once);
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -84,7 +86,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 mock.SendEmailAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>()), Times.Once);
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()), Times.Once);
         }
         
         [Test]
@@ -129,6 +132,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             #region First phase of the test (HttpClient will be just created)
             // Arrange
+            Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
             Mock<ITelemetryService> mockedTelemetry = GetMockedTelemetry();
             Mock<INotifyClient> firstMockedNotifyClient = GetMockedNotifyClient();
             var firstMockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
@@ -136,7 +140,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(firstMockedNotifyClient.Object);
 
-            this._testNotifySender = new NotifySender(firstMockedClientFactory.Object, mockedTelemetry.Object);
+            this._testNotifySender = new NotifySender(firstMockedClientFactory.Object, mockedSerializer.Object, mockedTelemetry.Object);
 
             NotificationEvent testNotification = GetTestNotification();
             
@@ -147,7 +151,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             firstMockedNotifyClient.Verify(mock => mock.SendEmailAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object>>()), Times.Once);
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()), Times.Once);
             #endregion
 
             #region Second phase of the test (HttpClient was already cached)
@@ -158,7 +163,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(secondMockedNotifyClient.Object);
 
-            this._testNotifySender = new NotifySender(secondMockedClientFactory.Object, mockedTelemetry.Object);
+            this._testNotifySender = new NotifySender(secondMockedClientFactory.Object, mockedSerializer.Object, mockedTelemetry.Object);
             
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
@@ -167,12 +172,14 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             firstMockedNotifyClient.Verify(mock => mock.SendEmailAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object>>()), Times.Exactly(2));
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()), Times.Exactly(2));
 
             secondMockedNotifyClient.Verify(mock => mock.SendEmailAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object>>()), Times.Never);
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()), Times.Never);
             #endregion
         }
         #endregion
@@ -186,9 +193,11 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             mockedClientFactory.Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                                .Returns((mockedClient ?? GetMockedNotifyClient()).Object);
 
+            Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
+
             mockedTelemetry ??= GetMockedTelemetry();
 
-            return new NotifySender(mockedClientFactory.Object, mockedTelemetry.Object);
+            return new NotifySender(mockedClientFactory.Object, mockedSerializer.Object, mockedTelemetry.Object);
         }
 
         private static Mock<INotifyClient> GetMockedNotifyClient()
@@ -198,16 +207,33 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             notificationClientMock.Setup(mock => mock.SendSmsAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>()))
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             notificationClientMock.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>()))
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             return notificationClientMock;
+        }
+
+        private static Mock<ISerializationService> GetMockedSerializer()
+        {
+            var serializerMock = new Mock<ISerializationService>(MockBehavior.Strict);
+
+            serializerMock.Setup(mock => mock.Serialize(
+                    It.IsAny<NotificationEvent>()))
+                .Returns(string.Empty);
+
+            serializerMock.Setup(mock => mock.Deserialize<NotificationEvent>(
+                    It.IsAny<string>()))
+                .Returns(new NotificationEvent());
+
+            return serializerMock;
         }
 
         private static Mock<ITelemetryService> GetMockedTelemetry()

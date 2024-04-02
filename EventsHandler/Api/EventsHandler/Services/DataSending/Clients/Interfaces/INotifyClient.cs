@@ -13,7 +13,8 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         /// <param name="mobileNumber">The mobile (phone) number.</param>
         /// <param name="templateId">The template identifier.</param>
         /// <param name="personalization">The personalization.</param>
-        internal Task<bool> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization);
+        /// <param name="reference">The reference representing original notification.</param>
+        internal Task<bool> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference);
 
         /// <summary>
         /// Sends the e-mail asynchronously.
@@ -21,6 +22,7 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         /// <param name="emailAddress">The email address.</param>
         /// <param name="templateId">The template identifier.</param>
         /// <param name="personalization">The personalization.</param>
-        internal Task<bool> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization);
+        /// <param name="reference">The reference representing original notification.</param>
+        internal Task<bool> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference);
     }
 }

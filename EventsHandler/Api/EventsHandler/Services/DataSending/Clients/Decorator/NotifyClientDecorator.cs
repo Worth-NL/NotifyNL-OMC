@@ -18,14 +18,14 @@ namespace EventsHandler.Services.DataSending.Clients.Decorator
             this._notificationClient = notificationClient;
         }
 
-        /// <inheritdoc cref="INotifyClient.SendSmsAsync(string, string, Dictionary{string, object})"/>
-        async Task<bool> INotifyClient.SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization)
+        /// <inheritdoc cref="INotifyClient.SendSmsAsync(string, string, Dictionary{string, object}, string)"/>
+        async Task<bool> INotifyClient.SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference)
         {
             return await this._notificationClient.SendSmsAsync(mobileNumber, templateId, personalization) != null;
         }
 
-        /// <inheritdoc cref="INotifyClient.SendEmailAsync(string, string, Dictionary{string, object})"/>
-        async Task<bool> INotifyClient.SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization)
+        /// <inheritdoc cref="INotifyClient.SendEmailAsync(string, string, Dictionary{string, object}, string)"/>
+        async Task<bool> INotifyClient.SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference)
         {
             return await this._notificationClient.SendEmailAsync(emailAddress, templateId, personalization) != null;
         }
