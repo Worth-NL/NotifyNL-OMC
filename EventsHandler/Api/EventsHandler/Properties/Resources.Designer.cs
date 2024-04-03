@@ -277,6 +277,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID.
+        /// </summary>
+        internal static string Feedback_NotifyNL_ERROR_UnexpectedFailure {
+            get {
+                return ResourceManager.GetString("Feedback_NotifyNL_ERROR_UnexpectedFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The status of notification with ID.
+        /// </summary>
+        internal static string Feedback_NotifyNL_SUCCESS_NotificationStatus {
+            get {
+                return ResourceManager.GetString("Feedback_NotifyNL_SUCCESS_NotificationStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The HTTPS protocol is expected..
         /// </summary>
         internal static string HttpRequest_ERROR_HttpsProtocolExpected {

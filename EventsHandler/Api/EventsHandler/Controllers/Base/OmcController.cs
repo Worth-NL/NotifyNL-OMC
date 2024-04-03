@@ -26,7 +26,7 @@ namespace EventsHandler.Controllers.Base
         /// </summary>
         protected ObjectResult LogAndReturnApiResponse(LogLevel logLevel, ObjectResult objectResult)
         {
-            DateTime logTime = DateTime.Now;
+            // Determine log message based on the received ObjectResult
             string logMessage = objectResult.Value switch
             {
                 // Description with message
@@ -41,11 +41,25 @@ namespace EventsHandler.Controllers.Base
                 _ => $"Not standardized API response | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
             };
 
-            #pragma warning disable CA2254  // The logged message will be dynamic by its nature in this case
-            this._logger.Log(logLevel, $"OMC: {logMessage} | {logTime}");
-            #pragma warning restore CA2254
+            LogApiResponse(logLevel, logMessage);
 
             return objectResult;
+        }
+
+        /// <summary>
+        /// Logs the API response.
+        /// </summary>
+        protected void LogApiResponse(LogLevel logLevel, string logMessage)
+        {
+            this._logger.Log(logLevel, $"OMC: {logMessage} | {DateTime.Now}");
+        }
+
+        /// <summary>
+        /// Logs the API response.
+        /// </summary>
+        protected void LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
+        {
+            _ = LogAndReturnApiResponse(logLevel, objectResult);
         }
     }
 }
