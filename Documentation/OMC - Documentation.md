@@ -84,11 +84,13 @@ Endpoints:
 
 Endpoints:
 
-- GET HealthCheck
-- POST SendEmail
-- POST SendSms
+- GET ...Test/HealthCheck
+- POST ...Test/SendEmail
+- POST ...Test/SendSms
 
 #### 6.2.1.1. Possible errors
+
+##### a) Common for ...Test/SendEmail + ...Test/SendSms:
 
 - Invalid base URL ("NotifyNL" API service):
 ![Invalid base URL - Error](images/test_notify_baseUrl.png)
@@ -99,9 +101,22 @@ Endpoints:
 - Invalid API key – it was not registered for this "NotifyNL" API service:
 ![Invalid API key - Error](images/test_notify_apiKeyInvalid.png)
 
+- Template UUID is invalid:
+![Invalid template ID format - Input](images/test_notify_templateIdFormatInput.png)
+![Invalid template ID format - Error](images/test_notify_templateIdFormatError.png)
+
+- Template not found:
+![Not found template ID - Input](images/test_notify_templateIdNotFoundInput.png)
+![Not found template ID - Error](images/test_notify_templateIdNotFoundError.png)
+
+- Missing required personalization (or the default “example” was used):
+![Missing required personalization - Input](images/test_notify_personalizationMissingInput.png)
+![Missing required personalization - Error](images/test_notify_personalizationMissingError.png)
+
+##### b) ...Test/SendEmail:
+
 - Missing required parameters:
 ![Missing required email address - Error](images/test_notify_emailMissing.png)
-![Missing required phone number - Error](images/test_notify_phoneMissing.png)
 ![Swagger UI validation - Error](images/test_notify_swaggerValidation.png)
 
 - Email is empty (only whitespaces):
@@ -111,6 +126,12 @@ Endpoints:
 - Email is invalid (missing @, dot, domain, etc.):
 ![Invalid email - Input](images/test_notify_emailInvalidInput.png)
 ![Invalid email - Error](images/test_notify_emailInvalidError.png)
+
+##### c) ...Test/SendSms:
+
+- Missing required parameters:
+![Missing required phone number - Error](images/test_notify_phoneMissing.png)
+![Swagger UI validation - Error](images/test_notify_swaggerValidation.png)
 
 - Phone number is empty (only whitespaces):
 ![Missing phone - Input](images/test_notify_phoneEmptyInput.png)
@@ -131,15 +152,3 @@ Endpoints:
 - Phone number has incorrect format (e.g., country code is not supported):
 ![Invalid phone format - Input](images/test_notify_phoneFormatInput.png)
 ![Invalid phone format - Error](images/test_notify_phoneFormatError.png)
-
-- Template UUID is invalid:
-![Invalid template ID format - Input](images/test_notify_templateIdFormatInput.png)
-![Invalid template ID format - Error](images/test_notify_templateIdFormatError.png)
-
-- Template not found:
-![Not found template ID - Input](images/test_notify_templateIdNotFoundInput.png)
-![Not found template ID - Error](images/test_notify_templateIdNotFoundError.png)
-
-- Missing required personalization (or the default “example” was used):
-![Missing required personalization - Input](images/test_notify_personalizationMissingInput.png)
-![Missing required personalization - Error](images/test_notify_personalizationMissingError.png)
