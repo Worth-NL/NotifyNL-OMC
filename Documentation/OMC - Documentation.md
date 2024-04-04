@@ -91,55 +91,55 @@ Endpoints:
 #### 6.2.1.1. Possible errors
 
 - Invalid base URL ("NotifyNL" API service):
-![Invalid base URL - Error](../images/test_notify_baseUrl.png)
+![Invalid base URL - Error](images/test_notify_baseUrl.png)
 
 - Invalid format of API key or it is missing ("NotifyNL" API service):
-![Invalid format of API key - Error](../images/test_notify_apiKeyMissing.png)
+![Invalid format of API key - Error](images/test_notify_apiKeyMissing.png)
 
 - Invalid API key – it was not registered for this "NotifyNL" API service:
-![Invalid API key - Error](../images/test_notify_apiKeyInvalid.png)
+![Invalid API key - Error](images/test_notify_apiKeyInvalid.png)
 
 - Missing required parameters:
-![Missing required email address - Error](../images/test_notify_emailMissing.png)
-![Missing required phone number - Error](../images/test_notify_phoneMissing.png)
-![Swagger UI validation - Error](../images/test_notify_swaggerValidation.png)
+![Missing required email address - Error](images/test_notify_emailMissing.png)
+![Missing required phone number - Error](images/test_notify_phoneMissing.png)
+![Swagger UI validation - Error](images/test_notify_swaggerValidation.png)
 
 - Email is empty (only whitespaces):
-![Missing email - Input](../images/test_notify_emailEmptyInput.png)
-![Missing email - Error](../images/test_notify_emailEmptyError.png)
+![Missing email - Input](images/test_notify_emailEmptyInput.png)
+![Missing email - Error](images/test_notify_emailEmptyError.png)
 
 - Email is invalid (missing @, dot, domain, etc.):
-![Invalid email - Input](../images/test_notify_emailInvalidInput.png)
-![Invalid email - Error](../images/test_notify_emailInvalidError.png)
+![Invalid email - Input](images/test_notify_emailInvalidInput.png)
+![Invalid email - Error](images/test_notify_emailInvalidError.png)
 
 - Phone number is empty (only whitespaces):
-![Missing phone - Input](../images/test_notify_phoneEmptyInput.png)
-![Missing phone - Error](../images/test_notify_phoneEmptyError.png)
+![Missing phone - Input](images/test_notify_phoneEmptyInput.png)
+![Missing phone - Error](images/test_notify_phoneEmptyError.png)
 
 - Phone number contains letters or symbols:
-![Invalid phone - Input](../images/test_notify_phoneLettersInput.png)
-![Invalid phone - Error](../images/test_notify_phoneLettersError.png)
+![Invalid phone - Input](images/test_notify_phoneLettersInput.png)
+![Invalid phone - Error](images/test_notify_phoneLettersError.png)
 
 - Phone number contains not enough digits:
-![Short phone - Input](../images/test_notify_phoneShortInput.png)
-![Short phone - Error](../images/test_notify_phoneShortError.png)
+![Short phone - Input](images/test_notify_phoneShortInput.png)
+![Short phone - Error](images/test_notify_phoneShortError.png)
 
 - Phone number contains too many digits:
-![Long phone - Input](../images/test_notify_phoneLongInput.png)
-![Long phone - Error](../images/test_notify_phoneLongError.png)
+![Long phone - Input](images/test_notify_phoneLongInput.png)
+![Long phone - Error](images/test_notify_phoneLongError.png)
 
 - Phone number has incorrect format (e.g., country code is not supported):
-![Invalid phone format - Input](../images/test_notify_phoneFormatInput.png)
-![Invalid phone format - Error](../images/test_notify_phoneFormatError.png)
+![Invalid phone format - Input](images/test_notify_phoneFormatInput.png)
+![Invalid phone format - Error](images/test_notify_phoneFormatError.png)
 
 - Template UUID is invalid:
-![Invalid template ID format - Input](../images/test_notify_templateIdFormatInput.png)
-![Invalid template ID format - Error](../images/test_notify_templateIdFormatError.png)
+![Invalid template ID format - Input](images/test_notify_templateIdFormatInput.png)
+![Invalid template ID format - Error](images/test_notify_templateIdFormatError.png)
 
 - Template not found:
-![Not found template ID - Input](../images/test_notify_templateIdNotFoundInput.png)
-![Not found template ID - Error](../images/test_notify_templateIdNotFoundError.png)
+![Not found template ID - Input](images/test_notify_templateIdNotFoundInput.png)
+![Not found template ID - Error](images/test_notify_templateIdNotFoundError.png)
 
 - Missing required personalization (or the default “example” was used):
-![Missing required personalization - Input](../images/test_notify_personalizationMissingInput.png)
-![Missing required personalization - Error](../images/test_notify_personalizationMissingError.png)
+![Missing required personalization - Input](images/test_notify_personalizationMissingInput.png)
+![Missing required personalization - Error](images/test_notify_personalizationMissingError.png)
