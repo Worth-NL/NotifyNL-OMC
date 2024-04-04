@@ -19,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Extensions;
+using EventsHandler.Properties;
 
 namespace EventsHandler.Controllers
 {
@@ -104,25 +105,39 @@ namespace EventsHandler.Controllers
             }
             finally
             {
-                if (callback.Reference != null)
-                {
-                    NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
-                    NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
-
-                    _ = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);  // TODO: Possible exception
-                }
+                await ReportAndLogStatusAsync(callback, callbackDetails);
             }
         }
 
         #region Helper methods
         private static string GetCallbackDetails(DeliveryReceipt callback)
         {
-            return $"The status of notification with ID {callback.Id} is: {callback.Status}.";
+            return $"{Resources.Feedback_NotifyNL_SUCCESS_NotificationStatus} {callback.Id}: {callback.Status}.";
         }
 
         private static string GetErrorDetails(DeliveryReceipt callback, Exception exception)
         {
-            return $"An unexpected error occurred during processing the notification with ID {callback.Id}: {exception.Message}.";
+            return $"{Resources.Feedback_NotifyNL_ERROR_UnexpectedFailure} {callback.Id}: {exception.Message}.";
+        }
+        
+        private async Task ReportAndLogStatusAsync(DeliveryReceipt callback, string callbackDetails)
+        {
+            if (callback.Reference != null)
+            {
+                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
+                NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+                try
+                {
+                    string result = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);
+
+                    LogApiResponse(LogLevel.Information, result);
+                }
+                catch (Exception exception)
+                {
+                    LogApiResponse(LogLevel.Critical, this._responder.GetStandardized_Exception_ActionResult(exception));
+                }
+            }
         }
         #endregion
     }
