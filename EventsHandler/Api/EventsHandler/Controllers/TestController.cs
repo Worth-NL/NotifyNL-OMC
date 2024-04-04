@@ -75,7 +75,7 @@ namespace EventsHandler.Controllers
         // Swagger UI
         [ProducesResponseType(StatusCodes.Status200OK)]                                                               // REASON: The API service is up and running
         [ProducesResponseType(StatusCodes.Status400BadRequest)]                                                       // REASON: The API service is currently down
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()
         {
@@ -201,7 +201,7 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API web service
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
+        [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> RegisterAsync(
