@@ -317,4 +317,12 @@
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>The notification was passed to NotifyNL API.</value>
   </data>
+  <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
+    <value>An unexpected error occurred during processing the notification with ID</value>
+    <comment>API Endpoint: Notify/Confirm</comment>
+  </data>
+  <data name="Feedback_NotifyNL_SUCCESS_NotificationStatus" xml:space="preserve">
+    <value>The status of notification with ID</value>
+    <comment>API Endpoint: Notify/Confirm</comment>
+  </data>
 </root>
