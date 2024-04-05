@@ -67,6 +67,8 @@ OMC (Output Management Component) is a central point and the common hub of the c
 ---
 # 5. Workflow (business logic cases)
 
+![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
+
 ---
 # 6. Errors
 
