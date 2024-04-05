@@ -64,6 +64,10 @@ OMC (Output Management Component) is a central point and the common hub of the c
 ---
 # 4. Authorization and authentication
 
+Generating **JWT tokens** and using SecretsManager `.exe` and `.dll`:
+
+[Secrets Manager - Documentation](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md)
+
 ---
 # 5. Workflow (business logic cases)
 
