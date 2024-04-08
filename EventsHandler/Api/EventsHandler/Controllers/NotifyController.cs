@@ -124,7 +124,8 @@ namespace EventsHandler.Controllers
         {
             if (callback.Reference != null)
             {
-                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(callback.Reference);
+                string decodedNotification = callback.Reference.Base64Decode();
+                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(decodedNotification);
                 NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
                 try
