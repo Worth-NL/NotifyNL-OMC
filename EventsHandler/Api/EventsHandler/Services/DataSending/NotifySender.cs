@@ -42,11 +42,12 @@ namespace EventsHandler.Services.DataSending
         async Task ISendingService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
+            string encodedNotification = serializedNotification.Base64Encode();
 
             _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
                                                                      templateId:      package.TemplateId,
                                                                      personalization: package.Personalization,
-                                                                     reference:       serializedNotification);
+                                                                     reference:       encodedNotification);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"SMS: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
@@ -56,11 +57,12 @@ namespace EventsHandler.Services.DataSending
         async Task ISendingService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
+            string encodedNotification = serializedNotification.Base64Encode();
             
             _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    "tkrystyan@worth.systems",//package.ContactDetails,
                                                                        templateId:      package.TemplateId,
                                                                        personalization: package.Personalization,
-                                                                       reference:       serializedNotification);
+                                                                       reference:       encodedNotification);
 
             _ = await this._telemetry.ReportCompletionAsync(notification, package.NotificationMethod,
                 $"Email: {Resources.Register_NotifyNL_SUCCESS_NotificationSent}");
