@@ -18,6 +18,11 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static string Base64Encode(this string originalTextValue)
         {
+            if (string.IsNullOrWhiteSpace(originalTextValue))
+            {
+                return string.Empty;
+            }
+
             byte[] plainTextBytes = Encoding.UTF8.GetBytes(originalTextValue);
             
             return Convert.ToBase64String(plainTextBytes);
@@ -31,6 +36,11 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static string Base64Decode(this string encodedTextValue)
         {
+            if (string.IsNullOrWhiteSpace(encodedTextValue))
+            {
+                return string.Empty;
+            }
+
             byte[] base64EncodedBytes = Convert.FromBase64String(encodedTextValue);
             
             return Encoding.UTF8.GetString(base64EncodedBytes);
