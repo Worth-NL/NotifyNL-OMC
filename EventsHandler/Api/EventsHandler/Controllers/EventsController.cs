@@ -110,5 +110,21 @@ namespace EventsHandler.Controllers
                     this._responder.GetStandardized_Exception_ActionResult(exception));
             }
         }
+
+        /// <summary>
+        /// Gets the current version of the OMC (Output Management Component).
+        /// </summary>
+        [HttpGet]
+        [Route("Version")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        // Swagger UI
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult Version()
+        {
+            return Ok(DefaultValues.ApiController.Version);
+        }
     }
 }
