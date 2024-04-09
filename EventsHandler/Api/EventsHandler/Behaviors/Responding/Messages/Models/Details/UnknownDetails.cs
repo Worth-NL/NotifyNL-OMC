@@ -13,7 +13,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Details
         /// <summary>
         /// Initializes a new instance of the <see cref="UnknownDetails"/> class.
         /// </summary>
-        public UnknownDetails() : base() { }  // NOTE: Used in generic constraints and by object initializer syntax
+        public UnknownDetails() { }  // NOTE: Used in generic constraints and by object initializer syntax
 
         /// <inheritdoc cref="UnknownDetails()"/>
         internal UnknownDetails(string message)

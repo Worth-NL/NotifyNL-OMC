@@ -1,21 +1,34 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Communication.Enums;
+using EventsHandler.Behaviors.Mapping.Converters;
+using EventsHandler.Constants;
 using System.Text.Json.Serialization;
-using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 
 namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
 {
     /// <summary>
     /// Notification types returned by "NotifyNL" API web service.
     /// </summary>
+    [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<NotificationTypes>))]
     internal enum NotificationTypes
     {
-        /// <inheritdoc cref="DistributionChannels.Email"/>
-        [JsonPropertyName("email")]
-        Email = DistributionChannels.Email,  // 2
+        /// <summary>
+        /// Default value.
+        /// </summary>
+        [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
+        Unknown = 0,
         
-        /// <inheritdoc cref="DistributionChannels.Sms"/>
+        /// <summary>
+        /// Notification type: e-mail.
+        /// </summary>
+        [JsonPropertyName("email")]
+        Email = NotifyMethods.Email,  // 2
+        
+        /// <summary>
+        /// Notification type: SMS.
+        /// </summary>
         [JsonPropertyName("sms")]
-        Sms = DistributionChannels.Sms  // 3
+        Sms = NotifyMethods.Sms  // 3
     }
 }

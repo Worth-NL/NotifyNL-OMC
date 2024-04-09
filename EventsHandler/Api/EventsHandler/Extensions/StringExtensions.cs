@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using Microsoft.IdentityModel.Tokens;
 using System.Buffers.Text;
-using System.Text;
 
 namespace EventsHandler.Extensions
 {
@@ -22,10 +22,8 @@ namespace EventsHandler.Extensions
             {
                 return string.Empty;
             }
-
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(originalTextValue);
             
-            return Convert.ToBase64String(plainTextBytes);
+            return Base64UrlEncoder.Encode(originalTextValue);
         }
         
         /// <summary>
@@ -41,9 +39,7 @@ namespace EventsHandler.Extensions
                 return string.Empty;
             }
 
-            byte[] base64EncodedBytes = Convert.FromBase64String(encodedTextValue);
-            
-            return Encoding.UTF8.GetString(base64EncodedBytes);
+            return Base64UrlEncoder.Decode(encodedTextValue);
         }
     }
 }

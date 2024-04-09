@@ -18,7 +18,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Details
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoDetails"/> class.
         /// </summary>
-        public InfoDetails() : base() { }  // NOTE: Used in generic constraints and by object initializer syntax
+        public InfoDetails() { }  // NOTE: Used in generic constraints and by object initializer syntax
 
         /// <inheritdoc cref="InfoDetails()"/>
         internal InfoDetails(string message, string cases, string[] reasons)
