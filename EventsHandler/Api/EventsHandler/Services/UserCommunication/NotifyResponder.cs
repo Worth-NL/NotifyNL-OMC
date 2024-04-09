@@ -1,16 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
+using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
-using System.Net;
 using System.Text.RegularExpressions;
-
-// TODO: Use details builder just like in NotificationResponder
 
 namespace EventsHandler.Services.UserCommunication
 {
@@ -85,10 +82,7 @@ namespace EventsHandler.Services.UserCommunication
                         message = match.Value;
 
                         // NOTE: This specific error message is inconsistently returned from Notify .NET client with 403 Forbidden status code (unlike others - with 400 BadRequest code)
-                        return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Forbidden, message))
-                        {
-                            StatusCode = (int)HttpStatusCode.Forbidden
-                        };
+                        return ObjectResultExtensions.AsResult_403(message);
                     }
                 
                     // HttpStatus Code: 400 BadRequest
@@ -123,17 +117,11 @@ namespace EventsHandler.Services.UserCommunication
 
                 // NOTE: Authorization issues wrapped around 403 Forbidden status code
                 case NotifyAuthException:
-                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Forbidden, exception.Message))
-                    {
-                        StatusCode = (int)HttpStatusCode.Forbidden
-                    };
+                    return ObjectResultExtensions.AsResult_403(exception.Message);
 
                 // NOTE: Unexpected issues wrapped around 500 Internal Server Error status code
                 default:
-                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.InternalServerError, exception.Message))
-                    {
-                        StatusCode = (int)HttpStatusCode.InternalServerError
-                    };
+                    return ObjectResultExtensions.AsResult_500(exception.Message);
             }
         }
 
@@ -151,9 +139,9 @@ namespace EventsHandler.Services.UserCommunication
             {
                 message = GetPhoneErrorMessage(match);
             }
-
+            
             // HttpStatus Code: 400 BadRequest
-            return new BadRequestObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.BadRequest, message ?? errorMessage));
+            return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
         }
 
         /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(ResultExecutingContext, IDictionary{string, string[]})"/>
@@ -201,22 +189,16 @@ namespace EventsHandler.Services.UserCommunication
                 // HttpStatus Code: 202 Accepted
                 case ProcessingResult.Success:
                 {
-                    return new ObjectResult(new ProcessingFailed.Simplified(HttpStatusCode.Accepted, details))
-                    {
-                        StatusCode = (int)HttpStatusCode.Accepted
-                    };
+                    return ObjectResultExtensions.AsResult_202(details);
                 }
 
                 // HttpStatus Code: 400 BadRequest
                 case ProcessingResult.Failure:
                     return ((IRespondingService)this).GetStandardized_Exception_ActionResult(details);
 
-                // HttpStatus Code: 500 Internal Server Error
+                // HttpStatus Code: 501 Not Implemented
                 default:
-                    return new ObjectResult(Resources.Operation_RESULT_NotImplemented)
-                    {
-                        StatusCode = (int)HttpStatusCode.InternalServerError
-                    };
+                    return ObjectResultExtensions.AsResult_501();
             }
         }
 
