@@ -13,7 +13,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Details
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorDetails"/> class.
         /// </summary>
-        public ErrorDetails() : base() { }  // NOTE: Used in generic constraints and by object initializer syntax
+        public ErrorDetails() { }  // NOTE: Used in generic constraints and by object initializer syntax
 
         /// <inheritdoc cref="ErrorDetails()"/>
         internal ErrorDetails(string message, string cases, string[] reasons)
