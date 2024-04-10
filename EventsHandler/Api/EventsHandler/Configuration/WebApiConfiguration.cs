@@ -13,9 +13,9 @@ namespace EventsHandler.Configuration
     public sealed record WebApiConfiguration
     {
         /// <summary>
-        /// Gets the configuration for Notify NL (internal) system.
+        /// Gets the configuration for OMC (internal) system.
         /// </summary>
-        internal NotifyComponent Notify { get; }
+        internal OmcComponent OMC { get; }
 
         /// <summary>
         /// Gets the configuration for the user (external) system.
@@ -29,12 +29,12 @@ namespace EventsHandler.Configuration
         public WebApiConfiguration(ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
         {
             // Recreating structure of "appsettings.json" or "secrets.json" files to use them later as objects
-            this.Notify = new NotifyComponent(loaderContext, nameof(this.Notify));
+            this.OMC = new OmcComponent(loaderContext, nameof(this.OMC));
             this.User = new UserComponent(loaderContext, nameof(this.User));
         }
 
         /// <summary>
-        /// The common base for <see cref="NotifyComponent"/> and <see cref="UserComponent"/>.
+        /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
         /// </summary>
         internal abstract record BaseComponent
         {
@@ -112,17 +112,17 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// The "Notify" part of the configuration.
+        /// The "OMC" part of the configuration.
         /// </summary>
-        internal record NotifyComponent : BaseComponent
+        internal record OmcComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
             internal ApiComponent API { get; }
             
             /// <summary>
-            /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
+            /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
-            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+            public OmcComponent(ILoadersContext loadersContext, string parentName)
                 : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName);
@@ -351,7 +351,8 @@ namespace EventsHandler.Configuration
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<string>(finalPath);
+            return loadersContext.GetData<string>(finalPath)
+                .NotEmpty(finalPath);
         }
 
         /// <summary>
@@ -361,7 +362,8 @@ namespace EventsHandler.Configuration
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<TData>(finalPath);
+            return loadersContext.GetData<TData>(finalPath)
+                .NotEmpty(finalPath);
         }
 
         /// <summary>
@@ -370,7 +372,6 @@ namespace EventsHandler.Configuration
         private static string GetDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
-                // NOTE: Validate only once when the value is cached
                 .WithoutHttp()
                 .WithoutEndpoint();
         }
@@ -381,7 +382,6 @@ namespace EventsHandler.Configuration
         private static string GetTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
-                // NOTE: Validate only once when the value is cached
                 .ValidTemplateId();
         }
         #endregion

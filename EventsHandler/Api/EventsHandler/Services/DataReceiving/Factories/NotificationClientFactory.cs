@@ -31,7 +31,7 @@ namespace EventsHandler.Services.DataReceiving.Factories
 
             return new NotifyClientDecorator(
                 new NotificationClient(
-                    baseUrl: this._configuration.Notify.API.BaseUrl(),      // The base URL to "Notify NL" API Service
+                    baseUrl: this._configuration.OMC.API.BaseUrl(),      // The base URL to "Notify NL" API Service
                     apiKey: this._configuration.User.API.Key.NotifyNL()));  // 3rd party-specific "Notify NL" API Key
         }
     }
