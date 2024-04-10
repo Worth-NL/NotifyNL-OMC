@@ -63,14 +63,11 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
                 #pragma warning restore IDE0008
             });
         }
 
-        [TestCaseSource(nameof(GetTestCases)), Ignore("Not yet working, dependency should be disposed")]
+        [TestCaseSource(nameof(GetTestCases))]
         public void WebApiConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
@@ -86,19 +83,23 @@ namespace EventsHandler.UnitTests.Configuration
                 ConfigurationHandler.GetEnvironmentLoader(isValid: false));
 
             // Invalid: Not existing
-            yield return ("#1", () => configuration.Notify.API.BaseUrl(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => configuration.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
             yield return ("#2", () => configuration.User.Authorization.JWT.Audience(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: http://domain
+            yield return ("#3", () => configuration.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: http://domain
+            yield return ("#4", () => configuration.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#3", () => configuration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#5", () => configuration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: domain/api/v1/typen
-            yield return ("#4", () => configuration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
+            yield return ("#6", () => configuration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
             // Invalid: Whitespace
-            yield return ("#5", () => configuration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => configuration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#6", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#8", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#7", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
         #endregion
     }

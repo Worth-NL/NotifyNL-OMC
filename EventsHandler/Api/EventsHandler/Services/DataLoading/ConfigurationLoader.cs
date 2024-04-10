@@ -27,10 +27,12 @@ namespace EventsHandler.Services.DataLoading
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+                throw new KeyNotFoundException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + key.Separated());
             }
 
-            return this._configuration.GetValue<TData>(key).NotEmpty(key);
+            return this._configuration.GetValue<TData>(key)
+                // The value is null
+                ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + key.Separated());
         }
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
