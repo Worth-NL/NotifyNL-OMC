@@ -54,7 +54,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_USERID",      isValid ? testValue : string.Empty },
                 { "OMC_AUTHORIZATION_JWT_USERNAME",    isValid ? testValue : string.Empty },
 
-                { "OMC_API_BASEURL",                   isValid ? "https://www.test.nl/" : string.Empty },
+                { "OMC_API_BASEURL_NOTIFYNL",          isValid ? "https://www.test.nl/" : string.Empty },
                 
                 { "USER_AUTHORIZATION_JWT_SECRET",     isValid ? testValue : string.Empty },
                 { "USER_AUTHORIZATION_JWT_ISSUER",     isValid ? testValue : string.Empty },
@@ -109,8 +109,9 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("OMC_AUTHORIZATION_JWT", "UserId",       "OMC_AUTHORIZATION_JWT_USERID"),
                 ("OMC_AUTHORIZATION_JWT", "UserName",     "OMC_AUTHORIZATION_JWT_USERNAME"),
 
-                ("OMC",     "API",     "OMC_API"),
-                ("OMC_API", "BaseUrl", "OMC_API_BASEURL"),
+                ("OMC",             "API",      "OMC_API"),
+                ("OMC_API",         "BaseUrl",  "OMC_API_BASEURL"),
+                ("OMC_API_BASEURL", "NotifyNL", "OMC_API_BASEURL_NOTIFYNL"),
 
                 ("USER_AUTHORIZATION",     "JWT",          "USER_AUTHORIZATION_JWT"),
                 ("USER_AUTHORIZATION_JWT", "Secret",       "USER_AUTHORIZATION_JWT_SECRET"),
