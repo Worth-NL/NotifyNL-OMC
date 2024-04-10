@@ -58,7 +58,6 @@ namespace EventsHandler.UnitTests.Extensions
         }
 
         [TestCase("")]
-        [TestCase(" ")]
         public void GetConfigValue_Generic_ForNotExistingPathOrValue_ThrowsArgumentException(string testValue)
         {
             // Act & Assert

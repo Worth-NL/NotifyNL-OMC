@@ -48,13 +48,13 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetData<T>() mocking
             Dictionary<string /* Key */, string /* Value */> keyValueMapping = new()
             {
-                { "NOTIFY_AUTHORIZATION_JWT_SECRET",   isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_ISSUER",   isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_AUDIENCE", isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_USERID",   isValid ? testValue : string.Empty },
-                { "NOTIFY_AUTHORIZATION_JWT_USERNAME", isValid ? testValue : string.Empty },
-                
-                { "NOTIFY_API_BASEURL",                isValid ? "https://www.test.nl/" : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_SECRET",      isValid ? testValue : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_ISSUER",      isValid ? testValue : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_AUDIENCE",    isValid ? testValue : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_USERID",      isValid ? testValue : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_USERNAME",    isValid ? testValue : string.Empty },
+
+                { "OMC_API_BASEURL",                   isValid ? "https://www.test.nl/" : string.Empty },
                 
                 { "USER_AUTHORIZATION_JWT_SECRET",     isValid ? testValue : string.Empty },
                 { "USER_AUTHORIZATION_JWT_ISSUER",     isValid ? testValue : string.Empty },
@@ -67,13 +67,13 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      isValid ? testDomain : string.Empty },
                 { "USER_DOMAIN_OPENZAAK",              isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OPENKLANT",             isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OBJECTEN",              isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OBJECTTYPEN",           isValid ? testDomain : string.Empty },
+                { "USER_DOMAIN_OPENKLANT",             isValid ? testDomain : "http://domain" },
+                { "USER_DOMAIN_OBJECTEN",              isValid ? testDomain : "https://domain" },
+                { "USER_DOMAIN_OBJECTTYPEN",           isValid ? testDomain : "domain/api/v1/typen" },
 
                 { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",   isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : string.Empty },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   isValid ? testTempId : "12345678-1234-12-34-1234-123456789012" },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : "123456789-1234-1234-1234-123456789012" },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  isValid ? testTempId : string.Empty }
@@ -87,7 +87,7 @@ namespace EventsHandler.Utilities._TestHelpers
             }
 
             mockedEnvironmentLoader
-                .Setup(mock => mock.GetData<ushort>("NOTIFY_AUTHORIZATION_JWT_EXPIRESINMIN"))
+                .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
 
             mockedEnvironmentLoader
@@ -98,19 +98,19 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetPathWithNode() mocking
             (string Path, string Node, string ResultPath)[] testData =
             {
-                ("Notify", "Authorization", "NOTIFY_AUTHORIZATION"),
-                ("User",   "Authorization", "USER_AUTHORIZATION"),
+                ("OMC",  "Authorization", "OMC_AUTHORIZATION"),
+                ("User", "Authorization", "USER_AUTHORIZATION"),
 
-                ("NOTIFY_AUTHORIZATION",     "JWT",          "NOTIFY_AUTHORIZATION_JWT"),
-                ("NOTIFY_AUTHORIZATION_JWT", "Secret",       "NOTIFY_AUTHORIZATION_JWT_SECRET"),
-                ("NOTIFY_AUTHORIZATION_JWT", "Issuer",       "NOTIFY_AUTHORIZATION_JWT_ISSUER"),
-                ("NOTIFY_AUTHORIZATION_JWT", "Audience",     "NOTIFY_AUTHORIZATION_JWT_AUDIENCE"),
-                ("NOTIFY_AUTHORIZATION_JWT", "ExpiresInMin", "NOTIFY_AUTHORIZATION_JWT_EXPIRESINMIN"),
-                ("NOTIFY_AUTHORIZATION_JWT", "UserId",       "NOTIFY_AUTHORIZATION_JWT_USERID"),
-                ("NOTIFY_AUTHORIZATION_JWT", "UserName",     "NOTIFY_AUTHORIZATION_JWT_USERNAME"),
+                ("OMC_AUTHORIZATION",     "JWT",          "OMC_AUTHORIZATION_JWT"),
+                ("OMC_AUTHORIZATION_JWT", "Secret",       "OMC_AUTHORIZATION_JWT_SECRET"),
+                ("OMC_AUTHORIZATION_JWT", "Issuer",       "OMC_AUTHORIZATION_JWT_ISSUER"),
+                ("OMC_AUTHORIZATION_JWT", "Audience",     "OMC_AUTHORIZATION_JWT_AUDIENCE"),
+                ("OMC_AUTHORIZATION_JWT", "ExpiresInMin", "OMC_AUTHORIZATION_JWT_EXPIRESINMIN"),
+                ("OMC_AUTHORIZATION_JWT", "UserId",       "OMC_AUTHORIZATION_JWT_USERID"),
+                ("OMC_AUTHORIZATION_JWT", "UserName",     "OMC_AUTHORIZATION_JWT_USERNAME"),
 
-                ("Notify",     "API",     "NOTIFY_API"),
-                ("NOTIFY_API", "BaseUrl", "NOTIFY_API_BASEURL"),
+                ("OMC",     "API",     "OMC_API"),
+                ("OMC_API", "BaseUrl", "OMC_API_BASEURL"),
 
                 ("USER_AUTHORIZATION",     "JWT",          "USER_AUTHORIZATION_JWT"),
                 ("USER_AUTHORIZATION_JWT", "Secret",       "USER_AUTHORIZATION_JWT_SECRET"),
