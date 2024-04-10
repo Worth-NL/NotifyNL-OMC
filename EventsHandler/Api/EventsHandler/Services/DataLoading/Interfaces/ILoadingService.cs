@@ -30,5 +30,14 @@ namespace EventsHandler.Services.DataLoading.Interfaces
         ///   The formatted node path.
         /// </returns>
         internal string GetPathWithNode(string currentPath, string nodeName);
+
+        /// <summary>
+        /// Precedes the (eventually formatted) node name with a respective separator.
+        /// </summary>
+        /// <param name="nodeName">The name of the configuration node.</param>
+        /// <returns>
+        ///   The formatted node path.
+        /// </returns>
+        internal string GetNodePath(string nodeName);
     }
 }

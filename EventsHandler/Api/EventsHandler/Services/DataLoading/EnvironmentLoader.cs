@@ -2,18 +2,17 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Base;
 using EventsHandler.Services.DataLoading.Interfaces;
 
 namespace EventsHandler.Services.DataLoading
 {
     /// <inheritdoc cref="ILoadingService"/>
-    internal sealed class EnvironmentLoader : BaseLoader
+    internal sealed class EnvironmentLoader : ILoadingService
     {
         #region Polymorphism
         /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
         /// <exception cref="NotImplementedException">The operating system (OS) is not supported.</exception>
-        protected override TData GetData<TData>(string key)
+        TData ILoadingService.GetData<TData>(string key)
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
@@ -26,6 +25,7 @@ namespace EventsHandler.Services.DataLoading
                                                or PlatformID.MacOSX
                                                or PlatformID.Unix)
             {
+                // The value is null
                 object value = Environment.GetEnvironmentVariable(key)
                     ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
 
@@ -35,16 +35,16 @@ namespace EventsHandler.Services.DataLoading
             throw new NotImplementedException(Resources.Configuration_ERROR_EnvironmentNotSupported);
         }
 
-        /// <inheritdoc cref="BaseLoader.GetPathWithNode(string, string)"/>
-        protected override string GetPathWithNode(string currentPath, string nodeName)
+        /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
+        string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
         {
             return $"{currentPath.ToUpper()}{(string.IsNullOrWhiteSpace(nodeName)
                 ? string.Empty
-                : GetNodePath(nodeName))}";
+                : ((ILoadingService)this).GetNodePath(nodeName))}";
         }
 
-        /// <inheritdoc cref="BaseLoader.GetNodePath(string)"/>
-        protected override string GetNodePath(string nodeName)
+        /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
+        string ILoadingService.GetNodePath(string nodeName)
         {
             const string separator = "_";
 

@@ -43,15 +43,15 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
         #region ILoadingService
         /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
         TData ILoadingService.GetData<TData>(string key)
-        {
-            return this._loadingService.GetData<TData>(key);
-        }
-        
+            => this._loadingService.GetData<TData>(key);
+
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
         string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
-        {
-            return this._loadingService.GetPathWithNode(currentPath, nodeName);
-        }
+            => this._loadingService.GetPathWithNode(currentPath, nodeName);
+
+        /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
+        string ILoadingService.GetNodePath(string nodeName)
+            => this._loadingService.GetNodePath(nodeName);
         #endregion
     }
 }
