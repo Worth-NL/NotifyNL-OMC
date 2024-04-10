@@ -108,9 +108,9 @@ namespace EventsHandler
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Validation parameters
-                    ValidIssuer = configuration.Notify.Authorization.JWT.Issuer(),
-                    ValidAudience = configuration.Notify.Authorization.JWT.Audience(),
-                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.Notify.Authorization.JWT.Secret()),
+                    ValidIssuer = configuration.OMC.Authorization.JWT.Issuer(),
+                    ValidAudience = configuration.OMC.Authorization.JWT.Audience(),
+                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Authorization.JWT.Secret()),
 
                     // Validation criteria
                     ValidateIssuer = true,
