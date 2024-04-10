@@ -35,7 +35,7 @@ namespace EventsHandler.Extensions
         {
             if (value is string stringValue)
             {
-                return string.IsNullOrWhiteSpace(stringValue)
+                return string.IsNullOrEmpty(stringValue)
                     ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
                     : value;
             }
