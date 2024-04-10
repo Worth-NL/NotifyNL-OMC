@@ -31,7 +31,7 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty);
 
                 // API | BaseUrl
-                Assert.That(configuration.OMC.API.BaseUrl(), Is.Not.Null.Or.Empty);
+                Assert.That(configuration.OMC.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty);
 
                 // Authorization | JWT | User
                 var userJwt = configuration.User.Authorization.JWT;
