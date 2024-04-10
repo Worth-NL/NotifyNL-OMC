@@ -22,7 +22,7 @@ namespace EventsHandler.UnitTests.Configuration
                 #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
                                                  // ReSharper disable SuggestVarOrType_SimpleTypes
                 // Authorization | JWT | Notify
-                var notifyJwt = configuration.Notify.Authorization.JWT;
+                var notifyJwt = configuration.OMC.Authorization.JWT;
                 Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty);
                 Assert.That(notifyJwt.Issuer(), Is.Not.Null.Or.Empty);
                 Assert.That(notifyJwt.Audience(), Is.Not.Null.Or.Empty);
@@ -31,7 +31,7 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty);
 
                 // API | BaseUrl
-                Assert.That(configuration.Notify.API.BaseUrl(), Is.Not.Null.Or.Empty);
+                Assert.That(configuration.OMC.API.BaseUrl(), Is.Not.Null.Or.Empty);
 
                 // Authorization | JWT | User
                 var userJwt = configuration.User.Authorization.JWT;
