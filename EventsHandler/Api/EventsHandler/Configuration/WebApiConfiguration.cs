@@ -351,7 +351,8 @@ namespace EventsHandler.Configuration
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<string>(finalPath);
+            return loadersContext.GetData<string>(finalPath)
+                .NotEmpty(finalPath);
         }
 
         /// <summary>
@@ -361,7 +362,8 @@ namespace EventsHandler.Configuration
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<TData>(finalPath);
+            return loadersContext.GetData<TData>(finalPath)
+                .NotEmpty(finalPath);
         }
 
         /// <summary>
@@ -370,7 +372,6 @@ namespace EventsHandler.Configuration
         private static string GetDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
-                // NOTE: Validate only once when the value is cached
                 .WithoutHttp()
                 .WithoutEndpoint();
         }
@@ -381,7 +382,6 @@ namespace EventsHandler.Configuration
         private static string GetTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
-                // NOTE: Validate only once when the value is cached
                 .ValidTemplateId();
         }
         #endregion

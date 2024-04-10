@@ -25,10 +25,11 @@ namespace EventsHandler.Services.DataLoading
                                                or PlatformID.MacOSX
                                                or PlatformID.Unix)
             {
+                // The value is null
                 object value = Environment.GetEnvironmentVariable(key)
                     ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
 
-                return (TData)Convert.ChangeType(value, typeof(TData)).NotEmpty(key);
+                return (TData)Convert.ChangeType(value, typeof(TData));
             }
 
             throw new NotImplementedException(Resources.Configuration_ERROR_EnvironmentNotSupported);

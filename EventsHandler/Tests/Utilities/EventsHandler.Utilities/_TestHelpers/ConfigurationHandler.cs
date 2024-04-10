@@ -67,13 +67,13 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      isValid ? testDomain : string.Empty },
                 { "USER_DOMAIN_OPENZAAK",              isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OPENKLANT",             isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OBJECTEN",              isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OBJECTTYPEN",           isValid ? testDomain : string.Empty },
+                { "USER_DOMAIN_OPENKLANT",             isValid ? testDomain : "http://domain" },
+                { "USER_DOMAIN_OBJECTEN",              isValid ? testDomain : "https://domain" },
+                { "USER_DOMAIN_OBJECTTYPEN",           isValid ? testDomain : "domain/api/v1/typen" },
 
                 { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",   isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : string.Empty },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   isValid ? testTempId : "12345678-1234-12-34-1234-123456789012" },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : "123456789-1234-1234-1234-123456789012" },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", isValid ? testTempId : string.Empty },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  isValid ? testTempId : string.Empty }
