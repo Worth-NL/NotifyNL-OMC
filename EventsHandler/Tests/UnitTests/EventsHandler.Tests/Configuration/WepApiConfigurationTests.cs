@@ -57,6 +57,9 @@ namespace EventsHandler.UnitTests.Configuration
 
                 // Templates
                 var templateIds = configuration.User.TemplateIds;
+                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
