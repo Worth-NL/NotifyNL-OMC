@@ -2,13 +2,12 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Base;
 using EventsHandler.Services.DataLoading.Interfaces;
 
 namespace EventsHandler.Services.DataLoading
 {
     /// <inheritdoc cref="ILoadingService"/>
-    internal sealed class ConfigurationLoader : BaseLoader
+    internal sealed class ConfigurationLoader : ILoadingService
     {
         private readonly IConfiguration _configuration;
 
@@ -23,7 +22,7 @@ namespace EventsHandler.Services.DataLoading
         #region Polymorphism
         /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
         /// <exception cref="ArgumentException"/>
-        protected override TData GetData<TData>(string key)
+        TData ILoadingService.GetData<TData>(string key)
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
@@ -34,16 +33,16 @@ namespace EventsHandler.Services.DataLoading
             return this._configuration.GetValue<TData>(key).NotEmpty(key);
         }
 
-        /// <inheritdoc cref="BaseLoader.GetPathWithNode(string, string)"/>
-        protected override string GetPathWithNode(string currentPath, string nodeName)
+        /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
+        string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
         {
             return $"{currentPath}{(string.IsNullOrWhiteSpace(nodeName)
                 ? string.Empty
-                : GetNodePath(nodeName))}";
+                : ((ILoadingService)this).GetNodePath(nodeName))}";
         }
 
-        /// <inheritdoc cref="BaseLoader.GetNodePath(string)"/>
-        protected override string GetNodePath(string nodeName)
+        /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
+        string ILoadingService.GetNodePath(string nodeName)
         {
             const string separator = ":";
 
