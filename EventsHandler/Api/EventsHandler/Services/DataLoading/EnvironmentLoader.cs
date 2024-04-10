@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataLoading
                 object value = Environment.GetEnvironmentVariable(key)
                     ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
 
-                return (TData)Convert.ChangeType(value, typeof(TData));
+                return (TData)Convert.ChangeType(value, typeof(TData)).NotEmpty(key);
             }
 
             throw new NotImplementedException(Resources.Configuration_ERROR_EnvironmentNotSupported);
