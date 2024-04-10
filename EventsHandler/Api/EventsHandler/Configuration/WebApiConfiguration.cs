@@ -133,21 +133,40 @@ namespace EventsHandler.Configuration
             /// </summary>
             internal sealed record ApiComponent
             {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
+                /// <inheritdoc cref="BaseUrlComponent"/>
+                internal BaseUrlComponent BaseUrl { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="ApiComponent"/> class.
                 /// </summary>
                 internal ApiComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-                }
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string BaseUrl()
-                    => GetValue(this._loadersContext, this._currentPath, nameof(BaseUrl));
+                    this.BaseUrl = new BaseUrlComponent(loadersContext, currentPath);
+                }
+                
+                /// <summary>
+                /// The "Base URL" part of the configuration.
+                /// </summary>
+                internal sealed record BaseUrlComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="BaseUrlComponent"/> class.
+                    /// </summary>
+                    public BaseUrlComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(BaseUrl));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string NotifyNL()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                }
             }
         }
 
