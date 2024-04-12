@@ -218,6 +218,18 @@ And then click "Authorize".
 
 List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing **OMC** API endpoints.
 
+**General errors:**
+
+> **HTTP Status Code: 401 Unauthorized**
+
+- Invalid JWT token:
+
+![Invalid JWT Token - Error](images/general_jwt_invalid.png)
+
+- Invalid JWT secret:
+
+![Invalid JWT secret - Error](images/general_jwt_secret_wrong.png)
+
 ## 6.1. Events Controller
 
 Endpoints:
@@ -253,7 +265,9 @@ Endpoints:
 
 #### 6.3.1.1. Possible errors
 
-##### a) Common for ...Test/SendEmail + ...Test/SendSms:
+##### a) Common for SendEmail + SendSms:
+
+> **HTTP Status Code: 403 Forbidden**
 
 - Invalid base URL ("NotifyNL" API service):
 
@@ -266,6 +280,8 @@ Endpoints:
 - Invalid API key - it was not registered for this "NotifyNL" API service:
 
 ![Invalid API key - Error](images/test_notify_apiKeyInvalid.png)
+
+> **HTTP Status Code: 400 Bad Request**
 
 - Template UUID is invalid:
 
@@ -285,13 +301,15 @@ Endpoints:
 
 ![Missing required personalization - Error](images/test_notify_personalizationMissingError.png)
 
-##### b) ...Test/SendEmail:
+##### b) SendEmail:
 
 - Missing required parameters:
 
 ![Missing required email address - Error](images/test_notify_emailMissing.png)
 
 ![Swagger UI validation - Error](images/test_notify_swaggerValidation.png)
+
+> **HTTP Status Code: 400 Bad Request**
 
 - Email is empty (only whitespaces):
 
@@ -305,13 +323,15 @@ Endpoints:
 
 ![Invalid email - Error](images/test_notify_emailInvalidError.png)
 
-##### c) ...Test/SendSms:
+##### c) SendSms:
 
 - Missing required parameters:
 
 ![Missing required phone number - Error](images/test_notify_phoneMissing.png)
 
 ![Swagger UI validation - Error](images/test_notify_swaggerValidation.png)
+
+> **HTTP Status Code: 400 Bad Request**
 
 - Phone number is empty (only whitespaces):
 
