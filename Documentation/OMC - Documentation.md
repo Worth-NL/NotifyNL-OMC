@@ -250,7 +250,21 @@ Endpoints:
 
 #### 6.2.1. Possible errors
 
-> To be finished...
+> HTTP Status Code: 400 Bad Request
+
+- HTTP Request error
+![HTTP Request - Error](images/events_listen_httpRequestError.png)
+
+Something went wrong when calling external API services: OpenZaak, OpenKlant, contactmomenten...
+
+You woull get the following outcome (separated by pipes):
+`The first possible error message`* | `Full URL to which request was tried to be send` | `The original JSON response from the called service`**
+
+\*  That interrupted the happy path workflow due to connectivity issues, invalid configuration values, or service being down. Unfortunately, due to complexity of the system, the variety of potential errors is quite broad.
+
+\** **WARNING**: For some mysterious reasons, authors of the third-party software (used in OMC-NotifyNL workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
+
+> **NOTE**: Unfortunately, OMC Development Team cannot provide meaningful guidance how the external services were developed or configured.
 
 ---
 ## 6.3. Test Controller
