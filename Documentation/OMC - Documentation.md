@@ -20,7 +20,7 @@ Since the **OMC** project is just an API, it would not have any user friendly gr
 
 That's why **ASP.NET** projects are usually exposing a UI presentation layer for the convenience of future users (usually developers). To achieve this effect, we are using so called [Swagger UI](https://swagger.io/tools/swagger-ui/), a standardized **HTML**/**CSS**/**JavaScript**-based suite of tools and assets made to generate visualized API endpoints, API documentation, data models schema, data validation, interaction with user (API responses), and other helpful hints on how to use the certain API.
 
-Swagger UI can be accessed just like a regular webpage, or when you are starting your project in your IDE (preferably Visual Studio).
+**Swagger UI** can be accessed just like a regular webpage, or when you are starting your project in your IDE (preferably **Visual Studio**).
 
 ![Invalid base URL - Error](images/swagger_ui_example.png)
 
@@ -35,7 +35,7 @@ The URL to **Swagger UI** can be recreated in the following way:
 For example: https://omc.acc.notifynl.nl/swagger/index.html
 
 \* Usually https
-\** Where your Web API application is deployed
+\** Where your **OMC** Web API application is deployed
 
 ### 1.1.2. Using IDE (Visual Studio)
 
