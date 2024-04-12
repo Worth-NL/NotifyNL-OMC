@@ -12,7 +12,6 @@ v.1.6.6.1
 - **Open Notificatie** (API web service)
 - **Open Zaak** (API web service)
 - **Open Klant** (API web service)
-- **Contactmomenten** (API web service)
 - **Notify NL** (API web service)
 
 ## 1.1. Swagger UI
