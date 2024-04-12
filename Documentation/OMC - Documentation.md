@@ -17,11 +17,19 @@ v.1.6.6.1
 
 ## 1.1. Swagger UI
 
-Since the OMC project is just an API, it would not have any user friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
+Since the **OMC** project is just an API, it would not have any user friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
 
 That's why **ASP.NET** projects are usually exposing a UI presentation layer for the convenience of future users (usually developers). To achieve this effect, we are using so called [Swagger UI](https://swagger.io/tools/swagger-ui/), a standardized **HTML**/**CSS**/**JavaScript**-based suite of tools and assets made to generate visualized API endpoints, API documentation, data models schema, data validation, interaction with user (API responses), and other helpful hints on how to use the certain API.
 
-The URL to swagger UI can be recreated in the following way:
+Swagger UI can be accessed just like a regular webpage, or when you are starting your project in your IDE (preferably Visual Studio).
+
+![Invalid base URL - Error](images/swagger_ui_example.png)
+
+**NOTE**: Check the section dedicated to [requests authorization](#swagger-ui-authorization) when using **Swagger UI**.
+
+### 1.1.1. Using web browser
+
+The URL to **Swagger UI** can be recreated in the following way:
 
 - [Protocol*] + [Domain**] + `/swagger/index.html`
 
@@ -30,9 +38,15 @@ For example: https://omc.acc.notifynl.nl/swagger/index.html
 \* Usually https
 \** Where your Web API application is deployed
 
-![Invalid base URL - Error](images/swagger_ui_example.png)
+### 1.1.2. Using IDE (Visual Studio)
 
-**NOTE**: Check the section dedicated to [requests authorization](#swagger-ui-authorization) when using Swagger UI.
+Select one of the launch **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:`).
+
+![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
+
+In `launchSettings.json` file, remember to always have these lines incuded in the launch **profile** you are going to use for running the API with **Swagger UI**:
+
+![Invalid base URL - Error](images/swagger_ui_launch_settings.png)
 
 ---
 # 2. Architecture
@@ -133,7 +147,7 @@ For example: https://omc.acc.notifynl.nl/swagger/index.html
 
 ## 4.1. Example of required JSON Web Token (JWT) components
 
-> Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using OMC API web service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
+> Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** API web service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
 ### 4.1.1. Header (algorithm + type)
 
@@ -187,7 +201,7 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 ---
 <h3 id="swagger-ui-authorization">4.3.2. Swagger UI</h3>
 
-> If you are using OMC **Swagger UI** from browser (graphic interface for OMC API web service) then you need to copy the generated token in the following way:
+> If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** API web service) then you need to copy the generated token in the following way:
 
 ![Swagger UI - Authorization](images/swagger_ui_authorization.png)
 
@@ -201,7 +215,7 @@ And then click "Authorize".
 ---
 # 6. Errors
 
-List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing `OMC` API endpoints.
+List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing **OMC** API endpoints.
 
 ## 6.1. Events Controller
 
