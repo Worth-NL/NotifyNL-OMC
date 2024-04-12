@@ -7,17 +7,32 @@ v.1.6.6.1
 ---
 # 1. Introduction
 
-OMC (Output Management Component) is a central point and the common hub of the communication workflow between third parties software such as:
+**OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
 - **Open Notificatie** (API web service)
-
 - **Open Zaak** (API web service)
-
 - **Open Klant** (API web service)
-
 - **Contactmomenten** (API web service)
-
 - **Notify NL** (API web service)
+
+## 1.1. Swagger UI
+
+Since the OMC project is just an API, it would not have any user friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
+
+That's why **ASP.NET** projects are usually exposing a UI presentation layer for the convenience of future users (usually developers). To achieve this effect, we are using so called [Swagger UI](https://swagger.io/tools/swagger-ui/), a standardized **HTML**/**CSS**/**JavaScript**-based suite of tools and assets made to generate visualized API endpoints, API documentation, data models schema, data validation, interaction with user (API responses), and other helpful hints on how to use the certain API.
+
+The URL to swagger UI can be recreated in the following way:
+
+- [Protocol*] + [Domain**] + `/swagger/index.html`
+
+For example: https://omc.acc.notifynl.nl/swagger/index.html
+
+\* Usually https
+\** Where your Web API application is deployed
+
+![Invalid base URL - Error](images/swagger_ui_example.png)
+
+**NOTE**: Check the section dedicated to [requests authorization](#swagger-ui-authorization) when using Swagger UI.
 
 ---
 # 2. Architecture
@@ -170,7 +185,7 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-### 4.3.2. Swagger UI
+<h3 id="swagger-ui-authorization">4.3.2. Swagger UI</h3>
 
 > If you are using OMC **Swagger UI** from browser (graphic interface for OMC API web service) then you need to copy the generated token in the following way:
 
