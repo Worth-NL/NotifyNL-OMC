@@ -100,6 +100,8 @@ In `launchSettings.json` file, remember to always have these lines incuded in th
 
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 
+**NOTE**: All of the configurations are required and validated whether they are null or empty. If you need to skip some `envionment variable` just use a value containing an empty space `" "`.
+
 ### 3.1.1. How to get some of these environment variables
 
 `OMC_AUTHORIZATION_JWT_SECRET` - To be generated from passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
