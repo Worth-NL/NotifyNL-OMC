@@ -240,6 +240,12 @@ Endpoints:
 
 #### 6.1.2. Possible errors
 
+> HTTP Status Code: 206 Partial Content
+
+- Not implemented scenario:
+
+![Not implemented scenario - Warning](images/events_listen_notImplementedScenario.png)
+
 > HTTP Status Code: 422 Unprocessable Entity
 
 - Invalid JSON payload (syntax error):
@@ -250,9 +256,13 @@ Endpoints:
 
 ![Invalid required data - Error](images/events_listen_modelMissingRequiredFields.png)
 
+**NOTE:** Multiple propertis are supported (comma-separated).
+
 - Invalid data model (unexpected fields):
 
 ![Invalid unexpected data - Error](images/events_listen_modelUnexpectedFields.png)
+
+**NOTE:** Multiple propertis are supported (comma-separated).
 
 ---
 ## 6.2. Notify Controller
