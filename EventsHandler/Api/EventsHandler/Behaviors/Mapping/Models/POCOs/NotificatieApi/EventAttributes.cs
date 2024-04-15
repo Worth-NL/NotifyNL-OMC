@@ -29,7 +29,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
                     // Critical Section
                     lock (s_lock)
                     {
-                        s_properties ??= new(this, nameof(this.Orphans));
+                        s_properties ??= new PropertiesMetadata(this, nameof(this.Orphans));
                     }
                 }
 
