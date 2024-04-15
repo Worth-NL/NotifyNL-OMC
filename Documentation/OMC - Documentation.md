@@ -240,7 +240,11 @@ Endpoints:
 
 #### 6.1.2. Possible errors
 
-> To be finished...
+> HTTP Status Code: 422 Unprocessable Entity
+
+- Invalid JSON payload (syntax error):
+
+![Invalid JSON payload](images/events_listen_jsonError.png)
 
 ---
 ## 6.2. Notify Controller
