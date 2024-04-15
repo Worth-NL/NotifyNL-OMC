@@ -242,6 +242,12 @@ Endpoints:
 
 > HTTP Status Code: 206 Partial Content
 
+- Test notification received:
+
+![Test notification - Input](images/events_listen_testNotificationInput.png)
+
+![Test notification - Warning](images/events_listen_testNotificationWarning.png)
+
 - Not implemented scenario:
 
 ![Not implemented scenario - Warning](images/events_listen_notImplementedScenario.png)
