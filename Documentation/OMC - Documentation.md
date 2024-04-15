@@ -272,6 +272,15 @@ Endpoints:
 
 **NOTE:** Multiple propertis are supported (comma-separated).
 
+> HTTP Status Code: 500 Internal Server Error
+
+Any eventual (however unlike) unhandled exceptions will be reported as 500.
+
+> HTTP Status Code: 501 Not Implemented
+
+Other cases (than not implemented business case scenarios) may raise 501 errors.
+This is however highly unlikely and might occur mainly in the development phase.
+
 ---
 ## 6.2. Notify Controller
 
