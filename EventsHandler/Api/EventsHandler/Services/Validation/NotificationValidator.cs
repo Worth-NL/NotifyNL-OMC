@@ -42,14 +42,11 @@ namespace EventsHandler.Services.Validation
             {
                 return healthCheck;
             }
-            
-            // 3. Additional JSON properties not included in POCO models
-            if (ContainsAnyOrphans(ref model, out healthCheck))
-            {
-                return healthCheck;
-            }
 
-            return HealthCheck.OK_Valid;
+            // 3. Additional JSON properties not included in POCO models
+            return ContainsAnyOrphans(ref model, out healthCheck)
+                ? healthCheck
+                : HealthCheck.OK_Valid;
         }
 
         #region Helper methods
