@@ -5,7 +5,6 @@ using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
-using EventsHandler.Constants;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -84,7 +83,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
-        public Uri MainObject { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri? MainObject { get; internal set; }
 
         /// <summary>
         /// URL reference to the resource publishing API.
@@ -94,7 +93,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
-        public Uri ResourceUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri? ResourceUrl { get; internal set; }
 
         /// <summary>
         /// Date and time the action took place.
@@ -130,6 +129,22 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         public NotificationEvent()
         {
+        }
+        
+        /// <summary>
+        /// Checks whether the <see cref="NotificationEvent"/> model wasn't initialized (and it has default values).
+        /// </summary>
+        internal static bool IsDefault(NotificationEvent notification)
+        {
+            return notification is
+                   {
+                       Action: Actions.Unknown,
+                       Channel: Channels.Unknown,
+                       Resource: Resources.Unknown
+                   } &&
+                   EventAttributes.IsDefault(notification.Attributes) &&
+                   notification.MainObject == null &&
+                   notification.ResourceUrl == null;
         }
     }
 }

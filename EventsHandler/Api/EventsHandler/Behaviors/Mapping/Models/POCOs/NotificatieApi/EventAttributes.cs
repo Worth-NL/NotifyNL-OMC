@@ -82,5 +82,19 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         public EventAttributes()
         {
         }
+
+        /// <summary>
+        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized (and it has default values).
+        /// </summary>
+        internal static bool IsDefault(EventAttributes attributes)
+        {
+            return attributes.ObjectType == null &&
+                   attributes.CaseType == null &&
+                   attributes is
+                   {
+                       SourceOrganization: null,
+                       ConfidentialityNotice: null
+                   };
+        }
     }
 }

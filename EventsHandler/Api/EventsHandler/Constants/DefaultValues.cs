@@ -58,6 +58,8 @@ namespace EventsHandler.Constants
             internal const string DefaultEnumValueName = "-";  // Constant only
 
             internal static Uri EmptyUri { get; } = new(@"http://0.0.0.0:0/");
+
+            internal const string DefaultOrganization = "000000000";
         }
 
         // ReSharper disable InconsistentNaming => Allow underscores
