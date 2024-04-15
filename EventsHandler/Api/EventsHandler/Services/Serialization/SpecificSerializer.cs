@@ -11,14 +11,7 @@ namespace EventsHandler.Services.Serialization
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
         TModel ISerializationService.Deserialize<TModel>(object json)
         {
-            try
-            {
-                return JsonSerializer.Deserialize<TModel>($"{json}");
-            }
-            catch
-            {
-                return default;
-            }
+            return JsonSerializer.Deserialize<TModel>($"{json}");
         }
 
         /// <inheritdoc cref="ISerializationService.Serialize{TModel}(TModel)"/>

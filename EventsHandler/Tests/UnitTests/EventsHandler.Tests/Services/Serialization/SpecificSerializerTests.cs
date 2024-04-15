@@ -4,7 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Constants;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
@@ -43,13 +43,10 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_TakesEmptyJson_DoesNotThrowException_AndReturnsDefaultModel()
+        public void Deserialize_TakesEmptyJson_ThrowsJsonException()
         {
-            // Act
-            TestFullModel actualResult = this._serializer!.Deserialize<TestFullModel>(new object());
-
-            // Assert
-            Assert.That(actualResult.Number, Is.EqualTo(TestNumber.GetType().GetDefaultValue()));
+            // Act & Assert
+            Assert.Throws<JsonException>(() => this._serializer!.Deserialize<TestFullModel>(new object()));
         }
         #endregion
 
