@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using EventsHandler.Constants;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -83,7 +84,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
-        public Uri? MainObject { get; internal set; }
+        public Uri MainObject { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// URL reference to the resource publishing API.
@@ -93,7 +94,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
-        public Uri? ResourceUrl { get; internal set; }
+        public Uri ResourceUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Date and time the action took place.
@@ -143,8 +144,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
                        Resource: Resources.Unknown
                    } &&
                    EventAttributes.IsDefault(notification.Attributes) &&
-                   notification.MainObject == null &&
-                   notification.ResourceUrl == null;
+                   notification.MainObject  == DefaultValues.Models.EmptyUri &&
+                   notification.ResourceUrl == DefaultValues.Models.EmptyUri;
         }
     }
 }

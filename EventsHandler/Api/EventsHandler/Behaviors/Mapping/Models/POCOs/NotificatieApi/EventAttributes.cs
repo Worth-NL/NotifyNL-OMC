@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Constants;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
@@ -89,7 +90,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsDefault(EventAttributes attributes)
         {
             return attributes.ObjectType == null &&
-                   attributes.CaseType == null &&
+                   attributes.CaseType   == null &&
                    attributes is
                    {
                        SourceOrganization: null,
