@@ -31,13 +31,19 @@ namespace EventsHandler.Services.Validation
         /// <param name="model">The notification model to be implicitly validated.</param>
         HealthCheck IValidationService<NotificationEvent>.Validate(ref NotificationEvent model)
         {
-            // 1. Missing values of POCO model (optional) properties
+            // 1. Problem with deserialization of the model
+            if (NotificationEvent.IsDefault(model))
+            {
+                return HealthCheck.ERROR_Invalid;
+            }
+
+            // 2. Missing values of POCO model (optional) properties
             if (HasEmptyAttributes(ref model, out HealthCheck healthCheck))
             {
                 return healthCheck;
             }
             
-            // 2. Additional JSON properties not included in POCO models
+            // 3. Additional JSON properties not included in POCO models
             if (ContainsAnyOrphans(ref model, out healthCheck))
             {
                 return healthCheck;
