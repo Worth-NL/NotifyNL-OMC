@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Constants;
+using EventsHandler.Utilities._TestHelpers;
 using System.Text.Json;
 
 namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
@@ -11,21 +12,20 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
     public sealed class NotificationEventTests
     {
         #region Test data
-        private static readonly string s_defaultJson =
+        private const string ValidJson =
             "{" +
-               $"\"actie\":\"{DefaultValues.Models.DefaultEnumValueName}\"," +
-               $"\"kanaal\":\"{DefaultValues.Models.DefaultEnumValueName}\"," +
-               $"\"resource\":\"{DefaultValues.Models.DefaultEnumValueName}\"," +
-                "\"kenmerken\":" +
-                "{" +
-                    "\"objectType\":null," +
-                    "\"zaaktype\":null," +
-                    "\"bronorganisatie\":null," +
-                    "\"vertrouwelijkheidaanduiding\":null" +
+                "\"actie\":\"create\"," +
+                "\"kanaal\":\"zaken\"," +
+                "\"resource\":\"status\"," +
+                "\"kenmerken\":{" +
+                    "\"objectType\":\"http://0.0.0.0:0/\"," +
+                    "\"zaaktype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\"," +
+                    "\"bronorganisatie\":\"286130270\"," +
+                    "\"vertrouwelijkheidaanduiding\":\"openbaar\"" +
                 "}," +
-               $"\"hoofdObject\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-               $"\"resourceUrl\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-                "\"aanmaakdatum\":\"0001-01-01T00:00:00\"" +
+                "\"hoofdObject\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\"," +
+                "\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\"," +
+                "\"aanmaakdatum\":\"2023-09-22T11:41:46.052Z\"" +
             "}";
 
         private static readonly string s_customJson =
@@ -69,13 +69,13 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
         public void Serialization_Object_IntoJson()
         {
             // Arrange
-            var testObject = new NotificationEvent();
+            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_TheHague();
 
             // Act
             string actualJson = JsonSerializer.Serialize(testObject);
 
             // Assert
-            Assert.That(actualJson, Is.EqualTo(s_defaultJson));
+            Assert.That(actualJson, Is.EqualTo(ValidJson));
         }
         #endregion
 
