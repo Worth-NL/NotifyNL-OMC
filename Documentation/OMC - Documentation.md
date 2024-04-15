@@ -248,6 +248,8 @@ Endpoints:
 
 ![Test notification - Warning](images/events_listen_testNotificationWarning.png)
 
+**NOTE**: Open Notificaties API is sending test notifications to ensure whether **OMC** is able to receive incoming notifications.
+
 - Not implemented scenario:
 
 ![Not implemented scenario - Warning](images/events_listen_notImplementedScenario.png)
