@@ -244,7 +244,15 @@ Endpoints:
 
 - Invalid JSON payload (syntax error):
 
-![Invalid JSON payload](images/events_listen_jsonError.png)
+![Invalid JSON payload - Error](images/events_listen_jsonError.png)
+
+- Invalid data model (missing required fields):
+
+![Invalid required data - Error](images/events_listen_modelMissingRequiredFields.png)
+
+- Invalid data model (unexpected fields):
+
+![Invalid unexpected data - Error](images/events_listen_modelUnexpectedFields.png)
 
 ---
 ## 6.2. Notify Controller
