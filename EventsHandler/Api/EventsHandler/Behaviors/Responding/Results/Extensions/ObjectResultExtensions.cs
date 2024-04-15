@@ -44,7 +44,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.PartialContent"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_206(this BaseEnhancedStandardResponseBody response)
+        internal static ObjectResult AsResult_206(this BaseApiStandardResponseBody response)
         {
             return new ObjectResult(response)
             {

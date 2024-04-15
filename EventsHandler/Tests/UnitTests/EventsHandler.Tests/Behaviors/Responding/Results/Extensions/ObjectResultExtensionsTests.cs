@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
+using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Behaviors.Responding.Messages.Models.Information;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -54,13 +55,14 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Extensions
         {
             // Arrange
             var testDetails = new InfoDetails(TestMessage, TestCases, new[] { TestReason });
-            var testResponse = new ProcessingSkipped(TestStatusDescription, testDetails);
+            var testEnhancedResponse = new HttpRequestFailed(testDetails);
+            var testSimpleResponse = new ProcessingSkipped(TestStatusDescription);
 
             // Response-based extensions
-            yield return (testResponse.AsResult_202, 202, "#1");
-            yield return (testResponse.AsResult_206, 206, "#2");
-            yield return (testResponse.AsResult_400, 400, "#3");
-            yield return (testResponse.AsResult_422, 422, "#4");
+            yield return (testEnhancedResponse.AsResult_202, 202, "#1");
+            yield return (testSimpleResponse.AsResult_206,   206, "#2");
+            yield return (testSimpleResponse.AsResult_400,   400, "#3");
+            yield return (testEnhancedResponse.AsResult_422, 422, "#4");
 
             // Details-based extensions
             yield return (testDetails.AsResult_400, 400, "#5");
