@@ -29,7 +29,7 @@ namespace EventsHandler.UnitTests.Services.Validation
         }
 
         [Test]
-        public void Validate_ForNotificationEvent_Invalid_WithoutSomeProperties_ReturnsInconsistentStatus()
+        public void Validate_ForNotificationEvent_Invalid_WithoutSomeProperties_ReturnsErrorStatus()
         {
             // Arrange
             var testModel = new NotificationEvent();
@@ -38,7 +38,7 @@ namespace EventsHandler.UnitTests.Services.Validation
             HealthCheck actualResult = this._validator!.Validate(ref testModel);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(HealthCheck.OK_Inconsistent));
+            Assert.That(actualResult, Is.EqualTo(HealthCheck.ERROR_Invalid));
         }
 
         [Test]

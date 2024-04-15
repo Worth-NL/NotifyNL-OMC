@@ -27,7 +27,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 {
                     ObjectType = DefaultValues.Models.EmptyUri,
                     CaseType = DefaultValues.Models.EmptyUri,
-                    SourceOrganization = new string('0', 9),
+                    SourceOrganization = DefaultValues.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential
                 },
                 MainObject = DefaultValues.Models.EmptyUri,
