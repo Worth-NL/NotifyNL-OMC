@@ -12,7 +12,7 @@ namespace EventsHandler.Constants
         {
             internal const string Route = "[controller]";
 
-            internal const string Version = "1.661";
+            internal const string Version = "1.67";
         }
         #endregion
 
@@ -58,6 +58,8 @@ namespace EventsHandler.Constants
             internal const string DefaultEnumValueName = "-";  // Constant only
 
             internal static Uri EmptyUri { get; } = new(@"http://0.0.0.0:0/");
+
+            internal const string DefaultOrganization = "000000000";
         }
 
         // ReSharper disable InconsistentNaming => Allow underscores

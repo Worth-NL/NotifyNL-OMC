@@ -18,16 +18,16 @@ namespace SecretsManager
             var context = new EncryptionContext(new SymmetricEncryptionStrategy());
 
             // Get security key
-            SecurityKey securityKey = context.GetSecurityKey(GetConfigValue("NOTIFY_AUTHORIZATION_JWT_SECRET"));
+            SecurityKey securityKey = context.GetSecurityKey(GetConfigValue("OMC_AUTHORIZATION_JWT_SECRET"));  // TODO: Remove hardcoded paths
 
             // Generate JSON Web Token
             string jwtToken = context.GetJwtToken(
                 securityKey,
-                issuer: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_ISSUER"),
-                audience: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_AUDIENCE"),
+                issuer: GetConfigValue("OMC_AUTHORIZATION_JWT_ISSUER"),
+                audience: GetConfigValue("OMC_AUTHORIZATION_JWT_AUDIENCE"),
                 expiresAt: validDateTime,
-                userId: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_USERID"),
-                userRepresentation: GetConfigValue("NOTIFY_AUTHORIZATION_JWT_USERNAME"));
+                userId: GetConfigValue("OMC_AUTHORIZATION_JWT_USERID"),
+                userRepresentation: GetConfigValue("OMC_AUTHORIZATION_JWT_USERNAME"));
 
             // Write JWT tokens
             context.SaveJwtToken(jwtToken);
@@ -61,8 +61,9 @@ namespace SecretsManager
 
                     return futureDateTime;
                 }
+
                 // Variant #2: Use specific range in minutes (e.g., valid for 120 minutes from now)
-                else if (double.TryParse(args[0], out double minutes))
+                if (double.TryParse(args[0], out double minutes))
                 {
                     validForNextMinutes = minutes;
                 }

@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Constants;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
@@ -29,7 +30,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
                     // Critical Section
                     lock (s_lock)
                     {
-                        s_properties ??= new(this, nameof(this.Orphans));
+                        s_properties ??= new PropertiesMetadata(this, nameof(this.Orphans));
                     }
                 }
 
@@ -81,6 +82,20 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         public EventAttributes()
         {
+        }
+
+        /// <summary>
+        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized (and it has default values).
+        /// </summary>
+        internal static bool IsDefault(EventAttributes attributes)
+        {
+            return attributes.ObjectType == null &&
+                   attributes.CaseType   == null &&
+                   attributes is
+                   {
+                       SourceOrganization: null,
+                       ConfidentialityNotice: null
+                   };
         }
     }
 }

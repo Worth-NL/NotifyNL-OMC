@@ -5,9 +5,9 @@ using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
-using EventsHandler.Constants;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using EventsHandler.Constants;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -33,7 +33,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
                     // Critical Section
                     lock (s_lock)
                     {
-                        s_properties ??= new(this, nameof(this.Attributes), nameof(this.Orphans));
+                        s_properties ??= new PropertiesMetadata(this, nameof(this.Attributes), nameof(this.Orphans));
                     }
                 }
 
@@ -130,6 +130,22 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         public NotificationEvent()
         {
+        }
+        
+        /// <summary>
+        /// Checks whether the <see cref="NotificationEvent"/> model wasn't initialized (and it has default values).
+        /// </summary>
+        internal static bool IsDefault(NotificationEvent notification)
+        {
+            return notification is
+                   {
+                       Action: Actions.Unknown,
+                       Channel: Channels.Unknown,
+                       Resource: Resources.Unknown
+                   } &&
+                   EventAttributes.IsDefault(notification.Attributes) &&
+                   notification.MainObject  == DefaultValues.Models.EmptyUri &&
+                   notification.ResourceUrl == DefaultValues.Models.EmptyUri;
         }
     }
 }

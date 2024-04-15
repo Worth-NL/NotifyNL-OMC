@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
+using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Behaviors.Responding.Messages.Models.Information;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -53,22 +54,31 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Extensions
             Func<ObjectResult> Response, int StatusCode, string Id)> GetTestCases()
         {
             // Arrange
+            var testSimpleResponse = new ProcessingSkipped(TestStatusDescription);
+
             var testDetails = new InfoDetails(TestMessage, TestCases, new[] { TestReason });
-            var testResponse = new ProcessingSkipped(TestStatusDescription, testDetails);
+            var testEnhancedResponse = new HttpRequestFailed(testDetails);
 
             // Response-based extensions
-            yield return (testResponse.AsResult_202, 202, "#1");
-            yield return (testResponse.AsResult_206, 206, "#2");
-            yield return (testResponse.AsResult_400, 400, "#3");
-            yield return (testResponse.AsResult_422, 422, "#4");
+            yield return (testSimpleResponse.AsResult_206,   206, "#1");
+            yield return (testSimpleResponse.AsResult_400,   400, "#2");
+            
+            yield return (testEnhancedResponse.AsResult_202, 202, "#3");
+            yield return (testEnhancedResponse.AsResult_206, 206, "#4");
+            yield return (testEnhancedResponse.AsResult_400, 400, "#5");
+            yield return (testEnhancedResponse.AsResult_422, 422, "#6");
 
             // Details-based extensions
-            yield return (testDetails.AsResult_400, 400, "#5");
-            yield return (testDetails.AsResult_422, 422, "#6");
-            yield return (testDetails.AsResult_500, 500, "#7");
+            yield return (testDetails.AsResult_400, 400, "#7");
+            yield return (testDetails.AsResult_422, 422, "#8");
+            yield return (testDetails.AsResult_500, 500, "#9");
 
-            // Parameterless extensions
-            yield return (ObjectResultExtensions.AsResult_501, 501, "#8");
+            // Simple static methods
+            yield return (() => ObjectResultExtensions.AsResult_202(TestStatusDescription), 202, "#10");
+            yield return (() => ObjectResultExtensions.AsResult_400(TestStatusDescription), 400, "#11");
+            yield return (() => ObjectResultExtensions.AsResult_403(TestStatusDescription), 403, "#12");
+            yield return (() => ObjectResultExtensions.AsResult_500(TestStatusDescription), 500, "#13");
+            yield return (ObjectResultExtensions.AsResult_501, 501, "#14");
         }
     }
 }

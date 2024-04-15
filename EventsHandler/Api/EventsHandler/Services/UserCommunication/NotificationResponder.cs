@@ -137,7 +137,7 @@ namespace EventsHandler.Services.UserCommunication
                     => new ProcessingSucceeded(result.Description, details).AsResult_202(),
 
                 ProcessingResult.Skipped
-                    => new ProcessingSkipped(result.Description, details).AsResult_206(),
+                    => new ProcessingSkipped(result.Description).AsResult_206(),
 
                 ProcessingResult.Failure
                     => string.Equals(details.Message, Resources.Operation_RESULT_Deserialization_Failure) ||
