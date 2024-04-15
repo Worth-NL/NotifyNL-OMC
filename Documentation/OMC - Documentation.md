@@ -9,10 +9,11 @@ v.1.6.6.1
 
 **OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
-- **Open Notificatie** (API web service)
-- **Open Zaak** (API web service)
-- **Open Klant** (API web service)
-- **Notify NL** (API web service)
+- [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (API web service)
+- [**Open Zaak**](https://github.com/open-zaak/open-zaak) (API web service)
+- [**Open Klant**](https://github.com/maykinmedia/open-klant) (API web service)
+- [**Klantinteractie**](https://vng-realisatie.github.io/klantinteracties/) (API web service)
+- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (API web service)
 
 ## 1.1. Swagger UI
 
