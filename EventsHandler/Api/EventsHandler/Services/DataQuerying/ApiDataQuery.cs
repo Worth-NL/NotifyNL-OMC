@@ -5,6 +5,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
+using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Interfaces;
@@ -177,7 +178,9 @@ namespace EventsHandler.Services.DataQuerying
             /// </summary>
             private async Task<Uri> GetCaseTypeAsync()
             {
-                return this.Notification.Attributes.CaseType ?? (await GetCaseDetailsAsync()).CaseType;
+                return this.Notification.Attributes.CaseType.Equals(DefaultValues.Models.EmptyUri)
+                    ? (await GetCaseDetailsAsync()).CaseType
+                    : this.Notification.Attributes.CaseType;
             }
 
             /// <summary>

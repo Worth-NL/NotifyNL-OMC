@@ -115,8 +115,8 @@ namespace EventsHandler.Services.DataProcessing
                        Channel: Channels.Unknown,
                        Resource: ResourcesEnum.Unknown
                    } &&
-                   string.Equals(notification.MainObject?.AbsoluteUri, testUrl) &&
-                   string.Equals(notification.ResourceUrl?.AbsoluteUri, testUrl);
+                   string.Equals(notification.MainObject.AbsoluteUri, testUrl) &&
+                   string.Equals(notification.ResourceUrl.AbsoluteUri, testUrl);
         }
     }
 }
