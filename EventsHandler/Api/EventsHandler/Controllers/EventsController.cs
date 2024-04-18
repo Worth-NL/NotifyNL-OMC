@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Asp.Versioning;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
@@ -23,12 +22,7 @@ namespace EventsHandler.Controllers
     /// Controller handling events workflow between "Notificatie API" events queue, services with citizens personal
     /// data from the municipalities in The Netherlands ("OpenZaak" and "OpenKlaant"), and "Notify NL" API service.
     /// </summary>
-    /// <seealso cref="Controller"/>
-    [ApiController]
-    [Route(DefaultValues.ApiController.Route)]
-    [Consumes(DefaultValues.Request.ContentType)]
-    [Produces(DefaultValues.Request.ContentType)]
-    [ApiVersion(DefaultValues.ApiController.Version)]
+    /// <seealso cref="OmcController"/>
     public sealed class EventsController : OmcController
     {
         private readonly ISerializationService _serializer;
@@ -73,7 +67,6 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                       // REASON: The notification was valid, and it was successfully sent to "Notify NL" Web service
         [ProducesResponseType(StatusCodes.Status206PartialContent)]                                                 // REASON: The notification was not sent (e.g., "test" ping received or scenario is not yet implemented. No need to retry sending it)
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Detailed))]  // REASON: The notification was not sent (e.g., it was invalid due to missing data or improper structure. Retry sending is required)
-        [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                     // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Input deserialization error (e.g. model binding of required properties)
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Internal server error (if-else / try-catch-finally handle)
         [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                     // REASON: Operation is not implemented (a new case is not yet supported)
