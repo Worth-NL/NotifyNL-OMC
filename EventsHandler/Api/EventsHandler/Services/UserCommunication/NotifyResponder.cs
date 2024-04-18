@@ -201,13 +201,6 @@ namespace EventsHandler.Services.UserCommunication
                     return ObjectResultExtensions.AsResult_501();
             }
         }
-
-        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Failed_ActionResult"/>
-        ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Failed_ActionResult(string details)
-        {
-            // HttpStatus Code: 400 BadRequest
-            return ((IRespondingService<ProcessingResult, string>)this).Get_Processing_Status_ActionResult(ProcessingResult.Failure, details);
-        }
         #endregion
 
         #region Helper methods

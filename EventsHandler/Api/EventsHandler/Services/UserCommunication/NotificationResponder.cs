@@ -119,12 +119,6 @@ namespace EventsHandler.Services.UserCommunication
         {
             return ((IRespondingService<NotificationEvent>)this).Get_Processing_Status_ActionResult(result, details);
         }
-
-        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Failed_ActionResult"/>
-        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.Get_Processing_Failed_ActionResult(BaseEnhancedDetails details)
-        {
-            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Failed_ActionResult(details);
-        }
         #endregion
 
         #region Implementation
@@ -147,14 +141,6 @@ namespace EventsHandler.Services.UserCommunication
 
                 _ => ObjectResultExtensions.AsResult_501()
             };
-        }
-
-        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Failed_ActionResult"/>
-        ObjectResult IRespondingService<NotificationEvent>.Get_Processing_Failed_ActionResult(BaseEnhancedDetails details)
-        {
-            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Status_ActionResult(
-                (ProcessingResult.Failure, Resources.Processing_ERROR_Scenario_NotificationNotSent),
-                details);
         }
         #endregion
 
