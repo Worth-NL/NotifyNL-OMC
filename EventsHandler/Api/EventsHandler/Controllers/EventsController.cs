@@ -88,19 +88,13 @@ namespace EventsHandler.Controllers
                 // Validation #2: Structural and data inconsistencies of optional properties
                 HealthCheck healthCheck = this._validator.Validate(ref notification);
 
-                if (healthCheck is HealthCheck.OK_Valid
-                                or HealthCheck.OK_Inconsistent)
-                {
-                    // Processing received notification
-                    (ProcessingResult, string) result = await this._processor.ProcessAsync(notification);
-
-                    return LogAndReturnApiResponse(LogLevel.Information,
-                        this._responder.Get_Processing_Status_ActionResult(result, notification.Details));
-                }
-
-                // Notification cannot be sent
-                return LogAndReturnApiResponse(LogLevel.Error,
-                    this._responder.Get_Processing_Status_ActionResult(s_failedResult, notification.Details));
+                return healthCheck is HealthCheck.OK_Valid or HealthCheck.OK_Inconsistent
+                    // Try to process received notification
+                    ? LogAndReturnApiResponse(LogLevel.Information,
+                        this._responder.Get_Processing_Status_ActionResult(await this._processor.ProcessAsync(notification), notification.Details))
+                    // Notification cannot be processed
+                    : LogAndReturnApiResponse(LogLevel.Error,
+                        this._responder.Get_Processing_Status_ActionResult(s_failedResult, notification.Details));
             }
             catch (Exception exception)
             {
