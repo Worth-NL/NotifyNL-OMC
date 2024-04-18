@@ -81,11 +81,11 @@ namespace EventsHandler.Controllers
                                             DeliveryStatus.TechnicalFailure))
                 {
                     return LogAndReturnApiResponse(LogLevel.Information,
-                        this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)));
+                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)));
                 }
 
                 return LogAndReturnApiResponse(LogLevel.Error,
-                    this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Failure, callbackDetails = GetCallbackDetails(callback)));
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, callbackDetails = GetCallbackDetails(callback)));
             }
             catch (Exception exception)
             {
@@ -93,7 +93,7 @@ namespace EventsHandler.Controllers
                 callbackDetails = GetErrorDetails(callback, exception);
 
                 return LogAndReturnApiResponse(LogLevel.Critical,
-                    this._responder.GetStandardized_Exception_ActionResult(exception));
+                    this._responder.Get_Exception_ActionResult(exception));
             }
             finally
             {
@@ -128,7 +128,7 @@ namespace EventsHandler.Controllers
                 }
                 catch (Exception exception)
                 {
-                    LogApiResponse(LogLevel.Critical, this._responder.GetStandardized_Exception_ActionResult(exception));
+                    LogApiResponse(LogLevel.Critical, this._responder.Get_Exception_ActionResult(exception));
                 }
             }
         }

@@ -33,19 +33,19 @@ namespace EventsHandler.Services.UserCommunication
         }
 
         #region IRespondingService
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(Exception)"/>
-        ObjectResult IRespondingService.GetStandardized_Exception_ActionResult(Exception exception)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Exception)"/>
+        ObjectResult IRespondingService.Get_Exception_ActionResult(Exception exception)
         {
             if (exception is HttpRequestException)
             {
                 return this._detailsBuilder.Get<ErrorDetails>(Reasons.HttpRequestError, exception.Message).AsResult_400();
             }
 
-            return ((IRespondingService<NotificationEvent>)this).GetStandardized_Exception_ActionResult(exception.Message);
+            return ((IRespondingService<NotificationEvent>)this).Get_Exception_ActionResult(exception.Message);
         }
 
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(string)"/>
-        ObjectResult IRespondingService.GetStandardized_Exception_ActionResult(string errorMessage)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(string)"/>
+        ObjectResult IRespondingService.Get_Exception_ActionResult(string errorMessage)
         {
             try
             {
@@ -67,12 +67,12 @@ namespace EventsHandler.Services.UserCommunication
             }
         }
 
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(ResultExecutingContext, IDictionary{string, string[]})"/>
-        ResultExecutingContext IRespondingService.GetStandardized_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext,System.Collections.Generic.IDictionary{string,string[]})"/>
+        ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
             {
-                context.Result = ((IRespondingService)this).GetStandardized_Exception_ActionResult(errorMessage);
+                context.Result = ((IRespondingService)this).Get_Exception_ActionResult(errorMessage);
             }
 
             return context;
@@ -114,22 +114,22 @@ namespace EventsHandler.Services.UserCommunication
         #endregion
 
         #region IRespondingService<TModel>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_ActionResult(TResult, TDetails)"/>
-        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.GetStandardized_Processing_ActionResult((ProcessingResult, string) result, BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
+        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.Get_Processing_Status_ActionResult((ProcessingResult, string) result, BaseEnhancedDetails details)
         {
-            return ((IRespondingService<NotificationEvent>)this).GetStandardized_Processing_ActionResult(result, details);
+            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Status_ActionResult(result, details);
         }
 
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_Failed_ActionResult(TDetails)"/>
-        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.GetStandardized_Processing_Failed_ActionResult(BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Failed_ActionResult"/>
+        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.Get_Processing_Failed_ActionResult(BaseEnhancedDetails details)
         {
-            return ((IRespondingService<NotificationEvent>)this).GetStandardized_Processing_Failed_ActionResult(details);
+            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Failed_ActionResult(details);
         }
         #endregion
 
         #region Implementation
-        /// <inheritdoc cref="IRespondingService{TModel}.GetStandardized_Processing_ActionResult(ValueTuple{ProcessingResult, string}, BaseEnhancedDetails)"/>
-        ObjectResult IRespondingService<NotificationEvent>.GetStandardized_Processing_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Status_ActionResult"/>
+        ObjectResult IRespondingService<NotificationEvent>.Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
         {
             return result.Status switch
             {
@@ -149,10 +149,10 @@ namespace EventsHandler.Services.UserCommunication
             };
         }
 
-        /// <inheritdoc cref="IRespondingService{TModel}.GetStandardized_Processing_Failed_ActionResult(BaseEnhancedDetails)"/>
-        ObjectResult IRespondingService<NotificationEvent>.GetStandardized_Processing_Failed_ActionResult(BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Failed_ActionResult"/>
+        ObjectResult IRespondingService<NotificationEvent>.Get_Processing_Failed_ActionResult(BaseEnhancedDetails details)
         {
-            return ((IRespondingService<NotificationEvent>)this).GetStandardized_Processing_ActionResult(
+            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Status_ActionResult(
                 (ProcessingResult.Failure, Resources.Processing_ERROR_Scenario_NotificationNotSent),
                 details);
         }

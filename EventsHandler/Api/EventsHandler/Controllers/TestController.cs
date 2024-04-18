@@ -91,7 +91,7 @@ namespace EventsHandler.Controllers
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogAndReturnApiResponse(LogLevel.Critical,
-                    this._responder.GetStandardized_Exception_ActionResult(exception));
+                    this._responder.Get_Exception_ActionResult(exception));
             }
         }
 
@@ -209,7 +209,7 @@ namespace EventsHandler.Controllers
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogAndReturnApiResponse(LogLevel.Critical,
-                    this._responder.GetStandardized_Exception_ActionResult(exception));
+                    this._responder.Get_Exception_ActionResult(exception));
             }
         }
 
@@ -272,7 +272,7 @@ namespace EventsHandler.Controllers
                 
                 // HttpStatus Code: 202 Accepted
                 return LogAndReturnApiResponse(LogLevel.Information,
-                    this._responder.GetStandardized_Processing_ActionResult(ProcessingResult.Success,
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success,
                     $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}"));
             }
             catch (NotImplementedException exception)
@@ -284,7 +284,7 @@ namespace EventsHandler.Controllers
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogAndReturnApiResponse(LogLevel.Critical,
-                    this._responder.GetStandardized_Exception_ActionResult(exception));
+                    this._responder.Get_Exception_ActionResult(exception));
             }
         }
 
