@@ -18,7 +18,6 @@ using Notify.Client;
 using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Runtime.InteropServices;
 
 namespace EventsHandler.Controllers
@@ -66,7 +65,7 @@ namespace EventsHandler.Controllers
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [ProducesResponseType(StatusCodes.Status200OK)]                                                               // REASON: The API service is up and running
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                               // REASON: The API service is up and running
         [ProducesResponseType(StatusCodes.Status400BadRequest)]                                                       // REASON: The API service is currently down
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()
@@ -81,11 +80,13 @@ namespace EventsHandler.Controllers
                 HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
 
                 // Response
-                return result.IsSuccessStatusCode  // TODO: Introduce standardized API Responses
-                    // HttpStatus Code: 200 OK
-                    ? Ok(result)
+                return result.IsSuccessStatusCode
+                    // HttpStatus Code: 202 Accepted
+                    ? LogAndReturnApiResponse(LogLevel.Information,
+                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
                     // HttpStatus Code: 400 Bad Request
-                    : StatusCode((int)HttpStatusCode.BadRequest, result);
+                    : LogAndReturnApiResponse(LogLevel.Error,
+                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
             }
             catch (Exception exception)
             {
@@ -201,9 +202,10 @@ namespace EventsHandler.Controllers
                 NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
 
                 string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
-                
-                // HttpStatus Code: 200 OK
-                return Ok(result);  // TODO: Use responder to standardize API responses
+
+                // HttpStatus Code: 202 Accepted
+                return LogAndReturnApiResponse(LogLevel.Information,
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result));
             }
             catch (Exception exception)
             {
@@ -235,7 +237,7 @@ namespace EventsHandler.Controllers
             try
             {
                 // Initialize the .NET client of "NotifyNL" API service
-                var notifyClient = new NotificationClient(    // TODO: Client to be resolved by IClientFactory (to be testable)
+                var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
                     this._configuration.OMC.API.BaseUrl.NotifyNL(),
                     this._configuration.User.API.Key.NotifyNL());
 
@@ -252,33 +254,43 @@ namespace EventsHandler.Controllers
                     personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&
                     Equals(value, PersonalizationExample.Value))
                 {
-                    NotificationResponse _ = notifyMethod switch
+                    switch (notifyMethod)
                     {
-                        NotifyMethods.Email => await notifyClient.SendEmailAsync(contactDetails, templateId),
-                        NotifyMethods.Sms   => await notifyClient.SendSmsAsync(contactDetails, templateId),
-                        _ => NotImplementedNotifyMethod()
-                    };
+                        case NotifyMethods.Email:
+                            _ = await notifyClient.SendEmailAsync(contactDetails, templateId);
+                            break;
+
+                        case NotifyMethods.Sms:
+                            _ = await notifyClient.SendSmsAsync(contactDetails, templateId);
+                            break;
+
+                        default:
+                            return LogAndReturnApiResponse(LogLevel.Error,
+                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
+                    }
                 }
                 // NOTE: Personalization was provided by the user
                 else
                 {
-                    NotificationResponse _ = notifyMethod switch
+                    switch (notifyMethod)
                     {
-                        NotifyMethods.Email => await notifyClient.SendEmailAsync(contactDetails, templateId, personalization),
-                        NotifyMethods.Sms   => await notifyClient.SendSmsAsync(contactDetails, templateId, personalization),
-                        _ => NotImplementedNotifyMethod()
-                    };
+                        case NotifyMethods.Email:
+                            _ = await notifyClient.SendEmailAsync(contactDetails, templateId, personalization);
+                            break;
+
+                        case NotifyMethods.Sms:
+                            _ = await notifyClient.SendSmsAsync(contactDetails, templateId, personalization);
+                            break;
+
+                        default:
+                            return LogAndReturnApiResponse(LogLevel.Error,
+                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
+                    }
                 }
                 
                 // HttpStatus Code: 202 Accepted
                 return LogAndReturnApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success,
-                    $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}"));
-            }
-            catch (NotImplementedException exception)
-            {
-                // HttpStatus Code: 501 NotImplementedException
-                return StatusCode((int)HttpStatusCode.NotImplemented, exception.Message);  // TODO: Use responder to standardize API responses
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(templateType)));
             }
             catch (Exception exception)
             {
@@ -288,8 +300,11 @@ namespace EventsHandler.Controllers
             }
         }
 
-        private static NotificationResponse NotImplementedNotifyMethod()
-            => throw new ArgumentException(Resources.Test_NotifyNL_ERROR_NotSupportedMethod);
+        private static string GetFailureMessage()
+            => Resources.Test_NotifyNL_ERROR_NotSupportedMethod;
+
+        private static string GetSuccessMessage(string templateType)
+            => $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}";
         #endregion
     }
 }
