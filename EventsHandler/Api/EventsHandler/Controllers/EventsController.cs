@@ -86,9 +86,8 @@ namespace EventsHandler.Controllers
                 NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
 
                 // Validation #2: Structural and data inconsistencies of optional properties
-                HealthCheck healthCheck = this._validator.Validate(ref notification);
-
-                return healthCheck is HealthCheck.OK_Valid or HealthCheck.OK_Inconsistent
+                return this._validator.Validate(ref notification) is HealthCheck.OK_Valid
+                                                                  or HealthCheck.OK_Inconsistent
                     // Try to process received notification
                     ? LogAndReturnApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(await this._processor.ProcessAsync(notification), notification.Details))
