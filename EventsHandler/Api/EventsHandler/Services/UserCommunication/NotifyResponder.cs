@@ -65,8 +65,8 @@ namespace EventsHandler.Services.UserCommunication
         #endregion
 
         #region IRespondingService
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(Exception)"/>
-        ObjectResult IRespondingService.GetStandardized_Exception_ActionResult(Exception exception)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Exception)"/>
+        ObjectResult IRespondingService.Get_Exception_ActionResult(Exception exception)
         {
             switch (exception)
             {
@@ -112,7 +112,7 @@ namespace EventsHandler.Services.UserCommunication
                         message = exception.Message;
                     }
 
-                    return ((IRespondingService)this).GetStandardized_Exception_ActionResult(message);
+                    return ((IRespondingService)this).Get_Exception_ActionResult(message);
                 }
 
                 // NOTE: Authorization issues wrapped around 403 Forbidden status code
@@ -125,8 +125,8 @@ namespace EventsHandler.Services.UserCommunication
             }
         }
 
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(string)"/>
-        ObjectResult IRespondingService.GetStandardized_Exception_ActionResult(string errorMessage)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(string)"/>
+        ObjectResult IRespondingService.Get_Exception_ActionResult(string errorMessage)
         {
             string? message = null;
             Match match;
@@ -144,13 +144,13 @@ namespace EventsHandler.Services.UserCommunication
             return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
         }
 
-        /// <inheritdoc cref="IRespondingService.GetStandardized_Exception_ActionResult(ResultExecutingContext, IDictionary{string, string[]})"/>
-        ResultExecutingContext IRespondingService.GetStandardized_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext,System.Collections.Generic.IDictionary{string,string[]})"/>
+        ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
             {
                 // HttpStatus Code: 400 BadRequest
-                context.Result = ((IRespondingService)this).GetStandardized_Exception_ActionResult(errorMessage);
+                context.Result = ((IRespondingService)this).Get_Exception_ActionResult(errorMessage);
             }
 
             return context;
@@ -181,8 +181,8 @@ namespace EventsHandler.Services.UserCommunication
         #endregion
 
         #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_ActionResult(TResult, TDetails)"/>
-        ObjectResult IRespondingService<ProcessingResult, string>.GetStandardized_Processing_ActionResult(ProcessingResult result, string details)
+        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
+        ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Status_ActionResult(ProcessingResult result, string details)
         {
             switch (result)
             {
@@ -194,7 +194,7 @@ namespace EventsHandler.Services.UserCommunication
 
                 // HttpStatus Code: 400 BadRequest
                 case ProcessingResult.Failure:
-                    return ((IRespondingService)this).GetStandardized_Exception_ActionResult(details);
+                    return ((IRespondingService)this).Get_Exception_ActionResult(details);
 
                 // HttpStatus Code: 501 Not Implemented
                 default:
@@ -202,11 +202,11 @@ namespace EventsHandler.Services.UserCommunication
             }
         }
 
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_Failed_ActionResult(TDetails)"/>
-        ObjectResult IRespondingService<ProcessingResult, string>.GetStandardized_Processing_Failed_ActionResult(string details)
+        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Failed_ActionResult"/>
+        ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Failed_ActionResult(string details)
         {
             // HttpStatus Code: 400 BadRequest
-            return ((IRespondingService<ProcessingResult, string>)this).GetStandardized_Processing_ActionResult(ProcessingResult.Failure, details);
+            return ((IRespondingService<ProcessingResult, string>)this).Get_Processing_Status_ActionResult(ProcessingResult.Failure, details);
         }
         #endregion
 
