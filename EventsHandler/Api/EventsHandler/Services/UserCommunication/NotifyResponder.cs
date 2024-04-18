@@ -184,22 +184,17 @@ namespace EventsHandler.Services.UserCommunication
         /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
         ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Status_ActionResult(ProcessingResult result, string details)
         {
-            switch (result)
+            return result switch
             {
                 // HttpStatus Code: 202 Accepted
-                case ProcessingResult.Success:
-                {
-                    return ObjectResultExtensions.AsResult_202(details);
-                }
-
+                ProcessingResult.Success => ObjectResultExtensions.AsResult_202(details),
+                
                 // HttpStatus Code: 400 BadRequest
-                case ProcessingResult.Failure:
-                    return ((IRespondingService)this).Get_Exception_ActionResult(details);
-
+                ProcessingResult.Failure => ((IRespondingService)this).Get_Exception_ActionResult(details),
+                
                 // HttpStatus Code: 501 Not Implemented
-                default:
-                    return ObjectResultExtensions.AsResult_501();
-            }
+                _ => ObjectResultExtensions.AsResult_501()
+            };
         }
         #endregion
 
