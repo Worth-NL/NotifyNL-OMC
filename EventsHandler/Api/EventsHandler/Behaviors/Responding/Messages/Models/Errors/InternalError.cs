@@ -11,7 +11,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// <summary>
     /// An internal server error occurred.
     /// </summary>
-    /// <seealso cref="BaseApiStandardResponseBody"/>
+    /// <seealso cref="BaseSimpleStandardResponseBody"/>
     internal sealed class InternalError : BaseSimpleStandardResponseBody
     {
         /// <summary>

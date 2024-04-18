@@ -10,7 +10,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// <summary>
     /// A HTTP Request failed.
     /// </summary>
-    /// <seealso cref="BaseApiStandardResponseBody"/>
+    /// <seealso cref="BaseEnhancedStandardResponseBody"/>
     internal sealed class HttpRequestFailed : BaseEnhancedStandardResponseBody
     {
         /// <summary>
