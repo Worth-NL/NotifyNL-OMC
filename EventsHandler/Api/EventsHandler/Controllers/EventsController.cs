@@ -91,16 +91,16 @@ namespace EventsHandler.Controllers
                     (ProcessingResult, string) result = await this._processor.ProcessAsync(notification);
 
                     return LogAndReturnApiResponse(LogLevel.Information,
-                        this._responder.GetStandardized_Processing_ActionResult(result, notification.Details));
+                        this._responder.Get_Processing_Status_ActionResult(result, notification.Details));
                 }
 
                 return LogAndReturnApiResponse(LogLevel.Error,
-                    this._responder.GetStandardized_Processing_Failed_ActionResult(notification.Details));
+                    this._responder.Get_Processing_Failed_ActionResult(notification.Details));
             }
             catch (Exception exception)
             {
                 return LogAndReturnApiResponse(LogLevel.Critical,
-                    this._responder.GetStandardized_Exception_ActionResult(exception));
+                    this._responder.Get_Exception_ActionResult(exception));
             }
         }
 
