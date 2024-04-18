@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Asp.Versioning;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Communication.Enums;
@@ -8,7 +7,6 @@ using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Configuration;
-using EventsHandler.Constants;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -28,12 +26,7 @@ namespace EventsHandler.Controllers
     /// <summary>
     /// Controller used to test other API services from which "NotifyNL" OMC is dependent.
     /// </summary>
-    /// <seealso cref="Controller"/>
-    [ApiController]
-    [Route(DefaultValues.ApiController.Route)]
-    [Consumes(DefaultValues.Request.ContentType)]
-    [Produces(DefaultValues.Request.ContentType)]
-    [ApiVersion(DefaultValues.ApiController.Version)]
+    /// <seealso cref="OmcController"/>
     public sealed class TestController : OmcController
     {
         private readonly WebApiConfiguration _configuration;
@@ -75,7 +68,6 @@ namespace EventsHandler.Controllers
         // Swagger UI
         [ProducesResponseType(StatusCodes.Status200OK)]                                                               // REASON: The API service is up and running
         [ProducesResponseType(StatusCodes.Status400BadRequest)]                                                       // REASON: The API service is currently down
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()
         {
@@ -133,7 +125,6 @@ namespace EventsHandler.Controllers
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
-        [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
@@ -172,7 +163,6 @@ namespace EventsHandler.Controllers
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
-        [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(string))]                       // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
@@ -201,7 +191,6 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API web service
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]                              // REASON: JWT Token is invalid or expired
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> RegisterAsync(
