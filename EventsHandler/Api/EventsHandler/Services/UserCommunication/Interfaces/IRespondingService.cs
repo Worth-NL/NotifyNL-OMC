@@ -66,15 +66,6 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
         ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TDetails']"/>
         /// </param>
         internal ObjectResult Get_Processing_Status_ActionResult(TResult result, TDetails details);
-
-        /// <summary>
-        /// Gets standardized failure <see cref="IActionResult"/> based on the received <typeparamref name="TDetails"/>.
-        /// </summary>
-        /// <param name="details">
-        ///   <inheritdoc cref="Get_Processing_Status_ActionResult"
-        ///               path="/param[@name='details']"/>
-        /// </param>
-        internal ObjectResult Get_Processing_Failed_ActionResult(TDetails details);
     }
 
     /// <summary>
@@ -89,8 +80,5 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
     {
         /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
         internal new ObjectResult Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details);
-
-        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Failed_ActionResult"/>
-        internal new ObjectResult Get_Processing_Failed_ActionResult(BaseEnhancedDetails details);
     }
 }
