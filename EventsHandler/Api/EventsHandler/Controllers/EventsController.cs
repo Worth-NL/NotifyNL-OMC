@@ -15,6 +15,7 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Controllers
 {
@@ -29,6 +30,9 @@ namespace EventsHandler.Controllers
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IProcessingService<NotificationEvent> _processor;
         private readonly IRespondingService<NotificationEvent> _responder;
+
+        private static readonly (ProcessingResult, string) s_failedResult =
+            (ProcessingResult.Failure, Resources.Processing_ERROR_Scenario_NotificationNotSent);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
@@ -87,15 +91,16 @@ namespace EventsHandler.Controllers
                 if (healthCheck is HealthCheck.OK_Valid
                                 or HealthCheck.OK_Inconsistent)
                 {
-                    // Process received notification
+                    // Processing received notification
                     (ProcessingResult, string) result = await this._processor.ProcessAsync(notification);
 
                     return LogAndReturnApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(result, notification.Details));
                 }
 
+                // Notification cannot be sent
                 return LogAndReturnApiResponse(LogLevel.Error,
-                    this._responder.Get_Processing_Failed_ActionResult(notification.Details));
+                    this._responder.Get_Processing_Status_ActionResult(s_failedResult, notification.Details));
             }
             catch (Exception exception)
             {
