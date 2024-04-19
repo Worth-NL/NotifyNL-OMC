@@ -51,7 +51,7 @@ namespace EventsHandler.Attributes.Validation
                     var responder = context.HttpContext.RequestServices.GetRequiredService(serviceType) as IRespondingService;
 
                     // Intercepting and replacing native error messages by user-friendly API responses
-                    context = responder?.GetStandardized_Exception_ActionResult(context, details!.Errors) ?? context;
+                    context = responder?.Get_Exception_ActionResult(context, details!.Errors) ?? context;
                 }
                 else
                 {

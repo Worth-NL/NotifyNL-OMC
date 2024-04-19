@@ -28,6 +28,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         }
 
         /// <inheritdoc cref="ProcessingFailed"/>
+        /// <seealso cref="BaseApiStandardResponseBody"/>
         internal sealed class Simplified : BaseApiStandardResponseBody
         {
             /// <summary>

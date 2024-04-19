@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
     ///   This is the heart of the <see cref="EventsHandler"/> business logic.
     /// </para>
     /// </summary>
-    public interface IProcessingService<TData>
+    public interface IProcessingService<in TData>
         where TData : IJsonSerializable
     {
         /// <summary>

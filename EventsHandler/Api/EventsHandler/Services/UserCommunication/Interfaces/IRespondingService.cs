@@ -17,7 +17,7 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
         /// Gets the standardized <see cref="IActionResult"/> based on the received <see cref="Exception"/>.
         /// </summary>
         /// <param name="exception">The handled program exception.</param>
-        internal ObjectResult GetStandardized_Exception_ActionResult(Exception exception);
+        internal ObjectResult Get_Exception_ActionResult(Exception exception);
 
         /// <summary>
         /// Gets the standardized <see cref="IActionResult"/> based on the received error message.
@@ -25,14 +25,14 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
         /// <param name="errorMessage">
         ///   The message (it can be a handled <see cref="Exception"/> message or intercepted validation error message).
         /// </param>
-        internal ObjectResult GetStandardized_Exception_ActionResult(string errorMessage);
+        internal ObjectResult Get_Exception_ActionResult(string errorMessage);
 
         /// <summary>
         /// Gets the standardized <see cref="IActionResult"/> based on received error details (e.g., handled by <seealso cref="ActionFilterAttribute"/>).
         /// </summary>
         /// <param name="context">The intercepted result of API executing context.</param>
         /// <param name="errorDetails">The encountered error details to be processed.</param>
-        internal ResultExecutingContext GetStandardized_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails);
+        internal ResultExecutingContext Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails);
 
         /// <summary>
         /// Tries to get valid and meaningful error message from the collection of encountered errors.
@@ -65,16 +65,7 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
         /// <param name="details">
         ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TDetails']"/>
         /// </param>
-        internal ObjectResult GetStandardized_Processing_ActionResult(TResult result, TDetails details);
-
-        /// <summary>
-        /// Gets standardized failure <see cref="IActionResult"/> based on the received <typeparamref name="TDetails"/>.
-        /// </summary>
-        /// <param name="details">
-        ///   <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_ActionResult(TResult, TDetails)"
-        ///               path="/param[@name='details']"/>
-        /// </param>
-        internal ObjectResult GetStandardized_Processing_Failed_ActionResult(TDetails details);
+        internal ObjectResult Get_Processing_Status_ActionResult(TResult result, TDetails details);
     }
 
     /// <summary>
@@ -87,10 +78,7 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
     public interface IRespondingService<TModel> : IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>  // NOTE: This interface is implicitly following Adapter Design Pattern
         where TModel : IJsonSerializable
     {
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_ActionResult(TResult, TDetails)"/>
-        internal new ObjectResult GetStandardized_Processing_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details);
-
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetStandardized_Processing_Failed_ActionResult(TDetails)"/>
-        internal new ObjectResult GetStandardized_Processing_Failed_ActionResult(BaseEnhancedDetails details);
+        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
+        internal new ObjectResult Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details);
     }
 }
