@@ -1,6 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
+using Asp.Versioning;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
+using EventsHandler.Constants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base
@@ -8,6 +10,13 @@ namespace EventsHandler.Controllers.Base
     /// <summary>
     /// Parent of all API Controllers in "NotifyNL" OMC.
     /// </summary>
+    [ApiController]
+    [Route(DefaultValues.ApiController.Route)]
+    [Consumes(DefaultValues.Request.ContentType)]
+    [Produces(DefaultValues.Request.ContentType)]
+    [ApiVersion(DefaultValues.ApiController.Version)]
+    // Swagger UI
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]  // REASON: JWT Token is invalid or expired
     public abstract class OmcController : Controller
     {
         private readonly ILogger _logger;
