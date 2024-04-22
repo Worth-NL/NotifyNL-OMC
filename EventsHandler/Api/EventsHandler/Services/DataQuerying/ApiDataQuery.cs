@@ -142,15 +142,15 @@ namespace EventsHandler.Services.DataQuerying
                 // Request URL
                 Uri citizenByBsnUri;
 
-                if (!this._configuration.AppSettings.UseNewOpenZaak())
+                if (!this._configuration.AppSettings.UseNewOpenKlant())
                 {
-                    // Open Zaak 1.0
+                    // Open Klant 1.0
                     citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/klanten/api/v1/klanten";
                     citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={await GetBsnNumberAsync()}");
                 }
                 else
                 {
-                    // Open Zaak 2.0
+                    // Open Klant 2.0
                     citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/";  // TODO: To be finished
                     citizenByBsnUri = new Uri(citizensEndpoint);                    // TODO: To be finished
                 }

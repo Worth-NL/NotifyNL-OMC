@@ -27,8 +27,8 @@ namespace EventsHandler.Extensions
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
             => configuration.GetValue<bool>("Encryption:IsAsymmetric");
 
-        internal static bool UseNewOpenZaak(this IConfiguration configuration)
-            => configuration.GetValue<bool>("Features:UseNewOpenZaak");
+        internal static bool UseNewOpenKlant(this IConfiguration configuration)
+            => configuration.GetValue<bool>("Features:UseNewOpenKlant");
 
         /// <summary>
         /// Gets the <see langword="string"/> value from the configuration.
