@@ -14,6 +14,7 @@ using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
+using Microsoft.Extensions.Configuration;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Text.Json;
@@ -31,7 +32,9 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
         {
             // Arrange
             ISerializationService serializer = new SpecificSerializer();
-            WebApiConfiguration configuration = new(new Mock<ILoadersContext>().Object);
+            IConfiguration appSettings = ConfigurationHandler.GetConfiguration();
+            ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;
+            WebApiConfiguration configuration = new(appSettings, loadersContext);
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);
