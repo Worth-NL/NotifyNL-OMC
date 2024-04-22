@@ -137,10 +137,23 @@ namespace EventsHandler.Services.DataQuerying
             internal async Task<CitizenDetails> GetCitizenDetailsAsync()
             {
                 // Predefined URL components
-                string citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/klanten/api/v1/klanten";
-
+                string citizensEndpoint;
+                
                 // Request URL
-                Uri citizenByBsnUri = new($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={await GetBsnNumberAsync()}");
+                Uri citizenByBsnUri;
+
+                if (!this._configuration.AppSettings.UseNewOpenZaak())
+                {
+                    // Open Zaak 1.0
+                    citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/klanten/api/v1/klanten";
+                    citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={await GetBsnNumberAsync()}");
+                }
+                else
+                {
+                    // Open Zaak 2.0
+                    citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/";  // TODO: To be finished
+                    citizenByBsnUri = new Uri(citizensEndpoint);                    // TODO: To be finished
+                }
 
                 return await ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
             }
