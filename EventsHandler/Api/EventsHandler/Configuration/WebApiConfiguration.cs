@@ -12,6 +12,9 @@ namespace EventsHandler.Configuration
     /// </summary>
     public sealed record WebApiConfiguration
     {
+        /// <inheritdoc cref="IConfiguration"/>
+        internal IConfiguration AppSettings { get; }
+
         /// <summary>
         /// Gets the configuration for OMC (internal) system.
         /// </summary>
@@ -25,9 +28,15 @@ namespace EventsHandler.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
         /// </summary>
+        /// <param name="appSettings">The application configurations stored in "appsettings.json" file.</param>
         /// <param name="loaderContext">The strategy context using a specific data provider configuration loader.</param>
-        public WebApiConfiguration(ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
+        public WebApiConfiguration(
+            IConfiguration appSettings,
+            ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
         {
+            // Mapping configurations from "appsettings.json" file => because these should be always accessible, regardless ILoadingService (in ILoadersContext)
+            this.AppSettings = appSettings;
+
             // Recreating structure of "appsettings.json" or "secrets.json" files to use them later as objects
             this.OMC = new OmcComponent(loaderContext, nameof(this.OMC));
             this.User = new UserComponent(loaderContext, nameof(this.User));
