@@ -160,6 +160,9 @@ namespace EventsHandler.Utilities._TestHelpers
         #region Web API Configuration
         internal static WebApiConfiguration GetWebApiConfiguration(ILoadingService loadingService)
         {
+            // "appSettings.json" configuration
+            IConfiguration appSettings = GetConfiguration();
+
             // Service Provider (does not require mocking)
             using ServiceProvider serviceProvider = new ServiceCollection().BuildServiceProvider();
             
@@ -167,7 +170,7 @@ namespace EventsHandler.Utilities._TestHelpers
             var loadersContext = new LoadersContext(serviceProvider, loadingService);
 
             // Web API Configuration
-            return new WebApiConfiguration(loadersContext);
+            return new WebApiConfiguration(appSettings, loadersContext);
         }
         #endregion
     }

@@ -49,6 +49,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using QueryContext = EventsHandler.Services.DataQuerying.ApiDataQuery.QueryContext;
 
 namespace EventsHandler
 {
@@ -187,27 +188,37 @@ namespace EventsHandler
         /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with custom services.</returns>
         private static WebApplicationBuilder AddCustomServices(this WebApplicationBuilder builder)
         {
+            // Configurations
             builder.Services.AddSingleton<WebApiConfiguration>();
-
             builder.RegisterEncryptionStrategy();
             builder.Services.RegisterLoadingStrategies();
-            builder.Services.AddSingleton<ITelemetryInitializer, AzureTelemetryService>();
+
+            // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
-            builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
-            builder.Services.RegisterNotifyStrategies();
-            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
-            builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
-            builder.Services.RegisterClientFactories();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
+            builder.Services.RegisterNotifyStrategies();
+
+            // Queries and HTTP resources
+            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
+            builder.Services.AddSingleton<IQueryContext, QueryContext>();
+            builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
+            builder.Services.RegisterClientFactories();
+
+            // Feedback and telemetry
+            builder.Services.AddSingleton<ITelemetryInitializer, AzureTelemetryService>();
             builder.Services.AddSingleton<ITelemetryService, ContactRegistration>();
+
+            // User Interaction
             builder.Services.RegisterResponders();
+            builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
         }
 
+        #region Aggregated registrations
         private static void RegisterEncryptionStrategy(this WebApplicationBuilder builder)
         {
             // Strategies
@@ -259,6 +270,7 @@ namespace EventsHandler
             // Explicit interfaces
             services.AddSingleton<IRespondingService<ProcessingResult, string>, NotifyResponder>();
         }
+        #endregion
 
         /// <summary>
         /// Configures the HTTP pipeline with middlewares.
