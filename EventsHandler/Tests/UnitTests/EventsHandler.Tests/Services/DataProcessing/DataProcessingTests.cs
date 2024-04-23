@@ -150,9 +150,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             NotifyData testNotifyData = GetNotifyData(NotifyMethods.Email);
             SetupScenariosManager(testNotifyData);
 
+            const string exceptionMessage = "Test";
+
             this._mockedSender?.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()))
-                .Throws<TelemetryException>();
+                .Throws(new TelemetryException(exceptionMessage));
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
@@ -165,7 +167,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             Assert.Multiple(() =>
             {
                 Assert.That(status, Is.EqualTo(ProcessingResult.Success));
-                Assert.That(message, Is.EqualTo(ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent));
+                Assert.That(message, Is.EqualTo($"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | Exception: {exceptionMessage}"));
             });
         }
 

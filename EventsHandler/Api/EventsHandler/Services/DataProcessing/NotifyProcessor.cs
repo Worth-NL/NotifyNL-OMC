@@ -86,10 +86,10 @@ namespace EventsHandler.Services.DataProcessing
                 // NOTE: The notification was sent and the completion status was reported to the telemetry API
                 return (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
-            catch (TelemetryException)
+            catch (TelemetryException exception)
             {
                 // NOTE: The notification was sent, but the communication with the telemetry API failed. Do not retry
-                return (ProcessingResult.Success, ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent);
+                return (ProcessingResult.Success, $"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | Exception: {exception.Message}");
             }
             catch (NotImplementedException)
             {
