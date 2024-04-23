@@ -49,6 +49,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using QueryContext = EventsHandler.Services.DataQuerying.ApiDataQuery.QueryContext;
 
 namespace EventsHandler
 {
@@ -198,6 +199,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
             builder.Services.RegisterNotifyStrategies();
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
+            builder.Services.AddSingleton<IQueryContext, QueryContext>();
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
