@@ -2,7 +2,6 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
-using static EventsHandler.Services.DataQuerying.ApiDataQuery;
 
 namespace EventsHandler.Services.DataQuerying.Interfaces
 {
@@ -18,6 +17,6 @@ namespace EventsHandler.Services.DataQuerying.Interfaces
         /// <summary>
         /// Gets the query context of <see cref="IDataQueryService{TModel}"/> or sets it first if not yet existing.
         /// </summary>
-        internal QueryContext From(TModel model);
+        internal IQueryContext From(TModel model);
     }
 }
