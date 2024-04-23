@@ -77,6 +77,7 @@ namespace EventsHandler.Services.DataQuerying
                 this.Notification = notification;
             }
 
+            #region General HTTP methods
             /// <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
             /// <exception cref="InvalidOperationException"/>
             /// <exception cref="HttpRequestException"/>
@@ -102,6 +103,7 @@ namespace EventsHandler.Services.DataQuerying
                 return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
                                  : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
             }
+            #endregion
 
             #region Internal query methods
             /// <inheritdoc cref="IQueryContext.GetCaseAsync()"/>
