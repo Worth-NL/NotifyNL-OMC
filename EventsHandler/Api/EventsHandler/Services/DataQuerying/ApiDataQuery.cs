@@ -77,9 +77,7 @@ namespace EventsHandler.Services.DataQuerying
                 this.Notification = notification;
             }
 
-            /// <summary>
-            ///   <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
-            /// </summary>
+            /// <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
             /// <exception cref="InvalidOperationException"/>
             /// <exception cref="HttpRequestException"/>
             async Task<TModel> IQueryContext.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
@@ -92,9 +90,7 @@ namespace EventsHandler.Services.DataQuerying
                                  : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
             }
 
-            /// <summary>
-            ///   <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
-            /// </summary>
+            /// <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
             /// <exception cref="InvalidOperationException"/>
             /// <exception cref="HttpRequestException"/>
             async Task<TModel> IQueryContext.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
@@ -108,18 +104,18 @@ namespace EventsHandler.Services.DataQuerying
             }
 
             #region Internal query methods
-            /// <summary>
-            /// Gets the <see cref="Case"/> from "OpenZaak" Web service.
-            /// </summary>
-            internal async Task<Case> GetCaseAsync()
+            /// <inheritdoc cref="IQueryContext.GetCaseAsync()"/>
+            /// <exception cref="InvalidOperationException"/>
+            /// <exception cref="HttpRequestException"/>
+            async Task<Case> IQueryContext.GetCaseAsync()
             {
                 return await ((IQueryContext)this).ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
             }
 
-            /// <summary>
-            /// Gets the details of a specific citizen from "OpenKlant" Web service.
-            /// </summary>
-            internal async Task<CitizenDetails> GetCitizenDetailsAsync()
+            /// <inheritdoc cref="IQueryContext.GetCitizenDetailsAsync()"/>
+            /// <exception cref="InvalidOperationException"/>
+            /// <exception cref="HttpRequestException"/>
+            async Task<CitizenDetails> IQueryContext.GetCitizenDetailsAsync()
             {
                 // Predefined URL components
                 string citizensEndpoint;
@@ -142,11 +138,11 @@ namespace EventsHandler.Services.DataQuerying
 
                 return await ((IQueryContext)this).ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
             }
-
-            /// <summary>
-            /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web service.
-            /// </summary>
-            internal async Task<CaseStatuses> GetCaseStatusesAsync()
+            
+            /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
+            /// <exception cref="InvalidOperationException"/>
+            /// <exception cref="HttpRequestException"/>
+            async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
             {
                 // Predefined URL components
                 string statusesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/statussen";
@@ -156,11 +152,11 @@ namespace EventsHandler.Services.DataQuerying
 
                 return await ((IQueryContext)this).ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
             }
-
-            /// <summary>
-            /// Gets the type of <see cref="CaseStatus"/>.
-            /// </summary>
-            internal async Task<CaseStatusType> GetLastCaseStatusTypeAsync(CaseStatuses statuses)
+            
+            /// <inheritdoc cref="IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses)"/>
+            /// <exception cref="InvalidOperationException"/>
+            /// <exception cref="HttpRequestException"/>
+            async Task<CaseStatusType> IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses statuses)
             {
                 // Request URL
                 Uri lastStatusTypeUri = statuses.LastStatus().Type;
