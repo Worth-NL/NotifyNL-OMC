@@ -16,7 +16,7 @@ namespace EventsHandler.Services.DataQuerying.Interfaces
         /// <summary>
         /// The notification from "Notificatie API" Web service.
         /// </summary>
-        internal NotificationEvent Notification { set; }
+        internal NotificationEvent Notification { get; set; }
 
         /// <summary>
         /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and deserializes received JSON result.
