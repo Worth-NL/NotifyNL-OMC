@@ -11,8 +11,6 @@ using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
-using EventsHandler.Services.Serialization;
-using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
@@ -30,16 +28,21 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            // Arrange
-            ISerializationService serializer = new SpecificSerializer();
+            // Mocked IQueryContext
+            IQueryContext queryContext = new Mock<IQueryContext>().Object;  // TODO: MockBehavior.Strict
+
+            // Mocked IHttpSupplier
             IConfiguration appSettings = ConfigurationHandler.GetConfiguration();
-            ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;
+            ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;  // TODO: MockBehavior.Strict
             WebApiConfiguration configuration = new(appSettings, loadersContext);
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);
 
-            this._dataQuery = new ApiDataQuery(serializer, supplier);
+            // Larger services
+            this._dataQuery = new ApiDataQuery(queryContext, supplier);
+
+            // Notification
             this._notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated();
         }
 
