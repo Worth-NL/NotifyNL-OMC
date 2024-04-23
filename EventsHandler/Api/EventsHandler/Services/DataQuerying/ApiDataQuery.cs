@@ -16,35 +16,24 @@ namespace EventsHandler.Services.DataQuerying
     /// <inheritdoc cref="IDataQueryService{TModel}"/>
     internal sealed class ApiDataQuery : IDataQueryService<NotificationEvent>
     {
-        private readonly ISerializationService _serializer;
-        private readonly IHttpSupplierService _httpSupplier;
-        
-        private IQueryContext? _queryContext;
+        private readonly IQueryContext _queryContext;
 
         /// <inheritdoc cref="IDataQueryService{TModel}.HttpSupplier"/>
-        IHttpSupplierService IDataQueryService<NotificationEvent>.HttpSupplier => this._httpSupplier;
+        public IHttpSupplierService HttpSupplier { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiDataQuery"/> class.
         /// </summary>
-        public ApiDataQuery(
-            ISerializationService serializer,
-            IHttpSupplierService httpSupplier)
+        public ApiDataQuery(IQueryContext queryContext, IHttpSupplierService httpSupplier)
         {
-            this._serializer = serializer;
-            this._httpSupplier = httpSupplier;
+            this._queryContext = queryContext;
+
+            this.HttpSupplier = httpSupplier;
         }
 
         /// <inheritdoc cref="IDataQueryService{TModel}.From(TModel)"/>
         IQueryContext IDataQueryService<NotificationEvent>.From(NotificationEvent notification)
         {
-            // To optimize the workflow keep the notification builder cached
-            if (this._queryContext == null)
-            {
-                return this._queryContext ??=
-                    new QueryContext(this._httpSupplier.Configuration, this._serializer, this._httpSupplier, notification);
-            }
-
             // Update only the current notification in cached builder
             this._queryContext.Notification = notification;
 
@@ -64,7 +53,7 @@ namespace EventsHandler.Services.DataQuerying
             /// <summary>
             /// Initializes a new instance of the <see cref="ApiDataQuery"/> nested class.
             /// </summary>
-            internal QueryContext(
+            public QueryContext(
                 WebApiConfiguration configuration,
                 ISerializationService serializer,
                 IHttpSupplierService httpSupplier,
