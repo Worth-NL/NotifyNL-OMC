@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
@@ -20,7 +19,7 @@ namespace EventsHandler.Services.DataQuerying
         private readonly ISerializationService _serializer;
         private readonly IHttpSupplierService _httpSupplier;
         
-        private QueryContext? _notificationBuilder;
+        private IQueryContext? _queryContext;
 
         /// <inheritdoc cref="IDataQueryService{TModel}.HttpSupplier"/>
         IHttpSupplierService IDataQueryService<NotificationEvent>.HttpSupplier => this._httpSupplier;
@@ -37,34 +36,30 @@ namespace EventsHandler.Services.DataQuerying
         }
 
         /// <inheritdoc cref="IDataQueryService{TModel}.From(TModel)"/>
-        QueryContext IDataQueryService<NotificationEvent>.From(NotificationEvent notification)
+        IQueryContext IDataQueryService<NotificationEvent>.From(NotificationEvent notification)
         {
             // To optimize the workflow keep the notification builder cached
-            if (this._notificationBuilder == null)
+            if (this._queryContext == null)
             {
-                return this._notificationBuilder ??=
+                return this._queryContext ??=
                     new QueryContext(this._httpSupplier.Configuration, this._serializer, this._httpSupplier, notification);
             }
 
             // Update only the current notification in cached builder
-            this._notificationBuilder.Notification = notification;
+            this._queryContext.Notification = notification;
 
-            return this._notificationBuilder;
+            return this._queryContext;
         }
 
-        /// <summary>
-        /// The nested builder operating on <see cref="NotificationEvent"/>.
-        /// </summary>
-        internal sealed class QueryContext  // TODO: Introduce service "IQueryContext" here
+        /// <inheritdoc cref="IQueryContext"/>
+        internal sealed class QueryContext : IQueryContext
         {
             private readonly WebApiConfiguration _configuration;
             private readonly ISerializationService _serializer;
             private readonly IHttpSupplierService _httpSupplier;
 
-            /// <summary>
-            /// The notification from "Notificatie API" Web service.
-            /// </summary>
-            internal NotificationEvent Notification { private get; set; }
+            /// <inheritdoc cref="IQueryContext.Notification"/>
+            public NotificationEvent Notification { internal get; set; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ApiDataQuery"/> nested class.
@@ -83,12 +78,11 @@ namespace EventsHandler.Services.DataQuerying
             }
 
             /// <summary>
-            /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and deserializes received JSON result.
+            ///   <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
             /// </summary>
             /// <exception cref="InvalidOperationException"/>
             /// <exception cref="HttpRequestException"/>
-            internal async Task<TModel> ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
-                where TModel : struct, IJsonSerializable
+            async Task<TModel> IQueryContext.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
             {
                 string organizationId = this.Notification.GetOrganizationId();
 
@@ -99,12 +93,11 @@ namespace EventsHandler.Services.DataQuerying
             }
 
             /// <summary>
-            /// Sends the <see cref="HttpMethods.Post"/> request to the specified URI and deserializes received JSON result.
+            ///   <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
             /// </summary>
             /// <exception cref="InvalidOperationException"/>
             /// <exception cref="HttpRequestException"/>
-            internal async Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
-                where TModel : struct, IJsonSerializable
+            async Task<TModel> IQueryContext.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
             {
                 string organizationId = this.Notification.GetOrganizationId();
 
@@ -116,19 +109,11 @@ namespace EventsHandler.Services.DataQuerying
 
             #region Internal query methods
             /// <summary>
-            /// Gets the <see cref="MainObject"/> from "OpenZaak" Web service.
-            /// </summary>
-            internal async Task<MainObject> GetMainObjectAsync()  // TODO: This method is not yet used
-            {
-                return await ProcessGetAsync<MainObject>(HttpClientTypes.Data, this.Notification.MainObject, Resources.HttpRequest_ERROR_NoMainObject);
-            }
-
-            /// <summary>
             /// Gets the <see cref="Case"/> from "OpenZaak" Web service.
             /// </summary>
             internal async Task<Case> GetCaseAsync()
             {
-                return await ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
+                return await ((IQueryContext)this).ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
             }
 
             /// <summary>
@@ -155,7 +140,7 @@ namespace EventsHandler.Services.DataQuerying
                     citizenByBsnUri = new Uri(citizensEndpoint);                    // TODO: To be finished
                 }
 
-                return await ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
+                return await ((IQueryContext)this).ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
             }
 
             /// <summary>
@@ -169,7 +154,7 @@ namespace EventsHandler.Services.DataQuerying
                 // Request URL
                 Uri caseStatuses = new($"{statusesEndpoint}?zaak={this.Notification.MainObject}");
 
-                return await ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
+                return await ((IQueryContext)this).ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
             }
 
             /// <summary>
@@ -180,7 +165,7 @@ namespace EventsHandler.Services.DataQuerying
                 // Request URL
                 Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
-                return await ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
+                return await ((IQueryContext)this).ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
             }
             #endregion
 
@@ -198,7 +183,7 @@ namespace EventsHandler.Services.DataQuerying
             /// </summary>
             private async Task<CaseDetails> GetCaseDetailsAsync()
             {
-                return await ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, this.Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
+                return await ((IQueryContext)this).ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, this.Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
             }
 
             /// <summary>
@@ -218,7 +203,7 @@ namespace EventsHandler.Services.DataQuerying
                 // Request URL
                 Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={this.Notification.MainObject}&betrokkeneType={roleType}");
 
-                return await ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
+                return await ((IQueryContext)this).ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
             }
             #endregion
 
