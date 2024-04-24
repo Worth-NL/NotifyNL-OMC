@@ -26,7 +26,7 @@
   <!-- Packages -->
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.1" />
-    <PackageReference Include="GovukNotify" Version="6.1.0" />
+    <PackageReference Include="GovukNotify" Version="6.1.0" />  <!-- TODO: Upgrade (Newtonsoft version is not safe) -->
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.11" />
