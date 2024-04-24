@@ -38,9 +38,7 @@ using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notify.Models.Responses;
@@ -194,15 +192,6 @@ namespace EventsHandler
                 options.Environment = "Production";
             });
 
-            // Application insights: Monitoring
-            builder.Services.AddApplicationInsightsTelemetry();
-
-            // Application insights: Logging
-            builder.Logging.AddApplicationInsights()
-                           .AddFilter<ApplicationInsightsLoggerProvider>(
-                               DefaultValues.Logging.Category,
-                               builder.Configuration.GetApplicationInsightsLogLevel());
-
             return builder;
         }
 
@@ -233,7 +222,6 @@ namespace EventsHandler
             builder.Services.RegisterClientFactories();
 
             // Feedback and telemetry
-            builder.Services.AddSingleton<ITelemetryInitializer, AzureTelemetryService>();
             builder.Services.AddSingleton<ITelemetryService, ContactRegistration>();
 
             // User Interaction
