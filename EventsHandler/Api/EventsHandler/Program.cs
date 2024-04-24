@@ -166,8 +166,33 @@ namespace EventsHandler
                 });
             });
 
-            // Swagger UI: Examples
+            // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
             builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
+
+            // Logging (using "Sentry.io") => Documentation: https://docs.sentry.io/platforms/dotnet/configuration/options/
+            SentrySdk.Init(options =>
+            {
+                // Sentry Data Source Name (DSN) => where to log application events
+                options.Dsn = "https://4dfba3b56e7a177e0dead03ad82fa9c8@o4506671778168832.ingest.sentry.io/4506772979777536";
+
+                // Informational messages are the most detailed to log
+                options.DiagnosticLevel = SentryLevel.Info;
+
+                // Enables Sentry's "Release Health" feature
+                options.AutoSessionTracking = true;
+
+                // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
+                options.IsGlobalModeEnabled = false;
+
+                // The identifier indicating to which or on which platform / system the application is meant to run
+                options.Distribution = $"{Environment.OSVersion.Platform} | {Environment.OSVersion.VersionString}";
+                    
+                // Version of the application ("OMC Web API" in this case)
+                options.Release = DefaultValues.ApiController.Version;
+                
+                // The environment of the application (Prod, Test, Dev, Staging, etc.)
+                options.Environment = "Production";
+            });
 
             // Application insights: Monitoring
             builder.Services.AddApplicationInsightsTelemetry();
@@ -286,6 +311,18 @@ namespace EventsHandler
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                SentrySdk.Init(options =>
+                {
+                    // Detailed debugging logs in the console window
+                    options.Debug = true;
+
+                    // Debugging messages are the most detailed to log
+                    options.DiagnosticLevel = SentryLevel.Debug;
+
+                    // The environment of the application (Prod, Test, Dev, Staging, etc.)
+                    options.Environment = "Development";
+                });
             }
 
             // Production settings
