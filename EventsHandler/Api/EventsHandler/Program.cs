@@ -166,11 +166,18 @@ namespace EventsHandler
 
             // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
             builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
-
-            // Logging (using "Sentry.io")
-            SentrySdk.Init(options =>
+            
+            // Add logging using Sentry
+            builder.WebHost.UseSentry(options =>
             {
-                options.ConfigureSentryOptions(SentryLevel.Info, isDebugEnabled: false);
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.ConfigureSentryOptions(SentryLevel.Debug, isDebugEnabled: true);
+                }
+                else
+                {
+                    options.ConfigureSentryOptions(SentryLevel.Info, isDebugEnabled: false);
+                }
             });
 
             return builder;
@@ -274,26 +281,22 @@ namespace EventsHandler
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
-
+            
             // Development settings
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                SentrySdk.Init(options =>
-                {
-                    options.ConfigureSentryOptions(SentryLevel.Debug, isDebugEnabled: true);
-                });
             }
 
-            // Production settings
             app.UseHttpsRedirection();  // Try to redirect from HTTP to HTTPS (after first HTTP call)
 
             app.UseAuthentication();
             app.UseAuthorization();
             
             app.MapControllers();  // Mapping actions from API controllers
+
+            app.UseSentryTracing();
 
             return app;
         }
