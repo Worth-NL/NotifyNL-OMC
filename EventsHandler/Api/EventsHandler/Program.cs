@@ -180,6 +180,8 @@ namespace EventsHandler
                 }
             });
 
+            builder.Services.AddSentryTunneling();
+
             return builder;
         }
 
@@ -296,7 +298,8 @@ namespace EventsHandler
             
             app.MapControllers();  // Mapping actions from API controllers
 
-            app.UseSentryTracing();
+            app.UseSentryTunneling();
+            app.UseSentryTracing();  // Enable Sentry to trace issues per requests
 
             return app;
         }
@@ -311,7 +314,7 @@ namespace EventsHandler
         private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
-            options.Dsn = "https://4dfba3b56e7a177e0dead03ad82fa9c8@o4506671778168832.ingest.sentry.io/4506772979777536";
+            options.Dsn = "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632";
 
             // Informational messages are the most detailed to log
             options.DiagnosticLevel = diagnosticLevel;
@@ -326,7 +329,7 @@ namespace EventsHandler
             options.IsGlobalModeEnabled = false;
 
             // The identifier indicating to which or on which platform / system the application is meant to run
-            options.Distribution = $"{Environment.OSVersion.Platform} | {Environment.OSVersion.VersionString}";
+            options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
                 
             // Version of the application ("OMC Web API" in this case)
             options.Release = DefaultValues.ApiController.Version;
