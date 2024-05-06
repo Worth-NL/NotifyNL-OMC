@@ -5,7 +5,6 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Responding.Messages.Models.Information;
 using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
 using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Controllers;
@@ -17,7 +16,6 @@ using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 
@@ -32,7 +30,6 @@ namespace EventsHandler.IntegrationTests.Controllers
         private Mock<IValidationService<NotificationEvent>> _validatorMock = new();
         private Mock<IProcessingService<NotificationEvent>> _processorMock = new();
         private Mock<IRespondingService<NotificationEvent>> _responderMock = new();
-        private Mock<ILogger<EventsController>> _loggerMock = new();
 
         [OneTimeSetUp]
         public void InitializeMocks()
@@ -41,7 +38,6 @@ namespace EventsHandler.IntegrationTests.Controllers
             this._validatorMock = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
             this._processorMock = new Mock<IProcessingService<NotificationEvent>>(MockBehavior.Strict);
             this._responderMock = new Mock<IRespondingService<NotificationEvent>>(MockBehavior.Strict);
-            this._loggerMock = new Mock<ILogger<EventsController>>(MockBehavior.Loose);
         }
 
         [SetUp]
@@ -59,8 +55,6 @@ namespace EventsHandler.IntegrationTests.Controllers
             
             this._processorMock.Reset();
             this._responderMock.Reset();
-
-            this._loggerMock.Reset();
         }
 
         #region Testing IActionResult API responses
@@ -205,8 +199,7 @@ namespace EventsHandler.IntegrationTests.Controllers
         private EventsController GetTestEventsController_WithRealResponder()
         {
             return new EventsController(this._serializerMock.Object, this._validatorMock.Object,
-                                        this._processorMock.Object, GetRealResponderService(),
-                                        this._loggerMock.Object);
+                                        this._processorMock.Object, GetRealResponderService());
         }
 
         private static IRespondingService<NotificationEvent> GetRealResponderService()

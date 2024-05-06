@@ -40,14 +40,11 @@ namespace EventsHandler.Controllers
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        /// <param name="logger">The logging service registering API events.</param>
         public TestController(
             WebApiConfiguration configuration,
             ISerializationService serializer,
             ITelemetryService telemetry,
-            IRespondingService<ProcessingResult, string> responder,
-            ILogger<TestController> logger)
-            : base(logger)
+            IRespondingService<ProcessingResult, string> responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;
@@ -82,16 +79,17 @@ namespace EventsHandler.Controllers
                 // Response
                 return result.IsSuccessStatusCode
                     // HttpStatus Code: 202 Accepted
-                    ? LogAndReturnApiResponse(LogLevel.Information,
+                    ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
+                    
                     // HttpStatus Code: 400 Bad Request
-                    : LogAndReturnApiResponse(LogLevel.Error,
+                    : LogApiResponse(LogLevel.Error,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
-                return LogAndReturnApiResponse(LogLevel.Critical,
+                return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
         }
@@ -204,13 +202,13 @@ namespace EventsHandler.Controllers
                 string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
 
                 // HttpStatus Code: 202 Accepted
-                return LogAndReturnApiResponse(LogLevel.Information,
+                return LogApiResponse(LogLevel.Information,
                     this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
-                return LogAndReturnApiResponse(LogLevel.Critical,
+                return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
         }
@@ -265,7 +263,7 @@ namespace EventsHandler.Controllers
                             break;
 
                         default:
-                            return LogAndReturnApiResponse(LogLevel.Error,
+                            return LogApiResponse(LogLevel.Error,
                                 this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
                     }
                 }
@@ -283,19 +281,19 @@ namespace EventsHandler.Controllers
                             break;
 
                         default:
-                            return LogAndReturnApiResponse(LogLevel.Error,
+                            return LogApiResponse(LogLevel.Error,
                                 this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
                     }
                 }
                 
                 // HttpStatus Code: 202 Accepted
-                return LogAndReturnApiResponse(LogLevel.Information,
+                return LogApiResponse(LogLevel.Information,
                     this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(templateType)));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
-                return LogAndReturnApiResponse(LogLevel.Critical,
+                return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
         }

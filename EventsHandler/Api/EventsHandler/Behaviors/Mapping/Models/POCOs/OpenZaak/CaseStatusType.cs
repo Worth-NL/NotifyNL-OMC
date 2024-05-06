@@ -27,6 +27,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyOrder(1)]
         public bool IsFinalStatus { get; internal set; }
 
+        // TODO: "informeren" JSON property might be used in the future
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusType"/> struct.
         /// </summary>
