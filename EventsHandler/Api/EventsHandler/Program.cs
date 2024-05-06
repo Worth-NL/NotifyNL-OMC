@@ -38,9 +38,7 @@ using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notify.Models.Responses;
@@ -166,17 +164,23 @@ namespace EventsHandler
                 });
             });
 
-            // Swagger UI: Examples
+            // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
             builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
 
-            // Application insights: Monitoring
-            builder.Services.AddApplicationInsightsTelemetry();
-
-            // Application insights: Logging
-            builder.Logging.AddApplicationInsights()
-                           .AddFilter<ApplicationInsightsLoggerProvider>(
-                               DefaultValues.Logging.Category,
-                               builder.Configuration.GetApplicationInsightsLogLevel());
+            // Add logging using Sentry SDK and external monitoring service
+            builder.WebHost.UseSentry(options =>
+            {
+                if (builder.Environment.IsDevelopment())
+                {
+                    // More detailed (but spamming) settings for logs
+                    options.ConfigureSentryOptions(SentryLevel.Debug, isDebugEnabled: true);
+                }
+                else
+                {
+                    // Less detailed but more meaningful and noisy settings for logs
+                    options.ConfigureSentryOptions(SentryLevel.Info, isDebugEnabled: false);
+                }
+            });
 
             return builder;
         }
@@ -208,7 +212,6 @@ namespace EventsHandler
             builder.Services.RegisterClientFactories();
 
             // Feedback and telemetry
-            builder.Services.AddSingleton<ITelemetryInitializer, AzureTelemetryService>();
             builder.Services.AddSingleton<ITelemetryService, ContactRegistration>();
 
             // User Interaction
@@ -280,7 +283,7 @@ namespace EventsHandler
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
-
+            
             // Development settings
             if (app.Environment.IsDevelopment())
             {
@@ -288,7 +291,6 @@ namespace EventsHandler
                 app.UseSwaggerUI();
             }
 
-            // Production settings
             app.UseHttpsRedirection();  // Try to redirect from HTTP to HTTPS (after first HTTP call)
 
             app.UseAuthentication();
@@ -296,7 +298,44 @@ namespace EventsHandler
             
             app.MapControllers();  // Mapping actions from API controllers
 
+            app.UseSentryTracing();  // Enable Sentry to capture transactions
+
             return app;
         }
+
+        #region Sentry configuration
+        /// <summary>
+        /// Configure logging options for Sentry.
+        /// <para>
+        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
+        /// </para>
+        /// </summary>
+        private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
+        {
+            // Sentry Data Source Name (DSN) => where to log application events
+            options.Dsn = "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632";
+
+            // Informational messages are the most detailed to log
+            options.DiagnosticLevel = diagnosticLevel;
+
+            // Detailed debugging logs in the console window
+            options.Debug = isDebugEnabled;
+
+            // Enables Sentry's "Release Health" feature
+            options.AutoSessionTracking = true;
+
+            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
+            options.IsGlobalModeEnabled = false;
+
+            // The identifier indicating to which or on which platform / system the application is meant to run
+            options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
+                
+            // Version of the application ("OMC Web API" in this case)
+            options.Release = DefaultValues.ApiController.Version;
+            
+            // The environment of the application (Prod, Test, Dev, Staging, etc.)
+            options.Environment = isDebugEnabled ? "Development" : "Production";
+        }
+        #endregion
     }
 }

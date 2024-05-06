@@ -52,7 +52,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
         [JsonInclude]
         [JsonPropertyName("geslachtsaanduiding")]
         [JsonPropertyOrder(3)]
-        public string GenderCode { get; internal set; } = string.Empty;
+        public string GenderCode { get; internal set; } = string.Empty;  // TODO: Remove Gender Code in the future
 
         /// <inheritdoc cref="DistributionChannels"/>
         [JsonInclude]

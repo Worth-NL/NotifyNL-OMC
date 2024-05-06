@@ -288,9 +288,6 @@
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
     <value>The configuration does not contain a given value, or it is empty:</value>
   </data>
-  <data name="Logging_Client_Initialized" xml:space="preserve">
-    <value>The Http Client was initialized for organization:</value>
-  </data>
   <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
     <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
   </data>
@@ -308,11 +305,11 @@
   </data>
   <data name="Test_NotifyNL_ERROR_NotSupportedMethod" xml:space="preserve">
     <value>This notification method is not supported.</value>
-    <comment>API Endpoint: TestController/Notify/</comment>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>was successfully send to NotifyNL.</value>
-    <comment>API Endpoint: TestController/Notify/</comment>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>The notification was passed to NotifyNL API.</value>
@@ -324,5 +321,9 @@
   <data name="Feedback_NotifyNL_SUCCESS_NotificationStatus" xml:space="preserve">
     <value>The status of notification with ID</value>
     <comment>API Endpoint: Notify/Confirm</comment>
+  </data>
+  <data name="Events_ApiVersionRequested" xml:space="preserve">
+    <value>Version of the API was requested</value>
+    <comment>API Endpoint: Events/Version</comment>
   </data>
 </root>
