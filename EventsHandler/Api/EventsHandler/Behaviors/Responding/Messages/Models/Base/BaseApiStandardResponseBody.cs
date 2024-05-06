@@ -26,5 +26,11 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Base
             this.StatusCode = statusCode;
             this.StatusDescription = statusDescription;
         }
+
+        /// <inheritdoc cref="object.ToString()"/>
+        public override string ToString()
+        {
+            return $"Description: {StatusDescription}";
+        }
     }
 }

@@ -47,12 +47,11 @@ namespace EventsHandler.Controllers.Base
             string logMessage = objectResult.Value switch
             {
                 // Description with message
-                BaseEnhancedStandardResponseBody detailedResponseBody
-                    => $"{detailedResponseBody.StatusDescription} | {detailedResponseBody.Details.Message}",
+                BaseEnhancedStandardResponseBody enhancedResponse => enhancedResponse.ToString(),
+                BaseSimpleStandardResponseBody simpleResponse => simpleResponse.ToString(),
                 
                 // Only description
-                BaseApiStandardResponseBody shortResponseBody
-                    => shortResponseBody.StatusDescription,
+                BaseApiStandardResponseBody baseResponse => baseResponse.ToString(),
                 
                 // Unknown object result
                 _ => $"Not standardized API response | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
