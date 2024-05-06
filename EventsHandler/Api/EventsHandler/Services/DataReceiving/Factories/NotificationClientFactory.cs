@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Configuration;
-using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Decorator;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
@@ -13,22 +12,18 @@ namespace EventsHandler.Services.DataReceiving.Factories
     internal sealed class NotificationClientFactory : IHttpClientFactory<INotifyClient, string>
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly ILogger<NotificationClientFactory> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationClientFactory"/> class.
         /// </summary>
-        public NotificationClientFactory(WebApiConfiguration configuration, ILogger<NotificationClientFactory> logger)
+        public NotificationClientFactory(WebApiConfiguration configuration)
         {
             this._configuration = configuration;
-            this._logger = logger;
         }
 
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
-        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string organizationId)
+        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string _)
         {
-            this._logger.LogInformation($"{Resources.Logging_Client_Initialized} {organizationId}");
-
             return new NotifyClientDecorator(
                 new NotificationClient(
                     baseUrl: this._configuration.OMC.API.BaseUrl.NotifyNL(),  // The base URL to "Notify NL" API Service
