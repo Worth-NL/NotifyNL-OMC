@@ -31,6 +31,14 @@ namespace EventsHandler.Controllers.Base
         }
 
         /// <summary>
+        /// Logs the API response.
+        /// </summary>
+        protected void LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
+        {
+            _ = LogAndReturnApiResponse(logLevel, objectResult);
+        }
+
+        /// <summary>
         /// Logs and returns the API response.
         /// </summary>
         protected ObjectResult LogAndReturnApiResponse(LogLevel logLevel, ObjectResult objectResult)
@@ -61,14 +69,6 @@ namespace EventsHandler.Controllers.Base
         protected void LogApiResponse(LogLevel logLevel, string logMessage)
         {
             this._logger.Log(logLevel, $"OMC: {logMessage} | {DateTime.Now}");
-        }
-
-        /// <summary>
-        /// Logs the API response.
-        /// </summary>
-        protected void LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
-        {
-            _ = LogAndReturnApiResponse(logLevel, objectResult);
         }
     }
 }
