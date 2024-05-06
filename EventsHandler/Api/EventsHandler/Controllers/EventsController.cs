@@ -41,14 +41,11 @@ namespace EventsHandler.Controllers
         /// <param name="validator">The input validating service.</param>
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        /// <param name="logger">The logging service registering API events.</param>
         public EventsController(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
             IProcessingService<NotificationEvent> processor,
-            IRespondingService<NotificationEvent> responder,
-            ILogger<EventsController> logger)
-            : base(logger)
+            IRespondingService<NotificationEvent> responder)
         {
             this._serializer = serializer;
             this._validator = validator;
@@ -89,15 +86,16 @@ namespace EventsHandler.Controllers
                 return this._validator.Validate(ref notification) is HealthCheck.OK_Valid
                                                                   or HealthCheck.OK_Inconsistent
                     // Try to process received notification
-                    ? LogAndReturnApiResponse(LogLevel.Information,
+                    ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(await this._processor.ProcessAsync(notification), notification.Details))
+
                     // Notification cannot be processed
-                    : LogAndReturnApiResponse(LogLevel.Error,
+                    : LogApiResponse(LogLevel.Error,
                         this._responder.Get_Processing_Status_ActionResult(s_failedResult, notification.Details));
             }
             catch (Exception exception)
             {
-                return LogAndReturnApiResponse(LogLevel.Critical,
+                return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
         }
@@ -115,6 +113,8 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult Version()
         {
+            LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
+
             return Ok(DefaultValues.ApiController.Version);
         }
     }

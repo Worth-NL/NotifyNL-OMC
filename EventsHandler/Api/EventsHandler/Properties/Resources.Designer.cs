@@ -277,6 +277,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version of the API was requested.
+        /// </summary>
+        internal static string Events_ApiVersionRequested {
+            get {
+                return ResourceManager.GetString("Events_ApiVersionRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID.
         /// </summary>
         internal static string Feedback_NotifyNL_ERROR_UnexpectedFailure {
@@ -408,15 +417,6 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_Reason2 {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_Reason2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Http Client was initialized for organization:.
-        /// </summary>
-        internal static string Logging_Client_Initialized {
-            get {
-                return ResourceManager.GetString("Logging_Client_Initialized", resourceCulture);
             }
         }
         

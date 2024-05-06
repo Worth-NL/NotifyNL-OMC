@@ -37,13 +37,10 @@ namespace EventsHandler.Controllers
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        /// <param name="logger">The logging service registering API events.</param>
         public NotifyController(
             ISerializationService serializer,
             IRespondingService<ProcessingResult, string> responder,
-            ITelemetryService telemetry,
-            ILogger<NotifyController> logger)
-            : base(logger)
+            ITelemetryService telemetry)
         {
             this._serializer = serializer;
             this._responder = responder;
@@ -76,28 +73,28 @@ namespace EventsHandler.Controllers
                 // Deserialize received JSON payload
                 callback = this._serializer.Deserialize<DeliveryReceipt>(json);
 
-                if (callback.Status is not (DeliveryStatus.PermanentFailure or
-                                            DeliveryStatus.TemporaryFailure or
-                                            DeliveryStatus.TechnicalFailure))
-                {
-                    return LogAndReturnApiResponse(LogLevel.Information,
-                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)));
-                }
+                return callback.Status is not (DeliveryStatus.PermanentFailure or
+                                               DeliveryStatus.TemporaryFailure or
+                                               DeliveryStatus.TechnicalFailure)
+                    // Positive status was returned by Notify NL
+                    ? LogApiResponse(LogLevel.Information,
+                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)))
 
-                return LogAndReturnApiResponse(LogLevel.Error,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, callbackDetails = GetCallbackDetails(callback)));
+                    // Failure status was returned by Notify NL
+                    : LogApiResponse(LogLevel.Error,
+                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, callbackDetails = GetCallbackDetails(callback)));
             }
             catch (Exception exception)
             {
-                // NOTE: If callback.Id == Guid.Empty then to be suspected is exception during DeliveryReceipt deserialization
+                // NOTE: If callback.Id == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
                 callbackDetails = GetErrorDetails(callback, exception);
 
-                return LogAndReturnApiResponse(LogLevel.Critical,
+                return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
             finally
             {
-                await ReportAndLogStatusAsync(callback, callbackDetails);
+                await LogContactRegistrationAsync(callback, callbackDetails);
             }
         }
 
@@ -112,7 +109,7 @@ namespace EventsHandler.Controllers
             return $"{Resources.Feedback_NotifyNL_ERROR_UnexpectedFailure} {callback.Id}: {exception.Message}.";
         }
         
-        private async Task ReportAndLogStatusAsync(DeliveryReceipt callback, string callbackDetails)
+        private async Task LogContactRegistrationAsync(DeliveryReceipt callback, string callbackDetails)
         {
             if (callback.Reference != null)
             {
@@ -122,13 +119,14 @@ namespace EventsHandler.Controllers
 
                 try
                 {
-                    string result = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);
-
-                    LogApiResponse(LogLevel.Information, result);
+                    LogApiResponse(LogLevel.Information,
+                        await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails));
                 }
                 catch (Exception exception)
                 {
-                    LogApiResponse(LogLevel.Critical, this._responder.Get_Exception_ActionResult(exception));
+                    // It wasn't possible to report completion because of issue with Telemetry Service
+                    LogApiResponse(exception,
+                        this._responder.Get_Exception_ActionResult(exception));
                 }
             }
         }

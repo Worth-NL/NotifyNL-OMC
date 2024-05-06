@@ -166,21 +166,21 @@ namespace EventsHandler
 
             // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
             builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
-            
-            // Add logging using Sentry
+
+            // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
             {
                 if (builder.Environment.IsDevelopment())
                 {
+                    // More detailed (but spamming) settings for logs
                     options.ConfigureSentryOptions(SentryLevel.Debug, isDebugEnabled: true);
                 }
                 else
                 {
+                    // Less detailed but more meaningful and noisy settings for logs
                     options.ConfigureSentryOptions(SentryLevel.Info, isDebugEnabled: false);
                 }
             });
-
-            builder.Services.AddSentryTunneling();
 
             return builder;
         }
@@ -298,8 +298,7 @@ namespace EventsHandler
             
             app.MapControllers();  // Mapping actions from API controllers
 
-            app.UseSentryTunneling();
-            app.UseSentryTracing();  // Enable Sentry to trace issues per requests
+            app.UseSentryTracing();  // Enable Sentry to capture transactions
 
             return app;
         }
