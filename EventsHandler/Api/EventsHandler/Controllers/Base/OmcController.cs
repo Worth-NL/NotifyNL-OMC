@@ -22,23 +22,6 @@ namespace EventsHandler.Controllers.Base
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OmcController"/> class.
-        /// </summary>
-        /// <param name="logger">The generic logger to be used.</param>
-        protected OmcController(ILogger logger)
-        {
-            this._logger = logger;
-        }
-
-        /// <summary>
-        /// Logs the API response.
-        /// </summary>
-        protected void LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
-        {
-            _ = LogAndReturnApiResponse(logLevel, objectResult);
-        }
-
-        /// <summary>
         /// Logs and returns the API response.
         /// </summary>
         protected ObjectResult LogAndReturnApiResponse(LogLevel logLevel, ObjectResult objectResult)
@@ -65,6 +48,8 @@ namespace EventsHandler.Controllers.Base
         /// <summary>
         /// Logs the API response.
         /// </summary>
+        /// <param name="logLevel">The severity of the log.</param>
+        /// <param name="logMessage">The message to be logged.</param>
         protected void LogApiResponse(LogLevel logLevel, string logMessage)
         {
             this._logger.Log(logLevel, $"OMC: {logMessage} | {DateTime.Now}");
