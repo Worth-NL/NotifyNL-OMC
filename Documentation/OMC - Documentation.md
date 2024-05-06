@@ -1,6 +1,6 @@
 # OMC Documentation
 
-v.1.6.9
+v.1.7.0
 
 © 2024, Worth Systems.
 
