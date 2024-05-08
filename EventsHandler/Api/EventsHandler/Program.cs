@@ -59,23 +59,25 @@ namespace EventsHandler
         /// <summary>
         /// Custom simplified version of application configuration.
         /// </summary>
+        /// <param name="args">The <see cref="Program"/> startup arguments.</param>
         private static void Main(string[] args)
         {
-            ConfigureServices(args)       // 1. Add and configure different types of services used by this application
+            WebApplication.CreateBuilder(args)
+                .ConfigureServices()      // 1. Add and configure different types of services used by this application
                 .ConfigureHttpPipeline()  // 2. Configure pipeline what should happen during HTTP request-response cycle
                 .Run();                   // 3. Start the application
         }
 
+        #region Services: External (.NET)
         /// <summary>
         /// Adds services to the <see cref="IServiceCollection"/> container.
         /// </summary>
-        /// <param name="args">The <see cref="Program"/> startup arguments.</param>
         /// <returns>Configured <see cref="WebApplicationBuilder"/>.</returns>
-        private static WebApplicationBuilder ConfigureServices(string[] args)
+        private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
         {
-            return WebApplication.CreateBuilder(args)
-                .AddCustomServices()  // Our custom Web API services
-                .AddNetServices();    // Microsoft .NET services
+            return builder
+                .AddNetServices()      // Microsoft .NET services
+                .AddCustomServices();  // Our custom Web API services
         }
 
         /// <summary>
@@ -185,6 +187,43 @@ namespace EventsHandler
             return builder;
         }
 
+        #region Sentry configuration
+        /// <summary>
+        /// Configure logging options for Sentry.
+        /// <para>
+        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
+        /// </para>
+        /// </summary>
+        private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
+        {
+            // Sentry Data Source Name (DSN) => where to log application events
+            options.Dsn = "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632";
+
+            // Informational messages are the most detailed to log
+            options.DiagnosticLevel = diagnosticLevel;
+
+            // Detailed debugging logs in the console window
+            options.Debug = isDebugEnabled;
+
+            // Enables Sentry's "Release Health" feature
+            options.AutoSessionTracking = true;
+
+            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
+            options.IsGlobalModeEnabled = false;
+
+            // The identifier indicating to which or on which platform / system the application is meant to run
+            options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
+                
+            // Version of the application ("OMC Web API" in this case)
+            options.Release = DefaultValues.ApiController.Version;
+            
+            // The environment of the application (Prod, Test, Dev, Staging, etc.)
+            options.Environment = isDebugEnabled ? "Development" : "Production";
+        }
+        #endregion
+        #endregion
+
+        #region Services: Internal (OMC)
         /// <summary>
         /// Registration of custom services, used for business logic and internal processes.
         /// </summary>
@@ -274,7 +313,9 @@ namespace EventsHandler
             services.AddSingleton<IRespondingService<ProcessingResult, string>, NotifyResponder>();
         }
         #endregion
+        #endregion
 
+        #region HTTP Pipeline
         /// <summary>
         /// Configures the HTTP pipeline with middlewares.
         /// </summary>
@@ -301,40 +342,6 @@ namespace EventsHandler
             app.UseSentryTracing();  // Enable Sentry to capture transactions
 
             return app;
-        }
-
-        #region Sentry configuration
-        /// <summary>
-        /// Configure logging options for Sentry.
-        /// <para>
-        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
-        /// </para>
-        /// </summary>
-        private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
-        {
-            // Sentry Data Source Name (DSN) => where to log application events
-            options.Dsn = "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632";
-
-            // Informational messages are the most detailed to log
-            options.DiagnosticLevel = diagnosticLevel;
-
-            // Detailed debugging logs in the console window
-            options.Debug = isDebugEnabled;
-
-            // Enables Sentry's "Release Health" feature
-            options.AutoSessionTracking = true;
-
-            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
-            options.IsGlobalModeEnabled = false;
-
-            // The identifier indicating to which or on which platform / system the application is meant to run
-            options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
-                
-            // Version of the application ("OMC Web API" in this case)
-            options.Release = DefaultValues.ApiController.Version;
-            
-            // The environment of the application (Prod, Test, Dev, Staging, etc.)
-            options.Environment = isDebugEnabled ? "Development" : "Production";
         }
         #endregion
     }
