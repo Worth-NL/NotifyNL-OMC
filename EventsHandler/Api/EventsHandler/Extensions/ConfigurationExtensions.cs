@@ -22,7 +22,7 @@ namespace EventsHandler.Extensions
         ///   The value of <see cref="LogLevel"/>.
         /// </returns>
         internal static LogLevel GetApplicationInsightsLogLevel(this IConfiguration configuration)
-            => configuration.GetValue<LogLevel>("Logging:ApplicationInsights:LogLevel:Default");
+            => configuration.GetValue<LogLevel>("Logging:LogLevel:Default");
 
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
             => configuration.GetValue<bool>("Encryption:IsAsymmetric");
