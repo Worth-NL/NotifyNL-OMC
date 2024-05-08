@@ -88,7 +88,7 @@ namespace EventsHandler.Controllers
                         (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
                         
                         return LogApiResponse(GetLogLevel(result.Status),
-                            this._responder.Get_Processing_Status_ActionResult(result, notification.Details));
+                            this._responder.Get_Processing_Status_ActionResult(GetResult(result, json), notification.Details));
                     })
 
                     // Notification cannot be processed
@@ -132,9 +132,19 @@ namespace EventsHandler.Controllers
             };
         }
 
+        private static (ProcessingResult, string) GetResult((ProcessingResult Status, string Description) result, object json)
+        {
+            return (result.Status, EnrichDescription(result.Description, json));
+        }
+
         private static (ProcessingResult, string) GetFailedResult(object json)
         {
-            return (ProcessingResult.Failure, $"{Resources.Processing_ERROR_Scenario_NotificationNotSent} | Notification: {json}");
+            return (ProcessingResult.Failure, EnrichDescription(Resources.Processing_ERROR_Scenario_NotificationNotSent, json));
+        }
+
+        private static string EnrichDescription(string originalText, object json)
+        {
+            return $"{originalText} | Notification: {json}";
         }
         #endregion
     }
