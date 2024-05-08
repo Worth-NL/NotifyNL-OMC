@@ -119,7 +119,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<UnprocessableEntityObjectResult, ProcessingFailed.Detailed>(
                 actualResult,
                 HttpStatusCode.UnprocessableEntity,
-                Resources.Processing_ERROR_Scenario_NotificationNotSent,
+                Resources.Processing_ERROR_Scenario_NotificationNotSent + AddNotificationDetails(s_testJson),
                 Resources.Operation_RESULT_Deserialization_Failure);
         }
 
@@ -147,7 +147,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<ObjectResult, ProcessingSucceeded>(
                 actualResult,
                 HttpStatusCode.Accepted,
-                Resources.Processing_SUCCESS_Scenario_NotificationSent,
+                Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
                 Resources.Operation_RESULT_Deserialization_Partial);
         }
 
@@ -175,7 +175,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<ObjectResult, ProcessingSucceeded>(
                 actualResult,
                 HttpStatusCode.Accepted,
-                Resources.Processing_SUCCESS_Scenario_NotificationSent,
+                Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
                 Resources.Operation_RESULT_Deserialization_Success);
         }
         #endregion
@@ -238,6 +238,11 @@ namespace EventsHandler.IntegrationTests.Controllers
                         $"But was: {castResult.Value!.GetType()}");
                 }
             });
+        }
+
+        private static string AddNotificationDetails(object json)
+        {
+            return $" | Notification: {json}";
         }
         #endregion
     }
