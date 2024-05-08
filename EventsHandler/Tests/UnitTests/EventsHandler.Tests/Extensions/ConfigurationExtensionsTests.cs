@@ -29,7 +29,7 @@ namespace EventsHandler.UnitTests.Extensions
             LogLevel actualValue = this._configuration!.GetApplicationInsightsLogLevel();
 
             // Assert
-            Assert.That(actualValue, Is.EqualTo(LogLevel.Trace));
+            Assert.That(actualValue, Is.EqualTo(LogLevel.Debug));
         }
 
         [Test]
