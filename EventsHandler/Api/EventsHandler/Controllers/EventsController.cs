@@ -31,9 +31,6 @@ namespace EventsHandler.Controllers
         private readonly IProcessingService<NotificationEvent> _processor;
         private readonly IRespondingService<NotificationEvent> _responder;
 
-        private static readonly (ProcessingResult, string) s_failedResult =
-            (ProcessingResult.Failure, Resources.Processing_ERROR_Scenario_NotificationNotSent);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
         /// </summary>
@@ -86,12 +83,17 @@ namespace EventsHandler.Controllers
                 return this._validator.Validate(ref notification) is HealthCheck.OK_Valid
                                                                   or HealthCheck.OK_Inconsistent
                     // Try to process received notification
-                    ? LogApiResponse(LogLevel.Information,
-                        this._responder.Get_Processing_Status_ActionResult(await this._processor.ProcessAsync(notification), notification.Details))
+                    ? await Task.Run<IActionResult>(async () =>
+                    {
+                        (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
+                        
+                        return LogApiResponse(GetLogLevel(result.Status),
+                            this._responder.Get_Processing_Status_ActionResult(result, notification.Details));
+                    })
 
                     // Notification cannot be processed
                     : LogApiResponse(LogLevel.Error,
-                        this._responder.Get_Processing_Status_ActionResult(s_failedResult, notification.Details));
+                        this._responder.Get_Processing_Status_ActionResult(GetFailedResult(json), notification.Details));
             }
             catch (Exception exception)
             {
@@ -117,5 +119,23 @@ namespace EventsHandler.Controllers
 
             return Ok(DefaultValues.ApiController.Version);
         }
+
+        #region Helper methods
+        private static LogLevel GetLogLevel(ProcessingResult result)
+        {
+            return result switch
+            {
+                ProcessingResult.Success => LogLevel.Information,
+                ProcessingResult.Skipped => LogLevel.Warning,
+                ProcessingResult.Failure => LogLevel.Error,
+                _                        => LogLevel.None
+            };
+        }
+
+        private static (ProcessingResult, string) GetFailedResult(object json)
+        {
+            return (ProcessingResult.Failure, $"{Resources.Processing_ERROR_Scenario_NotificationNotSent} | Notification: {json}");
+        }
+        #endregion
     }
 }
