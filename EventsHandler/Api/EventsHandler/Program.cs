@@ -197,7 +197,7 @@ namespace EventsHandler
         private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
-            options.Dsn = "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632";
+            // Taken from "SENTRY_DSN" environment variable
 
             // Informational messages are the most detailed to log
             options.DiagnosticLevel = diagnosticLevel;
