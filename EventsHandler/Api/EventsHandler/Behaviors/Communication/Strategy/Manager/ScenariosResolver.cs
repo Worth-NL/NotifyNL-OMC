@@ -27,10 +27,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
         /// <inheritdoc cref="IScenariosResolver.DetermineScenarioAsync(NotificationEvent)"/>
         async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
         {
-            // Scenarios for Cases
-            if (notification.Action == Actions.Create &&
-                notification.Channel == Channels.Cases &&
-                notification.Resource == Resources.Status)
+            // Supported scenarios for business cases
+            if (CanProcess(notification))
             {
                 CaseStatuses caseStatuses = await this._dataQuery.From(notification).GetCaseStatusesAsync();
 
@@ -54,8 +52,21 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 return strategy;
             }
 
-            // There is no matching scenario to be applied
+            // There is no matching scenario to be applied. There is no clear instruction what to do with received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
+        }
+
+        /// <summary>
+        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
+        /// </summary>
+        private static bool CanProcess(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action:   Actions.Create,
+                Channel:  Channels.Cases,
+                Resource: Resources.Status
+            };
         }
     }
 }
