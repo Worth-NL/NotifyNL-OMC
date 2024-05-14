@@ -61,6 +61,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OMC.
+        /// </summary>
+        internal static string Application_Name {
+            get {
+                return ResourceManager.GetString("Application_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In the configuration use only domain (without endpoint):.
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
@@ -111,6 +120,33 @@ namespace EventsHandler.Properties {
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The given value cannot be deserialized into dedicated target object.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Target {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Value {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Value", resourceCulture);
             }
         }
         
@@ -385,6 +421,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The case does not contain any statuses.
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoLastStatus {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoLastStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Main Object could not be retrieved from OpenZaak Web service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMainObject {
@@ -565,6 +610,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not standardized (unexpected) API response.
+        /// </summary>
+        internal static string Processing_ERROR_UnspecifiedResponse {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification has been successfully processed and sent to Notify NL..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_NotificationSent {
@@ -592,7 +646,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application handling the workflow between multiple Notify NL components..
+        ///   Looks up a localized string similar to API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL..
         /// </summary>
         internal static string Swagger_Description {
             get {
@@ -601,7 +655,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Notify NL - Events Handler.
+        ///   Looks up a localized string similar to OMC (Output Management Component).
         /// </summary>
         internal static string Swagger_Title {
             get {

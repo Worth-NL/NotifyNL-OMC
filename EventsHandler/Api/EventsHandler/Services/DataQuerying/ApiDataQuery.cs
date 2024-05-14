@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
@@ -73,8 +74,7 @@ namespace EventsHandler.Services.DataQuerying
 
                 (bool isSuccess, string jsonResult) = await this._httpSupplier.GetAsync(httpsClientType, organizationId, uri);
 
-                return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
-                                 : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
+                return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
             }
 
             /// <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
@@ -86,6 +86,12 @@ namespace EventsHandler.Services.DataQuerying
 
                 (bool isSuccess, string jsonResult) = await this._httpSupplier.PostAsync(httpsClientType, organizationId, uri, body);
 
+                return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
+            }
+
+            private TModel GetApiResult<TModel>(bool isSuccess, string jsonResult, Uri uri, string fallbackErrorMessage)
+                where TModel : struct, IJsonSerializable
+            {
                 return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
                                  : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
             }
