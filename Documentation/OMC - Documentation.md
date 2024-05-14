@@ -59,7 +59,7 @@ In `launchSettings.json` file, remember to always have these lines incuded in th
 - And run the following **docker** command:
 > docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
 >
-> NOTE: `omc` is just name of your docker image and it can be anything you want
+> NOTE: `omc` is just name of your **docker image** and it can be anything you want
 
 The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
 `ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
