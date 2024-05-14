@@ -394,6 +394,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The case does not contain any statuses.
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoLastStatus {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoLastStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Main Object could not be retrieved from OpenZaak Web service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMainObject {
