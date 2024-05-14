@@ -332,6 +332,15 @@
   <data name="Application_Name" xml:space="preserve">
     <value>OMC</value>
   </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
+    <value>The given value cannot be deserialized into dedicated target object</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
     <value>HTTP Request: The case does not contain any statuses</value>
   </data>
