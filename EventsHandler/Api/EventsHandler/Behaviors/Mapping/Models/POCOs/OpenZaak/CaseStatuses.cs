@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Properties;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
@@ -45,7 +46,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         {
             // NOTE: The statuses are ordered in reversed order (first item is the newest one)
             return this.Count > 0 ? this.Results[0]    // The very latest status
-                                  : new CaseStatus();
+                                  : throw new HttpRequestException(Resources.HttpRequest_ERROR_NoLastStatus);
         }
     }
 }

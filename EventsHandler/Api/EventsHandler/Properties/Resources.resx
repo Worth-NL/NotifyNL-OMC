@@ -253,23 +253,25 @@
   </data>
   <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine what to do with the received notification.</value>
+    <comment>HTTP Status Code = 206</comment>
   </data>
   <data name="Processing_ERROR_Telemetry_CompletionNotSent" xml:space="preserve">
     <value>The notification was sent but the completion status could not be delivered to the external telemetry API endpoint.</value>
   </data>
   <data name="Processing_SUCCESS_Scenario_NotificationSent" xml:space="preserve">
     <value>The notification has been successfully processed and sent to Notify NL.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Swagger_Authentication_Description" xml:space="preserve">
     <value>Insert received JWT token here</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Description" xml:space="preserve">
-    <value>Application handling the workflow between multiple Notify NL components.</value>
+    <value>API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL.</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Title" xml:space="preserve">
-    <value>Notify NL - Events Handler</value>
+    <value>OMC (Output Management Component)</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Version" xml:space="preserve">
@@ -313,6 +315,7 @@
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>The notification was passed to NotifyNL API.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
     <value>An unexpected error occurred during processing the notification with ID</value>
@@ -325,5 +328,23 @@
   <data name="Events_ApiVersionRequested" xml:space="preserve">
     <value>Version of the API was requested</value>
     <comment>API Endpoint: Events/Version</comment>
+  </data>
+  <data name="Application_Name" xml:space="preserve">
+    <value>OMC</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
+    <value>The given value cannot be deserialized into dedicated target object</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
+    <value>HTTP Request: The case does not contain any statuses</value>
+  </data>
+  <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
+    <value>Not standardized (unexpected) API response</value>
   </data>
 </root>
