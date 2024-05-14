@@ -267,11 +267,11 @@
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Description" xml:space="preserve">
-    <value>Application handling the workflow between multiple Notify NL components.</value>
+    <value>API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL.</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Title" xml:space="preserve">
-    <value>Notify NL - Events Handler</value>
+    <value>OMC (Output Management Component)</value>
     <comment>Swagger UI</comment>
   </data>
   <data name="Swagger_Version" xml:space="preserve">
