@@ -326,4 +326,7 @@
     <value>Version of the API was requested</value>
     <comment>API Endpoint: Events/Version</comment>
   </data>
+  <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
+    <value>Not standardized (unexpected) API response</value>
+  </data>
 </root>
