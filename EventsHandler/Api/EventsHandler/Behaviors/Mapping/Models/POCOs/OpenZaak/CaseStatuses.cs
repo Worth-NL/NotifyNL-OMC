@@ -42,6 +42,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// Gets the newest <see cref="CaseStatus"/> from multiple ones.
         /// </summary>
+        /// <exception cref="HttpRequestException"/>
         internal readonly CaseStatus LastStatus()
         {
             // NOTE: The statuses are ordered in reversed order (first item is the newest one)
