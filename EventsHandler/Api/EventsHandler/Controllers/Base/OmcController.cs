@@ -3,6 +3,7 @@
 using Asp.Versioning;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Constants;
+using EventsHandler.Properties;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base
@@ -60,18 +61,18 @@ namespace EventsHandler.Controllers.Base
         #region Sentry logging
         private static readonly Dictionary<LogLevel, SentryLevel> s_logMapping = new()
         {
-            { LogLevel.Trace,       SentryLevel.Debug },
-            { LogLevel.Debug,       SentryLevel.Debug },
-            { LogLevel.Information, SentryLevel.Info },
+            { LogLevel.Trace,       SentryLevel.Debug   },
+            { LogLevel.Debug,       SentryLevel.Debug   },
+            { LogLevel.Information, SentryLevel.Info    },
             { LogLevel.Warning,     SentryLevel.Warning },
-            { LogLevel.Error,       SentryLevel.Error },
-            { LogLevel.Critical,    SentryLevel.Fatal }
+            { LogLevel.Error,       SentryLevel.Error   },
+            { LogLevel.Critical,    SentryLevel.Fatal   }
         };
 
         /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
         private static void LogMessage(LogLevel logLevel, string logMessage)
         {
-            _ = SentrySdk.CaptureMessage($"OMC | {logLevel:G} | {logMessage}", s_logMapping[logLevel]);
+            _ = SentrySdk.CaptureMessage($"{Resources.Application_Name} | {logLevel:G} | {logMessage}", s_logMapping[logLevel]);
         }
 
         /// <inheritdoc cref="SentrySdk.CaptureException(Exception)"/>
@@ -97,7 +98,7 @@ namespace EventsHandler.Controllers.Base
                 BaseApiStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
-                _ => $"Not standardized API response | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
+                _ => $"{Resources.Processing_ERROR_UnspecifiedResponse} | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
             };
         }
         #endregion
