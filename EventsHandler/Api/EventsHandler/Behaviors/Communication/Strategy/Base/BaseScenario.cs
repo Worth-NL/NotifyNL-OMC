@@ -121,7 +121,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         #endregion
 
         #region Abstract
-
         /// <summary>
         /// Gets the SMS template ID for this strategy.
         /// </summary>
