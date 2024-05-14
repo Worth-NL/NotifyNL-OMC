@@ -48,6 +48,27 @@ In `launchSettings.json` file, remember to always have these lines incuded in th
 
 ![Invalid base URL - Error](images/swagger_ui_launch_settings.png)
 
+## 1.2. Docker
+
+- After cloning **OMC** Git repository:
+> git@github.com:Worth-NL/NotifyNL-OMC.git
+
+- Go to the root catalog:
+> .../NotifyNL-OMC
+
+- And run the following **docker** command:
+> docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
+>
+> NOTE: `omc` is just name of your docker image and it can be anything you want
+
+The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
+`ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
+
+![Docker - Failed to compute cache key](images/docker_error_failed_to_compute_cache_key.png)
+
+- From this moment follow the **HELM Chart** documentation to set up _environment variables_
+in order to run an already created **docker container**.
+ 
 ---
 # 2. Architecture
 
