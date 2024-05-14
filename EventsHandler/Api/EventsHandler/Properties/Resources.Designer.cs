@@ -610,7 +610,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application handling the workflow between multiple Notify NL components..
+        ///   Looks up a localized string similar to API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL..
         /// </summary>
         internal static string Swagger_Description {
             get {
@@ -619,7 +619,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Notify NL - Events Handler.
+        ///   Looks up a localized string similar to OMC (Output Management Component).
         /// </summary>
         internal static string Swagger_Title {
             get {
