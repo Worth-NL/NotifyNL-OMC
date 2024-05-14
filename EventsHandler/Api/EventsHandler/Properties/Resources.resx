@@ -253,12 +253,14 @@
   </data>
   <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine what to do with the received notification.</value>
+    <comment>HTTP Status Code = 206</comment>
   </data>
   <data name="Processing_ERROR_Telemetry_CompletionNotSent" xml:space="preserve">
     <value>The notification was sent but the completion status could not be delivered to the external telemetry API endpoint.</value>
   </data>
   <data name="Processing_SUCCESS_Scenario_NotificationSent" xml:space="preserve">
     <value>The notification has been successfully processed and sent to Notify NL.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Swagger_Authentication_Description" xml:space="preserve">
     <value>Insert received JWT token here</value>
@@ -313,6 +315,7 @@
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>The notification was passed to NotifyNL API.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
     <value>An unexpected error occurred during processing the notification with ID</value>
