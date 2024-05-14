@@ -61,6 +61,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OMC.
+        /// </summary>
+        internal static string Application_Name {
+            get {
+                return ResourceManager.GetString("Application_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In the configuration use only domain (without endpoint):.
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
