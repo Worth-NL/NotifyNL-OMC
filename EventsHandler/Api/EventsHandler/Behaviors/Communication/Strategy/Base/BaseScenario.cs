@@ -142,7 +142,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the e-mail template ID for this strategy.
         /// </summary>
         /// <returns>
-        ///   The template ID from "Notify NL" Web service in format "00000000-0000-0000-0000-00000000".
+        ///   The template ID from "Notify NL" Web service in format "00000000-0000-0000-0000-00000000" (UUID).
         /// </returns>
         protected abstract string GetEmailTemplateId();
 
