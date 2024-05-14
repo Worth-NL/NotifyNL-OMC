@@ -565,6 +565,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not standardized (unexpected) API response.
+        /// </summary>
+        internal static string Processing_ERROR_UnspecifiedResponse {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification has been successfully processed and sent to Notify NL..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_NotificationSent {

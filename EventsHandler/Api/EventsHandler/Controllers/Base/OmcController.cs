@@ -3,6 +3,7 @@
 using Asp.Versioning;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Constants;
+using EventsHandler.Properties;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base
@@ -97,7 +98,7 @@ namespace EventsHandler.Controllers.Base
                 BaseApiStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
-                _ => $"Not standardized API response | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
+                _ => $"{Resources.Processing_ERROR_UnspecifiedResponse} | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
             };
         }
         #endregion
