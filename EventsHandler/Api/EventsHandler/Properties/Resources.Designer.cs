@@ -124,6 +124,33 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The given value cannot be deserialized into dedicated target object.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Target {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Value {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The JSON payload is invalid..
         /// </summary>
         internal static string Deserialization_ERROR_InvalidJson_Message {
