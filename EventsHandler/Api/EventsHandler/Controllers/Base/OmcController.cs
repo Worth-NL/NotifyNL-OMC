@@ -60,12 +60,12 @@ namespace EventsHandler.Controllers.Base
         #region Sentry logging
         private static readonly Dictionary<LogLevel, SentryLevel> s_logMapping = new()
         {
-            { LogLevel.Trace,       SentryLevel.Debug },
-            { LogLevel.Debug,       SentryLevel.Debug },
-            { LogLevel.Information, SentryLevel.Info },
+            { LogLevel.Trace,       SentryLevel.Debug   },
+            { LogLevel.Debug,       SentryLevel.Debug   },
+            { LogLevel.Information, SentryLevel.Info    },
             { LogLevel.Warning,     SentryLevel.Warning },
-            { LogLevel.Error,       SentryLevel.Error },
-            { LogLevel.Critical,    SentryLevel.Fatal }
+            { LogLevel.Error,       SentryLevel.Error   },
+            { LogLevel.Critical,    SentryLevel.Fatal   }
         };
 
         /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
