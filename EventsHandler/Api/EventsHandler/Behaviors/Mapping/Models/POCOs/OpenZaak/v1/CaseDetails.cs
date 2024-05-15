@@ -1,13 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Text.Json.Serialization;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Constants;
-using System.Text.Json.Serialization;
 
-namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
+namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// The details of the case retrieved from "OpenZaak" Web service.
+    /// The details of the case retrieved from "OpenZaak" (1.0) Web service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseDetails : IJsonSerializable
@@ -17,7 +17,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(0)]
         public Uri CaseType { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
