@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Configuration;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
