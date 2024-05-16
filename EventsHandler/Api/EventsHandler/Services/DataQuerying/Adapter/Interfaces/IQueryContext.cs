@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {

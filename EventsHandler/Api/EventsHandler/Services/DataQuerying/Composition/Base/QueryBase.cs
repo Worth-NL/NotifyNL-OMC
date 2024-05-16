@@ -3,12 +3,12 @@
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Extensions;
-using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 
-namespace EventsHandler.Services.DataQuerying.Strategy.Base
+namespace EventsHandler.Services.DataQuerying.Composition.Base
 {
     /// <inheritdoc cref="IQueryBase"/>
     internal sealed class QueryBase : IQueryBase
