@@ -26,7 +26,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
         NotificationEvent IQueryContext.Notification { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiDataQuery"/> nested class.
+        /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
         public QueryContext(
             WebApiConfiguration configuration,

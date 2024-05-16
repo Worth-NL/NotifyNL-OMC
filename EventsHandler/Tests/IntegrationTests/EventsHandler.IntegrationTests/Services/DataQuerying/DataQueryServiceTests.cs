@@ -7,6 +7,7 @@ using EventsHandler.Configuration;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
@@ -16,12 +17,11 @@ using Microsoft.Extensions.Configuration;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Text.Json;
-using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 
 namespace EventsHandler.IntegrationTests.Services.DataQuerying
 {
     [TestFixture]
-    public sealed class ApiDataQueryTests
+    public sealed class DataQueryServiceTests
     {
         private IDataQueryService<NotificationEvent>? _dataQuery;
         private NotificationEvent _notification;
@@ -41,7 +41,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);
 
             // Larger services
-            this._dataQuery = new ApiDataQuery(queryContext, supplier);
+            this._dataQuery = new DataQueryService(queryContext, supplier);
 
             // Notification
             this._notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated();

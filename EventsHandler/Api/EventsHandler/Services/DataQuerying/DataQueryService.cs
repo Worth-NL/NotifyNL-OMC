@@ -8,7 +8,7 @@ using EventsHandler.Services.DataReceiving.Interfaces;
 namespace EventsHandler.Services.DataQuerying
 {
     /// <inheritdoc cref="IDataQueryService{TModel}"/>
-    internal sealed class ApiDataQuery : IDataQueryService<NotificationEvent>
+    internal sealed class DataQueryService : IDataQueryService<NotificationEvent>
     {
         private readonly IQueryContext _queryContext;
 
@@ -16,9 +16,9 @@ namespace EventsHandler.Services.DataQuerying
         public IHttpSupplierService HttpSupplier { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiDataQuery"/> class.
+        /// Initializes a new instance of the <see cref="DataQueryService"/> class.
         /// </summary>
-        public ApiDataQuery(IQueryContext queryContext, IHttpSupplierService httpSupplier)
+        public DataQueryService(IQueryContext queryContext, IHttpSupplierService httpSupplier)
         {
             this._queryContext = queryContext;
 
