@@ -4,7 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataReceiving.Enums;
 
-namespace EventsHandler.Services.DataQuerying.Strategy.Interfaces
+namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
 {
     /// <summary>
     /// Common HTTP methods to be used for requesting data from external services.
