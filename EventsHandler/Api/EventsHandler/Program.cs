@@ -20,6 +20,7 @@ using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataQuerying.Strategy.Base;
 using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
