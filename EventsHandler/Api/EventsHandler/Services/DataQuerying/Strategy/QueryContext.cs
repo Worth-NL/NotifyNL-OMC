@@ -1,7 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
@@ -9,8 +7,6 @@ using EventsHandler.Configuration;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Strategy
@@ -19,57 +15,20 @@ namespace EventsHandler.Services.DataQuerying.Strategy
     internal sealed class QueryContext : IQueryContext
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly ISerializationService _serializer;
-        private readonly IHttpSupplierService _httpSupplier;
 
-        /// <inheritdoc cref="IQueryContext.Notification"/>
-        NotificationEvent IQueryContext.Notification { get; set; }
+        /// <inheritdoc cref="IQueryContext.QueryBase"/>
+        IQueryBase IQueryContext.QueryBase { get; set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(
-            WebApiConfiguration configuration,
-            ISerializationService serializer,
-            IHttpSupplierService httpSupplier)
+        public QueryContext(WebApiConfiguration configuration, IQueryBase queryBase)
         {
             this._configuration = configuration;
-            this._serializer = serializer;
-            this._httpSupplier = httpSupplier;
+
+            // Composition
+            ((IQueryContext)this).QueryBase = queryBase;
         }
-
-        #region General HTTP methods
-        /// <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
-        async Task<TModel> IQueryContext.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
-        {
-            string organizationId = ((IQueryContext)this).Notification.GetOrganizationId();
-
-            (bool isSuccess, string jsonResult) = await this._httpSupplier.GetAsync(httpsClientType, organizationId, uri);
-
-            return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
-        }
-
-        /// <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
-        async Task<TModel> IQueryContext.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
-        {
-            string organizationId = ((IQueryContext)this).Notification.GetOrganizationId();
-
-            (bool isSuccess, string jsonResult) = await this._httpSupplier.PostAsync(httpsClientType, organizationId, uri, body);
-
-            return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
-        }
-
-        private TModel GetApiResult<TModel>(bool isSuccess, string jsonResult, Uri uri, string fallbackErrorMessage)
-            where TModel : struct, IJsonSerializable
-        {
-            return isSuccess ? this._serializer.Deserialize<TModel>(jsonResult)
-                             : throw new HttpRequestException($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}");
-        }
-        #endregion
 
         #region Internal query methods
         /// <inheritdoc cref="IQueryContext.GetCaseAsync()"/>
@@ -77,7 +36,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
         /// <exception cref="HttpRequestException"/>
         async Task<Case> IQueryContext.GetCaseAsync()
         {
-            return await ((IQueryContext)this).ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCitizenDetailsAsync()"/>
@@ -104,7 +63,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
                 citizenByBsnUri = new Uri(citizensEndpoint);                    // TODO: To be finished
             }
 
-            return await ((IQueryContext)this).ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
@@ -116,9 +75,9 @@ namespace EventsHandler.Services.DataQuerying.Strategy
             string statusesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/statussen";
 
             // Request URL
-            Uri caseStatuses = new($"{statusesEndpoint}?zaak={((IQueryContext)this).Notification.MainObject}");
+            Uri caseStatuses = new($"{statusesEndpoint}?zaak={((IQueryContext)this).QueryBase.Notification.MainObject}");
 
-            return await ((IQueryContext)this).ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
         
         /// <inheritdoc cref="IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses)"/>
@@ -129,7 +88,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
-            return await ((IQueryContext)this).ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
         #endregion
 
@@ -139,7 +98,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
         /// </summary>
         private async Task<Uri> GetCaseTypeAsync()
         {
-            return ((IQueryContext)this).Notification.Attributes.CaseType ?? (await GetCaseDetailsAsync()).CaseType;
+            return ((IQueryContext)this).QueryBase.Notification.Attributes.CaseType ?? (await GetCaseDetailsAsync()).CaseType;
         }
 
         /// <summary>
@@ -147,7 +106,7 @@ namespace EventsHandler.Services.DataQuerying.Strategy
         /// </summary>
         private async Task<CaseDetails> GetCaseDetailsAsync()
         {
-            return await ((IQueryContext)this).ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, ((IQueryContext)this).Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, ((IQueryContext)this).QueryBase.Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
         }
 
         /// <summary>
@@ -165,9 +124,9 @@ namespace EventsHandler.Services.DataQuerying.Strategy
             const string roleType = "natuurlijk_persoon";
 
             // Request URL
-            Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={((IQueryContext)this).Notification.MainObject}&betrokkeneType={roleType}");
+            Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={((IQueryContext)this).QueryBase.Notification.MainObject}&betrokkeneType={roleType}");
 
-            return await ((IQueryContext)this).ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
+            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
         }
         #endregion
 

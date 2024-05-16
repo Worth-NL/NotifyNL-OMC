@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataQuerying
         IQueryContext IDataQueryService<NotificationEvent>.From(NotificationEvent notification)
         {
             // Update only the current notification in cached builder
-            this._queryContext.Notification = notification;
+            this._queryContext.QueryBase.Notification = notification;
 
             return this._queryContext;
         }
