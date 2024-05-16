@@ -246,7 +246,7 @@ namespace EventsHandler
             builder.Services.RegisterNotifyStrategies();
 
             // Queries and HTTP resources
-            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
+            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();  // TODO: ???
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
