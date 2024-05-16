@@ -20,6 +20,7 @@ using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategy;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
@@ -47,7 +48,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
-using QueryContext = EventsHandler.Services.DataQuerying.ApiDataQuery.QueryContext;
+using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 
 namespace EventsHandler
 {
@@ -246,7 +247,7 @@ namespace EventsHandler
 
             // Queries and HTTP resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
-            builder.Services.AddSingleton<IQueryContext, QueryContext>();
+            builder.Services.AddSingleton<IQueryContext, QueryContext>();  // TODO: ???
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
 

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Text.Json;
+using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 
 namespace EventsHandler.IntegrationTests.Services.DataQuerying
 {
