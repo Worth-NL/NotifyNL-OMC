@@ -85,7 +85,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
 
             // TODO: Finish unit testing by introducing IQueryContext interface first
             //this._mockedDataQuery?.Setup(mock => mock.From(testNotification))
-            //    .Returns(new Mock<ApiDataQuery.QueryContext>());
+            //    .Returns(new Mock<DataQueryService.QueryContext>());
 
             // Act
             INotifyScenario actualResult = await this._scenariosResolver!.DetermineScenarioAsync(testNotification);
