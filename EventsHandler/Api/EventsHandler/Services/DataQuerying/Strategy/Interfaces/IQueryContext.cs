@@ -6,7 +6,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataReceiving.Enums;
 
-namespace EventsHandler.Services.DataQuerying.Interfaces
+namespace EventsHandler.Services.DataQuerying.Strategy.Interfaces
 {
     /// <summary>
     /// The nested query context (following loosely Builder pattern) operating on <see cref="NotificationEvent"/>.
