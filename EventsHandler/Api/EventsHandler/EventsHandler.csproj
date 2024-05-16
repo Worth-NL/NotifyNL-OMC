@@ -70,5 +70,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\DataQuerying\Adapter\Interfaces\" />
+  </ItemGroup>
   
 </Project>
