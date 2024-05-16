@@ -133,9 +133,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         #region Helper methods
         /// <summary>
-        /// Gets the domain part of the organization-specific (municipality) "OpenZaak" URI.
+        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web service URI.
         /// <para>
-        ///   <code>http(s):// [DOMAIN] /ApiEndpoint</code>
+        ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
         /// </para>
         /// </summary>
         private string GetSpecificOpenZaakDomain() => this._configuration.User.Domain.OpenZaak();
