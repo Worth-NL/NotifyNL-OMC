@@ -41,23 +41,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
         [JsonPropertyOrder(2)]
         public string Surname { get; internal set; } = string.Empty;
 
-        /// <summary>
-        /// The gender code.
-        /// <para>
-        ///   <example>
-        ///     [M] - mannenlijk, [V] - vrouw, more non-binary options could be also possible.
-        ///   </example>
-        /// </para>
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("geslachtsaanduiding")]
-        [JsonPropertyOrder(3)]
-        public string GenderCode { get; internal set; } = string.Empty;  // TODO: Remove Gender Code in the future
-
         /// <inheritdoc cref="DistributionChannels"/>
         [JsonInclude]
         [JsonPropertyName("aanmaakkanaal")]
-        [JsonPropertyOrder(4)]
+        [JsonPropertyOrder(3)]
         public DistributionChannels DistributionChannel { get; internal set; }
 
         /// <summary>
@@ -65,7 +52,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("telefoonnummer")]
-        [JsonPropertyOrder(5)]
+        [JsonPropertyOrder(4)]
         public string TelephoneNumber { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -73,7 +60,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("emailadres")]
-        [JsonPropertyOrder(6)]
+        [JsonPropertyOrder(5)]
         public string EmailAddress { get; internal set; } = string.Empty;
 
         /// <summary>
