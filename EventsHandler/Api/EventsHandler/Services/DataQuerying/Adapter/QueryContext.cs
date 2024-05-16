@@ -1,12 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Configuration;
-using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using Resources = EventsHandler.Properties.Resources;
 
@@ -17,19 +18,50 @@ namespace EventsHandler.Services.DataQuerying.Adapter
     {
         private readonly WebApiConfiguration _configuration;
 
-        /// <inheritdoc cref="IQueryContext.QueryBase"/>
-        IQueryBase IQueryContext.QueryBase { get; set; } = null!;
+        private readonly IQueryBase _queryBase;
+        private readonly IQueryKlant _queryKlant;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(WebApiConfiguration configuration, IQueryBase queryBase)
+        public QueryContext(WebApiConfiguration configuration, IQueryBase queryBase, IQueryKlant queryKlant)
         {
             this._configuration = configuration;
 
             // Composition
-            ((IQueryContext)this).QueryBase = queryBase;
+            this._queryBase = queryBase;
+            this._queryKlant = queryKlant;
         }
+
+        #region IQueryBase
+        /// <inheritdoc cref="IQueryContext.SetNotification(NotificationEvent)"/>
+        void IQueryContext.SetNotification(NotificationEvent notification)
+        {
+            this._queryBase.Notification = notification;
+        }
+
+        /// <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
+        async Task<TModel> IQueryContext.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
+        {
+            return await this._queryBase.ProcessPostAsync<TModel>(httpsClientType, uri, body, fallbackErrorMessage);
+        }
+        #endregion
+
+        #region IQueryKlant
+        /// <inheritdoc cref="IQueryContext.GetCitizenDetailsAsync()"/>
+        async Task<CitizenDetails> IQueryContext.GetCitizenDetailsAsync()
+        {
+            // 1. Fetch BSN using "OpenZaak"
+            string bsnNumber = await GetBsnNumberAsync();
+
+            // 2. Fetch Citizen Details using "OpenKlant"
+            return await this._queryKlant.GetCitizenDetailsAsync(this._queryBase, bsnNumber);
+        }
+        #endregion
+
+
+
+
 
         #region Internal query methods
         /// <inheritdoc cref="IQueryContext.GetCaseAsync()"/>
@@ -37,34 +69,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <exception cref="HttpRequestException"/>
         async Task<Case> IQueryContext.GetCaseAsync()
         {
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
-        }
-
-        /// <inheritdoc cref="IQueryContext.GetCitizenDetailsAsync()"/>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
-        async Task<CitizenDetails> IQueryContext.GetCitizenDetailsAsync()
-        {
-            // Predefined URL components
-            string citizensEndpoint;
-            
-            // Request URL
-            Uri citizenByBsnUri;
-
-            if (!this._configuration.AppSettings.UseNewOpenKlant())
-            {
-                // Open Klant 1.0
-                citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/klanten/api/v1/klanten";
-                citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={await GetBsnNumberAsync()}");
-            }
-            else
-            {
-                // Open Klant 2.0
-                citizensEndpoint = $"https://{GetSpecificOpenKlantDomain()}/";  // TODO: To be finished
-                citizenByBsnUri = new Uri(citizensEndpoint);                    // TODO: To be finished
-            }
-
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
+            return await this._queryBase.ProcessGetAsync<Case>(HttpClientTypes.Data, await GetCaseTypeAsync(), Resources.HttpRequest_ERROR_NoCase);
         }
         
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
@@ -76,9 +81,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             string statusesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/statussen";
 
             // Request URL
-            Uri caseStatuses = new($"{statusesEndpoint}?zaak={((IQueryContext)this).QueryBase.Notification.MainObject}");
+            Uri caseStatuses = new($"{statusesEndpoint}?zaak={this._queryBase.Notification.MainObject}");
 
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
+            return await this._queryBase.ProcessGetAsync<CaseStatuses>(HttpClientTypes.Data, caseStatuses, Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
         
         /// <inheritdoc cref="IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses)"/>
@@ -89,7 +94,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
+            return await this._queryBase.ProcessGetAsync<CaseStatusType>(HttpClientTypes.Data, lastStatusTypeUri, Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
         #endregion
 
@@ -99,7 +104,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// </summary>
         private async Task<Uri> GetCaseTypeAsync()
         {
-            return ((IQueryContext)this).QueryBase.Notification.Attributes.CaseType ?? (await GetCaseDetailsAsync()).CaseType;
+            return this._queryBase.Notification.Attributes.CaseType ?? (await GetCaseDetailsAsync()).CaseType;
         }
 
         /// <summary>
@@ -107,7 +112,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// </summary>
         private async Task<CaseDetails> GetCaseDetailsAsync()
         {
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, ((IQueryContext)this).QueryBase.Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
+            return await this._queryBase.ProcessGetAsync<CaseDetails>(HttpClientTypes.Data, this._queryBase.Notification.MainObject, Resources.HttpRequest_ERROR_NoCaseDetails);
         }
 
         /// <summary>
@@ -125,9 +130,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             const string roleType = "natuurlijk_persoon";
 
             // Request URL
-            Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={((IQueryContext)this).QueryBase.Notification.MainObject}&betrokkeneType={roleType}");
+            Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={this._queryBase.Notification.MainObject}&betrokkeneType={roleType}");
 
-            return await ((IQueryContext)this).QueryBase.ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
+            return await this._queryBase.ProcessGetAsync<CaseRoles>(HttpClientTypes.Data, caseWithRoleUri, Resources.HttpRequest_ERROR_NoCaseRole);
         }
         #endregion
 
@@ -139,14 +144,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// </para>
         /// </summary>
         private string GetSpecificOpenZaakDomain() => this._configuration.User.Domain.OpenZaak();
-
-        /// <summary>
-        /// Gets the domain part of the organization-specific (municipality) "OpenKlant" URI.
-        /// <para>
-        ///   <code>http(s):// [DOMAIN] /ApiEndpoint</code>
-        /// </para>
-        /// </summary>
-        private string GetSpecificOpenKlantDomain() => this._configuration.User.Domain.OpenKlant();
         #endregion
     }
 }
