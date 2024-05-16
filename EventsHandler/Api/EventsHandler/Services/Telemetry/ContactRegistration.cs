@@ -71,6 +71,7 @@ namespace EventsHandler.Services.Telemetry
             // Sending the request and getting the response (combined internal logic)
             return await this._dataQuery
                 .From(notification)
+                .QueryBase
                 .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
