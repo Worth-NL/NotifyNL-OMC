@@ -9,7 +9,7 @@ using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using Resources = EventsHandler.Properties.Resources;
 
-namespace EventsHandler.Services.DataQuerying.Strategy
+namespace EventsHandler.Services.DataQuerying.Adapter
 {
     /// <inheritdoc cref="IQueryContext"/>
     internal sealed class QueryContext : IQueryContext
