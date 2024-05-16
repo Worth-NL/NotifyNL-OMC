@@ -6,7 +6,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Configuration;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using Resources = EventsHandler.Properties.Resources;
 
