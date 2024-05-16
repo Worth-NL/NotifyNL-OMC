@@ -23,6 +23,8 @@ using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Base;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
@@ -250,7 +252,9 @@ namespace EventsHandler
             // Queries and HTTP resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
+
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
+            builder.Services.AddSingleton<IQueryKlant, QueryKlant>();
 
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
