@@ -63,7 +63,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                 return new[] { GetEmailNotifyData(@case, citizen) };
             }
 
-            if (citizen.DistributionChannel == DistributionChannels.Both)
+            if (citizen.DistributionChannel == DistributionChannels.Both)  // TODO: Not working
             {
                 return new[]
                 {
