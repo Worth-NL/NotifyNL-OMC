@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategy.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Interfaces
