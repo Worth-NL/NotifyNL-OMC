@@ -29,8 +29,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
         {
             string organizationId = ((IQueryBase)this).Notification.GetOrganizationId();
@@ -41,8 +39,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
         {
             string organizationId = ((IQueryBase)this).Notification.GetOrganizationId();

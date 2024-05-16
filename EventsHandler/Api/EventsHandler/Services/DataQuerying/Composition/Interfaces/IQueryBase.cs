@@ -19,12 +19,16 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <summary>
         /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and deserializes received JSON result.
         /// </summary>
+        /// <exception cref="InvalidOperationException"/>
+        /// <exception cref="HttpRequestException"/>
         internal Task<TModel> ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
 
         /// <summary>
         /// Sends the <see cref="HttpMethods.Post"/> request to the specified URI and deserializes received JSON result.
         /// </summary>
+        /// <exception cref="InvalidOperationException"/>
+        /// <exception cref="HttpRequestException"/>
         internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
     }
