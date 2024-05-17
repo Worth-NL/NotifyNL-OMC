@@ -25,9 +25,6 @@ namespace EventsHandler.Services.DataReceiving
         /// <inheritdoc cref="IHttpSupplierService.Configuration"/>
         WebApiConfiguration IHttpSupplierService.Configuration => this._configuration;
 
-        /// <inheritdoc cref="IHttpSupplierService.HttpClients"/>
-        ConcurrentDictionary<HttpClientTypes, HttpClient> IHttpSupplierService.HttpClients => this._httpClients;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="JwtHttpSupplier"/> class.
         /// </summary>
