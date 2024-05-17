@@ -19,11 +19,7 @@ namespace EventsHandler.Services.DataReceiving
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
         private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
-        
         private readonly ConcurrentDictionary<HttpClientTypes, HttpClient> _httpClients = new();
-
-        /// <inheritdoc cref="IHttpSupplierService.Configuration"/>
-        WebApiConfiguration IHttpSupplierService.Configuration => this._configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwtHttpSupplier"/> class.
