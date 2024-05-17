@@ -22,6 +22,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             this._configuration = configuration;
         }
         
+        #region Internal methods
         /// <inheritdoc cref="IQueryKlant.GetCitizenDetailsAsync(IQueryBase, string)"/>
         async Task<CitizenDetails> IQueryKlant.GetCitizenDetailsAsync(IQueryBase queryBase, string bsnNumber)
         {
@@ -36,7 +37,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
                 uri: citizenByBsnUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
-        
+        #endregion
+
         #region Helper methods
         /// <summary>
         /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web service URI.
