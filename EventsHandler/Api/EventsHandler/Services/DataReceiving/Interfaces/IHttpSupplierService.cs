@@ -15,11 +15,6 @@ namespace EventsHandler.Services.DataReceiving.Interfaces
         internal WebApiConfiguration Configuration { get; }
 
         /// <summary>
-        /// Gets the internal <see cref="HttpClient"/>s used for specific business purposes.
-        /// </summary>
-        internal ConcurrentDictionary<HttpClientTypes, HttpClient> HttpClients { get; }
-
-        /// <summary>
         /// Sends request to the given Web service using a specific <see cref="HttpClient"/>.
         /// </summary>
         /// <param name="httpClientType">The type of the specialized <see cref="HttpClient"/>.</param>
