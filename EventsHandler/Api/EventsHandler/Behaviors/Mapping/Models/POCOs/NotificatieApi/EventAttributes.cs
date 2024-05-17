@@ -53,7 +53,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(1)]
-        public Uri? CaseType { get; internal set; }
+        public Uri? CaseTypeUri { get; internal set; }
 
         /// <summary>
         /// Gets the name of the source organization.
@@ -90,7 +90,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsDefault(EventAttributes attributes)
         {
             return attributes.ObjectType == null &&
-                   attributes.CaseType   == null &&
+                   attributes.CaseTypeUri   == null &&
                    attributes is
                    {
                        SourceOrganization: null,
