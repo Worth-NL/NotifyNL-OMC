@@ -28,6 +28,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
             this._httpSupplier = httpSupplier;
         }
 
+        #region Internal methods
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
         {
@@ -47,6 +48,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
 
             return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
+        #endregion
 
         #region Helper methods
         private TModel GetApiResult<TModel>(bool isSuccess, string jsonResult, Uri uri, string fallbackErrorMessage)

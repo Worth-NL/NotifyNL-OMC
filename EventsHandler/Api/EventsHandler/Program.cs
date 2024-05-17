@@ -25,6 +25,8 @@ using EventsHandler.Services.DataQuerying.Composition.Base;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
@@ -256,6 +258,7 @@ namespace EventsHandler
 
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
             builder.Services.AddSingleton<IQueryKlant, QueryKlant>();
+            builder.Services.AddSingleton<IQueryZaak, QueryZaak>();
 
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
