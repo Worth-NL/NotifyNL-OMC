@@ -14,7 +14,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
     /// <remarks>
     ///   Version: "OpenZaak" (2.0) Web service.
     /// </remarks>
-    internal class QueryZaak : IQueryZaak
+    internal sealed class QueryZaak : IQueryZaak
     {
         /// <inheritdoc cref="IQueryZaak.Configuration"/>
         WebApiConfiguration IQueryZaak.Configuration { get; set; } = null!;
