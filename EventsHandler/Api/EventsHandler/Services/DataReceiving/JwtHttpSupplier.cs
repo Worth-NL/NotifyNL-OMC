@@ -43,15 +43,7 @@ namespace EventsHandler.Services.DataReceiving
             InitializeAvailableHttpClients();
         }
 
-        private void InitializeAvailableHttpClients()
-        {
-            this._httpClients.TryAdd(HttpClientTypes.Data, this._httpClientFactory
-                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
-
-            this._httpClients.TryAdd(HttpClientTypes.Telemetry, this._httpClientFactory
-                .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
-        }
-
+        #region Internal methods
         /// <inheritdoc cref="IHttpSupplierService.GetAsync(HttpClientTypes, string, Uri)"/>
         async Task<(bool Success, string JsonResponse)> IHttpSupplierService.GetAsync(HttpClientTypes httpClientType, string organizationId, Uri uri)
         {
@@ -63,8 +55,18 @@ namespace EventsHandler.Services.DataReceiving
         {
             return await ExecuteCallAsync(httpClientType, uri, body);
         }
+        #endregion
 
         #region Helper methods
+        private void InitializeAvailableHttpClients()
+        {
+            this._httpClients.TryAdd(HttpClientTypes.Data, this._httpClientFactory
+                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry, this._httpClientFactory
+                .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
+        }
+
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
