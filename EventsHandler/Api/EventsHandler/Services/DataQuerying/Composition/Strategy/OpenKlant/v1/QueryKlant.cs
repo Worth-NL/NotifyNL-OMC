@@ -10,6 +10,9 @@ using Resources = EventsHandler.Properties.Resources;
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
 {
     /// <inheritdoc cref="IQueryKlant"/>
+    /// <remarks>
+    ///   Version: "OpenKlant" (1.0) Web service.
+    /// </remarks>
     internal sealed class QueryKlant : IQueryKlant
     {
         private readonly WebApiConfiguration _configuration;
