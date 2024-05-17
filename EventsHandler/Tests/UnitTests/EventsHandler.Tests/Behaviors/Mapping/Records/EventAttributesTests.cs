@@ -64,7 +64,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
             Assert.Multiple(() =>
             {
                 Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.CaseType, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.CaseTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.SourceOrganization, Is.EqualTo("123456789"));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
@@ -81,7 +81,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
             Assert.Multiple(() =>
             {
                 Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.CaseType, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.CaseTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.SourceOrganization, Is.EqualTo("123456789"));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(2));
