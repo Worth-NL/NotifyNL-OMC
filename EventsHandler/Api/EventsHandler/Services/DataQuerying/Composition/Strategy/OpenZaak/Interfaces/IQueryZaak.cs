@@ -6,7 +6,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
 {
     /// <summary>
-    /// The service querying specific data from "OpenZaak" Web service.
+    /// The methods querying specific data from "OpenZaak" Web service.
     /// </summary>
     internal interface IQueryZaak
     {
