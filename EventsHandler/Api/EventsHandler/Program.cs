@@ -202,8 +202,9 @@ namespace EventsHandler
         private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
-            // Taken from "SENTRY_DSN" environment variable
-
+            options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN") ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
+                                                                                             // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
+                                                                                             // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception).
             // Informational messages are the most detailed to log
             options.DiagnosticLevel = diagnosticLevel;
 
