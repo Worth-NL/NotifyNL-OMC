@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
@@ -25,13 +26,15 @@ namespace EventsHandler.Services.Telemetry
     /// <seealso cref="ITelemetryService" />
     internal sealed class ContactRegistration : ITelemetryService
     {
+        private readonly WebApiConfiguration _configuration;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(IDataQueryService<NotificationEvent> dataQuery)
+        public ContactRegistration(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
         {
+            this._configuration = configuration;
             this._dataQuery = dataQuery;
         }
 
@@ -65,7 +68,7 @@ namespace EventsHandler.Services.Telemetry
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Predefined URL components
-            string specificOpenKlant = this._dataQuery.HttpSupplier.Configuration.User.Domain.OpenKlant();
+            string specificOpenKlant = this._configuration.User.Domain.OpenKlant();
             Uri klantContactMomentUri = new($"https://{specificOpenKlant}/contactmomenten/api/v1/contactmomenten");
 
             // Sending the request and getting the response (combined internal logic)
@@ -88,7 +91,7 @@ namespace EventsHandler.Services.Telemetry
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Predefined URL components
-            string specificOpenZaak = this._dataQuery.HttpSupplier.Configuration.User.Domain.OpenZaak();
+            string specificOpenZaak = this._configuration.User.Domain.OpenZaak();
             Uri klantContactMomentUri = new($"https://{specificOpenZaak}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request

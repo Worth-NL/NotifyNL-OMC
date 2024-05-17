@@ -11,9 +11,6 @@ namespace EventsHandler.Services.DataReceiving.Interfaces
     /// </summary>
     public interface IHttpSupplierService
     {
-        /// <inheritdoc cref="WebApiConfiguration"/>
-        internal WebApiConfiguration Configuration { get; }
-
         /// <summary>
         /// Sends request to the given Web service using a specific <see cref="HttpClient"/>.
         /// </summary>
