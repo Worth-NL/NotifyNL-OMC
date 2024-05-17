@@ -37,14 +37,14 @@ namespace EventsHandler.Services.DataReceiving
         }
 
         #region Internal methods
-        /// <inheritdoc cref="IHttpSupplierService.GetAsync(HttpClientTypes, string, Uri)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.GetAsync(HttpClientTypes httpClientType, string organizationId, Uri uri)
+        /// <inheritdoc cref="IHttpSupplierService.GetAsync(HttpClientTypes, Uri)"/>
+        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
-        /// <inheritdoc cref="IHttpSupplierService.PostAsync(HttpClientTypes, string, Uri, HttpContent)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.PostAsync(HttpClientTypes httpClientType, string organizationId, Uri uri, HttpContent body)
+        /// <inheritdoc cref="IHttpSupplierService.PostAsync(HttpClientTypes, Uri, HttpContent)"/>
+        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.PostAsync(HttpClientTypes httpClientType, Uri uri, HttpContent body)
         {
             return await ExecuteCallAsync(httpClientType, uri, body);
         }

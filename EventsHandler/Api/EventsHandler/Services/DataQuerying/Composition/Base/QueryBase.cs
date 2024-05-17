@@ -2,7 +2,6 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Interfaces;
@@ -32,9 +31,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
         {
-            string organizationId = ((IQueryBase)this).Notification.GetOrganizationId();
-
-            (bool isSuccess, string jsonResult) = await this._httpSupplier.GetAsync(httpsClientType, organizationId, uri);
+            (bool isSuccess, string jsonResult) = await this._httpSupplier.GetAsync(httpsClientType, uri);
 
             return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
@@ -42,9 +39,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
         {
-            string organizationId = ((IQueryBase)this).Notification.GetOrganizationId();
-
-            (bool isSuccess, string jsonResult) = await this._httpSupplier.PostAsync(httpsClientType, organizationId, uri, body);
+            (bool isSuccess, string jsonResult) = await this._httpSupplier.PostAsync(httpsClientType, uri, body);
 
             return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
