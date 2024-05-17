@@ -1,18 +1,18 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using Resources = EventsHandler.Properties.Resources;
 
-namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
+namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web service.
+    ///   Version: "OpenZaak" (2.0) Web service.
     /// </remarks>
     internal sealed class QueryZaak : IQueryZaak
     {
