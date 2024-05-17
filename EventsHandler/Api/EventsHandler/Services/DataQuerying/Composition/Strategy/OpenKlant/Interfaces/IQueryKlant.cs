@@ -6,7 +6,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {
     /// <summary>
-    /// The service querying specific data from "OpenKlant" Web service.
+    /// The methods querying specific data from "OpenKlant" Web service.
     /// </summary>
     internal interface IQueryKlant
     {
