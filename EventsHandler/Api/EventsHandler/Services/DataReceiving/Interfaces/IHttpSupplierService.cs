@@ -1,8 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Services.DataReceiving.Enums;
-using System.Collections.Concurrent;
 
 namespace EventsHandler.Services.DataReceiving.Interfaces
 {
