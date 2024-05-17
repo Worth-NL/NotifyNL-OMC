@@ -31,7 +31,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Request URL
             var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
 
-            return await queryBase.ProcessGetAsync<CitizenDetails>(HttpClientTypes.Data, citizenByBsnUri, Resources.HttpRequest_ERROR_NoCitizenDetails);
+            return await queryBase.ProcessGetAsync<CitizenDetails>(
+                httpsClientType: HttpClientTypes.Data,
+                uri: citizenByBsnUri,
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         
         #region Helper methods
