@@ -17,7 +17,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]
         [JsonPropertyOrder(0)]
-        public CitizenData Citizen { get; internal set; } = new();
+        public CitizenData Citizen { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseRole"/> struct.
