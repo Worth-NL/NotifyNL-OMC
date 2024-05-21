@@ -6,7 +6,6 @@ using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -20,7 +19,6 @@ namespace EventsHandler.Services.DataProcessing
     /// <inheritdoc cref="IProcessingService{TModel}"/>
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
-        private readonly WebApiConfiguration _configuration;
         private readonly IScenariosResolver _resolver;
         private readonly ISendingService<NotificationEvent, NotifyData> _sender;
 
@@ -28,11 +26,9 @@ namespace EventsHandler.Services.DataProcessing
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
         public NotifyProcessor(
-            WebApiConfiguration configuration,
             IScenariosResolver resolver,
             ISendingService<NotificationEvent, NotifyData> sender)
         {
-            this._configuration = configuration;
             this._resolver = resolver;
             this._sender = sender;
         }
