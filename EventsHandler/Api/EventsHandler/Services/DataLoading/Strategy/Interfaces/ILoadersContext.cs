@@ -12,6 +12,9 @@ namespace EventsHandler.Services.DataLoading.Strategy.Interfaces
     ///   the public "appsettings.json" file, while others (confidential and vulnerable) might be loaded
     ///   i.e., from Azure Key Vault, Environment Variables, or any other type of data carrier.
     /// </para>
+    /// <para>
+    ///   The proposed solution also gives more flexibility regarding how the application can be set up.
+    /// </para>
     /// </summary>
     public interface ILoadersContext : ILoadingService
     {
@@ -20,5 +23,10 @@ namespace EventsHandler.Services.DataLoading.Strategy.Interfaces
         /// </summary>
         /// <param name="loaderType">The specific loader to be set.</param>
         internal void SetLoader(LoaderTypes loaderType);
+
+        /// <summary>
+        /// Gets the type of the currently set DAO (Data Access Object) data provider / aka. "Loader".
+        /// </summary>
+        internal LoaderTypes GetLoaderType();
     }
 }
