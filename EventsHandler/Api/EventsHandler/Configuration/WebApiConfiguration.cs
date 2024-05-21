@@ -1,51 +1,98 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Extensions;
+using EventsHandler.Properties;
+using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
+using JetBrains.Annotations;
 
 namespace EventsHandler.Configuration
 {
     /// <summary>
-    /// The object to encapsulate <see cref="WebApplication"/> configurations
-    /// from "appsettings.json" (public) and "secrets.json" (private).
+    /// The object representing all application settings.
+    /// <para>
+    ///   Different types of settings are supported (to provide setup flexibility):
+    ///   <list type="bullet">
+    ///     <item>
+    ///       <see cref="LoaderTypes.AppSettings"/> - Read from "appsettings.json" file (using <see cref="IConfiguration"/> interface).
+    ///     </item>
+    ///     <item>
+    ///       <see cref="LoaderTypes.Environment"/> - Read from environment variables (using <see cref="Environment.GetEnvironmentVariable(string)"/>).
+    ///     </item>
+    ///   </list>
+    /// </para>
     /// </summary>
     public sealed record WebApiConfiguration
     {
+        private static readonly object s_padlock = new();
+
+        private readonly ILoadersContext _loaderContext;
+
+        private OmcComponent? _omc;
+        private UserComponent? _user;
+
         /// <inheritdoc cref="IConfiguration"/>
+        /// <remarks>
+        ///   NOTE: Use dedicated extension methods to obtain specific values from "appsettings.json" file.
+        /// </remarks>
         internal IConfiguration AppSettings { get; }
 
         /// <summary>
-        /// Gets the configuration for OMC (internal) system.
-        /// </summary>
-        internal OmcComponent OMC { get; }
-
-        /// <summary>
-        /// Gets the configuration for the user (external) system.
-        /// </summary>
-        internal UserComponent User { get; }
-        
-        /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
         /// </summary>
-        /// <param name="appSettings">The application configurations stored in "appsettings.json" file.</param>
-        /// <param name="loaderContext">The strategy context using a specific data provider configuration loader.</param>
+        /// <param name="appSettings">The application settings stored in "appsettings.json" file.</param>
+        /// <param name="loaderContext">The strategy context using a specific data provider settings loader.</param>
         public WebApiConfiguration(
             IConfiguration appSettings,
             ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
         {
-            // Mapping configurations from "appsettings.json" file => because these should be always accessible, regardless ILoadingService (in ILoadersContext)
-            this.AppSettings = appSettings;
+            this._loaderContext = loaderContext;
 
-            // Recreating structure of "appsettings.json" or "secrets.json" files to use them later as objects
-            this.OMC = new OmcComponent(loaderContext, nameof(this.OMC));
-            this.User = new UserComponent(loaderContext, nameof(this.User));
+            // Mapping settings from "appsettings.json" file => because these should be always accessible, regardless ILoadingService (in ILoadersContext)
+            this.AppSettings = appSettings;
+        }
+
+        /// <summary>
+        /// Gets the object representing Output Management Component (internal) settings.
+        /// </summary>
+        /// <param name="loaderType">The type of settings to be used (the default option is predefined).</param>
+        internal OmcComponent OMC(LoaderTypes loaderType = LoaderTypes.Environment)
+            => GetComponent(ref this._omc, loaderType, nameof(OMC));
+
+        /// <summary>
+        /// Gets the object representing (external) settings configured by user for
+        /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
+        /// </summary>
+        /// <param name="loaderType">The type of settings to be used (the default option is predefined).</param>
+        internal UserComponent User(LoaderTypes loaderType = LoaderTypes.Environment)
+            => GetComponent(ref this._user, loaderType, nameof(User));
+
+        #region Settings
+        /// <summary>
+        /// The common base for all types of settings (<see cref="LoaderTypes.AppSettings"/> or <see cref="LoaderTypes.Environment"/>).
+        /// </summary>
+        internal abstract record BaseSettings
+        {
+            private readonly ILoadersContext _loadersContext;
+
+            /// <inheritdoc cref="ILoadersContext.GetLoaderType()"/>
+            internal LoaderTypes GetLoaderType()
+                => this._loadersContext.GetLoaderType();
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="BaseSettings"/> class.
+            /// </summary>
+            protected BaseSettings(ILoadersContext loadersContext)
+            {
+                this._loadersContext = loadersContext;
+            }
         }
 
         /// <summary>
         /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
         /// </summary>
-        internal abstract record BaseComponent
+        internal abstract record BaseComponent : BaseSettings
         {
             /// <inheritdoc cref="AuthorizationComponent"/>
             internal AuthorizationComponent Authorization { get; }
@@ -54,12 +101,13 @@ namespace EventsHandler.Configuration
             /// Initializes a new instance of the <see cref="BaseComponent"/> class.
             /// </summary>
             protected BaseComponent(ILoadersContext loadersContext, string parentName)
+                : base(loadersContext)
             {
                 this.Authorization = new AuthorizationComponent(loadersContext, parentName);
             }
 
             /// <summary>
-            /// The "Authorization" part of the configuration.
+            /// The "Authorization" part of the settings.
             /// </summary>
             internal sealed record AuthorizationComponent
             {
@@ -77,7 +125,7 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <summary>
-                /// The "JWT" part of the configuration.
+                /// The "JWT" part of the settings.
                 /// </summary>
                 internal sealed record JwtComponent
                 {
@@ -121,9 +169,10 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// The "OMC" part of the configuration.
+        /// The "OMC" part of the settings.
         /// </summary>
-        internal record OmcComponent : BaseComponent
+        [UsedImplicitly]
+        internal sealed record OmcComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
             internal ApiComponent API { get; }
@@ -138,7 +187,7 @@ namespace EventsHandler.Configuration
             }
 
             /// <summary>
-            /// The "API" part of the configuration.
+            /// The "API" part of the settings.
             /// </summary>
             internal sealed record ApiComponent
             {
@@ -156,7 +205,7 @@ namespace EventsHandler.Configuration
                 }
                 
                 /// <summary>
-                /// The "Base URL" part of the configuration.
+                /// The "Base URL" part of the settings.
                 /// </summary>
                 internal sealed record BaseUrlComponent
                 {
@@ -180,8 +229,9 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// The "Parent" part of the configuration.
+        /// The "User" part of the settings.
         /// </summary>
+        [UsedImplicitly]
         internal sealed record UserComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
@@ -205,7 +255,7 @@ namespace EventsHandler.Configuration
             }
 
             /// <summary>
-            /// The "API" part of the configuration.
+            /// The "API" part of the settings.
             /// </summary>
             internal sealed record ApiComponent
             {
@@ -223,7 +273,7 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <summary>
-                /// The "Key" part of the configuration.
+                /// The "Key" part of the settings.
                 /// </summary>
                 internal sealed record KeyComponent
                 {
@@ -250,7 +300,7 @@ namespace EventsHandler.Configuration
             }
 
             /// <summary>
-            /// The "Domain" part of the configuration.
+            /// The "Domain" part of the settings.
             /// </summary>
             internal sealed record DomainComponent
             {
@@ -288,7 +338,7 @@ namespace EventsHandler.Configuration
             }
 
             /// <summary>
-            /// The "TemplateIds" part of the configuration.
+            /// The "TemplateIds" part of the settings.
             /// </summary>
             internal sealed record TemplateIdsComponent
             {
@@ -310,7 +360,7 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <summary>
-                /// The "Sms" part of the configuration.
+                /// The "Sms" part of the settings.
                 /// </summary>
                 internal sealed record SmsComponent
                 {
@@ -340,7 +390,7 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <summary>
-                /// The "Email" part of the configuration.
+                /// The "Email" part of the settings.
                 /// </summary>
                 internal sealed record EmailComponent
                 {
@@ -370,10 +420,34 @@ namespace EventsHandler.Configuration
                 }
             }
         }
+        #endregion
 
         #region Helper methods
         /// <summary>
-        /// Retrieves cached configuration value.
+        /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"/>
+        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType, string name)
+            where TComponent : BaseComponent
+        {
+            lock (s_padlock)
+            {
+                if (component == null ||                      // Initialization of the current settings object for the first time
+                    component.GetLoaderType() != loaderType)  // Changing the type of settings during runtime after it was initialized
+                {
+                    this._loaderContext.SetLoader(loaderType);
+
+                    // Set value to reference
+                    component = (TComponent?)Activator.CreateInstance(typeof(TComponent), this._loaderContext, name);
+                }
+            }
+            
+            // Return reference
+            return component ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
+        }
+
+        /// <summary>
+        /// Retrieves cached settings value.
         /// </summary>
         private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
@@ -384,7 +458,7 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// Retrieves cached configuration value.
+        /// Retrieves cached settings value.
         /// </summary>
         private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName)
         {
@@ -395,7 +469,7 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// Retrieves cached configuration value, ensuring it will be a domain (without http/s and API endpoint).
+        /// Retrieves cached settings value, ensuring it will be a domain (without http/s and API endpoint).
         /// </summary>
         private static string GetDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
@@ -405,7 +479,7 @@ namespace EventsHandler.Configuration
         }
 
         /// <summary>
-        /// Retrieves cached configuration value, ensuring it will be a valid Template Id.
+        /// Retrieves cached settings value, ensuring it will be a valid Template Id.
         /// </summary>
         private static string GetTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {

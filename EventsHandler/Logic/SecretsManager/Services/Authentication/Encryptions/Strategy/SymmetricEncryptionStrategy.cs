@@ -38,15 +38,15 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.GetJwtToken(SecurityKey, string, string, DateTime, string, string)"/>
-        string IJwtEncryptionStrategy.GetJwtToken(SecurityKey securityKey, string issuer, string audience, DateTime expiresAt, string userId, string userRepresentation)
+        string IJwtEncryptionStrategy.GetJwtToken(SecurityKey securityKey, string issuer, string audience, DateTime expiresAt, string userId, string userName)
         {
-            return JwtTokenHandler.GetJwtToken(securityKey, issuer, audience, expiresAt, SecurityAlgorithms.HmacSha256, userId, userRepresentation);
+            return JwtTokenHandler.GetJwtToken(securityKey, issuer, audience, expiresAt, SecurityAlgorithms.HmacSha256, userId, userName);
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.GetJwtToken(SecurityKey, string, string, double, string, string)"/>
-        string IJwtEncryptionStrategy.GetJwtToken(SecurityKey securityKey, string issuer, string audience, double expiresInMinutes, string userId, string userRepresentation)
+        string IJwtEncryptionStrategy.GetJwtToken(SecurityKey securityKey, string issuer, string audience, double expiresInMinutes, string userId, string userName)
         {
-            return JwtTokenHandler.GetJwtToken(securityKey, issuer, audience, expiresInMinutes, SecurityAlgorithms.HmacSha256, userId, userRepresentation);
+            return JwtTokenHandler.GetJwtToken(securityKey, issuer, audience, expiresInMinutes, SecurityAlgorithms.HmacSha256, userId, userName);
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.SaveJwtToken(string)"/>

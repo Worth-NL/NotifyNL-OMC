@@ -7,6 +7,7 @@ using EventsHandler.Services.DataLoading.Strategy.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using MoqExt;
 
 namespace EventsHandler.Utilities._TestHelpers
 {
@@ -30,11 +31,11 @@ namespace EventsHandler.Utilities._TestHelpers
         }
 
         /// <summary>
-        /// Gets the test <see cref="ConfigurationLoader"/>.
+        /// Gets the test <see cref="AppSettingsLoader"/>.
         /// </summary>
         internal static ILoadingService GetConfigurationLoader()
         {
-            return new ConfigurationLoader(GetConfiguration());
+            return new AppSettingsLoader(GetConfiguration());
         }
 
         internal static ILoadingService GetEnvironmentLoader(bool isValid = true)
@@ -158,16 +159,35 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Web API Configuration
+        private static ServiceProvider? s_serviceProvider;
+
         internal static WebApiConfiguration GetWebApiConfiguration(ILoadingService loadingService)
         {
             // "appSettings.json" configuration
             IConfiguration appSettings = GetConfiguration();
 
-            // Service Provider (does not require mocking)
-            using ServiceProvider serviceProvider = new ServiceCollection().BuildServiceProvider();
-            
+            // TODO: Failing tests
+            //var context = new MockingContext(
+            //    new ServiceCollection()
+            //        .AddSingleton(typeof(ILoadingService), (EnvironmentLoader)ConfigurationHandler.GetEnvironmentLoader(isValid: false))
+            //    );
+
+            // Service Provider(does not require mocking)
+            if (s_serviceProvider == null)
+            {
+               // Initialization of IServiceCollection
+               IServiceCollection serviceCollection = new ServiceCollection();
+
+               // Registering test services
+               serviceCollection.AddSingleton<AppSettingsLoader>();
+               serviceCollection.AddSingleton<EnvironmentLoader>();
+
+               // Initialization of IServiceProvider
+               s_serviceProvider = serviceCollection.BuildServiceProvider();
+            }
+
             // Loaders Context
-            var loadersContext = new LoadersContext(serviceProvider, loadingService);
+            var loadersContext = new LoadersContext(s_serviceProvider, loadingService);
 
             // Web API Configuration
             return new WebApiConfiguration(appSettings, loadersContext);

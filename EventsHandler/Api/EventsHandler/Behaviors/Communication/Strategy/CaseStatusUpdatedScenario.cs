@@ -30,14 +30,14 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            base.LastCaseStatusType ??= await ReQueryCaseStatusTypeAsync(notification);
+            this.LastCaseStatusType ??= await ReQueryCaseStatusTypeAsync(notification);
 
             return await base.GetAllNotifyDataAsync(notification);
         }
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => base.Configuration.User.TemplateIds.Sms.ZaakUpdate();
+          => this.Configuration.User().TemplateIds.Sms.ZaakUpdate();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
         protected sealed override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
@@ -55,7 +55,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => base.Configuration.User.TemplateIds.Email.ZaakUpdate();
+          => this.Configuration.User().TemplateIds.Email.ZaakUpdate();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
         protected sealed override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)
@@ -67,7 +67,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy
                 { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
                 { "klant.voornaam", citizen.Name },
                 { "klant.achternaam", citizen.Surname },
-                { "status.omschrijving", base.LastCaseStatusType!.Value.Description }
+                { "status.omschrijving", this.LastCaseStatusType!.Value.Description }
             };
         }
         #endregion

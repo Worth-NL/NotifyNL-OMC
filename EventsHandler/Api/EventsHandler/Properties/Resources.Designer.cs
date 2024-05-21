@@ -70,7 +70,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration use only domain (without endpoint):.
+        ///   Looks up a localized string similar to The specific type of settings cannot be initialized..
+        /// </summary>
+        internal static string Configuration_ERROR_CannotInitializeSettings {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_CannotInitializeSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found:.
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
             get {
@@ -79,7 +88,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration use only domain (without http or https):.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found:.
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {
             get {
@@ -106,7 +115,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration the Template Id is invalid (should be: 00000000-0000-0000-0000-000000000000):.
+        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):.
         /// </summary>
         internal static string Configuration_ERROR_InvalidTemplateId {
             get {
@@ -115,7 +124,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The configuration does not contain a given value, or it is empty:.
+        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {

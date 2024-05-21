@@ -102,15 +102,15 @@ namespace EventsHandler.Services.DataReceiving
         {
             // TODO: To be considered, caching the token until the expiration time doesn't elapse yet
             SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
-                this._configuration.User.Authorization.JWT.Secret());
+                this._configuration.User().Authorization.JWT.Secret());
 
             // Preparing JWT token
             string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
-                this._configuration.User.Authorization.JWT.Issuer(),
-                this._configuration.User.Authorization.JWT.Audience(),
-                this._configuration.User.Authorization.JWT.ExpiresInMin(),
-                this._configuration.User.Authorization.JWT.UserId(),
-                this._configuration.User.Authorization.JWT.UserName());
+                this._configuration.User().Authorization.JWT.Issuer(),
+                this._configuration.User().Authorization.JWT.Audience(),
+                this._configuration.User().Authorization.JWT.ExpiresInMin(),
+                this._configuration.User().Authorization.JWT.UserId(),
+                this._configuration.User().Authorization.JWT.UserName());
 
             // Set Authorization header
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
