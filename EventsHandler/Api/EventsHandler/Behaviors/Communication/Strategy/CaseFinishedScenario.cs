@@ -26,11 +26,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         #region Polymorphic
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => base.Configuration.User.TemplateIds.Sms.ZaakClose();
+          => this.Configuration.User().TemplateIds.Sms.ZaakClose();
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => base.Configuration.User.TemplateIds.Email.ZaakClose();
+          => this.Configuration.User().TemplateIds.Email.ZaakClose();
         #endregion
     }
 }

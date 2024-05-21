@@ -19,7 +19,7 @@ namespace EventsHandler.UnitTests.Services.DataLoading
         {
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(new ConfigurationLoader(ConfigurationHandler.GetConfiguration()));
+            serviceCollection.AddSingleton(new AppSettingsLoader(ConfigurationHandler.GetConfiguration()));
             serviceCollection.AddSingleton(new EnvironmentLoader());
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             EnvironmentLoader environmentLoader = new();
@@ -45,10 +45,10 @@ namespace EventsHandler.UnitTests.Services.DataLoading
 
         #region GetPathWithNode
         // IConfiguration
-        [TestCase(LoaderTypes.Configuration, "", "", "")]
-        [TestCase(LoaderTypes.Configuration, "abc", "", "abc")]
-        [TestCase(LoaderTypes.Configuration, "Path", "Node", "Path:Node")]
-        [TestCase(LoaderTypes.Configuration, "Path:Node", "SubNode", "Path:Node:SubNode")]
+        [TestCase(LoaderTypes.AppSettings, "", "", "")]
+        [TestCase(LoaderTypes.AppSettings, "abc", "", "abc")]
+        [TestCase(LoaderTypes.AppSettings, "Path", "Node", "Path:Node")]
+        [TestCase(LoaderTypes.AppSettings, "Path:Node", "SubNode", "Path:Node:SubNode")]
         // Environment variables
         [TestCase(LoaderTypes.Environment, "", "", "")]
         [TestCase(LoaderTypes.Environment, "abc", "", "ABC")]

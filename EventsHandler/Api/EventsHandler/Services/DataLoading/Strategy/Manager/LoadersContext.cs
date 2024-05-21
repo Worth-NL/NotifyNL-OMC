@@ -30,10 +30,23 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
             this._loadingService = loaderType switch
             {
                 // Reading configurations from "appsettings.json" (Dev, Test, Prod, and the fallback general file)
-                LoaderTypes.Configuration => this._serviceProvider.GetRequiredService<ConfigurationLoader>(),
+                LoaderTypes.AppSettings => this._serviceProvider.GetRequiredService<AppSettingsLoader>(),
 
-                // Reading configurations from the preset environment variables (e.g. in Windows, Linus, macOS)
+                // Reading configurations from the preset environment variables (e.g. in Windows, Linux, macOS)
                 LoaderTypes.Environment => this._serviceProvider.GetRequiredService<EnvironmentLoader>(),
+
+                _ => throw new NotImplementedException(Resources.Processing_ERROR_Loader_NotImplemented)
+            };
+        }
+
+        /// <inheritdoc cref="ILoadersContext.GetLoaderType()"/>
+        LoaderTypes ILoadersContext.GetLoaderType()
+        {
+            return this._loadingService switch
+            {
+                AppSettingsLoader => LoaderTypes.AppSettings,
+
+                EnvironmentLoader => LoaderTypes.Environment,
 
                 _ => throw new NotImplementedException(Resources.Processing_ERROR_Loader_NotImplemented)
             };

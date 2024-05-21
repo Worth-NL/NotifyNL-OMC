@@ -7,14 +7,14 @@ using EventsHandler.Services.DataLoading.Interfaces;
 namespace EventsHandler.Services.DataLoading
 {
     /// <inheritdoc cref="ILoadingService"/>
-    internal sealed class ConfigurationLoader : ILoadingService
+    internal sealed class AppSettingsLoader : ILoadingService
     {
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationLoader"/> class.
+        /// Initializes a new instance of the <see cref="AppSettingsLoader"/> class.
         /// </summary>
-        public ConfigurationLoader(IConfiguration configuration)
+        public AppSettingsLoader(IConfiguration configuration)
         {
             this._configuration = configuration;
         }

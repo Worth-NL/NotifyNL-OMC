@@ -116,9 +116,9 @@ namespace EventsHandler
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Validation parameters
-                    ValidIssuer = configuration.OMC.Authorization.JWT.Issuer(),
-                    ValidAudience = configuration.OMC.Authorization.JWT.Audience(),
-                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Authorization.JWT.Secret()),
+                    ValidIssuer = configuration.OMC().Authorization.JWT.Issuer(),
+                    ValidAudience = configuration.OMC().Authorization.JWT.Audience(),
+                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC().Authorization.JWT.Secret()),
 
                     // Validation criteria
                     ValidateIssuer = true,
@@ -295,7 +295,7 @@ namespace EventsHandler
             services.AddSingleton<ILoadersContext, LoadersContext>();
 
             // Strategies
-            services.AddSingleton<ConfigurationLoader>();
+            services.AddSingleton<AppSettingsLoader>();
             services.AddSingleton<EnvironmentLoader>();
         }
 

@@ -49,7 +49,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
         /// </para>
         /// </summary>
-        private string GetSpecificOpenKlantDomain() => this._configuration.User.Domain.OpenKlant();
+        private string GetSpecificOpenKlantDomain() => this._configuration.User().Domain.OpenKlant();
         #endregion
     }
 }

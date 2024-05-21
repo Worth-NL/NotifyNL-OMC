@@ -19,7 +19,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
         /// </summary>
         internal static string GetJwtToken(
             SecurityKey securityKey, string issuer, string audience, DateTime expiresAt,
-            string securityAlgorithm, string userId, string userRepresentation)
+            string securityAlgorithm, string userId, string userName)
         {
             // Creating JWT token
             return new JsonWebTokenHandler
@@ -29,7 +29,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
             .CreateToken(
                 GetJwtTokenDescriptor(
                     securityKey, issuer, audience, DateTime.UtcNow, expiresAt,
-                    securityAlgorithm, userId, userRepresentation));
+                    securityAlgorithm, userId, userName));
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
         /// </summary>
         internal static string GetJwtToken(
             SecurityKey securityKey, string issuer, string audience, double expiresInMinutes,
-            string securityAlgorithm, string userId, string userRepresentation)
+            string securityAlgorithm, string userId, string userName)
         {
             // Calculating validity time
             DateTime currentDateTime = DateTime.UtcNow;
@@ -54,15 +54,15 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
                 GetJwtTokenDescriptor(
                     securityKey, issuer, audience, currentDateTime,
                     currentDateTime.AddMinutes(expiresInMinutes),
-                    securityAlgorithm, userId, userRepresentation));
+                    securityAlgorithm, userId, userName));
         }
 
         /// <summary>
         /// Gets the JWT token descriptor - defining "claims" for JWT token.
         /// </summary>
         private static SecurityTokenDescriptor GetJwtTokenDescriptor(
-            SecurityKey securityKey, string issuer, string audience, DateTime issuedAt, DateTime expiresAt,
-            string securityAlgorithm, string userId, string userRepresentation)
+            SecurityKey securityKey, string issuer, string audience, DateTime issuedAt,
+            DateTime expiresAt, string securityAlgorithm, string userId, string userName)
         {
             SecurityTokenDescriptor tokenDescriptor = new()
             {
@@ -78,7 +78,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
 
                     // Optional: Used only for "audit trials"
                     new Claim("user_id",             userId),
-                    new Claim("user_representation", userRepresentation),
+                    new Claim("user_representation", userName),
                 }),
 
                 // Required
