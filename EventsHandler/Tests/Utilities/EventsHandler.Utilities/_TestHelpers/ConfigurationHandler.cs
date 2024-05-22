@@ -2,7 +2,7 @@
 
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Interfaces;
+using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Services.DataLoading.Strategy.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,9 +16,8 @@ namespace EventsHandler.Utilities._TestHelpers
     /// </summary>
     internal static class ConfigurationHandler
     {
-        #region Loading services (DAO)
         /// <summary>
-        /// Gets the test <see cref="IConfiguration"/>.
+        /// Gets the test <see cref="IConfiguration"/> with (re)created "appsettings.Test.json" and environment variables.
         /// </summary>
         internal static IConfiguration GetConfiguration()
         {
@@ -30,54 +29,66 @@ namespace EventsHandler.Utilities._TestHelpers
             return configuration;
         }
 
+        #region ILoadingService mocks
         /// <summary>
-        /// Gets the test <see cref="AppSettingsLoader"/>.
+        /// Gets the mocked <see cref="AppSettingsLoader"/>.
         /// </summary>
-        internal static ILoadingService GetConfigurationLoader()
+        private static AppSettingsLoader GetAppSettingsLoader(bool isValid = true)
         {
-            return new AppSettingsLoader(GetConfiguration());
+            return isValid
+                ? new AppSettingsLoader(GetConfiguration())
+                : new Mock<AppSettingsLoader>().Object;
         }
-
-        internal static ILoadingService GetEnvironmentLoader(bool isValid = true)
+        
+        /// <summary>
+        /// Gets the mocked <see cref="EnvironmentLoader"/>.
+        /// </summary>
+        private static EnvironmentLoader GetEnvironmentLoader(bool isValid = true)
         {
-            var mockedEnvironmentLoader = new Mock<ILoadingService>();
+            var mockedEnvironmentLoader = new Mock<EnvironmentLoader>();
 
             const string testValue = "Test";
             const string testDomain = "test.domain";
             const string testTempId = "00000000-0000-0000-0000-000000000000";
 
+            static string GetTestValue(bool isValid, string validString, string? invalidString = null)
+            {
+                return isValid ? validString : invalidString ?? string.Empty;
+            }
+
+            // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetData<T>() mocking
             Dictionary<string /* Key */, string /* Value */> keyValueMapping = new()
             {
-                { "OMC_AUTHORIZATION_JWT_SECRET",      isValid ? testValue : string.Empty },
-                { "OMC_AUTHORIZATION_JWT_ISSUER",      isValid ? testValue : string.Empty },
-                { "OMC_AUTHORIZATION_JWT_AUDIENCE",    isValid ? testValue : string.Empty },
-                { "OMC_AUTHORIZATION_JWT_USERID",      isValid ? testValue : string.Empty },
-                { "OMC_AUTHORIZATION_JWT_USERNAME",    isValid ? testValue : string.Empty },
+                { "OMC_AUTHORIZATION_JWT_SECRET",      GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_ISSUER",      GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_AUDIENCE",    GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_USERID",      GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_USERNAME",    GetTestValue(isValid, testValue) },
 
-                { "OMC_API_BASEURL_NOTIFYNL",          isValid ? "https://www.test.nl/" : string.Empty },
+                { "OMC_API_BASEURL_NOTIFYNL",          GetTestValue(isValid, "https://www.test.nl/") },
                 
-                { "USER_AUTHORIZATION_JWT_SECRET",     isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_ISSUER",     isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",   isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_USERID",     isValid ? testValue : string.Empty },
-                { "USER_AUTHORIZATION_JWT_USERNAME",   isValid ? testValue : string.Empty },
+                { "USER_AUTHORIZATION_JWT_SECRET",     GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_ISSUER",     GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_AUDIENCE",   GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_USERID",     GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
 
-                { "USER_API_KEY_NOTIFYNL",             isValid ? testValue : string.Empty },
-                { "USER_API_KEY_OBJECTEN",             isValid ? testValue : string.Empty },
+                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
 
-                { "USER_DOMAIN_OPENNOTIFICATIES",      isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OPENZAAK",              isValid ? testDomain : string.Empty },
-                { "USER_DOMAIN_OPENKLANT",             isValid ? testDomain : "http://domain" },
-                { "USER_DOMAIN_OBJECTEN",              isValid ? testDomain : "https://domain" },
-                { "USER_DOMAIN_OBJECTTYPEN",           isValid ? testDomain : "domain/api/v1/typen" },
+                { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENZAAK",              GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENKLANT",             GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_OBJECTEN",              GetTestValue(isValid, testDomain, "https://domain") },
+                { "USER_DOMAIN_OBJECTTYPEN",           GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",   isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   isValid ? testTempId : "12345678-1234-12-34-1234-123456789012" },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    isValid ? testTempId : "123456789-1234-1234-1234-123456789012" },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", isValid ? testTempId : string.Empty },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  isValid ? testTempId : string.Empty }
+                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  GetTestValue(isValid, testTempId) }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
@@ -96,6 +107,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 .Returns((ushort)(isValid ? 60 : 0));
             #endregion
 
+            // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetPathWithNode() mocking
             (string Path, string Node, string ResultPath)[] testData =
             {
@@ -159,35 +171,31 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Web API Configuration
-        private static ServiceProvider? s_serviceProvider;
-
-        internal static WebApiConfiguration GetWebApiConfiguration(ILoadingService loadingService)
+        internal static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isValid)
         {
-            // "appSettings.json" configuration
-            IConfiguration appSettings = GetConfiguration();
+            // IConfiguration
+            IConfiguration appSettings = new Mock<IConfiguration>().Object;
 
-            // TODO: Failing tests
-            //var context = new MockingContext(
-            //    new ServiceCollection()
-            //        .AddSingleton(typeof(ILoadingService), (EnvironmentLoader)ConfigurationHandler.GetEnvironmentLoader(isValid: false))
-            //    );
+            // IServiceCollection
+            var serviceCollection = new ServiceCollection();
 
-            // Service Provider(does not require mocking)
-            if (s_serviceProvider == null)
+            // ILoaderService
+            switch (loaderType)
             {
-               // Initialization of IServiceCollection
-               IServiceCollection serviceCollection = new ServiceCollection();
-
-               // Registering test services
-               serviceCollection.AddSingleton<AppSettingsLoader>();
-               serviceCollection.AddSingleton<EnvironmentLoader>();
-
-               // Initialization of IServiceProvider
-               s_serviceProvider = serviceCollection.BuildServiceProvider();
+                case LoaderTypes.AppSettings:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid));
+                    break;
+                
+                case LoaderTypes.Environment:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid));
+                    break;
             }
 
-            // Loaders Context
-            var loadersContext = new LoadersContext(s_serviceProvider, loadingService);
+            // IServiceProvider
+            var serviceProvider = new MockingContext(serviceCollection);
+
+            // ILoadersContext
+            var loadersContext = new LoadersContext(serviceProvider);
 
             // Web API Configuration
             return new WebApiConfiguration(appSettings, loadersContext);

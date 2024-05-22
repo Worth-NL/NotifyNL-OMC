@@ -2,6 +2,7 @@
 
 using EventsHandler.Configuration;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Configuration
@@ -16,14 +17,14 @@ namespace EventsHandler.UnitTests.Configuration
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {
             // Initializing Web API Configuration
-            WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfiguration(
-                ConfigurationHandler.GetEnvironmentLoader(isValid: true));
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
 
             // Assert
             Assert.Multiple(() =>
             {
-                var omcConfiguration = configuration.OMC();
-                var userConfiguration = configuration.User();
+                var omcConfiguration = configuration.OMC;
+                var userConfiguration = configuration.User;
 
                 // Authorization | JWT | Notify
                 var notifyJwt = omcConfiguration.Authorization.JWT;
@@ -76,34 +77,38 @@ namespace EventsHandler.UnitTests.Configuration
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Act & Assert
-            ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);  
-            Assert.That(exception?.Message.StartsWith(test.ExpectedErrorMessage), Is.True,
-                message: $"{test.CaseId}: {exception?.Message}");
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);
+
+                Assert.That(exception?.Message.StartsWith(test.ExpectedErrorMessage), Is.True,
+                    message: $"{test.CaseId}: {exception?.Message}");
+            });
         }
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
-            WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfiguration(
-                ConfigurationHandler.GetEnvironmentLoader(isValid: false));
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
 
             // Invalid: Not existing
-            yield return ("#1", () => configuration.User().API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => configuration.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#2", () => configuration.User().Authorization.JWT.Audience(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => configuration.User.Authorization.JWT.Audience(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#3", () => configuration.User().Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#3", () => configuration.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#4", () => configuration.User().Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => configuration.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#5", () => configuration.User().Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#5", () => configuration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: domain/api/v1/typen
-            yield return ("#6", () => configuration.User().Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
+            yield return ("#6", () => configuration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
             // Invalid: Whitespace
-            yield return ("#7", () => configuration.User().TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => configuration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#8", () => configuration.User().TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#8", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#9", () => configuration.User().TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
         #endregion
     }

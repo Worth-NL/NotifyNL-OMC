@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
 using EventsHandler.Services.DataLoading;
 using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
@@ -17,15 +18,14 @@ namespace EventsHandler.UnitTests.Services.DataLoading
         [OneTimeSetUp]
         public void SetupTests()
         {
-            // Service Provider (does not require mocking)
+            // Service Provider // TODO: Introduce mocks
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(new AppSettingsLoader(ConfigurationHandler.GetConfiguration()));
             serviceCollection.AddSingleton(new EnvironmentLoader());
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            EnvironmentLoader environmentLoader = new();
 
             // Loaders context
-            this._loadersContext = new LoadersContext(serviceProvider, environmentLoader);
+            this._loadersContext = new LoadersContext(serviceProvider);
         }
         
         #region SetLoader
@@ -36,7 +36,13 @@ namespace EventsHandler.UnitTests.Services.DataLoading
             const LoaderTypes invalidType = (LoaderTypes)2;
 
             // Act & Assert
-            Assert.Throws<NotImplementedException>(() => this._loadersContext!.SetLoader(invalidType));
+            Assert.Multiple(() =>
+            {
+                NotImplementedException? exception =
+                    Assert.Throws<NotImplementedException>(() => this._loadersContext!.SetLoader(invalidType));
+
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_Loader_NotImplemented));
+            });
         }
         #endregion
         

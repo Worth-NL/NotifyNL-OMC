@@ -19,7 +19,7 @@ namespace EventsHandler.Services.DataLoading.Interfaces
         ///   The generic data value associated with the key.
         /// </returns>
         /// <exception cref="KeyNotFoundException">The provided key is missing or invalid.</exception>
-        internal TData GetData<TData>(string key);
+        TData GetData<TData>(string key);
 
         /// <summary>
         /// Combines the configuration predeceasing path with the specific node name.
@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataLoading.Interfaces
         /// <returns>
         ///   The formatted node path.
         /// </returns>
-        internal string GetPathWithNode(string currentPath, string nodeName);
+        string GetPathWithNode(string currentPath, string nodeName);
 
         /// <summary>
         /// Precedes the (eventually formatted) node name with a respective separator.
@@ -38,6 +38,6 @@ namespace EventsHandler.Services.DataLoading.Interfaces
         /// <returns>
         ///   The formatted node path.
         /// </returns>
-        internal string GetNodePath(string nodeName);
+        string GetNodePath(string nodeName);
     }
 }

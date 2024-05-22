@@ -116,7 +116,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
         /// </para>
         /// </summary>
-        private string GetSpecificOpenZaakDomain() => this.Configuration.User().Domain.OpenZaak();
+        private string GetSpecificOpenZaakDomain() => this.Configuration.User.Domain.OpenZaak();
         #endregion
     }
 }

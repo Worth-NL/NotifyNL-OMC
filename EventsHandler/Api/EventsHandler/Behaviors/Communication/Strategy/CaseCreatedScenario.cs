@@ -28,7 +28,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         #region Polymorphic
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => this.Configuration.User().TemplateIds.Sms.ZaakCreate();
+          => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
@@ -45,7 +45,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => this.Configuration.User().TemplateIds.Email.ZaakCreate();
+          => this.Configuration.User.TemplateIds.Email.ZaakCreate();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)

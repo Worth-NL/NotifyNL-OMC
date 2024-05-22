@@ -37,7 +37,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => this.Configuration.User().TemplateIds.Sms.ZaakUpdate();
+          => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
         protected sealed override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
@@ -49,13 +49,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy
                 { "klant.voornaam", citizen.Name },
                 { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
                 { "klant.achternaam", citizen.Surname },
-                { "status.omschrijving", base.LastCaseStatusType!.Value.Description }
+                { "status.omschrijving", this.LastCaseStatusType!.Value.Description }
             };
         }
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => this.Configuration.User().TemplateIds.Email.ZaakUpdate();
+          => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
         protected sealed override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)

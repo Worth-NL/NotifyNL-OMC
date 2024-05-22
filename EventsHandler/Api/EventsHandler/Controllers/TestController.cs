@@ -70,7 +70,7 @@ namespace EventsHandler.Controllers
             try
             {
                 // Health Check URL
-                string healthCheckUrl = $"{this._configuration.OMC().API.BaseUrl.NotifyNL()}/_status?simple=true";
+                string healthCheckUrl = $"{this._configuration.OMC.API.BaseUrl.NotifyNL()}/_status?simple=true";
 
                 // Request
                 using var httpClient = new HttpClient();
@@ -236,8 +236,8 @@ namespace EventsHandler.Controllers
             {
                 // Initialize the .NET client of "NotifyNL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
-                    this._configuration.OMC().API.BaseUrl.NotifyNL(),
-                    this._configuration.User().API.Key.NotifyNL());
+                    this._configuration.OMC.API.BaseUrl.NotifyNL(),
+                    this._configuration.User.API.Key.NotifyNL());
 
                 // Determine template type
                 string templateType = s_templateTypes[notifyMethod];

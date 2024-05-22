@@ -124,6 +124,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It was not possible to determine the given data provider. It might be not implemented yet..
+        /// </summary>
+        internal static string Configuration_ERROR_Loader_NotImplemented {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_Loader_NotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It was not possible to retrieve any data provider. The loading service might not be set..
+        /// </summary>
+        internal static string Configuration_ERROR_Loader_NotSet {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_Loader_NotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
@@ -552,15 +570,6 @@ namespace EventsHandler.Properties {
         internal static string Processing_ERROR_ExecutingContext_UnregisteredApiController {
             get {
                 return ResourceManager.GetString("Processing_ERROR_ExecutingContext_UnregisteredApiController", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to It was not possible to determine the given data provider. It can be not implemented yet..
-        /// </summary>
-        internal static string Processing_ERROR_Loader_NotImplemented {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Loader_NotImplemented", resourceCulture);
             }
         }
         
