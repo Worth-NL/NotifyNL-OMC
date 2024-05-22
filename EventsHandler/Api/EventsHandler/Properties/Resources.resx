@@ -296,8 +296,8 @@
   <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
     <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
   </data>
-  <data name="Processing_ERROR_Loader_NotImplemented" xml:space="preserve">
-    <value>It was not possible to determine the given data provider. It can be not implemented yet.</value>
+  <data name="Configuration_ERROR_Loader_NotImplemented" xml:space="preserve">
+    <value>It was not possible to determine the given data provider. It might be not implemented yet.</value>
   </data>
   <data name="Processing_ERROR_ExecutingContext_UnknownErrorDetails" xml:space="preserve">
     <value>It wasn't possible to extract human-friendly error message</value>
@@ -349,5 +349,8 @@
   </data>
   <data name="Configuration_ERROR_CannotInitializeSettings" xml:space="preserve">
     <value>The specific type of settings cannot be initialized.</value>
+  </data>
+  <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
+    <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
   </data>
 </root>

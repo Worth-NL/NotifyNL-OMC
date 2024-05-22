@@ -6,13 +6,14 @@ using EventsHandler.Services.DataLoading.Interfaces;
 
 namespace EventsHandler.Services.DataLoading
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>
-    internal sealed class EnvironmentLoader : ILoadingService
+    internal class EnvironmentLoader : ILoadingService
     {
         #region Polymorphism
         /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
         /// <exception cref="NotImplementedException">The operating system (OS) is not supported.</exception>
-        TData ILoadingService.GetData<TData>(string key)
+        public virtual TData GetData<TData>(string key)
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
@@ -36,15 +37,15 @@ namespace EventsHandler.Services.DataLoading
         }
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
-        string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
+        public virtual string GetPathWithNode(string currentPath, string nodeName)
         {
             return $"{currentPath.ToUpper()}{(string.IsNullOrWhiteSpace(nodeName)
                 ? string.Empty
-                : ((ILoadingService)this).GetNodePath(nodeName))}";
+                : GetNodePath(nodeName))}";
         }
 
         /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
-        string ILoadingService.GetNodePath(string nodeName)
+        public virtual string GetNodePath(string nodeName)
         {
             const string separator = "_";
 

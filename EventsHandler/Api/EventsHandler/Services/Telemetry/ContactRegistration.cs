@@ -68,7 +68,7 @@ namespace EventsHandler.Services.Telemetry
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Predefined URL components
-            string specificOpenKlant = this._configuration.User().Domain.OpenKlant();
+            string specificOpenKlant = this._configuration.User.Domain.OpenKlant();
             Uri klantContactMomentUri = new($"https://{specificOpenKlant}/contactmomenten/api/v1/contactmomenten");
 
             // Sending the request and getting the response (combined internal logic)
@@ -91,7 +91,7 @@ namespace EventsHandler.Services.Telemetry
             HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Predefined URL components
-            string specificOpenZaak = this._configuration.User().Domain.OpenZaak();
+            string specificOpenZaak = this._configuration.User.Domain.OpenZaak();
             Uri klantContactMomentUri = new($"https://{specificOpenZaak}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request
