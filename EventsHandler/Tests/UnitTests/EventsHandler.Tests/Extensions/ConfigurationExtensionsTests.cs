@@ -10,9 +10,6 @@ namespace EventsHandler.UnitTests.Extensions
     [TestFixture]
     internal sealed class ConfigurationExtensionsTests
     {
-        //private const string TestValidPath = "NOTIFY_AUTHORIZATION_JWT_ISSUER";
-        //private const string TestInvalidPath = $"{TestValidPath}_INVALID";
-
         private IConfiguration? _configuration;
 
         [OneTimeSetUp]

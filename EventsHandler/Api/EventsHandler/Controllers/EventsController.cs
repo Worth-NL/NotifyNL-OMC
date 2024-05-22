@@ -82,7 +82,7 @@ namespace EventsHandler.Controllers
                 // Validation #2: Structural and data inconsistencies of optional properties
                 return this._validator.Validate(ref notification) is HealthCheck.OK_Valid
                                                                   or HealthCheck.OK_Inconsistent
-                    // Try to process received notification
+                    // Try to process the received notification
                     ? await Task.Run<IActionResult>(async () =>
                     {
                         (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
@@ -91,12 +91,13 @@ namespace EventsHandler.Controllers
                             this._responder.Get_Processing_Status_ActionResult(GetResult(result, json), notification.Details));
                     })
 
-                    // Notification cannot be processed
+                    // The notification cannot be processed
                     : LogApiResponse(LogLevel.Error,
                         this._responder.Get_Processing_Status_ActionResult(GetFailedResult(json), notification.Details));
             }
             catch (Exception exception)
             {
+                // Serious problems occurred during the attempt to process the notification
                 return LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }

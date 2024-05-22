@@ -25,8 +25,6 @@ namespace EventsHandler.Configuration
     /// </summary>
     public sealed record WebApiConfiguration
     {
-        private static readonly object s_padlock = new();
-
         private readonly ILoadersContext _loaderContext;
 
         private OmcComponent? _omc;
@@ -37,6 +35,19 @@ namespace EventsHandler.Configuration
         ///   NOTE: Use dedicated extension methods to obtain specific values from "appsettings.json" file.
         /// </remarks>
         internal IConfiguration AppSettings { get; }
+
+        /// <summary>
+        /// Gets the object representing Output Management Component (internal) settings.
+        /// </summary>
+        internal OmcComponent OMC
+            => GetComponent(ref this._omc, this._loaderContext, LoaderTypes.Environment, nameof(OMC));
+
+        /// <summary>
+        /// Gets the object representing (external) settings configured by user for
+        /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
+        /// </summary>
+        internal UserComponent User
+            => GetComponent(ref this._user, this._loaderContext, LoaderTypes.Environment, nameof(User));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
@@ -51,48 +62,17 @@ namespace EventsHandler.Configuration
 
             // Mapping settings from "appsettings.json" file => because these should be always accessible, regardless ILoadingService (in ILoadersContext)
             this.AppSettings = appSettings;
+
+            // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
+            this._omc = OMC;
+            this._user = User;
         }
-
-        /// <summary>
-        /// Gets the object representing Output Management Component (internal) settings.
-        /// </summary>
-        /// <param name="loaderType">The type of settings to be used (the default option is predefined).</param>
-        internal OmcComponent OMC(LoaderTypes loaderType = LoaderTypes.Environment)
-            => GetComponent(ref this._omc, loaderType, nameof(OMC));
-
-        /// <summary>
-        /// Gets the object representing (external) settings configured by user for
-        /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
-        /// </summary>
-        /// <param name="loaderType">The type of settings to be used (the default option is predefined).</param>
-        internal UserComponent User(LoaderTypes loaderType = LoaderTypes.Environment)
-            => GetComponent(ref this._user, loaderType, nameof(User));
 
         #region Settings
         /// <summary>
-        /// The common base for all types of settings (<see cref="LoaderTypes.AppSettings"/> or <see cref="LoaderTypes.Environment"/>).
-        /// </summary>
-        internal abstract record BaseSettings
-        {
-            private readonly ILoadersContext _loadersContext;
-
-            /// <inheritdoc cref="ILoadersContext.GetLoaderType()"/>
-            internal LoaderTypes GetLoaderType()
-                => this._loadersContext.GetLoaderType();
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="BaseSettings"/> class.
-            /// </summary>
-            protected BaseSettings(ILoadersContext loadersContext)
-            {
-                this._loadersContext = loadersContext;
-            }
-        }
-
-        /// <summary>
         /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
         /// </summary>
-        internal abstract record BaseComponent : BaseSettings
+        internal abstract record BaseComponent
         {
             /// <inheritdoc cref="AuthorizationComponent"/>
             internal AuthorizationComponent Authorization { get; }
@@ -101,7 +81,6 @@ namespace EventsHandler.Configuration
             /// Initializes a new instance of the <see cref="BaseComponent"/> class.
             /// </summary>
             protected BaseComponent(ILoadersContext loadersContext, string parentName)
-                : base(loadersContext)
             {
                 this.Authorization = new AuthorizationComponent(loadersContext, parentName);
             }
@@ -427,23 +406,20 @@ namespace EventsHandler.Configuration
         /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
-        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType, string name)
+        private static TComponent GetComponent<TComponent>(ref TComponent? component, ILoadersContext loaderContext, LoaderTypes loaderType, string name)
             where TComponent : BaseComponent
         {
-            lock (s_padlock)
+            if (component == null)
             {
-                if (component == null ||                      // Initialization of the current settings object for the first time
-                    component.GetLoaderType() != loaderType)  // Changing the type of settings during runtime after it was initialized
-                {
-                    this._loaderContext.SetLoader(loaderType);
+                loaderContext.SetLoader(loaderType);
 
-                    // Set value to reference
-                    component = (TComponent?)Activator.CreateInstance(typeof(TComponent), this._loaderContext, name);
-                }
+                // Set value to reference
+                component = (TComponent?)Activator.CreateInstance(typeof(TComponent), loaderContext, name)
+                            ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
             }
             
             // Return reference
-            return component ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
+            return component;
         }
 
         /// <summary>

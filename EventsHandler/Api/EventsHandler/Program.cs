@@ -13,7 +13,6 @@ using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Manager;
 using EventsHandler.Services.DataProcessing;
@@ -54,6 +53,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace EventsHandler
@@ -61,6 +61,7 @@ namespace EventsHandler
     /// <summary>
     /// The entry point to the Web API application, responsible for configuring and starting the application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class Program
     {
         /// <summary>
@@ -116,9 +117,9 @@ namespace EventsHandler
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Validation parameters
-                    ValidIssuer = configuration.OMC().Authorization.JWT.Issuer(),
-                    ValidAudience = configuration.OMC().Authorization.JWT.Audience(),
-                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC().Authorization.JWT.Secret()),
+                    ValidIssuer = configuration.OMC.Authorization.JWT.Issuer(),
+                    ValidAudience = configuration.OMC.Authorization.JWT.Audience(),
+                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Authorization.JWT.Secret()),
 
                     // Validation criteria
                     ValidateIssuer = true,
@@ -288,9 +289,6 @@ namespace EventsHandler
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
         {
-            // Default configuration loader strategy
-            services.AddSingleton<ILoadingService, EnvironmentLoader>();
-
             // Strategy Context (acting like loader strategy facade)
             services.AddSingleton<ILoadersContext, LoadersContext>();
 

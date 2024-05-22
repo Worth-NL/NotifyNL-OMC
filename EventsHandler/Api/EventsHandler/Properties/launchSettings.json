@@ -25,41 +25,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OMC_AUTHORIZATION_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
-        "OMC_AUTHORIZATION_JWT_ISSUER": "https://omc.test.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Development)",
-        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development)",
-
-        "OMC_API_BASEURL_NOTIFYNL": "https://api.notifynl.nl",
-
-        "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
-        "USER_AUTHORIZATION_JWT_ISSUER": "goc",
-        "USER_AUTHORIZATION_JWT_AUDIENCE": " ",
-        "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
-        "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
-
-        "USER_API_KEY_NOTIFYNL": "omc-7355b75b-8fa8-4923-85fb-d68432379b51-6d1eca33-bbd3-4e7a-a3f6-25bef2373223",
-        "USER_API_KEY_OBJECTEN": "c901449999175647118edd15d1f7d1f6a3863367",
-
-        "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.denhaag.opengem.nl",
-        "USER_DOMAIN_OPENZAAK": "openzaak.test.denhaag.opengem.nl",
-        "USER_DOMAIN_OPENKLANT": "openklant.test.denhaag.opengem.nl",
-        "USER_DOMAIN_OBJECTEN": "objecten.test.denhaag.opengem.nl",
-        "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.denhaag.opengem.nl",
-
-        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "530651bd-291a-475a-8db4-db76eaa6fed3",
-        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "5d70dcea-6134-4154-bfa2-ce68424a2cf3",
-        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "9822b2fa-ffa3-4da1-b487-673e59631b51",
-
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "530651bd-291a-475a-8db4-db76eaa6fed3",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "ff24e8c5-c97a-40ae-b341-9ad1d5008740",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "98a5348d-3058-4488-bb14-5d61519a5aca",
-
-        "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
