@@ -11,7 +11,6 @@ using EventsHandler.Services.DataReceiving.Factories;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
-using Microsoft.Extensions.Configuration;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 
@@ -30,9 +29,8 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             IQueryContext queryContext = new Mock<IQueryContext>().Object;  // TODO: MockBehavior.Strict
 
             // Mocked IHttpSupplier
-            IConfiguration appSettings = ConfigurationHandler.GetConfiguration();
             ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;  // TODO: MockBehavior.Strict
-            WebApiConfiguration configuration = new(appSettings, loadersContext);
+            WebApiConfiguration configuration = new(loadersContext);
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);
