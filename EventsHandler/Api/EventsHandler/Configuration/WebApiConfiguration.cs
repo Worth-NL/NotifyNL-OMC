@@ -27,14 +27,15 @@ namespace EventsHandler.Configuration
     {
         private readonly ILoadersContext _loaderContext;
 
+        private AppSettingsComponent? _appSettings;
         private OmcComponent? _omc;
         private UserComponent? _user;
 
-        /// <inheritdoc cref="IConfiguration"/>
-        /// <remarks>
-        ///   NOTE: Use dedicated extension methods to obtain specific values from "appsettings.json" file.
-        /// </remarks>
-        internal IConfiguration AppSettings { get; }
+        /// <summary>
+        /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
+        /// </summary>
+        internal AppSettingsComponent AppSettings
+            => GetComponent(ref this._appSettings, this._loaderContext, LoaderTypes.AppSettings, nameof(AppSettings));
 
         /// <summary>
         /// Gets the object representing Output Management Component (internal) settings.
@@ -52,23 +53,59 @@ namespace EventsHandler.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
         /// </summary>
-        /// <param name="appSettings">The application settings stored in "appsettings.json" file.</param>
-        /// <param name="loaderContext">The strategy context using a specific data provider settings loader.</param>
-        public WebApiConfiguration(
-            IConfiguration appSettings,
-            ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
+        /// <param name="loaderContext">The strategy context using a specific data provider to load the settings from.</param>
+        public WebApiConfiguration(ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
         {
             this._loaderContext = loaderContext;
 
-            // Mapping settings from "appsettings.json" file => because these should be always accessible, regardless ILoadingService (in ILoadersContext)
-            this.AppSettings = appSettings;
-
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
+            // NOTE: Initialize these components now to spare execution time during real-time (Activator.CreateInstance<T>)
+            this._appSettings = AppSettings;
             this._omc = OMC;
             this._user = User;
         }
 
         #region Settings
+        /// <summary>
+        /// The "appsettings[.xxx].json" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        internal sealed record AppSettingsComponent
+        {
+            /// <inheritdoc cref="VariablesComponent"/>
+            internal VariablesComponent Variables { get; }
+            
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AppSettingsComponent"/> class.
+            /// </summary>
+            public AppSettingsComponent(ILoadersContext loadersContext, string parentName)
+            {
+                this.Variables = new VariablesComponent(loadersContext, parentName);
+            }
+            
+            /// <summary>
+            /// The "Variables" part of the settings.
+            /// </summary>
+            internal sealed record VariablesComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+                
+                /// <summary>
+                /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
+                /// </summary>
+                internal VariablesComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string BetrokkeneType()  // ENG: Subject type
+                    => GetValue(this._loadersContext, this._currentPath, nameof(BetrokkeneType));
+            }
+        }
+
         /// <summary>
         /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
         /// </summary>
@@ -407,7 +444,7 @@ namespace EventsHandler.Configuration
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         private static TComponent GetComponent<TComponent>(ref TComponent? component, ILoadersContext loaderContext, LoaderTypes loaderType, string name)
-            where TComponent : BaseComponent
+            where TComponent : class
         {
             if (component == null)
             {
