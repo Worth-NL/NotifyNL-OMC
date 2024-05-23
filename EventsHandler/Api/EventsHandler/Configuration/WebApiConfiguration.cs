@@ -101,8 +101,8 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string BetrokkeneType()  // ENG: Subject type
-                    => GetValue(this._loadersContext, this._currentPath, nameof(BetrokkeneType));
+                internal string SubjectType()
+                    => GetValue(this._loadersContext, this._currentPath, "betrokkeneType");
             }
         }
 
