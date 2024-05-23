@@ -99,10 +99,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/rollen";
-            const string roleType = "natuurlijk_persoon";
 
             // Request URL
-            Uri caseWithRoleUri = new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}&betrokkeneType={roleType}");
+            Uri caseWithRoleUri =
+                new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+                    $"&betrokkeneType={this.Configuration.AppSettings.Variables.SubjectType()}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(
                 httpsClientType: HttpClientTypes.Data,
