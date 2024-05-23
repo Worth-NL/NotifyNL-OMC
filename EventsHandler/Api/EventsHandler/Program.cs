@@ -95,6 +95,11 @@ namespace EventsHandler
         /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddNetServices(this WebApplicationBuilder builder)
         {
+            // Configuration appsettings.json files
+            const string settingsFileName = "appsettings";
+            builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
+                                 .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
+            
             // API Controllers
             builder.Services.AddControllers();
             
