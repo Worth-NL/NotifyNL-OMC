@@ -2,6 +2,9 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Configuration;
+using EventsHandler.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {
@@ -38,6 +41,22 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
         /// <value>
         ///   The data of a single citizen.
         /// </value>
-        internal readonly CitizenData Citizen => this.Results[^1].Citizen;  // NOTE: The requirement is to get only the last result from many possible
+        internal readonly CitizenData Citizen(WebApiConfiguration configuration)
+        {
+            if (Results.IsNullOrEmpty())
+            {
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
+            }
+
+            CaseRole? caseRole = Results.SingleOrDefault(result =>
+                result.InitiatorRole == configuration.AppSettings.Variables.InitiatorRole());
+
+            if (caseRole == null)
+            {
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
+            }
+
+            return caseRole.Value.Citizen;
+        }
     }
 }

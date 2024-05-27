@@ -30,9 +30,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase, string)"/>
         async Task<string> IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain)
         {
-            string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameters might be supported
+            string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
-            return (await GetCaseRolesV2Async(queryBase, openZaakDomain, subjectType)).Citizen.BsnNumber;
+            return (await GetCaseRolesV2Async(queryBase, openZaakDomain, subjectType))
+                .Citizen(((IQueryZaak)this).Configuration)
+                .BsnNumber;
         }
 
         private static async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, string openZaakDomain, string subjectType)
