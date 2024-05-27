@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
