@@ -367,6 +367,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Results representing case roles retrieved from OpenZaak Web service are empty..
+        /// </summary>
+        internal static string HttpRequest_ERROR_EmptyCaseRoles {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCaseRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The HTTPS protocol is expected..
         /// </summary>
         internal static string HttpRequest_ERROR_HttpsProtocolExpected {

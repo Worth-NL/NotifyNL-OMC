@@ -353,4 +353,7 @@
   <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
     <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
   </data>
+  <data name="HttpRequest_ERROR_EmptyCaseRoles" xml:space="preserve">
+    <value>HTTP Request: Results representing case roles retrieved from OpenZaak Web service are empty.</value>
+  </data>
 </root>
