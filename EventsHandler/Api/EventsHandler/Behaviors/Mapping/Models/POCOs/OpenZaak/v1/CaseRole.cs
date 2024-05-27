@@ -3,10 +3,10 @@
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
+namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// A single role from <see cref="CaseRoles"/> retrieved from "OpenZaak" Web service.
+    /// A single role from <see cref="CaseRoles"/> retrieved from "OpenZaak" (1.0) Web service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRole : IJsonSerializable
