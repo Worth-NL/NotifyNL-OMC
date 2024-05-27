@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -27,16 +26,39 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             ((IQueryZaak)this).Configuration = configuration;
         }
 
-        #region Polymorphism
+        #region Polymorphic (BSN Number)
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase, string)"/>
+        async Task<string> IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain)
+        {
+            const string subjectType = "natuurlijk_persoon";  // NOTE: Only this parameter is supported
+
+            return (await GetCaseRolesV1Async(queryBase, openZaakDomain, subjectType)).Citizen.BsnNumber;
+        }
+
+        private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, string subjectType)
+        {
+            // Predefined URL components
+            string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
+
+            // Request URL
+            Uri caseWithRoleUri =
+                new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+                    $"&betrokkeneType={subjectType}");
+
+            return await queryBase.ProcessGetAsync<CaseRoles>(
+                httpsClientType: HttpClientTypes.Data,
+                uri: caseWithRoleUri,
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseRole);
+        }
+        #endregion
+
+        #region Polimorphic (Case type)
         /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
         async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
         {
             return (await GetCaseDetailsV1Async(queryBase)).CaseType;
         }
-        
-        /// <summary>
-        /// Gets the <see cref="Case"/> details from "OpenZaak" Web service.
-        /// </summary>
+
         private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(

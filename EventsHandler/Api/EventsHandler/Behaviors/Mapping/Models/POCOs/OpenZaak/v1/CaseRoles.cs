@@ -1,13 +1,12 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
+namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// The roles of the <see cref="Case"/> retrieved from "OpenZaak" Web service.
+    /// The roles of the case retrieved from "OpenZaak" (1.0) Web service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRoles : IJsonSerializable
