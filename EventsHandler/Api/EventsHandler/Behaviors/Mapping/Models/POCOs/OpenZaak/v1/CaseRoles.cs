@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Properties;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
@@ -38,6 +40,17 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
         /// <value>
         ///   The data of a single citizen.
         /// </value>
-        internal readonly CitizenData Citizen => this.Results[^1].Citizen;  // NOTE: The requirement is to get only the last result from many possible
+        internal readonly CitizenData Citizen
+        {
+            get
+            {
+                if (Results.IsNullOrEmpty())
+                {
+                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
+                }
+
+                return this.Results[^1].Citizen;  // NOTE: The requirement is to get only the last result from many possible
+            }
+        }
     }
 }
