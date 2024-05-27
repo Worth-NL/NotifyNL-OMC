@@ -3,20 +3,28 @@
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
+namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {
     /// <summary>
-    /// A single role from <see cref="CaseRoles"/> results retrieved from "OpenZaak" (1.0) Web service.
+    /// A single role from <see cref="CaseRoles"/> results retrieved from "OpenZaak" (2.0) Web service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRole : IJsonSerializable
     {
         /// <summary>
+        /// The general description of the <see cref="CaseRole"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("omschrijvingGeneriek")]
+        [JsonPropertyOrder(0)]
+        public string GeneralDescription { get; internal set; } = string.Empty;
+
+        /// <summary>
         /// The data about a single citizen.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public CitizenData Citizen { get; internal set; }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
-        internal async Task<Case> GetCaseAsync(IQueryBase queryBase)
+        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<Case>(
                 httpsClientType: HttpClientTypes.Data,
@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
-        internal async Task<CaseStatuses> GetCaseStatusesAsync(IQueryBase queryBase)
+        internal sealed async Task<CaseStatuses> GetCaseStatusesAsync(IQueryBase queryBase)
         {
             // Predefined URL components
             string statusesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/statussen";
@@ -53,7 +53,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
-        internal async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
+        internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
         {
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
@@ -63,61 +63,49 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
-        
+
+        #region Abstract (BSN Number)
         /// <summary>
         /// Gets BSN number of a specific citizen from "OpenZaak" Web service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
-        internal async Task<string> GetBsnNumberAsync(IQueryBase queryBase)
+        internal sealed async Task<string> GetBsnNumberAsync(IQueryBase queryBase)
         {
             // 1. Fetch case roles from "OpenZaak"
             // 2. Determine citizen data from case roles
             // 3. Return BSN from citizen data
-            return (await GetCaseRoleAsync(queryBase)).Citizen.BsnNumber;
+            return await GetBsnNumberFromCaseRolesAsync(queryBase, GetSpecificOpenZaakDomain());
         }
-        
-        #region Helper methods
+
+        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase)"/>
+        protected Task<string> GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain);
+        #endregion
+
+        #region Abstract (Case type)
         /// <summary>
         /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web service.
         /// </summary>
+        /// <exception cref="InvalidOperationException"/>
+        /// <exception cref="HttpRequestException"/>
         private async Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase)
         {
             return queryBase.Notification.Attributes.CaseTypeUri
                 ?? await GetCaseTypeUriFromDetailsAsync(queryBase);  // Fallback, providing case type URI anyway
         }
-        
-        /// <summary>
-        /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web service.
-        /// </summary>
+
+        /// <inheritdoc cref="GetCaseTypeUriAsync(IQueryBase)"/>
         protected Task<Uri> GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase);
+        #endregion
 
-        /// <summary>
-        /// Gets the <see cref="Case"/> role from "OpenZaak" Web service.
-        /// </summary>
-        private async Task<CaseRoles> GetCaseRoleAsync(IQueryBase queryBase)
-        {
-            // Predefined URL components
-            string rolesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/rollen";
-
-            // Request URL
-            Uri caseWithRoleUri =
-                new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
-                    $"&betrokkeneType={this.Configuration.AppSettings.Variables.SubjectType()}");
-
-            return await queryBase.ProcessGetAsync<CaseRoles>(
-                httpsClientType: HttpClientTypes.Data,
-                uri: caseWithRoleUri,
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseRole);
-        }
-
+        #region Helper methods
         /// <summary>
         /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web service URI.
         /// <para>
         ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
         /// </para>
         /// </summary>
-        private string GetSpecificOpenZaakDomain() => this.Configuration.User.Domain.OpenZaak();
+        protected string GetSpecificOpenZaakDomain() => this.Configuration.User.Domain.OpenZaak();
         #endregion
     }
 }
