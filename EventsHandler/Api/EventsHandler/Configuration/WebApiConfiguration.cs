@@ -102,7 +102,11 @@ namespace EventsHandler.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string SubjectType()
-                    => GetValue(this._loadersContext, this._currentPath, "betrokkeneType");
+                    => GetValue(this._loadersContext, this._currentPath, "BetrokkeneType");
+                
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string InitiatorRole()
+                    => GetValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
             }
         }
 
