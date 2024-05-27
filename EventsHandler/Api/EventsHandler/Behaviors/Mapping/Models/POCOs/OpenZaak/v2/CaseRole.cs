@@ -12,18 +12,18 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
     public struct CaseRole : IJsonSerializable
     {
         /// <summary>
-        /// The general description of the <see cref="CaseRole"/>.
+        /// The general description of the <see cref="CaseRole"/> which includes the "initiator role" of the case.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("omschrijvingGeneriek")]
+        [JsonPropertyName("omschrijvingGeneriek")]  // ENG: General description
         [JsonPropertyOrder(0)]
-        public string GeneralDescription { get; internal set; } = string.Empty;
+        public string InitiatorRole { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The data about a single citizen.
+        /// The data subject identification which includes details about a single citizen related to this case.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("betrokkeneIdentificatie")]
+        [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
         [JsonPropertyOrder(1)]
         public CitizenData Citizen { get; internal set; }
 
