@@ -367,7 +367,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Results representing case roles retrieved from OpenZaak Web service are empty..
+        ///   Looks up a localized string similar to HTTP Request: Results representing case roles (retrieved from OpenZaak Web service) are empty..
         /// </summary>
         internal static string HttpRequest_ERROR_EmptyCaseRoles {
             get {
@@ -390,6 +390,15 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_Message {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;)..
+        /// </summary>
+        internal static string HttpRequest_ERROR_MissingInitiatorRole {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_MissingInitiatorRole", resourceCulture);
             }
         }
         
@@ -448,7 +457,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The Contact Moment could not be retrieved from OpenKlant Web service..
+        ///   Looks up a localized string similar to HTTP Request: The contact moment could not be retrieved from OpenKlant Web service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoFeedbackKlant {
             get {
@@ -457,7 +466,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The case does not contain any statuses.
+        ///   Looks up a localized string similar to HTTP Request: The case (obtained from OpenZaak Web service) does not contain any statuses..
         /// </summary>
         internal static string HttpRequest_ERROR_NoLastStatus {
             get {
@@ -466,7 +475,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Main Object could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: The main object could not be retrieved from OpenZaak Web service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMainObject {
             get {
@@ -475,7 +484,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The notification does not contain source organization (&apos;bronorganisatie&apos;) which is crucial!.
+        ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
             get {
