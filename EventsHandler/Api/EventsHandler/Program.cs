@@ -172,16 +172,7 @@ namespace EventsHandler
             // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
             {
-                if (builder.Environment.IsDevelopment())
-                {
-                    // More detailed (but spamming) settings for logs
-                    options.ConfigureSentryOptions(SentryLevel.Debug, isDebugEnabled: true);
-                }
-                else
-                {
-                    // Less detailed but more meaningful and noisy settings for logs
-                    options.ConfigureSentryOptions(SentryLevel.Info, isDebugEnabled: false);
-                }
+                options.ConfigureSentryOptions(isDebugEnabled: builder.Environment.IsDevelopment());
             });
 
             return builder;
@@ -194,13 +185,14 @@ namespace EventsHandler
         ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
         /// </para>
         /// </summary>
-        private static void ConfigureSentryOptions(this SentryOptions options, SentryLevel diagnosticLevel, bool isDebugEnabled)
+        private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
             // Taken from "SENTRY_DSN" environment variable
 
             // Informational messages are the most detailed to log
-            options.DiagnosticLevel = diagnosticLevel;
+            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
+                                                     : SentryLevel.Info;  // Less detailed (not affecting performance) settings for logs
 
             // Detailed debugging logs in the console window
             options.Debug = isDebugEnabled;
