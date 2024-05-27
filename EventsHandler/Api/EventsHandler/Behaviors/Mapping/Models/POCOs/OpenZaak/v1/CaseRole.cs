@@ -15,7 +15,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
         /// The data about a single citizen.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("betrokkeneIdentificatie")]
+        [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
         [JsonPropertyOrder(0)]
         public CitizenData Citizen { get; internal set; }
 
