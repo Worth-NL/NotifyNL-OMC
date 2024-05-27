@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase, string)"/>
         async Task<string> IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain)
         {
-            const string subjectType = "natuurlijk_persoon";  // NOTE: Only this parameter is supported
+            const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
             return (await GetCaseRolesV1Async(queryBase, openZaakDomain, subjectType)).Citizen.BsnNumber;
         }
