@@ -218,7 +218,8 @@ namespace EventsHandler
             options.Release = DefaultValues.ApiController.Version;
             
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
-            options.Environment = isDebugEnabled ? "Development" : "Production";
+            options.Environment = Environment.GetEnvironmentVariable("SENTRY_ENVIRONMENT") ??
+                                  Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
         #endregion
         #endregion
