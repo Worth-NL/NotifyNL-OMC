@@ -1,12 +1,12 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Text.Json;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Constants;
 using EventsHandler.Utilities._TestHelpers;
-using System.Text.Json;
 
-namespace EventsHandler.UnitTests.Behaviors.Mapping.Records
+namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
     [TestFixture]
     public sealed class NotificationEventTests
