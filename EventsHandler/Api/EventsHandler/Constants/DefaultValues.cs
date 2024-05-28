@@ -12,7 +12,7 @@ namespace EventsHandler.Constants
         {
             internal const string Route = "[controller]";
 
-            internal const string Version = "1.73";
+            internal const string Version = "1.74";
         }
         #endregion
 
