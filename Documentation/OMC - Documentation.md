@@ -40,33 +40,116 @@ For example: https://omc.acc.notifynl.nl/swagger/index.html
 
 ### 1.1.2. Using IDE (Visual Studio)
 
-To use the application locally (when starting it from Visual Studio) select one of the launch **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:`).
+To run the application locally (using **Visual Studio**) select one of the `launchSettings.json` **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:...` address).
 
 By default these **profiles** are already defined:
 
-- http
-- https
-- IIS Express
+- `http`
+- `https`
+- `IIS Express`
 
-And all of them are specifying to start **OMC** API through **Swagger UI**.
+And all of them have **Swagger UI** specified as the default start option.
 
-#### Customizing profile:
+![Invalid base URL - Error](images/swagger_ui_launch_settings.png)
 
+> **NOTE:** In this example application will start in "Development" mode.
 
+<h4 id="custom-lanunchSettings-profile"> Customizing profile:</h4>
+
+> Full content of `launchSettings.json` file.
+
+```json
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5270"
+    },
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7042;http://localhost:5270"
+    },
+    "IIS Express (Development)": {  // NOTE: Name of the profile can be changed
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",  // NOTE: Application mode can be changed
+		 
+        "OMC_AUTHORIZATION_JWT_SECRET": "",
+        "OMC_AUTHORIZATION_JWT_ISSUER": "",
+        "OMC_AUTHORIZATION_JWT_AUDIENCE": "",
+        "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "",
+        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        
+        "OMC_API_BASEURL_NOTIFYNL": "",
+        
+        "USER_AUTHORIZATION_JWT_SECRET": "",
+        "USER_AUTHORIZATION_JWT_ISSUER": "",
+        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
+        "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "",
+        "USER_AUTHORIZATION_JWT_USERID": "",
+        "USER_AUTHORIZATION_JWT_USERNAME": "",
+        
+        "USER_API_KEY_NOTIFYNL": "",
+        "USER_API_KEY_OBJECTEN": "",
+        
+        "USER_DOMAIN_OPENNOTIFICATIES": "",
+        "USER_DOMAIN_OPENZAAK": "",
+        "USER_DOMAIN_OPENKLANT": "",
+        "USER_DOMAIN_OBJECTEN": "",
+        "USER_DOMAIN_OBJECTTYPEN": "",
+        
+        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
+        
+        "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
+        
+        "SENTRY_DSN": "",
+        "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:24394",
+      "sslPort": 44397
+    }
+  }
+}
+```
+
+> **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
 #### Running profile:
 
 ![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
-
-> **NOTE:** An example of "Test" profile (with test environment variables)
-
-#### Important:
-
-In `launchSettings.json` file, remember to always have these lines incuded in the launch **profile** you are going to use for running the API with **Swagger UI**:
-
-![Invalid base URL - Error](images/swagger_ui_launch_settings.png)
-
-> **NOTE:** An example of `launchSettings.json` file with "Development" profile defined.
 
 ## 1.2. Docker
 
@@ -103,7 +186,9 @@ in order to run an already created **docker container**.
 
 ![Invalid base URL - Error](images/appsettings.png)
 
-- `environment variables` (for sensitive configurations and/or customizable per customers/instances of OMC):
+> NOTE: These configurations are also reflecting the modes which **OMC** Web API application is supporting.
+
+- `environment variables` (for sensitive configurations and/or customizable per customers/instances of **OMC**):
 
 | Name*                               | Type   | Example                            | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
 | ----------------------------------- | ------ | ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -161,6 +246,8 @@ in order to run an already created **docker container**.
 1. On Windows:
 
 ![Invalid base URL - Error](images/environment_varibles_windows.png)
+
+Additionally, environment variables can be also defined in **Visual Studio**'s `launchSettings.json` file. Check the example [here](#custom-lanunchSettings-profile).
 
 2. On Linux:
 
