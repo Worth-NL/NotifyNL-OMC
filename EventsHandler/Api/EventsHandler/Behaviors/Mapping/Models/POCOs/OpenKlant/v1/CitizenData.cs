@@ -4,10 +4,10 @@ using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
+namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger") retrieved from "OpenKlant" Web service.
+    /// The sensitive data about a single citizen ("burger") retrieved from "OpenKlant" (1.0) Web service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenData : IJsonSerializable
