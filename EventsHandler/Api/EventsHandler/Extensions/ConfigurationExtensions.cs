@@ -15,13 +15,13 @@ namespace EventsHandler.Extensions
     internal static partial class ConfigurationExtensions  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <summary>
-        /// Gets the <see cref="LogLevel"/> defined for Application Insights (Azure service).
+        /// Gets the <see cref="Microsoft.Extensions.Logging.LogLevel"/> defined for Application Insights (Azure service).
         /// </summary>
         /// <param name="configuration">The configuration manager to be used.</param>
         /// <returns>
-        ///   The value of <see cref="LogLevel"/>.
+        ///   The value of <see cref="Microsoft.Extensions.Logging.LogLevel"/>.
         /// </returns>
-        internal static LogLevel GetApplicationInsightsLogLevel(this IConfiguration configuration)
+        internal static LogLevel LogLevel(this IConfiguration configuration)
             => configuration.GetValue<LogLevel>("Logging:LogLevel:Default");
 
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)

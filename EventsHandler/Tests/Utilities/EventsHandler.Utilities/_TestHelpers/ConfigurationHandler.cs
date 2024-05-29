@@ -3,7 +3,6 @@
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataLoading;
 using EventsHandler.Services.DataLoading.Enums;
-using EventsHandler.Services.DataLoading.Strategy.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -23,7 +22,6 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Test.json")
-                .AddEnvironmentVariables()
                 .Build();
 
             return configuration;
@@ -37,7 +35,7 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             return isValid
                 ? new AppSettingsLoader(GetConfiguration())
-                : new Mock<AppSettingsLoader>().Object;
+                : new AppSettingsLoader(new Mock<IConfiguration>().Object);
         }
         
         /// <summary>
@@ -171,6 +169,18 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Web API Configuration
+        internal static WebApiConfiguration GetWebApiConfiguration(ServiceCollection? serviceCollection = null)
+        {
+            // IServiceCollection
+            serviceCollection ??= new ServiceCollection();
+
+            // IServiceProvider
+            var serviceProvider = new MockingContext(serviceCollection);
+
+            // Web API Configuration
+            return new WebApiConfiguration(serviceProvider);
+        }
+
         internal static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isValid)
         {
             // IServiceCollection
@@ -188,14 +198,13 @@ namespace EventsHandler.Utilities._TestHelpers
                     break;
             }
 
-            // IServiceProvider
-            var serviceProvider = new MockingContext(serviceCollection);
+            // Remaining components of Web API Configuration
+            return GetWebApiConfiguration(serviceCollection);
+        }
 
-            // ILoadersContext
-            var loadersContext = new LoadersContext(serviceProvider);
-
-            // Web API Configuration
-            return new WebApiConfiguration(loadersContext);
+        internal static WebApiConfiguration GetValidAppSettingsConfiguration()
+        {
+            return GetWebApiConfiguration(LoaderTypes.AppSettings, isValid: true);
         }
         #endregion
     }
