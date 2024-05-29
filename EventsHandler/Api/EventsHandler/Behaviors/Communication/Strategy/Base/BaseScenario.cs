@@ -8,7 +8,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.CitizenData;
+using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1.CitizenData;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Base
