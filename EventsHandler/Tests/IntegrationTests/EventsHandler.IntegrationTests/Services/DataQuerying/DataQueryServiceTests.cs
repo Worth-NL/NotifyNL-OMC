@@ -2,7 +2,6 @@
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Configuration;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
@@ -11,6 +10,7 @@ using EventsHandler.Services.DataReceiving.Factories;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
+using MoqExt;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 
@@ -29,8 +29,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             IQueryContext queryContext = new Mock<IQueryContext>().Object;  // TODO: MockBehavior.Strict
 
             // Mocked IHttpSupplier
-            ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;  // TODO: MockBehavior.Strict
-            WebApiConfiguration configuration = new(loadersContext);
+            WebApiConfiguration configuration = new(new MockingContext());
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
             IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);

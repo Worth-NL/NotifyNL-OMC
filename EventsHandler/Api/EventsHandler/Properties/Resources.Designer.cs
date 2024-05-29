@@ -394,11 +394,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;)..
+        ///   Looks up a localized string similar to HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). There is no initiator at all..
         /// </summary>
         internal static string HttpRequest_ERROR_MissingInitiatorRole {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_MissingInitiatorRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Multiple roles (retrieved from OpenZaak Web service) have the same initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). It cannot be determined which of them is the initiator..
+        /// </summary>
+        internal static string HttpRequest_ERROR_MultipleInitiatorRoles {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_MultipleInitiatorRoles", resourceCulture);
             }
         }
         

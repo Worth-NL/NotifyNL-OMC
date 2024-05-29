@@ -5,6 +5,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
+using EventsHandler.Services.DataLoading.Strategy.Manager;
 using JetBrains.Annotations;
 
 namespace EventsHandler.Configuration
@@ -25,7 +26,7 @@ namespace EventsHandler.Configuration
     /// </summary>
     public sealed record WebApiConfiguration
     {
-        private readonly ILoadersContext _loaderContext;
+        private readonly IServiceProvider _serviceProvider;
 
         private AppSettingsComponent? _appSettings;
         private OmcComponent? _omc;
@@ -35,28 +36,27 @@ namespace EventsHandler.Configuration
         /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
         /// </summary>
         internal AppSettingsComponent AppSettings
-            => GetComponent(ref this._appSettings, this._loaderContext, LoaderTypes.AppSettings, nameof(AppSettings));
+            => GetComponent(ref this._appSettings, LoaderTypes.AppSettings, nameof(AppSettings));
 
         /// <summary>
         /// Gets the object representing Output Management Component (internal) settings.
         /// </summary>
         internal OmcComponent OMC
-            => GetComponent(ref this._omc, this._loaderContext, LoaderTypes.Environment, nameof(OMC));
+            => GetComponent(ref this._omc, LoaderTypes.Environment, nameof(OMC));
 
         /// <summary>
         /// Gets the object representing (external) settings configured by user for
         /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
         /// </summary>
         internal UserComponent User
-            => GetComponent(ref this._user, this._loaderContext, LoaderTypes.Environment, nameof(User));
+            => GetComponent(ref this._user, LoaderTypes.Environment, nameof(User));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
         /// </summary>
-        /// <param name="loaderContext">The strategy context using a specific data provider to load the settings from.</param>
-        public WebApiConfiguration(ILoadersContext loaderContext)  // NOTE: The only constructor to be used with Dependency Injection
+        public WebApiConfiguration(IServiceProvider serviceProvider)  // NOTE: The only constructor to be used with Dependency Injection
         {
-            this._loaderContext = loaderContext;
+            this._serviceProvider = serviceProvider;
 
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
             // NOTE: Initialize these components now to spare execution time during real-time (Activator.CreateInstance<T>)
@@ -447,11 +447,16 @@ namespace EventsHandler.Configuration
         /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
-        private static TComponent GetComponent<TComponent>(ref TComponent? component, ILoadersContext loaderContext, LoaderTypes loaderType, string name)
+        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType,
+            string name)
             where TComponent : class
         {
             if (component == null)
             {
+                // Initialize new loaders context
+                ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+
+                // Set what type of loading service is going to be used
                 loaderContext.SetLoader(loaderType);
 
                 // Set value to reference

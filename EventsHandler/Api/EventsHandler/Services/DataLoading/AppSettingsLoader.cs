@@ -39,6 +39,11 @@ namespace EventsHandler.Services.DataLoading
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
         public virtual string GetPathWithNode(string currentPath, string nodeName)
         {
+            if (currentPath == "AppSettings")  // Skip "AppSettings" as part of the configuration path
+            {
+                return nodeName;
+            }
+
             return $"{currentPath}{(string.IsNullOrWhiteSpace(nodeName)
                 ? string.Empty
                 : GetNodePath(nodeName))}";

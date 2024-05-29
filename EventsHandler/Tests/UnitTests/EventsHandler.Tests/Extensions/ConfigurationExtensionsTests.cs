@@ -23,7 +23,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void GetApplicationInsightsLogLevel_ReturnsExpectedValue()
         {
             // Act
-            LogLevel actualValue = this._configuration!.GetApplicationInsightsLogLevel();
+            LogLevel actualValue = this._configuration!.LogLevel();
 
             // Assert
             Assert.That(actualValue, Is.EqualTo(LogLevel.Debug));
