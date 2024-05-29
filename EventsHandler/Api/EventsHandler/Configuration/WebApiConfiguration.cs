@@ -107,6 +107,10 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string InitiatorRole()
                     => GetValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
+                
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string CitizenIdentifier()
+                    => GetValue(this._loadersContext, this._currentPath, "PartijIdentificator");
             }
         }
 
