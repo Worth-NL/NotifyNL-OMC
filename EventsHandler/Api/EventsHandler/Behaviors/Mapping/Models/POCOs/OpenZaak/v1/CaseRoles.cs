@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// The roles of the case.
+    /// The roles of the case retrieved from "OpenZaak" Web service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenZaak" (1.0) Web service.

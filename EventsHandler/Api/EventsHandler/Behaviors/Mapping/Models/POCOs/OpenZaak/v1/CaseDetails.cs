@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// The details of the case.
+    /// The details of the case retrieved from "OpenZaak" Web service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenZaak" (1.0) Web service.

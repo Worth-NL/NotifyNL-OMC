@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
 {
     /// <summary>
-    /// A single role from <see cref="CaseRoles"/> results.
+    /// A single role from <see cref="CaseRoles"/> results retrieved from "OpenZaak" Web service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenZaak" (1.0) Web service.
