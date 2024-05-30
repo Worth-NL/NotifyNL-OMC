@@ -75,11 +75,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             // 1. Fetch case roles from "OpenZaak"
             // 2. Determine citizen data from case roles
             // 3. Return BSN from citizen data
-            return await GetBsnNumberFromCaseRolesAsync(queryBase, GetSpecificOpenZaakDomain());
+            return await GetBsnNumberAsync(queryBase, GetSpecificOpenZaakDomain());
         }
 
         /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase)"/>
-        protected Task<string> GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain);
+        protected Task<string> GetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain);
         #endregion
 
         #region Abstract (Case type)

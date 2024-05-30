@@ -27,8 +27,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase, string)"/>
-        async Task<string> IQueryZaak.GetBsnNumberFromCaseRolesAsync(IQueryBase queryBase, string openZaakDomain)
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(EventsHandler.Services.DataQuerying.Composition.Interfaces.IQueryBase,string)"/>
+        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain)
         {
             string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
