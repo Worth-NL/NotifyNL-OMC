@@ -38,7 +38,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenData"/>.
+        /// Gets the most recent (last) <see cref="CitizenData"/>.
         /// </summary>
         /// <value>
         ///   The data of a single citizen.
