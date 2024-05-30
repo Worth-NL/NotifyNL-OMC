@@ -39,10 +39,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenData"/>.
+        /// Gets the <see cref="CitizenData"/> with matching "initiator role" set.
         /// </summary>
         /// <value>
-        ///   The data of a single citizen (matching to the internal criteria).
+        ///   The data of a single citizen.
         /// </value>
         internal readonly CitizenData Citizen(WebApiConfiguration configuration)
         {
