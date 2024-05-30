@@ -6,8 +6,11 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The details about the citizen retrieved from "OpenKlant" (1.0) Web service.
+    /// The details about the citizen.
     /// </summary>
+    /// <remarks>
+    ///   Version: "OpenKlant" (1.0) Web service.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenDetails : IJsonSerializable
     {

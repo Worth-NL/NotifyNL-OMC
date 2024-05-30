@@ -7,8 +7,11 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {
     /// <summary>
-    /// The details of the case retrieved from "OpenZaak" (2.0) Web service.
+    /// The details of the case.
     /// </summary>
+    /// <remarks>
+    ///   Version: "OpenZaak" (2.0) Web service.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseDetails : IJsonSerializable
     {

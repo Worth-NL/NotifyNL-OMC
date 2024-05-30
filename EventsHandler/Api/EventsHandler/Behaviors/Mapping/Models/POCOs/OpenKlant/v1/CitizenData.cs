@@ -7,8 +7,11 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger") retrieved from "OpenKlant" (1.0) Web service.
+    /// The sensitive data about a single citizen ("burger").
     /// </summary>
+    /// <remarks>
+    ///   Version: "OpenKlant" (1.0) Web service.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenData : IJsonSerializable
     {

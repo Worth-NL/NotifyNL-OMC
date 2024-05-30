@@ -6,8 +6,11 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {
     /// <summary>
-    /// A single role from <see cref="CaseRoles"/> results retrieved from "OpenZaak" (2.0) Web service.
+    /// A single role from <see cref="CaseRoles"/> results.
     /// </summary>
+    /// <remarks>
+    ///   Version: "OpenZaak" (2.0) Web service.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRole : IJsonSerializable
     {
