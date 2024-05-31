@@ -5,6 +5,7 @@ using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
+using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -26,6 +27,7 @@ namespace EventsHandler.Controllers
     /// <seealso cref="OmcController"/>
     public sealed class EventsController : OmcController
     {
+        private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IProcessingService<NotificationEvent> _processor;
@@ -34,16 +36,19 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
         /// </summary>
+        /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public EventsController(
+            WebApiConfiguration configuration,
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
             IProcessingService<NotificationEvent> processor,
             IRespondingService<NotificationEvent> responder)
         {
+            this._configuration = configuration;
             this._serializer = serializer;
             this._validator = validator;
             this._processor = processor;
@@ -118,7 +123,8 @@ namespace EventsHandler.Controllers
         {
             LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
 
-            return Ok(DefaultValues.ApiController.Version);
+            return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} | " +
+                      $"OpenServices: v{this._configuration.AppSettings.Features.OpenServicesVersion()}" );
         }
 
         #region Helper methods
