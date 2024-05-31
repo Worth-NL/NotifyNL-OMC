@@ -394,11 +394,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Results representing citizen results (retrieved from OpenKlant Web service) are empty..
+        ///   Looks up a localized string similar to HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web service) are empty..
         /// </summary>
-        internal static string HttpRequest_ERROR_EmptyCitizenResults {
+        internal static string HttpRequest_ERROR_EmptyCitizensResults {
             get {
-                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCitizenResults", resourceCulture);
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCitizensResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Results representing results about parties (retrieved from OpenKlant Web service) are empty..
+        /// </summary>
+        internal static string HttpRequest_ERROR_EmptyPartiesResults {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyPartiesResults", resourceCulture);
             }
         }
         
