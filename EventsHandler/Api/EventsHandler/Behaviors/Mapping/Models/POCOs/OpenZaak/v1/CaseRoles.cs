@@ -43,6 +43,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
         /// <value>
         ///   The data of a single citizen.
         /// </value>
+        /// <exception cref="HttpRequestException"/>
         internal readonly CitizenData Citizen
         {
             get
