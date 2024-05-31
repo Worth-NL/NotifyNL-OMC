@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The ID of party (e.g., citizen, organization) in format:
         /// <code>
-        ///   http(s)://OpenKlantDomain/ApiEndpoint/[UUID].
+        ///   http(s)://OpenKlantDomain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
         [JsonInclude]
