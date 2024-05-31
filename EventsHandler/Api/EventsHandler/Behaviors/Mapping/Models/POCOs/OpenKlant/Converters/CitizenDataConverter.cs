@@ -17,16 +17,16 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
         /// </returns>
-        internal static CommonPartyData ConvertToUnified(this CitizenResult citizenResult)
+        internal static CommonPartyData ConvertToUnified(this CitizenResult citizen)
         {
             return new CommonPartyData
             {
-                Name                = citizenResult.Name,
-                SurnamePrefix       = citizenResult.SurnamePrefix,
-                Surname             = citizenResult.Surname,
-                DistributionChannel = citizenResult.DistributionChannel,
-                EmailAddress        = citizenResult.EmailAddress,
-                TelephoneNumber     = citizenResult.TelephoneNumber
+                Name                = citizen.Name,
+                SurnamePrefix       = citizen.SurnamePrefix,
+                Surname             = citizen.Surname,
+                DistributionChannel = citizen.DistributionChannel,
+                EmailAddress        = citizen.EmailAddress,
+                TelephoneNumber     = citizen.TelephoneNumber
             };
         }
 
@@ -36,24 +36,24 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
         /// </returns>
-        internal static CommonPartyData ConvertToUnified(this PartyResult partyResult)
+        internal static CommonPartyData ConvertToUnified(this PartyResult party)
         {
-            DistributionChannels distributionChannel = DetermineDistributionChannel(partyResult);
-            (string emailAddress, string telephoneNumber) = DetermineDigitalAddress(partyResult, distributionChannel);
+            DistributionChannels distributionChannel = DetermineDistributionChannel(party);
+            (string emailAddress, string telephoneNumber) = DetermineDigitalAddress(party, distributionChannel);
 
             return new CommonPartyData
             {
-                Name                = partyResult.Identification.Details.Name,
-                SurnamePrefix       = partyResult.Identification.Details.SurnamePrefix,
-                Surname             = partyResult.Identification.Details.Surname,
+                Name                = party.Identification.Details.Name,
+                SurnamePrefix       = party.Identification.Details.SurnamePrefix,
+                Surname             = party.Identification.Details.Surname,
                 DistributionChannel = distributionChannel,
                 EmailAddress        = emailAddress,
                 TelephoneNumber     = telephoneNumber
             };
 
-            static DistributionChannels DetermineDistributionChannel(PartyResult partyResult)
+            static DistributionChannels DetermineDistributionChannel(PartyResult party)
             {
-                return partyResult.Expansion.DigitalAddress.Type switch
+                return party.Expansion.DigitalAddress.Type switch
                 {
                     "Email" or "email" or "e-mail" => DistributionChannels.Email,
                     "SMS"   or "Sms"   or "sms"    => DistributionChannels.Sms,
@@ -62,12 +62,12 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
             }
 
             static (string /* Email address */, string /* Telephone number */)
-                DetermineDigitalAddress(PartyResult partyResult, DistributionChannels distributionChannel)
+                DetermineDigitalAddress(PartyResult party, DistributionChannels distributionChannel)
             {
                 return distributionChannel switch
                 {
-                    DistributionChannels.Email => (partyResult.Expansion.DigitalAddress.Address, string.Empty),
-                    DistributionChannels.Sms   => (string.Empty, partyResult.Expansion.DigitalAddress.Address),
+                    DistributionChannels.Email => (party.Expansion.DigitalAddress.Address, string.Empty),
+                    DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddress.Address),
                     _                          => (string.Empty, string.Empty)
 
                 };
