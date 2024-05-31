@@ -38,9 +38,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// Gets the <see cref="PartyResult"/>.
         /// </summary>
-        /// <value>
+        /// <returns>
         ///   The data of a single party.
-        /// </value>
+        /// </returns>
+        /// <exception cref="HttpRequestException"/>
         internal readonly PartyResult Party()
         {
             throw new NotImplementedException();
