@@ -109,7 +109,7 @@ namespace EventsHandler.Configuration
                     => GetValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string CitizenIdentifier()
+                internal string PartyIdentifier()
                     => GetValue(this._loadersContext, this._currentPath, "PartijIdentificator");
             }
         }

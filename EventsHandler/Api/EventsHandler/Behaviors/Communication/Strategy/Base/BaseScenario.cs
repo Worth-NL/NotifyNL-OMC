@@ -5,10 +5,10 @@ using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1.CitizenData;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Base
@@ -49,54 +49,43 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         internal virtual async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             Case @case = await this.DataQuery.From(notification).GetCaseAsync();
-            CitizenData citizen = (await this.DataQuery.From(notification).GetCitizenDetailsAsync()).Citizen;
+            CommonPartyData partyData = await this.DataQuery.From(notification).GetPartyDataAsync();
 
             // TODO: Introduce unit tests
             // Determine which types of notifications should be published
-            if (citizen.DistributionChannel == DistributionChannels.Sms)
+            return partyData.DistributionChannel switch
             {
-                return new[] { GetSmsNotifyData(@case, citizen) };
-            }
+                DistributionChannels.Email => new[] { GetEmailNotifyData(@case, partyData) },
 
-            if (citizen.DistributionChannel == DistributionChannels.Email)
-            {
-                return new[] { GetEmailNotifyData(@case, citizen) };
-            }
-
-            if (citizen.DistributionChannel == DistributionChannels.Both)  // TODO: Not working
-            {
-                return new[]
-                {
-                    GetSmsNotifyData(@case, citizen),
-                    GetEmailNotifyData(@case, citizen)
-                };
-            }
-
-            if (citizen.DistributionChannel == DistributionChannels.None)
-            {
-                return Array.Empty<NotifyData>();
-            }
-
-            // Notification method cannot be unknown. Fill the data properly in "OpenKlant"
-            throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown);
+                DistributionChannels.Sms   => new[] { GetSmsNotifyData(@case, partyData) },
+                
+                // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
+                DistributionChannels.Both  => new[] { GetEmailNotifyData(@case, partyData),  // TODO: Not working
+                                                      GetSmsNotifyData(@case, partyData) },
+                
+                DistributionChannels.None  => Array.Empty<NotifyData>(),
+                
+                // NOTE: Notification method cannot be unknown. Fill the data properly in "OpenKlant"
+                _ => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+            };
         }
 
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
-        /// <param name="citizen">The data associated to a specific citizen.</param>
+        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web service.
         /// </returns>
-        protected virtual NotifyData GetSmsNotifyData(Case @case, CitizenData citizen)
+        protected virtual NotifyData GetSmsNotifyData(Case @case, CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
-                contactDetails: citizen.TelephoneNumber,
+                contactDetails: partyData.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: GetSmsPersonalization(@case, citizen)
+                personalization: GetSmsPersonalization(@case, partyData)
             );
         }
 
@@ -104,18 +93,18 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
-        /// <param name="citizen">The data associated to a specific citizen.</param>
+        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web service.
         /// </returns>
-        protected virtual NotifyData GetEmailNotifyData(Case @case, CitizenData citizen)
+        protected virtual NotifyData GetEmailNotifyData(Case @case, CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
-                contactDetails: citizen.EmailAddress,
+                contactDetails: partyData.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: GetEmailPersonalization(@case, citizen)
+                personalization: GetEmailPersonalization(@case, partyData)
             );
         }
         #endregion
@@ -135,7 +124,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen);
+        protected abstract Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData);
 
         /// <summary>
         /// Gets the e-mail template ID for this strategy.
@@ -151,7 +140,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen);
+        protected abstract Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData);
         #endregion
     }
 }

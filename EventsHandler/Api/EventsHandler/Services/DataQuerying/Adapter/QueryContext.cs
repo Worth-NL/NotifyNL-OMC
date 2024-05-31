@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -44,14 +44,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryContext.GetCitizenDetailsAsync(string?)"/>
-        async Task<CitizenDetails> IQueryContext.GetCitizenDetailsAsync(string? bsnNumber)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
         {
             // 1. Fetch BSN using "OpenZaak" Web service (if it wasn't provided already)
             bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync();
 
             // 2. Fetch citizen details using "OpenKlant" Web service
-            return await this._queryKlant.GetCitizenDetailsAsync(this._queryBase, bsnNumber);
+            return await this._queryKlant.GetPartyDataAsync(this._queryBase, bsnNumber);
         }
         #endregion
 

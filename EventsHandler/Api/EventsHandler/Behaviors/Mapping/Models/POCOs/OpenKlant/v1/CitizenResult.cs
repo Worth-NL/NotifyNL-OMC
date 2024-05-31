@@ -7,69 +7,55 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger").
+    /// The sensitive data about the citizen ("burger") retrieved from "OpenKlant" Web service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web service.
     /// </remarks>
+    /// <seealso cref="CommonPartyData"/>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenData : IJsonSerializable
+    public struct CitizenResult : IJsonSerializable
     {
-        /// <summary>
-        /// The first name of the citizen.
-        /// </summary>
+        /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonInclude]
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
-
-        /// <summary>
-        /// The prefix added before the Dutch / Belgian surname.
-        /// <para>
-        ///   <example>
-        ///     Prefixes: "de", "van", "van de", "van der", "van den", "te", "ter", "ten".
-        ///   </example>
-        /// </para>
-        /// </summary>
+        
+        /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
         [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
         public string SurnamePrefix { get; internal set; } = string.Empty;
-
-        /// <summary>
-        /// The last name (surname) of the citizen.
-        /// </summary>
+        
+        /// <inheritdoc cref="CommonPartyData.Surname"/>
         [JsonInclude]
         [JsonPropertyName("achternaam")]
         [JsonPropertyOrder(2)]
         public string Surname { get; internal set; } = string.Empty;
-
-        /// <inheritdoc cref="DistributionChannels"/>
+        
+        /// <inheritdoc cref="CommonPartyData.DistributionChannel"/>
         [JsonInclude]
         [JsonPropertyName("aanmaakkanaal")]
         [JsonPropertyOrder(3)]
         public DistributionChannels DistributionChannel { get; internal set; }
-
-        /// <summary>
-        /// The telephone number of the citizen.
-        /// </summary>
+        
+        /// <inheritdoc cref="CommonPartyData.TelephoneNumber"/>
         [JsonInclude]
         [JsonPropertyName("telefoonnummer")]
         [JsonPropertyOrder(4)]
         public string TelephoneNumber { get; internal set; } = string.Empty;
-
-        /// <summary>
-        /// The e-mail address of the citizen.
-        /// </summary>
+        
+        /// <inheritdoc cref="CommonPartyData.EmailAddress"/>
         [JsonInclude]
         [JsonPropertyName("emailadres")]
         [JsonPropertyOrder(5)]
         public string EmailAddress { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenData"/> struct.
+        /// Initializes a new instance of the <see cref="CitizenResult"/> struct.
         /// </summary>
-        public CitizenData()
+        public CitizenResult()
         {
         }
     }
