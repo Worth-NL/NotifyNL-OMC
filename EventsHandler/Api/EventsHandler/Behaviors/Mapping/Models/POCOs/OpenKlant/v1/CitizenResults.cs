@@ -2,6 +2,8 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
@@ -41,6 +43,18 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
         /// <value>
         ///   The data of a single citizen.
         /// </value>
-        internal readonly CitizenResult Citizen => this.Results[^1];  // TODO: Exception
+        /// <exception cref="HttpRequestException"/>
+        internal readonly CitizenResult Citizen
+        {
+            get
+            {
+                if (this.Results.IsNullOrEmpty())
+                {
+                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCitizenResults);
+                }
+
+                return this.Results[^1];
+            }
+        }
     }
 }
