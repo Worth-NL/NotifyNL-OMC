@@ -17,7 +17,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     public struct PartyResult : IJsonSerializable
     {
         /// <summary>
-        /// The ID of party (e.g., citizen, organization) in format: https://[OpenKlantDomain]/endpoint/UUID.
+        /// The ID of party (e.g., citizen, organization) in format:
+        /// <code>
+        ///   protocol://[OpenKlantDomain]/endpoint/UUID.
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("url")]
