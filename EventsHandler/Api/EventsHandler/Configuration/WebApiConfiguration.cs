@@ -72,15 +72,71 @@ namespace EventsHandler.Configuration
         [UsedImplicitly]
         internal sealed record AppSettingsComponent
         {
+            // NOTE: Property "Logging" (from "appsettings.json") is skipped because it's not used anywhere in the code
+
+            /// <inheritdoc cref="EncryptionComponent"/>
+            internal EncryptionComponent Encryption { get; }
+            
+            /// <inheritdoc cref="FeaturesComponent"/>
+            internal FeaturesComponent Features { get; }
+            
             /// <inheritdoc cref="VariablesComponent"/>
             internal VariablesComponent Variables { get; }
-            
+
+            // NOTE: Property "AllowedHosts" (from "appsettings.json") is skipped because it's not used anywhere in the code
+
             /// <summary>
             /// Initializes a new instance of the <see cref="AppSettingsComponent"/> class.
             /// </summary>
             public AppSettingsComponent(ILoadersContext loadersContext, string parentName)
             {
+                this.Encryption = new EncryptionComponent(loadersContext, parentName);
+                this.Features = new FeaturesComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
+            }
+            
+            /// <summary>
+            /// The "Encryption" part of the settings.
+            /// </summary>
+            internal sealed record EncryptionComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+                
+                /// <summary>
+                /// Initializes a new instance of the <see cref="EncryptionComponent"/> class.
+                /// </summary>
+                internal EncryptionComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Encryption));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal bool IsAsymmetric()
+                    => GetValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
+            }
+            
+            /// <summary>
+            /// The "Features" part of the settings.
+            /// </summary>
+            internal sealed record FeaturesComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+                
+                /// <summary>
+                /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
+                /// </summary>
+                internal FeaturesComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal ushort OpenServicesVersion()
+                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(OpenServicesVersion));
             }
             
             /// <summary>
