@@ -32,10 +32,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
 
         #region Helper methods
         /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web service URI.
-        /// <para>
-        ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
-        /// </para>
+        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web service URI:
+        /// <code>
+        ///   http(s)://[DOMAIN]/ApiEndpoint
+        /// </code>
         /// </summary>
         protected sealed string GetSpecificOpenKlantDomain() => this.Configuration.User.Domain.OpenKlant();
         #endregion
