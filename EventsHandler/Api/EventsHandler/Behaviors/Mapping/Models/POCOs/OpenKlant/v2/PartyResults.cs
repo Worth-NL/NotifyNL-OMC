@@ -2,6 +2,8 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {
@@ -44,6 +46,11 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// <exception cref="HttpRequestException"/>
         internal readonly PartyResult Party()
         {
+            if (this.Results.IsNullOrEmpty())
+            {
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
+            }
+
             throw new NotImplementedException();
         }
     }

@@ -50,7 +50,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
             {
                 if (this.Results.IsNullOrEmpty())
                 {
-                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCitizenResults);
+                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCitizensResults);
                 }
 
                 return this.Results[^1];
