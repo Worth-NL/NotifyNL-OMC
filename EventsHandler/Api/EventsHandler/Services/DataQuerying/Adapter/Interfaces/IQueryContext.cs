@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -41,12 +41,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryKlant.GetCitizenDetailsAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web service.
         /// </remarks>
-        internal Task<CitizenDetails> GetCitizenDetailsAsync(string? bsnNumber = null);
+        internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
         #endregion
 
         #region IQueryZaak
