@@ -8,6 +8,9 @@ namespace EventsHandler.Services.DataLoading
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>
+    /// <remarks>
+    ///   This data provider is using system's Environment Variables.
+    /// </remarks>
     internal class EnvironmentLoader : ILoadingService
     {
         #region Polymorphism
