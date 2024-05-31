@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The details about the citizen.
+    /// The results about the citizens retrieved from "OpenKlant" Web service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web service.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenDetails : IJsonSerializable
+    public struct CitizenResults : IJsonSerializable
     {
         /// <summary>
         /// The number of received results.
@@ -22,25 +22,25 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
-        /// <inheritdoc cref="CitizenData"/>
+        /// <inheritdoc cref="CitizenResult"/>
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CitizenData> Results { get; internal set; } = new();
+        public List<CitizenResult> Results { get; internal set; } = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenDetails"/> struct.
+        /// Initializes a new instance of the <see cref="CitizenResults"/> struct.
         /// </summary>
-        public CitizenDetails()
+        public CitizenResults()
         {
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenData"/>.
+        /// Gets the <see cref="CitizenResult"/>.
         /// </summary>
         /// <value>
         ///   The data of a single citizen.
         /// </value>
-        internal readonly CitizenData Citizen => this.Results[^1];
+        internal readonly CitizenResult Citizen => this.Results[^1];  // TODO: Exception
     }
 }
