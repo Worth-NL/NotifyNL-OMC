@@ -100,10 +100,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Helper methods
         /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web service URI.
-        /// <para>
-        ///   <code>http(s)://[DOMAIN]/ApiEndpoint</code>
-        /// </para>
+        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web service URI:
+        /// <code>
+        ///   http(s)://[DOMAIN]/ApiEndpoint
+        /// </code>
         /// </summary>
         protected sealed string GetSpecificOpenZaakDomain() => this.Configuration.User.Domain.OpenZaak();
         #endregion
