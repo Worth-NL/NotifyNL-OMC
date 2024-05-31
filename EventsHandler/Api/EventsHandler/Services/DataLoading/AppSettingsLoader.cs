@@ -8,6 +8,9 @@ namespace EventsHandler.Services.DataLoading
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>
+    /// <remarks>
+    ///   This data provider is using "appsettings.json" configuration file.
+    /// </remarks>
     internal class AppSettingsLoader : ILoadingService
     {
         private readonly IConfiguration _configuration;
