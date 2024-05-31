@@ -3,7 +3,6 @@
 using EventsHandler.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace EventsHandler.UnitTests.Extensions
 {
@@ -20,23 +19,23 @@ namespace EventsHandler.UnitTests.Extensions
 
         #region Specific GetValue methods
         [Test]
-        public void GetApplicationInsightsLogLevel_ReturnsExpectedValue()
-        {
-            // Act
-            LogLevel actualValue = this._configuration!.LogLevel();
-
-            // Assert
-            Assert.That(actualValue, Is.EqualTo(LogLevel.Debug));
-        }
-
-        [Test]
-        public void IsEncryptionAsymmetric_ReturnsExpectedValue()
+        public void Encryption_ReturnsExpectedValue()
         {
             // Act
             bool actualValue = this._configuration!.IsEncryptionAsymmetric();
 
             // Assert
             Assert.That(actualValue, Is.False);
+        }
+        
+        [Test]
+        public void Features_ReturnsExpectedValue()
+        {
+            // Act
+            ushort actualValue = this._configuration!.OpenServicesVersion();
+
+            // Assert
+            Assert.That(actualValue, Is.EqualTo(1));
         }
         #endregion
 
