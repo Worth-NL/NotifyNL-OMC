@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Constants;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
@@ -15,22 +16,30 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     /// <seealso cref="IJsonSerializable"/>
     public struct PartyResult : IJsonSerializable
     {
-        /// <inheritdoc cref="DigitalAddressShort"/>
+        /// <summary>
+        /// The party (e.g., citizen, organization) ID in format: https://[OpenKlantDomain]/endpoint/UUID.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("url")]
+        [JsonPropertyOrder(0)]
+        public Uri Id { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <inheritdoc cref="DigitalAddressShort" />
         [JsonInclude]
         [JsonPropertyName("voorkeursDigitaalAdres")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public DigitalAddressShort DigitalAddress { get; internal set; }
         
         /// <inheritdoc cref="PartyIdentification"/>
         [JsonInclude]
         [JsonPropertyName("partijIdentificatie")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public PartyIdentification Identification { get; internal set; }
 
         /// <inheritdoc cref="v2.Expansion"/>
         [JsonInclude]
         [JsonPropertyName("_expand")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(3)]
         public Expansion Expansion { get; internal set; }
 
         /// <summary>
