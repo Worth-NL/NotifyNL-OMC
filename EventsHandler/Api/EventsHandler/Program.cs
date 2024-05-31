@@ -254,11 +254,9 @@ namespace EventsHandler
             // Queries and HTTP resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
+            builder.Services.RegisterOpenServices();
 
-            builder.Services.AddSingleton<IQueryBase, QueryBase>();
-            builder.Services.AddSingleton<IQueryKlant, QueryKlant>();
-            builder.Services.AddSingleton<IQueryZaak, QueryZaak>();
-
+            // HTTP communication + authorization
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
             builder.Services.RegisterClientFactories();
 
@@ -305,6 +303,14 @@ namespace EventsHandler
             services.AddSingleton<CaseStatusUpdatedScenario>();
             services.AddSingleton<CaseFinishedScenario>();
             services.AddSingleton<NotImplementedScenario>();
+        }
+
+        private static void RegisterOpenServices(this IServiceCollection services)
+        {
+            // Common query methods
+            services.AddSingleton<IQueryBase, QueryBase>();
+
+
         }
 
         private static void RegisterClientFactories(this IServiceCollection services)

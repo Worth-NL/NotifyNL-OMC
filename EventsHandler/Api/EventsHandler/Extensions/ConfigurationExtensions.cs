@@ -14,22 +14,25 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static partial class ConfigurationExtensions  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
+        #region GetValue<T>
         /// <summary>
-        /// Gets the <see cref="Microsoft.Extensions.Logging.LogLevel"/> defined for Application Insights (Azure service).
+        /// Gets type of encryption used in the application for JWT tokens.
         /// </summary>
-        /// <param name="configuration">The configuration manager to be used.</param>
-        /// <returns>
-        ///   The value of <see cref="Microsoft.Extensions.Logging.LogLevel"/>.
-        /// </returns>
-        internal static LogLevel LogLevel(this IConfiguration configuration)
-            => configuration.GetValue<LogLevel>("Logging:LogLevel:Default");
-
+        /// <param name="configuration">The application configuration.</param>
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
-            => configuration.GetValue<bool>("Encryption:IsAsymmetric");
+            => configuration.GetValue<bool>(key: $"{nameof(WebApiConfiguration.AppSettings.Encryption)}:" +
+                                                 $"{nameof(WebApiConfiguration.AppSettings.Encryption.IsAsymmetric)}");
+        
+        /// <summary>
+        /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
+        /// </summary>
+        /// <param name="configuration">The application configuration.</param>
+        internal static ushort OpenServicesVersion(this IConfiguration configuration)
+            => configuration.GetValue<ushort>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
+                                                   $"{nameof(WebApiConfiguration.AppSettings.Features.OpenServicesVersion)}");
+        #endregion
 
-        internal static bool UseNewOpenKlant(this IConfiguration configuration)
-            => configuration.GetValue<bool>("Features:UseNewOpenKlant");
-
+        #region Validation
         /// <summary>
         /// Gets the <see langword="string"/> value from the configuration.
         /// </summary>
@@ -81,7 +84,10 @@ namespace EventsHandler.Extensions
                 ? value
                 : throw new ArgumentException(Resources.Configuration_ERROR_InvalidTemplateId + Separated(value));
         }
+        #endregion
 
+        #region Formatting
         internal static string Separated(this string text) => $" {text}";
+        #endregion
     }
 }
