@@ -142,6 +142,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_OpenKlantVersionUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_OpenKlantVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_OpenZaakVersionUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_OpenZaakVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {

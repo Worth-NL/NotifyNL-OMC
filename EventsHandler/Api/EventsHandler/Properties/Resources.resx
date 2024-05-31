@@ -359,6 +359,12 @@
   <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
     <value>HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
   </data>
+  <data name="Configuration_ERROR_OpenKlantVersionUnknown" xml:space="preserve">
+    <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+  </data>
+  <data name="Configuration_ERROR_OpenZaakVersionUnknown" xml:space="preserve">
+    <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+  </data>
   <data name="HttpRequest_ERROR_MultipleInitiatorRoles" xml:space="preserve">
     <value>HTTP Request: Multiple roles (retrieved from OpenZaak Web service) have the same initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). It cannot be determined which of them is the initiator.</value>
   </data>

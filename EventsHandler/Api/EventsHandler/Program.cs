@@ -22,10 +22,6 @@ using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Base;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
@@ -55,6 +51,8 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
+using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 
 namespace EventsHandler
 {
@@ -68,7 +66,7 @@ namespace EventsHandler
         /// Custom simplified version of application configuration.
         /// </summary>
         /// <param name="args">The <see cref="Program"/> startup arguments.</param>
-        private static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
                 .ConfigureServices()      // 1. Add and configure different types of services used by this application
@@ -254,7 +252,7 @@ namespace EventsHandler
             // Queries and HTTP resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
-            builder.Services.RegisterOpenServices();
+            builder.RegisterOpenServices();
 
             // HTTP communication + authorization
             builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
@@ -305,12 +303,35 @@ namespace EventsHandler
             services.AddSingleton<NotImplementedScenario>();
         }
 
-        private static void RegisterOpenServices(this IServiceCollection services)
+        private static void RegisterOpenServices(this WebApplicationBuilder builder)
         {
             // Common query methods
-            services.AddSingleton<IQueryBase, QueryBase>();
+            builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
+            // Strategies
+            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(builder));
+            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(builder));
+            return;
 
+            static Type DetermineOpenZaakVersion(WebApplicationBuilder builder)
+            {
+                return builder.Configuration.OpenServicesVersion() switch
+                {
+                    1 => typeof(OpenZaak.v1.QueryZaak),
+                    2 => typeof(OpenZaak.v2.QueryZaak),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_OpenZaakVersionUnknown)
+                };
+            }
+
+            static Type DetermineOpenKlantVersion(WebApplicationBuilder builder)
+            {
+                return builder.Configuration.OpenServicesVersion() switch
+                {
+                    1 => typeof(OpenKlant.v1.QueryKlant),
+                    2 => typeof(OpenKlant.v2.QueryKlant),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_OpenKlantVersionUnknown)
+                };
+            }
         }
 
         private static void RegisterClientFactories(this IServiceCollection services)
