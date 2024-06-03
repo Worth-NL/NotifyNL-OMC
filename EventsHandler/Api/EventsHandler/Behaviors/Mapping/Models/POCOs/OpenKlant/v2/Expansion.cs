@@ -15,6 +15,6 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         [JsonInclude]
         [JsonPropertyName("digitaleAdressen")]
         [JsonPropertyOrder(0)]
-        public DigitalAddressLong DigitalAddress { get; internal set; }
+        public DigitalAddressLong[] DigitalAddresses { get; internal set; }
     }
 }
