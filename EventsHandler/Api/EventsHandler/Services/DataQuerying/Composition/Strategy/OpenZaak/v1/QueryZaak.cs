@@ -46,7 +46,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
                     $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(
-                httpsClientType: HttpClientTypes.Data,
+                httpsClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseWithRoleUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseRole);
         }
@@ -62,7 +62,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(
-                httpsClientType: HttpClientTypes.Data,
+                httpsClientType: HttpClientTypes.OpenZaak_v1,
                 uri: queryBase.Notification.MainObject,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
         }

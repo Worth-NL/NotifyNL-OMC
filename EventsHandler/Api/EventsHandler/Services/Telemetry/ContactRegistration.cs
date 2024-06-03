@@ -74,7 +74,7 @@ namespace EventsHandler.Services.Telemetry
             // Sending the request and getting the response (combined internal logic)
             return await this._dataQuery
                 .From(notification)
-                .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
+                .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry_ContactMomenten, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace EventsHandler.Services.Telemetry
 
             // Sending the request
             (bool success, string jsonResponse) =
-                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry, klantContactMomentUri, body);
+                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry_ContactMomenten, klantContactMomentUri, body);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);

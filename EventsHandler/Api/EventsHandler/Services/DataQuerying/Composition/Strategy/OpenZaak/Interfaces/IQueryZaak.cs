@@ -24,7 +24,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<Case>(
-                httpsClientType: HttpClientTypes.Data,
+                httpsClientType: HttpClientTypes.OpenZaak_v1,
                 uri: await GetCaseTypeUriAsync(queryBase),
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
-                httpsClientType: HttpClientTypes.Data,
+                httpsClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseStatuses,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
@@ -53,13 +53,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
+        // TODO: Static method => to be used as inherited interface in IQueryContext?
         internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
         {
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
             return await queryBase.ProcessGetAsync<CaseStatusType>(
-                httpsClientType: HttpClientTypes.Data,
+                httpsClientType: HttpClientTypes.OpenZaak_v1,
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
         }

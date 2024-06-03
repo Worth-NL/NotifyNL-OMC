@@ -53,10 +53,17 @@ namespace EventsHandler.Services.DataReceiving
         #region Helper methods
         private void InitializeAvailableHttpClients()
         {
-            this._httpClients.TryAdd(HttpClientTypes.Data, this._httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
                 .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
 
-            this._httpClients.TryAdd(HttpClientTypes.Telemetry, this._httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
+                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+
+            // TODO: Open Klant 2 using static token from Environment Variables
+            this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
+                .GetHttpClient(new[] { ("Authorization", "Token ") }));
+
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry_ContactMomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
         }
 
