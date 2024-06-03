@@ -70,7 +70,7 @@ namespace EventsHandler.Controllers.Base
         };
 
         /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
-        private static void LogMessage(LogLevel logLevel, string logMessage)
+        internal static void LogMessage(LogLevel logLevel, string logMessage)
         {
             _ = SentrySdk.CaptureMessage($"{Resources.Application_Name} | {logLevel:G} | {logMessage}", s_logMapping[logLevel]);
         }

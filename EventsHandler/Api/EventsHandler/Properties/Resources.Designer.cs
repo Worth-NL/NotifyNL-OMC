@@ -358,11 +358,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version of the API was requested.
+        ///   Looks up a localized string similar to The version of the API was requested..
         /// </summary>
         internal static string Events_ApiVersionRequested {
             get {
                 return ResourceManager.GetString("Events_ApiVersionRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID:.
+        /// </summary>
+        internal static string Events_NotifyClientInitialized {
+            get {
+                return ResourceManager.GetString("Events_NotifyClientInitialized", resourceCulture);
             }
         }
         
