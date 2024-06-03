@@ -38,40 +38,42 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         /// </returns>
         internal static CommonPartyData ConvertToUnified(this PartyResult party)
         {
-            DistributionChannels distributionChannel = DetermineDistributionChannel(party);
-            (string emailAddress, string telephoneNumber) = DetermineDigitalAddress(party, distributionChannel);
+            return default;
 
-            return new CommonPartyData
-            {
-                Name                = party.Identification.Details.Name,
-                SurnamePrefix       = party.Identification.Details.SurnamePrefix,
-                Surname             = party.Identification.Details.Surname,
-                DistributionChannel = distributionChannel,
-                EmailAddress        = emailAddress,
-                TelephoneNumber     = telephoneNumber
-            };
+            //DistributionChannels distributionChannel = DetermineDistributionChannel(party);
+            //(string emailAddress, string telephoneNumber) = DetermineDigitalAddress(party, distributionChannel);
 
-            static DistributionChannels DetermineDistributionChannel(PartyResult party)
-            {
-                return party.Expansion.DigitalAddresses.Type switch
-                {
-                    "Email" or "email" or "e-mail" => DistributionChannels.Email,
-                    "SMS"   or "Sms"   or "sms"    => DistributionChannels.Sms,
-                    _                              => DistributionChannels.Unknown
-                };
-            }
+            //return new CommonPartyData
+            //{
+            //    Name                = party.Identification.Details.Name,
+            //    SurnamePrefix       = party.Identification.Details.SurnamePrefix,
+            //    Surname             = party.Identification.Details.Surname,
+            //    DistributionChannel = distributionChannel,
+            //    EmailAddress        = emailAddress,
+            //    TelephoneNumber     = telephoneNumber
+            //};
 
-            static (string /* Email address */, string /* Telephone number */)
-                DetermineDigitalAddress(PartyResult party, DistributionChannels distributionChannel)
-            {
-                return distributionChannel switch
-                {
-                    DistributionChannels.Email => (party.Expansion.DigitalAddresses.Address, string.Empty),
-                    DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddresses.Address),
-                    _                          => (string.Empty, string.Empty)
+            //static DistributionChannels DetermineDistributionChannel(PartyResult party)
+            //{
+            //    return party.Expansion.DigitalAddresses.Type switch
+            //    {
+            //        "Email" or "email" or "e-mail" => DistributionChannels.Email,
+            //        "SMS"   or "Sms"   or "sms"    => DistributionChannels.Sms,
+            //        _                              => DistributionChannels.Unknown
+            //    };
+            //}
 
-                };
-            }
+            //static (string /* Email address */, string /* Telephone number */)
+            //    DetermineDigitalAddress(PartyResult party, DistributionChannels distributionChannel)
+            //{
+            //    return distributionChannel switch
+            //    {
+            //        DistributionChannels.Email => (party.Expansion.DigitalAddresses.Address, string.Empty),
+            //        DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddresses.Address),
+            //        _                          => (string.Empty, string.Empty)
+
+            //    };
+            //}
         }
     }
 }
