@@ -16,6 +16,8 @@ namespace EventsHandler.Services.DataReceiving
     /// <inheritdoc cref="IHttpNetworkService"/>
     internal sealed class HttpNetworkService : IHttpNetworkService
     {
+        private static readonly object s_padlock = new();
+
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
         private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
@@ -106,23 +108,26 @@ namespace EventsHandler.Services.DataReceiving
         /// </returns>
         private HttpClient AuthorizeWithGeneratedJwt(HttpClient httpClient)
         {
-            // TODO: Caching the token until the expiration time doesn't elapse yet
-            SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
-                this._configuration.User.Authorization.JWT.Secret());
+            lock (s_padlock)
+            {
+                // TODO: Caching the token until the expiration time doesn't elapse yet
+                SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
+                    this._configuration.User.Authorization.JWT.Secret());
 
-            // Preparing JWT token
-            string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
-                this._configuration.User.Authorization.JWT.Issuer(),
-                this._configuration.User.Authorization.JWT.Audience(),
-                this._configuration.User.Authorization.JWT.ExpiresInMin(),
-                this._configuration.User.Authorization.JWT.UserId(),
-                this._configuration.User.Authorization.JWT.UserName());
+                // Preparing JWT token
+                string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
+                    this._configuration.User.Authorization.JWT.Issuer(),
+                    this._configuration.User.Authorization.JWT.Audience(),
+                    this._configuration.User.Authorization.JWT.ExpiresInMin(),
+                    this._configuration.User.Authorization.JWT.UserId(),
+                    this._configuration.User.Authorization.JWT.UserName());
 
-            // Set Authorization header
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
+                // Set Authorization header
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
 
-            return httpClient;
+                return httpClient;
+            }
         }
 
         /// <summary>
@@ -138,9 +143,8 @@ namespace EventsHandler.Services.DataReceiving
         {
             return httpClientType switch
             {
-                // TODO: Open Klant 2 using static token from Environment Variables
                 HttpClientTypes.OpenKlant_v2
-                    => $"{DefaultValues.Authorization.Static.Token} ",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant_2()}",
 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
