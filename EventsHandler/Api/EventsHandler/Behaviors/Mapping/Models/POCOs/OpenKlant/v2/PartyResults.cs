@@ -51,6 +51,14 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
+            foreach (PartyResult result in this.Results)
+            {
+                foreach (DigitalAddressLong address in result.Expansion.DigitalAddresses)
+                {
+
+                }
+            }
+
             throw new NotImplementedException();
         }
     }
