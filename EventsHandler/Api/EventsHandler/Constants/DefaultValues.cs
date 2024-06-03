@@ -39,6 +39,11 @@ namespace EventsHandler.Constants
 
                 internal static string BearerSchema => "Bearer";
             }
+
+            internal static class Static
+            {
+                internal static string Token => "Token";
+            }
         }
         #endregion
 
