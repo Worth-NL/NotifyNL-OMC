@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
     internal sealed class QueryBase : IQueryBase
     {
         private readonly ISerializationService _serializer;
-        private readonly IHttpNetworkService _httpNetwork;
+        private readonly IHttpNetworkService _networkService;
 
         /// <inheritdoc cref="IQueryBase.Notification"/>
         NotificationEvent IQueryBase.Notification { get; set; }
@@ -21,17 +21,17 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBase"/> class.
         /// </summary>
-        public QueryBase(ISerializationService serializer, IHttpNetworkService httpNetwork)
+        public QueryBase(ISerializationService serializer, IHttpNetworkService networkService)
         {
             this._serializer = serializer;
-            this._httpNetwork = httpNetwork;
+            this._networkService = networkService;
         }
 
         #region Internal methods
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
         {
-            (bool isSuccess, string jsonResult) = await this._httpNetwork.GetAsync(httpsClientType, uri);
+            (bool isSuccess, string jsonResult) = await this._networkService.GetAsync(httpsClientType, uri);
 
             return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
@@ -39,7 +39,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
         {
-            (bool isSuccess, string jsonResult) = await this._httpNetwork.PostAsync(httpsClientType, uri, body);
+            (bool isSuccess, string jsonResult) = await this._networkService.PostAsync(httpsClientType, uri, body);
 
             return GetApiResult<TModel>(isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
