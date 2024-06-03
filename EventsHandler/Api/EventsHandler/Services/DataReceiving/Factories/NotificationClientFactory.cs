@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Configuration;
+using EventsHandler.Controllers.Base;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Decorator;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
@@ -22,8 +24,10 @@ namespace EventsHandler.Services.DataReceiving.Factories
         }
 
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
-        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string _)
+        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string organizationId)
         {
+            OmcController.LogMessage(LogLevel.Trace, $"{Resources.Events_NotifyClientInitialized} {organizationId}.");
+
             return new NotifyClientDecorator(
                 new NotificationClient(
                     baseUrl: this._configuration.OMC.API.BaseUrl.NotifyNL(),  // The base URL to "Notify NL" API Service

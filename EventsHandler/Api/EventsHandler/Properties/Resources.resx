@@ -326,7 +326,7 @@
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
   <data name="Events_ApiVersionRequested" xml:space="preserve">
-    <value>Version of the API was requested</value>
+    <value>The version of the API was requested.</value>
     <comment>API Endpoint: Events/Version</comment>
   </data>
   <data name="Application_Name" xml:space="preserve">
@@ -364,6 +364,9 @@
   </data>
   <data name="Configuration_ERROR_OpenZaakVersionUnknown" xml:space="preserve">
     <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+  </data>
+  <data name="Events_NotifyClientInitialized" xml:space="preserve">
+    <value>The Notify HttpClient was initialized for organization ID:</value>
   </data>
   <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
     <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web service) are empty.</value>
