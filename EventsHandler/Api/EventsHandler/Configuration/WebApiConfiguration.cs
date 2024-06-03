@@ -135,8 +135,8 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal ushort OpenServicesVersion()
-                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(OpenServicesVersion));
+                internal byte OpenServicesVersion()
+                    => GetValue<byte>(this._loadersContext, this._currentPath, nameof(OpenServicesVersion));
             }
             
             /// <summary>
@@ -535,23 +535,25 @@ namespace EventsHandler.Configuration
         /// <summary>
         /// Retrieves cached settings value.
         /// </summary>
-        private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<string>(finalPath)
-                .NotEmpty(finalPath);
+            return disableValidation
+                ? loadersContext.GetData<string>(finalPath)
+                : loadersContext.GetData<string>(finalPath).NotEmpty(finalPath);
         }
 
         /// <summary>
         /// Retrieves cached settings value.
         /// </summary>
-        private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName)
+        private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return loadersContext.GetData<TData>(finalPath)
-                .NotEmpty(finalPath);
+            return disableValidation
+                ? loadersContext.GetData<TData>(finalPath)
+                : loadersContext.GetData<TData>(finalPath).NotEmpty(finalPath);
         }
 
         /// <summary>
