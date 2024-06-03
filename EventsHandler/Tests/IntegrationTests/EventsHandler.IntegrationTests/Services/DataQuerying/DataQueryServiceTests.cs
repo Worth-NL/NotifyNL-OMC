@@ -32,10 +32,10 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             WebApiConfiguration configuration = new(new MockingContext());
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
-            IHttpSupplierService supplier = new JwtHttpSupplier(configuration, encryptionContext, httpClientFactory);
+            IHttpNetworkService network = new JwtHttpNetwork(configuration, encryptionContext, httpClientFactory);
 
             // Larger services
-            this._dataQuery = new DataQueryService(queryContext, supplier);
+            this._dataQuery = new DataQueryService(queryContext, network);
 
             // Notification
             this._notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated();

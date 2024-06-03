@@ -96,7 +96,7 @@ namespace EventsHandler.Services.Telemetry
 
             // Sending the request
             (bool success, string jsonResponse) =
-                await this._dataQuery.HttpSupplier.PostAsync(HttpClientTypes.Telemetry, klantContactMomentUri, body);
+                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry, klantContactMomentUri, body);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);
