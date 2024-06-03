@@ -61,7 +61,7 @@ namespace EventsHandler.Services.DataReceiving
 
             // TODO: Open Klant 2 using static token from Environment Variables
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", "Token ") }));
+                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_ContactMomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
@@ -80,10 +80,10 @@ namespace EventsHandler.Services.DataReceiving
                     return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
-                // Determine whether GET or POST call should be sent (depends on if body is required)
+                // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 HttpResponseMessage result = body is null
-                    ? await AuthorizeWithJwt(ResolveClient(httpClientType)).GetAsync(uri)
-                    : await AuthorizeWithJwt(ResolveClient(httpClientType)).PostAsync(uri, body);
+                    ? await ResolveClient(httpClientType).GetAsync(uri)
+                    : await ResolveClient(httpClientType).PostAsync(uri, body);
 
                 return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());  // Status + JSON response
             }
@@ -99,13 +99,30 @@ namespace EventsHandler.Services.DataReceiving
         /// <exception cref="ArgumentNullException"/>
         private HttpClient ResolveClient(HttpClientTypes httpClientType)
         {
-            return this._httpClients.GetValueOrDefault(httpClientType)!;
+            return httpClientType switch
+            {
+                // Clients requiring JWT token to be refreshed
+                HttpClientTypes.OpenZaak_v1  or
+                HttpClientTypes.OpenKlant_v1 or
+                HttpClientTypes.Telemetry_ContactMomenten
+                    => AuthorizeWithJwtToken(this._httpClients.GetValueOrDefault(httpClientType)!),
+                    
+                // Clients using static tokens from configuration
+                HttpClientTypes.OpenKlant_v2
+                    => this._httpClients.GetValueOrDefault(httpClientType)!,
+                
+                _ => throw new ArgumentException(
+                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
+            };
         }
 
         /// <summary>
         /// Adds JWT Token to "Authorize" header of the HTTP Request.
         /// </summary>
-        private HttpClient AuthorizeWithJwt(HttpClient httpClient)
+        /// <remarks>
+        /// The token will be initialized for the first time and then refreshed if it's time expired.
+        /// </remarks>
+        private HttpClient AuthorizeWithJwtToken(HttpClient httpClient)
         {
             // TODO: To be considered, caching the token until the expiration time doesn't elapse yet
             SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
@@ -124,6 +141,24 @@ namespace EventsHandler.Services.DataReceiving
                 DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
 
             return httpClient;
+        }
+
+        /// <summary>
+        /// Returns static value of "Authorize" header of the HTTP Request.
+        /// </summary>
+        /// <remarks>
+        /// The token will be got from a specific setting defined in <see cref="WebApiConfiguration"/>.
+        /// </remarks>
+        private string AuthorizeWithStaticToken(HttpClientTypes httpClientType)
+        {
+            return httpClientType switch
+            {
+                HttpClientTypes.OpenKlant_v2
+                    => $"{DefaultValues.Authorization.Static.Token} ",
+
+                _ => throw new ArgumentException(
+                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
+            };
         }
         #endregion
     }
