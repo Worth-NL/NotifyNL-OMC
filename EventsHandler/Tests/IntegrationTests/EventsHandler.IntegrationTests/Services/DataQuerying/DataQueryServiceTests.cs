@@ -32,7 +32,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             WebApiConfiguration configuration = new(new MockingContext());
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new HeadersHttpClientFactory();
-            IHttpNetworkService network = new JwtHttpNetwork(configuration, encryptionContext, httpClientFactory);
+            IHttpNetworkService network = new HttpNetworkService(configuration, encryptionContext, httpClientFactory);
 
             // Larger services
             this._dataQuery = new DataQueryService(queryContext, network);

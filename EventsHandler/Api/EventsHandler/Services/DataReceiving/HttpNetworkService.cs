@@ -14,7 +14,7 @@ using System.Net.Http.Headers;
 namespace EventsHandler.Services.DataReceiving
 {
     /// <inheritdoc cref="IHttpNetworkService"/>
-    internal sealed class JwtHttpNetwork : IHttpNetworkService
+    internal sealed class HttpNetworkService : IHttpNetworkService
     {
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
@@ -22,9 +22,9 @@ namespace EventsHandler.Services.DataReceiving
         private readonly ConcurrentDictionary<HttpClientTypes, HttpClient> _httpClients = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JwtHttpNetwork"/> class.
+        /// Initializes a new instance of the <see cref="HttpNetworkService"/> class.
         /// </summary>
-        public JwtHttpNetwork(
+        public HttpNetworkService(
             WebApiConfiguration configuration,
             EncryptionContext encryptionContext,
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)
