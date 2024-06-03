@@ -255,7 +255,7 @@ namespace EventsHandler
             builder.RegisterOpenServices();
 
             // HTTP communication + authorization
-            builder.Services.AddSingleton<IHttpNetworkService, JwtHttpNetwork>();
+            builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.RegisterClientFactories();
 
             // Feedback and telemetry
