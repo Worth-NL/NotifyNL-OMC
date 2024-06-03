@@ -309,9 +309,23 @@ namespace EventsHandler
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
             // Strategies
+            // TODO: To be moved into strategies
+            // TODO: Implement "GetOrAddService" method
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(builder));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(builder));
             return;
+
+            // NOTE: Versions
+            // 
+            // "OpenServices" v1 workflow:
+            // - "OpenZaak" v1.0.0
+            // - "OpenKlant" v1.0.0
+            // - "ContactMomenten"
+            //
+            // "OpenServices" v2 workflow:
+            // - "OpenZaak" v1.0.0 (enhanced models)
+            // - "OpenKlant" v2.0.0
+            // - "KlantContacten"
 
             static Type DetermineOpenZaakVersion(WebApplicationBuilder builder)
             {
