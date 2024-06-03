@@ -28,14 +28,6 @@ namespace EventsHandler.Constants
         #endregion
 
         #region Settings (Program.cs)
-        // Telemetry
-        internal static class Logging
-        {
-            internal static string CloudRoleName => "omc";
-
-            internal static string Category => "notifynl-omc";
-        }
-
         // Security
         internal static class Authorization
         {
