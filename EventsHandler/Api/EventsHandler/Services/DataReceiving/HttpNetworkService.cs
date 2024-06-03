@@ -19,6 +19,10 @@ namespace EventsHandler.Services.DataReceiving
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
         private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
+
+        /// <summary>
+        /// Cached reusable HTTP Clients with preconfigured settings (etc., "Authorization" or "Headers").
+        /// </summary>
         private readonly ConcurrentDictionary<HttpClientTypes, HttpClient> _httpClients = new();
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace EventsHandler.Services.DataReceiving
         }
         #endregion
 
-        #region Helper methods
+        #region HTTP Clients
         private void InitializeAvailableHttpClients()
         {
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
@@ -59,7 +63,6 @@ namespace EventsHandler.Services.DataReceiving
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
                 .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
 
-            // TODO: Open Klant 2 using static token from Environment Variables
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
                 .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
 
@@ -67,6 +70,85 @@ namespace EventsHandler.Services.DataReceiving
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
         }
 
+        /// <summary>
+        /// Resolves a specific type of cached <see cref="HttpClient"/> or add a new one if it's not existing.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"/>
+        private HttpClient ResolveClient(HttpClientTypes httpClientType)
+        {
+            return httpClientType switch
+            {
+                // Clients requiring JWT token to be refreshed
+                HttpClientTypes.OpenZaak_v1  or
+                HttpClientTypes.OpenKlant_v1 or
+                HttpClientTypes.Telemetry_ContactMomenten
+                    => AuthorizeWithGeneratedJwt(this._httpClients.GetValueOrDefault(httpClientType)!),
+                    
+                // Clients using static tokens from configuration
+                HttpClientTypes.OpenKlant_v2
+                    => this._httpClients.GetValueOrDefault(httpClientType)!,
+                
+                _ => throw new ArgumentException(
+                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
+            };
+        }
+        #endregion
+
+        #region Authorization
+        /// <summary>
+        /// Adds generated JSON Web Token to "Authorization" part of the HTTP Request.
+        /// </summary>
+        /// <remarks>
+        /// The token will be initialized for the first time and then refreshed if it's time expired.
+        /// </remarks>
+        /// <returns>
+        /// The source <see cref="HttpClient"/> with updated "Authorization" header.
+        /// </returns>
+        private HttpClient AuthorizeWithGeneratedJwt(HttpClient httpClient)
+        {
+            // TODO: Caching the token until the expiration time doesn't elapse yet
+            SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
+                this._configuration.User.Authorization.JWT.Secret());
+
+            // Preparing JWT token
+            string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
+                this._configuration.User.Authorization.JWT.Issuer(),
+                this._configuration.User.Authorization.JWT.Audience(),
+                this._configuration.User.Authorization.JWT.ExpiresInMin(),
+                this._configuration.User.Authorization.JWT.UserId(),
+                this._configuration.User.Authorization.JWT.UserName());
+
+            // Set Authorization header
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
+
+            return httpClient;
+        }
+
+        /// <summary>
+        /// Gets static token for "Headers" part of the HTTP Request.
+        /// </summary>
+        /// <remarks>
+        /// The token will be got from a specific setting defined (per API service) in <see cref="WebApiConfiguration"/>.
+        /// </remarks>
+        /// <returns>
+        /// The Key and Value of the "Header" used for authorization purpose.
+        /// </returns>
+        private string AuthorizeWithStaticToken(HttpClientTypes httpClientType)
+        {
+            return httpClientType switch
+            {
+                // TODO: Open Klant 2 using static token from Environment Variables
+                HttpClientTypes.OpenKlant_v2
+                    => $"{DefaultValues.Authorization.Static.Token} ",
+
+                _ => throw new ArgumentException(
+                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
+            };
+        }
+        #endregion
+
+        #region HTTP Requests
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
@@ -91,74 +173,6 @@ namespace EventsHandler.Services.DataReceiving
             {
                 return (false, exception.Message);
             }
-        }
-
-        /// <summary>
-        /// Resolves a specific type of cached <see cref="HttpClient"/> or add a new one if it's not existing.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"/>
-        private HttpClient ResolveClient(HttpClientTypes httpClientType)
-        {
-            return httpClientType switch
-            {
-                // Clients requiring JWT token to be refreshed
-                HttpClientTypes.OpenZaak_v1  or
-                HttpClientTypes.OpenKlant_v1 or
-                HttpClientTypes.Telemetry_ContactMomenten
-                    => AuthorizeWithJwtToken(this._httpClients.GetValueOrDefault(httpClientType)!),
-                    
-                // Clients using static tokens from configuration
-                HttpClientTypes.OpenKlant_v2
-                    => this._httpClients.GetValueOrDefault(httpClientType)!,
-                
-                _ => throw new ArgumentException(
-                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
-            };
-        }
-
-        /// <summary>
-        /// Adds JWT Token to "Authorize" header of the HTTP Request.
-        /// </summary>
-        /// <remarks>
-        /// The token will be initialized for the first time and then refreshed if it's time expired.
-        /// </remarks>
-        private HttpClient AuthorizeWithJwtToken(HttpClient httpClient)
-        {
-            // TODO: To be considered, caching the token until the expiration time doesn't elapse yet
-            SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
-                this._configuration.User.Authorization.JWT.Secret());
-
-            // Preparing JWT token
-            string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
-                this._configuration.User.Authorization.JWT.Issuer(),
-                this._configuration.User.Authorization.JWT.Audience(),
-                this._configuration.User.Authorization.JWT.ExpiresInMin(),
-                this._configuration.User.Authorization.JWT.UserId(),
-                this._configuration.User.Authorization.JWT.UserName());
-
-            // Set Authorization header
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
-
-            return httpClient;
-        }
-
-        /// <summary>
-        /// Returns static value of "Authorize" header of the HTTP Request.
-        /// </summary>
-        /// <remarks>
-        /// The token will be got from a specific setting defined in <see cref="WebApiConfiguration"/>.
-        /// </remarks>
-        private string AuthorizeWithStaticToken(HttpClientTypes httpClientType)
-        {
-            return httpClientType switch
-            {
-                HttpClientTypes.OpenKlant_v2
-                    => $"{DefaultValues.Authorization.Static.Token} ",
-
-                _ => throw new ArgumentException(
-                    $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
-            };
         }
         #endregion
     }
