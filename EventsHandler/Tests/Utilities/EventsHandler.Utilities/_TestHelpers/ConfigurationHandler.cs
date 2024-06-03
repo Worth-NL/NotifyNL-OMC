@@ -73,6 +73,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
 
                 { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OPENKLANT_2",          GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
@@ -132,10 +133,11 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_AUTHORIZATION_JWT", "UserId",       "USER_AUTHORIZATION_JWT_USERID"),
                 ("USER_AUTHORIZATION_JWT", "UserName",     "USER_AUTHORIZATION_JWT_USERNAME"),
 
-                ("User",         "API",      "USER_API"),
-                ("USER_API",     "Key",      "USER_API_KEY"),
-                ("USER_API_KEY", "NotifyNL", "USER_API_KEY_NOTIFYNL"),
-                ("USER_API_KEY", "Objecten", "USER_API_KEY_OBJECTEN"),
+                ("User",         "API",         "USER_API"),
+                ("USER_API",     "Key",         "USER_API_KEY"),
+                ("USER_API_KEY", "NotifyNL",    "USER_API_KEY_NOTIFYNL"),
+                ("USER_API_KEY", "OpenKlant_2", "USER_API_KEY_OPENKLANT_2"),
+                ("USER_API_KEY", "Objecten",    "USER_API_KEY_OBJECTEN"),
 
                 ("User",        "Domain",           "USER_DOMAIN"),
                 ("USER_DOMAIN", "OpenNotificaties", "USER_DOMAIN_OPENNOTIFICATIES"),
