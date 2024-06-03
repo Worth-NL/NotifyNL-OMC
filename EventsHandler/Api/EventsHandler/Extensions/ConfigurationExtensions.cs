@@ -27,9 +27,9 @@ namespace EventsHandler.Extensions
         /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
         /// </summary>
         /// <param name="configuration">The application configuration.</param>
-        internal static int OpenServicesVersion(this IConfiguration configuration)
-            => configuration.GetValue<int>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
-                                                $"{nameof(WebApiConfiguration.AppSettings.Features.OpenServicesVersion)}");
+        internal static byte OpenServicesVersion(this IConfiguration configuration)
+            => configuration.GetValue<byte>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
+                                                 $"{nameof(WebApiConfiguration.AppSettings.Features.OpenServicesVersion)}");
         #endregion
 
         #region Validation
