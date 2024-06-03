@@ -70,6 +70,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This type of HttpClient is not supported yet:.
+        /// </summary>
+        internal static string Authorization_ERROR_HttpClientTypeNotSuported {
+            get {
+                return ResourceManager.GetString("Authorization_ERROR_HttpClientTypeNotSuported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specific type of settings cannot be initialized..
         /// </summary>
         internal static string Configuration_ERROR_CannotInitializeSettings {

@@ -359,6 +359,9 @@
   <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
     <value>HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
   </data>
+  <data name="Authorization_ERROR_HttpClientTypeNotSuported" xml:space="preserve">
+    <value>This type of HttpClient is not supported yet:</value>
+  </data>
   <data name="Configuration_ERROR_OpenKlantVersionUnknown" xml:space="preserve">
     <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
   </data>
