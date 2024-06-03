@@ -53,7 +53,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
 
             static DistributionChannels DetermineDistributionChannel(PartyResult party)
             {
-                return party.Expansion.DigitalAddress.Type switch
+                return party.Expansion.DigitalAddresses.Type switch
                 {
                     "Email" or "email" or "e-mail" => DistributionChannels.Email,
                     "SMS"   or "Sms"   or "sms"    => DistributionChannels.Sms,
@@ -66,8 +66,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
             {
                 return distributionChannel switch
                 {
-                    DistributionChannels.Email => (party.Expansion.DigitalAddress.Address, string.Empty),
-                    DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddress.Address),
+                    DistributionChannels.Email => (party.Expansion.DigitalAddresses.Address, string.Empty),
+                    DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddresses.Address),
                     _                          => (string.Empty, string.Empty)
 
                 };
