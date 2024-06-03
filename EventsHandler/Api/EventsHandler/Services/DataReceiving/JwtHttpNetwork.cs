@@ -13,8 +13,8 @@ using System.Net.Http.Headers;
 
 namespace EventsHandler.Services.DataReceiving
 {
-    /// <inheritdoc cref="IHttpSupplierService"/>
-    internal sealed class JwtHttpSupplier : IHttpSupplierService
+    /// <inheritdoc cref="IHttpNetworkService"/>
+    internal sealed class JwtHttpNetwork : IHttpNetworkService
     {
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
@@ -22,9 +22,9 @@ namespace EventsHandler.Services.DataReceiving
         private readonly ConcurrentDictionary<HttpClientTypes, HttpClient> _httpClients = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JwtHttpSupplier"/> class.
+        /// Initializes a new instance of the <see cref="JwtHttpNetwork"/> class.
         /// </summary>
-        public JwtHttpSupplier(
+        public JwtHttpNetwork(
             WebApiConfiguration configuration,
             EncryptionContext encryptionContext,
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)
@@ -37,14 +37,14 @@ namespace EventsHandler.Services.DataReceiving
         }
 
         #region Internal methods
-        /// <inheritdoc cref="IHttpSupplierService.GetAsync(HttpClientTypes, Uri)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.GetAsync(HttpClientTypes httpClientType, Uri uri)
+        /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
+        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
-        /// <inheritdoc cref="IHttpSupplierService.PostAsync(HttpClientTypes, Uri, HttpContent)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpSupplierService.PostAsync(HttpClientTypes httpClientType, Uri uri, HttpContent body)
+        /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, HttpContent)"/>
+        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, HttpContent body)
         {
             return await ExecuteCallAsync(httpClientType, uri, body);
         }

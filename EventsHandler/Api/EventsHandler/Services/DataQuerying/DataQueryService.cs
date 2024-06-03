@@ -12,17 +12,17 @@ namespace EventsHandler.Services.DataQuerying
     {
         private readonly IQueryContext _queryContext;
 
-        /// <inheritdoc cref="IDataQueryService{TModel}.HttpSupplier"/>
-        public IHttpSupplierService HttpSupplier { get; }
+        /// <inheritdoc cref="IDataQueryService{TModel}.HttpNetwork"/>
+        public IHttpNetworkService HttpNetwork { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataQueryService"/> class.
         /// </summary>
-        public DataQueryService(IQueryContext queryContext, IHttpSupplierService httpSupplier)
+        public DataQueryService(IQueryContext queryContext, IHttpNetworkService httpNetwork)
         {
             this._queryContext = queryContext;
 
-            this.HttpSupplier = httpSupplier;
+            this.HttpNetwork = httpNetwork;
         }
 
         /// <inheritdoc cref="IDataQueryService{TModel}.From(TModel)"/>

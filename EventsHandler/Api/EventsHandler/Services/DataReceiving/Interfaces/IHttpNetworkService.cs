@@ -7,7 +7,7 @@ namespace EventsHandler.Services.DataReceiving.Interfaces
     /// <summary>
     /// The service to retrieve data from different services supplying them to business logic.
     /// </summary>
-    public interface IHttpSupplierService
+    public interface IHttpNetworkService
     {
         /// <summary>
         /// Sends request to the given Web service using a specific <see cref="HttpClient"/>.
