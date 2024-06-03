@@ -269,6 +269,32 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 ---
 # 4. Authorization and authentication
 
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed).
+
+> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" workflow is used.
+
+<h2 id="workflow_versions">4.1. Workflow versions in OMC</h3>
+
+> Here are the details which workflows are using which versions of external API services.
+
+#### "OpenServices" v1 workflow (default):
+- "OpenNotificaties" v1.0.0
+- "OpenZaak" v1.0.0
+- "OpenKlant" v1.0.0
+- "ContactMomenten"
+
+#### "OpenServices" v2 workflow:
+- "OpenNotificaties" v1.0.0
+- "OpenZaak" v1.0.0
+- "OpenKlant" v2.0.0 <code>new</code>
+- "KlantContacten" <code>new</code>
+
+> The OMC workflows can be defined in `appsettings.json` configuration file:
+
+![Configuration in appsettings.json](images/appsettings_open_services_version.png)
+
+## 4.2. JSON Web Tokens
+
 **JSON Web Token (JWT)** can be generated using:
 
 - **SecretsManager.exe** from `CLI` (e.g., `CMD.exe on Windows`. **NOTE:** Do not use `PowerShell`)
@@ -279,18 +305,18 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 - External **https://jwt.io** webpage.
 
-## 4.1. Example of required JSON Web Token (JWT) components
+### 4.2.1. Required JSON Web Token (JWT) components
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** API web service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-### 4.1.1. Header (algorithm + type)
+#### 4.2.1.1. Header (algorithm + type)
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-### 4.1.2. Payload (claims)
+#### 4.2.1.2. Payload (claims)
 
 > {
   "client_id": "",
@@ -302,13 +328,13 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
   "exp": 0000000000
 }
 
-### 4.1.3. Signature (secret)
+#### 4.2.1.3. Signature (secret)
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-## 4.2. Mapping of JWT claims from environment variables
+### 4.2.2. Mapping of JWT claims from environment variables
 
 | JWT claims            | **OMC** Environment Variables                |
 | --------------------- | ---------------------------------------- |
@@ -324,16 +350,16 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-## 4.3. Using generated JSON Web Token (JWT)
+### 4.2.3. Using generated JSON Web Token (JWT)
 
-### 4.3.1. Postman
+#### 4.2.3.1. Postman
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h3 id="swagger-ui-authorization">4.3.2. Swagger UI</h3>
+<h4 id="swagger-ui-authorization">4.2.3.2. Swagger UI</h3>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** API web service) then you need to copy the generated token in the following way:
 
@@ -345,6 +371,8 @@ And then click "Authorize".
 # 5. Workflow (business logic cases)
 
 ![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
+
+> Version of **OMC** <= 1.7.4 (using "OpenServices" v1 [workflow](#workflow_versions)).
 
 ---
 # 6. Errors
