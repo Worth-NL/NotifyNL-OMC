@@ -24,7 +24,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         #region Helper methods
-        private static PartyResults GetTestCaseRoles(params PartyResult[] roles)
+        private static PartyResults GetTestPartyResults(params PartyResult[] roles)
         {
             var caseRoles = new PartyResults
             {
