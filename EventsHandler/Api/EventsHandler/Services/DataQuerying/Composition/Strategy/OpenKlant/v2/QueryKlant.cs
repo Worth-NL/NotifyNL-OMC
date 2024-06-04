@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
                 = new Uri($"{partiesEndpoint}{partyTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetCitizenDetailsV2Async(queryBase, partiesByTypeIdAndExpand))
-                .Party()
+                .Party(configuration)
                 .ConvertToUnified();
         }
 

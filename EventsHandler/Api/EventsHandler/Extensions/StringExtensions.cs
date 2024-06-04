@@ -11,6 +11,30 @@ namespace EventsHandler.Extensions
     internal static class StringExtensions
     {
         /// <summary>
+        /// Determines whether the given <see langword="string"/> <c>is</c> empty.
+        /// </summary>
+        /// <param name="text">The text value to be validated.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the specified text <c>is</c> empty; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsEmpty(this string text)
+        {
+            return text == string.Empty;
+        }
+
+        /// <summary>
+        /// Determines whether the given <see langword="string"/> is <c>not</c> empty.
+        /// </summary>
+        /// <param name="text">The text value to be validated.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the specified text is <c>not</c> empty; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsNotEmpty(this string text)
+        {
+            return !text.IsEmpty();
+        }
+
+        /// <summary>
         /// Encodes a raw plain <see langword="string"/> into <see cref="Base64"/> value.
         /// </summary>
         /// <returns>
@@ -18,12 +42,9 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static string Base64Encode(this string originalTextValue)
         {
-            if (string.IsNullOrWhiteSpace(originalTextValue))
-            {
-                return string.Empty;
-            }
-            
-            return Base64UrlEncoder.Encode(originalTextValue);
+            return string.IsNullOrWhiteSpace(originalTextValue)
+                ? string.Empty
+                : Base64UrlEncoder.Encode(originalTextValue);
         }
         
         /// <summary>
@@ -34,12 +55,9 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static string Base64Decode(this string encodedTextValue)
         {
-            if (string.IsNullOrWhiteSpace(encodedTextValue))
-            {
-                return string.Empty;
-            }
-
-            return Base64UrlEncoder.Decode(encodedTextValue);
+            return string.IsNullOrWhiteSpace(encodedTextValue)
+                ? string.Empty
+                : Base64UrlEncoder.Decode(encodedTextValue);
         }
     }
 }
