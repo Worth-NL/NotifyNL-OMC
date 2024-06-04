@@ -31,12 +31,15 @@ namespace EventsHandler.Services.DataReceiving.Factories
             var httpClient = new HttpClient(handler);
 
             // Set universal Request Headers
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));
 
             // Set custom Request Headers
             for (int index = 0; index < requestHeaders.Length; index++)
             {
-                httpClient.DefaultRequestHeaders.Add(requestHeaders[index].Name, requestHeaders[index].Value);
+                httpClient.DefaultRequestHeaders.Add(
+                    /* Headers Key   */ requestHeaders[index].Name,
+                    /* Headers Value */ requestHeaders[index].Value);
             }
 
             return httpClient;
