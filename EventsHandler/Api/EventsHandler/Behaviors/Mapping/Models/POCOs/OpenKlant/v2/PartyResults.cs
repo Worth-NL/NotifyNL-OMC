@@ -81,7 +81,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                         DetermineDigitalAddresses(digitalAddress, distributionChannel);
 
                     // 1. This address is the preferred one and should be prioritized
-                    if (digitalAddress.Id == prefDigitalAddressId)
+                    if (prefDigitalAddressId != Guid.Empty &&
+                        prefDigitalAddressId == digitalAddress.Id)
                     {
                         return (party, distributionChannel, emailAddress, phoneNumber);
                     }
