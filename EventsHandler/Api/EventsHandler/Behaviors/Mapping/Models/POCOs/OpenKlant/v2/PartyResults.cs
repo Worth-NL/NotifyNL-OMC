@@ -65,7 +65,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             {
                 if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
                 {
-                    continue;  // Do not waste time on processing party data which would be 100% invalid
+                    continue;  // Do not waste time on processing party data which would be for 100% invalid
                 }
 
                 Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
