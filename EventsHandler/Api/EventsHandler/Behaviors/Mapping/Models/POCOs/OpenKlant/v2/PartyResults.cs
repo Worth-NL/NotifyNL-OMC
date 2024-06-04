@@ -63,8 +63,14 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             // Determine which party result should be returned and match the data
             foreach (PartyResult party in this.Results)
             {
+                // Do not waste time on processing party data which would be 100% invalid
+                if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
+                {
+                    continue;
+                }
+
                 Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
-                
+
                 // Looking which digital address should be used
                 foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
                 {
@@ -150,8 +156,8 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         {
             return distributionChannel switch
             {
-                DistributionChannels.Email => (digitalAddress.Address, string.Empty),
-                DistributionChannels.Sms   => (string.Empty, digitalAddress.Address),
+                DistributionChannels.Email => (digitalAddress.Value, string.Empty),
+                DistributionChannels.Sms   => (string.Empty, digitalAddress.Value),
 
                 _ => (string.Empty, string.Empty)
             };
