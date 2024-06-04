@@ -130,6 +130,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
         
+        #region Helper methods
         /// <summary>
         /// Checks if the value from generic JSON property "Type" is
         /// matching to the predefined names of digital address types.
@@ -161,5 +162,6 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                 _ => (string.Empty, string.Empty)
             };
         }
+        #endregion
     }
 }
