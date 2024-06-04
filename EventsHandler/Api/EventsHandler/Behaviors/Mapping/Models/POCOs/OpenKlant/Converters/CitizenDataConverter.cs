@@ -31,49 +31,24 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         }
 
         /// <summary>
-        /// Converts <see cref="CitizenResult"/> from "OpenKlant" (2.0) Web service.
+        /// Converts <see cref="PartyResult"/> from "OpenKlant" (2.0) Web service.
         /// </summary>
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
         /// </returns>
-        internal static CommonPartyData ConvertToUnified(this PartyResult party)
+        internal static CommonPartyData ConvertToUnified(this
+            (PartyResult Party, DistributionChannels DistributionChannel,
+            string EmailAddress, string PhoneNumber) data)
         {
-            return default;
-
-            //DistributionChannels distributionChannel = DetermineDistributionChannel(party);
-            //(string emailAddress, string telephoneNumber) = DetermineDigitalAddress(party, distributionChannel);
-
-            //return new CommonPartyData
-            //{
-            //    Name                = party.Identification.Details.Name,
-            //    SurnamePrefix       = party.Identification.Details.SurnamePrefix,
-            //    Surname             = party.Identification.Details.Surname,
-            //    DistributionChannel = distributionChannel,
-            //    EmailAddress        = emailAddress,
-            //    TelephoneNumber     = telephoneNumber
-            //};
-
-            //static DistributionChannels DetermineDistributionChannel(PartyResult party)
-            //{
-            //    return party.Expansion.DigitalAddresses.Type switch
-            //    {
-            //        "Email" or "email" or "e-mail" => DistributionChannels.Email,
-            //        "SMS"   or "Sms"   or "sms"    => DistributionChannels.Sms,
-            //        _                              => DistributionChannels.Unknown
-            //    };
-            //}
-
-            //static (string /* Email address */, string /* Telephone number */)
-            //    DetermineDigitalAddress(PartyResult party, DistributionChannels distributionChannel)
-            //{
-            //    return distributionChannel switch
-            //    {
-            //        DistributionChannels.Email => (party.Expansion.DigitalAddresses.Address, string.Empty),
-            //        DistributionChannels.Sms   => (string.Empty, party.Expansion.DigitalAddresses.Address),
-            //        _                          => (string.Empty, string.Empty)
-
-            //    };
-            //}
+            return new CommonPartyData
+            {
+                Name                = data.Party.Identification.Details.Name,
+                SurnamePrefix       = data.Party.Identification.Details.SurnamePrefix,
+                Surname             = data.Party.Identification.Details.Surname,
+                DistributionChannel = data.DistributionChannel,
+                EmailAddress        = data.EmailAddress,
+                TelephoneNumber     = data.PhoneNumber
+            };
         }
     }
 }

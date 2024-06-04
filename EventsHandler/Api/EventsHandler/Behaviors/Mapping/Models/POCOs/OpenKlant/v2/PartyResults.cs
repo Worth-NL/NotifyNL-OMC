@@ -1,9 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using System.Text.Json.Serialization;
+using EventsHandler.Configuration;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {
@@ -41,25 +44,116 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// Gets the <see cref="PartyResult"/>.
         /// </summary>
         /// <returns>
-        ///   The data of a single party.
+        ///   The data of a single party (with determined contact details).
         /// </returns>
         /// <exception cref="HttpRequestException"/>
-        internal readonly PartyResult Party()
+        internal readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+            Party(WebApiConfiguration configuration)
         {
             if (this.Results.IsNullOrEmpty())
             {
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
-            foreach (PartyResult result in this.Results)
-            {
-                foreach (DigitalAddressLong address in result.Expansion.DigitalAddresses)
-                {
+            string fallbackEmailAddress = string.Empty;
+            string fallbackPhoneNumber = string.Empty;
+            PartyResult fallbackEmailOwningParty = default;
+            PartyResult fallbackPhoneOwningParty = default;
 
+            // Determine which party result should be returned and match the data
+            foreach (PartyResult party in this.Results)
+            {
+                Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
+                
+                // Looking which digital address should be used
+                foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
+                {
+                    // Recognize what type of digital address it is
+                    DistributionChannels distributionChannel =
+                        DetermineDistributionChannel(digitalAddress, configuration);
+
+                    if (distributionChannel is DistributionChannels.Unknown)
+                    {
+                        continue;  // Any digital address couldn't be found
+                    }
+
+                    (string emailAddress, string phoneNumber) =
+                        DetermineDigitalAddresses(digitalAddress, distributionChannel);
+
+                    // 1. This address is the preferred one and should be prioritized
+                    if (digitalAddress.Id == prefDigitalAddressId)
+                    {
+                        return (party, distributionChannel, emailAddress, phoneNumber);
+                    }
+
+                    // 2a. This is one of many other addresses to be checked
+                    if (fallbackEmailAddress.IsEmpty() &&  // Only the first encountered one matters
+                        emailAddress.IsNotEmpty())
+                    {
+                        fallbackEmailAddress = emailAddress;
+                        fallbackEmailOwningParty = party;
+                    }
+                    
+                    if (fallbackPhoneNumber.IsEmpty() &&  // Only the first encountered one matters
+                        phoneNumber.IsNotEmpty())
+                    {
+                        fallbackPhoneNumber = phoneNumber;
+                        fallbackPhoneOwningParty = party;
+                    }
                 }
             }
 
-            throw new NotImplementedException();
+            // 2b. FALLBACK APPROACH: If the party's preferred address couldn't be determined
+            //     the email address has priority and the first encountered one should be returned
+            if (fallbackEmailAddress.IsNotEmpty())
+            {
+                return (fallbackEmailOwningParty, DistributionChannels.Email,
+                        EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
+            }
+
+            // 2c. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
+            //     the first encountered telephone number (for SMS) should be returned instead
+            if (fallbackPhoneNumber.IsNotEmpty())
+            {
+                return (fallbackPhoneOwningParty, DistributionChannels.Sms,
+                        EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
+            }
+
+            // 2d. In the case of worst possible scenario, that preferred address couldn't be determined
+            //     neither any existing email address nor telephone number, then process can't be finished
+            throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+        
+        /// <summary>
+        /// Checks if the value from generic JSON property "Type" is
+        /// matching to the predefined names of digital address types.
+        /// </summary>
+        private static DistributionChannels DetermineDistributionChannel(
+            DigitalAddressLong digitalAddress, WebApiConfiguration configuration)
+        {
+            return digitalAddress.Type == configuration.AppSettings.Variables.EmailGenericDescription()
+                ? DistributionChannels.Email
+                
+                : digitalAddress.Type == configuration.AppSettings.Variables.PhoneGenericDescription()
+                    ? DistributionChannels.Sms
+
+                    // NOTE: Any address type doesn't match the generic address types defined in the app settings
+                    : DistributionChannels.Unknown;
+        }
+
+        /// <summary>
+        /// Tries to retrieve specific email address and telephone number.
+        /// </summary>
+        private static (string /* Email address */, string /* Telephone number */)
+            DetermineDigitalAddresses(DigitalAddressLong digitalAddress, DistributionChannels distributionChannel)
+        {
+            return distributionChannel switch
+            {
+                DistributionChannels.Email => (digitalAddress.Address, string.Empty),
+                DistributionChannels.Sms   => (string.Empty, digitalAddress.Address),
+
+                _ => (string.Empty, string.Empty)
+            };
         }
     }
 }

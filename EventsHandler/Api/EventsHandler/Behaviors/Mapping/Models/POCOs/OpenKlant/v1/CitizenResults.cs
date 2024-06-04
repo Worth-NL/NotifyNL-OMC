@@ -1,9 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using System.Text.Json.Serialization;
 using EventsHandler.Properties;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
