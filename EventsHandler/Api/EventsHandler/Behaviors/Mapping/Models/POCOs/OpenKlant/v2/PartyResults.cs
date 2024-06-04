@@ -63,10 +63,9 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             // Determine which party result should be returned and match the data
             foreach (PartyResult party in this.Results)
             {
-                // Do not waste time on processing party data which would be 100% invalid
                 if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
                 {
-                    continue;
+                    continue;  // Do not waste time on processing party data which would be 100% invalid
                 }
 
                 Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
