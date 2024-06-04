@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 namespace EventsHandler.Services.DataReceiving.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
-    internal sealed class HeadersHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>
+    internal sealed class RegularHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>
     {
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
         HttpClient IHttpClientFactory<HttpClient, (string Name, string Value)[]>.GetHttpClient((string Name, string Value)[] requestHeaders)
