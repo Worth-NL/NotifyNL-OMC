@@ -73,6 +73,9 @@ namespace EventsHandler.Configuration
         internal sealed record AppSettingsComponent
         {
             // NOTE: Property "Logging" (from "appsettings.json") is skipped because it's not used anywhere in the code
+            
+            /// <inheritdoc cref="NetworkComponent"/>
+            internal NetworkComponent Network { get; }
 
             /// <inheritdoc cref="EncryptionComponent"/>
             internal EncryptionComponent Encryption { get; }
@@ -90,11 +93,34 @@ namespace EventsHandler.Configuration
             /// </summary>
             public AppSettingsComponent(ILoadersContext loadersContext, string parentName)
             {
+                this.Network = new NetworkComponent(loadersContext, parentName);
                 this.Encryption = new EncryptionComponent(loadersContext, parentName);
                 this.Features = new FeaturesComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
             }
             
+            /// <summary>
+            /// The "Network" part of the settings.
+            /// </summary>
+            internal sealed record NetworkComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+                
+                /// <summary>
+                /// Initializes a new instance of the <see cref="NetworkComponent"/> class.
+                /// </summary>
+                internal NetworkComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Network));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal ushort ConnectionLifetimeInSeconds()
+                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
+            }
+
             /// <summary>
             /// The "Encryption" part of the settings.
             /// </summary>
