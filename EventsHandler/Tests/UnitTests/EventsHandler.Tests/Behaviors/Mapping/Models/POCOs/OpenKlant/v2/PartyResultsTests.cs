@@ -70,7 +70,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     DigitalAddresses = new List<DigitalAddressLong>
                     {
-                        new(), // Just empty result
+                        new(), // Just empty address
                         new()
                         {
                             Id = testGuid,
