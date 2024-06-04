@@ -350,7 +350,7 @@ namespace EventsHandler
 
         private static void RegisterClientFactories(this IServiceCollection services)
         {
-            services.AddSingleton<IHttpClientFactory<HttpClient, (string, string)[]>, HeadersHttpClientFactory>();
+            services.AddSingleton<IHttpClientFactory<HttpClient, (string, string)[]>, RegularHttpClientFactory>();
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
