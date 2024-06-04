@@ -31,7 +31,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             // Mocked IHttpSupplier
             WebApiConfiguration configuration = new(new MockingContext());
             EncryptionContext encryptionContext = new(new SymmetricEncryptionStrategy());
-            IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new RegularHttpClientFactory();
+            IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory = new RegularHttpClientFactory(configuration);
             IHttpNetworkService network = new HttpNetworkService(configuration, encryptionContext, httpClientFactory);
 
             // Larger services
