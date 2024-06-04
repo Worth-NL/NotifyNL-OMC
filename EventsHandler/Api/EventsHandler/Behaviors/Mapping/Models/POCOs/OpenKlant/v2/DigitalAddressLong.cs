@@ -25,7 +25,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         [JsonInclude]
         [JsonPropertyName("adres")]
         [JsonPropertyOrder(1)]
-        public string Address { get; internal set; } = string.Empty;
+        public string Value { get; internal set; } = string.Empty;
         
         /// <summary>
         /// The type of the digital address.
