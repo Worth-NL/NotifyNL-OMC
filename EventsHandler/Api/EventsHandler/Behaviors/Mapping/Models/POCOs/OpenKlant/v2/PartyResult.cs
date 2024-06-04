@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The ID of party (e.g., citizen, organization) in format:
         /// <code>
-        ///   http(s)://OpenKlantDomain/ApiEndpoint/[UUID]
+        /// http(s)://OpenKlantDomain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
         [JsonInclude]
@@ -27,11 +27,14 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyOrder(0)]
         public Uri Id { get; internal set; } = DefaultValues.Models.EmptyUri;
 
-        /// <inheritdoc cref="DigitalAddressShort" />
+        /// <inheritdoc cref="DigitalAddressShort"/>
+        /// <remarks>
+        /// Preferred by the user.
+        /// </remarks>
         [JsonInclude]
         [JsonPropertyName("voorkeursDigitaalAdres")]
         [JsonPropertyOrder(1)]
-        public DigitalAddressShort DigitalAddress { get; internal set; }
+        public DigitalAddressShort PreferredDigitalAddress { get; internal set; }
         
         /// <inheritdoc cref="PartyIdentification"/>
         [JsonInclude]

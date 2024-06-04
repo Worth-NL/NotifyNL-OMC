@@ -193,6 +193,14 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PartyIdentifier()
                     => GetValue(this._loadersContext, this._currentPath, "PartijIdentificator");
+                
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string EmailGenericDescription()
+                    => GetValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string PhoneGenericDescription()
+                    => GetValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
             }
         }
 

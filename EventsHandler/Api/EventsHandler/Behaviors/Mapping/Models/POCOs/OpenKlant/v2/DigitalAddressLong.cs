@@ -12,11 +12,19 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     public struct DigitalAddressLong : IJsonSerializable
     {
         /// <summary>
+        /// The UUID of the digital address.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("uuid")]
+        [JsonPropertyOrder(0)]
+        public Guid Id { get; internal set; } = Guid.Empty;
+
+        /// <summary>
         /// The value of the digital address.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("adres")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public string Address { get; internal set; } = string.Empty;
         
         /// <summary>
@@ -24,7 +32,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("soortDigitaalAdres")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public string Type { get; internal set; } = string.Empty;
 
         /// <summary>
