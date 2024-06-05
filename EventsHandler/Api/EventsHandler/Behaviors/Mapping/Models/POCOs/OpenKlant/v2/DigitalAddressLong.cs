@@ -8,6 +8,9 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     /// <summary>
     /// The details of digital address retrieved from "OpenKlant" Web service.
     /// </summary>
+    /// <remarks>
+    ///   Version: "OpenKlant" (2.0) Web service | "OMC workflow" v2.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable" />
     public struct DigitalAddressLong : IJsonSerializable
     {
