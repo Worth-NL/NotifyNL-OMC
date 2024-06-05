@@ -63,6 +63,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             // Determine which party result should be returned and match the data
             foreach (PartyResult party in this.Results)
             {
+                // VALIDATION: Addresses
                 if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
                 {
                     continue;  // Do not waste time on processing party data which would be for 100% invalid
@@ -77,6 +78,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                     DistributionChannels distributionChannel =
                         DetermineDistributionChannel(digitalAddress, configuration);
 
+                    // VALIDATION: Distribution channel
                     if (distributionChannel is DistributionChannels.Unknown)
                     {
                         continue;  // Any digital address couldn't be found
@@ -84,6 +86,12 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 
                     (string emailAddress, string phoneNumber) =
                         DetermineDigitalAddresses(digitalAddress, distributionChannel);
+
+                    // VALIDATION: e-mail and phone number
+                    if (emailAddress.IsEmpty() && phoneNumber.IsEmpty())
+                    {
+                        continue;  // Empty results cannot be used anyway
+                    }
 
                     // 1. This address is the preferred one and should be prioritized
                     if (prefDigitalAddressId != Guid.Empty &&
@@ -98,6 +106,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                     {
                         fallbackEmailAddress = emailAddress;
                         fallbackEmailOwningParty = party;
+
+                        continue;  // The e-mail address always has priority over the phone number.
+                                   // If any e-mail address was found during this run then the phone
+                                   // number doesn't matter anymore since it will not be returned anyway
                     }
                     
                     if (fallbackPhoneNumber.IsEmpty() &&  // Only the first encountered one matters
