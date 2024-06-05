@@ -9,7 +9,7 @@ using EventsHandler.Utilities._TestHelpers;
 namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {
     [TestFixture]
-    public class PartyResultsTests
+    public sealed class PartyResultsTests
     {
         #region Party (method)
         [Test]
@@ -31,6 +31,57 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             WebApiConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
 
             PartyResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
+
+            // Act & Assert
+            AssertThrows<HttpRequestException>(testConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+
+        [Test]
+        public void Party_Method_ForExistingResults_ButEmptyDigitalAddresses_ThrowsHttpRequestException()
+        {
+            // Arrange
+            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
+
+            var partyId = Guid.NewGuid();
+            Guid firstAddressId = GetUniqueId(partyId);
+            Guid secondAddressId = GetUniqueId(firstAddressId);
+
+            var partyResult = new PartyResult
+            {
+                PreferredDigitalAddress = new DigitalAddressShort
+                {
+                    Id = partyId
+                },
+                Identification = new PartyIdentification
+                {
+                    Details = new PartyDetails
+                    {
+                        Name = "Samantha",
+                        SurnamePrefix = string.Empty,
+                        Surname = "Rogers"
+                    }
+                },
+                Expansion = new Expansion
+                {
+                    DigitalAddresses = new List<DigitalAddressLong>
+                    {
+                        new()  // Just empty address
+                        {
+                            Id = firstAddressId,
+                            Value = string.Empty,
+                            Type = testConfiguration.AppSettings.Variables.PhoneGenericDescription()
+                        },
+                        new()  // Just empty address
+                        {
+                            Id = secondAddressId,
+                            Value = string.Empty,
+                            Type = testConfiguration.AppSettings.Variables.EmailGenericDescription()
+                        }
+                    }
+                }
+            };
+
+            PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
 
             // Act & Assert
             AssertThrows<HttpRequestException>(testConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
@@ -204,15 +255,6 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                     }
                 }
             };
-
-            static Guid GetUniqueId(Guid addressId)
-            {
-                var newId = Guid.NewGuid();
-
-                return newId != addressId  // NOTE: In turbo rare cases newly generated GUID can be identical
-                    ? newId
-                    : GetUniqueId(addressId);  // Retry
-            }
         }
 
         /// <summary>
@@ -278,15 +320,15 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                     }
                 }
             };
+        }
+        
+        private static Guid GetUniqueId(Guid addressId)
+        {
+            var newId = Guid.NewGuid();
 
-            static Guid GetUniqueId(Guid addressId)
-            {
-                var newId = Guid.NewGuid();
-
-                return newId != addressId  // NOTE: In turbo rare cases newly generated GUID can be identical
-                    ? newId
-                    : GetUniqueId(addressId);  // Retry
-            }
+            return newId != addressId  // NOTE: In turbo rare cases newly generated GUID can be identical
+                ? newId
+                : GetUniqueId(addressId);  // Retry
         }
 
         private static PartyResults GetTestPartyResults(params PartyResult[] parties)
