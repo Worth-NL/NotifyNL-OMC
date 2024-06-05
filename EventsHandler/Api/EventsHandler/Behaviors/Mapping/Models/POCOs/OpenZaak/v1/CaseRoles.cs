@@ -11,7 +11,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1
     /// The roles of the case retrieved from "OpenZaak" Web service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web service.
+    ///   Version: "OpenZaak" (1.0) Web service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRoles : IJsonSerializable

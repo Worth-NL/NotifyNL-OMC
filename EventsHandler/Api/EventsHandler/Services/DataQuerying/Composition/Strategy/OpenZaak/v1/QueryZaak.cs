@@ -11,7 +11,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web service.
+    ///   Version: "OpenZaak" (1.0) Web service | "OMC workflow" v1.
     /// </remarks>
     internal sealed class QueryZaak : IQueryZaak
     {
