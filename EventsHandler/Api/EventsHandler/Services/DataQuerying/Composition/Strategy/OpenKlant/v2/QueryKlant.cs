@@ -52,7 +52,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         private static async Task<PartyResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri citizenByBsnUri)
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
-                httpsClientType: HttpClientTypes.OpenKlant_v2,
+                httpClientType: HttpClientTypes.OpenKlant_v2,
                 uri: citizenByBsnUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
