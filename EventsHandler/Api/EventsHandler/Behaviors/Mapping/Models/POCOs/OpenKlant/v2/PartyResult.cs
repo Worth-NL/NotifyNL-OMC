@@ -10,7 +10,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     /// The sensitive data about the party (e.g., citizen, organization) retrieved from "OpenKlant" Web service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (2.0) Web service.
+    ///   Version: "OpenKlant" (2.0) Web service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="CommonPartyData"/>
     /// <seealso cref="IJsonSerializable"/>

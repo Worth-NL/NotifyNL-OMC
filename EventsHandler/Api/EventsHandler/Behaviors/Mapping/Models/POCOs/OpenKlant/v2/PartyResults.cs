@@ -14,7 +14,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
     /// The results about the parties (e.g., citizen, organization) retrieved from "OpenKlant" Web service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (2.0) Web service.
+    ///   Version: "OpenKlant" (2.0) Web service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct PartyResults : IJsonSerializable

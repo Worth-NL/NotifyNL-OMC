@@ -11,7 +11,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
     /// The results about the citizens retrieved from "OpenKlant" Web service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (1.0) Web service.
+    ///   Version: "OpenKlant" (1.0) Web service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenResults : IJsonSerializable
