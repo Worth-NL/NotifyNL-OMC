@@ -24,7 +24,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<Case>(
-                httpsClientType: HttpClientTypes.OpenZaak_v1,
+                httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: await GetCaseTypeUriAsync(queryBase),
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
-                httpsClientType: HttpClientTypes.OpenZaak_v1,
+                httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseStatuses,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
@@ -60,7 +60,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
             return await queryBase.ProcessGetAsync<CaseStatusType>(
-                httpsClientType: HttpClientTypes.OpenZaak_v1,
+                httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
