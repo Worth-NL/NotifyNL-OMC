@@ -32,7 +32,6 @@ using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.Telemetry;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
@@ -53,6 +52,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
 {
@@ -258,9 +258,6 @@ namespace EventsHandler
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.RegisterClientFactories();
 
-            // Feedback and telemetry
-            builder.Services.AddSingleton<ITelemetryService, ContactRegistration>();
-
             // User Interaction
             builder.Services.RegisterResponders();
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
@@ -308,11 +305,17 @@ namespace EventsHandler
             // Common query methods
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
+            byte omcWorkflowVersion = builder.Configuration.OpenServicesVersion();
+            
             // Strategies
             // TODO: To be moved into strategies
             // TODO: Implement "GetOrAddService" method
-            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(builder));
-            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(builder));
+            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
+
+            // Feedback and telemetry
+            builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
+
             return;
 
             // NOTE: Versions
@@ -327,9 +330,9 @@ namespace EventsHandler
             // - "OpenKlant" v2.0.0
             // - "KlantContacten"
 
-            static Type DetermineOpenZaakVersion(WebApplicationBuilder builder)
+            static Type DetermineOpenZaakVersion(byte omcWorkflowVersion)
             {
-                return builder.Configuration.OpenServicesVersion() switch
+                return omcWorkflowVersion switch
                 {
                     1 => typeof(OpenZaak.v1.QueryZaak),
                     2 => typeof(OpenZaak.v2.QueryZaak),
@@ -337,13 +340,22 @@ namespace EventsHandler
                 };
             }
 
-            static Type DetermineOpenKlantVersion(WebApplicationBuilder builder)
+            static Type DetermineOpenKlantVersion(byte omcWorkflowVersion)
             {
-                return builder.Configuration.OpenServicesVersion() switch
+                return omcWorkflowVersion switch
                 {
                     1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_OpenKlantVersionUnknown)
+                };
+            }
+
+            static Type DetermineTelemetryVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 => typeof(Telemetry.v1.ContactRegistration),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_TelemetryVersionUnknown)
                 };
             }
         }
