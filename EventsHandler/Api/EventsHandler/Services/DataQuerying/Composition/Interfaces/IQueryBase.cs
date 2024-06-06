@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Exceptions;
 using EventsHandler.Services.DataReceiving.Enums;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
@@ -44,6 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// </returns>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="TelemetryException"/>
         internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
     }
