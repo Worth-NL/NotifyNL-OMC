@@ -7,7 +7,7 @@ using EventsHandler.Properties;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The statuses of the <see cref="Case"/> retrieved from "OpenZaak" Web service.
+    /// The statuses of the <see cref="Case"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseStatuses : IJsonSerializable

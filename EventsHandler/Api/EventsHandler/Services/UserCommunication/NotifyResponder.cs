@@ -77,7 +77,7 @@ namespace EventsHandler.Services.UserCommunication
                     Match match;
 
                     // HttpStatus Code: 403 Forbidden
-                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to "NotifyNL" API service denied)
+                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to "Notify NL" API service denied)
                     {
                         message = match.Value;
 

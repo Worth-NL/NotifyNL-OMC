@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
     internal interface IQueryBase
     {
         /// <summary>
-        /// The notification from "Notificatie API" Web service.
+        /// The notification from "OpenNotificaties" Web API service.
         /// </summary>
         internal NotificationEvent Notification { get; set; }
         

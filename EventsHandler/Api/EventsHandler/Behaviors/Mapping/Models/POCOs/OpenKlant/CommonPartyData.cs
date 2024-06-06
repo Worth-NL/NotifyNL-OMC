@@ -6,10 +6,10 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
 {
     /// <summary>
-    /// The sensitive data about a single party (e.g., citizen, organization) retrieved from "OpenKlant" Web service.
+    /// The sensitive data about a single party (e.g., citizen, organization) retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
-    ///   Common DTO for all versions of "OpenKlant" Web service.
+    ///   Common DTO for all versions of "OpenKlant" Web API service.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public readonly struct CommonPartyData : IJsonSerializable

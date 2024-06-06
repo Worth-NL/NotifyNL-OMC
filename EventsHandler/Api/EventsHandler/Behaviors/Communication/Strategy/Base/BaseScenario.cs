@@ -76,7 +76,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
-        ///   The SMS data for "Notify NL" Web service.
+        ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
         protected virtual NotifyData GetSmsNotifyData(Case @case, CommonPartyData partyData)
         {
@@ -95,7 +95,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
-        ///   The e-mail data for "Notify NL" Web service.
+        ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
         protected virtual NotifyData GetEmailNotifyData(Case @case, CommonPartyData partyData)
         {
@@ -114,7 +114,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the SMS template ID for this strategy.
         /// </summary>
         /// <returns>
-        ///   The template ID from "Notify NL" Web service in format "00000000-0000-0000-0000-00000000".
+        ///   The template ID from "Notify NL" Web API service in format "00000000-0000-0000-0000-00000000".
         /// </returns>
         protected abstract string GetSmsTemplateId();
 
@@ -122,7 +122,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the SMS "personalization" for this strategy.
         /// </summary>
         /// <returns>
-        ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web service notification.
+        ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
         protected abstract Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData);
 
@@ -130,7 +130,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the e-mail template ID for this strategy.
         /// </summary>
         /// <returns>
-        ///   The template ID from "Notify NL" Web service in format "00000000-0000-0000-0000-00000000" (UUID).
+        ///   The template ID from "Notify NL" Web API service in format "00000000-0000-0000-0000-00000000" (UUID).
         /// </returns>
         protected abstract string GetEmailTemplateId();
 
@@ -138,7 +138,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Gets the e-mail "personalization" for this strategy.
         /// </summary>
         /// <returns>
-        ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web service notification.
+        ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
         protected abstract Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData);
         #endregion

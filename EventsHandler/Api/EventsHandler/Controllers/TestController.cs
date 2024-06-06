@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// Controller used to test other API services from which "NotifyNL" OMC is dependent.
+    /// Controller used to test other API services from which "Notify NL" OMC is dependent.
     /// </summary>
     /// <seealso cref="OmcController"/>
     public sealed class TestController : OmcController
@@ -53,7 +53,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks the status of "NotifyNL" API web service.
+        /// Checks the status of "Notify NL" Web API service service.
         /// </summary>
         [HttpGet]
         [Route("Notify/HealthCheck")]
@@ -95,17 +95,17 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending Email messages to the "NotifyNL" API web service.
+        /// Sending Email messages to the "Notify NL" Web API service service.
         /// </summary>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
-        /// <param name="emailTemplateId">The email template ID (optional) to be used from "NotifyNL" API service.
+        /// <param name="emailTemplateId">The email template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
         ///     If empty the ID of a very first looked up email template will be used.
         ///   </para>
         /// </param>
         /// <param name="personalization">The map (optional) of keys and values to be used as message personalization.
         ///   <para>
-        ///     Example of personalization in template from "NotifyNL" Admin Portal: "This is ((placeholderText)) information".
+        ///     Example of personalization in template from "Notify NL" Admin Portal: "This is ((placeholderText)) information".
         ///   </para>
         ///   <para>
         ///     Example of personalization values to be provided: { "placeholderText": "good" }
@@ -122,9 +122,9 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
-        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "Notify NL" API service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "Notify NL" API service side
+        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "Notify NL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                       // REASON: Operation is not implemented
@@ -141,10 +141,10 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending SMS text messages to the "NotifyNL" API web service.
+        /// Sending SMS text messages to the "Notify NL" Web API service service.
         /// </summary>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.</param>
-        /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "NotifyNL" API service.
+        /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
         ///     If empty the ID of a very first looked up SMS template will be used.
         ///   </para>
@@ -160,9 +160,9 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "NotifyNL" API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "NotifyNL" API service side
-        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "NotifyNL" API service were incorrect
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The notification successfully sent to "Notify NL" API service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: Issues on the "Notify NL" API service side
+        [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(ProcessingFailed.Simplified))]  // REASON: Base URL or API key to "Notify NL" API service were incorrect
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                       // REASON: Operation is not implemented
@@ -179,9 +179,9 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks whether feedback can be received by "Contactmomenten" API web service.
+        /// Checks whether feedback can be received by "Contactmomenten" API Web API service.
         /// </summary>
-        /// <param name="json">The notification from "Notificatie API" Web service (as a plain JSON object).</param>
+        /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
         [HttpPost]
         [Route("Open/ContactRegistration")]
         // Security
@@ -189,7 +189,7 @@ namespace EventsHandler.Controllers
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API web service
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API Web API service
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> RegisterAsync(
@@ -234,7 +234,7 @@ namespace EventsHandler.Controllers
         {
             try
             {
-                // Initialize the .NET client of "NotifyNL" API service
+                // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
                     this._configuration.OMC.API.BaseUrl.NotifyNL(),
                     this._configuration.User.API.Key.NotifyNL());
