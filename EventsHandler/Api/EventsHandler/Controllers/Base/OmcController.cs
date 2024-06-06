@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventsHandler.Controllers.Base
 {
     /// <summary>
-    /// Parent of all API Controllers in "NotifyNL" OMC.
+    /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
     [Route(DefaultValues.ApiController.Route)]

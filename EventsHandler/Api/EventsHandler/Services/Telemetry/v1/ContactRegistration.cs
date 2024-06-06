@@ -18,12 +18,12 @@ using EventsHandler.Services.Telemetry.Interfaces;
 namespace EventsHandler.Services.Telemetry.v1
 {
     /// <summary>
-    /// <inheritdoc cref="ITelemetryService" />
-    /// <para>
-    ///   Informs external "Contactmomenten" API web service about completion of sending notifications to "NotifyNL" API web service.
-    /// </para>
+    /// <inheritdoc cref="ITelemetryService"/>
     /// </summary>
-    /// <seealso cref="ITelemetryService" />
+    /// <remarks>
+    ///   Version: "ContactMomenten" Web API service | "OMC workflow" v1.
+    /// </remarks>
+    /// <seealso cref="ITelemetryService"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
         private readonly WebApiConfiguration _configuration;
@@ -39,6 +39,9 @@ namespace EventsHandler.Services.Telemetry.v1
         }
 
         /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string)"/>
+        /// <returns>
+        ///   Response from "OpenZaak" Web API service.
+        /// </returns>
         async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
         {
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
@@ -49,7 +52,7 @@ namespace EventsHandler.Services.Telemetry.v1
 
         #region Helper methods
         /// <summary>
-        /// Sends the completion feedback to "OpenKlant" Web service.
+        /// Sends the completion feedback to "OpenKlant" Web API service.
         /// </summary>
         private async Task<ContactMoment> SendFeedbackToOpenKlantAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
         {
@@ -78,7 +81,7 @@ namespace EventsHandler.Services.Telemetry.v1
         }
 
         /// <summary>
-        /// Sends the completion feedback to "OpenZaak" Web service.
+        /// Sends the completion feedback to "OpenZaak" Web API service.
         /// </summary>
         private async Task<string> SendFeedbackToOpenZaakAsync(NotificationEvent notification, ContactMoment contactMoment)
         {

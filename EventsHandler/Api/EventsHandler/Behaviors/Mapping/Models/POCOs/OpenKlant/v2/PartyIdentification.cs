@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {
     /// <summary>
-    /// The identification of the party (e.g., citizen, organization) retrieved from "OpenKlant" Web service.
+    /// The identification of the party (e.g., citizen, organization) retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (2.0) Web service | "OMC workflow" v2.
+    ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable" />
     public struct PartyIdentification : IJsonSerializable

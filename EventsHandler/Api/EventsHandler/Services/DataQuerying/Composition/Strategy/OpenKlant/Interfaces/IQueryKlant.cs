@@ -7,7 +7,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {
     /// <summary>
-    /// The methods querying specific data from "OpenKlant" Web service.
+    /// The methods querying specific data from "OpenKlant" Web API service.
     /// </summary>
     internal interface IQueryKlant
     {
@@ -16,7 +16,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
 
         #region Abstract (Citizen details)
         /// <summary>
-        /// Gets the details of a specific citizen from "OpenKlant" Web service.
+        /// Gets the details of a specific citizen from "OpenKlant" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -32,7 +32,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
 
         #region Helper methods
         /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web service URI:
+        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web API service URI:
         /// <code>
         ///   http(s)://[DOMAIN]/ApiEndpoint
         /// </code>

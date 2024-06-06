@@ -7,10 +7,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The sensitive data about the citizen ("burger") retrieved from "OpenKlant" Web service.
+    /// The sensitive data about the citizen ("burger") retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (1.0) Web service | "OMC workflow" v1.
+    ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="CommonPartyData"/>
     /// <seealso cref="IJsonSerializable"/>
