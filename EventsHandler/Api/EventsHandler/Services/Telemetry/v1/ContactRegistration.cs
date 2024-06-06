@@ -1,5 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Text;
+using System.Text.Json;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
@@ -12,10 +14,8 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.Telemetry.Interfaces;
-using System.Text;
-using System.Text.Json;
 
-namespace EventsHandler.Services.Telemetry
+namespace EventsHandler.Services.Telemetry.v1
 {
     /// <summary>
     /// <inheritdoc cref="ITelemetryService" />

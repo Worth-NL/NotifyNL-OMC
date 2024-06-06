@@ -169,6 +169,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_TelemetryVersionUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_TelemetryVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
