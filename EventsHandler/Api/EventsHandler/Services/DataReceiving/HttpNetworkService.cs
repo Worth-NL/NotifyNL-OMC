@@ -166,6 +166,7 @@ namespace EventsHandler.Services.DataReceiving
                     return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
+                // TODO: To be removed after tests
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 HttpResponseMessage result = body is null
                     ? await ResolveClient(httpClientType).GetAsync(uri)
