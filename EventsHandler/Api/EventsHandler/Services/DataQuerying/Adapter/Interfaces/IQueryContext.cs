@@ -44,7 +44,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
-        ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web service.
+        ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
         #endregion
@@ -59,7 +59,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetLastCaseStatusTypeAsync(IQueryBase, CaseStatuses)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="CaseStatus"/>es, but it produces an additional
-        ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web service.
+        ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<CaseStatusType> GetLastCaseStatusTypeAsync(CaseStatuses? statuses = null);
 

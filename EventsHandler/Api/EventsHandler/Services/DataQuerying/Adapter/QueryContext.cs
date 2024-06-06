@@ -47,10 +47,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
         async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
         {
-            // 1. Fetch BSN using "OpenZaak" Web service (if it wasn't provided already)
+            // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
             bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync();
 
-            // 2. Fetch citizen details using "OpenKlant" Web service
+            // 2. Fetch citizen details using "OpenKlant" Web API service
             return await this._queryKlant.GetPartyDataAsync(this._queryBase, bsnNumber);
         }
         #endregion
@@ -67,10 +67,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses?)"/>
         async Task<CaseStatusType> IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses? statuses)
         {
-            // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web service
+            // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
             statuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
 
-            // 2. Fetch the case status type from the last case status from "OpenZaak" Web service
+            // 2. Fetch the case status type from the last case status from "OpenZaak" Web API service
             return await this._queryZaak.GetLastCaseStatusTypeAsync(this._queryBase, statuses.Value);
         }
 

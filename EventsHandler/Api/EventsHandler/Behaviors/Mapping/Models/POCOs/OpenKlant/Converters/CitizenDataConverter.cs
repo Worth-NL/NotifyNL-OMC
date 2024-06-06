@@ -12,7 +12,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
     internal static class CitizenDataConverter
     {
         /// <summary>
-        /// Converts <see cref="CitizenResult"/> from "OpenKlant" (1.0) Web service.
+        /// Converts <see cref="CitizenResult"/> from "OpenKlant" (1.0) Web API service.
         /// </summary>
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
@@ -31,7 +31,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         }
 
         /// <summary>
-        /// Converts <see cref="PartyResult"/> from "OpenKlant" (2.0) Web service.
+        /// Converts <see cref="PartyResult"/> from "OpenKlant" (2.0) Web API service.
         /// </summary>
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.

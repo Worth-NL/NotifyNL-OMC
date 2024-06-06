@@ -5,14 +5,14 @@ using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
+using EventsHandler.Constants;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using EventsHandler.Constants;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
     /// <summary>
-    /// The main notification retrieved as a callback event from "Notificatie API" Web service.
+    /// The main notification retrieved as a callback event from "OpenNotificaties" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct NotificationEvent : IJsonSerializable

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger") retrieved from "OpenZaak" Web service.
+    /// The sensitive data about a single citizen ("burger") retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenData : IJsonSerializable

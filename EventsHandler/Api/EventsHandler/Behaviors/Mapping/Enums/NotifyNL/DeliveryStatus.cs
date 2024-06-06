@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
 {
     /// <summary>
-    /// Delivery statuses of notifications (e-mail, SMS) returned by "NotifyNL" API web service.
+    /// Delivery statuses of notifications (e-mail, SMS) returned by "Notify NL" Web API service.
     /// <para>
     ///   Source:
     /// 
@@ -14,7 +14,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
     ///     https://[DOMAIN*]/using-notify/message-status/email
     ///   </code>
     /// 
-    ///   * Domain where "NotifyNL" Admin portal is deployed (e.g., "admin.notify.nl").
+    ///   * Domain where "Notify NL" Admin portal is deployed (e.g., "admin.notify.nl").
     /// </para>
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<DeliveryStatus>))]
@@ -23,7 +23,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
         /// <summary>
         /// Default value.
         /// <para>
-        ///   It might occur in case of problems with receiving notification delivery statuses from "NotifyNL"
+        ///   It might occur in case of problems with receiving notification delivery statuses from "Notify NL"
         ///   (for example if the API was recently changed).
         /// </para>
         /// </summary>

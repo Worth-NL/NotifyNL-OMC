@@ -175,34 +175,34 @@
     <value>The HTTPS protocol is expected.</value>
   </data>
   <data name="HttpRequest_ERROR_Message" xml:space="preserve">
-    <value>The HTTP Request sent to external Web service failed.</value>
+    <value>The HTTP Request sent to external Web API service failed.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCase" xml:space="preserve">
-    <value>HTTP Request: Case could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseDetails" xml:space="preserve">
-    <value>HTTP Request: Case details could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case details could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseRole" xml:space="preserve">
-    <value>HTTP Request: Case role could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case role could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseStatuses" xml:space="preserve">
-    <value>HTTP Request: Case statuses could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case statuses could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseStatusType" xml:space="preserve">
-    <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCitizenDetails" xml:space="preserve">
-    <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web service.</value>
+    <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
-    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoFeedbackKlant" xml:space="preserve">
-    <value>HTTP Request: The contact moment could not be retrieved from OpenKlant Web service.</value>
+    <value>HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoSourceOrganization" xml:space="preserve">
-    <value>HTTP Request: The notification (from OpenNotificaties Web service) does not contain source organization ('bronorganisatie').</value>
+    <value>HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization ('bronorganisatie').</value>
   </data>
   <data name="HttpRequest_ERROR_Reason1" xml:space="preserve">
     <value>RECEIVER: The requested resource is unavailable or not existing.</value>
@@ -342,7 +342,7 @@
     <value>Value</value>
   </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
-    <value>HTTP Request: The case (obtained from OpenZaak Web service) does not contain any statuses.</value>
+    <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
   </data>
   <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
     <value>Not standardized (unexpected) API response</value>
@@ -354,10 +354,10 @@
     <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
   </data>
   <data name="HttpRequest_ERROR_EmptyCaseRoles" xml:space="preserve">
-    <value>HTTP Request: Results representing case roles (retrieved from OpenZaak Web service) are empty.</value>
+    <value>HTTP Request: Results representing case roles (retrieved from OpenZaak Web API service) are empty.</value>
   </data>
   <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
-    <value>HTTP Request: Any case role (retrieved from OpenZaak Web service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
+    <value>HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
   </data>
   <data name="Authorization_ERROR_HttpClientTypeNotSuported" xml:space="preserve">
     <value>This type of HttpClient is not supported yet:</value>
@@ -375,15 +375,15 @@
     <value>The Notify HttpClient was initialized for organization ID:</value>
   </data>
   <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
-    <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web service) are empty.</value>
+    <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
   </data>
   <data name="HttpRequest_ERROR_EmptyPartiesResults" xml:space="preserve">
-    <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web service) are empty.</value>
+    <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty.</value>
   </data>
   <data name="HttpRequest_ERROR_MultipleInitiatorRoles" xml:space="preserve">
-    <value>HTTP Request: Multiple roles (retrieved from OpenZaak Web service) have the same initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). It cannot be determined which of them is the initiator.</value>
+    <value>HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). It cannot be determined which of them is the initiator.</value>
   </data>
   <data name="HttpRequest_ERROR_NoDigitalAddresses" xml:space="preserve">
-    <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web service.</value>
+    <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
   </data>
 </root>

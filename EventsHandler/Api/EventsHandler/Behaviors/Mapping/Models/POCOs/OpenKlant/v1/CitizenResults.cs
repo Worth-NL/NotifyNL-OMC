@@ -8,10 +8,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The results about the citizens retrieved from "OpenKlant" Web service.
+    /// The results about the citizens retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
-    ///   Version: "OpenKlant" (1.0) Web service | "OMC workflow" v1.
+    ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenResults : IJsonSerializable

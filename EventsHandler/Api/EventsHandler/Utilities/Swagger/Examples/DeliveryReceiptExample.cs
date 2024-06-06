@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EventsHandler.Utilities.Swagger.Examples
 {
     /// <summary>
-    /// An example of delivery status received from "NotifyNL" API web service.
+    /// An example of delivery status received from "Notify NL" Web API service.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
     [ExcludeFromCodeCoverage]

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// A single status from <see cref="CaseStatuses"/> retrieved from "OpenZaak" Web service.
+    /// A single status from <see cref="CaseStatuses"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseStatus : IJsonSerializable

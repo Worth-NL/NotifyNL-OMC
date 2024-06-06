@@ -27,7 +27,7 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
         ///   Strategy could not be determined or <see cref="DistributionChannels"/> option is invalid.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        ///   Something could not be queried from external API Web services.
+        ///   Something could not be queried from external Web API services.
         /// </exception>
         /// <exception cref="TelemetryException">The completion status could not be sent.</exception>
         internal Task<(ProcessingResult, string)> ProcessAsync(TData data);

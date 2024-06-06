@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// Controller used to get feedback from "NotifyNL" API web service.
+    /// Controller used to get feedback from "Notify NL" Web API service service.
     /// </summary>
     /// <seealso cref="OmcController"/>
     public sealed class NotifyController : OmcController
@@ -48,9 +48,9 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Callback URL listening to delivery receipt send by "NotifyNL" API web service.
+        /// Callback URL listening to delivery receipt send by "Notify NL" Web API service service.
         /// </summary>
-        /// <param name="json">The delivery receipt from "NotifyNL" Web service (as a plain JSON object).</param>
+        /// <param name="json">The delivery receipt from "Notify NL" Web API service (as a plain JSON object).</param>
         [HttpPost]
         [Route("Confirm")]
         // Security

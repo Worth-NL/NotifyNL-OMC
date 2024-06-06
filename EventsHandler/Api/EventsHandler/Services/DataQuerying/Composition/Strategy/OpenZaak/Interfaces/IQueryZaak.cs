@@ -9,7 +9,7 @@ using Resources = EventsHandler.Properties.Resources;
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
 {
     /// <summary>
-    /// The methods querying specific data from "OpenZaak" Web service.
+    /// The methods querying specific data from "OpenZaak" Web API service.
     /// </summary>
     internal interface IQueryZaak
     {
@@ -17,7 +17,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         protected internal WebApiConfiguration Configuration { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Case"/> from "OpenZaak" Web service.
+        /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
         
         /// <summary>
-        /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web service.
+        /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -49,7 +49,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
         
         /// <summary>
-        /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web service.
+        /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -67,7 +67,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Abstract (BSN Number)
         /// <summary>
-        /// Gets BSN number of a specific citizen from "OpenZaak" Web service.
+        /// Gets BSN number of a specific citizen from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -85,7 +85,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Abstract (Case type)
         /// <summary>
-        /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web service.
+        /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
         /// <exception cref="HttpRequestException"/>
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Helper methods
         /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web service URI:
+        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web API service URI:
         /// <code>
         ///   http(s)://[DOMAIN]/ApiEndpoint
         /// </code>
