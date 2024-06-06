@@ -167,6 +167,11 @@ namespace EventsHandler.Services.DataReceiving
                 }
 
                 // TODO: To be removed after tests
+                if (httpClientType == HttpClientTypes.OpenKlant_v2)
+                {
+                    uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
+                }
+
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 HttpResponseMessage result = body is null
                     ? await ResolveClient(httpClientType).GetAsync(uri)
