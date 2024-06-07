@@ -25,6 +25,7 @@ namespace EventsHandler.Services.DataReceiving.Factories
         {
             var handler = new SocketsHttpHandler
             {
+                // Prevents DNS changes issue (changing IP address)
                 PooledConnectionLifetime = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.ConnectionLifetimeInSeconds())
             };
 
