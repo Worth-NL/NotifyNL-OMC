@@ -42,8 +42,20 @@ namespace EventsHandler.Constants
 
             internal static class Static
             {
-                internal static string Token => "Token";
+                internal static string Token => nameof(Token);
             }
+        }
+
+        // Configurations
+        internal static class EnvironmentVariables
+        {
+            internal static string AspNetCoreEnvironment => "ASPNETCORE_ENVIRONMENT";
+
+            internal static string SentryDsn => "SENTRY_DSN";
+
+            internal static string SentryEnvironment => "SENTRY_ENVIRONMENT";
+
+            internal static string Missing => nameof(Missing);
         }
         #endregion
 
