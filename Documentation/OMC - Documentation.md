@@ -278,16 +278,18 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 > Here are the details which workflows are using which versions of external API services.
 
 #### OMC workflow v1 (default):
-- "OpenNotificaties" v1.0.0
-- "OpenZaak" v1.0.0
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
 - "OpenKlant" v1.0.0
-- "ContactMomenten"
+- "Contactmomenten" v1.0.0
 
 #### OMC workflow v2:
-- "OpenNotificaties" v1.0.0
-- "OpenZaak" v1.0.0
-- "OpenKlant" v2.0.0 <code>new</code>
-- "KlantContacten" <code>new</code>
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- <code>new</code> "OpenKlant" v2.0.0
+- <code>new</code> "Klantcontacten" v2.0.0
+
+<code>**Last update:** 7 Jun 2024</code>
 
 > The OMC workflows can be defined in `appsettings.json` configuration file:
 

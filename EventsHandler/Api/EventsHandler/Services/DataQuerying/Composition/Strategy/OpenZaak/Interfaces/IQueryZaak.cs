@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
@@ -11,10 +12,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
     /// <summary>
     /// The methods querying specific data from "OpenZaak" Web API service.
     /// </summary>
-    internal interface IQueryZaak
+    /// <seealso cref="IVersionDetails"/>
+    internal interface IQueryZaak : IVersionDetails
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }
+
+        /// <inheritdoc cref="IVersionDetails.Name"/>
+        string IVersionDetails.Name => "OpenZaak";
 
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
