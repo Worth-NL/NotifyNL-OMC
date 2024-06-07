@@ -53,7 +53,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks the status of "Notify NL" Web API service service.
+        /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
         [Route("Notify/HealthCheck")]
@@ -95,7 +95,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending Email messages to the "Notify NL" Web API service service.
+        /// Sending Email messages to the "Notify NL" Web API service.
         /// </summary>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
         /// <param name="emailTemplateId">The email template ID (optional) to be used from "Notify NL" API service.
@@ -141,7 +141,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending SMS text messages to the "Notify NL" Web API service service.
+        /// Sending SMS text messages to the "Notify NL" Web API service.
         /// </summary>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.</param>
         /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "Notify NL" API service.
