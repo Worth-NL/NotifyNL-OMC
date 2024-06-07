@@ -41,7 +41,7 @@ namespace EventsHandler.Services.DataReceiving
             this._httpClientFactory = httpClientFactory;
 
             this._semaphore = new SemaphoreSlim(
-                this._configuration.AppSettings.Network.SimultaneousHttpRequestsNum());
+                this._configuration.AppSettings.Network.HttpRequestsSimultaneousNumber());
             
             InitializeAvailableHttpClients();
         }
