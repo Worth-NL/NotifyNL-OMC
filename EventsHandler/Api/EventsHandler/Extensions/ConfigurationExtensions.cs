@@ -29,7 +29,7 @@ namespace EventsHandler.Extensions
         /// <param name="configuration">The application configuration.</param>
         internal static byte OpenServicesVersion(this IConfiguration configuration)
             => configuration.GetValue<byte>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
-                                                 $"{nameof(WebApiConfiguration.AppSettings.Features.OpenServicesVersion)}");
+                                                 $"{nameof(WebApiConfiguration.AppSettings.Features.OmcWorkflowVersion)}");
         #endregion
 
         #region Validation

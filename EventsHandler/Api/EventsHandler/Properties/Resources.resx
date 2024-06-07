@@ -363,13 +363,13 @@
     <value>This type of HttpClient is not supported yet:</value>
   </data>
   <data name="Configuration_ERROR_OpenKlantVersionUnknown" xml:space="preserve">
-    <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+    <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="Configuration_ERROR_OpenZaakVersionUnknown" xml:space="preserve">
-    <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+    <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="Configuration_ERROR_TelemetryVersionUnknown" xml:space="preserve">
-    <value>The version of Telemetry service to be used by OMC is unknown or not supported ('Features:OpenServicesVersion').</value>
+    <value>The version of Telemetry service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="Events_NotifyClientInitialized" xml:space="preserve">
     <value>The Notify HttpClient was initialized for organization ID:</value>

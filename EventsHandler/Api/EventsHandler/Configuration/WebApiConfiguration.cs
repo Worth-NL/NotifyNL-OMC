@@ -161,8 +161,8 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal byte OpenServicesVersion()
-                    => GetValue<byte>(this._loadersContext, this._currentPath, nameof(OpenServicesVersion));
+                internal byte OmcWorkflowVersion()
+                    => GetValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
             
             /// <summary>
