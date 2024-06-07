@@ -114,7 +114,7 @@ namespace EventsHandler.Services.DataReceiving
         /// </returns>
         private HttpClient AuthorizeWithGeneratedJwt(HttpClient httpClient)
         {
-            lock (s_padlock)
+            lock (s_padlock)  // NOTE: Prevents multiple threads to update authorization token of an already used HttpClient
             {
                 // TODO: Caching the token until the expiration time doesn't elapse yet
                 SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
