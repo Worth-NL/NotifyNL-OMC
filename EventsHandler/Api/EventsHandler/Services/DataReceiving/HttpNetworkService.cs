@@ -40,9 +40,11 @@ namespace EventsHandler.Services.DataReceiving
             this._encryptionContext = encryptionContext;
             this._httpClientFactory = httpClientFactory;
 
+            // NOTE: Prevents "TaskCanceledException" in case there is a lot of simultaneous HTTP Requests being called
             this._semaphore = new SemaphoreSlim(
                 this._configuration.AppSettings.Network.HttpRequestsSimultaneousNumber());
             
+            // NOTE: This method is working like IHttpClientFactory: builder.Services.AddHttpClient("type_1", client => { });
             InitializeAvailableHttpClients();
         }
 
@@ -179,6 +181,7 @@ namespace EventsHandler.Services.DataReceiving
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await this._semaphore.WaitAsync();
                 HttpResponseMessage result = body is null
+                    // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
                     ? await ResolveClient(httpClientType).GetAsync(uri)
                     : await ResolveClient(httpClientType).PostAsync(uri, body);
                 this._semaphore.Release();
