@@ -21,6 +21,7 @@ namespace EventsHandler.Services.DataReceiving
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
         private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
+        private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
         /// Cached reusable HTTP Clients with preconfigured settings (etc., "Authorization" or "Headers").
@@ -38,6 +39,9 @@ namespace EventsHandler.Services.DataReceiving
             this._configuration = configuration;
             this._encryptionContext = encryptionContext;
             this._httpClientFactory = httpClientFactory;
+
+            this._semaphore = new SemaphoreSlim(
+                this._configuration.AppSettings.Network.SimultaneousHttpRequestsNum());
             
             InitializeAvailableHttpClients();
         }
@@ -171,11 +175,13 @@ namespace EventsHandler.Services.DataReceiving
                 {
                     uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
                 }
-
+                
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
+                await this._semaphore.WaitAsync();
                 HttpResponseMessage result = body is null
                     ? await ResolveClient(httpClientType).GetAsync(uri)
                     : await ResolveClient(httpClientType).PostAsync(uri, body);
+                this._semaphore.Release();
 
                 return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());  // Status + JSON response
             }
