@@ -29,7 +29,11 @@ namespace EventsHandler.Services.DataReceiving.Factories
                 PooledConnectionLifetime = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.ConnectionLifetimeInSeconds())
             };
 
-            var httpClient = new HttpClient(socketsHandler);
+            var httpClient = new HttpClient(socketsHandler)
+            {
+                // Prevents issues with resource leaks and application performance in case of HTTP Requests taking too long
+                Timeout = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.HttpRequestTimeoutInSeconds())
+            };
 
             // Set universal Request Headers
             httpClient.DefaultRequestHeaders.Accept.Add(

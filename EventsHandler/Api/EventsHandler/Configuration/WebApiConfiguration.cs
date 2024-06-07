@@ -121,8 +121,12 @@ namespace EventsHandler.Configuration
                     => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal ushort SimultaneousHttpRequestsNum()
-                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(SimultaneousHttpRequestsNum));
+                internal ushort HttpRequestTimeoutInSeconds()
+                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal ushort HttpRequestsSimultaneousNumber()
+                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
             }
 
             /// <summary>
