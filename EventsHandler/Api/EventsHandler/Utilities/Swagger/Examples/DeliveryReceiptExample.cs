@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
+using EventsHandler.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 
@@ -38,7 +39,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
             return new DeliveryReceipt
             {
                 Id = Guid.NewGuid(),
-                Reference = SerializedNotification,
+                Reference = SerializedNotification.Base64Encode(),
                 Recipient = "hello@gov.nl",
                 Status = DeliveryStatus.Delivered,
                 CreatedAt = currentTime,
