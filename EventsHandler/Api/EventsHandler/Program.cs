@@ -199,9 +199,11 @@ namespace EventsHandler
         private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
-            options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN") ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
+            options.Dsn = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryDsn)
+                          ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
                                                                                              // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
-                                                                                             // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception).
+                                            // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
+
             // Informational messages are the most detailed to log
             options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
                                                      : SentryLevel.Info;  // Less detailed (not affecting performance) settings for logs
@@ -222,8 +224,9 @@ namespace EventsHandler
             options.Release = DefaultValues.ApiController.Version;
             
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
-            options.Environment = Environment.GetEnvironmentVariable("SENTRY_ENVIRONMENT") ??
-                                  Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            options.Environment = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryEnvironment) ??
+                                  Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment) ??
+                                  DefaultValues.EnvironmentVariables.Missing;
         }
         #endregion
         #endregion

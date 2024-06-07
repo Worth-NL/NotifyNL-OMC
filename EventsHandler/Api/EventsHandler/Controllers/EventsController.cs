@@ -123,9 +123,9 @@ namespace EventsHandler.Controllers
         {
             LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
 
-            return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} | " +
-                      $"Workflow: v{this._configuration.AppSettings.Features.OmcWorkflowVersion()} | " +
-                      $"Mode: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}" );
+            return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} " +
+                      $"({Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment)}) | " +
+                      $"Workflow: v{this._configuration.AppSettings.Features.OmcWorkflowVersion()}");
         }
 
         #region Helper methods
