@@ -308,8 +308,6 @@ namespace EventsHandler
             byte omcWorkflowVersion = builder.Configuration.OpenServicesVersion();
             
             // Strategies
-            // TODO: To be moved into strategies
-            // TODO: Implement "GetOrAddService" method
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
 
@@ -317,18 +315,6 @@ namespace EventsHandler
             builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
 
             return;
-
-            // NOTE: Versions
-            // 
-            // "OpenServices" v1 workflow:
-            // - "OpenZaak" v1.0.0
-            // - "OpenKlant" v1.0.0
-            // - "ContactMomenten"
-            //
-            // "OpenServices" v2 workflow:
-            // - "OpenZaak" v1.0.0 (enhanced models)
-            // - "OpenKlant" v2.0.0
-            // - "KlantContacten"
 
             static Type DetermineOpenZaakVersion(byte omcWorkflowVersion)
             {
