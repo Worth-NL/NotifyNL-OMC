@@ -53,7 +53,7 @@ namespace EventsHandler.Services.DataReceiving.Enums
         /// <remarks>
         /// Authorization: JSON Web Token.
         /// </remarks>
-        Telemetry_ContactMomenten = 21
+        Telemetry_Contactmomenten = 21
         #endregion
     }
 }

@@ -53,7 +53,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
             return isSuccess
                 ? this._serializer.Deserialize<TModel>(jsonResult)
                 // Logging errors
-                : httpClientType == HttpClientTypes.Telemetry_ContactMomenten
+                : httpClientType == HttpClientTypes.Telemetry_Contactmomenten
                     // Soft error: HTTP Status Code 206
                     ? throw new TelemetryException(GetMessage(jsonResult, uri, fallbackErrorMessage))
                     // Hard error: HTTP Status Code 400

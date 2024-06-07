@@ -74,7 +74,7 @@ namespace EventsHandler.Services.DataReceiving
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
                 .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
 
-            this._httpClients.TryAdd(HttpClientTypes.Telemetry_ContactMomenten, this._httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
         }
 
@@ -89,7 +89,7 @@ namespace EventsHandler.Services.DataReceiving
                 // Clients requiring JWT token to be refreshed
                 HttpClientTypes.OpenZaak_v1  or
                 HttpClientTypes.OpenKlant_v1 or
-                HttpClientTypes.Telemetry_ContactMomenten
+                HttpClientTypes.Telemetry_Contactmomenten
                     => AuthorizeWithGeneratedJwt(this._httpClients.GetValueOrDefault(httpClientType)!),
                     
                 // Clients using static tokens from configuration

@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -15,10 +16,15 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
+    /// <seealso cref="IQueryKlant"/>
+    /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryKlant : IQueryKlant
     {
         /// <inheritdoc cref="IQueryKlant.Configuration"/>
         WebApiConfiguration IQueryKlant.Configuration { get; set; } = null!;
+        
+        /// <inheritdoc cref="IVersionDetails.Version"/>
+        string IVersionDetails.Version => "1.0.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryKlant"/> class.

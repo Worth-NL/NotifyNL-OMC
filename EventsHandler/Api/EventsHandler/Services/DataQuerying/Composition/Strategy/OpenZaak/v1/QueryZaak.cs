@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
@@ -13,10 +14,15 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
     /// <remarks>
     ///   Version: "OpenZaak" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
+    /// <seealso cref="IQueryZaak"/>
+    /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryZaak : IQueryZaak
     {
         /// <inheritdoc cref="IQueryZaak.Configuration"/>
         WebApiConfiguration IQueryZaak.Configuration { get; set; } = null!;
+        
+        /// <inheritdoc cref="IVersionDetails.Version"/>
+        string IVersionDetails.Version => "1.12.1";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryZaak"/> class.
