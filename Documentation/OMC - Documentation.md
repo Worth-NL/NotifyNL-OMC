@@ -273,17 +273,17 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" workflow is used.
 
-<h2 id="workflow_versions">4.1. Workflow versions in OMC</h3>
+<h2 id="workflow_versions">4.1. Versions of OMC workflows</h3>
 
 > Here are the details which workflows are using which versions of external API services.
 
-#### "OpenServices" v1 workflow (default):
+#### OMC workflow v1 (default):
 - "OpenNotificaties" v1.0.0
 - "OpenZaak" v1.0.0
 - "OpenKlant" v1.0.0
 - "ContactMomenten"
 
-#### "OpenServices" v2 workflow:
+#### OMC workflow v2:
 - "OpenNotificaties" v1.0.0
 - "OpenZaak" v1.0.0
 - "OpenKlant" v2.0.0 <code>new</code>

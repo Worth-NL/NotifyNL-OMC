@@ -124,7 +124,7 @@ namespace EventsHandler.Controllers
             LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
 
             return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} | " +
-                      $"OpenServices: v{this._configuration.AppSettings.Features.OpenServicesVersion()} | " +
+                      $"Workflow: v{this._configuration.AppSettings.Features.OmcWorkflowVersion()} | " +
                       $"Mode: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}" );
         }
 

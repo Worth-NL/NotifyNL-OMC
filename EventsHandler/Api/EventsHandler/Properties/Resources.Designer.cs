@@ -151,7 +151,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
         internal static string Configuration_ERROR_OpenKlantVersionUnknown {
             get {
@@ -160,7 +160,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
         internal static string Configuration_ERROR_OpenZaakVersionUnknown {
             get {
@@ -169,7 +169,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OpenServicesVersion&apos;)..
+        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
         internal static string Configuration_ERROR_TelemetryVersionUnknown {
             get {
