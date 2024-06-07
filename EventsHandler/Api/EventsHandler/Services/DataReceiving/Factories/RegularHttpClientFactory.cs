@@ -23,13 +23,13 @@ namespace EventsHandler.Services.DataReceiving.Factories
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
         HttpClient IHttpClientFactory<HttpClient, (string Name, string Value)[]>.GetHttpClient((string Name, string Value)[] requestHeaders)
         {
-            var handler = new SocketsHttpHandler
+            var socketsHandler = new SocketsHttpHandler
             {
                 // Prevents DNS changes issue (changing IP address)
                 PooledConnectionLifetime = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.ConnectionLifetimeInSeconds())
             };
 
-            var httpClient = new HttpClient(handler);
+            var httpClient = new HttpClient(socketsHandler);
 
             // Set universal Request Headers
             httpClient.DefaultRequestHeaders.Accept.Add(
