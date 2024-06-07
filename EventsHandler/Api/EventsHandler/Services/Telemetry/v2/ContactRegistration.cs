@@ -8,7 +8,9 @@ using EventsHandler.Services.Telemetry.Interfaces;
 namespace EventsHandler.Services.Telemetry.v2
 {
     /// <inheritdoc cref="ITelemetryService"/>
-    /// <seealso cref="ITelemetryService"/>
+    /// <remarks>
+    ///   Version: "Klantcontacten" Web API service | "OMC workflow" v2.
+    /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {

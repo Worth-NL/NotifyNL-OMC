@@ -16,7 +16,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
     /// <remarks>
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
-    /// <seealso cref="IQueryKlant"/>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryKlant : IQueryKlant
     {

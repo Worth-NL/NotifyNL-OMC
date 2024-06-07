@@ -24,7 +24,6 @@ namespace EventsHandler.Services.Telemetry.v1
     /// <remarks>
     ///   Version: "Contactmomenten" Web API service | "OMC workflow" v1.
     /// </remarks>
-    /// <seealso cref="ITelemetryService"/>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {

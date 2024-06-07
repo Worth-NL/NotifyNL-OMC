@@ -252,14 +252,17 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
             builder.Services.RegisterNotifyStrategies();
 
-            // Queries and HTTP resources
+            // Domain queries and resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
             builder.RegisterOpenServices();
 
-            // HTTP communication + authorization
+            // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.RegisterClientFactories();
+
+            // Versioning
+            builder.Services.AddSingleton<IVersionsRegister, VersionsRegister>();
 
             // User Interaction
             builder.Services.RegisterResponders();
