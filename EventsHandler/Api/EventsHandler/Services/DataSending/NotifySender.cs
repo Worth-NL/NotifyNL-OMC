@@ -14,9 +14,9 @@ namespace EventsHandler.Services.DataSending
     internal sealed class NotifySender : ISendingService<NotificationEvent, NotifyData>
     {
         #region Cached HttpClient
-        private static INotifyClient? s_httpClient;
-
         private static readonly object s_padlock = new();
+
+        private static INotifyClient? s_httpClient;
         #endregion
 
         private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
@@ -66,8 +66,6 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         #region Helper methods
-        // TODO: HttpClient can be cached on service level
-
         /// <summary>
         /// Gets the cached <see cref="INotifyClient"/> or create a new one if not yet existing.
         /// <para>
