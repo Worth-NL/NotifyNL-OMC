@@ -37,8 +37,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters
         ///   The unified <see cref="CommonPartyData"/> DTO model.
         /// </returns>
         internal static CommonPartyData ConvertToUnified(this
-            (PartyResult Party, DistributionChannels DistributionChannel,
-            string EmailAddress, string PhoneNumber) data)
+            (PartyResult Party, DistributionChannels DistributionChannel, string EmailAddress, string PhoneNumber) data)
         {
             return new CommonPartyData
             {
