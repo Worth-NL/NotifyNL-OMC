@@ -14,6 +14,9 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         /// <param name="templateId">The template identifier.</param>
         /// <param name="personalization">The personalization.</param>
         /// <param name="reference">The reference representing original notification.</param>
+        /// <remarks>
+        /// NOTE: Throws exceptions from the external libraries.
+        /// </remarks>
         internal Task<bool> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference);
 
         /// <summary>
@@ -23,6 +26,9 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         /// <param name="templateId">The template identifier.</param>
         /// <param name="personalization">The personalization.</param>
         /// <param name="reference">The reference representing original notification.</param>
+        /// <remarks>
+        /// NOTE: Throws exceptions from the external libraries.
+        /// </remarks>
         internal Task<bool> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference);
     }
 }
