@@ -8,6 +8,7 @@ using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
@@ -201,7 +202,7 @@ namespace EventsHandler
             // Sentry Data Source Name (DSN) => where to log application events
             options.Dsn = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryDsn)
                           ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
-                                                                                             // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
+                                            // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
                                             // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
 
             // Informational messages are the most detailed to log
@@ -347,6 +348,7 @@ namespace EventsHandler
                 return omcWorkflowVersion switch
                 {
                     1 => typeof(Telemetry.v1.ContactRegistration),
+                    2 => typeof(Telemetry.v2.ContactRegistration),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_TelemetryVersionUnknown)
                 };
             }
