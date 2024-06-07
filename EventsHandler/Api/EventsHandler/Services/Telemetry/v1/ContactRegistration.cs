@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
@@ -21,13 +22,20 @@ namespace EventsHandler.Services.Telemetry.v1
     /// <inheritdoc cref="ITelemetryService"/>
     /// </summary>
     /// <remarks>
-    ///   Version: "ContactMomenten" Web API service | "OMC workflow" v1.
+    ///   Version: "Contactmomenten" Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="ITelemetryService"/>
+    /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
+
+        /// <inheritdoc cref="IVersionDetails.Name"/>
+        string IVersionDetails.Name => "Contactmomenten";
+        
+        /// <inheritdoc cref="IVersionDetails.Version"/>
+        string IVersionDetails.Version => "1.0.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
@@ -77,7 +85,7 @@ namespace EventsHandler.Services.Telemetry.v1
             // Sending the request and getting the response (combined internal logic)
             return await this._dataQuery
                 .From(notification)
-                .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry_ContactMomenten, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
+                .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry_Contactmomenten, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
         /// <summary>
@@ -99,7 +107,7 @@ namespace EventsHandler.Services.Telemetry.v1
 
             // Sending the request
             (bool success, string jsonResponse) =
-                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry_ContactMomenten, klantContactMomentUri, body);
+                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry_Contactmomenten, klantContactMomentUri, body);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);
