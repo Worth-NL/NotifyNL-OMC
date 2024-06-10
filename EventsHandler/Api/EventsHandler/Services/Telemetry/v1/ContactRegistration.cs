@@ -5,16 +5,11 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
-using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
-using EventsHandler.Properties;
-using EventsHandler.Services.DataQuerying.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
 using System.Text;
-using System.Text.Json;
 
 namespace EventsHandler.Services.Telemetry.v1
 {
@@ -27,8 +22,7 @@ namespace EventsHandler.Services.Telemetry.v1
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
-        private readonly WebApiConfiguration _configuration;
-        private readonly IDataQueryService<NotificationEvent> _dataQuery;
+        private readonly IQueryContext _queryContext;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Contactmomenten";
@@ -39,77 +33,55 @@ namespace EventsHandler.Services.Telemetry.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
+        public ContactRegistration(IQueryContext queryContext)
         {
-            this._configuration = configuration;
-            this._dataQuery = dataQuery;
+            this._queryContext = queryContext;
         }
 
-        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string)"/>
-        /// <returns>
-        ///   Response from "OpenZaak" Web API service.
-        /// </returns>
-        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
+        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
+        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
         {
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
-            return await SendFeedbackToOpenZaakAsync(
-                notification,
-                await SendFeedbackToOpenKlantAsync(notification, notificationMethod, message));
+            return await SendFeedbackToOpenZaakAsync(this._queryContext, notification,
+                   await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));
         }
 
         #region Helper methods
-        /// <summary>
-        /// Sends the completion feedback to "OpenKlant" Web API service.
-        /// </summary>
-        private async Task<ContactMoment> SendFeedbackToOpenKlantAsync(NotificationEvent notification, NotifyMethods notificationMethod, string message)
+        private static async Task<ContactMoment> SendFeedbackToOpenKlantAsync(
+            IQueryContext queryContext, NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             // Prepare the body
-            CaseStatus caseStatus = (await this._dataQuery.From(notification).GetCaseStatusesAsync()).LastStatus();  // TODO: Regarding performance, think whether we can store such data in a kind of register
+            CaseStatus caseStatus = (await queryContext.GetCaseStatusesAsync()).LastStatus();
+            string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
-            string serialized = JsonSerializer.Serialize(new Dictionary<string, object>  // TODO: Optimization-wise, try to compose a simple JSON-like string directly in the code to skip the serialization
-            {
-                { "bronorganisatie", notification.GetOrganizationId() },
-                { "registratiedatum", caseStatus.Created },
-                { "kanaal", $"{notificationMethod}" },
-                { "tekst", message },
-                { "initiatief", "gemeente" },
-                { "medewerker", "https://www.google.com/" }  // TODO: Check if this is the correct one
-            });
-            HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
+            string jsonBody =
+                $"{{" +
+                $"  \"bronorganisatie\": {notification.GetOrganizationId()}, " +  // ENG: Source organization
+                $"  \"registratiedatum\": {caseStatus.Created}, " +               // ENG: Date of registration (of the case)
+                $"  \"kanaal\": \"{notificationMethod}\", " +                     // ENG: Channel (of communication / notification)
+                $"  \"tekst\": \"{logMessage}\", " +                              // ENG: Text (to be logged)
+                $"  \"initiatief\": \"gemeente\", " +                             // ENG: Initiator (of the case)
+                $"  \"medewerker\": \"{DefaultValues.Models.EmptyUri}\"" +        // ENG: Worker / collaborator / contributor
+                $"}}";
 
-            // Predefined URL components
-            string specificOpenKlant = this._configuration.User.Domain.OpenKlant();
-            Uri klantContactMomentUri = new($"https://{specificOpenKlant}/contactmomenten/api/v1/contactmomenten");
+            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
 
-            // Sending the request and getting the response (combined internal logic)
-            return await this._dataQuery
-                .From(notification)
-                .ProcessPostAsync<ContactMoment>(HttpClientTypes.Telemetry_Contactmomenten, klantContactMomentUri, body, Resources.HttpRequest_ERROR_NoFeedbackKlant);
+            return await queryContext.SendFeedbackToOpenKlantAsync(body);
         }
 
-        /// <summary>
-        /// Sends the completion feedback to "OpenZaak" Web API service.
-        /// </summary>
-        private async Task<string> SendFeedbackToOpenZaakAsync(NotificationEvent notification, ContactMoment contactMoment)
+        private static async Task<string> SendFeedbackToOpenZaakAsync(
+            IQueryContext queryContext, NotificationEvent notification, ContactMoment contactMoment)
         {
             // Prepare the body
-            string serialized = JsonSerializer.Serialize(new Dictionary<string, object>  // TODO: Optimization-wise, try to compose a simple JSON-like string directly in the code to skip the serialization
-            {
-                { "zaak", $"{notification.MainObject}" },
-                { "contactmoment", $"{contactMoment.Url}" }
-            });
-            HttpContent body = new StringContent(serialized, Encoding.UTF8, DefaultValues.Request.ContentType);
+            string jsonBody =
+                $"{{" +
+                $"  \"zaak\": \"{notification.MainObject}\", " +   // ENG: Case
+                $"  \"contactmoment\": \"{contactMoment.Url}\"" +  // ENG: Moment of contact
+                $"}}";
 
-            // Predefined URL components
-            string specificOpenZaak = this._configuration.User.Domain.OpenZaak();
-            Uri klantContactMomentUri = new($"https://{specificOpenZaak}/zaken/api/v1/zaakcontactmomenten");
+            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
 
-            // Sending the request
-            (bool success, string jsonResponse) =
-                await this._dataQuery.HttpNetwork.PostAsync(HttpClientTypes.Telemetry_Contactmomenten, klantContactMomentUri, body);
-
-            // Getting the response
-            return success ? jsonResponse : throw new TelemetryException(jsonResponse);
+            return await queryContext.SendFeedbackToOpenZaakAsync(body);
         }
         #endregion
     }

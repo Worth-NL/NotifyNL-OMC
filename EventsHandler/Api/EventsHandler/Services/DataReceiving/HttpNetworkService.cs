@@ -75,7 +75,10 @@ namespace EventsHandler.Services.DataReceiving
                 .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
-                .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", ""), ("X-Audit-Toelichting", "") }));  // TODO: Put the right value here
+                .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
+
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
+                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.Telemetry_Klantinteracties)) }));
         }
 
         /// <summary>
@@ -149,7 +152,8 @@ namespace EventsHandler.Services.DataReceiving
         {
             return httpClientType switch
             {
-                HttpClientTypes.OpenKlant_v2
+                HttpClientTypes.OpenKlant_v2 or
+                HttpClientTypes.Telemetry_Klantinteracties
                     => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant_2()}",
 
                 _ => throw new ArgumentException(

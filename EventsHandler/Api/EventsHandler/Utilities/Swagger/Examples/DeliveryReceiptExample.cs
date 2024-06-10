@@ -41,7 +41,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 Id = Guid.NewGuid(),
                 Reference = SerializedNotification.Base64Encode(),
                 Recipient = "hello@gov.nl",
-                Status = DeliveryStatus.Delivered,
+                Statuses = DeliveryStatuses.Delivered,
                 CreatedAt = currentTime,
                 CompletedAt = currentTime.Add(new TimeSpan(seconds: 1, hours: 0, minutes: 0)),
                 SentAt = currentTime.Add(new TimeSpan(seconds: 2, hours: 0, minutes: 0)),

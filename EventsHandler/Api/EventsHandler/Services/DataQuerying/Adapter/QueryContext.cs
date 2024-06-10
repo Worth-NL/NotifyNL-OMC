@@ -7,13 +7,14 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataReceiving.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
 {
     /// <inheritdoc cref="IQueryContext"/>
     internal sealed class QueryContext : IQueryContext
     {
+        private readonly IHttpNetworkService _networkService;
         private readonly IQueryBase _queryBase;
         private readonly IQueryKlant _queryKlant;
         private readonly IQueryZaak _queryZaak;
@@ -21,9 +22,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(IQueryBase queryBase, IQueryKlant queryKlant, IQueryZaak queryZaak)
+        public QueryContext(IHttpNetworkService networkService, IQueryBase queryBase, IQueryKlant queryKlant, IQueryZaak queryZaak)
         {
             // Composition
+            this._networkService = networkService;
             this._queryBase = queryBase;
             this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
@@ -32,26 +34,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #region IQueryBase
         /// <inheritdoc cref="IQueryContext.SetNotification(NotificationEvent)"/>
         void IQueryContext.SetNotification(NotificationEvent notification)
-            => this._queryBase.Notification = notification;
-
-        /// <inheritdoc cref="IQueryContext.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
-        async Task<TModel> IQueryContext.ProcessGetAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, string fallbackErrorMessage)
-            => await this._queryBase.ProcessGetAsync<TModel>(httpsClientType, uri, fallbackErrorMessage);
-
-        /// <inheritdoc cref="IQueryContext.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
-        async Task<TModel> IQueryContext.ProcessPostAsync<TModel>(HttpClientTypes httpsClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
-            => await this._queryBase.ProcessPostAsync<TModel>(httpsClientType, uri, body, fallbackErrorMessage);
-        #endregion
-
-        #region IQueryKlant
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
         {
-            // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
-            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync();
-
-            // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.GetPartyDataAsync(this._queryBase, bsnNumber);
+            this._queryBase.Notification = notification;
         }
         #endregion
 
@@ -76,7 +60,47 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
         async Task<string> IQueryContext.GetBsnNumberAsync()
-            => await this._queryZaak.GetBsnNumberAsync(this._queryBase);
+        {
+            // 1. Fetch case roles from "OpenZaak"
+            // 2. Determine citizen data from case roles
+            // 3. Return BSN from citizen data
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
+        async Task<MainObject> IQueryContext.GetMainObjectAsync()
+            => await this._queryZaak.GetMainObjectAsync(this._queryBase);
+
+        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
+        async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
+        {
+            return await this._queryZaak.SendFeedbackAsync(this._networkService, body);
+        }
+        #endregion
+
+        #region IQueryKlant
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
+        {
+            // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
+            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync();
+
+            // 2. Fetch citizen details using "OpenKlant" Web API service
+            return await this._queryKlant.GetPartyDataAsync(this._queryBase, bsnNumber);
+        }
+
+        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent)"/>
+        async Task<ContactMoment> IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent body)
+        {
+            return await this._queryKlant.SendFeedbackAsync(this._queryBase, body);
+        }
+
+        /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(HttpContent)"/>
+        async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
+        {
+            return await Composition.Strategy.OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
+                this._networkService, this._queryKlant.GetSpecificOpenKlantDomain(), body);
+        }
         #endregion
     }
 }
