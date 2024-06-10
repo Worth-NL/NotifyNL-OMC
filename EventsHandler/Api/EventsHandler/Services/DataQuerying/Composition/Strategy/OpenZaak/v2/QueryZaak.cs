@@ -6,6 +6,7 @@ using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataReceiving.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
@@ -32,12 +33,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(EventsHandler.Services.DataQuerying.Composition.Interfaces.IQueryBase,string)"/>
-        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain)
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
+        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
         {
             string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
-            return (await GetCaseRolesV2Async(queryBase, openZaakDomain, subjectType))
+            return (await GetCaseRolesV2Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), subjectType))
                 .Citizen(((IQueryZaak)this).Configuration)
                 .BsnNumber;
         }
@@ -48,9 +49,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
             string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
 
             // Request URL
-            Uri caseWithRoleUri =
-                new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
-                    $"&betrokkeneType={subjectType}");
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+                                          $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -63,7 +63,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
         async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
         {
-            return (await GetCaseDetailsV2Async(queryBase)).CaseType;
+            return (await GetCaseDetailsV2Async(queryBase))
+                .CaseType;
         }
         
         private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase)
@@ -72,6 +73,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: queryBase.Notification.MainObject,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
+        }
+        #endregion
+
+        #region Polymorphic (Telemetry)
+        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
+        Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
+        {
+            throw new NotImplementedException(Resources.HttpRequest_ERROR_TelemetryOpenZaakNotImplemented);  // TODO: To be removed and converted to static in OpenZaak v1
         }
         #endregion
     }

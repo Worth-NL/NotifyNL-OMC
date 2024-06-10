@@ -3,9 +3,11 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
+using EventsHandler.Exceptions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataReceiving.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
@@ -32,12 +34,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(EventsHandler.Services.DataQuerying.Composition.Interfaces.IQueryBase,string)"/>
-        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain)
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
+        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, openZaakDomain, subjectType)).Citizen.BsnNumber;
+            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), subjectType))
+                .Citizen
+                .BsnNumber;
         }
 
         private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, string subjectType)
@@ -46,9 +50,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
 
             // Request URL
-            Uri caseWithRoleUri =
-                new($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
-                    $"&betrokkeneType={subjectType}");
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+                                          $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -61,7 +64,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
         async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
         {
-            return (await GetCaseDetailsV1Async(queryBase)).CaseType;
+            return (await GetCaseDetailsV1Async(queryBase))
+                .CaseType;
         }
 
         private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase)
@@ -70,6 +74,24 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: queryBase.Notification.MainObject,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
+        }
+        #endregion
+
+        #region Polymorphic (Telemetry)
+        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
+        async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
+        {
+            // Predefined URL components
+            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetSpecificOpenZaakDomain()}/zaken/api/v1/zaakcontactmomenten");
+
+            // Sending the request
+            (bool success, string jsonResponse) = await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
+                uri: klantContactMomentUri,
+                body: body);
+
+            // Getting the response
+            return success ? jsonResponse : throw new TelemetryException(jsonResponse);
         }
         #endregion
     }

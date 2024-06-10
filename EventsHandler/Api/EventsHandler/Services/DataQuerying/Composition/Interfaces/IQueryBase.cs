@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataReceiving.Enums;
+using System.Text.Json;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
 {
@@ -27,7 +28,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <returns>
         ///   Deserialized HTTP Response.
         /// </returns>
-        /// <exception cref="InvalidOperationException"/>
+        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         internal Task<TModel> ProcessGetAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
@@ -43,9 +44,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <returns>
         ///   Deserialized HTTP Response.
         /// </returns>
-        /// <exception cref="InvalidOperationException"/>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="TelemetryException"/>
+        /// <exception cref="JsonException"/>
+        /// <exception cref="HttpRequestException"/> or <exception cref="TelemetryException"/>
         internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
     }
