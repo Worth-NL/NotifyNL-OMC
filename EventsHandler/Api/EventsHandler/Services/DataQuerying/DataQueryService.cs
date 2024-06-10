@@ -3,7 +3,6 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying
 {
@@ -12,17 +11,12 @@ namespace EventsHandler.Services.DataQuerying
     {
         private readonly IQueryContext _queryContext;
 
-        /// <inheritdoc cref="IDataQueryService{TModel}.HttpNetwork"/>
-        public IHttpNetworkService HttpNetwork { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DataQueryService"/> class.
         /// </summary>
-        public DataQueryService(IQueryContext queryContext, IHttpNetworkService httpNetwork)
+        public DataQueryService(IQueryContext queryContext)
         {
             this._queryContext = queryContext;
-
-            this.HttpNetwork = httpNetwork;
         }
 
         /// <inheritdoc cref="IDataQueryService{TModel}.From(TModel)"/>

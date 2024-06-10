@@ -73,9 +73,9 @@ namespace EventsHandler.Controllers
                 // Deserialize received JSON payload
                 callback = this._serializer.Deserialize<DeliveryReceipt>(json);
 
-                return callback.Status is not (DeliveryStatus.PermanentFailure or
-                                               DeliveryStatus.TemporaryFailure or
-                                               DeliveryStatus.TechnicalFailure)
+                return callback.Statuses is not (DeliveryStatuses.PermanentFailure or
+                                               DeliveryStatuses.TemporaryFailure or
+                                               DeliveryStatuses.TechnicalFailure)
                     // Positive status was returned by Notify NL
                     ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)))
@@ -101,7 +101,7 @@ namespace EventsHandler.Controllers
         #region Helper methods
         private static string GetCallbackDetails(DeliveryReceipt callback)
         {
-            return $"{Resources.Feedback_NotifyNL_SUCCESS_NotificationStatus} {callback.Id}: {callback.Status}.";
+            return $"{Resources.Feedback_NotifyNL_SUCCESS_NotificationStatus} {callback.Id}: {callback.Statuses}.";
         }
 
         private static string GetErrorDetails(DeliveryReceipt callback, Exception exception)

@@ -37,7 +37,7 @@ namespace EventsHandler.Services.DataReceiving.Enums
         /// The <see cref="HttpClient"/> used to obtain data from "OpenKlant" v2.0.0.
         /// </summary>
         /// <remarks>
-        /// Authorization: Static token.
+        /// Authorization: Static API key.
         /// </remarks>
         OpenKlant_v2 = 12,
         #endregion
@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataReceiving.Enums
         #region Telemetry
         // NOTE: "OpenZaak" v1.0.0 is part of the "OpenServices" v1 workflow, but those version numbers
         //       are not synonymous. For example, "OpenServices" v2 workflow includes "OpenKlant" v2.0.0
-        //       but also "OpenZaak" v1.0.0. For more details check notes in QueryServiceResolver.
+        //       but also "OpenZaak" v1.0.0. For more details check "OMC - Documentation.md".
 
         /// <summary>
         /// The <see cref="HttpClient"/> used for feedback and telemetry purposes in "OpenServices" v1 workflow.
@@ -53,7 +53,15 @@ namespace EventsHandler.Services.DataReceiving.Enums
         /// <remarks>
         /// Authorization: JSON Web Token.
         /// </remarks>
-        Telemetry_Contactmomenten = 21
+        Telemetry_Contactmomenten = 21,
+        
+        /// <summary>
+        /// The <see cref="HttpClient"/> used for feedback and telemetry purposes in "OpenServices" v2 workflow.
+        /// </summary>
+        /// <remarks>
+        /// Authorization: Static API key.
+        /// </remarks>
+        Telemetry_Klantinteracties = 22
         #endregion
     }
 }

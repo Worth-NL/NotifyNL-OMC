@@ -386,4 +386,7 @@
   <data name="HttpRequest_ERROR_NoDigitalAddresses" xml:space="preserve">
     <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
   </data>
+  <data name="HttpRequest_ERROR_TelemetryOpenZaakNotImplemented" xml:space="preserve">
+    <value>HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow ('Features:OmcWorkflowVersion').</value>
+  </data>
 </root>

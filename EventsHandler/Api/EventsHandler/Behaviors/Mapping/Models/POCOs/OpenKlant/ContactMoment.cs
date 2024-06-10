@@ -13,7 +13,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
     public struct ContactMoment : IJsonSerializable
     {
         /// <summary>
-        /// The first name of the citizen.
+        /// The URL to the <see cref="ContactMoment"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("url")]
