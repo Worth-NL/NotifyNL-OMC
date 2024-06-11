@@ -180,6 +180,12 @@ namespace EventsHandler.Configuration
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
+
+                /// <inheritdoc cref="OpenKlantComponent"/>
+                internal OpenKlantComponent OpenKlant { get; }
+
+                /// <inheritdoc cref="MessagesComponent"/>
+                internal MessagesComponent Messages { get; }
                 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
@@ -188,6 +194,9 @@ namespace EventsHandler.Configuration
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+
+                    this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
+                    this.Messages = new MessagesComponent(loadersContext, this._currentPath);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
@@ -209,6 +218,90 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PhoneGenericDescription()
                     => GetValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
+                
+                /// <summary>
+                /// The "OpenKlant" part of the settings.
+                /// </summary>
+                internal sealed class OpenKlantComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="OpenKlantComponent"/> class.
+                    /// </summary>
+                    internal OpenKlantComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string CodeObjectType()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string CodeRegister()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string CodeObjectTypeId()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
+                }
+
+                /// <summary>
+                /// The "Messages" part of the settings.
+                /// </summary>
+                internal sealed class MessagesComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="MessagesComponent"/> class.
+                    /// </summary>
+                    internal MessagesComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Messages));
+                    }
+
+                    #region SMS
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string SMS_Success_Subject()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string SMS_Success_Body()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string SMS_Failure_Subject()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string SMS_Failure_Body()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
+                    #endregion
+
+                    #region E-mail
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string Email_Success_Subject()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string Email_Success_Body()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string Email_Failure_Subject()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string Email_Failure_Body()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
+                    #endregion
+                }
             }
         }
 
