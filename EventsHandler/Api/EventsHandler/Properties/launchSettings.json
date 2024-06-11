@@ -25,14 +25,14 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Test",
+        "ASPNETCORE_ENVIRONMENT": "Production",
 
         "OMC_AUTHORIZATION_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
         "OMC_AUTHORIZATION_JWT_ISSUER": "https://omc.test.notifynl.nl/",
         "OMC_AUTHORIZATION_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Test) | Workflow v1",
-        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Test) | Workflow v1",
+        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Production) | Workflow v1",
+        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Production) | Workflow v1",
 
         "OMC_API_BASEURL_NOTIFYNL": "https://api.notifynl.nl",
 
@@ -63,7 +63,7 @@
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "98a5348d-3058-4488-bb14-5d61519a5aca",
 
         "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632",
-        "SENTRY_ENVIRONMENT": "Worth Test | Workflow v1"
+        "SENTRY_ENVIRONMENT": "Worth Production | Workflow v1"
       }
     },
     "IIS Express (Workflow v2)": {
