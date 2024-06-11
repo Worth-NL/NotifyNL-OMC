@@ -362,10 +362,10 @@ namespace EventsHandler
 
         private static void RegisterResponders(this IServiceCollection services)
         {
-            // Implicit interface (Adapter) for the main EventsController (is used most often, and it looks cleaner with single generic)
-            services.AddSingleton<IRespondingService<NotificationEvent>, NotificationResponder>();
+            // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
+            services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
             
-            // Explicit interfaces
+            // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
             services.AddSingleton<IRespondingService<ProcessingResult, string>, NotifyResponder>();
         }
         #endregion

@@ -20,14 +20,14 @@ using System.Net;
 namespace EventsHandler.Services.UserCommunication
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
-    internal sealed class NotificationResponder : IRespondingService<NotificationEvent>
+    internal sealed class OmcResponder : IRespondingService<NotificationEvent>
     {
         private readonly IDetailsBuilder _detailsBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationResponder"/> class.
+        /// Initializes a new instance of the <see cref="OmcResponder"/> class.
         /// </summary>
-        public NotificationResponder(IDetailsBuilder builder)
+        public OmcResponder(IDetailsBuilder builder)
         {
             this._detailsBuilder = builder;
         }
