@@ -74,8 +74,9 @@ namespace EventsHandler.Controllers
                 callback = this._serializer.Deserialize<DeliveryReceipt>(json);
 
                 return callback.Statuses is not (DeliveryStatuses.PermanentFailure or
-                                               DeliveryStatuses.TemporaryFailure or
-                                               DeliveryStatuses.TechnicalFailure)
+                                                 DeliveryStatuses.TemporaryFailure or
+                                                 DeliveryStatuses.TechnicalFailure)
+
                     // Positive status was returned by Notify NL
                     ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, callbackDetails = GetCallbackDetails(callback)))
