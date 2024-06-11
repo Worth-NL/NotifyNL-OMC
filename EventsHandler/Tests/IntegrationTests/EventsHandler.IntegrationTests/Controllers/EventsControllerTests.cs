@@ -209,7 +209,7 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private static IRespondingService<NotificationEvent> GetRealResponderService()
         {
-            return new NotificationResponder(new DetailsBuilder());
+            return new OmcResponder(new DetailsBuilder());
         }
 
         private static void AssertWithConditions
