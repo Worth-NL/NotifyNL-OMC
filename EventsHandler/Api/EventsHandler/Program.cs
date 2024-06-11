@@ -381,8 +381,8 @@ namespace EventsHandler
         {
             WebApplication app = builder.Build();
             
-            // Development settings
-            if (app.Environment.IsDevelopment())
+            // Displaying Swagger UI as the main page of the Web API
+            if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
