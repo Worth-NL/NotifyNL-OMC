@@ -20,14 +20,12 @@ namespace EventsHandler.Controllers.Base
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]  // REASON: JWT Token is invalid or expired
     public abstract class OmcController : Controller
     {
-        // ReSharper disable MemberCanBeMadeStatic.Global
-
         /// <summary>
         /// Logs the message and returns the API response.
         /// </summary>
         /// <param name="logLevel">The severity of the log.</param>
         /// <param name="objectResult">The result to be analyzed before logging it.</param>
-        protected ObjectResult LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
+        protected internal static ObjectResult LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
         {
             LogMessage(logLevel, DetermineResultMessage(objectResult));
 
@@ -39,7 +37,7 @@ namespace EventsHandler.Controllers.Base
         /// </summary>
         /// <param name="logLevel">The severity of the log.</param>
         /// <param name="logMessage">The message to be logged.</param>
-        protected void LogApiResponse(LogLevel logLevel, string logMessage)
+        protected internal static void LogApiResponse(LogLevel logLevel, string logMessage)
         {
             LogMessage(logLevel, logMessage);
         }
@@ -49,14 +47,12 @@ namespace EventsHandler.Controllers.Base
         /// </summary>
         /// <param name="exception">The exception to be passed.</param>
         /// <param name="objectResult">The result to be analyzed before logging it.</param>
-        protected ObjectResult LogApiResponse(Exception exception, ObjectResult objectResult)
+        protected internal static ObjectResult LogApiResponse(Exception exception, ObjectResult objectResult)
         {
             LogException(exception);
 
             return objectResult;
         }
-        
-        // ReSharper enable MemberCanBeMadeStatic.Global
 
         #region Sentry logging
         private static readonly Dictionary<LogLevel, SentryLevel> s_logMapping = new()
