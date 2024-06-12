@@ -11,7 +11,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
     /// The notification types returned by "Notify NL" Web API service.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<NotificationTypes>))]
-    internal enum NotificationTypes
+    public enum NotificationTypes
     {
         /// <summary>
         /// Default value.
