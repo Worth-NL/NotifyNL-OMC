@@ -3,10 +3,10 @@
 using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.CitizenData;
 
 namespace EventsHandler.Behaviors.Communication.Strategy
 {
@@ -28,35 +28,35 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         #region Polymorphic
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => base.Configuration.User.TemplateIds.Sms.ZaakCreate();
+          => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
-        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
         {
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "klant.voornaam", citizen.Name },
-                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
-                { "klant.achternaam", citizen.Surname }
+                { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.achternaam", partyData.Surname }
             };
         }
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => base.Configuration.User.TemplateIds.Email.ZaakCreate();
+          => this.Configuration.User.TemplateIds.Email.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
-        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
         {
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "klant.voornaam", citizen.Name },
-                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
-                { "klant.achternaam", citizen.Surname }
+                { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.achternaam", partyData.Surname }
             };
         }
         #endregion

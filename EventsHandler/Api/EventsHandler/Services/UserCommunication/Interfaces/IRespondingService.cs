@@ -78,7 +78,7 @@ namespace EventsHandler.Services.UserCommunication.Interfaces
     public interface IRespondingService<TModel> : IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>  // NOTE: This interface is implicitly following Adapter Design Pattern
         where TModel : IJsonSerializable
     {
-        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
+        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.Get_Processing_Status_ActionResult(TResult, TDetails)"/>
         internal new ObjectResult Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details);
     }
 }

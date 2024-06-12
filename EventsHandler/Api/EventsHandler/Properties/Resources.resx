@@ -175,34 +175,34 @@
     <value>The HTTPS protocol is expected.</value>
   </data>
   <data name="HttpRequest_ERROR_Message" xml:space="preserve">
-    <value>The HTTP Request sent to external Web service failed.</value>
+    <value>The HTTP Request sent to external Web API service failed.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCase" xml:space="preserve">
-    <value>HTTP Request: Case could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseDetails" xml:space="preserve">
-    <value>HTTP Request: Case details could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case details could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseRole" xml:space="preserve">
-    <value>HTTP Request: Case role could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case role could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseStatuses" xml:space="preserve">
-    <value>HTTP Request: Case statuses could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case statuses could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCaseStatusType" xml:space="preserve">
-    <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCitizenDetails" xml:space="preserve">
-    <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web service.</value>
+    <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
-    <value>HTTP Request: Main Object could not be retrieved from OpenZaak Web service.</value>
+    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoFeedbackKlant" xml:space="preserve">
-    <value>HTTP Request: The Contact Moment could not be retrieved from OpenKlant Web service.</value>
+    <value>HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoSourceOrganization" xml:space="preserve">
-    <value>HTTP Request: The notification does not contain source organization ('bronorganisatie') which is crucial!</value>
+    <value>HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization ('bronorganisatie').</value>
   </data>
   <data name="HttpRequest_ERROR_Reason1" xml:space="preserve">
     <value>RECEIVER: The requested resource is unavailable or not existing.</value>
@@ -279,16 +279,16 @@
     <comment>Swagger UI</comment>
   </data>
   <data name="Configuration_ERROR_ContainsEndpoint" xml:space="preserve">
-    <value>In the configuration use only domain (without endpoint):</value>
+    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found:</value>
   </data>
   <data name="Configuration_ERROR_ContainsHttp" xml:space="preserve">
-    <value>In the configuration use only domain (without http or https):</value>
+    <value>In the settings representing domain unnecessary protocol (http or https) was found:</value>
   </data>
   <data name="Configuration_ERROR_InvalidTemplateId" xml:space="preserve">
-    <value>In the configuration the Template Id is invalid (should be: 00000000-0000-0000-0000-000000000000):</value>
+    <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):</value>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
-    <value>The configuration does not contain a given value, or it is empty:</value>
+    <value>The settings does not contain a given value, or the value is empty:</value>
   </data>
   <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
     <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
@@ -296,8 +296,8 @@
   <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
     <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
   </data>
-  <data name="Processing_ERROR_Loader_NotImplemented" xml:space="preserve">
-    <value>It was not possible to determine the given data provider. It can be not implemented yet.</value>
+  <data name="Configuration_ERROR_Loader_NotImplemented" xml:space="preserve">
+    <value>It was not possible to determine the given data provider. It might be not implemented yet.</value>
   </data>
   <data name="Processing_ERROR_ExecutingContext_UnknownErrorDetails" xml:space="preserve">
     <value>It wasn't possible to extract human-friendly error message</value>
@@ -321,12 +321,12 @@
     <value>An unexpected error occurred during processing the notification with ID</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
-  <data name="Feedback_NotifyNL_SUCCESS_NotificationStatus" xml:space="preserve">
+  <data name="Feedback_NotifyNL_STATUS_NotificationStatus" xml:space="preserve">
     <value>The status of notification with ID</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
   <data name="Events_ApiVersionRequested" xml:space="preserve">
-    <value>Version of the API was requested</value>
+    <value>The version of the API was requested.</value>
     <comment>API Endpoint: Events/Version</comment>
   </data>
   <data name="Application_Name" xml:space="preserve">
@@ -342,9 +342,54 @@
     <value>Value</value>
   </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
-    <value>HTTP Request: The case does not contain any statuses</value>
+    <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
   </data>
   <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
     <value>Not standardized (unexpected) API response</value>
+  </data>
+  <data name="Configuration_ERROR_CannotInitializeSettings" xml:space="preserve">
+    <value>The specific type of settings cannot be initialized.</value>
+  </data>
+  <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
+    <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
+  </data>
+  <data name="HttpRequest_ERROR_EmptyCaseRoles" xml:space="preserve">
+    <value>HTTP Request: Results representing case roles (retrieved from OpenZaak Web API service) are empty.</value>
+  </data>
+  <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
+    <value>HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
+  </data>
+  <data name="Authorization_ERROR_HttpClientTypeNotSuported" xml:space="preserve">
+    <value>This type of HttpClient is not supported yet:</value>
+  </data>
+  <data name="Configuration_ERROR_VersionOpenKlantUnknown" xml:space="preserve">
+    <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="Configuration_ERROR_VersionOpenZaakUnknown" xml:space="preserve">
+    <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="Configuration_ERROR_VersionTelemetryUnknown" xml:space="preserve">
+    <value>The version of Telemetry service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="Events_NotifyClientInitialized" xml:space="preserve">
+    <value>The Notify HttpClient was initialized for organization ID:</value>
+  </data>
+  <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
+    <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
+  </data>
+  <data name="HttpRequest_ERROR_EmptyPartiesResults" xml:space="preserve">
+    <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty.</value>
+  </data>
+  <data name="HttpRequest_ERROR_MultipleInitiatorRoles" xml:space="preserve">
+    <value>HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). It cannot be determined which of them is the initiator.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoDigitalAddresses" xml:space="preserve">
+    <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="Configuration_ERROR_VersionNotifyResponderUnknown" xml:space="preserve">
+    <value>The version of NotifyResponder service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="HttpRequest_ERROR_TelemetryOpenZaakNotImplemented" xml:space="preserve">
+    <value>HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow ('Features:OmcWorkflowVersion').</value>
   </data>
 </root>

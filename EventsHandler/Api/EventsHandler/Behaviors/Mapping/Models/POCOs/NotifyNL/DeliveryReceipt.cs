@@ -61,7 +61,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(3)]
-        public DeliveryStatus Status { get; internal set; }
+        public DeliveryStatuses Status { get; internal set; }
         
         /// <summary>
         /// The time the service sent the request.

@@ -4,10 +4,10 @@ using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.CitizenData;
 
 namespace EventsHandler.Behaviors.Communication.Strategy
 {
@@ -33,8 +33,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<Task<NotifyData[]>>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(Case, CitizenData)"/>
-        protected override NotifyData GetSmsNotifyData(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(Case, CommonPartyData)"/>
+        protected override NotifyData GetSmsNotifyData(Case @case, CommonPartyData partyData)
         {
             return NotImplemented<NotifyData>();
         }
@@ -45,14 +45,14 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<string>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
-        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
         {
             return NotImplemented<Dictionary<string, object>>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(Case, CitizenData)"/>
-        protected override NotifyData GetEmailNotifyData(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(Case, CommonPartyData)"/>
+        protected override NotifyData GetEmailNotifyData(Case @case, CommonPartyData partyData)
         {
             return NotImplemented<NotifyData>();
         }
@@ -63,8 +63,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<string>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
-        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
         {
             return NotImplemented<Dictionary<string, object>>();
         }

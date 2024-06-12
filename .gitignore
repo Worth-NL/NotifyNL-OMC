@@ -401,6 +401,6 @@ FodyWeavers.xsd
 
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
+.config
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
-.config

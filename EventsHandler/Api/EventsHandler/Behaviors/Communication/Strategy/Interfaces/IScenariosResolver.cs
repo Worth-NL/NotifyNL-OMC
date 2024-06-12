@@ -12,7 +12,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <summary>
         /// Determines which workflow scenario should be used based on the delivered <see cref="NotificationEvent"/>.
         /// </summary>
-        /// <param name="notification">The notification from "Notificatie API" Web service.</param>
+        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
         /// <returns>
         ///   The appropriate <see cref="INotifyScenario"/> strategy.
         /// </returns>
