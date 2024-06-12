@@ -12,7 +12,7 @@ namespace EventsHandler.Constants
         {
             internal const string Route = "[controller]";
 
-            internal const string Version = "1.74";
+            internal const string Version = "1.80";
         }
         #endregion
 
@@ -28,14 +28,6 @@ namespace EventsHandler.Constants
         #endregion
 
         #region Settings (Program.cs)
-        // Telemetry
-        internal static class Logging
-        {
-            internal static string CloudRoleName => "omc";
-
-            internal static string Category => "notifynl-omc";
-        }
-
         // Security
         internal static class Authorization
         {
@@ -47,6 +39,23 @@ namespace EventsHandler.Constants
 
                 internal static string BearerSchema => "Bearer";
             }
+
+            internal static class Static
+            {
+                internal static string Token => nameof(Token);
+            }
+        }
+
+        // Configurations
+        internal static class EnvironmentVariables
+        {
+            internal static string AspNetCoreEnvironment => "ASPNETCORE_ENVIRONMENT";
+
+            internal static string SentryDsn => "SENTRY_DSN";
+
+            internal static string SentryEnvironment => "SENTRY_ENVIRONMENT";
+
+            internal static string Missing => nameof(Missing);
         }
         #endregion
 

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The case retrieved from "OpenZaak" Web service.
+    /// The case retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct Case : IJsonSerializable
@@ -16,7 +16,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(1)]
         public string Identification { get; internal set; } = string.Empty;
 
         // TODO: "zaaktype" might be used as well

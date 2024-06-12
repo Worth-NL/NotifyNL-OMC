@@ -27,7 +27,7 @@ namespace SecretsManager
                 audience: GetConfigValue("OMC_AUTHORIZATION_JWT_AUDIENCE"),
                 expiresAt: validDateTime,
                 userId: GetConfigValue("OMC_AUTHORIZATION_JWT_USERID"),
-                userRepresentation: GetConfigValue("OMC_AUTHORIZATION_JWT_USERNAME"));
+                userName: GetConfigValue("OMC_AUTHORIZATION_JWT_USERNAME"));
 
             // Write JWT tokens
             context.SaveJwtToken(jwtToken);

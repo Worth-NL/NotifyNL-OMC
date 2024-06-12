@@ -70,7 +70,25 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration use only domain (without endpoint):.
+        ///   Looks up a localized string similar to This type of HttpClient is not supported yet:.
+        /// </summary>
+        internal static string Authorization_ERROR_HttpClientTypeNotSuported {
+            get {
+                return ResourceManager.GetString("Authorization_ERROR_HttpClientTypeNotSuported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specific type of settings cannot be initialized..
+        /// </summary>
+        internal static string Configuration_ERROR_CannotInitializeSettings {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_CannotInitializeSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found:.
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
             get {
@@ -79,7 +97,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration use only domain (without http or https):.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found:.
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {
             get {
@@ -106,7 +124,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the configuration the Template Id is invalid (should be: 00000000-0000-0000-0000-000000000000):.
+        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):.
         /// </summary>
         internal static string Configuration_ERROR_InvalidTemplateId {
             get {
@@ -115,11 +133,65 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The configuration does not contain a given value, or it is empty:.
+        ///   Looks up a localized string similar to It was not possible to determine the given data provider. It might be not implemented yet..
+        /// </summary>
+        internal static string Configuration_ERROR_Loader_NotImplemented {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_Loader_NotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It was not possible to retrieve any data provider. The loading service might not be set..
+        /// </summary>
+        internal static string Configuration_ERROR_Loader_NotSet {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_Loader_NotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of NotifyResponder service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionNotifyResponderUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionNotifyResponderUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionOpenKlantUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionOpenKlantUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionOpenZaakUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionOpenZaakUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionTelemetryUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionTelemetryUnknown", resourceCulture);
             }
         }
         
@@ -313,11 +385,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version of the API was requested.
+        ///   Looks up a localized string similar to The version of the API was requested..
         /// </summary>
         internal static string Events_ApiVersionRequested {
             get {
                 return ResourceManager.GetString("Events_ApiVersionRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID:.
+        /// </summary>
+        internal static string Events_NotifyClientInitialized {
+            get {
+                return ResourceManager.GetString("Events_NotifyClientInitialized", resourceCulture);
             }
         }
         
@@ -333,9 +414,36 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The status of notification with ID.
         /// </summary>
-        internal static string Feedback_NotifyNL_SUCCESS_NotificationStatus {
+        internal static string Feedback_NotifyNL_STATUS_NotificationStatus {
             get {
-                return ResourceManager.GetString("Feedback_NotifyNL_SUCCESS_NotificationStatus", resourceCulture);
+                return ResourceManager.GetString("Feedback_NotifyNL_STATUS_NotificationStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Results representing case roles (retrieved from OpenZaak Web API service) are empty..
+        /// </summary>
+        internal static string HttpRequest_ERROR_EmptyCaseRoles {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCaseRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty..
+        /// </summary>
+        internal static string HttpRequest_ERROR_EmptyCitizensResults {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCitizensResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty..
+        /// </summary>
+        internal static string HttpRequest_ERROR_EmptyPartiesResults {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_EmptyPartiesResults", resourceCulture);
             }
         }
         
@@ -349,7 +457,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The HTTP Request sent to external Web service failed..
+        ///   Looks up a localized string similar to The HTTP Request sent to external Web API service failed..
         /// </summary>
         internal static string HttpRequest_ERROR_Message {
             get {
@@ -358,7 +466,25 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Case could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). There is no initiator at all..
+        /// </summary>
+        internal static string HttpRequest_ERROR_MissingInitiatorRole {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_MissingInitiatorRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). It cannot be determined which of them is the initiator..
+        /// </summary>
+        internal static string HttpRequest_ERROR_MultipleInitiatorRoles {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_MultipleInitiatorRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Case could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCase {
             get {
@@ -367,7 +493,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Case details could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: Case details could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCaseDetails {
             get {
@@ -376,7 +502,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Case role could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: Case role could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCaseRole {
             get {
@@ -385,7 +511,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Case statuses could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: Case statuses could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCaseStatuses {
             get {
@@ -394,7 +520,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Case status type could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: Case status type could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCaseStatusType {
             get {
@@ -403,7 +529,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Citizen details could not be retrieved from OpenKlant Web service..
+        ///   Looks up a localized string similar to HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCitizenDetails {
             get {
@@ -412,7 +538,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The Contact Moment could not be retrieved from OpenKlant Web service..
+        ///   Looks up a localized string similar to HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDigitalAddresses {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDigitalAddresses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoFeedbackKlant {
             get {
@@ -421,7 +556,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The case does not contain any statuses.
+        ///   Looks up a localized string similar to HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses..
         /// </summary>
         internal static string HttpRequest_ERROR_NoLastStatus {
             get {
@@ -430,7 +565,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Main Object could not be retrieved from OpenZaak Web service..
+        ///   Looks up a localized string similar to HTTP Request: The main object could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMainObject {
             get {
@@ -439,7 +574,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The notification does not contain source organization (&apos;bronorganisatie&apos;) which is crucial!.
+        ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
             get {
@@ -462,6 +597,15 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_Reason2 {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string HttpRequest_ERROR_TelemetryOpenZaakNotImplemented {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_TelemetryOpenZaakNotImplemented", resourceCulture);
             }
         }
         
@@ -543,15 +687,6 @@ namespace EventsHandler.Properties {
         internal static string Processing_ERROR_ExecutingContext_UnregisteredApiController {
             get {
                 return ResourceManager.GetString("Processing_ERROR_ExecutingContext_UnregisteredApiController", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to It was not possible to determine the given data provider. It can be not implemented yet..
-        /// </summary>
-        internal static string Processing_ERROR_Loader_NotImplemented {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Loader_NotImplemented", resourceCulture);
             }
         }
         

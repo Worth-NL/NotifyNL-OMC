@@ -10,7 +10,7 @@ namespace EventsHandler.Services.DataLoading.Enums
         /// <summary>
         /// The configuration JSON loader.
         /// </summary>
-        Configuration,
+        AppSettings,
 
         /// <summary>
         /// The environment variables loader.

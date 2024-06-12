@@ -167,7 +167,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             Assert.Multiple(() =>
             {
                 Assert.That(status, Is.EqualTo(ProcessingResult.Success));
-                Assert.That(message, Is.EqualTo($"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | Exception: {exceptionMessage}"));
+                Assert.That(message, Is.EqualTo($"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | {exceptionMessage}"));
             });
         }
 
@@ -213,7 +213,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             Assert.Multiple(() =>
             {
                 Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-                Assert.That(message, Does.StartWith("Exception of type 'System.Net.Http.HttpRequestException' was"));
+                Assert.That(message, Does.StartWith("HttpRequestException | Exception of type 'System.Net.Http.HttpRequestException' was"));
             });
         }
 

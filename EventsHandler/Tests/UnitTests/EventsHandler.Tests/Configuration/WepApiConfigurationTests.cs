@@ -2,6 +2,7 @@
 
 using EventsHandler.Configuration;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataLoading.Enums;
 using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Configuration
@@ -10,19 +11,23 @@ namespace EventsHandler.UnitTests.Configuration
     public sealed class WepApiConfigurationTests
     {
         #region Environment variables
+        #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
+                                         // ReSharper disable SuggestVarOrType_SimpleTypes
         [Test]
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {
-            WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfiguration(
-                ConfigurationHandler.GetEnvironmentLoader(isValid: true));
+            // Initializing Web API Configuration
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
 
             // Assert
             Assert.Multiple(() =>
             {
-                #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
-                                                 // ReSharper disable SuggestVarOrType_SimpleTypes
+                var omcConfiguration = configuration.OMC;
+                var userConfiguration = configuration.User;
+
                 // Authorization | JWT | Notify
-                var notifyJwt = configuration.OMC.Authorization.JWT;
+                var notifyJwt = omcConfiguration.Authorization.JWT;
                 Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty);
                 Assert.That(notifyJwt.Issuer(), Is.Not.Null.Or.Empty);
                 Assert.That(notifyJwt.Audience(), Is.Not.Null.Or.Empty);
@@ -31,10 +36,10 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty);
 
                 // API | BaseUrl
-                Assert.That(configuration.OMC.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty);
+                Assert.That(omcConfiguration.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty);
 
                 // Authorization | JWT | User
-                var userJwt = configuration.User.Authorization.JWT;
+                var userJwt = userConfiguration.Authorization.JWT;
                 Assert.That(userJwt.Secret(), Is.Not.Null.Or.Empty);
                 Assert.That(userJwt.Issuer(), Is.Not.Null.Or.Empty);
                 Assert.That(userJwt.Audience(), Is.Not.Null.Or.Empty);
@@ -43,12 +48,13 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(userJwt.UserName(), Is.Not.Null.Or.Empty);
 
                 // Authorization | Key
-                var key = configuration.User.API.Key;
+                var key = userConfiguration.API.Key;
                 Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty);
+                Assert.That(key.OpenKlant_2(), Is.Not.Null.Or.Empty);
                 Assert.That(key.Objecten(), Is.Not.Null.Or.Empty);
 
                 // API | Domain
-                var apiDomain = configuration.User.Domain;
+                var apiDomain = userConfiguration.Domain;
                 Assert.That(apiDomain.OpenNotificaties(), Is.Not.Null.Or.Empty);
                 Assert.That(apiDomain.OpenZaak(), Is.Not.Null.Or.Empty);
                 Assert.That(apiDomain.OpenKlant(), Is.Not.Null.Or.Empty);
@@ -56,31 +62,35 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(apiDomain.ObjectTypen(), Is.Not.Null.Or.Empty);
 
                 // Templates
-                var templateIds = configuration.User.TemplateIds;
+                var templateIds = userConfiguration.TemplateIds;
                 Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
-                #pragma warning restore IDE0008
             });
         }
+        #pragma warning restore IDE0008
 
         [TestCaseSource(nameof(GetTestCases))]
         public void WebApiConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Act & Assert
-            ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);  
-            Assert.That(exception?.Message.StartsWith(test.ExpectedErrorMessage), Is.True,
-                message: $"{test.CaseId}: {exception?.Message}");
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);
+
+                Assert.That(exception?.Message.StartsWith(test.ExpectedErrorMessage), Is.True,
+                    message: $"{test.CaseId}: {exception?.Message}");
+            });
         }
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
-            WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfiguration(
-                ConfigurationHandler.GetEnvironmentLoader(isValid: false));
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
 
             // Invalid: Not existing
             yield return ("#1", () => configuration.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);

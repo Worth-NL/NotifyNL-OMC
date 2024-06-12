@@ -7,12 +7,10 @@ using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Configuration;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using EventsHandler.Utilities._TestHelpers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using MoqExt;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
 {
@@ -28,9 +26,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            IConfiguration appSettings = ConfigurationHandler.GetConfiguration();
-            ILoadersContext loadersContext = new Mock<ILoadersContext>().Object;
-            WebApiConfiguration webApiConfiguration = new(appSettings, loadersContext);
+            WebApiConfiguration webApiConfiguration = new(new MockingContext());
 
             // Mocked services
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
@@ -85,7 +81,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
 
             // TODO: Finish unit testing by introducing IQueryContext interface first
             //this._mockedDataQuery?.Setup(mock => mock.From(testNotification))
-            //    .Returns(new Mock<ApiDataQuery.QueryContext>());
+            //    .Returns(new Mock<DataQueryService.QueryContext>());
 
             // Act
             INotifyScenario actualResult = await this._scenariosResolver!.DetermineScenarioAsync(testNotification);

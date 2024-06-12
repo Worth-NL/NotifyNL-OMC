@@ -8,10 +8,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
 {
     /// <summary>
-    /// Notification types returned by "NotifyNL" API web service.
+    /// The notification types returned by "Notify NL" Web API service.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<NotificationTypes>))]
-    internal enum NotificationTypes
+    public enum NotificationTypes
     {
         /// <summary>
         /// Default value.

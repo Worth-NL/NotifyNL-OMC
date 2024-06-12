@@ -163,7 +163,7 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Builder
             string serializedActualDetails = JsonSerializer.Serialize(actualDetails);
             const string serializedExpectedDetails =
                 $"{{" +
-                  $"\"Message\":\"The HTTP Request sent to external Web service failed.\"," +
+                  $"\"Message\":\"The HTTP Request sent to external Web API service failed.\"," +
                   $"\"Cases\":\"{TestCase}\"," +
                   $"\"Reasons\":" +
                   $"[" +

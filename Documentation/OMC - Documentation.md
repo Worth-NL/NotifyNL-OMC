@@ -1,6 +1,6 @@
-# OMC Documentation
+# **OMC** Documentation
 
-v.1.7.4
+v.1.8.0
 
 © 2024, Worth Systems.
 
@@ -9,11 +9,11 @@ v.1.7.4
 
 **OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
-- [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (API web service)
-- [**Open Zaak**](https://github.com/open-zaak/open-zaak) (API web service)
-- [**Open Klant**](https://github.com/maykinmedia/open-klant) (API web service)
-- [**Klantinteractie**](https://vng-realisatie.github.io/klantinteracties/) (API web service)
-- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (API web service)
+- [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
+- [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
+- [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
+- [**Klantinteractie**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
+- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service)
 
 ## 1.1. Swagger UI
 
@@ -40,13 +40,116 @@ For example: https://omc.acc.notifynl.nl/swagger/index.html
 
 ### 1.1.2. Using IDE (Visual Studio)
 
-Select one of the launch **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:`).
+To run the application locally (using **Visual Studio**) select one of the `launchSettings.json` **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:...` address).
 
-![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
+By default these **profiles** are already defined:
 
-In `launchSettings.json` file, remember to always have these lines incuded in the launch **profile** you are going to use for running the API with **Swagger UI**:
+- `http`
+- `https`
+- `IIS Express`
+
+And all of them have **Swagger UI** specified as the default start option.
 
 ![Invalid base URL - Error](images/swagger_ui_launch_settings.png)
+
+> **NOTE:** In this example application will start in "Development" mode.
+
+<h4 id="custom-lanunchSettings-profile"> Customizing profile:</h4>
+
+> Full content of `launchSettings.json` file.
+
+```json
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5270"
+    },
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7042;http://localhost:5270"
+    },
+    "IIS Express (Development)": {  // NOTE: Name of the profile can be changed
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",  // NOTE: Application mode can be changed
+		 
+        "OMC_AUTHORIZATION_JWT_SECRET": "",
+        "OMC_AUTHORIZATION_JWT_ISSUER": "",
+        "OMC_AUTHORIZATION_JWT_AUDIENCE": "",
+        "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "",
+        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        
+        "OMC_API_BASEURL_NOTIFYNL": "",
+        
+        "USER_AUTHORIZATION_JWT_SECRET": "",
+        "USER_AUTHORIZATION_JWT_ISSUER": "",
+        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
+        "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "",
+        "USER_AUTHORIZATION_JWT_USERID": "",
+        "USER_AUTHORIZATION_JWT_USERNAME": "",
+        
+        "USER_API_KEY_NOTIFYNL": "",
+        "USER_API_KEY_OBJECTEN": "",
+        
+        "USER_DOMAIN_OPENNOTIFICATIES": "",
+        "USER_DOMAIN_OPENZAAK": "",
+        "USER_DOMAIN_OPENKLANT": "",
+        "USER_DOMAIN_OBJECTEN": "",
+        "USER_DOMAIN_OBJECTTYPEN": "",
+        
+        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
+        
+        "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
+        
+        "SENTRY_DSN": "",
+        "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:24394",
+      "sslPort": 44397
+    }
+  }
+}
+```
+
+> **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
+
+#### Running profile:
+
+![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
 
 ## 1.2. Docker
 
@@ -59,7 +162,7 @@ In `launchSettings.json` file, remember to always have these lines incuded in th
 - And run the following **docker** command:
 > docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
 >
-> NOTE: `omc` is just name of your **docker image** and it can be anything you want
+> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want
 
 The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
 `ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
@@ -83,7 +186,9 @@ in order to run an already created **docker container**.
 
 ![Invalid base URL - Error](images/appsettings.png)
 
-- `environment variables` (for sensitive configurations and/or customizable per customers/instances of OMC):
+> NOTE: These configurations are also reflecting the modes which **OMC** Web API application is supporting.
+
+- `environment variables` (for sensitive configurations and/or customizable per customers/instances of **OMC**):
 
 | Name*                               | Type   | Example                            | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
 | ----------------------------------- | ------ | ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -99,11 +204,12 @@ in order to run an already created **docker container**.
 | USER_AUTHORIZATION_JWT_SECRET       | string | abcd123t2gw3r8192dewEg%wdlsa3e!    | true         | Cannot be missing and have null or empty value                                                                                             | Internal implementation of Open services is regulating this, however it's better to use something longer as well                                                                                                      |
 | USER_AUTHORIZATION_JWT_ISSUER       | string | Open Services                      | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OpenZaak / OpenKlant / OpenNotificatie services (token is shared between of them)                                                                                                               |
 | USER_AUTHORIZATION_JWT_AUDIENCE     | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OMC web API service (it will be used internally) - The OMC is the audience                                                                                                                      |
-| USER_AUTHORIZATION_JWT_EXPIRESINMIN | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak API web service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
-| USER_AUTHORIZATION_JWT_USERID       | string | admin                              | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak API web service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
-| USER_AUTHORIZATION_JWT_USERNAME     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak API web service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| USER_AUTHORIZATION_JWT_EXPIRESINMIN | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| USER_AUTHORIZATION_JWT_USERID       | string | admin                              | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| USER_AUTHORIZATION_JWT_USERNAME     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_API_KEY_NOTIFYNL               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "NotifyNL" Admin Portal                                                                                                                                                                 |
+| USER_API_KEY_NOTIFYNL               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                 |
+| USER_API_KEY_OPENKLANT_2            | string | 43dcba52d312d1e00bc...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Open Klant 2.0 web UI                                                                                                                                                                   |
 | USER_API_KEY_OBJECTEN               | string | 56abcd24e75c02d44ee...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Objecten web UI                                                                                                                                                                         |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | USER_DOMAIN_OPENNOTIFICATIES        | string | opennotificaties.mycity.nl         | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
@@ -112,14 +218,15 @@ in order to run an already created **docker container**.
 | USER_DOMAIN_OBJECTEN                | string | objecten.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_OBJECTTYPEN             | string | objecttypen.mycity.nl              | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_TEMPLATEIDS_SMS_ZAAKCREATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKUPDATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKCLOSE      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "NotifyNL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_SMS_ZAAKCREATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_SMS_ZAAKUPDATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_SMS_ZAAKCLOSE      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| SENTRY_DSN                          | string | https://1abxxx@o1xxx.sentry.io/xxx | false        |                                                                                                                                            | Can be obtained from sentry.io after creating a dedicated workspace (where the logs will be sent)                                                                                                                     |
+| SENTRY_DSN                          | string | https://1abxxx@o1xxx.sentry.io/xxx | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |
+| SENTRY_ENVIRONMENT                  | string | MyCompany-prod                     | false        | Validated internally by Sentry.SDK                                                                                                         | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)                |
 
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 
@@ -127,19 +234,21 @@ in order to run an already created **docker container**.
 
 ### 3.1.1. How to get some of these environment variables
 
-`OMC_AUTHORIZATION_JWT_SECRET` - To be generated from passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
+`OMC_AUTHORIZATION_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
 
-`USER_AUTHORIZATION_JWT_SECRET` - Like other **USER_AUTHORIZATION_[...]** configurations to be configured and set by the user after logging to OpenZaak API web service.
+`USER_AUTHORIZATION_JWT_SECRET` - Like other **USER_AUTHORIZATION_[...]** configurations to be configured and set by the user after logging to **OpenZaak** Web API service.
 
-`USER_API_KEY_NOTIFYNL` - To be generated from "NotifyNL" Admin Portal => **API Integration** section.
+`USER_API_KEY_NOTIFYNL` - To be generated from **NotifyNL** Admin Portal => **API Integration** section.
 
-`USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from "NotifyNL" Admin Portal => **Templates** section.
+`USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
 ## 3.2. Setting environment variables
 
 1. On Windows:
 
 ![Invalid base URL - Error](images/environment_varibles_windows.png)
+
+Additionally, environment variables can be also defined in **Visual Studio**'s `launchSettings.json` file. Check the example [here](#custom-lanunchSettings-profile).
 
 2. On Linux:
 
@@ -160,6 +269,34 @@ in order to run an already created **docker container**.
 ---
 # 4. Authorization and authentication
 
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed).
+
+> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" workflow is used.
+
+<h2 id="workflow_versions">4.1. Versions of OMC workflows</h3>
+
+> Here are the details which workflows are using which versions of external API services.
+
+#### OMC workflow v1 (default):
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- "OpenKlant" v1.0.0
+- "Contactmomenten" v1.0.0
+
+#### OMC workflow v2:
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- <code>new</code> "OpenKlant" v2.0.0
+- <code>new</code> "Klantcontacten" v2.0.0
+
+<code>**Last update:** 7 Jun 2024</code>
+
+> The OMC workflows can be defined in `appsettings.json` configuration file:
+
+![Configuration in appsettings.json](images/appsettings_open_services_version.png)
+
+## 4.2. JSON Web Tokens
+
 **JSON Web Token (JWT)** can be generated using:
 
 - **SecretsManager.exe** from `CLI` (e.g., `CMD.exe on Windows`. **NOTE:** Do not use `PowerShell`)
@@ -170,18 +307,18 @@ in order to run an already created **docker container**.
 
 - External **https://jwt.io** webpage.
 
-## 4.1. Example of required JSON Web Token (JWT) components
+### 4.2.1. Required JSON Web Token (JWT) components
 
-> Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** API web service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
+> Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-### 4.1.1. Header (algorithm + type)
+#### 4.2.1.1. Header (algorithm + type)
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-### 4.1.2. Payload (claims)
+#### 4.2.1.2. Payload (claims)
 
 > {
   "client_id": "",
@@ -193,15 +330,15 @@ in order to run an already created **docker container**.
   "exp": 0000000000
 }
 
-### 4.1.3. Signature (secret)
+#### 4.2.1.3. Signature (secret)
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-## 4.2. Mapping of JWT claims from environment variables
+### 4.2.2. Mapping of JWT claims from environment variables
 
-| JWT claims            | OMC Environment Variables                |
+| JWT claims            | **OMC** Environment Variables                |
 | --------------------- | ---------------------------------------- |
 | `client_id`           | `OMC_AUTHORIZATION_JWT_ISSUER`           |
 | `user_id`             | `OMC_AUTHORIZATION_JWT_USERID`           |
@@ -215,18 +352,18 @@ in order to run an already created **docker container**.
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-## 4.3. Using generated JSON Web Token (JWT)
+### 4.2.3. Using generated JSON Web Token (JWT)
 
-### 4.3.1. Postman
+#### 4.2.3.1. Postman
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h3 id="swagger-ui-authorization">4.3.2. Swagger UI</h3>
+<h4 id="swagger-ui-authorization">4.2.3.2. Swagger UI</h3>
 
-> If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** API web service) then you need to copy the generated token in the following way:
+> If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
 ![Swagger UI - Authorization](images/swagger_ui_authorization.png)
 
@@ -236,6 +373,8 @@ And then click "Authorize".
 # 5. Workflow (business logic cases)
 
 ![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
+
+> Version of **OMC** <= 1.7.4 (using "OpenServices" v1 [workflow](#workflow_versions)).
 
 ---
 # 6. Errors
@@ -327,7 +466,7 @@ You woull get the following outcome (separated by pipes):
 
 \** **WARNING**: For some mysterious reasons, authors of the third-party software (used in OMC-NotifyNL workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
 
-> **NOTE**: Unfortunately, OMC Development Team cannot provide meaningful guidance how the external services were developed or configured.
+> **NOTE**: Unfortunately, **OMC** Development Team cannot provide meaningful guidance how the external services were developed or configured.
 
 ---
 ## 6.3. Test Controller
@@ -346,15 +485,15 @@ Endpoints:
 
 > **HTTP Status Code: 403 Forbidden**
 
-- Invalid base URL ("NotifyNL" API service):
+- Invalid base URL (**NotifyNL** API service):
 
 ![Invalid base URL - Error](images/test_notify_baseUrl.png)
 
-- Invalid format of API key or it is missing ("NotifyNL" API service):
+- Invalid format of API key or it is missing (**NotifyNL** API service):
 
 ![Invalid format of API key - Error](images/test_notify_apiKeyMissing.png)
 
-- Invalid API key - it was not registered for this "NotifyNL" API service:
+- Invalid API key - it was not registered for this **NotifyNL** API service:
 
 ![Invalid API key - Error](images/test_notify_apiKeyInvalid.png)
 

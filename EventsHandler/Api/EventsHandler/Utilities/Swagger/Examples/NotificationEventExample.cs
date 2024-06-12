@@ -26,7 +26,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 Attributes = new EventAttributes
                 {
                     ObjectType = DefaultValues.Models.EmptyUri,
-                    CaseType = DefaultValues.Models.EmptyUri,
+                    CaseTypeUri = DefaultValues.Models.EmptyUri,
                     SourceOrganization = DefaultValues.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential
                 },

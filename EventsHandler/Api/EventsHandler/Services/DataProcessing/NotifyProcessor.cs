@@ -10,6 +10,7 @@ using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using Notify.Exceptions;
 using ResourcesEnum = EventsHandler.Behaviors.Mapping.Enums.NotificatieApi.Resources;
 using ResourcesText = EventsHandler.Properties.Resources;
 
@@ -89,17 +90,22 @@ namespace EventsHandler.Services.DataProcessing
             catch (TelemetryException exception)
             {
                 // NOTE: The notification was sent, but the communication with the telemetry API failed. Do not retry
-                return (ProcessingResult.Success, $"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | Exception: {exception.Message}");
+                return (ProcessingResult.Success, $"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | {exception.Message}");
             }
             catch (NotImplementedException)
             {
                 // NOTE: The notification COULD not be sent, but it's not a failure and shouldn't be retried
                 return (ProcessingResult.Skipped, ResourcesText.Processing_ERROR_Scenario_NotImplemented);
             }
+            catch (NotifyClientException exception)
+            {
+                // NOTE: The notification COULD not be sent because of issues with "Notify NL" (e.g., authorization or service being down)
+                return (ProcessingResult.Failure, $"Notify NL Exception | {exception.Message}");
+            }
             catch (Exception exception)
             {
                 // NOTE: The notification COULD not be sent. Retry is necessary
-                return (ProcessingResult.Failure, exception.Message);
+                return (ProcessingResult.Failure, $"{exception.GetType().Name} | {exception.Message}");
             }
         }
 

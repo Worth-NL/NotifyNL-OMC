@@ -14,7 +14,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <summary>
         /// Prepares all data consumed by "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification">The notification from "Notificatie API" Web service.</param>
+        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
@@ -22,7 +22,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         ///   The <see cref="DistributionChannels"/> option is invalid.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        ///   Something could not be queried from external API Web services.
+        ///   Something could not be queried from external API Web API services.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
     }

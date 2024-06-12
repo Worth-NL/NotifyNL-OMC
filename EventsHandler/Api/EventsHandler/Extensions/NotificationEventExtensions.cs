@@ -16,7 +16,7 @@ namespace EventsHandler.Extensions
         ///   This value is absolutely necessary to continue Web API "OMC" workflow!
         /// </para>
         /// </summary>
-        /// <param name="notification">The notification from "Notificatie API" Web service.</param>
+        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
         /// <returns>
         ///   The value of property <see cref="EventAttributes.SourceOrganization"/> ("bronorganisatie").
         /// </returns>

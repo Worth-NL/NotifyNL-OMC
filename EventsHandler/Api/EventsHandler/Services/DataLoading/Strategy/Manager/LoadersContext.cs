@@ -12,15 +12,14 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private ILoadingService _loadingService;
+        private ILoadingService? _loadingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadersContext"/> class.
         /// </summary>
-        public LoadersContext(IServiceProvider serviceProvider, ILoadingService loadingService)  // NOTE: Used by Dependency Injection
+        public LoadersContext(IServiceProvider serviceProvider)  // NOTE: Used by Dependency Injection
         {
             this._serviceProvider = serviceProvider;
-            this._loadingService = loadingService;
         }
 
         #region ILoadersContext
@@ -30,12 +29,12 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
             this._loadingService = loaderType switch
             {
                 // Reading configurations from "appsettings.json" (Dev, Test, Prod, and the fallback general file)
-                LoaderTypes.Configuration => this._serviceProvider.GetRequiredService<ConfigurationLoader>(),
+                LoaderTypes.AppSettings => this._serviceProvider.GetRequiredService<AppSettingsLoader>(),
 
-                // Reading configurations from the preset environment variables (e.g. in Windows, Linus, macOS)
+                // Reading configurations from the preset environment variables (e.g. in Windows, Linux, macOS)
                 LoaderTypes.Environment => this._serviceProvider.GetRequiredService<EnvironmentLoader>(),
 
-                _ => throw new NotImplementedException(Resources.Processing_ERROR_Loader_NotImplemented)
+                _ => throw new NotImplementedException(Resources.Configuration_ERROR_Loader_NotImplemented)
             };
         }
         #endregion
@@ -43,15 +42,21 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
         #region ILoadingService
         /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
         TData ILoadingService.GetData<TData>(string key)
-            => this._loadingService.GetData<TData>(key);
+            => FromLoader().GetData<TData>(key);
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
         string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
-            => this._loadingService.GetPathWithNode(currentPath, nodeName);
+            => FromLoader().GetPathWithNode(currentPath, nodeName);
 
         /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
         string ILoadingService.GetNodePath(string nodeName)
-            => this._loadingService.GetNodePath(nodeName);
+            => FromLoader().GetNodePath(nodeName);
+
+        private ILoadingService FromLoader()
+        {
+            return this._loadingService ??
+                throw new InvalidOperationException(Resources.Configuration_ERROR_Loader_NotSet);
+        }
         #endregion
     }
 }

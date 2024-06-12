@@ -28,15 +28,15 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy.Context
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.GetJwtToken(SecurityKey, string, string, DateTime, string, string)"/>
-        public string GetJwtToken(SecurityKey securityKey, string issuer, string audience, DateTime expiresAt, string userId, string userRepresentation)
+        public string GetJwtToken(SecurityKey securityKey, string issuer, string audience, DateTime expiresAt, string userId, string userName)
         {
-            return this.Strategy.GetJwtToken(securityKey, issuer, audience, expiresAt, userId, userRepresentation);
+            return this.Strategy.GetJwtToken(securityKey, issuer, audience, expiresAt, userId, userName);
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.GetJwtToken(SecurityKey, string, string, double, string, string)"/>
-        public string GetJwtToken(SecurityKey securityKey, string issuer, string audience, double expiresInMinutes, string userId, string userRepresentation)
+        public string GetJwtToken(SecurityKey securityKey, string issuer, string audience, double expiresInMinutes, string userId, string userName)
         {
-            return this.Strategy.GetJwtToken(securityKey, issuer, audience, expiresInMinutes, userId, userRepresentation);
+            return this.Strategy.GetJwtToken(securityKey, issuer, audience, expiresInMinutes, userId, userName);
         }
 
         /// <inheritdoc cref="IJwtEncryptionStrategy.SaveJwtToken(string)"/>

@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using System.Text.Json;
 
 namespace EventsHandler.Services.Serialization.Interfaces
 {
@@ -16,6 +17,7 @@ namespace EventsHandler.Services.Serialization.Interfaces
         /// <returns>
         ///   Deserialized POCO model.
         /// </returns>
+        /// <exception cref="JsonException"/>
         internal TModel Deserialize<TModel>(object json) where TModel : struct, IJsonSerializable;
 
         /// <summary>
