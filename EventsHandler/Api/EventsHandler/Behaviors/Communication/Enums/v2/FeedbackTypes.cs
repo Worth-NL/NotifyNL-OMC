@@ -5,12 +5,12 @@ using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 namespace EventsHandler.Behaviors.Communication.Enums.v2
 {
     /// <summary>
-    /// The statuses mapping "Notify NL" Web API service <see cref="DeliveryStatuses"/> to interpret them trichotomously.
+    /// The types of feedback mapping "Notify NL" Web API service <see cref="DeliveryStatuses"/>.
     /// </summary>
     /// <remarks>
-    /// NOTE: In "OMC workflow v2" the final communication with the user is based on these shortened statuses.
+    /// NOTE: In "OMC workflow v2" the final communication with the user is based on this value.
     /// </remarks>
-    public enum NotifyStatuses
+    public enum FeedbackTypes
     {
         /// <summary>
         /// Default value.
@@ -23,7 +23,7 @@ namespace EventsHandler.Behaviors.Communication.Enums.v2
         Success = 1,
 
         /// <summary>
-        /// "Notify NL" Web API service returned one of ambiguous or internal statuses which should be treated as neutral.
+        /// "Notify NL" Web API service returned one of ambiguous or internal statuses which should be treated as info.
         /// </summary>
         /// <remarks>
         /// NOTE: For logging purposes only!

@@ -32,29 +32,29 @@ namespace EventsHandler.Extensions
         }
         
         /// <summary>
-        /// Converts from <see cref="DeliveryStatuses"/> enum to <see cref="NotifyStatuses"/> enum.
+        /// Converts from <see cref="DeliveryStatuses"/> enum to <see cref="FeedbackTypes"/> enum.
         /// </summary>
         /// <param name="deliveryStatus">The input enum of type A.</param>
         /// <returns>
         ///   The output enum of type B.
         /// </returns>
-        internal static NotifyStatuses ConvertToNotifyStatus(this DeliveryStatuses deliveryStatus)
+        internal static FeedbackTypes ConvertToFeedbackStatus(this DeliveryStatuses deliveryStatus)
         {
             if (deliveryStatus == DeliveryStatuses.Unknown ||
                 !Enum.IsDefined(typeof(DeliveryStatuses), (int)deliveryStatus))  // Can't determine based on the value
             {
-                return NotifyStatuses.Unknown;
+                return FeedbackTypes.Unknown;
             }
 
             return deliveryStatus switch
             {
                 DeliveryStatuses.Delivered
-                    => NotifyStatuses.Success,
+                    => FeedbackTypes.Success,
                 
                 DeliveryStatuses.PermanentFailure or DeliveryStatuses.TemporaryFailure or DeliveryStatuses.TechnicalFailure
-                    => NotifyStatuses.Failure,
+                    => FeedbackTypes.Failure,
                 
-                _ => NotifyStatuses.Info
+                _ => FeedbackTypes.Info
             };
         }
     }

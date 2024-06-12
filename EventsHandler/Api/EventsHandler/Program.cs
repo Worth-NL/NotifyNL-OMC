@@ -375,6 +375,7 @@ namespace EventsHandler
                 return builder.Configuration.OmcWorkflowVersion() switch
                 {
                     1 => typeof(Responder.v1.NotifyCallbackResponder),
+                    2 => typeof(Responder.v2.NotifyCallbackResponder),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionNotifyResponderUnknown)
                 };
             }

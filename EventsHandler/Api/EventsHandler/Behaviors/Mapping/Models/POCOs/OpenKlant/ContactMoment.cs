@@ -13,11 +13,19 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
     public struct ContactMoment : IJsonSerializable
     {
         /// <summary>
+        /// The ID of the <see cref="ContactMoment"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("uuid")]
+        [JsonPropertyOrder(0)]
+        public Guid Id { get; internal set; } = Guid.Empty;
+
+        /// <summary>
         /// The URL to the <see cref="ContactMoment"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("url")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public Uri Url { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
