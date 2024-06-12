@@ -4,7 +4,6 @@ using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
@@ -53,6 +52,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using Responder = EventsHandler.Services.UserCommunication;
 using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
@@ -266,7 +266,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IVersionsRegister, VersionsRegister>();
 
             // User Interaction
-            builder.Services.RegisterResponders();
+            builder.RegisterResponders();
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
@@ -312,7 +312,7 @@ namespace EventsHandler
             // Common query methods
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
-            byte omcWorkflowVersion = builder.Configuration.OpenServicesVersion();
+            byte omcWorkflowVersion = builder.Configuration.OmcWorkflowVersion();
             
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
@@ -329,7 +329,7 @@ namespace EventsHandler
                 {
                     1 => typeof(OpenZaak.v1.QueryZaak),
                     2 => typeof(OpenZaak.v2.QueryZaak),
-                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_OpenZaakVersionUnknown)
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenZaakUnknown)
                 };
             }
 
@@ -339,7 +339,7 @@ namespace EventsHandler
                 {
                     1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
-                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_OpenKlantVersionUnknown)
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenKlantUnknown)
                 };
             }
 
@@ -349,7 +349,7 @@ namespace EventsHandler
                 {
                     1 => typeof(Telemetry.v1.ContactRegistration),
                     2 => typeof(Telemetry.v2.ContactRegistration),
-                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_TelemetryVersionUnknown)
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionTelemetryUnknown)
                 };
             }
         }
@@ -360,13 +360,24 @@ namespace EventsHandler
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
-        private static void RegisterResponders(this IServiceCollection services)
+        private static void RegisterResponders(this WebApplicationBuilder builder)
         {
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
+            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
             
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            services.AddSingleton<IRespondingService<ProcessingResult, string>, NotifyResponder>();
+            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(builder));
+
+            return;
+
+            static Type DetermineResponderVersion(WebApplicationBuilder builder)
+            {
+                return builder.Configuration.OmcWorkflowVersion() switch
+                {
+                    1 => typeof(Responder.v1.NotifyCallbackResponder),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionNotifyResponderUnknown)
+                };
+            }
         }
         #endregion
         #endregion

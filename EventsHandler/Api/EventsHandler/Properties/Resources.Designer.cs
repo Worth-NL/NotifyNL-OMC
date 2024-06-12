@@ -151,38 +151,47 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
+        /// </summary>
+        internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of NotifyResponder service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionNotifyResponderUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionNotifyResponderUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
-        internal static string Configuration_ERROR_OpenKlantVersionUnknown {
+        internal static string Configuration_ERROR_VersionOpenKlantUnknown {
             get {
-                return ResourceManager.GetString("Configuration_ERROR_OpenKlantVersionUnknown", resourceCulture);
+                return ResourceManager.GetString("Configuration_ERROR_VersionOpenKlantUnknown", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
-        internal static string Configuration_ERROR_OpenZaakVersionUnknown {
+        internal static string Configuration_ERROR_VersionOpenZaakUnknown {
             get {
-                return ResourceManager.GetString("Configuration_ERROR_OpenZaakVersionUnknown", resourceCulture);
+                return ResourceManager.GetString("Configuration_ERROR_VersionOpenZaakUnknown", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
-        internal static string Configuration_ERROR_TelemetryVersionUnknown {
+        internal static string Configuration_ERROR_VersionTelemetryUnknown {
             get {
-                return ResourceManager.GetString("Configuration_ERROR_TelemetryVersionUnknown", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
-        /// </summary>
-        internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+                return ResourceManager.GetString("Configuration_ERROR_VersionTelemetryUnknown", resourceCulture);
             }
         }
         

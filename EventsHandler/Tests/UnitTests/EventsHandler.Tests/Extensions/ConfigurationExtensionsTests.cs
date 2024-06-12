@@ -32,7 +32,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void Features_ReturnsExpectedValue()
         {
             // Act
-            int actualValue = this._configuration!.OpenServicesVersion();
+            int actualValue = this._configuration!.OmcWorkflowVersion();
 
             // Assert
             Assert.That(actualValue, Is.EqualTo(1));

@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 namespace EventsHandler.Services.UserCommunication
 {
     /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
-    internal sealed partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         #region RegEx patterns
         // -------
@@ -196,6 +196,13 @@ namespace EventsHandler.Services.UserCommunication
                 _ => ObjectResultExtensions.AsResult_501()
             };
         }
+        #endregion
+
+        #region Abstract        
+        /// <summary>
+        /// Handles the callbacks from "Notify NL" Web API service (accordingly to the used "OMC workflow" version).
+        /// </summary>
+        internal abstract Task<IActionResult> HandleNotifyCallbackAsync(object json);
         #endregion
 
         #region Helper methods
