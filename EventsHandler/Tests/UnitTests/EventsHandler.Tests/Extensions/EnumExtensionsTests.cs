@@ -34,36 +34,36 @@ namespace EventsHandler.UnitTests.Extensions
         }
         #endregion
 
-        #region ConvertToNotifyStatus
+        #region ConvertToFeedbackStatus
         // Success
-        [TestCase(DeliveryStatuses.Delivered, NotifyStatuses.Success)]
+        [TestCase(DeliveryStatuses.Delivered, FeedbackTypes.Success)]
         // Failures
-        [TestCase(DeliveryStatuses.PermanentFailure, NotifyStatuses.Failure)]
-        [TestCase(DeliveryStatuses.TemporaryFailure, NotifyStatuses.Failure)]
-        [TestCase(DeliveryStatuses.TechnicalFailure, NotifyStatuses.Failure)]
+        [TestCase(DeliveryStatuses.PermanentFailure, FeedbackTypes.Failure)]
+        [TestCase(DeliveryStatuses.TemporaryFailure, FeedbackTypes.Failure)]
+        [TestCase(DeliveryStatuses.TechnicalFailure, FeedbackTypes.Failure)]
         // Info
-        [TestCase(DeliveryStatuses.Created, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Sending, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Pending, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Sent, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Accepted, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Received, NotifyStatuses.Info)]
-        [TestCase(DeliveryStatuses.Cancelled, NotifyStatuses.Info)]
-        public void ConvertToNotifyStatus_ForValidEnum_ReturnsExpectedConvertedValue(DeliveryStatuses testStartValue, NotifyStatuses expectedEndValue)
+        [TestCase(DeliveryStatuses.Created, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Sending, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Pending, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Sent, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Accepted, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Received, FeedbackTypes.Info)]
+        [TestCase(DeliveryStatuses.Cancelled, FeedbackTypes.Info)]
+        public void ConvertToNotifyStatus_ForValidEnum_ReturnsExpectedConvertedValue(DeliveryStatuses testStartValue, FeedbackTypes expectedEndValue)
         {
             // Act
-            NotifyStatuses actualValue = testStartValue.ConvertToNotifyStatus();
+            FeedbackTypes actualValue = testStartValue.ConvertToFeedbackStatus();
 
             // Assert
             Assert.That(actualValue, Is.EqualTo(expectedEndValue));
         }
 
-        [TestCase(DeliveryStatuses.Unknown, NotifyStatuses.Unknown)]
-        [TestCase((DeliveryStatuses)666, NotifyStatuses.Unknown)]
-        public void ConvertToNotifyStatus_ForInvalidEnum_ReturnsExpectedConvertedValue(DeliveryStatuses testStartValue, NotifyStatuses expectedEndValue)
+        [TestCase(DeliveryStatuses.Unknown, FeedbackTypes.Unknown)]
+        [TestCase((DeliveryStatuses)666, FeedbackTypes.Unknown)]
+        public void ConvertToNotifyStatus_ForInvalidEnum_ReturnsExpectedConvertedValue(DeliveryStatuses testStartValue, FeedbackTypes expectedEndValue)
         {
             // Act
-            NotifyStatuses actualValue = testStartValue.ConvertToNotifyStatus();
+            FeedbackTypes actualValue = testStartValue.ConvertToFeedbackStatus();
 
             // Assert
             Assert.That(actualValue, Is.EqualTo(expectedEndValue));

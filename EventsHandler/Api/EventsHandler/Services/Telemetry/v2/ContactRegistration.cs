@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Enums.v2;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Versioning;
+using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
@@ -19,6 +19,7 @@ namespace EventsHandler.Services.Telemetry.v2
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
+        private readonly WebApiConfiguration _configuration;
         private readonly IQueryContext _queryContext;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
@@ -30,16 +31,19 @@ namespace EventsHandler.Services.Telemetry.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(IQueryContext queryContext)
+        public ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)
         {
+            this._configuration = configuration;
             this._queryContext = queryContext;
         }
 
         /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
         async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
         {
+            this._queryContext.SetNotification(notification);
+
             // NOTE: Feedback from "OpenKlant" will be linked to the subject object
-            return await SendFeedbackToSubjectObjectAsync(this._queryContext,
+            return await SendFeedbackToSubjectObjectAsync(this._configuration, this._queryContext,
                    await SendFeedbackToOpenKlantAsync(this._queryContext, notificationMethod, messages));
         }
 
@@ -49,7 +53,7 @@ namespace EventsHandler.Services.Telemetry.v2
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
-            bool isSuccessfullySent   = messages.Count > 2 && Equals(messages[2], NotifyStatuses.Success.ToString());
+            string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
 
             string jsonBody =
                 $"{{" +
@@ -66,23 +70,24 @@ namespace EventsHandler.Services.Telemetry.v2
             return await queryContext.SendFeedbackToOpenKlantAsync(body);
         }
 
-        private static async Task<string> SendFeedbackToSubjectObjectAsync(IQueryContext queryContext, ContactMoment contactMoment)
+        private static async Task<string> SendFeedbackToSubjectObjectAsync(
+            WebApiConfiguration configuration, IQueryContext queryContext, ContactMoment contactMoment)
         {
             string caseId = (await queryContext.GetMainObjectAsync()).Id;
 
             string jsonBody =
                 $"{{" +
-                $"  \"klantcontact\": {{" +
-                $"    \"uuid\": \"{contactMoment.Url}\"" +
+                $"  \"klantcontact\": {{" +                  // ENG: Customer contact
+                $"    \"uuid\": \"{contactMoment.Id}\"" +
                 $"  }}, " +
-                $"  \"wasKlantcontact\": {{" +
-                $"    \"uuid\": null" +
+                $"  \"wasKlantcontact\": {{" +               // ENG: ???
+                $"    \"uuid\": \"{contactMoment.Id}\"" +
                 $"  }}, " +
-                $"  \"onderwerpobjectidentificator\": {{" +
+                $"  \"onderwerpobjectidentificator\": {{" +  // ENG: Subject Object Identifier
                 $"    \"objectId\": \"{caseId}\", " +
-                $"    \"codeObjecttype\": \"\", " +  // TODO: Get from appsettings
-                $"    \"codeRegister\": \"\", " +  // TODO: Get from appsettings
-                $"    \"codeSoortObjectId\": \"\"" +  // TODO: Get from appsettings
+                $"    \"codeObjecttype\": \"{configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\", " +
+                $"    \"codeRegister\": \"{configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\", " +
+                $"    \"codeSoortObjectId\": \"{configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
                 $"  }}" +
                 $"}}";
 

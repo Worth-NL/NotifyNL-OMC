@@ -414,9 +414,9 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The status of notification with ID.
         /// </summary>
-        internal static string Feedback_NotifyNL_SUCCESS_NotificationStatus {
+        internal static string Feedback_NotifyNL_STATUS_NotificationStatus {
             get {
-                return ResourceManager.GetString("Feedback_NotifyNL_SUCCESS_NotificationStatus", resourceCulture);
+                return ResourceManager.GetString("Feedback_NotifyNL_STATUS_NotificationStatus", resourceCulture);
             }
         }
         

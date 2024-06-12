@@ -41,6 +41,8 @@ namespace EventsHandler.Services.Telemetry.v1
         /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
         async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
         {
+            this._queryContext.SetNotification(notification);
+
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
             return await SendFeedbackToOpenZaakAsync(this._queryContext, notification,
                    await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));

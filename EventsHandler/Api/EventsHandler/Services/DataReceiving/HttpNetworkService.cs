@@ -96,7 +96,8 @@ namespace EventsHandler.Services.DataReceiving
                     => AuthorizeWithGeneratedJwt(this._httpClients.GetValueOrDefault(httpClientType)!),
                     
                 // Clients using static tokens from configuration
-                HttpClientTypes.OpenKlant_v2
+                HttpClientTypes.OpenKlant_v2 or
+                HttpClientTypes.Telemetry_Klantinteracties
                     => this._httpClients.GetValueOrDefault(httpClientType)!,
                 
                 _ => throw new ArgumentException(
@@ -177,7 +178,7 @@ namespace EventsHandler.Services.DataReceiving
                 }
 
                 // TODO: To be removed after tests
-                if (httpClientType == HttpClientTypes.OpenKlant_v2)
+                if (httpClientType is HttpClientTypes.OpenKlant_v2 or HttpClientTypes.Telemetry_Klantinteracties)
                 {
                     uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
                 }

@@ -8,6 +8,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
+using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
 {
@@ -98,7 +99,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(HttpContent)"/>
         async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
         {
-            return await Composition.Strategy.OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
+            return await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
                 this._networkService, this._queryKlant.GetSpecificOpenKlantDomain(), body);
         }
         #endregion

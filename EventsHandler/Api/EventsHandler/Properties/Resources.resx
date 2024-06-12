@@ -321,7 +321,7 @@
     <value>An unexpected error occurred during processing the notification with ID</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
-  <data name="Feedback_NotifyNL_SUCCESS_NotificationStatus" xml:space="preserve">
+  <data name="Feedback_NotifyNL_STATUS_NotificationStatus" xml:space="preserve">
     <value>The status of notification with ID</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
