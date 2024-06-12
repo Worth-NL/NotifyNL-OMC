@@ -7,7 +7,7 @@ namespace EventsHandler.Behaviors.Communication.Enums
     /// <summary>
     /// The notification method used by "Notify NL" API Client to communicate with a citizen.
     /// </summary>
-    internal enum NotifyMethods
+    public enum NotifyMethods
     {
         /// <inheritdoc cref="DistributionChannels.None"/>
         None = DistributionChannels.None,  // 1
