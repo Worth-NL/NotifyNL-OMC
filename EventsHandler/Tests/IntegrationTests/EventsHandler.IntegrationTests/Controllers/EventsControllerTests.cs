@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
 using EventsHandler.Behaviors.Responding.Results.Builder;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Controllers;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -30,6 +31,7 @@ namespace EventsHandler.IntegrationTests.Controllers
         private Mock<IValidationService<NotificationEvent>> _validatorMock = new();
         private Mock<IProcessingService<NotificationEvent>> _processorMock = new();
         private Mock<IRespondingService<NotificationEvent>> _responderMock = new();
+        private Mock<IVersionsRegister> _registerMock = new();
 
         [OneTimeSetUp]
         public void InitializeMocks()
@@ -38,6 +40,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             this._validatorMock = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
             this._processorMock = new Mock<IProcessingService<NotificationEvent>>(MockBehavior.Strict);
             this._responderMock = new Mock<IRespondingService<NotificationEvent>>(MockBehavior.Strict);
+            this._registerMock = new Mock<IVersionsRegister>(MockBehavior.Strict);
         }
 
         [SetUp]
@@ -198,13 +201,15 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private EventsController GetTestEventsController_WithRealResponder()
         {
-            return new EventsController(this._serializerMock.Object, this._validatorMock.Object,
-                                        this._processorMock.Object, GetRealResponderService());
+            return new EventsController(ConfigurationHandler.GetValidAppSettingsConfiguration(),
+                                        this._serializerMock.Object, this._validatorMock.Object,
+                                        this._processorMock.Object, GetRealResponderService(),
+                                        this._registerMock.Object);
         }
 
         private static IRespondingService<NotificationEvent> GetRealResponderService()
         {
-            return new NotificationResponder(new DetailsBuilder());
+            return new OmcResponder(new DetailsBuilder());
         }
 
         private static void AssertWithConditions

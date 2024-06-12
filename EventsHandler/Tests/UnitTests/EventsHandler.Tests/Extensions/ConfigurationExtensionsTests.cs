@@ -3,16 +3,12 @@
 using EventsHandler.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace EventsHandler.UnitTests.Extensions
 {
     [TestFixture]
     internal sealed class ConfigurationExtensionsTests
     {
-        //private const string TestValidPath = "NOTIFY_AUTHORIZATION_JWT_ISSUER";
-        //private const string TestInvalidPath = $"{TestValidPath}_INVALID";
-
         private IConfiguration? _configuration;
 
         [OneTimeSetUp]
@@ -23,23 +19,23 @@ namespace EventsHandler.UnitTests.Extensions
 
         #region Specific GetValue methods
         [Test]
-        public void GetApplicationInsightsLogLevel_ReturnsExpectedValue()
-        {
-            // Act
-            LogLevel actualValue = this._configuration!.GetApplicationInsightsLogLevel();
-
-            // Assert
-            Assert.That(actualValue, Is.EqualTo(LogLevel.Debug));
-        }
-
-        [Test]
-        public void IsEncryptionAsymmetric_ReturnsExpectedValue()
+        public void Encryption_ReturnsExpectedValue()
         {
             // Act
             bool actualValue = this._configuration!.IsEncryptionAsymmetric();
 
             // Assert
             Assert.That(actualValue, Is.False);
+        }
+        
+        [Test]
+        public void Features_ReturnsExpectedValue()
+        {
+            // Act
+            int actualValue = this._configuration!.OmcWorkflowVersion();
+
+            // Assert
+            Assert.That(actualValue, Is.EqualTo(1));
         }
         #endregion
 

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EventsHandler.Utilities.Swagger.Examples
 {
     /// <summary>
-    /// An example of personalization map for "NotifyNL" message template to be used in Swagger UI.
+    /// An example of personalization map for "Notify NL" message template to be used in Swagger UI.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
     [ExcludeFromCodeCoverage]

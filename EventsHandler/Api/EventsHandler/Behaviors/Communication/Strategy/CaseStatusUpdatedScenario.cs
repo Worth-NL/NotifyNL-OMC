@@ -4,10 +4,10 @@ using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using CitizenData = EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.CitizenData;
 
 namespace EventsHandler.Behaviors.Communication.Strategy
 {
@@ -30,44 +30,44 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            base.LastCaseStatusType ??= await ReQueryCaseStatusTypeAsync(notification);
+            this.LastCaseStatusType ??= await ReQueryCaseStatusTypeAsync(notification);
 
             return await base.GetAllNotifyDataAsync(notification);
         }
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => base.Configuration.User.TemplateIds.Sms.ZaakUpdate();
+          => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CitizenData)"/>
-        protected sealed override Dictionary<string, object> GetSmsPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
+        protected sealed override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
         {
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "klant.voornaam", citizen.Name },
-                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
-                { "klant.achternaam", citizen.Surname },
-                { "status.omschrijving", base.LastCaseStatusType!.Value.Description }
+                { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.achternaam", partyData.Surname },
+                { "status.omschrijving", this.LastCaseStatusType!.Value.Description }
             };
         }
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-          => base.Configuration.User.TemplateIds.Email.ZaakUpdate();
+          => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CitizenData)"/>
-        protected sealed override Dictionary<string, object> GetEmailPersonalization(Case @case, CitizenData citizen)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
+        protected sealed override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
         {
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },
                 { "zaak.identificatie", @case.Identification },
-                { "klant.voorvoegselAchternaam", citizen.SurnamePrefix },
-                { "klant.voornaam", citizen.Name },
-                { "klant.achternaam", citizen.Surname },
-                { "status.omschrijving", base.LastCaseStatusType!.Value.Description }
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.voornaam", partyData.Name },
+                { "klant.achternaam", partyData.Surname },
+                { "status.omschrijving", this.LastCaseStatusType!.Value.Description }
             };
         }
         #endregion

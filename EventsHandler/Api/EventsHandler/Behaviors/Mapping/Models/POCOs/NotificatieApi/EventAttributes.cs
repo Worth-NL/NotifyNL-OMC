@@ -3,13 +3,12 @@
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Constants;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
     /// <summary>
-    /// The dynamic attributes of the notification retrieved from "Notificatie API" Web service.
+    /// The dynamic attributes of the notification retrieved from "OpenNotificaties" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct EventAttributes : IJsonSerializable
@@ -40,7 +39,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         #endregion
 
         /// <summary>
-        /// Gets the URI to "OpenKlant" Web service.
+        /// Gets the URI to "OpenKlant" Web API service.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("objectType")]
@@ -48,12 +47,12 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         public Uri? ObjectType { get; internal set; }
 
         /// <summary>
-        /// Gets the URI to "OpenZaak" Web service.
+        /// Gets the URI to "OpenZaak" Web API service.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(1)]
-        public Uri? CaseType { get; internal set; }
+        public Uri? CaseTypeUri { get; internal set; }
 
         /// <summary>
         /// Gets the name of the source organization.
@@ -90,7 +89,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsDefault(EventAttributes attributes)
         {
             return attributes.ObjectType == null &&
-                   attributes.CaseType   == null &&
+                   attributes.CaseTypeUri   == null &&
                    attributes is
                    {
                        SourceOrganization: null,

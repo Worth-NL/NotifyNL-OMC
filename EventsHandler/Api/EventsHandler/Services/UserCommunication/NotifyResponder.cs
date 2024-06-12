@@ -1,8 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -12,8 +17,20 @@ using System.Text.RegularExpressions;
 namespace EventsHandler.Services.UserCommunication
 {
     /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
-    internal sealed partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
+        /// <inheritdoc cref="ISerializationService"/>
+        protected ISerializationService Serializer { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotifyResponder"/> class.
+        /// </summary>
+        /// <param name="serializer">The input de(serializing) service.</param>
+        protected NotifyResponder(ISerializationService serializer)
+        {
+            this.Serializer = serializer;
+        }
+
         #region RegEx patterns
         // -------
         // API Key
@@ -77,7 +94,7 @@ namespace EventsHandler.Services.UserCommunication
                     Match match;
 
                     // HttpStatus Code: 403 Forbidden
-                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to "NotifyNL" API service denied)
+                    if ((match = InvalidApiKeyPattern().Match(exception.Message)).Success)  // NOTE: The API key is invalid (access to "Notify NL" API service denied)
                     {
                         message = match.Value;
 
@@ -181,7 +198,7 @@ namespace EventsHandler.Services.UserCommunication
         #endregion
 
         #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult,TDetails}.Get_Processing_Status_ActionResult"/>
+        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.Get_Processing_Status_ActionResult(TResult, TDetails)"/>
         ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Status_ActionResult(ProcessingResult result, string details)
         {
             return result switch
@@ -196,6 +213,46 @@ namespace EventsHandler.Services.UserCommunication
                 _ => ObjectResultExtensions.AsResult_501()
             };
         }
+        #endregion
+
+        #region Abstract        
+        /// <summary>
+        /// Handles the callbacks from "Notify NL" Web API service (accordingly to the used "OMC workflow" version).
+        /// </summary>
+        internal abstract Task<IActionResult> HandleNotifyCallbackAsync(object json);
+        #endregion
+
+        #region Parent        
+        /// <summary>
+        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback.
+        /// </summary>
+        /// <param name="callback">The callback to be analyzed.</param>
+        /// <returns>
+        ///   The notification data required for further processing.
+        /// </returns>
+        internal (NotificationEvent, NotifyMethods) ExtractNotificationData(DeliveryReceipt callback)
+        {
+            string decodedNotification = callback.Reference!.Base64Decode();
+            NotificationEvent notification = this.Serializer.Deserialize<NotificationEvent>(decodedNotification);
+            NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+            return (notification, notificationMethod);
+        }
+
+        /// <summary>
+        /// Gets the text confirming successful delivery receipt.
+        /// </summary>
+        /// <param name="callback">The callback to be parsed.</param>
+        internal static string GetDeliveryStatusLogMessage(DeliveryReceipt callback)
+            => $"{Resources.Feedback_NotifyNL_STATUS_NotificationStatus} {callback.Id}: {callback.Status}.";
+
+        /// <summary>
+        /// Gets the text confirming failed delivery receipt.
+        /// </summary>
+        /// <param name="callback">The callback to be parsed.</param>
+        /// <param name="exception">The exception that occurred during processing the callback.</param>
+        internal static string GetDeliveryErrorLogMessage(DeliveryReceipt callback, Exception exception)
+            => $"{Resources.Feedback_NotifyNL_ERROR_UnexpectedFailure} {callback.Id}: {exception.Message}.";
         #endregion
 
         #region Helper methods

@@ -4,21 +4,24 @@ using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
+using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Manager;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataQuerying;
+using EventsHandler.Services.DataQuerying.Adapter;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Base;
+using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
@@ -29,7 +32,6 @@ using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.Telemetry;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
@@ -46,21 +48,26 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using QueryContext = EventsHandler.Services.DataQuerying.ApiDataQuery.QueryContext;
+using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
+using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using Responder = EventsHandler.Services.UserCommunication;
+using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
 {
     /// <summary>
     /// The entry point to the Web API application, responsible for configuring and starting the application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class Program
     {
         /// <summary>
         /// Custom simplified version of application configuration.
         /// </summary>
         /// <param name="args">The <see cref="Program"/> startup arguments.</param>
-        private static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
                 .ConfigureServices()      // 1. Add and configure different types of services used by this application
@@ -87,6 +94,11 @@ namespace EventsHandler
         /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddNetServices(this WebApplicationBuilder builder)
         {
+            // Configuration appsettings.json files
+            const string settingsFileName = "appsettings";
+            builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
+                                 .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
+            
             // API Controllers
             builder.Services.AddControllers();
             
@@ -188,7 +200,10 @@ namespace EventsHandler
         private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
             // Sentry Data Source Name (DSN) => where to log application events
-            // Taken from "SENTRY_DSN" environment variable
+            options.Dsn = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryDsn)
+                          ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
+                                            // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
+                                            // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
 
             // Informational messages are the most detailed to log
             options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
@@ -210,8 +225,9 @@ namespace EventsHandler
             options.Release = DefaultValues.ApiController.Version;
             
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
-            options.Environment = Environment.GetEnvironmentVariable("SENTRY_ENVIRONMENT") ??
-                                  Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            options.Environment = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryEnvironment) ??
+                                  Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment) ??
+                                  DefaultValues.EnvironmentVariables.Missing;
         }
         #endregion
         #endregion
@@ -237,17 +253,20 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
             builder.Services.RegisterNotifyStrategies();
 
-            // Queries and HTTP resources
-            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, ApiDataQuery>();
+            // Domain queries and resources
+            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
-            builder.Services.AddSingleton<IHttpSupplierService, JwtHttpSupplier>();
+            builder.RegisterOpenServices();
+
+            // HTTP communication
+            builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.RegisterClientFactories();
 
-            // Feedback and telemetry
-            builder.Services.AddSingleton<ITelemetryService, ContactRegistration>();
+            // Versioning
+            builder.Services.AddSingleton<IVersionsRegister, VersionsRegister>();
 
             // User Interaction
-            builder.Services.RegisterResponders();
+            builder.RegisterResponders();
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
@@ -268,14 +287,11 @@ namespace EventsHandler
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
         {
-            // Default configuration loader strategy
-            services.AddSingleton<ILoadingService, EnvironmentLoader>();
-
             // Strategy Context (acting like loader strategy facade)
             services.AddSingleton<ILoadersContext, LoadersContext>();
 
             // Strategies
-            services.AddSingleton<ConfigurationLoader>();
+            services.AddSingleton<AppSettingsLoader>();
             services.AddSingleton<EnvironmentLoader>();
         }
 
@@ -291,19 +307,78 @@ namespace EventsHandler
             services.AddSingleton<NotImplementedScenario>();
         }
 
+        private static void RegisterOpenServices(this WebApplicationBuilder builder)
+        {
+            // Common query methods
+            builder.Services.AddSingleton<IQueryBase, QueryBase>();
+
+            byte omcWorkflowVersion = builder.Configuration.OmcWorkflowVersion();
+            
+            // Strategies
+            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
+
+            // Feedback and telemetry
+            builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
+
+            return;
+
+            static Type DetermineOpenZaakVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 => typeof(OpenZaak.v1.QueryZaak),
+                    2 => typeof(OpenZaak.v2.QueryZaak),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenZaakUnknown)
+                };
+            }
+
+            static Type DetermineOpenKlantVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 => typeof(OpenKlant.v1.QueryKlant),
+                    2 => typeof(OpenKlant.v2.QueryKlant),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenKlantUnknown)
+                };
+            }
+
+            static Type DetermineTelemetryVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 => typeof(Telemetry.v1.ContactRegistration),
+                    2 => typeof(Telemetry.v2.ContactRegistration),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionTelemetryUnknown)
+                };
+            }
+        }
+
         private static void RegisterClientFactories(this IServiceCollection services)
         {
-            services.AddSingleton<IHttpClientFactory<HttpClient, (string, string)[]>, HeadersHttpClientFactory>();
+            services.AddSingleton<IHttpClientFactory<HttpClient, (string, string)[]>, RegularHttpClientFactory>();
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
-        private static void RegisterResponders(this IServiceCollection services)
+        private static void RegisterResponders(this WebApplicationBuilder builder)
         {
-            // Implicit interface (Adapter) for the main EventsController (is used most often, and it looks cleaner with single generic)
-            services.AddSingleton<IRespondingService<NotificationEvent>, NotificationResponder>();
+            // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
+            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
             
-            // Explicit interfaces
-            services.AddSingleton<IRespondingService<ProcessingResult, string>, NotifyResponder>();
+            // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
+            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(builder));
+
+            return;
+
+            static Type DetermineResponderVersion(WebApplicationBuilder builder)
+            {
+                return builder.Configuration.OmcWorkflowVersion() switch
+                {
+                    1 => typeof(Responder.v1.NotifyCallbackResponder),
+                    2 => typeof(Responder.v2.NotifyCallbackResponder),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionNotifyResponderUnknown)
+                };
+            }
         }
         #endregion
         #endregion
@@ -318,8 +393,8 @@ namespace EventsHandler
         {
             WebApplication app = builder.Build();
             
-            // Development settings
-            if (app.Environment.IsDevelopment())
+            // Displaying Swagger UI as the main page of the Web API
+            if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();

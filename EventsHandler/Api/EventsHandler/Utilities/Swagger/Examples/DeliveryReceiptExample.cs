@@ -2,13 +2,14 @@
 
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
+using EventsHandler.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {
     /// <summary>
-    /// An example of delivery status received from "NotifyNL" API web service.
+    /// An example of delivery status received from "Notify NL" Web API service.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
     [ExcludeFromCodeCoverage]
@@ -38,9 +39,9 @@ namespace EventsHandler.Utilities.Swagger.Examples
             return new DeliveryReceipt
             {
                 Id = Guid.NewGuid(),
-                Reference = SerializedNotification,
+                Reference = SerializedNotification.Base64Encode(),
                 Recipient = "hello@gov.nl",
-                Status = DeliveryStatus.Delivered,
+                Status = DeliveryStatuses.Delivered,
                 CreatedAt = currentTime,
                 CompletedAt = currentTime.Add(new TimeSpan(seconds: 1, hours: 0, minutes: 0)),
                 SentAt = currentTime.Add(new TimeSpan(seconds: 2, hours: 0, minutes: 0)),
