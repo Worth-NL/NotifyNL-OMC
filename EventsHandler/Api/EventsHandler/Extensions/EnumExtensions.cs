@@ -1,4 +1,7 @@
-﻿using EventsHandler.Behaviors.Communication.Enums;
+﻿// © 2024, Worth Systems.
+
+using EventsHandler.Behaviors.Communication.Enums;
+using EventsHandler.Behaviors.Communication.Enums.v2;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 
 namespace EventsHandler.Extensions
@@ -9,7 +12,7 @@ namespace EventsHandler.Extensions
     internal static class EnumExtensions
     {
         /// <summary>
-        /// Converts to <see cref="NotificationTypes"/> enum into <see cref="NotifyMethods"/> enum.
+        /// Converts from <see cref="NotificationTypes"/> enum to <see cref="NotifyMethods"/> enum.
         /// </summary>
         /// <param name="notificationType">The input enum of type A.</param>
         /// <returns>
@@ -26,6 +29,33 @@ namespace EventsHandler.Extensions
                 ? (NotifyMethods)notificationTypeValue
                 // FAILURE: Return fallback enum B
                 : NotifyMethods.None;
+        }
+        
+        /// <summary>
+        /// Converts from <see cref="DeliveryStatuses"/> enum to <see cref="NotifyStatuses"/> enum.
+        /// </summary>
+        /// <param name="deliveryStatus">The input enum of type A.</param>
+        /// <returns>
+        ///   The output enum of type B.
+        /// </returns>
+        internal static NotifyStatuses ConvertToNotifyStatus(this DeliveryStatuses deliveryStatus)
+        {
+            if (deliveryStatus == DeliveryStatuses.Unknown ||
+                !Enum.IsDefined(typeof(DeliveryStatuses), (int)deliveryStatus))  // Can't determine based on the value
+            {
+                return NotifyStatuses.Unknown;
+            }
+
+            return deliveryStatus switch
+            {
+                DeliveryStatuses.Delivered
+                    => NotifyStatuses.Success,
+                
+                DeliveryStatuses.PermanentFailure or DeliveryStatuses.TemporaryFailure or DeliveryStatuses.TechnicalFailure
+                    => NotifyStatuses.Failure,
+                
+                _ => NotifyStatuses.Info
+            };
         }
     }
 }

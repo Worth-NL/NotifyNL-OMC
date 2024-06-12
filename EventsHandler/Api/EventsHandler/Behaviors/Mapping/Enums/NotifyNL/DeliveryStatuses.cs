@@ -18,7 +18,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
     /// </para>
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<DeliveryStatuses>))]
-    internal enum DeliveryStatuses
+    public enum DeliveryStatuses
     {
         /// <summary>
         /// Default value.
