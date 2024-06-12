@@ -27,7 +27,7 @@ namespace EventsHandler.Extensions
         /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
         /// </summary>
         /// <param name="configuration">The application configuration.</param>
-        internal static byte OpenServicesVersion(this IConfiguration configuration)
+        internal static byte OmcWorkflowVersion(this IConfiguration configuration)
             => configuration.GetValue<byte>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
                                                  $"{nameof(WebApiConfiguration.AppSettings.Features.OmcWorkflowVersion)}");
         #endregion
