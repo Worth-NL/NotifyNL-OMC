@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// Controller used to test other API services from which "Notify NL" OMC is dependent.
+    /// Controller used to test other Web API services from which "Notify NL" OMC is dependent.
     /// </summary>
     /// <seealso cref="OmcController"/>
     public sealed class TestController : OmcController
