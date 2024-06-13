@@ -179,7 +179,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks whether feedback can be received by contact register API Web API service.
+        /// Checks whether feedback can be received by contact register Web API service.
         /// </summary>
         /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
         [HttpPost]
