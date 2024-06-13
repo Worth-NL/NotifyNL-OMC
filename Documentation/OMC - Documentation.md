@@ -12,7 +12,7 @@ v.1.8.0
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
-- [**Klantinteractie**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
+- [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
 - [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service)
 
 ## 1.1. Swagger UI
