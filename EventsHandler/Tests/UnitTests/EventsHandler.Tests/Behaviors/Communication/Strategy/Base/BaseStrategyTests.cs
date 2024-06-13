@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Base;
+using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
@@ -44,7 +45,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel);
             Mock<IDataQueryService<NotificationEvent>> mockedDataQuery = GetMockedQueryService(mockedQueryContext);
 
-            var scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -73,7 +74,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Both);
             Mock<IDataQueryService<NotificationEvent>> mockedDataQuery = GetMockedQueryService(mockedQueryContext);
 
-            var scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -108,7 +109,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.None);
             Mock<IDataQueryService<NotificationEvent>> mockedDataQuery = GetMockedQueryService(mockedQueryContext);
 
-            var scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -131,7 +132,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Unknown);
             Mock<IDataQueryService<NotificationEvent>> mockedDataQuery = GetMockedQueryService(mockedQueryContext);
 
-            var scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
 
             // Act & Assert
             Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
@@ -143,7 +144,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             // Arrange
             var mockedQueryService = new Mock<IDataQueryService<NotificationEvent>>();
 
-            var scenario = new NotImplementedScenario(this._testConfiguration, mockedQueryService.Object);
+            INotifyScenario scenario = new NotImplementedScenario(this._testConfiguration, mockedQueryService.Object);
 
             // Act & Assert
             Assert.ThrowsAsync<NotImplementedException>(() => scenario.GetAllNotifyDataAsync(default));
