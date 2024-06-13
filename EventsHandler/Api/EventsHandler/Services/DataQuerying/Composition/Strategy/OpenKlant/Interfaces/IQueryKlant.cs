@@ -26,8 +26,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// Gets the details of a specific citizen from "OpenKlant" Web API service.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> GetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
         #endregion
         
@@ -36,8 +36,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// Sends the completion feedback to "OpenKlant" Web API service.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="JsonException"/>
         /// <exception cref="TelemetryException"/>
+        /// <exception cref="JsonException"/>
         internal Task<ContactMoment> SendFeedbackAsync(IQueryBase queryBase, HttpContent body);
         #endregion
 

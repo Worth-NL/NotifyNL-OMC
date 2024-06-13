@@ -27,8 +27,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<Case>(
@@ -41,8 +41,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal sealed async Task<CaseStatuses> GetCaseStatusesAsync(IQueryBase queryBase)
         {
             // Predefined URL components
@@ -60,8 +60,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
         /// </summary>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         #pragma warning disable CA1822  // Method can be marked as static but that would be inconsistent for interface
         internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
         #pragma warning restore CA1822
@@ -78,8 +78,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the <see cref="MainObject"/> from "OpenZaak" Web API service.
         /// </summary>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal async Task<MainObject> GetMainObjectAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<MainObject>(
