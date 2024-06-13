@@ -51,7 +51,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
             Case @case = await this.DataQuery.From(notification).GetCaseAsync();
             CommonPartyData partyData = await this.DataQuery.From(notification).GetPartyDataAsync();
 
-            // TODO: Introduce unit tests
             // Determine which types of notifications should be published
             return partyData.DistributionChannel switch
             {
@@ -60,7 +59,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                 DistributionChannels.Sms   => new[] { GetSmsNotifyData(@case, partyData) },
                 
                 // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
-                DistributionChannels.Both  => new[] { GetEmailNotifyData(@case, partyData),  // TODO: Not working
+                DistributionChannels.Both  => new[] { GetEmailNotifyData(@case, partyData),
                                                       GetSmsNotifyData(@case, partyData) },
                 
                 DistributionChannels.None  => Array.Empty<NotifyData>(),

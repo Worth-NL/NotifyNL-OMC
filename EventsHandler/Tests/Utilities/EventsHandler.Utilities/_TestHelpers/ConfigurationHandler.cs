@@ -208,6 +208,11 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             return GetWebApiConfiguration(LoaderTypes.AppSettings, isValid: true);
         }
+
+        internal static WebApiConfiguration GetValidEnvironmentConfiguration()
+        {
+            return GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
+        }
         #endregion
     }
 }

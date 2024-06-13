@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using System.Text.Json;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
 {
@@ -18,11 +19,14 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
-        /// <exception cref="InvalidOperationException">
-        ///   The <see cref="DistributionChannels"/> option is invalid.
-        /// </exception>
         /// <exception cref="HttpRequestException">
         ///   Something could not be queried from external API Web API services.
+        /// </exception>
+        /// <exception cref="JsonException">
+        ///   The HTTP response wasn't deserialized properly.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///   The <see cref="DistributionChannels"/> option is invalid.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
     }
