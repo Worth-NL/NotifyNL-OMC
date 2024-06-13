@@ -12,10 +12,10 @@ namespace EventsHandler.Controllers.Base
     /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
+    [ApiVersion(DefaultValues.ApiController.Version)]
     [Route(DefaultValues.ApiController.Route)]
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
-    [ApiVersion(DefaultValues.ApiController.Version)]
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]  // REASON: JWT Token is invalid or expired
     public abstract class OmcController : Controller
