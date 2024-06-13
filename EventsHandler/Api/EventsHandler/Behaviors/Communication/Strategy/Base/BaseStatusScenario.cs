@@ -21,7 +21,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseStatusScenario"/> class.
         /// </summary>
-        public BaseStatusScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
+        protected BaseStatusScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
             : base(configuration, dataQuery)
         {
         }
@@ -42,8 +42,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// </summary>
         protected async Task<CaseStatusType> ReQueryCaseStatusTypeAsync(NotificationEvent notification)
         {
-            CaseStatuses caseStatuses = await base.DataQuery.From(notification).GetCaseStatusesAsync();
-            CaseStatusType lastCaseStatusType = await base.DataQuery.From(notification).GetLastCaseStatusTypeAsync(caseStatuses);
+            CaseStatuses caseStatuses = await this.DataQuery.From(notification).GetCaseStatusesAsync();
+            CaseStatusType lastCaseStatusType = await this.DataQuery.From(notification).GetLastCaseStatusTypeAsync(caseStatuses);
 
             return lastCaseStatusType;
         }
