@@ -34,6 +34,12 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotificatieApi
         /// Case status.
         /// </summary>
         [JsonPropertyName("status")]
-        Status = 3
+        Status = 3,
+
+        /// <summary>
+        /// Decision resource.
+        /// </summary>
+        [JsonPropertyName("besluit")]
+        Decision = 4
     }
 }
