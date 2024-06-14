@@ -1,8 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Text.Json;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Constants;
+using System.Text.Json;
 
 // ReSharper disable InconsistentNaming => allow constants with underscores (for readability)
 
@@ -14,6 +15,8 @@ namespace EventsHandler.Utilities._TestHelpers
     internal static class NotificationEventHandler
     {
         #region Constants
+        internal const string TestOrganization = "286130270";
+
         // Regulars
         internal const string Regular_FirstProperty  = "kanaal";
         internal const string Regular_SecondProperty = "bronorganisatie";
@@ -61,21 +64,28 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             string jsonPayload =
                 $"{{\r\n" +
-                $"  \"actie\": \"create\",\r\n" +
-                $"  \"kanaal\": \"zaken\",\r\n" +
-                $"  \"resource\": \"zaak\",\r\n" +
-                $"  \"{Orphan_FirstProperty}\": {Orphan_FirstValue},\r\n" +  // Unexpected JSON property => will be moved to root Orphans
-                $"  \"kenmerken\": {{\r\n" +
-                $"    \"objectType\": \"http://0.0.0.0:0/\",\r\n" +
-                $"    \"zaaktype\": \"http://0.0.0.0:0/\",\r\n" +
-                $"    \"bronorganisatie\": \"000000000\",\r\n" +
-                $"    \"vertrouwelijkheidaanduiding\": \"vertrouwelijk\",\r\n" +
-                $"    \"{Orphan_SecondProperty}\": {GetOrphanSecondValue()},\r\n" +  // Unexpected JSON property => will be moved to nested Orphans
-                $"    \"{Orphan_ThirdProperty}\": \"{Orphan_ThirdValue}\"\r\n" +     // Unexpected JSON property => will be moved to nested Orphans
-                $"  }},\r\n" +
-                $"  \"hoofdObject\": \"http://0.0.0.0:0/\",\r\n" +
-                $"  \"resourceUrl\": \"http://0.0.0.0:0/\",\r\n" +
-                $"  \"aanmaakdatum\": \"2023-09-12T13:58:29.9237316Z\"\r\n" +
+                  $"\"actie\": \"create\", \r\n" +
+                  $"\"kanaal\": \"zaken\", \r\n" +
+                  $"\"resource\": \"zaak\", \r\n" +
+                  $"\"kenmerken\": {{\r\n" +
+                    // Cases
+                    $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                    $"\"bronorganisatie\": \"000000000\", \r\n" +
+                    $"\"vertrouwelijkheidaanduiding\": \"vertrouwelijk\", \r\n" +
+                    // Objects
+                    $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                    // Decisions
+                    $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                    $"\"verantwoordelijkeOrganisatie\": \"000000000\", \r\n" +
+                    // Orphans (attributes)
+                    $"\"{Orphan_SecondProperty}\": {GetOrphanSecondValue()}, \r\n" +  // Unexpected JSON property => will be moved to nested Orphans
+                    $"\"{Orphan_ThirdProperty}\": \"{Orphan_ThirdValue}\"\r\n" +     // Unexpected JSON property => will be moved to nested Orphans
+                  $"}}, \r\n" +
+                  $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                  $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                  $"\"aanmaakdatum\": \"2023-09-12T13:58:29.9237316Z\", \r\n" +
+                  // Orphans (event)
+                  $"\"{Orphan_FirstProperty}\": {Orphan_FirstValue}\r\n" +  // Unexpected JSON property => will be moved to root Orphans
                 $"}}";
 
             return JsonSerializer.Deserialize<NotificationEvent>(jsonPayload);
@@ -110,20 +120,25 @@ namespace EventsHandler.Utilities._TestHelpers
 
         internal static NotificationEvent GetNotification_Real_TheHague()
         {
-            const string jsonPayload =
+            string jsonPayload =
                 $"{{\r\n" +
-                $"  \"actie\": \"create\",\r\n" +
-                $"  \"kanaal\": \"zaken\",\r\n" +
-                $"  \"resource\": \"status\",\r\n" +
-                $"  \"kenmerken\": {{\r\n" +
-                $"    \"objectType\": \"http://0.0.0.0:0/\",\r\n" +
-                $"    \"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\",\r\n" +
-                $"    \"bronorganisatie\": \"286130270\",\r\n" +
-                $"    \"vertrouwelijkheidaanduiding\": \"openbaar\"\r\n" +
-                $"  }},\r\n" +
-                $"  \"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\",\r\n" +
-                $"  \"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\",\r\n" +
-                $"  \"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"\r\n" +
+                  $"\"actie\": \"create\", \r\n" +
+                  $"\"kanaal\": \"zaken\", \r\n" +
+                  $"\"resource\": \"status\", \r\n" +
+                  $"\"kenmerken\": {{\r\n" +
+                    // Cases
+                    $"\"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\", \r\n" +
+                    $"\"bronorganisatie\": \"{TestOrganization}\", \r\n" +
+                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\", \r\n" +
+                    // Objects
+                    $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                    // Decisions
+                    $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
+                    $"\"verantwoordelijkeOrganisatie\": \"{TestOrganization}\"\r\n" +
+                  $"}}, \r\n" +
+                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\", \r\n" +
+                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\", \r\n" +
+                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"\r\n" +
                 $"}}";
 
             return JsonSerializer.Deserialize<NotificationEvent>(jsonPayload);

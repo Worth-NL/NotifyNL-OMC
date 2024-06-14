@@ -1,9 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections.Concurrent;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
@@ -123,6 +123,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         {
         }
 
+        #region Validation
         /// <summary>
         /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized
         /// (and it has default values) for the <see cref="Channels.Cases"/> scenarios.
@@ -167,5 +168,6 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
             return attributes.DecisionType            == null ||
                    attributes.ResponsibleOrganization == null;
         }
+        #endregion
     }
 }

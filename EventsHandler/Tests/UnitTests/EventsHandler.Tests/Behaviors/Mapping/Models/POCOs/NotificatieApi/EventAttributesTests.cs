@@ -1,9 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Text.Json;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Constants;
+using EventsHandler.Utilities._TestHelpers;
+using System.Text.Json;
 
 namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -11,30 +12,52 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
     public sealed class EventAttributesTests
     {
         #region Test data
+        private static readonly Uri s_testUri = new("https://www.test.fr/");
+        private const string TestOrphanKey1 = "test1";
+        private const string TestOrphanValue1 = "abc";
+        private const string TestOrphanKey2 = "test2";
+        private const string TestOrphanValue2 = "xyz";
+
         private const string DefaultJson =
             "{" +
-               "\"objectType\":null," +
+               // Cases
                "\"zaaktype\":null," +
                "\"bronorganisatie\":null," +
-               "\"vertrouwelijkheidaanduiding\":null" +
+               "\"vertrouwelijkheidaanduiding\":null," +
+               // Objects
+               "\"objectType\":null," +
+               // Decisions
+               "\"besluittype\":null," +
+               "\"verantwoordelijkeOrganisatie\":null" +
             "}";
 
-        private static readonly string s_customJson =
+        private static readonly string s_validJson =
             "{" +
-               $"\"objectType\":\"{DefaultValues.Models.EmptyUri}\"," +
-               $"\"zaaktype\":\"{DefaultValues.Models.EmptyUri}\"," +
-                "\"bronorganisatie\":\"123456789\"," +
-                "\"vertrouwelijkheidaanduiding\":2" +
+               // Cases
+               $"\"zaaktype\": \"{s_testUri}\", " +
+               $"\"bronorganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+                "\"vertrouwelijkheidaanduiding\": 2, " +
+               // Objects
+               $"\"objectType\": \"{s_testUri}\", " +
+               // Decisions
+               $"\"besluittype\": \"{s_testUri}\", " +
+               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.TestOrganization}\"" +
             "}";
 
         private static readonly string s_unexpectedJson =
             "{" +
-               $"\"objectType\":\"{DefaultValues.Models.EmptyUri}\"," +
-               $"\"zaaktype\":\"{DefaultValues.Models.EmptyUri}\"," +
-                "\"bronorganisatie\":\"123456789\"," +
-                "\"vertrouwelijkheidaanduiding\":2," +
-                "\"test1\":\"abc\"," +
-                "\"test2\":\"xyz\"" +
+               // Cases
+               $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", " +
+               $"\"bronorganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+                "\"vertrouwelijkheidaanduiding\": 2, " +
+               // Objects
+               $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", " +
+               // Decisions
+               $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
+               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+                // Orphans
+               $"\"{TestOrphanKey1}\": \"{TestOrphanValue1}\", " +
+               $"\"{TestOrphanKey2}\": \"{TestOrphanValue2}\"" +
             "}";
         #endregion
 
@@ -58,15 +81,21 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
         public void Deserialization_Valid_Json_IntoObject_WithoutOrphans()
         {
             // Act
-            EventAttributes actualObject = JsonSerializer.Deserialize<EventAttributes>(s_customJson);
+            EventAttributes actualObject = JsonSerializer.Deserialize<EventAttributes>(s_validJson);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.CaseType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo("123456789"));
+                // Cases
+                Assert.That(actualObject.CaseType, Is.EqualTo(s_testUri));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
+                // Objects
+                Assert.That(actualObject.ObjectType, Is.EqualTo(s_testUri));
+                // Decisions
+                Assert.That(actualObject.DecisionType, Is.EqualTo(s_testUri));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
             });
         }
@@ -80,24 +109,110 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                // Cases
                 Assert.That(actualObject.CaseType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo("123456789"));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
+                // Objects
+                Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                // Decisions
+                Assert.That(actualObject.DecisionType, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(2));
                 Assert.Multiple(() =>
                 {
                     KeyValuePair<string, object> firstKeyValuePair = actualObject.Orphans.First();
 
-                    Assert.That(firstKeyValuePair.Key, Is.EqualTo("test1"));
-                    Assert.That(firstKeyValuePair.Value.ToString(), Is.EqualTo("abc"));
+                    Assert.That(firstKeyValuePair.Key, Is.EqualTo(TestOrphanKey1));
+                    Assert.That(firstKeyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue1));
 
                     KeyValuePair<string, object> lastKeyValuePair = actualObject.Orphans.Last();
 
-                    Assert.That(lastKeyValuePair.Key, Is.EqualTo("test2"));
-                    Assert.That(lastKeyValuePair.Value.ToString(), Is.EqualTo("xyz"));
+                    Assert.That(lastKeyValuePair.Key, Is.EqualTo(TestOrphanKey2));
+                    Assert.That(lastKeyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue2));
                 });
             });
+        }
+        #endregion
+
+        #region Validation
+        [Test]
+        public void IsInvalidCase_InvalidModel_ReturnsTrue()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(DefaultJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidCase(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.True);
+        }
+        
+        [Test]
+        public void IsInvalidCase_ValidModel_ReturnsFalse()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(s_validJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidCase(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.False);
+        }
+        
+        [Test]
+        public void IsInvalidObject_InvalidModel_ReturnsTrue()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(DefaultJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidObject(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.True);
+        }
+        
+        [Test]
+        public void IsInvalidObject_ValidModel_ReturnsFalse()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(s_validJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidObject(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.False);
+        }
+        
+        [Test]
+        public void IsInvalidDecision_InvalidModel_ReturnsTrue()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(DefaultJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidDecision(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.True);
+        }
+        
+        [Test]
+        public void IsInvalidDecision_ValidModel_ReturnsFalse()
+        {
+            // Arrange
+            EventAttributes eventAttributes = JsonSerializer.Deserialize<EventAttributes>(s_validJson);
+
+            // Act
+            bool actualResult = EventAttributes.IsInvalidDecision(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.False);
         }
         #endregion
     }
