@@ -106,7 +106,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="HttpRequestException"/>
         private async Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase)
         {
-            return queryBase.Notification.Attributes.CaseTypeUri
+            return queryBase.Notification.Attributes.CaseType
                 ?? await GetCaseTypeUriFromDetailsAsync(queryBase);  // Fallback, providing case type URI anyway
         }
 

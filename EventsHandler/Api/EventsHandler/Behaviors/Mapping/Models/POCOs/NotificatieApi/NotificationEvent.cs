@@ -33,7 +33,9 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
                     // Critical Section
                     lock (s_lock)
                     {
-                        s_properties ??= new PropertiesMetadata(this, nameof(this.Attributes), nameof(this.Orphans));
+                        // Metadata initialization
+                        s_properties ??= new PropertiesMetadata(this,
+                            nameof(this.Attributes), nameof(this.Orphans));
                     }
                 }
 
@@ -133,17 +135,17 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         }
         
         /// <summary>
-        /// Checks whether the <see cref="NotificationEvent"/> model wasn't initialized (and it has default values).
+        /// Checks whether the <see cref="NotificationEvent"/> model wasn't
+        /// initialized (and it has default values) for required properties.
         /// </summary>
-        internal static bool IsDefault(NotificationEvent notification)
+        internal static bool IsInvalidEvent(NotificationEvent notification)
         {
             return notification is
                    {
-                       Action: Actions.Unknown,
-                       Channel: Channels.Unknown,
+                       Action:   Actions.Unknown,
+                       Channel:  Channels.Unknown,
                        Resource: Resources.Unknown
                    } &&
-                   EventAttributes.IsDefault(notification.Attributes) &&
                    notification.MainObject  == DefaultValues.Models.EmptyUri &&
                    notification.ResourceUrl == DefaultValues.Models.EmptyUri;
         }
