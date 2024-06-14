@@ -5,6 +5,7 @@ using EventsHandler.Extensions;
 using EventsHandler.Services.Templates.Interfaces;
 using Notify.Models.Responses;
 using System.Text.RegularExpressions;
+using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 
 namespace EventsHandler.Services.Templates
 {
@@ -60,11 +61,10 @@ namespace EventsHandler.Services.Templates
             }
 
             Dictionary<string, dynamic> mappedPlaceholders = new();
-            string currentPlaceholder;
 
             for (int index = 0; index < placeholders.Length; index++)
             {
-                currentPlaceholder = placeholders[index];
+                string currentPlaceholder = placeholders[index];
 
                 mappedPlaceholders.Add(currentPlaceholder, GetValue(notification, currentPlaceholder));
             }
@@ -87,26 +87,34 @@ namespace EventsHandler.Services.Templates
             {
                 return propertyValue;
             }
+
             // FASTER + LESS PROBABLE: Check the Orphans from the root NotificationEvent POCO model
-            else if (notification.Orphans.TryGetValue(placeholder, out propertyValue))
+            if (notification.Orphans.TryGetValue(placeholder, out propertyValue))
             {
                 return propertyValue;
             }
+
             // BIT SLOWER + MORE PROBABLE: Check the instance properties of EventAttributes POCO model
-            else if (notification.Attributes.Properties.TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue))
+            if (notification.Attributes.Properties(Channels.Cases)
+                    .TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue) ||
+                
+                notification.Attributes.Properties(Channels.Objects)
+                    .TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue) ||
+
+                notification.Attributes.Properties(Channels.Decisions)
+                    .TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue))
             {
                 return propertyValue;
             }
+            
             // BIT SLOWER + LESS PROBABLE: Check the instance properties of NotificationEvent POCO model
-            else if (notification.Properties.TryGetPropertyValueByDutchName(placeholder, notification, out propertyValue))
+            if (notification.Properties.TryGetPropertyValueByDutchName(placeholder, notification, out propertyValue))
             {
                 return propertyValue;
             }
-            // Fallback: Always map some value into expected placeholder (to avoid NotifyUK exception)
-            else
-            {
-                return ValueNotAvailable;  // Default value
-            }
+
+            // Fallback: Always map some value into expected placeholder (to avoid "NotifyClientException")
+            return ValueNotAvailable;  // Default value
         }
     }
 }

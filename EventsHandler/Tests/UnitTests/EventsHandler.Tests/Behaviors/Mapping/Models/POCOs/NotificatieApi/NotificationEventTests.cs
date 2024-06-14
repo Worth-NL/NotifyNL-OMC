@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Text.Json;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Constants;
 using EventsHandler.Utilities._TestHelpers;
+using System.Text.Json;
 
 namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -12,56 +12,73 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
     public sealed class NotificationEventTests
     {
         #region Test data
-        private const string ValidJson =
-            "{" +
-                "\"actie\":\"create\"," +
-                "\"kanaal\":\"zaken\"," +
-                "\"resource\":\"status\"," +
-                "\"kenmerken\":{" +
-                    "\"objectType\":\"http://0.0.0.0:0/\"," +
-                    "\"zaaktype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\"," +
-                    "\"bronorganisatie\":\"286130270\"," +
-                    "\"vertrouwelijkheidaanduiding\":\"openbaar\"" +
-                "}," +
-                "\"hoofdObject\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\"," +
-                "\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\"," +
-                "\"aanmaakdatum\":\"2023-09-22T11:41:46.052Z\"" +
+        private const string TestOrphanKey = "testKey";
+        private const string TestOrphanValue = "testValue";
+
+        private static readonly string s_validJson =
+            $"{{" +
+              $"\"actie\":\"create\"," +
+              $"\"kanaal\":\"zaken\"," +
+              $"\"resource\":\"status\"," +
+              $"\"kenmerken\":{{" +
+                // Cases
+                $"\"zaaktype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\"," +
+                $"\"bronorganisatie\":\"{NotificationEventHandler.TestOrganization}\"," +
+                $"\"vertrouwelijkheidaanduiding\":\"openbaar\"," +
+                // Objects
+                $"\"objectType\":\"{DefaultValues.Models.EmptyUri}\"," +
+                // Decisions
+                $"\"besluittype\":\"{DefaultValues.Models.EmptyUri}\"," +
+                $"\"verantwoordelijkeOrganisatie\":\"{NotificationEventHandler.TestOrganization}\"" +
+              $"}}," +
+              $"\"hoofdObject\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\"," +
+              $"\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\"," +
+              $"\"aanmaakdatum\":\"2023-09-22T11:41:46.052Z\"" +
             "}";
 
         private static readonly string s_customJson =
-            "{" +
-                "\"actie\":0," +
-                "\"kanaal\":1," +
-                "\"resource\":2," +
-                "\"kenmerken\":" +
-                "{" +
-                    "\"objectType\":null," +
-                    "\"zaaktype\":null," +
-                    "\"bronorganisatie\":null," +
-                    "\"vertrouwelijkheidaanduiding\":null" +
-                "}," +
-               $"\"hoofdObject\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-               $"\"resourceUrl\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-                "\"aanmaakdatum\":\"0001-01-01T00:00:00\"" +
-            "}";
+            $"{{" +
+              $"\"actie\": 0, " +  // Invalid value
+              $"\"kanaal\": 1, " +
+              $"\"resource\": 2, " +
+              $"\"kenmerken\": {{" +
+                // Cases
+                $"\"zaaktype\": null, " +
+                $"\"bronorganisatie\": null, " +
+                $"\"vertrouwelijkheidaanduiding\": null, " +
+                // Objects
+                $"\"objectType\": null, " +
+                // Decisions
+                $"\"besluittype\": null, " +
+                $"\"verantwoordelijkeOrganisatie\": null" +
+              $"}}," +
+              $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"aanmaakdatum\": \"0001-01-01T00:00:00\"" +
+            $"}}";
 
         private static readonly string s_unexpectedJson =
-            "{" +
-                "\"actie\":0," +
-                "\"kanaal\":1," +
-                "\"resource\":2," +
-                "\"kenmerken\":" +
-                "{" +
-                    "\"objectType\":null," +
-                    "\"zaaktype\":null," +
-                    "\"bronorganisatie\":null," +
-                    "\"vertrouwelijkheidaanduiding\":null" +
-                "}," +
-               $"\"hoofdObject\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-               $"\"resourceUrl\":\"{DefaultValues.Models.EmptyUri.AbsoluteUri}\"," +
-                "\"aanmaakdatum\":\"0001-01-01T00:00:00\"," +
-                "\"test\":\"xyz\"" +
-            "}";
+            $"{{" +
+              $"\"actie\": 0, " +  // Invalid value
+              $"\"kanaal\": 1, " +
+              $"\"resource\": 2, " +
+              $"\"kenmerken\": {{" +
+                // Cases
+                $"\"zaaktype\": null, " +
+                $"\"bronorganisatie\": null, " +
+                $"\"vertrouwelijkheidaanduiding\": null, " +
+                // Objects
+                $"\"objectType\": null, " +
+                // Decisions
+                $"\"besluittype\": null, " +
+                $"\"verantwoordelijkeOrganisatie\": null" +
+              $"}}," +
+              $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"aanmaakdatum\": \"0001-01-01T00:00:00\", " +
+              // Orphans (event)
+              $"\"{TestOrphanKey}\": \"{TestOrphanValue}\"" +
+            $"}}";
         #endregion
 
         #region Serialization
@@ -75,7 +92,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             string actualJson = JsonSerializer.Serialize(testObject);
 
             // Assert
-            Assert.That(actualJson, Is.EqualTo(ValidJson));
+            Assert.That(actualJson, Is.EqualTo(s_validJson));
         }
         #endregion
 
@@ -96,6 +113,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.MainObject, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.ResourceUrl, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
+                // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
             });
         }
@@ -116,18 +134,45 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.MainObject, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.ResourceUrl, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
+                // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(1));
                 Assert.Multiple(() =>
                 {
                     KeyValuePair<string, object> keyValuePair = actualObject.Orphans.First();
 
-                    Assert.That(keyValuePair.Key, Is.EqualTo("test"));
-                    Assert.That(keyValuePair.Value.ToString(), Is.EqualTo("xyz"));
+                    Assert.That(keyValuePair.Key, Is.EqualTo(TestOrphanKey));
+                    Assert.That(keyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue));
                 });
             });
         }
+        #endregion
+        
+        #region Validation
+        [Test]
+        public void IsInvalidEvent_InvalidModel_ReturnsTrue()
+        {
+            // Arrange
+            NotificationEvent eventAttributes = JsonSerializer.Deserialize<NotificationEvent>(s_customJson);
 
-        // TODO: Add tests for [Required] properties
+            // Act
+            bool actualResult = NotificationEvent.IsInvalidEvent(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.True);
+        }
+        
+        [Test]
+        public void IsInvalidEvent_ValidModel_ReturnsFalse()
+        {
+            // Arrange
+            NotificationEvent eventAttributes = JsonSerializer.Deserialize<NotificationEvent>(s_validJson);
+
+            // Act
+            bool actualResult = NotificationEvent.IsInvalidEvent(eventAttributes);
+
+            // Assert
+            Assert.That(actualResult, Is.False);
+        }
         #endregion
     }
 }

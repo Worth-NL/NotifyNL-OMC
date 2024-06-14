@@ -134,20 +134,19 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         {
         }
         
+        #region Validation
         /// <summary>
         /// Checks whether the <see cref="NotificationEvent"/> model wasn't
         /// initialized (and it has default values) for required properties.
         /// </summary>
         internal static bool IsInvalidEvent(NotificationEvent notification)
         {
-            return notification is
-                   {
-                       Action:   Actions.Unknown,
-                       Channel:  Channels.Unknown,
-                       Resource: Resources.Unknown
-                   } &&
-                   notification.MainObject  == DefaultValues.Models.EmptyUri &&
+            return notification.Action      == Actions.Unknown               ||
+                   notification.Channel     == Channels.Unknown              ||
+                   notification.Resource    == Resources.Unknown             ||
+                   notification.MainObject  == DefaultValues.Models.EmptyUri ||
                    notification.ResourceUrl == DefaultValues.Models.EmptyUri;
         }
+        #endregion
     }
 }

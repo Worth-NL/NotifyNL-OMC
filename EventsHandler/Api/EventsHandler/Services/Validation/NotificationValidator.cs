@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Enums;
+using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
@@ -51,37 +53,49 @@ namespace EventsHandler.Services.Validation
 
         #region Helper methods
         /// <summary>
-        /// Determines whether any (optional) property from <see cref="EventAttributes"/> POCO model wasn't properly deserialized.
+        /// Determines whether specific properties from <see cref="EventAttributes"/> POCO model wasn't properly deserialized.
         /// <para>
-        ///   <see cref="EventAttributes"/> sub-model can potentially contain undefined, missing or unmatching properties
-        ///   (because different APIs may define their own key-value pairs as "kenmerken" [attributes / characteristics]).
+        ///   DETAILS: <see cref="EventAttributes"/> sub-model can potentially contain undefined, missing or unmatching
+        ///   properties (because different Web APIs may define their own key-value pairs as "kenmerken" [attributes /
+        ///   characteristics], and because different types of notifications contains different dynamic properties e.g.,
+        ///   for the purpose of business processing: cases, objects, decisions, etc...).
         /// </para>
         /// </summary>
+        /// <remarks>
+        ///   NOTE: Only the properties related to the specific notification type (defined in <see cref="NotificationEvent"/>.<see cref="Channels"/>)
+        ///   will be validated, to not produce any unnecessary validation noise (by checking properties which are not
+        ///   essential anyway for this specific business case).
+        /// </remarks>
         /// <param name="notification">The model to be validated.</param>
         /// <param name="healthCheck">The final health check.</param>
         /// <returns>
-        ///   <see langword="true"/> if value of any <see cref="EventAttributes"/> property is missing (weren't mapped as expected); otherwise, <see langword="false"/>.
+        ///   <see langword="true"/> if value of any specific <see cref="EventAttributes"/> property is missing
+        ///   (weren't mapped as expected); otherwise, <see langword="false"/>.
         /// </returns>
         private bool HasEmptyAttributes(ref NotificationEvent notification, out HealthCheck healthCheck)
         {
             List<string>? missingPropertiesNames = null;
 
-            for (int index = 0; index < notification.Attributes.Properties.Count; index++)
-            {
-                PropertyInfo currentProperty = notification.Attributes.Properties[index];
+            // Determine properties only for this specific notification type (e.g., cases, objects, decisions, etc.)
+            PropertiesMetadata specificProperties = notification.Attributes.Properties(notification.Channel);
 
+            for (int index = 0; index < specificProperties.Count; index++)
+            {
+                PropertyInfo currentProperty = specificProperties[index];
+
+                // Check if the property is null
                 if (notification.Attributes.NotInitializedProperty(currentProperty))
                 {
                     // Stores Dutch names of missing properties
-                    (missingPropertiesNames ??= new List<string>(notification.Attributes.Properties.Count))  // Lazy initialization
-                        .Add(notification.Attributes.Properties.GetPropertyDutchName(currentProperty));
+                    (missingPropertiesNames ??= new List<string>(specificProperties.Count))  // Lazy initialization
+                        .Add(specificProperties.GetPropertyDutchName(currentProperty));
                 }
             }
 
-            // Failure: Missing dynamic EventAttributes data (check with third-party API if this is desired)
+            // Failure: Missing specific EventAttributes data (necessary for this notification type)
             if (missingPropertiesNames.HasAny())
             {
-                healthCheck = HealthCheck.OK_Inconsistent;
+                healthCheck = HealthCheck.ERROR_Invalid;
                 notification.Details = this._detailsBuilder.Get<InfoDetails>(
                     Reasons.MissingProperties_Attributes,
                     JoinWithComma(missingPropertiesNames!));

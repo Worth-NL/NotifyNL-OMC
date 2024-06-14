@@ -3,9 +3,9 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 using Notify.Models.Responses;
 using System.Text.Json;
-using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Services.Templates
 {
