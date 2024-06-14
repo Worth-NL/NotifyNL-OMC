@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Collections.Concurrent;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
@@ -14,66 +15,105 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
     public struct EventAttributes : IJsonSerializable
     {
         #region Metadata
-        private static readonly object s_lock = new();
-        private static PropertiesMetadata? s_properties;
+        private static readonly ConcurrentDictionary<Channels, PropertiesMetadata> s_properties = new();
 
         /// <summary>
         /// Gets metadata of all public instance properties from the <see cref="EventAttributes"/> POCO model.
         /// </summary>
-        internal readonly PropertiesMetadata Properties
+        internal readonly PropertiesMetadata Properties(Channels channel)
         {
-            get
+            if (s_properties.IsEmpty)  // Metadata initialization
             {
-                if (s_properties == null)
-                {
-                    // Critical Section
-                    lock (s_lock)
-                    {
-                        s_properties ??= new PropertiesMetadata(this, nameof(this.Orphans));
-                    }
-                }
+                // Case
+                s_properties.TryAdd(Channels.Cases, new PropertiesMetadata(this,
+                    // Exclude objects
+                    nameof(ObjectType),
+                    // Exclude decisions
+                    nameof(DecisionType), nameof(ResponsibleOrganization),
+                    // Exclude orphans
+                    nameof(this.Orphans)));
 
-                return s_properties;
+                // Object
+                s_properties.TryAdd(Channels.Objects, new PropertiesMetadata(this,
+                    // Exclude cases
+                    nameof(CaseType), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    // Exclude decisions
+                    nameof(DecisionType), nameof(ResponsibleOrganization),
+                    // Exclude orphans
+                    nameof(this.Orphans)));
+
+                // Decisions
+                s_properties.TryAdd(Channels.Decisions, new PropertiesMetadata(this,
+                    // Exclude cases
+                    nameof(CaseType), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    // Exclude objects
+                    nameof(ObjectType),
+                    // Exclude orphans
+                    nameof(this.Orphans)));
             }
+
+            return s_properties[channel];
         }
         #endregion
 
+        #region Case properties
         /// <summary>
-        /// Gets the URI to "OpenKlant" Web API service.
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("objectType")]
-        [JsonPropertyOrder(0)]
-        public Uri? ObjectType { get; internal set; }
-
-        /// <summary>
-        /// Gets the URI to "OpenZaak" Web API service.
+        /// Gets the URI of case type.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
-        [JsonPropertyOrder(1)]
-        public Uri? CaseTypeUri { get; internal set; }
+        [JsonPropertyOrder(0)]
+        public Uri? CaseType { get; internal set; }
 
         /// <summary>
         /// Gets the name of the source organization.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("bronorganisatie")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(1)]
         public string? SourceOrganization { get; internal set; }
 
         /// <inheritdoc cref="PrivacyNotices"/>
         [JsonInclude]
         [JsonPropertyName("vertrouwelijkheidaanduiding")]
-        [JsonPropertyOrder(3)]
+        [JsonPropertyOrder(2)]
         public PrivacyNotices? ConfidentialityNotice { get; internal set; }
+        #endregion
+
+        #region Object properties
+        /// <summary>
+        /// Gets the URI of object type.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("objectType")]
+        [JsonPropertyOrder(3)]
+        public Uri? ObjectType { get; internal set; }
+        #endregion
+
+        #region Decision properties
+        /// <summary>
+        /// Gets the URI of decision type.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("besluittype")]
+        [JsonPropertyOrder(4)]
+        public Uri? DecisionType { get; internal set; }
+        
+        /// <summary>
+        /// Gets the name of the responsible organization.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("verantwoordelijkeOrganisatie")]
+        [JsonPropertyOrder(5)]
+        public string? ResponsibleOrganization { get; internal set; }
+        #endregion
 
         /// <summary>
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
         /// </summary>
         [JsonInclude]
-        [JsonExtensionData]     // Aggregate all JSON properties that couldn't be matched with this model
-        [JsonPropertyOrder(4)]
+        [JsonExtensionData]      // Aggregate all JSON properties that couldn't be matched with this model
+        [JsonPropertyOrder(99)]
         public Dictionary<string, object> Orphans { get; internal set; } = new();
 
         /// <summary>
@@ -84,17 +124,48 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         }
 
         /// <summary>
-        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized (and it has default values).
+        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized
+        /// (and it has default values) for the <see cref="Channels.Cases"/> scenarios.
         /// </summary>
-        internal static bool IsDefault(EventAttributes attributes)
+        /// <returns>
+        ///   <see langword="true"/> if the <see cref="EventAttributes"/> isn't valid for <see cref="Channels.Cases"/>;
+        ///   otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsInvalidCase(EventAttributes attributes)
         {
-            return attributes.ObjectType == null &&
-                   attributes.CaseTypeUri   == null &&
-                   attributes is
-                   {
-                       SourceOrganization: null,
-                       ConfidentialityNotice: null
-                   };
+            // Properties required for cases scenarios
+            return attributes.CaseType              == null || 
+                   attributes.SourceOrganization    == null ||
+                   attributes.ConfidentialityNotice == null;
+        }
+
+        /// <summary>
+        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized
+        /// (and it has default values) for the <see cref="Channels.Objects"/> scenarios.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> if the <see cref="EventAttributes"/> isn't valid for <see cref="Channels.Objects"/>;
+        ///   otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsInvalidObject(EventAttributes attributes)
+        {
+            // Properties required for objects scenarios
+            return attributes.ObjectType == null;
+        }
+
+        /// <summary>
+        /// Checks whether the <see cref="EventAttributes"/> model wasn't initialized
+        /// (and it has default values) for the <see cref="Channels.Decisions"/> scenarios.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> if the <see cref="EventAttributes"/> isn't valid for <see cref="Channels.Decisions"/>;
+        ///   otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsInvalidDecision(EventAttributes attributes)
+        {
+            // Properties required for decisions scenarios
+            return attributes.DecisionType            == null ||
+                   attributes.ResponsibleOrganization == null;
         }
     }
 }

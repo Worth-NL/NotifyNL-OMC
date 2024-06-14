@@ -31,8 +31,8 @@ namespace EventsHandler.Services.Validation
         /// <param name="model">The notification model to be implicitly validated.</param>
         HealthCheck IValidationService<NotificationEvent>.Validate(ref NotificationEvent model)
         {
-            // 1. Problem with deserialization of the model
-            if (NotificationEvent.IsDefault(model))
+            // 1. Problem with deserialization of the event model (common properties)
+            if (NotificationEvent.IsInvalidEvent(model))
             {
                 return HealthCheck.ERROR_Invalid;
             }
@@ -120,8 +120,8 @@ namespace EventsHandler.Services.Validation
 
                 return true;
             }
-            // Failure: Additional JSON properties for EventAttributes (check with third-party API if this is desired)
 
+            // Inconsistency: Additional JSON properties for EventAttributes
             if (notification.Attributes.Orphans.Count > 0)
             {
                 healthCheck = HealthCheck.OK_Inconsistent;

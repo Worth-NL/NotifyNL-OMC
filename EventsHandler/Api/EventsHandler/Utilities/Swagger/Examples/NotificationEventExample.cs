@@ -25,10 +25,15 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 Resource = Resources.Status,
                 Attributes = new EventAttributes
                 {
-                    ObjectType = DefaultValues.Models.EmptyUri,
-                    CaseTypeUri = DefaultValues.Models.EmptyUri,
+                    // Cases
+                    CaseType = DefaultValues.Models.EmptyUri,
                     SourceOrganization = DefaultValues.Models.DefaultOrganization,
-                    ConfidentialityNotice = PrivacyNotices.NonConfidential
+                    ConfidentialityNotice = PrivacyNotices.NonConfidential,
+                    // Objects
+                    ObjectType = DefaultValues.Models.EmptyUri,
+                    // Decisions
+                    DecisionType = DefaultValues.Models.EmptyUri,
+                    ResponsibleOrganization = DefaultValues.Models.DefaultOrganization
                 },
                 MainObject = DefaultValues.Models.EmptyUri,
                 ResourceUrl = DefaultValues.Models.EmptyUri,
