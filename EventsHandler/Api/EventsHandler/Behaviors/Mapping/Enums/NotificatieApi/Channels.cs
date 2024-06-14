@@ -28,6 +28,12 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotificatieApi
         /// Objects channel.
         /// </summary>
         [JsonPropertyName("objecten")]
-        Objects = 2
+        Objects = 2,
+
+        /// <summary>
+        /// Decisions channel.
+        /// </summary>
+        [JsonPropertyName("besluiten")]
+        Decisions = 3
     }
 }
