@@ -17,6 +17,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         // Channels
         [TestCase(typeof(Channels), Channels.Cases, "zaken")]
         [TestCase(typeof(Channels), Channels.Objects, "objecten")]
+        [TestCase(typeof(Channels), Channels.Decisions, "besluiten")]
         // Privacy notices
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.Confidential, "vertrouwelijk")]
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.NonConfidential, "openbaar")]
@@ -53,6 +54,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         // Channels
         [TestCase("zaken", typeof(Channels), Channels.Cases)]
         [TestCase("objecten", typeof(Channels), Channels.Objects)]
+        [TestCase("besluiten", typeof(Channels), Channels.Decisions)]
         // Privacy notices
         [TestCase("vertrouwelijk", typeof(PrivacyNotices), PrivacyNotices.Confidential)]
         [TestCase("openbaar", typeof(PrivacyNotices), PrivacyNotices.NonConfidential)]
