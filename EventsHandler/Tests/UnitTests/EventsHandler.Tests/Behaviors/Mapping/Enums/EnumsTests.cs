@@ -25,6 +25,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         [TestCase(typeof(Resources), Resources.Case, "zaak")]
         [TestCase(typeof(Resources), Resources.Object, "object")]
         [TestCase(typeof(Resources), Resources.Status, "status")]
+        [TestCase(typeof(Resources), Resources.Decision, "besluit")]
         // Distribution channels
         [TestCase(typeof(DistributionChannels), DistributionChannels.None, "geen")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Sms, "sms")]
@@ -62,6 +63,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         [TestCase("zaak", typeof(Resources), Resources.Case)]
         [TestCase("object", typeof(Resources), Resources.Object)]
         [TestCase("status", typeof(Resources), Resources.Status)]
+        [TestCase("besluit", typeof(Resources), Resources.Decision)]
         // Distribution channels
         [TestCase("geen", typeof(DistributionChannels), DistributionChannels.None)]
         [TestCase("sms", typeof(DistributionChannels), DistributionChannels.Sms)]
