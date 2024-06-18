@@ -606,6 +606,10 @@ namespace EventsHandler.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string DecisionMade()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
 
                 /// <summary>
@@ -636,6 +640,10 @@ namespace EventsHandler.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string DecisionMade()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
             }
         }
