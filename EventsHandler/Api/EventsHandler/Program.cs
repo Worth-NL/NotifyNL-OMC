@@ -304,6 +304,9 @@ namespace EventsHandler
             services.AddSingleton<CaseCreatedScenario>();
             services.AddSingleton<CaseStatusUpdatedScenario>();
             services.AddSingleton<CaseFinishedScenario>();
+            
+            services.AddSingleton<DecisionMadeScenario>();
+
             services.AddSingleton<NotImplementedScenario>();
         }
 
