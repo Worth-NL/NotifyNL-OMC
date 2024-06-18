@@ -28,7 +28,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
         async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
         {
             // Supported scenarios for business cases
-            if (CanProcess(notification))
+            if (IsCaseScenario(notification))
             {
                 CaseStatuses caseStatuses = await this._dataQuery.From(notification).GetCaseStatusesAsync();
 
@@ -51,6 +51,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
 
                 return strategy;
             }
+            
+            // Scenario #4: "Decision made"
+            if (IsDecisionScenario(notification))
+            {
+                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+            }
 
             // There is no matching scenario to be applied. There is no clear instruction what to do with received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
@@ -59,13 +65,32 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
         /// <summary>
         /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
-        private static bool CanProcess(NotificationEvent notification)
+        /// <remarks>
+        ///   This check is verifying whether case scenarios would be processed.
+        /// </remarks>
+        private static bool IsCaseScenario(NotificationEvent notification)
         {
             return notification is
             {
                 Action:   Actions.Create,
                 Channel:  Channels.Cases,
                 Resource: Resources.Status
+            };
+        }
+
+        /// <summary>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        /// </summary>
+        /// <remarks>
+        ///   This check is verifying whether decision scenarios would be processed.
+        /// </remarks>
+        private static bool IsDecisionScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action:   Actions.Create,
+                Channel:  Channels.Decisions,
+                Resource: Resources.Decision
             };
         }
     }
