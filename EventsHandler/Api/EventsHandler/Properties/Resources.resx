@@ -126,10 +126,10 @@
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Message" xml:space="preserve">
     <value>Required properties are missing in the given JSON payload.</value>
   </data>
-  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2" xml:space="preserve">
     <value>SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it.</value>
   </data>
-  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2" xml:space="preserve">
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3" xml:space="preserve">
     <value>RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema.</value>
   </data>
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Value_Message" xml:space="preserve">
@@ -141,7 +141,7 @@
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2" xml:space="preserve">
     <value>RECEIVER: In the POCO model the type, format or range of expected data was recently changed, causing a mismatch with the JSON schema.</value>
   </data>
-  <data name="Deserialization_INFO_NotDeserialized_Attributes_Properties_Message" xml:space="preserve">
+  <data name="Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message" xml:space="preserve">
     <value>Some values of properties in the nested 'attributes' ('kenmerken') in the POCO model are missing.</value>
   </data>
   <data name="Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1" xml:space="preserve">
@@ -162,7 +162,7 @@
   <data name="Deserialization_INFO_UnexpectedData_Attributes_Reason2" xml:space="preserve">
     <value>RECEIVER: In the POCO model some existing properties were removed from the nested 'attributes', causing a mismatch with the JSON schema.</value>
   </data>
-  <data name="Deserialization_INFO_UnexpectedData_Notification_Message" xml:space="preserve">
+  <data name="Deserialization_ERROR_UnexpectedData_Notification_Message" xml:space="preserve">
     <value>The JSON payload contains more root 'notification' properties than expected by the POCO model.</value>
   </data>
   <data name="Deserialization_INFO_UnexpectedData_Notification_Reason1" xml:space="preserve">
@@ -391,5 +391,8 @@
   </data>
   <data name="HttpRequest_ERROR_TelemetryOpenZaakNotImplemented" xml:space="preserve">
     <value>HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
+    <value>SENDER: In the received notification some [Required] properties are either null, empty, or with default values.</value>
   </data>
 </root>

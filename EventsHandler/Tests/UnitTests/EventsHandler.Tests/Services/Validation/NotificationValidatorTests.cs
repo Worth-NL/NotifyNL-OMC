@@ -17,6 +17,10 @@ namespace EventsHandler.UnitTests.Services.Validation
     {
         private IValidationService<NotificationEvent>? _validator;
 
+        private static readonly NotificationEvent s_testNotification =
+            NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                .Deserialized();
+
         [SetUp]
         public void InitializeTests()
         {
@@ -24,12 +28,16 @@ namespace EventsHandler.UnitTests.Services.Validation
             mockedBuilder.Setup(mock => mock.Get<InfoDetails>(
                     It.IsAny<Reasons>(), It.IsAny<string>()))
                 .Returns(new InfoDetails());
+
+            mockedBuilder.Setup(mock => mock.Get<ErrorDetails>(
+                    It.IsAny<Reasons>(), It.IsAny<string>()))
+                .Returns(new ErrorDetails());
             
             this._validator = new NotificationValidator(mockedBuilder.Object);
         }
 
         [Test]
-        public void Validate_ForNotificationEvent_Invalid_WithoutSomeProperties_ReturnsErrorStatus()
+        public void Validate_ForNotification_Invalid_NullProperties_ReturnsErrorStatus()
         {
             // Arrange
             var testModel = new NotificationEvent();
@@ -42,10 +50,24 @@ namespace EventsHandler.UnitTests.Services.Validation
         }
 
         [Test]
-        public void Validate_ForNotificationEvent_Invalid_WithAdditionalProperties_InNotificationEvent_ReturnsInvalidStatus()
+        public void Validate_ForNotification_Invalid_EmptyProperties_ReturnsErrorStatus()
         {
             // Arrange
-            NotificationEvent testModel = NotificationEventHandler.GetNotification_Real_TheHague();
+            NotificationEvent testModel = NotificationEventHandler.GetNotification_Test_AllAttributes_Null_WithoutOrphans()
+                .Deserialized();
+
+            // Act
+            HealthCheck actualResult = this._validator!.Validate(ref testModel);
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(HealthCheck.ERROR_Invalid));
+        }
+
+        [Test]
+        public void Validate_ForNotification_Invalid_AdditionalProperties_ReturnsInvalidStatus()
+        {
+            // Arrange
+            NotificationEvent testModel = s_testNotification;
 
             testModel.Orphans = new Dictionary<string, object>
             {
@@ -61,10 +83,10 @@ namespace EventsHandler.UnitTests.Services.Validation
         }
 
         [Test]
-        public void Validate_ForNotificationEvent_Invalid_WithAdditionalProperties_InEventAttributes_ReturnsInconsistentStatus()
+        public void Validate_ForAttributes_Invalid_AdditionalProperties_ReturnsInconsistentStatus()
         {
             // Arrange
-            NotificationEvent testModel = NotificationEventHandler.GetNotification_Real_TheHague();
+            NotificationEvent testModel = s_testNotification;
 
             EventAttributes testAttributes = testModel.Attributes;
             testAttributes.Orphans = new Dictionary<string, object>
@@ -82,10 +104,10 @@ namespace EventsHandler.UnitTests.Services.Validation
         }
 
         [Test]
-        public void Validate_ForNotificationEvent_Valid_ReturnsOkStatus()
+        public void Validate_ForNotification_Valid_ReturnsOkStatus()
         {
             // Arrange
-            NotificationEvent testModel = NotificationEventHandler.GetNotification_Real_TheHague();
+            NotificationEvent testModel = s_testNotification;
 
             // Act
             HealthCheck actualResult = this._validator!.Validate(ref testModel);

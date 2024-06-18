@@ -8,6 +8,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -139,13 +140,34 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         /// Checks whether the <see cref="NotificationEvent"/> model wasn't
         /// initialized (and it has default values) for required properties.
         /// </summary>
-        internal static bool IsInvalidEvent(NotificationEvent notification)
+        internal readonly bool IsInvalidEvent(out int[] invalidPropertiesIndices)
         {
-            return notification.Action      == Actions.Unknown               ||
-                   notification.Channel     == Channels.Unknown              ||
-                   notification.Resource    == Resources.Unknown             ||
-                   notification.MainObject  == DefaultValues.Models.EmptyUri ||
-                   notification.ResourceUrl == DefaultValues.Models.EmptyUri;
+            bool[] validatedProperties =
+            {
+                this.Action      == Actions.Unknown,
+                this.Channel     == Channels.Unknown,
+                this.Resource    == Resources.Unknown,
+                this.MainObject  == DefaultValues.Models.EmptyUri,
+                this.ResourceUrl == DefaultValues.Models.EmptyUri
+            };
+
+            List<int>? invalidIndices = null;
+
+            for (int index = 0; index < validatedProperties.Length; index++)
+            {
+                if (validatedProperties[index])  // Is invalid
+                {
+                    (invalidIndices ??= new List<int>()).Add(index);
+                }
+            }
+
+            bool arePropertiesInvalid = invalidIndices.HasAny();
+
+            invalidPropertiesIndices = arePropertiesInvalid
+                ? invalidIndices!.ToArray()
+                : Array.Empty<int>();
+
+            return arePropertiesInvalid;
         }
         #endregion
     }
