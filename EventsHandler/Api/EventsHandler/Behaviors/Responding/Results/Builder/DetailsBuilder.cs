@@ -43,7 +43,8 @@ namespace EventsHandler.Behaviors.Responding.Results.Builder
                 new[]
                 {
                     Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
-                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2
+                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
+                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
                 })
             },
             {
@@ -57,7 +58,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Builder
             },
             {
                 Reasons.MissingProperties_Attributes,
-                (Resources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Message,
+                (Resources.Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message,
                 new[]
                 {
                     Resources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1,
@@ -67,7 +68,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Builder
             },
             {
                 Reasons.UnexpectedProperties_Notification,
-                (Resources.Deserialization_INFO_UnexpectedData_Notification_Message,
+                (Resources.Deserialization_ERROR_UnexpectedData_Notification_Message,
                 new[]
                 {
                     Resources.Deserialization_INFO_UnexpectedData_Notification_Reason1,

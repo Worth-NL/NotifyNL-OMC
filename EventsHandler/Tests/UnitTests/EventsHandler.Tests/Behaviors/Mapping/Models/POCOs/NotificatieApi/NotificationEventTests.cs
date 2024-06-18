@@ -12,10 +12,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
     public sealed class NotificationEventTests
     {
         #region Test data
-        private const string TestOrphanKey = "testKey";
-        private const string TestOrphanValue = "testValue";
-
-        private static readonly string s_validJson =
+        private const string ValidCaseJson =
             $"{{" +
               $"\"actie\":\"create\"," +
               $"\"kanaal\":\"zaken\"," +
@@ -23,17 +20,38 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
               $"\"kenmerken\":{{" +
                 // Cases
                 $"\"zaaktype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\"," +
-                $"\"bronorganisatie\":\"{NotificationEventHandler.TestOrganization}\"," +
+                $"\"bronorganisatie\":\"{NotificationEventHandler.SourceOrganization_Real_TheHague}\"," +
                 $"\"vertrouwelijkheidaanduiding\":\"openbaar\"," +
                 // Objects
-                $"\"objectType\":\"{DefaultValues.Models.EmptyUri}\"," +
+                $"\"objectType\":null," +
                 // Decisions
-                $"\"besluittype\":\"{DefaultValues.Models.EmptyUri}\"," +
-                $"\"verantwoordelijkeOrganisatie\":\"{NotificationEventHandler.TestOrganization}\"" +
+                $"\"besluittype\":null," +
+                $"\"verantwoordelijkeOrganisatie\":null" +
               $"}}," +
               $"\"hoofdObject\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\"," +
               $"\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\"," +
               $"\"aanmaakdatum\":\"2023-09-22T11:41:46.052Z\"" +
+            "}";
+
+        private const string ValidDecisionJson =
+            $"{{" +
+              $"\"actie\":\"create\"," +
+              $"\"kanaal\":\"besluiten\"," +
+              $"\"resource\":\"besluit\"," +
+              $"\"kenmerken\":{{" +
+                // Cases
+                $"\"zaaktype\":null," +
+                $"\"bronorganisatie\":null," +
+                $"\"vertrouwelijkheidaanduiding\":null," +
+                // Objects
+                $"\"objectType\":null," +
+                // Decisions
+                $"\"besluittype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/besluittypen/7002077e-0358-4301-8aac-5b440093f214\"," +
+                $"\"verantwoordelijkeOrganisatie\":\"{NotificationEventHandler.ResponsibleOrganization_Real_TheHague}\"" +
+              $"}}," +
+              $"\"hoofdObject\":\"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\"," +
+              $"\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\"," +
+              $"\"aanmaakdatum\":\"2023-10-05T08:52:02.273Z\"" +
             "}";
 
         private static readonly string s_customJson =
@@ -77,22 +95,37 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
               $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
               $"\"aanmaakdatum\": \"0001-01-01T00:00:00\", " +
               // Orphans (event)
-              $"\"{TestOrphanKey}\": \"{TestOrphanValue}\"" +
+              $"\"{NotificationEventHandler.Orphan_Test_Property_3}\": \"{NotificationEventHandler.Orphan_Test_Value_3}\"" +
             $"}}";
         #endregion
 
         #region Serialization
         [Test]
-        public void Serialization_Object_IntoJson()
+        public void Serialization_Object_IntoCaseJson()
         {
             // Arrange
-            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_TheHague();
+            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                .Deserialized();
 
             // Act
             string actualJson = JsonSerializer.Serialize(testObject);
 
             // Assert
-            Assert.That(actualJson, Is.EqualTo(s_validJson));
+            Assert.That(actualJson, Is.EqualTo(ValidCaseJson));
+        }
+
+        [Test]
+        public void Serialization_Object_IntoDecisionJson()
+        {
+            // Arrange
+            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_DecisionsScenario_TheHague()
+                .Deserialized();
+
+            // Act
+            string actualJson = JsonSerializer.Serialize(testObject);
+
+            // Assert
+            Assert.That(actualJson, Is.EqualTo(ValidDecisionJson));
         }
         #endregion
 
@@ -140,8 +173,8 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
                 {
                     KeyValuePair<string, object> keyValuePair = actualObject.Orphans.First();
 
-                    Assert.That(keyValuePair.Key, Is.EqualTo(TestOrphanKey));
-                    Assert.That(keyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue));
+                    Assert.That(keyValuePair.Key, Is.EqualTo(NotificationEventHandler.Orphan_Test_Property_3));
+                    Assert.That(keyValuePair.Value.ToString(), Is.EqualTo(NotificationEventHandler.Orphan_Test_Value_3));
                 });
             });
         }
@@ -152,26 +185,34 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
         public void IsInvalidEvent_InvalidModel_ReturnsTrue()
         {
             // Arrange
-            NotificationEvent eventAttributes = JsonSerializer.Deserialize<NotificationEvent>(s_customJson);
+            NotificationEvent notification = JsonSerializer.Deserialize<NotificationEvent>(s_customJson);
 
             // Act
-            bool actualResult = NotificationEvent.IsInvalidEvent(eventAttributes);
+            bool actualResult = notification.IsInvalidEvent(out int[] invalidPropertiesIndices);
 
             // Assert
-            Assert.That(actualResult, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult, Is.True);
+                Assert.That(invalidPropertiesIndices, Has.Length.EqualTo(3));
+            });
         }
         
         [Test]
         public void IsInvalidEvent_ValidModel_ReturnsFalse()
         {
             // Arrange
-            NotificationEvent eventAttributes = JsonSerializer.Deserialize<NotificationEvent>(s_validJson);
+            NotificationEvent notification = JsonSerializer.Deserialize<NotificationEvent>(ValidCaseJson);
 
             // Act
-            bool actualResult = NotificationEvent.IsInvalidEvent(eventAttributes);
+            bool actualResult = notification.IsInvalidEvent(out int[] invalidPropertiesIndices);
 
             // Assert
-            Assert.That(actualResult, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult, Is.False);
+                Assert.That(invalidPropertiesIndices, Has.Length.Zero);
+            });
         }
         #endregion
     }

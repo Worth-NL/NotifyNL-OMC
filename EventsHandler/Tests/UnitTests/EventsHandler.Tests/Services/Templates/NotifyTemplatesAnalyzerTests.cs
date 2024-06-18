@@ -209,16 +209,16 @@ namespace EventsHandler.UnitTests.Services.Templates
                 Description = "3 mappable Placeholders used with manually created Notification having 3 matching properties (Orphans) returns 3 expected Personalizations",
                 Placeholders = new[]
                 {
-                    NotificationEventHandler.Orphan_FirstProperty,   // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Orphan_SecondProperty,  // Matching placeholder (the POCO model has this property) => nested
-                    NotificationEventHandler.Orphan_ThirdProperty    // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_1,   // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Orphan_Test_Property_2,  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_3    // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated(),
+                Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
-                  $"\"{NotificationEventHandler.Orphan_FirstProperty}\":{NotificationEventHandler.Orphan_FirstValue}," +
-                  $"\"{NotificationEventHandler.Orphan_SecondProperty}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
-                  $"\"{NotificationEventHandler.Orphan_ThirdProperty}\":\"{NotificationEventHandler.Orphan_ThirdValue}\"" +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_1}\":{NotificationEventHandler.Orphan_Test_Value_1}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_2}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_3}\":\"{NotificationEventHandler.Orphan_Test_Value_3}\"" +
                 $"}}"
             };
             // Test 2b: Orphan properties
@@ -227,16 +227,16 @@ namespace EventsHandler.UnitTests.Services.Templates
                 Description = "3 mappable Placeholders used with dynamically deserialized Notification having 3 matching properties (Orphans) returns 3 expected Personalizations",
                 Placeholders = new[]
                 {
-                    NotificationEventHandler.Orphan_FirstProperty,   // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Orphan_SecondProperty,  // Matching placeholder (the POCO model has this property) => nested
-                    NotificationEventHandler.Orphan_ThirdProperty    // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_1,   // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Orphan_Test_Property_2,  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_3    // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithOrphans_DynamicallyDeserialized(),
+                Notification = NotificationEventHandler.GetNotification_Test_AllAttributes_WithOrphans().Deserialized(),
                 SerializedExpectedPersonalization =
                 $"{{" +
-                  $"\"{NotificationEventHandler.Orphan_FirstProperty}\":{NotificationEventHandler.Orphan_FirstValue}," +
-                  $"\"{NotificationEventHandler.Orphan_SecondProperty}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
-                  $"\"{NotificationEventHandler.Orphan_ThirdProperty}\":\"{NotificationEventHandler.Orphan_ThirdValue}\"" +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_1}\":{NotificationEventHandler.Orphan_Test_Value_1}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_2}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_3}\":\"{NotificationEventHandler.Orphan_Test_Value_3}\"" +
                 $"}}"
             };
             // Test 3: Orphan properties
@@ -248,7 +248,7 @@ namespace EventsHandler.UnitTests.Services.Templates
                     notExistingProperty1,  // Unmatching placeholder (the POCO model doesn't have such property)
                     notExistingProperty2   // Unmatching placeholder (the POCO model doesn't have such property)
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated(),
+                Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
                   $"\"{notExistingProperty1}\":\"{NotifyTemplatesAnalyzer.ValueNotAvailable}\"," +
@@ -263,15 +263,15 @@ namespace EventsHandler.UnitTests.Services.Templates
                 Placeholders = new[]
                 {
                     notExistingProperty1,                           // Unmatching placeholder (the POCO model doesn't have such property)
-                    NotificationEventHandler.Orphan_FirstProperty,  // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Orphan_SecondProperty  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_1,  // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Orphan_Test_Property_2  // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated(),
+                Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
                   $"\"{notExistingProperty1}\":\"{NotifyTemplatesAnalyzer.ValueNotAvailable}\"," +
-                  $"\"{NotificationEventHandler.Orphan_FirstProperty}\":{NotificationEventHandler.Orphan_FirstValue}," +
-                  $"\"{NotificationEventHandler.Orphan_SecondProperty}\":{NotificationEventHandler.GetOrphanSecondValue()}" +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_1}\":{NotificationEventHandler.Orphan_Test_Value_1}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_2}\":{NotificationEventHandler.GetOrphanSecondValue()}" +
                 $"}}"
             };
 
@@ -281,14 +281,14 @@ namespace EventsHandler.UnitTests.Services.Templates
                 Description = "2 Placeholders (2 mappable) used with Notification having 2 matching properties (regular) returns 2 expected Personalizations",
                 Placeholders = new[]
                 {
-                    NotificationEventHandler.Regular_FirstProperty,  // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Regular_SecondProperty  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Regular_Real_Property_Channel,  // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Regular_Real_Property_SourceOrganization  // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization(),
+                Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
-                  $"\"{NotificationEventHandler.Regular_FirstProperty}\":\"{NotificationEventHandler.Regular_FirstCustomValue}\"," +
-                  $"\"{NotificationEventHandler.Regular_SecondProperty}\":\"{NotificationEventHandler.Regular_SecondValue}\"" +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_Channel}\":\"{NotificationEventHandler.Regular_Real_Value_Channel_String}\"," +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_SourceOrganization}\":\"{NotificationEventHandler.Regular_Test_Value_SourceOrganization}\"" +
                 $"}}"
             };
             // Test 6: Regular properties
@@ -298,15 +298,15 @@ namespace EventsHandler.UnitTests.Services.Templates
                 Placeholders = new[]
                 {
                     notExistingProperty1,                            // Unmatching placeholder (the POCO model doesn't have such property)
-                    NotificationEventHandler.Regular_FirstProperty,  // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Regular_SecondProperty  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Regular_Real_Property_Channel,  // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Regular_Real_Property_SourceOrganization  // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization(),
+                Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
                   $"\"{notExistingProperty1}\":\"{NotifyTemplatesAnalyzer.ValueNotAvailable}\"," +
-                  $"\"{NotificationEventHandler.Regular_FirstProperty}\":\"{NotificationEventHandler.Regular_FirstCustomValue}\"," +
-                  $"\"{NotificationEventHandler.Regular_SecondProperty}\":\"{NotificationEventHandler.Regular_SecondValue}\"" +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_Channel}\":\"{NotificationEventHandler.Regular_Real_Value_Channel_String}\"," +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_SourceOrganization}\":\"{NotificationEventHandler.Regular_Test_Value_SourceOrganization}\"" +
                 $"}}"
             };
 
@@ -319,36 +319,36 @@ namespace EventsHandler.UnitTests.Services.Templates
                     notExistingProperty1,                             // Unmatching placeholder (the POCO model doesn't have such property)
                     notExistingProperty2,                             // Unmatching placeholder (the POCO model doesn't have such property)
                     // Regular                                      
-                    NotificationEventHandler.Regular_FirstProperty,   // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Regular_SecondProperty,  // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Regular_Real_Property_Channel,   // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Regular_Real_Property_SourceOrganization,  // Matching placeholder (the POCO model has this property) => nested
                     // Orphans                                      
-                    NotificationEventHandler.Orphan_FirstProperty,    // Matching placeholder (the POCO model has this property) => root
-                    NotificationEventHandler.Orphan_SecondProperty,   // Matching placeholder (the POCO model has this property) => nested
-                    NotificationEventHandler.Orphan_ThirdProperty     // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_1,    // Matching placeholder (the POCO model has this property) => root
+                    NotificationEventHandler.Orphan_Test_Property_2,   // Matching placeholder (the POCO model has this property) => nested
+                    NotificationEventHandler.Orphan_Test_Property_3     // Matching placeholder (the POCO model has this property) => nested
                 },
-                Notification = NotificationEventHandler.GetNotification_Test_WithMixed_RegularAndOrphans_Properties(),
+                Notification = NotificationEventHandler.GetNotification_Test_WithMixed_RegularAndOrphans_Properties_ManuallyCreated(),
                 SerializedExpectedPersonalization =
                 $"{{" +
                   $"\"{notExistingProperty1}\":\"{NotifyTemplatesAnalyzer.ValueNotAvailable}\"," +
                   $"\"{notExistingProperty2}\":\"{NotifyTemplatesAnalyzer.ValueNotAvailable}\"," +
-                  $"\"{NotificationEventHandler.Regular_FirstProperty}\":\"{NotificationEventHandler.Regular_FirstCustomValue}\"," +
-                  $"\"{NotificationEventHandler.Regular_SecondProperty}\":\"{NotificationEventHandler.Regular_SecondValue}\"," +
-                  $"\"{NotificationEventHandler.Orphan_FirstProperty}\":{NotificationEventHandler.Orphan_FirstValue}," +
-                  $"\"{NotificationEventHandler.Orphan_SecondProperty}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
-                  $"\"{NotificationEventHandler.Orphan_ThirdProperty}\":\"{NotificationEventHandler.Orphan_ThirdValue}\"" +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_Channel}\":\"{NotificationEventHandler.Regular_Real_Value_Channel_String}\"," +
+                  $"\"{NotificationEventHandler.Regular_Real_Property_SourceOrganization}\":\"{NotificationEventHandler.Regular_Test_Value_SourceOrganization}\"," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_1}\":{NotificationEventHandler.Orphan_Test_Value_1}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_2}\":{NotificationEventHandler.GetOrphanSecondValue()}," +
+                  $"\"{NotificationEventHandler.Orphan_Test_Property_3}\":\"{NotificationEventHandler.Orphan_Test_Value_3}\"" +
                 $"}}"
             };
         }
 
         public sealed class TestCase
         {
-            internal string Description { get; set; } = string.Empty;
+            internal string Description { get; init; } = string.Empty;
 
-            internal string[] Placeholders { get; set; } = Array.Empty<string>();
+            internal string[] Placeholders { get; init; } = Array.Empty<string>();
 
-            internal NotificationEvent Notification { get; set; }
+            internal NotificationEvent Notification { get; init; }
 
-            internal string SerializedExpectedPersonalization { get; set; } = string.Empty;
+            internal string SerializedExpectedPersonalization { get; init; } = string.Empty;
         }
         #endregion
     }
