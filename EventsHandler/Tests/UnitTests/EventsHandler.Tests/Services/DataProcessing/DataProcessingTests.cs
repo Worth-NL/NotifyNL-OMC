@@ -80,7 +80,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(Times.Never());
@@ -107,7 +107,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(smsSendCount     > 0 ? Times.Once() : Times.Never());
@@ -130,7 +130,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(Times.Never());
@@ -158,7 +158,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(Times.Never());
@@ -181,7 +181,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(Times.Never());
@@ -204,7 +204,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
-                NotificationEventHandler.GetNotification_Test_WithRegulars_ChannelAndSourceOrganization());
+                NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
             Verify_SendSmsAsync(Times.Never());

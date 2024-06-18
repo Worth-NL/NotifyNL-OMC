@@ -28,34 +28,55 @@ namespace EventsHandler.Services.Validation
         }
 
         /// <summary>
-        /// Checks the result of deserialization of the <see cref="NotificationEvent"/> model (and it's nested components).
+        /// Checks the result of deserialization of the <see cref="NotificationEvent"/> notification (and it's nested components).
         /// </summary>
-        /// <param name="model">The notification model to be implicitly validated.</param>
-        HealthCheck IValidationService<NotificationEvent>.Validate(ref NotificationEvent model)
+        /// <param name="notification">The notification model to be implicitly validated.</param>
+        HealthCheck IValidationService<NotificationEvent>.Validate(ref NotificationEvent notification)
         {
-            // 1. Problem with deserialization of the event model (common properties)
-            if (NotificationEvent.IsInvalidEvent(model))
+            // 1. Problem with deserialization of the event notification (common properties)
+            if (notification.IsInvalidEvent(out int[] invalidPropertiesIndices))
             {
-                return HealthCheck.ERROR_Invalid;
+                return ReportInvalidPropertiesNames(ref notification, invalidPropertiesIndices);
             }
 
-            // 2. Missing values of POCO model (optional) properties
-            if (HasEmptyAttributes(ref model, out HealthCheck healthCheck))
+            // 2. Missing values of POCO notification (optional) properties
+            if (HasEmptyAttributes(ref notification, out HealthCheck healthCheck))
             {
                 return healthCheck;
             }
 
             // 3. Additional JSON properties not included in POCO models
-            return ContainsAnyOrphans(ref model, out healthCheck)
+            return ContainsAnyOrphans(ref notification, out healthCheck)
                 ? healthCheck
                 : HealthCheck.OK_Valid;
         }
 
         #region Helper methods
         /// <summary>
-        /// Determines whether specific properties from <see cref="EventAttributes"/> POCO model wasn't properly deserialized.
+        /// Gets the names of invalid <see cref="NotificationEvent"/> properties.
+        /// </summary>
+        /// <param name="notification">The notification to which invalid properties belongs.</param>
+        /// <param name="invalidPropertiesIndices">The collection of indices of invalid properties.</param>
+        /// <returns>
+        ///   The comma-separated names of invalid <see cref="NotificationEvent"/> properties.
+        /// </returns>
+        private HealthCheck ReportInvalidPropertiesNames(ref NotificationEvent notification, IEnumerable<int> invalidPropertiesIndices)
+        {
+            NotificationEvent currentNotification = notification;
+
+            notification.Details = this._detailsBuilder.Get<ErrorDetails>(
+                Reasons.MissingProperties_Notification,
+                JoinWithComma(invalidPropertiesIndices
+                    .Select(index => currentNotification.Properties  // NOTE: Initialization of notification metadata (or reusing an already initialized ones)
+                        .GetPropertyDutchName(currentNotification.Properties[index]))));
+
+            return HealthCheck.ERROR_Invalid;
+        }
+
+        /// <summary>
+        /// Determines whether specific properties from <see cref="EventAttributes"/> POCO notification wasn't properly deserialized.
         /// <para>
-        ///   DETAILS: <see cref="EventAttributes"/> sub-model can potentially contain undefined, missing or unmatching
+        ///   DETAILS: <see cref="EventAttributes"/> sub-notification can potentially contain undefined, missing or unmatching
         ///   properties (because different Web APIs may define their own key-value pairs as "kenmerken" [attributes /
         ///   characteristics], and because different types of notifications contains different dynamic properties e.g.,
         ///   for the purpose of business processing: cases, objects, decisions, etc...).
@@ -66,7 +87,7 @@ namespace EventsHandler.Services.Validation
         ///   will be validated, to not produce any unnecessary validation noise (by checking properties which are not
         ///   essential anyway for this specific business case).
         /// </remarks>
-        /// <param name="notification">The model to be validated.</param>
+        /// <param name="notification">The notification to be validated.</param>
         /// <param name="healthCheck">The final health check.</param>
         /// <returns>
         ///   <see langword="true"/> if value of any specific <see cref="EventAttributes"/> property is missing
@@ -96,7 +117,7 @@ namespace EventsHandler.Services.Validation
             if (missingPropertiesNames.HasAny())
             {
                 healthCheck = HealthCheck.ERROR_Invalid;
-                notification.Details = this._detailsBuilder.Get<InfoDetails>(
+                notification.Details = this._detailsBuilder.Get<ErrorDetails>(
                     Reasons.MissingProperties_Attributes,
                     JoinWithComma(missingPropertiesNames!));
 
@@ -117,7 +138,7 @@ namespace EventsHandler.Services.Validation
         ///   Eventual mismatches should be reported back as errors to not risk loosing any important data in the process.
         /// </para>
         /// </summary>
-        /// <param name="notification">The model to be validated.</param>
+        /// <param name="notification">The notification to be validated.</param>
         /// <param name="healthCheck">The final health check.</param>
         /// <returns>
         ///   <see langword="true"/> if any additional unmatching JSON property was found; otherwise, <see langword="false"/>.

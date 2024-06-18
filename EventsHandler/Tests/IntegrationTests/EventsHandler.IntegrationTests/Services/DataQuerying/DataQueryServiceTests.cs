@@ -24,7 +24,7 @@ namespace EventsHandler.IntegrationTests.Services.DataQuerying
             this._dataQuery = new DataQueryService(queryContext);
 
             // Notification
-            this._notification = NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated();
+            this._notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated();
         }
 
         // TODO: Complete tests

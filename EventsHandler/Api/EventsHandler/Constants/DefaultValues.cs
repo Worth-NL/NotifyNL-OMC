@@ -79,6 +79,8 @@ namespace EventsHandler.Constants
             internal static string Deserialization_MissingProperty => "JSON deserialization";
 
             internal static string Deserialization_InvalidValue => "The JSON value";
+
+            internal static string HttpRequest_ErrorMessage => "HTTP Request";
         }
         #endregion
     }

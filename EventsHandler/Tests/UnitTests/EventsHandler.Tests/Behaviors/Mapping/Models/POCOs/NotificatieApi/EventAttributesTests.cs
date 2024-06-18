@@ -13,10 +13,6 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
     {
         #region Test data
         private static readonly Uri s_testUri = new("https://www.test.fr/");
-        private const string TestOrphanKey1 = "test1";
-        private const string TestOrphanValue1 = "abc";
-        private const string TestOrphanKey2 = "test2";
-        private const string TestOrphanValue2 = "xyz";
 
         private const string DefaultJson =
             "{" +
@@ -35,29 +31,29 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             "{" +
                // Cases
                $"\"zaaktype\": \"{s_testUri}\", " +
-               $"\"bronorganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+               $"\"bronorganisatie\": \"{NotificationEventHandler.SourceOrganization_Real_TheHague}\", " +
                 "\"vertrouwelijkheidaanduiding\": 2, " +
                // Objects
                $"\"objectType\": \"{s_testUri}\", " +
                // Decisions
                $"\"besluittype\": \"{s_testUri}\", " +
-               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.TestOrganization}\"" +
+               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.ResponsibleOrganization_Real_TheHague}\"" +
             "}";
 
         private static readonly string s_unexpectedJson =
             "{" +
                // Cases
                $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", " +
-               $"\"bronorganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+               $"\"bronorganisatie\": \"{NotificationEventHandler.SourceOrganization_Real_TheHague}\", " +
                 "\"vertrouwelijkheidaanduiding\": 2, " +
                // Objects
                $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", " +
                // Decisions
                $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
-               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.TestOrganization}\", " +
+               $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.ResponsibleOrganization_Real_TheHague}\", " +
                 // Orphans
-               $"\"{TestOrphanKey1}\": \"{TestOrphanValue1}\", " +
-               $"\"{TestOrphanKey2}\": \"{TestOrphanValue2}\"" +
+               $"\"{NotificationEventHandler.Orphan_Test_Property_1}\": \"{NotificationEventHandler.Orphan_Test_Value_1}\", " +
+               $"\"{NotificationEventHandler.Orphan_Test_Property_2}\": \"{NotificationEventHandler.Orphan_Test_Value_2}\"" +
             "}";
         #endregion
 
@@ -88,15 +84,15 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             {
                 // Cases
                 Assert.That(actualObject.CaseType, Is.EqualTo(s_testUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.SourceOrganization_Real_TheHague));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
                 // Objects
                 Assert.That(actualObject.ObjectType, Is.EqualTo(s_testUri));
                 // Decisions
                 Assert.That(actualObject.DecisionType, Is.EqualTo(s_testUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                Assert.That(actualObject.ResponsibleOrganization, Is.EqualTo(NotificationEventHandler.ResponsibleOrganization_Real_TheHague));
                 // Orphans
-                Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
+                Assert.That(actualObject.Orphans, Has.Count.Zero);
             });
         }
 
@@ -111,26 +107,26 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             {
                 // Cases
                 Assert.That(actualObject.CaseType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.SourceOrganization_Real_TheHague));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
                 // Objects
                 Assert.That(actualObject.ObjectType, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 // Decisions
                 Assert.That(actualObject.DecisionType, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.TestOrganization));
+                Assert.That(actualObject.ResponsibleOrganization, Is.EqualTo(NotificationEventHandler.ResponsibleOrganization_Real_TheHague));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(2));
                 Assert.Multiple(() =>
                 {
                     KeyValuePair<string, object> firstKeyValuePair = actualObject.Orphans.First();
 
-                    Assert.That(firstKeyValuePair.Key, Is.EqualTo(TestOrphanKey1));
-                    Assert.That(firstKeyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue1));
+                    Assert.That(firstKeyValuePair.Key, Is.EqualTo(NotificationEventHandler.Orphan_Test_Property_1));
+                    Assert.That(firstKeyValuePair.Value.ToString(), Is.EqualTo(NotificationEventHandler.Orphan_Test_Value_1.ToString()));
 
                     KeyValuePair<string, object> lastKeyValuePair = actualObject.Orphans.Last();
 
-                    Assert.That(lastKeyValuePair.Key, Is.EqualTo(TestOrphanKey2));
-                    Assert.That(lastKeyValuePair.Value.ToString(), Is.EqualTo(TestOrphanValue2));
+                    Assert.That(lastKeyValuePair.Key, Is.EqualTo(NotificationEventHandler.Orphan_Test_Property_2));
+                    Assert.That(lastKeyValuePair.Value.ToString(), Is.EqualTo(NotificationEventHandler.Orphan_Test_Value_2.ToString()));
                 });
             });
         }
