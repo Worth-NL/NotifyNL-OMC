@@ -69,7 +69,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5270"
+      "applicationUrl": "http://localhost:0000"
     },
     "https": {
       "commandName": "Project",
@@ -79,7 +79,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7042;http://localhost:5270"
+      "applicationUrl": "https://localhost:0001;http://localhost:0000"
     },
     "IIS Express (Development)": {  // NOTE: Name of the profile can be changed
       "commandName": "IISExpress",
@@ -113,13 +113,15 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_DOMAIN_OBJECTEN": "",
         "USER_DOMAIN_OBJECTTYPEN": "",
         
-        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
-        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
-        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
-        
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
+        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
+        
+        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
+        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
@@ -138,8 +140,8 @@ And all of them have **Swagger UI** specified as the default start option.
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:24394",
-      "sslPort": 44397
+      "applicationUrl": "http://localhost:00002",
+      "sslPort": 00003
     }
   }
 }
@@ -208,7 +210,7 @@ in order to run an already created **docker container**.
 | USER_AUTHORIZATION_JWT_USERID       | string | admin                              | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
 | USER_AUTHORIZATION_JWT_USERNAME     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_API_KEY_NOTIFYNL               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                 |
+| USER_API_KEY_NOTIFYNL               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                |
 | USER_API_KEY_OPENKLANT_2            | string | 43dcba52d312d1e00bc...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Open Klant 2.0 web UI                                                                                                                                                                   |
 | USER_API_KEY_OBJECTEN               | string | 56abcd24e75c02d44ee...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Objecten web UI                                                                                                                                                                         |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
@@ -218,12 +220,14 @@ in order to run an already created **docker container**.
 | USER_DOMAIN_OBJECTEN                | string | objecten.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_OBJECTTYPEN             | string | objecttypen.mycity.nl              | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_TEMPLATEIDS_SMS_ZAAKCREATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKUPDATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKCLOSE      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_DECISIONMADE | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKCREATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKUPDATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKCLOSE      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_DECISIONMADE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | SENTRY_DSN                          | string | https://1abxxx@o1xxx.sentry.io/xxx | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |
 | SENTRY_ENVIRONMENT                  | string | MyCompany-prod                     | false        | Validated internally by Sentry.SDK                                                                                                         | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)                |
