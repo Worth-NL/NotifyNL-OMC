@@ -82,12 +82,15 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OBJECTEN",              GetTestValue(isValid, testDomain, "https://domain") },
                 { "USER_DOMAIN_OBJECTTYPEN",           GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",   GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",    GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE", GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE", GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",  GetTestValue(isValid, testTempId) }
+                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
+
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",    GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testTempId) }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
@@ -110,52 +113,55 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetPathWithNode() mocking
             (string Path, string Node, string ResultPath)[] testData =
             {
-                ("OMC",  "Authorization", "OMC_AUTHORIZATION"),
-                ("User", "Authorization", "USER_AUTHORIZATION"),
+                ($"{nameof(WebApiConfiguration.OMC)}",  $"{nameof(WebApiConfiguration.OMC.Authorization)}", "OMC_AUTHORIZATION"),
+                ($"{nameof(WebApiConfiguration.User)}", $"{nameof(WebApiConfiguration.OMC.Authorization)}", "USER_AUTHORIZATION"),
 
-                ("OMC_AUTHORIZATION",     "JWT",          "OMC_AUTHORIZATION_JWT"),
-                ("OMC_AUTHORIZATION_JWT", "Secret",       "OMC_AUTHORIZATION_JWT_SECRET"),
-                ("OMC_AUTHORIZATION_JWT", "Issuer",       "OMC_AUTHORIZATION_JWT_ISSUER"),
-                ("OMC_AUTHORIZATION_JWT", "Audience",     "OMC_AUTHORIZATION_JWT_AUDIENCE"),
-                ("OMC_AUTHORIZATION_JWT", "ExpiresInMin", "OMC_AUTHORIZATION_JWT_EXPIRESINMIN"),
-                ("OMC_AUTHORIZATION_JWT", "UserId",       "OMC_AUTHORIZATION_JWT_USERID"),
-                ("OMC_AUTHORIZATION_JWT", "UserName",     "OMC_AUTHORIZATION_JWT_USERNAME"),
+                ("OMC_AUTHORIZATION",     $"{nameof(WebApiConfiguration.OMC.Authorization.JWT)}",              "OMC_AUTHORIZATION_JWT"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Secret)}",       "OMC_AUTHORIZATION_JWT_SECRET"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Issuer)}",       "OMC_AUTHORIZATION_JWT_ISSUER"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Audience)}",     "OMC_AUTHORIZATION_JWT_AUDIENCE"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.ExpiresInMin)}", "OMC_AUTHORIZATION_JWT_EXPIRESINMIN"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.UserId)}",       "OMC_AUTHORIZATION_JWT_USERID"),
+                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.UserName)}",     "OMC_AUTHORIZATION_JWT_USERNAME"),
 
-                ("OMC",             "API",      "OMC_API"),
-                ("OMC_API",         "BaseUrl",  "OMC_API_BASEURL"),
-                ("OMC_API_BASEURL", "NotifyNL", "OMC_API_BASEURL_NOTIFYNL"),
+                ("OMC",             $"{nameof(WebApiConfiguration.OMC.API)}",                  "OMC_API"),
+                ("OMC_API",         $"{nameof(WebApiConfiguration.OMC.API.BaseUrl)}",          "OMC_API_BASEURL"),
+                ("OMC_API_BASEURL", $"{nameof(WebApiConfiguration.OMC.API.BaseUrl.NotifyNL)}", "OMC_API_BASEURL_NOTIFYNL"),
 
-                ("USER_AUTHORIZATION",     "JWT",          "USER_AUTHORIZATION_JWT"),
-                ("USER_AUTHORIZATION_JWT", "Secret",       "USER_AUTHORIZATION_JWT_SECRET"),
-                ("USER_AUTHORIZATION_JWT", "Issuer",       "USER_AUTHORIZATION_JWT_ISSUER"),
-                ("USER_AUTHORIZATION_JWT", "Audience",     "USER_AUTHORIZATION_JWT_AUDIENCE"),
-                ("USER_AUTHORIZATION_JWT", "ExpiresInMin", "USER_AUTHORIZATION_JWT_EXPIRESINMIN"),
-                ("USER_AUTHORIZATION_JWT", "UserId",       "USER_AUTHORIZATION_JWT_USERID"),
-                ("USER_AUTHORIZATION_JWT", "UserName",     "USER_AUTHORIZATION_JWT_USERNAME"),
+                ("USER_AUTHORIZATION",     $"{nameof(WebApiConfiguration.User.Authorization.JWT)}",              "USER_AUTHORIZATION_JWT"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Secret)}",       "USER_AUTHORIZATION_JWT_SECRET"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Issuer)}",       "USER_AUTHORIZATION_JWT_ISSUER"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Audience)}",     "USER_AUTHORIZATION_JWT_AUDIENCE"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.ExpiresInMin)}", "USER_AUTHORIZATION_JWT_EXPIRESINMIN"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.UserId)}",       "USER_AUTHORIZATION_JWT_USERID"),
+                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.UserName)}",     "USER_AUTHORIZATION_JWT_USERNAME"),
 
-                ("User",         "API",         "USER_API"),
-                ("USER_API",     "Key",         "USER_API_KEY"),
-                ("USER_API_KEY", "NotifyNL",    "USER_API_KEY_NOTIFYNL"),
-                ("USER_API_KEY", "OpenKlant_2", "USER_API_KEY_OPENKLANT_2"),
-                ("USER_API_KEY", "Objecten",    "USER_API_KEY_OBJECTEN"),
+                ("User",         $"{nameof(WebApiConfiguration.User.API)}",                 "USER_API"),
+                ("USER_API",     $"{nameof(WebApiConfiguration.User.API.Key)}",             "USER_API_KEY"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.OpenKlant_2)}", "USER_API_KEY_OPENKLANT_2"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.Objecten)}",    "USER_API_KEY_OBJECTEN"),
 
-                ("User",        "Domain",           "USER_DOMAIN"),
-                ("USER_DOMAIN", "OpenNotificaties", "USER_DOMAIN_OPENNOTIFICATIES"),
-                ("USER_DOMAIN", "OpenZaak",         "USER_DOMAIN_OPENZAAK"),
-                ("USER_DOMAIN", "OpenKlant",        "USER_DOMAIN_OPENKLANT"),
-                ("USER_DOMAIN", "Objecten",         "USER_DOMAIN_OBJECTEN"),
-                ("USER_DOMAIN", "ObjectTypen",      "USER_DOMAIN_OBJECTTYPEN"),
+                ("User",        $"{nameof(WebApiConfiguration.User.Domain)}",                  "USER_DOMAIN"),
+                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenNotificaties)}", "USER_DOMAIN_OPENNOTIFICATIES"),
+                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}",         "USER_DOMAIN_OPENZAAK"),
+                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}",        "USER_DOMAIN_OPENKLANT"),
+                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.Objecten)}",         "USER_DOMAIN_OBJECTEN"),
+                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.ObjectTypen)}",      "USER_DOMAIN_OBJECTTYPEN"),
 
-                ("User",                   "TemplateIds", "USER_TEMPLATEIDS"),
-                ("USER_TEMPLATEIDS",       "Sms",         "USER_TEMPLATEIDS_SMS"),
-                ("USER_TEMPLATEIDS_SMS",   "ZaakCreate",  "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_SMS",   "ZaakUpdate",  "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_SMS",   "ZaakClose",   "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
+                ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
+                ("USER_TEMPLATEIDS",     $"{nameof(WebApiConfiguration.User.TemplateIds.Sms)}",              "USER_TEMPLATEIDS_SMS"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE"),
 
-                ("USER_TEMPLATEIDS",       "Email",      "USER_TEMPLATEIDS_EMAIL"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakCreate", "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakUpdate", "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_EMAIL", "ZaakClose",  "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
+                ("User",                   $"{nameof(WebApiConfiguration.User.TemplateIds)}",                    "USER_TEMPLATEIDS"),
+                ("USER_TEMPLATEIDS",       $"{nameof(WebApiConfiguration.User.TemplateIds.Email)}",              "USER_TEMPLATEIDS_EMAIL"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakCreate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakUpdate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakClose)}",    "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE")
             };
 
             foreach ((string Path, string Node, string ResultPath) data in testData)

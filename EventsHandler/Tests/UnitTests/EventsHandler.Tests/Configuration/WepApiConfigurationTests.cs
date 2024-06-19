@@ -63,12 +63,15 @@ namespace EventsHandler.UnitTests.Configuration
 
                 // Templates
                 var templateIds = userConfiguration.TemplateIds;
-                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
+
+                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Null.Or.Empty);
             });
         }
         #pragma warning restore IDE0008
@@ -104,12 +107,14 @@ namespace EventsHandler.UnitTests.Configuration
             yield return ("#5", () => configuration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: domain/api/v1/typen
             yield return ("#6", () => configuration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
-            // Invalid: Whitespace
+            // Invalid: Empty
             yield return ("#7", () => configuration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: Empty
+            yield return ("#8", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#8", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_InvalidTemplateId);
-            // Invalid: (9)-4-4-4-12
             yield return ("#9", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: (9)-4-4-4-12
+            yield return ("#10", () => configuration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
         #endregion
     }

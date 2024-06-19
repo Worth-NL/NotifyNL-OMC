@@ -63,18 +63,18 @@ namespace EventsHandler.Services.DataProcessing
                     // Determine how to handle certain types of notifications by "Notify NL"
                     switch (notifyData.NotificationMethod)
                     {
-                        case NotifyMethods.Sms:
-                            await this._sender.SendSmsAsync(notification, notifyData);
-                            break;
-
                         case NotifyMethods.Email:
                             await this._sender.SendEmailAsync(notification, notifyData);
                             break;
 
+                        case NotifyMethods.Sms:
+                            await this._sender.SendSmsAsync(notification, notifyData);
+                            break;
+
                         // TODO: This case is never handler as expected (always either SMS or Email), maybe not necessary
                         case NotifyMethods.Both:
-                            await this._sender.SendSmsAsync(notification, notifyData);
                             await this._sender.SendEmailAsync(notification, notifyData);
+                            await this._sender.SendSmsAsync(notification, notifyData);
                             break;
 
                         case NotifyMethods.None:

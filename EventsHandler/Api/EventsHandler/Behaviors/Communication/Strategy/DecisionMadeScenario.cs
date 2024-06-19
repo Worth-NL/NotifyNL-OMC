@@ -17,6 +17,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
+        private Decision? CachedDecision { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
         /// </summary>
@@ -34,13 +36,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            Decision decision = await this.DataQuery.From(notification).GetDecisionAsync();
-            Case @case = await this.DataQuery.From(notification).GetCaseAsync(decision.CaseTypeUrl);
+            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
+            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync(this.CachedDecision.Value.CaseTypeUrl);
 
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", @case.Name },
-                { "zaak.identificatie", @case.Identification }
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification }
             };
         }
 
@@ -52,14 +54,21 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            Decision decision = await this.DataQuery.From(notification).GetDecisionAsync();
-            Case @case = await this.DataQuery.From(notification).GetCaseAsync(decision.CaseTypeUrl);
+            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
+            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync(this.CachedDecision.Value.CaseTypeUrl);
 
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", @case.Name },
-                { "zaak.identificatie", @case.Identification }
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification }
             };
+        }
+
+        /// <inheritdoc cref="BaseScenario.DropCache()"/>
+        protected override void DropCache()
+        {
+            this.CachedDecision = null;
+            base.DropCache();
         }
         #endregion
     }
