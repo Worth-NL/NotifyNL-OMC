@@ -5,7 +5,6 @@ using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
@@ -39,13 +38,16 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override string GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
-        protected sealed override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
+        protected sealed override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
+            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
+
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", @case.Name },
-                { "zaak.identificatie", @case.Identification },
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification },
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname },
@@ -57,13 +59,16 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override string GetEmailTemplateId()
           => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
-        protected sealed override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
+        protected sealed override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
+            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
+
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", @case.Name },
-                { "zaak.identificatie", @case.Identification },
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.voornaam", partyData.Name },
                 { "klant.achternaam", partyData.Surname },

@@ -40,6 +40,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// Ensures that required data will be retried to be loaded (re-queried)
         /// even if they were not passed to the strategy from the outside world.
         /// </summary>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         protected async Task<CaseStatusType> ReQueryCaseStatusTypeAsync(NotificationEvent notification)
         {
             CaseStatuses caseStatuses = await this.DataQuery.From(notification).GetCaseStatusesAsync();
