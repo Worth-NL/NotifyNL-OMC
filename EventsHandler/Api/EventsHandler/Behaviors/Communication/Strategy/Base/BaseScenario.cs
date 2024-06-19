@@ -23,6 +23,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
     /// <seealso cref="INotifyScenario"/>
     internal abstract class BaseScenario : INotifyScenario
     {
+        protected Case? CachedCase { get; set; }
+
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected WebApiConfiguration Configuration { get; private set; }
 
@@ -41,26 +43,29 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         #region Interface
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         async Task<NotifyData[]> INotifyScenario.GetAllNotifyDataAsync(NotificationEvent notification)
-            => await GetAllNotifyDataAsync(notification);
+            => await this.GetAllNotifyDataAsync(notification);
+
+        /// <inheritdoc cref="INotifyScenario.DropCache()"/>
+        void INotifyScenario.DropCache()
+            => this.DropCache();
         #endregion
 
         #region Virtual
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal virtual async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            Case @case = await this.DataQuery.From(notification).GetCaseAsync();
             CommonPartyData partyData = await this.DataQuery.From(notification).GetPartyDataAsync();
 
             // Determine which types of notifications should be published
             return partyData.DistributionChannel switch
             {
-                DistributionChannels.Email => new[] { GetEmailNotifyData(@case, partyData) },
+                DistributionChannels.Email => new[] { await GetEmailNotifyDataAsync(notification, partyData) },
 
-                DistributionChannels.Sms   => new[] { GetSmsNotifyData(@case, partyData) },
+                DistributionChannels.Sms   => new[] { await GetSmsNotifyDataAsync(notification, partyData) },
                 
                 // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
-                DistributionChannels.Both  => new[] { GetEmailNotifyData(@case, partyData),
-                                                      GetSmsNotifyData(@case, partyData) },
+                DistributionChannels.Both  => new[] { await GetEmailNotifyDataAsync(notification, partyData),
+                                                      await GetSmsNotifyDataAsync(notification, partyData) },
                 
                 DistributionChannels.None  => Array.Empty<NotifyData>(),
                 
@@ -72,38 +77,38 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual NotifyData GetSmsNotifyData(Case @case, CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
                 contactDetails: partyData.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: GetSmsPersonalization(@case, partyData)
+                personalization: await GetSmsPersonalizationAsync(notification, partyData)
             );
         }
 
         /// <summary>
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="case">The <see cref="Case"/> the notification to be sent will be about.</param>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual NotifyData GetEmailNotifyData(Case @case, CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
                 contactDetails: partyData.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: GetEmailPersonalization(@case, partyData)
+                personalization: await GetEmailPersonalizationAsync(notification, partyData)
             );
         }
         #endregion
@@ -120,10 +125,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the SMS "personalization" for this strategy.
         /// </summary>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData);
 
         /// <summary>
         /// Gets the e-mail template ID for this strategy.
@@ -136,10 +144,19 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the e-mail "personalization" for this strategy.
         /// </summary>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData);
+
+        /// <inheritdoc cref="INotifyScenario.DropCache()"/>
+        protected virtual void DropCache()
+        {
+            this.CachedCase = null;
+        }
         #endregion
     }
 }

@@ -233,6 +233,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(data);
 
+            mockedNotifyScenario.Setup(mock => mock.DropCache());
+
             return mockedNotifyScenario;
         }
 

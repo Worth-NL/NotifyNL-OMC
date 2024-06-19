@@ -29,5 +29,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         ///   The <see cref="DistributionChannels"/> option is invalid.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
+
+        /// <summary>
+        /// Drops (clears) the scenario internal cache.
+        /// </summary>
+        internal void DropCache();
     }
 }
