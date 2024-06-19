@@ -30,9 +30,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override string GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.DecisionMade();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
-        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
+            Decision decision = await this.DataQuery.From(notification).GetDecisionAsync();
+            Case @case = await this.DataQuery.From(notification).GetCaseAsync(decision.CaseTypeUrl);
+
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },
@@ -44,9 +48,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy
         protected override string GetEmailTemplateId()
           => this.Configuration.User.TemplateIds.Email.DecisionMade();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
-        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
+            Decision decision = await this.DataQuery.From(notification).GetDecisionAsync();
+            Case @case = await this.DataQuery.From(notification).GetCaseAsync(decision.CaseTypeUrl);
+
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", @case.Name },

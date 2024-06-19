@@ -64,7 +64,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
         {
             return (await GetCaseDetailsV2Async(queryBase))
-                .CaseType;
+                .CaseTypeUrl;
         }
         
         private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase)

@@ -195,8 +195,8 @@
   <data name="HttpRequest_ERROR_NoCitizenDetails" xml:space="preserve">
     <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service.</value>
   </data>
-  <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
-    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
+  <data name="HttpRequest_ERROR_NoDecision" xml:space="preserve">
+    <value>HTTP Request: The decision could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoFeedbackKlant" xml:space="preserve">
     <value>HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service.</value>
@@ -394,5 +394,8 @@
   </data>
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
     <value>SENDER: In the received notification some [Required] properties are either null, empty, or with default values.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
+    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
 </root>

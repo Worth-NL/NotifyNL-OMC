@@ -5,7 +5,6 @@ using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using System.Diagnostics.CodeAnalysis;
@@ -34,11 +33,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<Task<NotifyData[]>>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(Case, CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(NotificationEvent, CommonPartyData)"/>
         [ExcludeFromCodeCoverage]
-        protected override NotifyData GetSmsNotifyData(Case @case, CommonPartyData partyData)
+        protected override async Task<NotifyData> GetSmsNotifyDataAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
-            return NotImplemented<NotifyData>();
+            return await Task.FromResult(NotImplemented<NotifyData>());
         }
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
@@ -48,18 +48,20 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<string>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(Case, CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
         [ExcludeFromCodeCoverage]
-        protected override Dictionary<string, object> GetSmsPersonalization(Case @case, CommonPartyData partyData)
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
-            return NotImplemented<Dictionary<string, object>>();
+            return await Task.FromResult(NotImplemented<Dictionary<string, object>>());
         }
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(Case, CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(NotificationEvent, CommonPartyData)"/>
         [ExcludeFromCodeCoverage]
-        protected override NotifyData GetEmailNotifyData(Case @case, CommonPartyData partyData)
+        protected override async Task<NotifyData> GetEmailNotifyDataAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
-            return NotImplemented<NotifyData>();
+            return await Task.FromResult(NotImplemented<NotifyData>());
         }
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
@@ -69,11 +71,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy
             return NotImplemented<string>();
         }
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(Case, CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
         [ExcludeFromCodeCoverage]
-        protected override Dictionary<string, object> GetEmailPersonalization(Case @case, CommonPartyData partyData)
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
+            NotificationEvent notification, CommonPartyData partyData)
         {
-            return NotImplemented<Dictionary<string, object>>();
+            return await Task.FromResult(NotImplemented<Dictionary<string, object>>());
         }
         #endregion
 

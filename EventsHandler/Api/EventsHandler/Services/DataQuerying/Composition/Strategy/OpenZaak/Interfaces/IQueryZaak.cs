@@ -31,9 +31,17 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
         {
+            return await GetCaseAsync(queryBase, null);
+        }
+
+        /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
+        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Uri? caseTypeUrl)
+        {
+            caseTypeUrl ??= await GetCaseTypeUriAsync(queryBase);
+
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: await GetCaseTypeUriAsync(queryBase),
+                uri: caseTypeUrl,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
         
@@ -86,6 +94,19 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: queryBase.Notification.MainObject,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoMainObject);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase)
+        {
+            return await queryBase.ProcessGetAsync<Decision>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: queryBase.Notification.MainObject,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
 
         #region Abstract (BSN Number)
