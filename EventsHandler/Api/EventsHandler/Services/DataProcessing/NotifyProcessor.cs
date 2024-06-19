@@ -71,12 +71,6 @@ namespace EventsHandler.Services.DataProcessing
                             await this._sender.SendSmsAsync(notification, notifyData);
                             break;
 
-                        // TODO: This case is never handler as expected (always either SMS or Email), maybe not necessary
-                        case NotifyMethods.Both:
-                            await this._sender.SendEmailAsync(notification, notifyData);
-                            await this._sender.SendSmsAsync(notification, notifyData);
-                            break;
-
                         case NotifyMethods.None:
                         default:
                             // NOTE: NotifyMethods cannot be "None" or undefined
