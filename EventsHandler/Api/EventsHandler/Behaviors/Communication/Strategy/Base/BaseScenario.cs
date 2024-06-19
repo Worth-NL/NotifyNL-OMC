@@ -69,7 +69,9 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                 
                 DistributionChannels.None  => Array.Empty<NotifyData>(),
                 
-                // NOTE: Notification method cannot be unknown. Fill the data properly in "OpenKlant"
+                // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
+                DistributionChannels.Unknown
+                  => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
                 _ => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
             };
         }
