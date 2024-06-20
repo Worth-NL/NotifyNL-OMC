@@ -16,6 +16,7 @@ using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Services.UserCommunication
 {
@@ -128,18 +129,20 @@ namespace EventsHandler.Services.UserCommunication
             return result.Status switch
             {
                 ProcessingResult.Success
-                    => new ProcessingSucceeded(result.Description, details).AsResult_202(),
+                    => new ProcessingSucceeded(result.Description).AsResult_202(),
 
                 ProcessingResult.Skipped
                     => new ProcessingSkipped(result.Description).AsResult_206(),
 
+                ProcessingResult.Failure
+                    => details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
+                        ? new HttpRequestFailed.Simplified(details).AsResult_400()
+                        : details.Cases.IsNotEmpty() && details.Reasons.Any()
+                            ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_400()
+                            : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
+
                 ProcessingResult.Aborted
                     => new DeserializationFailed(details).AsResult_422(),
-
-                ProcessingResult.Failure
-                    => details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)
-                        ? new ProcessingFailed.Simplified(HttpStatusCode.BadRequest, result.Description).AsResult_400()
-                        : new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_422(),
 
                 _ => ObjectResultExtensions.AsResult_501()
             };

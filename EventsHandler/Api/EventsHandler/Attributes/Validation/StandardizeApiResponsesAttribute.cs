@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections.Concurrent;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
@@ -11,6 +10,7 @@ using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Models.Responses;
+using System.Collections.Concurrent;
 
 namespace EventsHandler.Attributes.Validation
 {
@@ -37,7 +37,7 @@ namespace EventsHandler.Attributes.Validation
 
         /// <summary>
         /// Intercepts the <see cref="IActionResult"/> error messages from the validation of
-        /// <see cref="NotificationEvent"/> to display <see cref="BaseApiStandardResponseBody"/>.
+        /// <see cref="NotificationEvent"/> to display <see cref="BaseStandardResponseBody"/>.
         /// </summary>
         public override void OnResultExecuting(ResultExecutingContext context)
         {

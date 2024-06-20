@@ -91,7 +91,7 @@ namespace EventsHandler.Controllers.Base
                 BaseSimpleStandardResponseBody simpleResponse => simpleResponse.ToString(),
                 
                 // Only description
-                BaseApiStandardResponseBody baseResponse => baseResponse.ToString(),
+                BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
                 _ => $"{Resources.Processing_ERROR_UnspecifiedResponse} | {objectResult.StatusCode} | {nameof(objectResult.Value)}"

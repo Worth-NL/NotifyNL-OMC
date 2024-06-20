@@ -27,4 +27,19 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Details.Base
             this.Message = message;
         }
     }
+
+    /// <summary>
+    /// Concrete implementation of <see cref="BaseSimpleDetails"/> allowing to initialize all properties manually.
+    /// </summary>
+    /// <seealso cref="BaseSimpleDetails"/>
+    internal sealed record SimpleDetails : BaseSimpleDetails
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleDetails"/> class.
+        /// </summary>
+        internal SimpleDetails(string message)
+            : base(message)
+        {
+        }
+    }
 }
