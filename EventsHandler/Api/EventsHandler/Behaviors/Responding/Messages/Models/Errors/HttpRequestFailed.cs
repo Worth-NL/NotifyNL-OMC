@@ -10,16 +10,34 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// <summary>
     /// A HTTP Request failed.
     /// </summary>
-    /// <seealso cref="BaseEnhancedStandardResponseBody"/>
-    internal sealed class HttpRequestFailed : BaseEnhancedStandardResponseBody
+    internal abstract record HttpRequestFailed
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestFailed"/> class.
-        /// </summary>
-        /// <param name="details">The details to be included.</param>
-        internal HttpRequestFailed(BaseEnhancedDetails details)
-            : base(HttpStatusCode.BadRequest, Resources.Operation_RESULT_HttpRequest_Failure, details)
+        /// <inheritdoc cref="HttpRequestFailed"/>
+        /// <seealso cref="BaseEnhancedStandardResponseBody"/>
+        internal sealed record Detailed : BaseEnhancedStandardResponseBody
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Detailed"/> class.
+            /// </summary>
+            /// <param name="details">The details to be included.</param>
+            internal Detailed(BaseEnhancedDetails details)
+                : base(HttpStatusCode.BadRequest, Resources.Operation_RESULT_HttpRequest_Failure, details)
+            {
+            }
+        }
+
+        /// <inheritdoc cref="HttpRequestFailed"/>
+        /// <seealso cref="BaseSimpleStandardResponseBody"/>
+        internal sealed record Simplified : BaseSimpleStandardResponseBody
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Simplified"/> class.
+            /// </summary>
+            /// <param name="details">The details to be included.</param>
+            internal Simplified(BaseSimpleDetails details)
+                : base(HttpStatusCode.BadRequest, Resources.Operation_RESULT_HttpRequest_Failure, details)
+            {
+            }
         }
     }
 }

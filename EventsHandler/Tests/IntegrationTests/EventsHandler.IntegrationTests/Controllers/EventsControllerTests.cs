@@ -119,7 +119,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             IActionResult actualResult = await testController.ListenAsync(s_testJson);
 
             // Assert
-            AssertWithConditions<BadRequestObjectResult, HttpRequestFailed>(
+            AssertWithConditions<BadRequestObjectResult, HttpRequestFailed.Detailed>(
                 actualResult,
                 HttpStatusCode.BadRequest,
                 Resources.Operation_RESULT_HttpRequest_Failure,
@@ -229,7 +229,6 @@ namespace EventsHandler.IntegrationTests.Controllers
                 string expectedDetailsMessage
             )
             where TExpectedApiActionResultType : IActionResult
-            where TExpectedApiResponseBodyType : BaseEnhancedStandardResponseBody
         {
             Assert.Multiple(() =>
             {
@@ -238,11 +237,15 @@ namespace EventsHandler.IntegrationTests.Controllers
                 var castResult = (ObjectResult)actualResult;
                 Assert.That(castResult.StatusCode, Is.EqualTo((int)expectedHttpStatusCode), "Status code");
 
-                if (castResult.Value is TExpectedApiResponseBodyType apiResponse)
+                if (castResult.Value is BaseStandardResponseBody simpleResponse)
                 {
-                    Assert.That(apiResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode), "Status code");
-                    Assert.That(apiResponse.StatusDescription, Is.EqualTo(expectedStatusDescription), "Status description");
-                    Assert.That(apiResponse.Details.Message, Is.EqualTo(expectedDetailsMessage), "Details message");
+                    Assert.That(simpleResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode), "Status code");
+                    Assert.That(simpleResponse.StatusDescription, Is.EqualTo(expectedStatusDescription), "Status description");
+                    
+                    if (castResult.Value is BaseEnhancedStandardResponseBody enhancedResponse)
+                    {
+                        Assert.That(enhancedResponse.Details.Message, Is.EqualTo(expectedDetailsMessage), "Details message");
+                    }
                 }
                 else
                 {
