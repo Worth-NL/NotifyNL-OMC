@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Communication.Enums.v2;
+using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 
 namespace EventsHandler.Extensions
@@ -11,6 +12,24 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static class EnumExtensions
     {
+        /// <summary>
+        /// Converts from <see cref="ProcessingResult"/> enum to <see cref="LogLevel"/> enum.
+        /// </summary>
+        /// <param name="processingResult">The input enum of type A.</param>
+        /// <returns>
+        ///   The output enum of type B.
+        /// </returns>
+        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)
+        {
+            return processingResult switch
+            {
+                ProcessingResult.Success => LogLevel.Information,
+                ProcessingResult.Skipped => LogLevel.Warning,
+                ProcessingResult.Failure => LogLevel.Error,
+                _                        => LogLevel.None
+            };
+        }
+
         /// <summary>
         /// Converts from <see cref="NotificationTypes"/> enum to <see cref="NotifyMethods"/> enum.
         /// </summary>
