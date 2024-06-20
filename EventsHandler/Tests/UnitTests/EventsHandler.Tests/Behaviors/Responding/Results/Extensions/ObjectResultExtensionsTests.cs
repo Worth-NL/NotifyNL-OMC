@@ -28,7 +28,7 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Extensions
             {
                 Assert.That(actualResult.StatusCode, Is.EqualTo(test.StatusCode));
 
-                if (actualResult.Value is BaseApiStandardResponseBody baseResponse)
+                if (actualResult.Value is BaseStandardResponseBody baseResponse)
                 {
                     Assert.That(baseResponse.StatusDescription, Is.Not.Empty);
 
@@ -57,16 +57,16 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Extensions
             var testSimpleResponse = new ProcessingSkipped(TestStatusDescription);
 
             var testDetails = new InfoDetails(TestMessage, TestCases, new[] { TestReason });
-            var testEnhancedResponse = new HttpRequestFailed(testDetails);
+            var testDetailedResponse = new DeserializationFailed(testDetails);
 
             // Response-based extensions
             yield return (testSimpleResponse.AsResult_206,   206, "#1");
             yield return (testSimpleResponse.AsResult_400,   400, "#2");
             
-            yield return (testEnhancedResponse.AsResult_202, 202, "#3");
-            yield return (testEnhancedResponse.AsResult_206, 206, "#4");
-            yield return (testEnhancedResponse.AsResult_400, 400, "#5");
-            yield return (testEnhancedResponse.AsResult_422, 422, "#6");
+            yield return (testDetailedResponse.AsResult_202, 202, "#3");
+            yield return (testDetailedResponse.AsResult_206, 206, "#4");
+            yield return (testDetailedResponse.AsResult_400, 400, "#5");
+            yield return (testDetailedResponse.AsResult_422, 422, "#6");
 
             // Details-based extensions
             yield return (testDetails.AsResult_400, 400, "#7");

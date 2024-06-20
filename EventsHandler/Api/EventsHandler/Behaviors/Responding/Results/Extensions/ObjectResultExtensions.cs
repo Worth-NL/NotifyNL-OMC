@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
+using EventsHandler.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -18,7 +19,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.Accepted"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_202(this BaseEnhancedStandardResponseBody response)
+        internal static ObjectResult AsResult_202(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -44,7 +45,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.PartialContent"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_206(this BaseApiStandardResponseBody response)
+        internal static ObjectResult AsResult_206(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -60,7 +61,10 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// <param name="errorDetails">The error details to be passed into <see cref="IActionResult"/>.</param>
         internal static ObjectResult AsResult_400(this BaseEnhancedDetails errorDetails)
         {
-            return new HttpRequestFailed(errorDetails).AsResult_400();
+            return errorDetails.Cases.IsNotEmpty() &&  // NOTE: Not enough details
+                   errorDetails.Reasons.Any()
+                ? new HttpRequestFailed.Detailed(errorDetails).AsResult_400()
+                : new HttpRequestFailed.Simplified(errorDetails.Trim()).AsResult_400();
         }
 
         /// <summary>
@@ -76,7 +80,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.BadRequest"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_400(this BaseApiStandardResponseBody response)
+        internal static ObjectResult AsResult_400(this BaseStandardResponseBody response)
         {
             return new BadRequestObjectResult(response);
         }
@@ -96,7 +100,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.Forbidden"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        private static ObjectResult AsResult_403(this BaseApiStandardResponseBody response)
+        private static ObjectResult AsResult_403(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -119,7 +123,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.UnprocessableEntity"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_422(this BaseEnhancedStandardResponseBody response)
+        internal static ObjectResult AsResult_422(this DeserializationFailed response)
         {
             return new UnprocessableEntityObjectResult(response);
         }
@@ -148,7 +152,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.InternalServerError"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        private static ObjectResult AsResult_500(this BaseApiStandardResponseBody response)
+        private static ObjectResult AsResult_500(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -167,6 +171,19 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
             {
                 StatusCode = StatusCodes.Status501NotImplemented
             };
+        }
+        #endregion
+
+        #region Trim()
+        // ReSharper disable once SuggestBaseTypeForParameter => Do not allow simplifying simple details (redundancy)
+        /// <summary>
+        /// Trims the missing details.
+        /// </summary>
+        /// <param name="details">The enhanced details.</param>
+        private static BaseSimpleDetails Trim(this BaseEnhancedDetails details)
+        {
+            // Details without Cases and Reasons
+            return new SimpleDetails(details.Message);
         }
         #endregion
     }

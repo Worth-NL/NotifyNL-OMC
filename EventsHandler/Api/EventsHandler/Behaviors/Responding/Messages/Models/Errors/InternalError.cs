@@ -12,7 +12,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// An internal server error occurred.
     /// </summary>
     /// <seealso cref="BaseSimpleStandardResponseBody"/>
-    internal sealed class InternalError : BaseSimpleStandardResponseBody
+    internal sealed record InternalError : BaseSimpleStandardResponseBody
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalError"/> class.
