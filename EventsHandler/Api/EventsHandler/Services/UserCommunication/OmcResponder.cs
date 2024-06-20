@@ -11,12 +11,12 @@ using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
 using EventsHandler.Behaviors.Responding.Results.Enums;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
-using EventsHandler.Extensions;
 
 namespace EventsHandler.Services.UserCommunication
 {
