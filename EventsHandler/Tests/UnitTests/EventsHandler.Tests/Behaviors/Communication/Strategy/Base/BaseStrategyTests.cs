@@ -4,6 +4,8 @@ using System.Reflection;
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Base;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
@@ -35,10 +37,10 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         #region GetAllNotifyDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 2, 1, 1)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 2, 1, 1)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
-        [TestCase(typeof(CaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
-        [TestCase(typeof(CaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
         [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 3, 1, 1)]
         [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 3, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithSingleNotifyMethod_ReturnsExpectedData(
@@ -73,8 +75,8 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         }
         
         [TestCase(typeof(CaseCreatedScenario), 2, 1, 1)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), 4, 1, 1)]
-        [TestCase(typeof(CaseFinishedScenario), 4, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 4, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), 4, 1, 1)]
         [TestCase(typeof(DecisionMadeScenario), 3, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithBothNotifyMethods_ReturnsBothExpectedData(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
@@ -112,8 +114,8 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         }
 
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 0)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), 3, 1, 0)]
-        [TestCase(typeof(CaseFinishedScenario), 3, 1, 0)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 1, 1, 0)]
+        [TestCase(typeof(CaseCaseFinishedScenario), 1, 1, 0)]
         [TestCase(typeof(DecisionMadeScenario), 1, 1, 0)]
         public async Task GetAllNotifyDataAsync_ForNotification_WithoutNotifyMethod_ReturnsEmptyData_DoesNotThrowException(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
@@ -139,8 +141,8 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         }
 
         [TestCase(typeof(CaseCreatedScenario))]
-        [TestCase(typeof(CaseStatusUpdatedScenario))]
-        [TestCase(typeof(CaseFinishedScenario))]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario))]
+        [TestCase(typeof(CaseCaseFinishedScenario))]
         [TestCase(typeof(DecisionMadeScenario))]
         public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ReturnsEmptyData_DoesNotThrowException(Type scenarioType)
         {
@@ -229,7 +231,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                         _ => string.Empty
                     },
                 
-                nameof(CaseStatusUpdatedScenario) =>
+                nameof(CaseCaseStatusUpdatedScenario) =>
                     notifyMethod switch
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakUpdate(),
@@ -237,7 +239,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                         _ => string.Empty
                     },
                 
-                nameof(CaseFinishedScenario) =>
+                nameof(CaseCaseFinishedScenario) =>
                     notifyMethod switch
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakClose(),
