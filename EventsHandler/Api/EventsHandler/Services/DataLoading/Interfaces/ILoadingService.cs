@@ -18,7 +18,9 @@ namespace EventsHandler.Services.DataLoading.Interfaces
         /// <returns>
         ///   The generic data value associated with the key.
         /// </returns>
-        /// <exception cref="KeyNotFoundException">The provided key is missing or invalid.</exception>
+        /// <exception cref="KeyNotFoundException">
+        ///   The provided key is missing or invalid.
+        /// </exception>
         TData GetData<TData>(string key);
 
         /// <summary>

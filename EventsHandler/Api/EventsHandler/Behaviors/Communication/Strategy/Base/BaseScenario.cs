@@ -56,7 +56,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         {
             if (this.CachedCommonPartyData == null)  // NOTE: Needs to be set by a respective strategy
             {
-                return Array.Empty<NotifyData>();
+                throw new InvalidOperationException(Resources.HttpRequest_ERROR_NoPartyData);
             }
 
             // Determine which types of notifications should be published

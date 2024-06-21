@@ -37,20 +37,26 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
         {
+            return await ((IQueryZaak)this).GetBsnNumberAsync(queryBase, queryBase.Notification.MainObject);
+        }
+
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
+        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
+        {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), subjectType))
+            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), caseTypeUri, subjectType))
                 .Citizen
                 .BsnNumber;
         }
 
-        private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, string subjectType)
+        private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri, string subjectType)
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
 
             // Request URL
-            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseTypeUri}" +
                                           $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(

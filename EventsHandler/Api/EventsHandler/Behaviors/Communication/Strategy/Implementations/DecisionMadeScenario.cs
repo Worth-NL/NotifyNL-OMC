@@ -36,7 +36,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            this.CachedCommonPartyData ??= await this.DataQuery.From(notification).GetPartyDataAsync();
+            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
+            this.CachedCommonPartyData ??=
+                await this.DataQuery.From(notification).GetPartyDataAsync(
+                await this.DataQuery.From(notification).GetBsnNumberAsync(
+                      this.CachedDecision.Value.CaseTypeUrl));
             
             return await base.GetAllNotifyDataAsync(notification);
         }
@@ -51,9 +55,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync(this.CachedDecision.Value.CaseTypeUrl);
-
+            this.CachedCase ??= await this.DataQuery.From(notification)
+                                                    .GetCaseAsync(this.CachedDecision!.Value.CaseTypeUrl);
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
@@ -71,9 +74,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync(this.CachedDecision.Value.CaseTypeUrl);
-
+            this.CachedCase ??= await this.DataQuery.From(notification)
+                                                    .GetCaseAsync(this.CachedDecision!.Value.CaseTypeUrl);
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },

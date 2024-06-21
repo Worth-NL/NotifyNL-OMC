@@ -66,10 +66,21 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
         async Task<string> IQueryContext.GetBsnNumberAsync()
         {
-            // 1. Fetch case roles from "OpenZaak"
-            // 2. Determine citizen data from case roles
-            // 3. Return BSN from citizen data
+            // 1. MainObject from the NotificationEvent is case type URI
+            // 2. Fetch case roles from "OpenZaak"
+            // 3. Determine citizen data from case roles
+            // 4. Return BSN from citizen data
             return await this._queryZaak.GetBsnNumberAsync(this._queryBase);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
+        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
+        {
+            // 1. Pass case type URI from outside (MainObject is a different one in this situation)
+            // 2. Fetch case roles from "OpenZaak"
+            // 3. Determine citizen data from case roles
+            // 4. Return BSN from citizen data
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseTypeUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
