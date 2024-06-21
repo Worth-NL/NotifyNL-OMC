@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Diagnostics.CodeAnalysis;
 using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
@@ -7,9 +8,8 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using System.Diagnostics.CodeAnalysis;
 
-namespace EventsHandler.Behaviors.Communication.Strategy
+namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 {
     /// <summary>
     /// <inheritdoc cref="INotifyScenario"/>

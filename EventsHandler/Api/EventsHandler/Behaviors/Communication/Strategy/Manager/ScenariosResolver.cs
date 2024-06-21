@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy.Base;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
@@ -41,11 +43,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 CaseStatusType lastCaseStatusType =
                     await this._dataQuery.From(notification).GetLastCaseStatusTypeAsync(caseStatuses);
 
-                BaseStatusScenario strategy = !lastCaseStatusType.IsFinalStatus
+                BaseCaseScenario strategy = !lastCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"
-                    ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
+                    ? this._serviceProvider.GetRequiredService<CaseCaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
-                    : this._serviceProvider.GetRequiredService<CaseFinishedScenario>();
+                    : this._serviceProvider.GetRequiredService<CaseCaseFinishedScenario>();
 
                 strategy.PassAlreadyQueriedResult(lastCaseStatusType);
 

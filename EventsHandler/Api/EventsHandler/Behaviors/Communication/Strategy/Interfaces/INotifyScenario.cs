@@ -32,6 +32,9 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
 
         /// <summary>
         /// Drops (clears) the scenario internal cache.
+        /// <para>
+        ///   Clears:
+        /// </para>
         /// </summary>
         internal void DropCache();
     }
