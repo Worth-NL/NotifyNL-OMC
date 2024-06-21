@@ -54,6 +54,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         internal Task<string> GetBsnNumberAsync();
 
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
+        internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
+
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
 

@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using System.Text.Json;
 
@@ -19,14 +18,17 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
+        /// <exception cref="InvalidOperationException">
+        ///   Some internal business logic failed (implementation mistake).
+        /// </exception>
+        /// <exception cref="KeyNotFoundException">
+        ///   The looked up key to configuration value is missing or invalid.
+        /// </exception>
         /// <exception cref="HttpRequestException">
-        ///   Something could not be queried from external API Web API services.
+        ///   Something could not be queried from external Web API services.
         /// </exception>
         /// <exception cref="JsonException">
         ///   The HTTP response wasn't deserialized properly.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The <see cref="DistributionChannels"/> option is invalid.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
 
