@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Reflection;
 using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
@@ -17,6 +15,7 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
+using System.Reflection;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 {
