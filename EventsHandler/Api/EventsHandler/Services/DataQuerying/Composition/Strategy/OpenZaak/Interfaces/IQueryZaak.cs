@@ -24,6 +24,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenZaak";
 
+        #region Parent
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -65,14 +66,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
         
+        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
         /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        #pragma warning disable CA1822  // Method can be marked as static but that would be inconsistent for interface
         internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
-        #pragma warning restore CA1822
         {
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
@@ -88,7 +88,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<MainObject> GetMainObjectAsync(IQueryBase queryBase)
+        internal sealed async Task<MainObject> GetMainObjectAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<MainObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -101,30 +101,35 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase)
+        internal sealed async Task<Decision> GetDecisionAsync(IQueryBase queryBase)
         {
             return await queryBase.ProcessGetAsync<Decision>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: queryBase.Notification.MainObject,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
+        #pragma warning restore CA1822
+        #endregion
 
         #region Abstract (BSN Number)
         /// <summary>
         /// Gets BSN number of a specific citizen from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal Task<string> GetBsnNumberAsync(IQueryBase queryBase);
+
+        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase)"/>
+        internal Task<string> GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri);
         #endregion
 
         #region Abstract (Case type)
         /// <summary>
         /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web API service.
         /// </summary>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         private async Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase)
         {
             return queryBase.Notification.Attributes.CaseType
