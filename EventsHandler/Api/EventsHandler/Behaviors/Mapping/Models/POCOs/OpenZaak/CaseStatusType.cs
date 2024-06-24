@@ -29,7 +29,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// Determines whether the party (e.g., user or organization) wants to be notified about
-        /// this certain type of notification.
+        /// this certain <see cref="CaseStatusType"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informeren")]

@@ -131,7 +131,8 @@ namespace EventsHandler.Services.UserCommunication
                 ProcessingResult.Success
                     => new ProcessingSucceeded(result.Description).AsResult_202(),
 
-                ProcessingResult.Skipped
+                ProcessingResult.Skipped or
+                ProcessingResult.Aborted
                     => new ProcessingSkipped(result.Description).AsResult_206(),
 
                 ProcessingResult.Failure
@@ -141,7 +142,7 @@ namespace EventsHandler.Services.UserCommunication
                             ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_400()
                             : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
 
-                ProcessingResult.Aborted
+                ProcessingResult.NotPossible
                     => new DeserializationFailed(details).AsResult_422(),
 
                 _ => ObjectResultExtensions.AsResult_501()
