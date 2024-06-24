@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.0
+v.1.8.1
 
 © 2024, Worth Systems.
 
@@ -12,12 +12,14 @@ v.1.8.0
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
-- [**Klantinteractie**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
-- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service)
+- [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
+- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
+
+> **NOTE:** Different versions of these external API services are handled by, so called "[OMC Workflows](#workflow_versions)".
 
 ## 1.1. Swagger UI
 
-Since the **OMC** project is just an API, it would not have any user friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
+Since the **OMC** project is just an API, it would not have any user-friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
 
 That's why **ASP.NET** projects are usually exposing a UI presentation layer for the convenience of future users (usually developers). To achieve this effect, we are using so called [Swagger UI](https://swagger.io/tools/swagger-ui/), a standardized **HTML**/**CSS**/**JavaScript**-based suite of tools and assets made to generate visualized API endpoints, API documentation, data models schema, data validation, interaction with user (API responses), and other helpful hints on how to use the certain API.
 
@@ -69,7 +71,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5270"
+      "applicationUrl": "http://localhost:0000"
     },
     "https": {
       "commandName": "Project",
@@ -79,7 +81,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7042;http://localhost:5270"
+      "applicationUrl": "https://localhost:0001;http://localhost:0000"
     },
     "IIS Express (Development)": {  // NOTE: Name of the profile can be changed
       "commandName": "IISExpress",
@@ -113,13 +115,15 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_DOMAIN_OBJECTEN": "",
         "USER_DOMAIN_OBJECTTYPEN": "",
         
-        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
-        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
-        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
-        
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
+        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
+        
+        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
+        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
+        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
@@ -138,8 +142,8 @@ And all of them have **Swagger UI** specified as the default start option.
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:24394",
-      "sslPort": 44397
+      "applicationUrl": "http://localhost:00002",
+      "sslPort": 00003
     }
   }
 }
@@ -147,9 +151,16 @@ And all of them have **Swagger UI** specified as the default start option.
 
 > **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
+The developer can create more than one launch profile:
+> e.g., for testing **OMC Workflow v1** (pointing to older domains) and **OMC Workflow v2** (pointing to newer domains). Both using different credentials, template IDs, application modes (Production, Development, Test), names, logging identifiers (Sentry.io).
+
+![Multiple custom launch profiles - Visual Studio](images/launchProfiles_many_custom.png)
+
+![Multiple custom launch profiles - launchSettings.json](images/launchSettings_many_custom.png)
+
 #### Running profile:
 
-![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
+![Invalid base URL - Error](images/launchProfiles_full.png)
 
 ## 1.2. Docker
 
@@ -162,7 +173,7 @@ And all of them have **Swagger UI** specified as the default start option.
 - And run the following **docker** command:
 > docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
 >
-> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want
+> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want.
 
 The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
 `ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
@@ -190,43 +201,52 @@ in order to run an already created **docker container**.
 
 - `environment variables` (for sensitive configurations and/or customizable per customers/instances of **OMC**):
 
-| Name*                               | Type   | Example                            | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
-| ----------------------------------- | ------ | ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| OMC_AUTHORIZATION_JWT_SECRET        | string | abcd123t2gw3r8192dewEg%wdlsa3e!    | true         | Cannot be missing and have null or empty value                                                                                             | For security reasons it should be at least 64 bytes long                                                                                                                                                              |
-| OMC_AUTHORIZATION_JWT_ISSUER        | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the issuer                                                                                                            |
-| OMC_AUTHORIZATION_JWT_AUDIENCE      | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the audience                                                                                                          |
-| OMC_AUTHORIZATION_JWT_EXPIRESINMIN  | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
-| OMC_AUTHORIZATION_JWT_USERID        | string | tester                             | false        | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
-| OMC_AUTHORIZATION_JWT_USERNAME      | string | Charlotte Sanders                  | false        | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| OMC_API_BASEURL_NOTIFYNL            | string | https://api.notify.nl              | false        | Cannot be missing and have null or empty value                                                                                             | The domain where your Notify API instance is listening (e.g.: "https://api.notifynl.nl")                                                                                                                              |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_AUTHORIZATION_JWT_SECRET       | string | abcd123t2gw3r8192dewEg%wdlsa3e!    | true         | Cannot be missing and have null or empty value                                                                                             | Internal implementation of Open services is regulating this, however it's better to use something longer as well                                                                                                      |
-| USER_AUTHORIZATION_JWT_ISSUER       | string | Open Services                      | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OpenZaak / OpenKlant / OpenNotificatie services (token is shared between of them)                                                                                                               |
-| USER_AUTHORIZATION_JWT_AUDIENCE     | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OMC web API service (it will be used internally) - The OMC is the audience                                                                                                                      |
-| USER_AUTHORIZATION_JWT_EXPIRESINMIN | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
-| USER_AUTHORIZATION_JWT_USERID       | string | admin                              | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
-| USER_AUTHORIZATION_JWT_USERNAME     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_API_KEY_NOTIFYNL               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                 |
-| USER_API_KEY_OPENKLANT_2            | string | 43dcba52d312d1e00bc...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Open Klant 2.0 web UI                                                                                                                                                                   |
-| USER_API_KEY_OBJECTEN               | string | 56abcd24e75c02d44ee...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Objecten web UI                                                                                                                                                                         |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_DOMAIN_OPENNOTIFICATIES        | string | opennotificaties.mycity.nl         | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| USER_DOMAIN_OPENZAAK                | string | openzaak.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| USER_DOMAIN_OPENKLANT               | string | openklant.mycity.nl                | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| USER_DOMAIN_OBJECTEN                | string | objecten.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| USER_DOMAIN_OBJECTTYPEN             | string | objecttypen.mycity.nl              | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| USER_TEMPLATEIDS_SMS_ZAAKCREATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKUPDATE     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_SMS_ZAAKCLOSE      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                       |
-| ---                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
-| SENTRY_DSN                          | string | https://1abxxx@o1xxx.sentry.io/xxx | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |
-| SENTRY_ENVIRONMENT                  | string | MyCompany-prod                     | false        | Validated internally by Sentry.SDK                                                                                                         | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)                |
+| Name*                                               | Type   | Example                            | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
+| --------------------------------------------------- | ------ | ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authorization:** JWT to "OMC" Web API             |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| OMC_AUTHORIZATION_JWT_SECRET                        | string | abcd123t2gw3r8192dewEg%wdlsa3e!    | true         | Cannot be missing and have null or empty value                                                                                             | For security reasons it should be at least 64 bytes long                                                                                                                                                              |
+| OMC_AUTHORIZATION_JWT_ISSUER                        | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the issuer                                                                                                            |
+| OMC_AUTHORIZATION_JWT_AUDIENCE                      | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the audience                                                                                                          |
+| OMC_AUTHORIZATION_JWT_EXPIRESINMIN                  | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
+| OMC_AUTHORIZATION_JWT_USERID                        | string | tester                             | false        | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
+| OMC_AUTHORIZATION_JWT_USERNAME                      | string | Charlotte Sanders                  | false        | Cannot be missing and have null or empty value                                                                                             | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes)          |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Authorization:** JWT to "OpenServices" APIs       |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| USER_AUTHORIZATION_JWT_SECRET                       | string | abcd123t2gw3r8192dewEg%wdlsa3e!    | true         | Cannot be missing and have null or empty value                                                                                             | Internal implementation of Open services is regulating this, however it's better to use something longer as well                                                                                                      |
+| USER_AUTHORIZATION_JWT_ISSUER                       | string | Open Services                      | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OpenZaak / OpenKlant / OpenNotificatie services (token is shared between of them)                                                                                                               |
+| USER_AUTHORIZATION_JWT_AUDIENCE                     | string | OMC                                | true         | Cannot be missing and have null or empty value                                                                                             | Something identifying OMC web API service (it will be used internally) - The OMC is the audience                                                                                                                      |
+| USER_AUTHORIZATION_JWT_EXPIRESINMIN                 | int    | 60                                 | true         | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| USER_AUTHORIZATION_JWT_USERID                       | string | admin                              | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| USER_AUTHORIZATION_JWT_USERNAME                     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Authorization:** API Keys                         |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| USER_API_KEY_NOTIFYNL                               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                |
+| USER_API_KEY_OPENKLANT_2                            | string | 43dcba52d312d1e00bc...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Open Klant 2.0 web UI                                                                                                                                                                   |
+| USER_API_KEY_OBJECTEN                               | string | 56abcd24e75c02d44ee...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Objecten web UI                                                                                                                                                                         |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Connection:** Base URLs to external API services  |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| OMC_API_BASEURL_NOTIFYNL                            | string | https://api.notify.nl              | false        | Cannot be missing and have null or empty value                                                                                             | The domain where your Notify API instance is listening (e.g.: "https://api.notifynl.nl")                                                                                                                              |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Connection:** Domains of external API services    |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| USER_DOMAIN_OPENNOTIFICATIES                        | string | opennotificaties.mycity.nl         | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_OPENZAAK                                | string | openzaak.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_OPENKLANT                               | string | openklant.mycity.nl                | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_OBJECTEN                                | string | objecten.mycity.nl                 | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_OBJECTTYPEN                             | string | objecttypen.mycity.nl              | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https) or endpoints (.../api/create) | You have to use ONLY the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Business:** Templates IDs used by "Notify" API    |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCREATE                   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE                   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE                    | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_DECISIONMADE                 | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKCREATE                     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKUPDATE                     | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_ZAAKCLOSE                      | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_DECISIONMADE                   | string | 8-4-4-4-12                         | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Monitoring:** Configurations used by "Sentry"     |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| SENTRY_DSN                                          | string | https://1abxxx@o1xxx.sentry.io/xxx | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |
+| SENTRY_ENVIRONMENT                                  | string | MyCompany-prod                     | false        | Validated internally by Sentry.SDK                                                                                                         | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)                |
 
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 
@@ -269,56 +289,55 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 ---
 # 4. Authorization and authentication
 
-> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed).
+All of the API services involved in the notifying process (**OpenServices**, **OMC**, **Notify**) requires some type of authorization and authentication procedure.
 
-> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" workflow is used.
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
 
-<h2 id="workflow_versions">4.1. Versions of OMC workflows</h3>
+> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" [workflow](#workflow_versions) is used.
 
-> Here are the details which workflows are using which versions of external API services.
+## 4.1. JSON Web Tokens
 
-#### OMC workflow v1 (default):
-- "OpenNotificaties" v1.6.0
-- "OpenZaak" v1.12.1
-- "OpenKlant" v1.0.0
-- "Contactmomenten" v1.0.0
-
-#### OMC workflow v2:
-- "OpenNotificaties" v1.6.0
-- "OpenZaak" v1.12.1
-- <code>new</code> "OpenKlant" v2.0.0
-- <code>new</code> "Klantcontacten" v2.0.0
-
-<code>**Last update:** 7 Jun 2024</code>
-
-> The OMC workflows can be defined in `appsettings.json` configuration file:
-
-![Configuration in appsettings.json](images/appsettings_open_services_version.png)
-
-## 4.2. JSON Web Tokens
+In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ would be used internally (based on the provided credentials (_environment variables_). However, developers testing or maintaining the solution need to generate their own JWT tokens (e.g., to access the **OMC** API endpoints from **Swagger UI** or **Postman**) using one of the following approaches.
 
 **JSON Web Token (JWT)** can be generated using:
 
-- **SecretsManager.exe** from `CLI` (e.g., `CMD.exe on Windows`. **NOTE:** Do not use `PowerShell`)
+- **SecretsManager.exe** from `CLI (Command Line Interface)` externally (e.g., `CMD.exe on Windows`, using valid credentials defined in _environment variables_)
 
-- **SecretsManager.dll** from the code (public methods)
+> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md)'s documentation.
+> **NOTE:** Do not use `PowerShell`.
+
+An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
+
+<code>
+"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net7.0\NotifyNL.SecretsManager.exe" 1440
+
+pause
+</code>
+
+Users can also execute their commands directly in the catalog where **SecretsManager.exe** is located.
+
+- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
 > To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md).
 
-- External **https://jwt.io** webpage.
+- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
-### 4.2.1. Required JSON Web Token (JWT) components
+![Configuration in appsettings.json](images/launchProfiles_secrets_manager.png)
+
+- Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
+
+### 4.1.1. Required JSON Web Token (JWT) components
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-#### 4.2.1.1. Header (algorithm + type)
+#### 4.1.1.1. Header (algorithm + type)
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-#### 4.2.1.2. Payload (claims)
+#### 4.1.1.2. Payload (claims)
 
 > {
   "client_id": "",
@@ -330,13 +349,13 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
   "exp": 0000000000
 }
 
-#### 4.2.1.3. Signature (secret)
+#### 4.1.1.3. Signature (secret)
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-### 4.2.2. Mapping of JWT claims from environment variables
+### 4.1.2. Mapping of JWT claims from environment variables
 
 | JWT claims            | **OMC** Environment Variables                |
 | --------------------- | ---------------------------------------- |
@@ -352,16 +371,16 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-### 4.2.3. Using generated JSON Web Token (JWT)
+### 4.1.3. Using generated JSON Web Token (JWT)
 
-#### 4.2.3.1. Postman
+#### 4.1.3.1. Postman
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger-ui-authorization">4.2.3.2. Swagger UI</h3>
+<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI</h3>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
@@ -370,11 +389,114 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 And then click "Authorize".
 
 ---
-# 5. Workflow (business logic cases)
+# 5. OMC Workflow
 
 ![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
 
-> Version of **OMC** <= 1.7.4 (using "OpenServices" v1 [workflow](#workflow_versions)).
+> Version of **OMC** <= 1.7.4 (using "[OMC workflow v1](#workflow_dependencies)").
+
+<h2 id="workflow_versions">5.1. Versions of OMC workflows</h3>
+
+The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
+
+<code>**Last update:** 24 Jun 2024</code>
+
+<h3 id="workflow_dependencies">5.1.1. Dependencies</h3>
+
+Here are the details which _workflows_ are using which versions of the external API services:
+
+#### OMC workflow v1 `(default)`:
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- "OpenKlant" v1.0.0
+- "Contactmomenten" v1.0.0
+
+#### OMC workflow v2:
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- <code>new</code> "OpenKlant" v2.0.0
+- <code>new</code> "Klantcontacten" v2.0.0
+
+> **NOTE:** The OMC workflows can be defined in `appsettings[...].json` configuration file.
+
+### 5.1.2. Default workflows
+
+By default `appsettings.json` (fallback), `appsettings.Production.json`, and `appsettings.Test.json` are using the older version of the **OMC workflow**, while `appsettings.Development.json` is using the most recent one.
+
+### 5.1.3. Customization
+
+To change the **OMC workflow** you just have to change the value of `Features:OmcWorkflowVersion` in `appsettings[...].json` to one of the supported ones:
+
+- 1
+- 2
+
+![Configuration in appsettings.json](images/appsettings_omc_workflow_version.png)
+
+> **NOTE:** These numbers are just reflecting the currently supported workflows => e.g., `v1`, `v2`.
+
+You can also determine which _appsettings[...].json_ configuration will be used by setting a respective value of `ASPNETCORE_ENVIRONMENT` property in `environmentVariables` in your _launch profile_ defined in `launchSettings.json`. The supported values are:
+
+- "Production"
+- "Development"
+- "Test"
+
+![Configuration in appsettings.json](images/environment_varibles_aspnetcore.png)
+
+During the start of the **OMC** application the content of `appsettings.[ASPNETCORE_ENVIRONMENT].json` file will be loaded.
+
+> **NOTE:** Sometimes, in the documentation or in the code, when referring to this value a name "application mode(s)" might be used - because this _environment variable_ is usually defining the global setup / behavior of any **.NET** application.
+
+## 5.2. Initial notifications
+
+Any **OMC** workflow relies on receiving the (initial) notification from **Notificaties** API service to trigger the processing business logic. This notification is in _JSON_ format and can be also passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to simulate the desired **OMC** behavior.
+
+### 5.2.1. Scenarios
+
+Currently, the following business **scenarios** are implemented:
+
+- Creating the _case_
+- Updating the _case_ status
+- Closing the _case_
+- Receiving the _decision_
+
+### 5.2.2. Examples of notifications
+
+These are the examples of the structure of _JSON payloads_ to be used as initial notifications for testing or development purposes:
+
+#### 5.2.2.1. Cases
+
+```json
+{
+   "actie": "create",
+   "kanaal": "zaken",
+   "resource": "status",
+   "kenmerken": {
+      "zaaktype": "https://...",
+      "bronorganisatie": "000000000",
+      "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
+   },
+   "hoofdObject": "https://...",
+   "resourceUrl": "https://...",
+   "aanmaakdatum": "2024-04-09T13:35:11.223Z"
+}
+```
+
+#### 5.2.2.2. Decisions
+
+```json
+{
+   "actie": "create",
+   "kanaal": "besluiten",
+   "resource": "besluit",
+   "kenmerken": {
+      "besluittype": "https://...",
+      "verantwoordelijkeOrganisatie": "000000000"
+   },
+   "hoofdObject": "https://...",
+   "resourceUrl": "https://...",
+   "aanmaakdatum": "2023-10-05T08:52:02.273Z"
+}
+```
 
 ---
 # 6. Errors

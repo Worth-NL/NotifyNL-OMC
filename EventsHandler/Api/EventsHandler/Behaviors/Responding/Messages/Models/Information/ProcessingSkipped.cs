@@ -9,7 +9,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Information
     /// Processing of notification was skipped (due to some expected reasons).
     /// </summary>
     /// <seealso cref="BaseEnhancedStandardResponseBody"/>
-    internal sealed class ProcessingSkipped : BaseApiStandardResponseBody
+    internal sealed record ProcessingSkipped : BaseStandardResponseBody
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessingSkipped"/> class.

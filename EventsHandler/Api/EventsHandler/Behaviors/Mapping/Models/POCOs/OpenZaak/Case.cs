@@ -27,8 +27,6 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyOrder(1)]
         public string Identification { get; internal set; } = string.Empty;
 
-        // TODO: "zaaktype" might be used as well
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Case"/> struct.
         /// </summary>

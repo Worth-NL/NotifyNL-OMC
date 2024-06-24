@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);
-
+                                                   scenario.DropCache();
                 if (!allNotifyData.HasAny())
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
@@ -63,18 +63,12 @@ namespace EventsHandler.Services.DataProcessing
                     // Determine how to handle certain types of notifications by "Notify NL"
                     switch (notifyData.NotificationMethod)
                     {
-                        case NotifyMethods.Sms:
-                            await this._sender.SendSmsAsync(notification, notifyData);
-                            break;
-
                         case NotifyMethods.Email:
                             await this._sender.SendEmailAsync(notification, notifyData);
                             break;
 
-                        // TODO: This case is never handler as expected (always either SMS or Email), maybe not necessary
-                        case NotifyMethods.Both:
+                        case NotifyMethods.Sms:
                             await this._sender.SendSmsAsync(notification, notifyData);
-                            await this._sender.SendEmailAsync(notification, notifyData);
                             break;
 
                         case NotifyMethods.None:

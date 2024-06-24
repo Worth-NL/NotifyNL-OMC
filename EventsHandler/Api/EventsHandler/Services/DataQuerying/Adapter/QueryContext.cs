@@ -45,6 +45,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<Case> IQueryContext.GetCaseAsync()
             => await this._queryZaak.GetCaseAsync(this._queryBase);
 
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(Uri? caseTypeUri)
+            => await this._queryZaak.GetCaseAsync(this._queryBase, caseTypeUri);
+
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
             => await this._queryZaak.GetCaseStatusesAsync(this._queryBase);
@@ -62,15 +66,30 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
         async Task<string> IQueryContext.GetBsnNumberAsync()
         {
-            // 1. Fetch case roles from "OpenZaak"
-            // 2. Determine citizen data from case roles
-            // 3. Return BSN from citizen data
+            // 1. MainObject from the NotificationEvent is case type URI
+            // 2. Fetch case roles from "OpenZaak"
+            // 3. Determine citizen data from case roles
+            // 4. Return BSN from citizen data
             return await this._queryZaak.GetBsnNumberAsync(this._queryBase);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
+        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
+        {
+            // 1. Pass case type URI from outside (MainObject is a different one in this situation)
+            // 2. Fetch case roles from "OpenZaak"
+            // 3. Determine citizen data from case roles
+            // 4. Return BSN from citizen data
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseTypeUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
         async Task<MainObject> IQueryContext.GetMainObjectAsync()
             => await this._queryZaak.GetMainObjectAsync(this._queryBase);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync()"/>
+        async Task<Decision> IQueryContext.GetDecisionAsync()
+            => await this._queryZaak.GetDecisionAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)

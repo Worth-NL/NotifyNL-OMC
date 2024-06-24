@@ -9,8 +9,8 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// <summary>
     /// The operation is not implemented.
     /// </summary>
-    /// <seealso cref="BaseApiStandardResponseBody"/>
-    internal sealed class NotImplemented : BaseApiStandardResponseBody
+    /// <seealso cref="BaseStandardResponseBody"/>
+    internal sealed record NotImplemented : BaseStandardResponseBody
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotImplemented"/> class.

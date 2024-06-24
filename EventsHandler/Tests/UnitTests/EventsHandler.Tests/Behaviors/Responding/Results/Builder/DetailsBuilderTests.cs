@@ -56,6 +56,7 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Builder
                   $"\"Cases\":\"{TestCase}\"," +
                   $"\"Reasons\":" +
                     $"[" +
+                      $"\"SENDER: In the received notification some [Required] properties are either null, empty, or with default values.\"," +
                       $"\"SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it.\"," +
                       $"\"RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema.\"" +
                     $"]" +
