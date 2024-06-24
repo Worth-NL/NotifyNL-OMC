@@ -28,8 +28,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <returns>
         ///   Deserialized HTTP Response.
         /// </returns>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal Task<TModel> ProcessGetAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
 
@@ -44,8 +44,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <returns>
         ///   Deserialized HTTP Response.
         /// </returns>
-        /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/> or <exception cref="TelemetryException"/>
+        /// <exception cref="JsonException"/>
         internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
     }

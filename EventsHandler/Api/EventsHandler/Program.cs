@@ -50,6 +50,8 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Responder = EventsHandler.Services.UserCommunication;
@@ -302,8 +304,11 @@ namespace EventsHandler
 
             // Strategies
             services.AddSingleton<CaseCreatedScenario>();
-            services.AddSingleton<CaseStatusUpdatedScenario>();
-            services.AddSingleton<CaseFinishedScenario>();
+            services.AddSingleton<CaseCaseStatusUpdatedScenario>();
+            services.AddSingleton<CaseCaseFinishedScenario>();
+            
+            services.AddSingleton<DecisionMadeScenario>();
+
             services.AddSingleton<NotImplementedScenario>();
         }
 

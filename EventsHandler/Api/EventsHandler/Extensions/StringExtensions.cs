@@ -6,7 +6,7 @@ using System.Buffers.Text;
 namespace EventsHandler.Extensions
 {
     /// <summary>
-    /// Extension methods for strings.
+    /// Extension methods for <see langword="string"/>s.
     /// </summary>
     internal static class StringExtensions
     {

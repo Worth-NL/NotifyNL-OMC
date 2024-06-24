@@ -34,6 +34,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase)"/>
         internal Task<Case> GetCaseAsync();
 
+        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Uri?)"/>
+        /// <remarks>
+        ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/> or extracted
+        ///   internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<Case> GetCaseAsync(Uri? caseTypeUri);
+
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
 
@@ -47,8 +54,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         internal Task<string> GetBsnNumberAsync();
 
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
+        internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
+
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
+
+        /// <inheritdoc cref="IQueryZaak.GetDecisionAsync(IQueryBase)"/>
+        internal Task<Decision> GetDecisionAsync();
 
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);

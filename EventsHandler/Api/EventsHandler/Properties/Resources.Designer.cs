@@ -241,6 +241,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some values of properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) in the POCO model are missing..
+        /// </summary>
+        internal static string Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Required properties are missing in the given JSON payload..
         /// </summary>
         internal static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Message {
@@ -250,7 +259,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it..
+        ///   Looks up a localized string similar to SENDER: In the received notification some [Required] properties are either null, empty, or with default values..
         /// </summary>
         internal static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1 {
             get {
@@ -259,11 +268,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema..
+        ///   Looks up a localized string similar to SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it..
         /// </summary>
         internal static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2 {
             get {
                 return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema..
+        /// </summary>
+        internal static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3", resourceCulture);
             }
         }
         
@@ -295,11 +313,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some values of properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) in the POCO model are missing..
+        ///   Looks up a localized string similar to The JSON payload contains more root &apos;notification&apos; properties than expected by the POCO model..
         /// </summary>
-        internal static string Deserialization_INFO_NotDeserialized_Attributes_Properties_Message {
+        internal static string Deserialization_ERROR_UnexpectedData_Notification_Message {
             get {
-                return ResourceManager.GetString("Deserialization_INFO_NotDeserialized_Attributes_Properties_Message", resourceCulture);
+                return ResourceManager.GetString("Deserialization_ERROR_UnexpectedData_Notification_Message", resourceCulture);
             }
         }
         
@@ -354,15 +372,6 @@ namespace EventsHandler.Properties {
         internal static string Deserialization_INFO_UnexpectedData_Attributes_Reason2 {
             get {
                 return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Attributes_Reason2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The JSON payload contains more root &apos;notification&apos; properties than expected by the POCO model..
-        /// </summary>
-        internal static string Deserialization_INFO_UnexpectedData_Notification_Message {
-            get {
-                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Notification_Message", resourceCulture);
             }
         }
         
@@ -538,6 +547,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The decision could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDecision {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDecision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoDigitalAddresses {
@@ -570,6 +588,15 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_NoMainObject {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_NoMainObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The party data (e.g., citizen, organization) are missing..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoPartyData {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyData", resourceCulture);
             }
         }
         

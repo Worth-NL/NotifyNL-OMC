@@ -9,6 +9,7 @@ using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Controllers.Base;
+using EventsHandler.Extensions;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
@@ -97,13 +98,15 @@ namespace EventsHandler.Controllers
                     {
                         (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
                         
-                        return LogApiResponse(GetLogLevel(result.Status),
-                            this._responder.Get_Processing_Status_ActionResult(GetResult(result, json), notification.Details));
+                        return LogApiResponse(result.Status.ConvertToLogLevel(),
+                            this._responder.Get_Processing_Status_ActionResult(
+                                GetResult(result, json), notification.Details));
                     })
 
                     // The notification cannot be processed
                     : LogApiResponse(LogLevel.Error,
-                        this._responder.Get_Processing_Status_ActionResult(GetFailedResult(json), notification.Details));
+                        this._responder.Get_Processing_Status_ActionResult(
+                            GetAbortedResult(notification.Details.Message, json), notification.Details));
             }
             catch (Exception exception)
             {
@@ -135,25 +138,14 @@ namespace EventsHandler.Controllers
         }
 
         #region Helper methods
-        private static LogLevel GetLogLevel(ProcessingResult result)
-        {
-            return result switch
-            {
-                ProcessingResult.Success => LogLevel.Information,
-                ProcessingResult.Skipped => LogLevel.Warning,
-                ProcessingResult.Failure => LogLevel.Error,
-                _                        => LogLevel.None
-            };
-        }
-
         private static (ProcessingResult, string) GetResult((ProcessingResult Status, string Description) result, object json)
         {
             return (result.Status, EnrichDescription(result.Description, json));
         }
 
-        private static (ProcessingResult, string) GetFailedResult(object json)
+        private static (ProcessingResult, string) GetAbortedResult(string message, object json)
         {
-            return (ProcessingResult.Failure, EnrichDescription(Resources.Processing_ERROR_Scenario_NotificationNotSent, json));
+            return (ProcessingResult.Aborted, EnrichDescription(message, json));
         }
 
         private static string EnrichDescription(string originalText, object json)

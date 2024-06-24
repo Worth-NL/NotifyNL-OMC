@@ -9,8 +9,8 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Base
     /// <summary>
     /// Standard format how to display internal API responses with simplified details.
     /// </summary>
-    /// <seealso cref="BaseApiStandardResponseBody"/>
-    internal abstract class BaseSimpleStandardResponseBody : BaseApiStandardResponseBody
+    /// <seealso cref="BaseStandardResponseBody"/>
+    internal abstract record BaseSimpleStandardResponseBody : BaseStandardResponseBody
     {
         [JsonPropertyName("Details")]
         [JsonPropertyOrder(2)]
@@ -29,6 +29,21 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Base
         public sealed override string ToString()
         {
             return $"{StatusDescription} | {Details.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Concrete implementation of <see cref="BaseSimpleStandardResponseBody"/> allowing to initialize all properties manually.
+    /// </summary>
+    /// <seealso cref="BaseSimpleStandardResponseBody"/>
+    internal sealed record SimpleStandardResponseBody : BaseSimpleStandardResponseBody
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleStandardResponseBody"/> class.
+        /// </summary>
+        internal SimpleStandardResponseBody(HttpStatusCode statusCodes, string statusDescription, BaseSimpleDetails details)
+            : base(statusCodes, statusDescription, details)
+        {
         }
     }
 }

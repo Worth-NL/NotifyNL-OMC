@@ -7,6 +7,7 @@ using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 
 #pragma warning disable IDE0008 // Use explicit type
 
@@ -53,8 +54,12 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             // Arrange
             Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
             this._testNotifySender = GetTestSendingService(mockedClient: mockedClient);
-            NotificationEvent testNotification = GetTestNotification();
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
 
             // Act
             await this._testNotifySender.SendSmsAsync(testNotification, new NotifyData());
@@ -73,8 +78,12 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             // Arrange
             Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
             this._testNotifySender = GetTestSendingService(mockedClient: mockedClient);
-            NotificationEvent testNotification = GetTestNotification();
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
 
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
@@ -93,16 +102,19 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         {
             #region First phase of the test (HttpClient will be just created)
             // Arrange
-            Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
             Mock<INotifyClient> firstMockedNotifyClient = GetMockedNotifyClient();
             var firstMockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             firstMockedClientFactory
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(firstMockedNotifyClient.Object);
 
+            Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
+
             this._testNotifySender = new NotifySender(firstMockedClientFactory.Object, mockedSerializer.Object);
 
-            NotificationEvent testNotification = GetTestNotification();
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
             
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
@@ -192,11 +204,6 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
 
             return serializerMock;
         }
-
-        private static NotificationEvent GetTestNotification() => new()
-        {
-            Attributes = new EventAttributes { SourceOrganization = new string('0', 9) }
-        };
         #endregion
     }
 }
