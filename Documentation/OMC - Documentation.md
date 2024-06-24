@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.1
+v.1.8.2
 
 © 2024, Worth Systems.
 

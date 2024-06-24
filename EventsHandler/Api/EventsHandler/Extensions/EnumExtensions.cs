@@ -24,7 +24,11 @@ namespace EventsHandler.Extensions
             return processingResult switch
             {
                 ProcessingResult.Success => LogLevel.Information,
-                ProcessingResult.Skipped => LogLevel.Warning,
+
+                ProcessingResult.Skipped or
+                ProcessingResult.Aborted => LogLevel.Warning,
+
+                ProcessingResult.NotPossible or
                 ProcessingResult.Failure => LogLevel.Error,
                 _                        => LogLevel.None
             };
