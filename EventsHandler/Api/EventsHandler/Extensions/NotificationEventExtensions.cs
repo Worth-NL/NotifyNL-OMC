@@ -1,7 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Properties;
+using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Extensions
 {
@@ -25,8 +26,15 @@ namespace EventsHandler.Extensions
         /// </exception>
         internal static string GetOrganizationId(this NotificationEvent notification)
         {
-            return notification.Attributes.SourceOrganization
-                ?? throw new HttpRequestException(Resources.HttpRequest_ERROR_NoSourceOrganization);
+            string? organizationId = notification.Channel switch
+            {
+                Channels.Cases     => notification.Attributes.SourceOrganization,
+                Channels.Decisions => notification.Attributes.ResponsibleOrganization,
+                _ => null
+            };
+
+            return organizationId
+                ?? throw new HttpRequestException(Resources.HttpRequest_ERROR_NoSourceOrganization + $" [{notification.Channel}]");
         }
     }
 }
