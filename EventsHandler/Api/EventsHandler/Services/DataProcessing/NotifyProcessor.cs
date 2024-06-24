@@ -88,8 +88,13 @@ namespace EventsHandler.Services.DataProcessing
             }
             catch (NotImplementedException)
             {
-                // NOTE: The notification COULD not be sent, but it's not a failure and shouldn't be retried
+                // NOTE: The notification COULD not be sent, but it's not a failure, and it shouldn't be retried
                 return (ProcessingResult.Skipped, ResourcesText.Processing_ERROR_Scenario_NotImplemented);
+            }
+            catch (AbortedNotifyingException exception)
+            {
+                // NOTE: The notification SHOULD not be sent due to internal condition, and it shouldn't be retried
+                return (ProcessingResult.Aborted, exception.Message);
             }
             catch (NotifyClientException exception)
             {

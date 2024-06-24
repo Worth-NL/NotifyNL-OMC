@@ -401,4 +401,7 @@
   <data name="HttpRequest_ERROR_NoPartyData" xml:space="preserve">
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
+  <data name="Processing_ABORT_DoNotSendNotification_CaseStatusType" xml:space="preserve">
+    <value>It was requested to not send notification for this type of case status. Processing aborted.</value>
+  </data>
 </root>
