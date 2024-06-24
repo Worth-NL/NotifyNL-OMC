@@ -36,12 +36,12 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         #region GetAllNotifyDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 2, 1, 1)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 2, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 4, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 4, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 3, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 3, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 2, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 2, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 2, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 2, 1, 1)]
+        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 2, 1, 1)]
+        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 2, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithSingleNotifyMethod_ReturnsExpectedData(
             Type scenarioType, DistributionChannels testDistributionChannel, int expectedResultsCount,
             NotifyMethods expectedNotificationMethod, string expectedContactDetails,
@@ -74,9 +74,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         }
         
         [TestCase(typeof(CaseCreatedScenario), 2, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 4, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), 4, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), 3, 1, 1)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 3, 1, 1)]
+        [TestCase(typeof(CaseCaseFinishedScenario), 3, 1, 1)]
+        [TestCase(typeof(DecisionMadeScenario), 2, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithBothNotifyMethods_ReturnsBothExpectedData(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
@@ -264,7 +264,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         {
             if (scenarioType.Name == nameof(DecisionMadeScenario))
             {
-                VerifyMethodCalls_Decision(mockedQueryContext, mockedDataQuery, fromInvokeCount, partyInvokeCount, caseInvokeCount, caseInvokeCount);
+                VerifyMethodCalls_Decision(mockedQueryContext, mockedDataQuery, fromInvokeCount, partyInvokeCount, 1, caseInvokeCount);
             }
             else
             {

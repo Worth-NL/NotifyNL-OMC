@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
@@ -36,10 +37,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            this.CachedDecision ??= await this.DataQuery.From(notification).GetDecisionAsync();
+            IQueryContext queryContext = this.DataQuery.From(notification);
+            this.CachedDecision ??= await queryContext.GetDecisionAsync();
             this.CachedCommonPartyData ??=
-                await this.DataQuery.From(notification).GetPartyDataAsync(
-                await this.DataQuery.From(notification).GetBsnNumberAsync(
+                await queryContext.GetPartyDataAsync(
+                await queryContext.GetBsnNumberAsync(
                       this.CachedDecision.Value.CaseTypeUrl));
             
             return await base.GetAllNotifyDataAsync(notification);
