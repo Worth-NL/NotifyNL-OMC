@@ -3,7 +3,7 @@
 namespace EventsHandler.Exceptions
 {
     /// <summary>
-    /// The custom exception to report communication issues with external telemetry API endpoint.
+    /// The custom exception to report communication issues with external telemetry API service.
     /// </summary>
     /// <seealso cref="Exception"/>
     internal sealed class TelemetryException : Exception
@@ -11,12 +11,8 @@ namespace EventsHandler.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryException"/> class.
         /// </summary>
-        public TelemetryException() : this(string.Empty)
-        {
-        }
-
-        /// <inheritdoc cref="TelemetryException()"/>
-        public TelemetryException(string message) : base(message)
+        public TelemetryException(string message)
+            : base(message)
         {
         }
     }
