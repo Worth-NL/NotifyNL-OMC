@@ -17,7 +17,7 @@ v.1.8.1
 
 ## 1.1. Swagger UI
 
-Since the **OMC** project is just an API, it would not have any user friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
+Since the **OMC** project is just an API, it would not have any user-friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
 
 That's why **ASP.NET** projects are usually exposing a UI presentation layer for the convenience of future users (usually developers). To achieve this effect, we are using so called [Swagger UI](https://swagger.io/tools/swagger-ui/), a standardized **HTML**/**CSS**/**JavaScript**-based suite of tools and assets made to generate visualized API endpoints, API documentation, data models schema, data validation, interaction with user (API responses), and other helpful hints on how to use the certain API.
 
@@ -149,9 +149,16 @@ And all of them have **Swagger UI** specified as the default start option.
 
 > **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
+The developer can create more than one launch profile:
+> e.g., for testing **OMC Workflow v1** (pointing to older domains) and **OMC Workflow v2** (pointing to newer domains). Both using different credentials, template IDs, application modes (Production, Development, Test), names, logging identifiers (Sentry.io).
+
+![Multiple custom launch profiles - Visual Studio](images/launchProfiles_many_custom.png)
+
+![Multiple custom launch profiles - launchSettings.json](images/launchSettings_many_custom.png)
+
 #### Running profile:
 
-![Invalid base URL - Error](images/visual_studio_launch_profiles.png)
+![Invalid base URL - Error](images/launchProfiles_full.png)
 
 ## 1.2. Docker
 
@@ -164,7 +171,7 @@ And all of them have **Swagger UI** specified as the default start option.
 - And run the following **docker** command:
 > docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
 >
-> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want
+> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want.
 
 The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
 `ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
@@ -280,56 +287,55 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 ---
 # 4. Authorization and authentication
 
-> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed).
+All of the API services involved in the notifying process (**OpenServices**, **OMC**, **Notify**) requires some type of authorization and authentication procedure.
 
-> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" workflow is used.
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
 
-<h2 id="workflow_versions">4.1. Versions of OMC workflows</h3>
+> The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" [workflow](#workflow_versions) is used.
 
-> Here are the details which workflows are using which versions of external API services.
+## 4.1. JSON Web Tokens
 
-#### OMC workflow v1 (default):
-- "OpenNotificaties" v1.6.0
-- "OpenZaak" v1.12.1
-- "OpenKlant" v1.0.0
-- "Contactmomenten" v1.0.0
-
-#### OMC workflow v2:
-- "OpenNotificaties" v1.6.0
-- "OpenZaak" v1.12.1
-- <code>new</code> "OpenKlant" v2.0.0
-- <code>new</code> "Klantcontacten" v2.0.0
-
-<code>**Last update:** 7 Jun 2024</code>
-
-> The OMC workflows can be defined in `appsettings.json` configuration file:
-
-![Configuration in appsettings.json](images/appsettings_open_services_version.png)
-
-## 4.2. JSON Web Tokens
+In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ would be used internally (based on the provided credentials (_environment variables_). However, developers testing or maintaining the solution need to generate their own JWT tokens (e.g., to access the **OMC** API endpoints from **Swagger UI** or **Postman**) using one of the following approaches.
 
 **JSON Web Token (JWT)** can be generated using:
 
-- **SecretsManager.exe** from `CLI` (e.g., `CMD.exe on Windows`. **NOTE:** Do not use `PowerShell`)
+- **SecretsManager.exe** from `CLI (Command Line Interface)` externally (e.g., `CMD.exe on Windows`, using valid credentials defined in _environment variables_)
 
-- **SecretsManager.dll** from the code (public methods)
+> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md)'s documentation.
+> **NOTE:** Do not use `PowerShell`.
+
+An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
+
+<code>
+"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net7.0\NotifyNL.SecretsManager.exe" 1440
+
+pause
+</code>
+
+Users can also execute their commands directly in the catalog where **SecretsManager.exe** is located.
+
+- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
 > To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md).
 
-- External **https://jwt.io** webpage.
+- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
-### 4.2.1. Required JSON Web Token (JWT) components
+![Configuration in appsettings.json](images/launchProfiles_secrets_manager.png)
+
+- Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
+
+### 4.1.1. Required JSON Web Token (JWT) components
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-#### 4.2.1.1. Header (algorithm + type)
+#### 4.1.1.1. Header (algorithm + type)
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-#### 4.2.1.2. Payload (claims)
+#### 4.1.1.2. Payload (claims)
 
 > {
   "client_id": "",
@@ -341,13 +347,13 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
   "exp": 0000000000
 }
 
-#### 4.2.1.3. Signature (secret)
+#### 4.1.1.3. Signature (secret)
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-### 4.2.2. Mapping of JWT claims from environment variables
+### 4.1.2. Mapping of JWT claims from environment variables
 
 | JWT claims            | **OMC** Environment Variables                |
 | --------------------- | ---------------------------------------- |
@@ -363,16 +369,16 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-### 4.2.3. Using generated JSON Web Token (JWT)
+### 4.1.3. Using generated JSON Web Token (JWT)
 
-#### 4.2.3.1. Postman
+#### 4.1.3.1. Postman
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger-ui-authorization">4.2.3.2. Swagger UI</h3>
+<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI</h3>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
@@ -381,11 +387,114 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 And then click "Authorize".
 
 ---
-# 5. Workflow (business logic cases)
+# 5. OMC Workflow
 
 ![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
 
-> Version of **OMC** <= 1.7.4 (using "OpenServices" v1 [workflow](#workflow_versions)).
+> Version of **OMC** <= 1.7.4 (using "[OMC workflow v1](#workflow_dependencies)").
+
+<h2 id="workflow_versions">5.1. Versions of OMC workflows</h3>
+
+The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
+
+<code>**Last update:** 24 Jun 2024</code>
+
+<h3 id="workflow_dependencies">5.1.1. Dependencies</h3>
+
+Here are the details which _workflows_ are using which versions of the external API services:
+
+#### OMC workflow v1 `(default)`:
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- "OpenKlant" v1.0.0
+- "Contactmomenten" v1.0.0
+
+#### OMC workflow v2:
+- "OpenNotificaties" v1.6.0
+- "OpenZaak" v1.12.1
+- <code>new</code> "OpenKlant" v2.0.0
+- <code>new</code> "Klantcontacten" v2.0.0
+
+> **NOTE:** The OMC workflows can be defined in `appsettings[...].json` configuration file.
+
+### 5.1.2. Default workflows
+
+By default `appsettings.json` (fallback), `appsettings.Production.json`, and `appsettings.Test.json` are using the older version of the **OMC workflow**, while `appsettings.Development.json` is using the most recent one.
+
+### 5.1.3. Customization
+
+To change the **OMC workflow** you just have to change the value of `Features:OmcWorkflowVersion` in `appsettings[...].json` to one of the supported ones:
+
+- 1
+- 2
+
+![Configuration in appsettings.json](images/appsettings_omc_workflow_version.png)
+
+> **NOTE:** These numbers are just reflecting the currently supported workflows => e.g., `v1`, `v2`.
+
+You can also determine which _appsettings[...].json_ configuration will be used by setting a respective value of `ASPNETCORE_ENVIRONMENT` property in `environmentVariables` in your _launch profile_ defined in `launchSettings.json`. The supported values are:
+
+- "Production"
+- "Development"
+- "Test"
+
+![Configuration in appsettings.json](images/environment_varibles_aspnetcore.png)
+
+During the start of the **OMC** application the content of `appsettings.[ASPNETCORE_ENVIRONMENT].json` file will be loaded.
+
+> **NOTE:** Sometimes, in the documentation or in the code, when referring to this value a name "application mode(s)" might be used - because this _environment variable_ is usually defining the global setup / behavior of any **.NET** application.
+
+## 5.2. Initial notifications
+
+Any **OMC** workflow relies on receiving the (initial) notification from **Notificaties** API service to trigger the processing business logic. This notification is in _JSON_ format and can be also passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to simulate the desired **OMC** behavior.
+
+### 5.2.1. Scenarios
+
+Currently, the following business **scenarios** are implemented:
+
+- Creating the _case_
+- Updating the _case_ status
+- Closing the _case_
+- Receiving the _decision_
+
+### 5.2.2. Examples of notifications
+
+These are the examples of the structure of _JSON payloads_ to be used as initial notifications for testing or development purposes:
+
+#### 5.2.2.1. Cases
+
+```json
+{
+   "actie": "create",
+   "kanaal": "zaken",
+   "resource": "status",
+   "kenmerken": {
+      "zaaktype": "https://...",
+      "bronorganisatie": "000000000",
+      "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
+   },
+   "hoofdObject": "https://...",
+   "resourceUrl": "https://...",
+   "aanmaakdatum": "2024-04-09T13:35:11.223Z"
+}
+```
+
+#### 5.2.2.2. Decisions
+
+```json
+{
+   "actie": "create",
+   "kanaal": "besluiten",
+   "resource": "besluit",
+   "kenmerken": {
+      "besluittype": "https://...",
+      "verantwoordelijkeOrganisatie": "000000000"
+   },
+   "hoofdObject": "https://...",
+   "resourceUrl": "https://...",
+   "aanmaakdatum": "2023-10-05T08:52:02.273Z"
+}
+```
 
 ---
 # 6. Errors
