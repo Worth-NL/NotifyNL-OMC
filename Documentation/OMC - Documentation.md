@@ -13,7 +13,9 @@ v.1.8.1
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
 - [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
-- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service)
+- [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
+
+> **NOTE:** Different versions of these external API services are handled by, so called "[OMC Workflows](#workflow_versions)".
 
 ## 1.1. Swagger UI
 
