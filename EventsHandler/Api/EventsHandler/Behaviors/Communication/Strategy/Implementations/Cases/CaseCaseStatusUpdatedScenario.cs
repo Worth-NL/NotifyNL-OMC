@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
@@ -39,9 +40,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
-            this.CachedCaseStatuses ??= await this.DataQuery.From(notification).GetCaseStatusesAsync();
-            this.CachedLastCaseStatusType ??= await this.DataQuery.From(notification).GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
+            IQueryContext queryContext = this.DataQuery.From(notification);
+            this.CachedCase ??= await queryContext.GetCaseAsync();
+            this.CachedCaseStatuses ??= await queryContext.GetCaseStatusesAsync();
+            this.CachedLastCaseStatusType ??= await queryContext.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
 
             return new Dictionary<string, object>
             {
@@ -64,9 +66,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
-            this.CachedCaseStatuses ??= await this.DataQuery.From(notification).GetCaseStatusesAsync();
-            this.CachedLastCaseStatusType ??= await this.DataQuery.From(notification).GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
+            IQueryContext queryContext = this.DataQuery.From(notification);
+            this.CachedCase ??= await queryContext.GetCaseAsync();
+            this.CachedCaseStatuses ??= await queryContext.GetCaseStatusesAsync();
+            this.CachedLastCaseStatusType ??= await queryContext.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
 
             return new Dictionary<string, object>
             {
