@@ -70,6 +70,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <exception cref="AbortedNotifyingException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
