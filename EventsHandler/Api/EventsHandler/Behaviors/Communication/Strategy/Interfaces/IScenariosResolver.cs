@@ -1,6 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Text.Json;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Exceptions;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
 {
@@ -16,8 +18,20 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <returns>
         ///   The appropriate <see cref="INotifyScenario"/> strategy.
         /// </returns>
+        /// <exception cref="KeyNotFoundException">
+        ///   The key used to retrieve a specific "environment variable" value was invalid.
+        /// </exception>
+        /// <exception cref="HttpRequestException">
+        ///   There was an error while attempting to fetch some resources using HTTP Request.
+        /// </exception>
+        /// <exception cref="JsonException">
+        ///   The JSON payload could not be deserialized into specified POCO model.
+        /// </exception>
+        /// <exception cref="AbortedNotifyingException">
+        ///   The processing and sending of this notification should not be continued.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        ///   The following service (scenario strategy) could not be resolved.
+        ///   The following service (scenario strategy) could not be resolved from <see cref="IServiceProvider"/>.
         /// </exception>
         /// <exception cref="NotImplementedException">
         ///   The processing strategy could not be determined.

@@ -700,6 +700,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It was requested to not send notification for this type of case status. Processing aborted..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_CaseStatusType {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseStatusType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to It wasn&apos;t possible to extract human-friendly error message.
         /// </summary>
         internal static string Processing_ERROR_ExecutingContext_UnknownErrorDetails {

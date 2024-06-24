@@ -145,7 +145,7 @@ namespace EventsHandler.Controllers
 
         private static (ProcessingResult, string) GetAbortedResult(string message, object json)
         {
-            return (ProcessingResult.Aborted, EnrichDescription(message, json));
+            return (ProcessingResult.NotPossible, EnrichDescription(message, json));
         }
 
         private static string EnrichDescription(string originalText, object json)

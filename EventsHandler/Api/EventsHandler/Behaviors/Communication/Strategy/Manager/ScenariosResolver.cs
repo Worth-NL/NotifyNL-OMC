@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Manager
@@ -32,7 +33,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             // Supported scenarios for business cases
             if (IsCaseScenario(notification))
             {
-                CaseStatuses caseStatuses = await this._dataQuery.From(notification).GetCaseStatusesAsync();
+                IQueryContext queryContext = this._dataQuery.From(notification);
+                CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
 
                 // Scenario #1: "Case created"
                 if (caseStatuses.WereNeverUpdated())
@@ -41,7 +43,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 }
 
                 CaseStatusType lastCaseStatusType =
-                    await this._dataQuery.From(notification).GetLastCaseStatusTypeAsync(caseStatuses);
+                    await queryContext.GetLastCaseStatusTypeAsync(caseStatuses);
 
                 BaseCaseScenario strategy = !lastCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"

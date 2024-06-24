@@ -3,6 +3,8 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Exceptions;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -60,7 +62,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             statuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
 
             // 2. Fetch the case status type from the last case status from "OpenZaak" Web API service
-            return await this._queryZaak.GetLastCaseStatusTypeAsync(this._queryBase, statuses.Value);
+            CaseStatusType statusType = await this._queryZaak.GetLastCaseStatusTypeAsync(this._queryBase, statuses.Value);
+
+            return statusType.IsNotificationExpected
+                ? statusType
+                : throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_CaseStatusType);
         }
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>

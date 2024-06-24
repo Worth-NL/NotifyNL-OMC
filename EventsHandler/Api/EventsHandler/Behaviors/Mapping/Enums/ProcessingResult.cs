@@ -15,18 +15,23 @@ namespace EventsHandler.Behaviors.Mapping.Enums
         Success = 0,
 
         /// <summary>
-        /// The <see cref="NotificationEvent"/> was not processed (e.g., as part of requirements). DO NOT retry sending.
+        /// The processing of <see cref="NotificationEvent"/> was skipped (intentionally). DO NOT retry sending.
         /// </summary>
         Skipped = 1,
 
         /// <summary>
-        /// The <see cref="NotificationEvent"/> was not processed (e.g., due to internal errors). Retry is required.
+        /// The processing of <see cref="NotificationEvent"/> was aborted (intentionally). DO NOT retry sending.
         /// </summary>
-        Failure = 2,
+        Aborted = 2,
+        
+        /// <summary>
+        /// The processing of <see cref="NotificationEvent"/> wasn't possible (e.g., due to missing data). DO NOT retry sending.
+        /// </summary>
+        NotPossible = 3,
 
         /// <summary>
-        /// The <see cref="NotificationEvent"/> was not processed (e.g., due to missing data). DO NOT retry sending.
+        /// The <see cref="NotificationEvent"/> was not processed (e.g., due to internal errors). Retry is required.
         /// </summary>
-        Aborted = 3
+        Failure = 4
     }
 }
