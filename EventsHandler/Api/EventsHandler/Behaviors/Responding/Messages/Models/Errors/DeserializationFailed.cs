@@ -12,7 +12,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
     /// Serialization of <see cref="NotificationEvent"/> was unsuccessful.
     /// </summary>
     /// <seealso cref="BaseEnhancedStandardResponseBody"/>
-    internal sealed class DeserializationFailed : BaseEnhancedStandardResponseBody
+    internal sealed record DeserializationFailed : BaseEnhancedStandardResponseBody
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DeserializationFailed"/> class.

@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 namespace EventsHandler.Controllers
 {
     /// <summary>
-    /// Controller used to test other API services from which "Notify NL" OMC is dependent.
+    /// Controller used to test other Web API services from which "Notify NL" OMC is dependent.
     /// </summary>
     /// <seealso cref="OmcController"/>
     public sealed class TestController : OmcController
@@ -179,7 +179,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks whether feedback can be received by contact register API Web API service.
+        /// Checks whether feedback can be received by contact register Web API service.
         /// </summary>
         /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
         [HttpPost]

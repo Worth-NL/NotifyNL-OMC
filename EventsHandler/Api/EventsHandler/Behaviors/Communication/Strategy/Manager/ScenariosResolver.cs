@@ -1,6 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy.Base;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
@@ -28,7 +30,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
         async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
         {
             // Supported scenarios for business cases
-            if (CanProcess(notification))
+            if (IsCaseScenario(notification))
             {
                 CaseStatuses caseStatuses = await this._dataQuery.From(notification).GetCaseStatusesAsync();
 
@@ -41,15 +43,21 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 CaseStatusType lastCaseStatusType =
                     await this._dataQuery.From(notification).GetLastCaseStatusTypeAsync(caseStatuses);
 
-                BaseStatusScenario strategy = !lastCaseStatusType.IsFinalStatus
+                BaseCaseScenario strategy = !lastCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"
-                    ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
+                    ? this._serviceProvider.GetRequiredService<CaseCaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
-                    : this._serviceProvider.GetRequiredService<CaseFinishedScenario>();
+                    : this._serviceProvider.GetRequiredService<CaseCaseFinishedScenario>();
 
                 strategy.PassAlreadyQueriedResult(lastCaseStatusType);
 
                 return strategy;
+            }
+            
+            // Scenario #4: "Decision made"
+            if (IsDecisionScenario(notification))
+            {
+                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
             // There is no matching scenario to be applied. There is no clear instruction what to do with received Notification
@@ -59,13 +67,32 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
         /// <summary>
         /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
-        private static bool CanProcess(NotificationEvent notification)
+        /// <remarks>
+        ///   This check is verifying whether case scenarios would be processed.
+        /// </remarks>
+        private static bool IsCaseScenario(NotificationEvent notification)
         {
             return notification is
             {
                 Action:   Actions.Create,
                 Channel:  Channels.Cases,
                 Resource: Resources.Status
+            };
+        }
+
+        /// <summary>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        /// </summary>
+        /// <remarks>
+        ///   This check is verifying whether decision scenarios would be processed.
+        /// </remarks>
+        private static bool IsDecisionScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action:   Actions.Create,
+                Channel:  Channels.Decisions,
+                Resource: Resources.Decision
             };
         }
     }

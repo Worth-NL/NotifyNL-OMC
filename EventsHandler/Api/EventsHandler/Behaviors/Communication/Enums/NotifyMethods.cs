@@ -16,9 +16,6 @@ namespace EventsHandler.Behaviors.Communication.Enums
         Email = DistributionChannels.Email,  // 2
 
         /// <inheritdoc cref="DistributionChannels.Sms"/>
-        Sms = DistributionChannels.Sms,  // 3
-
-        /// <inheritdoc cref="DistributionChannels.Both"/>
-        Both = DistributionChannels.Both  // 4
+        Sms = DistributionChannels.Sms  // 3
     }
 }

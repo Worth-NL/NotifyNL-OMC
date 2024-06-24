@@ -9,8 +9,8 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Base
     /// <summary>
     /// Standard format how to display internal API responses with elaborative details.
     /// </summary>
-    /// <seealso cref="BaseApiStandardResponseBody"/>
-    internal abstract class BaseEnhancedStandardResponseBody : BaseApiStandardResponseBody
+    /// <seealso cref="BaseStandardResponseBody"/>
+    internal abstract record BaseEnhancedStandardResponseBody : BaseStandardResponseBody
     {
         [JsonPropertyName("Details")]
         [JsonPropertyOrder(2)]

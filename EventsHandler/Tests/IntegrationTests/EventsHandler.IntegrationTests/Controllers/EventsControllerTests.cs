@@ -27,11 +27,11 @@ namespace EventsHandler.IntegrationTests.Controllers
     {
         private static readonly object s_testJson = new();
 
-        private Mock<ISerializationService> _serializerMock = new();
-        private Mock<IValidationService<NotificationEvent>> _validatorMock = new();
-        private Mock<IProcessingService<NotificationEvent>> _processorMock = new();
-        private Mock<IRespondingService<NotificationEvent>> _responderMock = new();
-        private Mock<IVersionsRegister> _registerMock = new();
+        private Mock<ISerializationService> _serializerMock = null!;
+        private Mock<IValidationService<NotificationEvent>> _validatorMock = null!;
+        private Mock<IProcessingService<NotificationEvent>> _processorMock = null!;
+        private Mock<IRespondingService<NotificationEvent>> _responderMock = null!;
+        private Mock<IVersionsRegister> _registerMock = null!;
 
         [OneTimeSetUp]
         public void InitializeMocks()
@@ -49,7 +49,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             this._serializerMock.Reset();
             this._serializerMock.Setup(mock => mock.Deserialize<NotificationEvent>(
                     It.IsAny<object>()))
-                .Returns(NotificationEventHandler.GetNotification_Test_WithOrphans_ManuallyCreated);
+                .Returns(NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated);
 
             this._validatorMock.Reset();
             this._validatorMock.Setup(mock => mock.Validate(
@@ -62,7 +62,7 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         #region Testing IActionResult API responses
         [Test]
-        public async Task ListenAsync_UnexpectedFailure_ReturnsExpectedIActionResult()
+        public async Task ListenAsync_Failure_Deserialize_ReturnsErrorResult()
         {
             // Arrange
             this._serializerMock.Setup(mock => mock.Deserialize<NotificationEvent>(It.IsAny<object>()))
@@ -82,7 +82,32 @@ namespace EventsHandler.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task ListenAsync_HttpFailure_ReturnsExpectedIActionResult()
+        public async Task ListenAsync_Failure_Validate_ReturnsErrorResult()
+        {
+            // Arrange
+            this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
+                               .Returns((ref NotificationEvent notificationEvent) =>
+                               {
+                                   notificationEvent.Details = GetTestErrorDetails_Notification_Properties();  // NOTE: Other ErrorDetails are also possible, but that's covered in Validator tests
+
+                                   return HealthCheck.ERROR_Invalid;
+                               });
+
+            EventsController testController = GetTestEventsController_WithRealResponder();
+
+            // Act
+            IActionResult actualResult = await testController.ListenAsync(s_testJson);
+
+            // Assert
+            AssertWithConditions<UnprocessableEntityObjectResult, DeserializationFailed>(
+                actualResult,
+                HttpStatusCode.UnprocessableEntity,
+                Resources.Operation_RESULT_Deserialization_Failure,
+                Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message);
+        }
+        
+        [Test]
+        public async Task ListenAsync_Failure_ProcessAsync_ReturnsErrorResult()
         {
             // Arrange
             this._processorMock.Setup(mock => mock.ProcessAsync(It.IsAny<NotificationEvent>()))
@@ -94,7 +119,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             IActionResult actualResult = await testController.ListenAsync(s_testJson);
 
             // Assert
-            AssertWithConditions<BadRequestObjectResult, HttpRequestFailed>(
+            AssertWithConditions<BadRequestObjectResult, HttpRequestFailed.Detailed>(
                 actualResult,
                 HttpStatusCode.BadRequest,
                 Resources.Operation_RESULT_HttpRequest_Failure,
@@ -102,32 +127,7 @@ namespace EventsHandler.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task ListenAsync_HealthCheck_ERROR_Invalid_ReturnsExpectedIActionResult()
-        {
-            // Arrange
-            this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
-                               .Returns((ref NotificationEvent notificationEvent) =>
-                               {
-                                   notificationEvent.Details = GetTestErrorDetails();
-
-                                   return HealthCheck.ERROR_Invalid;
-                               });
-
-            EventsController testController = GetTestEventsController_WithRealResponder();
-
-            // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
-
-            // Assert
-            AssertWithConditions<UnprocessableEntityObjectResult, ProcessingFailed.Detailed>(
-                actualResult,
-                HttpStatusCode.UnprocessableEntity,
-                Resources.Processing_ERROR_Scenario_NotificationNotSent + AddNotificationDetails(s_testJson),
-                Resources.Operation_RESULT_Deserialization_Failure);
-        }
-
-        [Test]
-        public async Task ListenAsync_HealthCheck_OK_Inconsistent_ReturnsExpectedIActionResult()
+        public async Task ListenAsync_Success_Validate_HealthCheck_OK_Inconsistent_ReturnsInfoResult()
         {
             // Arrange
             this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
@@ -155,7 +155,7 @@ namespace EventsHandler.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task ListenAsync_HealthCheck_OK_Valid_ReturnsExpectedIActionResult()
+        public async Task ListenAsync_Success_Validate_HealthCheck_OK_Valid_ReturnsInfoResult()
         {
             // Arrange
             this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
@@ -184,9 +184,17 @@ namespace EventsHandler.IntegrationTests.Controllers
         #endregion
 
         #region Helper methods
-        private static ErrorDetails GetTestErrorDetails()
+        private static ErrorDetails GetTestErrorDetails_Notification_Properties()
         {
-            return new ErrorDetails(Resources.Operation_RESULT_Deserialization_Failure, string.Empty, Array.Empty<string>());
+            return new ErrorDetails(
+                Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
+                "hoofdObject, resourceUrl",
+                new[]
+                {
+                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
+                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
+                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
+                });
         }
 
         private static InfoDetails GetTestInfoDetails_Partial()
@@ -221,20 +229,23 @@ namespace EventsHandler.IntegrationTests.Controllers
                 string expectedDetailsMessage
             )
             where TExpectedApiActionResultType : IActionResult
-            where TExpectedApiResponseBodyType : BaseEnhancedStandardResponseBody
         {
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult, Is.TypeOf<TExpectedApiActionResultType>());
 
                 var castResult = (ObjectResult)actualResult;
-                Assert.That(castResult.StatusCode, Is.EqualTo((int)expectedHttpStatusCode));
+                Assert.That(castResult.StatusCode, Is.EqualTo((int)expectedHttpStatusCode), "Status code");
 
-                if (castResult.Value is TExpectedApiResponseBodyType apiResponse)
+                if (castResult.Value is BaseStandardResponseBody simpleResponse)
                 {
-                    Assert.That(apiResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode));
-                    Assert.That(apiResponse.StatusDescription, Is.EqualTo(expectedStatusDescription));
-                    Assert.That(apiResponse.Details.Message, Is.EqualTo(expectedDetailsMessage));
+                    Assert.That(simpleResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode), "Status code");
+                    Assert.That(simpleResponse.StatusDescription, Is.EqualTo(expectedStatusDescription), "Status description");
+                    
+                    if (castResult.Value is BaseEnhancedStandardResponseBody enhancedResponse)
+                    {
+                        Assert.That(enhancedResponse.Details.Message, Is.EqualTo(expectedDetailsMessage), "Details message");
+                    }
                 }
                 else
                 {
@@ -245,10 +256,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             });
         }
 
-        private static string AddNotificationDetails(object json)
-        {
-            return $" | Notification: {json}";
-        }
+        private static string AddNotificationDetails(object json) => $" | Notification: {json}";
         #endregion
     }
 }

@@ -9,6 +9,8 @@ namespace EventsHandler.Behaviors.Responding.Results.Enums
     /// </summary>
     internal enum Reasons
     {
+        // ReSharper disable InconsistentNaming => Allow names with underscores
+
         /// <summary>
         /// The details handling the remaining cases of validation issues.
         /// </summary>
@@ -47,7 +49,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Enums
         MissingProperties_Attributes = 4,
 
         /// <summary>
-        /// Details for unexpectd data in <see cref="NotificationEvent"/>.
+        /// Details for unexpected data in <see cref="NotificationEvent"/>.
         /// <para>
         ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="NotificationEvent"/> model.
         /// </para>
@@ -55,7 +57,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Enums
         UnexpectedProperties_Notification = 5,
 
         /// <summary>
-        /// Details for unexpectd data in <see cref="EventAttributes"/>.
+        /// Details for unexpected data in <see cref="EventAttributes"/>.
         /// <para>
         ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="EventAttributes"/> model.
         /// </para>

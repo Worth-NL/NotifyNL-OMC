@@ -11,6 +11,7 @@ using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
 using EventsHandler.Behaviors.Responding.Results.Enums;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +68,7 @@ namespace EventsHandler.Services.UserCommunication
             }
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext,System.Collections.Generic.IDictionary{string,string[]})"/>
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(ResultExecutingContext, IDictionary{string,string[]})"/>
         ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
@@ -122,22 +123,26 @@ namespace EventsHandler.Services.UserCommunication
         #endregion
 
         #region Implementation
-        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Status_ActionResult"/>
+        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Status_ActionResult(ValueTuple{ProcessingResult, string}, BaseEnhancedDetails)"/>
         ObjectResult IRespondingService<NotificationEvent>.Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
         {
             return result.Status switch
             {
                 ProcessingResult.Success
-                    => new ProcessingSucceeded(result.Description, details).AsResult_202(),
+                    => new ProcessingSucceeded(result.Description).AsResult_202(),
 
                 ProcessingResult.Skipped
                     => new ProcessingSkipped(result.Description).AsResult_206(),
 
                 ProcessingResult.Failure
-                    => string.Equals(details.Message, Resources.Operation_RESULT_Deserialization_Failure) ||
-                       string.Equals(details.Message, Resources.Deserialization_INFO_UnexpectedData_Notification_Message)
-                        ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_422()
-                        : new ProcessingFailed.Simplified(HttpStatusCode.BadRequest, result.Description).AsResult_400(),
+                    => details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
+                        ? new HttpRequestFailed.Simplified(details).AsResult_400()
+                        : details.Cases.IsNotEmpty() && details.Reasons.Any()
+                            ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_400()
+                            : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
+
+                ProcessingResult.Aborted
+                    => new DeserializationFailed(details).AsResult_422(),
 
                 _ => ObjectResultExtensions.AsResult_501()
             };

@@ -1,19 +1,18 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Net;
 using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
+using System.Net;
 
 namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
 {
     /// <summary>
     /// Processing of notification was unsuccessful (due to some unexpected reasons).
     /// </summary>
-    /// <seealso cref="BaseEnhancedStandardResponseBody"/>
     internal static class ProcessingFailed
     {
         /// <inheritdoc cref="ProcessingFailed"/>
-        internal sealed class Detailed : BaseEnhancedStandardResponseBody
+        internal sealed record Detailed : BaseEnhancedStandardResponseBody
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="Detailed"/> class.
@@ -28,8 +27,8 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         }
 
         /// <inheritdoc cref="ProcessingFailed"/>
-        /// <seealso cref="BaseApiStandardResponseBody"/>
-        internal sealed class Simplified : BaseApiStandardResponseBody
+        /// <seealso cref="BaseStandardResponseBody"/>
+        internal sealed record Simplified : BaseStandardResponseBody
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="Simplified"/> class.

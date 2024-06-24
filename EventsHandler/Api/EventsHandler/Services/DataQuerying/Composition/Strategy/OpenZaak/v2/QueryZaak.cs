@@ -36,20 +36,26 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
         {
+            return await ((IQueryZaak)this).GetBsnNumberAsync(queryBase, queryBase.Notification.MainObject);
+        }
+
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
+        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
+        {
             string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
-            return (await GetCaseRolesV2Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), subjectType))
+            return (await GetCaseRolesV2Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), caseTypeUri, subjectType))
                 .Citizen(((IQueryZaak)this).Configuration)
                 .BsnNumber;
         }
 
-        private static async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, string openZaakDomain, string subjectType)
+        private static async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri, string subjectType)
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
 
             // Request URL
-            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={queryBase.Notification.MainObject}" +
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseTypeUri}" +
                                           $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(
@@ -64,7 +70,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
         {
             return (await GetCaseDetailsV2Async(queryBase))
-                .CaseType;
+                .CaseTypeUrl;
         }
         
         private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase)

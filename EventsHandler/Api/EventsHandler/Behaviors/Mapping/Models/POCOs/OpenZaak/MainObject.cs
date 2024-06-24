@@ -8,6 +8,10 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
     /// The domain object attached to the <see cref="NotificationEvent"/> and used for most of the further references.
+    /// <remarks>
+    ///   Many workflows might request data from URL stored as "hoofdObject", but the responses also might be different
+    ///   depending on the business case scenario. For example, response might be case or decision.
+    /// </remarks>
     /// </summary>
     /// <seealso cref="IJsonSerializable" />
     public struct MainObject : IJsonSerializable
