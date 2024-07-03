@@ -56,10 +56,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 return strategy;
             }
 
-            // Scenario #4: "Task ..."
+            // Scenario #4: "Task assigned"
             if (IsTaskScenario(notification))
             {
-
+                return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
             }
             
             // Scenario #5: "Decision made"
@@ -68,7 +68,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
-            // There is no matching scenario to be applied. There is no clear instruction what to do with received Notification
+            // No matching scenario. There is no clear instruction what to do with the received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
