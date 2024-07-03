@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Converters;
 using EventsHandler.Constants;
 using System.Text.Json.Serialization;
@@ -23,12 +22,12 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
         /// Notification type: e-mail.
         /// </summary>
         [JsonPropertyName("email")]
-        Email = NotifyMethods.Email,  // 2
+        Email = 1,
         
         /// <summary>
         /// Notification type: SMS.
         /// </summary>
         [JsonPropertyName("sms")]
-        Sms = NotifyMethods.Sms  // 3
+        Sms = 2
     }
 }
