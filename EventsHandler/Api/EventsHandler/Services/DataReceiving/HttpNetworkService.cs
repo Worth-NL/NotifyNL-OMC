@@ -72,13 +72,13 @@ namespace EventsHandler.Services.DataReceiving
                 .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
+                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.Telemetry_Klantinteracties)) }));
+                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace EventsHandler.Services.DataReceiving
         /// <returns>
         /// The Key and Value of the "Header" used for authorization purpose.
         /// </returns>
-        private string AuthorizeWithStaticToken(HttpClientTypes httpClientType)
+        private string AuthorizeWithStaticApiKey(HttpClientTypes httpClientType)
         {
             return httpClientType switch
             {
