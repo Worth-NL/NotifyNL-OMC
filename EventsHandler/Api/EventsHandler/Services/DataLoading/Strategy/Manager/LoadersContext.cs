@@ -12,7 +12,7 @@ namespace EventsHandler.Services.DataLoading.Strategy.Manager
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private ILoadingService? _loadingService;
+        private ILoadingService _loadingService = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadersContext"/> class.
