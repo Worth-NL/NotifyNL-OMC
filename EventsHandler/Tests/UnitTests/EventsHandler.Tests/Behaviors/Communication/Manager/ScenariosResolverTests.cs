@@ -45,6 +45,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new CaseCaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new CaseCaseFinishedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new TaskAssignedScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object));
 
@@ -64,7 +65,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             this._serviceProvider.Dispose();
         }
 
-        #region DetermineScenarioAsync
+        #region DetermineScenarioAsync()
         [Test]
         public async Task DetermineScenarioAsync_ForInvalidNotification_ReturnsNotImplementedScenario()
         {
@@ -169,6 +170,26 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
 
             // Assert
             Assert.That(actualResult, Is.TypeOf<CaseCaseFinishedScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_ForTaskAssignedScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            var testNotification = new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Objects,
+                Resource = Resources.Object
+            };
+            
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<TaskAssignedScenario>());
         }
 
         [Test]
