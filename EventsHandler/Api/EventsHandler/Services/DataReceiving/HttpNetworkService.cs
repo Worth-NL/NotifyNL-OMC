@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataReceiving
 
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
-        private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
+        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
@@ -93,12 +93,12 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.OpenZaak_v1  or
                 HttpClientTypes.OpenKlant_v1 or
                 HttpClientTypes.Telemetry_Contactmomenten
-                    => AuthorizeWithGeneratedJwt(this._httpClients.GetValueOrDefault(httpClientType)!),
+                    => AuthorizeWithGeneratedJwt(this._httpClients[httpClientType]),
                     
                 // Clients using static tokens from configuration
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => this._httpClients.GetValueOrDefault(httpClientType)!,
+                    => this._httpClients[httpClientType],
                 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
