@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
@@ -50,8 +51,6 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Responder = EventsHandler.Services.UserCommunication;
@@ -306,9 +305,8 @@ namespace EventsHandler
             services.AddSingleton<CaseCreatedScenario>();
             services.AddSingleton<CaseCaseStatusUpdatedScenario>();
             services.AddSingleton<CaseCaseFinishedScenario>();
-            
             services.AddSingleton<DecisionMadeScenario>();
-
+            services.AddSingleton<TaskAssignedScenario>();
             services.AddSingleton<NotImplementedScenario>();
         }
 
