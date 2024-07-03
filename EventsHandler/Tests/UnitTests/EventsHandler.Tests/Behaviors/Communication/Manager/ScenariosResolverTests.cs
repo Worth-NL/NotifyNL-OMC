@@ -1,102 +1,194 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using MoqExt;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
 {
     [TestFixture]
     public sealed class ScenariosResolverTests
     {
-        private Mock<INotifyScenario>? _mockedNotifyScenario;
-        private Mock<IDataQueryService<NotificationEvent>>? _mockedDataQuery;
+        private Mock<INotifyScenario> _mockedNotifyScenario = null!;
+        private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
 
-        private ServiceProvider? _serviceProvider;
-        private IScenariosResolver? _scenariosResolver;
+        private ServiceProvider _serviceProvider = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            WebApiConfiguration webApiConfiguration = new(new MockingContext());
-
             // Mocked services
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
-            this._mockedNotifyScenario?.Setup(mock => mock.GetAllNotifyDataAsync(
-                    It.IsAny<NotificationEvent>()))
+            this._mockedNotifyScenario
+                .Setup(mock => mock.GetAllNotifyDataAsync(It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(Array.Empty<NotifyData>());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
-            var defaultScenario = new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object);
 
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(webApiConfiguration);
-            serviceCollection.AddSingleton(defaultScenario);
-            this._serviceProvider = serviceCollection.BuildServiceProvider();
 
-            // Scenarios Manager
-            this._scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            WebApiConfiguration webApiConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
+
+            serviceCollection.AddSingleton(webApiConfiguration);
+            serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new CaseCaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new CaseCaseFinishedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+
+            this._serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         [SetUp]
         public void ResetTests()
         {
-            this._mockedDataQuery?.Reset();
+            // NOTE: This mock is object of tests setup (arrange)
+            this._mockedDataQuery.Reset();
         }
 
         [OneTimeTearDown]
         public void CleanupTests()
         {
-            // Dispose service provider with registered services
-            this._serviceProvider?.Dispose();
+            this._serviceProvider.Dispose();
         }
 
+        #region DetermineScenarioAsync
         [Test]
         public async Task DetermineScenarioAsync_ForInvalidNotification_ReturnsNotImplementedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent();
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act
-            INotifyScenario actualResult = await this._scenariosResolver!.DetermineScenarioAsync(testNotification);
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(default);
 
             // Assert
             Assert.That(actualResult, Is.TypeOf<NotImplementedScenario>());
         }
 
-        [Test, Ignore("QueryContext class is not yet ready for mocking => tech debt")]
+        [Test]
         public async Task DetermineScenarioAsync_ForCaseCreatedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            NotificationEvent testNotification = GetTestNotificationEvent();
-
-            // TODO: Finish unit testing by introducing IQueryContext interface first
-            //this._mockedDataQuery?.Setup(mock => mock.From(testNotification))
-            //    .Returns(new Mock<DataQueryService.QueryContext>());
-
-            // Act
-            INotifyScenario actualResult = await this._scenariosResolver!.DetermineScenarioAsync(testNotification);
-        }
-
-        #region Helper methods
-        private static NotificationEvent GetTestNotificationEvent()
-        {
-            return new NotificationEvent
+            var testNotification = new NotificationEvent
             {
                 Action = Actions.Create,
                 Channel = Channels.Cases,
                 Resource = Resources.Status
             };
+
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses { Count = 1 });
+
+            this._mockedDataQuery
+                .Setup(mock => mock.From(testNotification))
+                .Returns(mockedQueryContext.Object);
+            
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<CaseCreatedScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_ForCaseCaseStatusUpdatedScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            var testNotification = new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Cases,
+                Resource = Resources.Status
+            };
+
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses { Count = 2 });
+            mockedQueryContext
+                .Setup(mock => mock.GetLastCaseStatusTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseStatusType { IsFinalStatus = false });
+
+            this._mockedDataQuery
+                .Setup(mock => mock.From(testNotification))
+                .Returns(mockedQueryContext.Object);
+            
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<CaseCaseStatusUpdatedScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_ForCaseCaseFinishedScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            var testNotification = new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Cases,
+                Resource = Resources.Status
+            };
+
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses { Count = 2 });
+            mockedQueryContext
+                .Setup(mock => mock.GetLastCaseStatusTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseStatusType { IsFinalStatus = true });
+
+            this._mockedDataQuery
+                .Setup(mock => mock.From(testNotification))
+                .Returns(mockedQueryContext.Object);
+            
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<CaseCaseFinishedScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_ForDecisionMadeScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            var testNotification = new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Decisions,
+                Resource = Resources.Decision
+            };
+            
+            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<DecisionMadeScenario>());
         }
         #endregion
     }
