@@ -184,6 +184,9 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="OpenKlantComponent"/>
                 internal OpenKlantComponent OpenKlant { get; }
 
+                /// <inheritdoc cref="ObjectenComponent"/>
+                internal ObjectenComponent Objecten { get; }
+
                 /// <inheritdoc cref="MessagesComponent"/>
                 internal MessagesComponent Messages { get; }
                 
@@ -196,6 +199,7 @@ namespace EventsHandler.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
+                    this.Objecten = new ObjectenComponent(loadersContext, this._currentPath);
                     this.Messages = new MessagesComponent(loadersContext, this._currentPath);
                 }
 
@@ -247,6 +251,28 @@ namespace EventsHandler.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string CodeObjectTypeId()
                         => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
+                }
+                
+                /// <summary>
+                /// The "Objecten" part of the settings.
+                /// </summary>
+                internal sealed class ObjectenComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
+                    /// </summary>
+                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal Guid TaskTypeGuid()
+                        => GetValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
                 }
 
                 /// <summary>
