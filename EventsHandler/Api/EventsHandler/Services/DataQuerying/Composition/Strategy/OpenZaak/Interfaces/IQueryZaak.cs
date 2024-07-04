@@ -16,7 +16,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
     /// The methods querying specific data from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
-    internal interface IQueryZaak : IVersionDetails
+    internal interface IQueryZaak : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }
@@ -55,7 +55,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal sealed async Task<CaseStatuses> GetCaseStatusesAsync(IQueryBase queryBase)
         {
             // Predefined URL components
-            string statusesEndpoint = $"https://{GetSpecificOpenZaakDomain()}/zaken/api/v1/statussen";
+            string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
 
             // Request URL
             Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");
@@ -153,15 +153,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal Task<string> SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body);
         #endregion
 
-        #region Domain
-        /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenZaak" Web API service URI:
-        /// <code>
-        ///   http(s)://[DOMAIN]/ApiEndpoint
-        /// </code>
-        /// </summary>
-        /// <exception cref="KeyNotFoundException"/>
-        internal sealed string GetSpecificOpenZaakDomain() => this.Configuration.User.Domain.OpenZaak();
+        #region Polymorphic (Domain)
+        /// <inheritdoc cref="IDomain.GetDomain"/>
+        string IDomain.GetDomain() => this.Configuration.User.Domain.OpenZaak();
         #endregion
     }
 }
