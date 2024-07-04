@@ -7,6 +7,7 @@ using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
@@ -21,17 +22,24 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         private readonly IQueryBase _queryBase;
         private readonly IQueryKlant _queryKlant;
         private readonly IQueryZaak _queryZaak;
+        private readonly IQueryObjecten _queryObjecten;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(IHttpNetworkService networkService, IQueryBase queryBase, IQueryKlant queryKlant, IQueryZaak queryZaak)
+        public QueryContext(
+            IHttpNetworkService networkService,
+            IQueryBase queryBase,
+            IQueryKlant queryKlant,
+            IQueryZaak queryZaak,
+            IQueryObjecten queryObjecten)
         {
             // Composition
             this._networkService = networkService;
             this._queryBase = queryBase;
             this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
+            this._queryObjecten = queryObjecten;
         }
 
         #region IQueryBase
