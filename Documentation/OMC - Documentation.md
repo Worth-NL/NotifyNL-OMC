@@ -454,9 +454,10 @@ Any **OMC** workflow relies on receiving the (initial) notification from **Notif
 
 Currently, the following business **scenarios** are implemented:
 
-- Creating the _case_
+- Opening (creating) the _case_
 - Updating the _case_ status
 - Closing the _case_
+- Assignment of the _task_
 - Receiving the _decision_
 
 ### 5.2.2. Examples of notifications
@@ -467,34 +468,50 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 ```json
 {
-   "actie": "create",
-   "kanaal": "zaken",
-   "resource": "status",
-   "kenmerken": {
-      "zaaktype": "https://...",
-      "bronorganisatie": "000000000",
-      "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
-   },
-   "hoofdObject": "https://...",
-   "resourceUrl": "https://...",
-   "aanmaakdatum": "2024-04-09T13:35:11.223Z"
+  "actie": "create",
+  "kanaal": "zaken",
+  "resource": "status",
+  "kenmerken": {
+    "zaaktype": "https://...",
+    "bronorganisatie": "000000000",
+    "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
 }
 ```
 
-#### 5.2.2.2. Decisions
+#### 5.2.2.2. Tasks
 
 ```json
 {
-   "actie": "create",
-   "kanaal": "besluiten",
-   "resource": "besluit",
-   "kenmerken": {
-      "besluittype": "https://...",
-      "verantwoordelijkeOrganisatie": "000000000"
-   },
-   "hoofdObject": "https://...",
-   "resourceUrl": "https://...",
-   "aanmaakdatum": "2023-10-05T08:52:02.273Z"
+  "actie": "create",
+  "kanaal": "objecten",
+  "resource": "object",
+  "kenmerken": {
+    "objectType": "https://..."
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
+}
+```
+
+#### 5.2.2.3. Decisions
+
+```json
+{
+  "actie": "create",
+  "kanaal": "besluiten",
+  "resource": "besluit",
+  "kenmerken": {
+    "besluittype": "https://...",
+    "verantwoordelijkeOrganisatie": "000000000"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
 }
 ```
 
