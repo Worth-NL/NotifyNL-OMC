@@ -51,6 +51,8 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Responder = EventsHandler.Services.UserCommunication;
@@ -320,6 +322,7 @@ namespace EventsHandler
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton<IQueryObjecten, QueryObjecten>();
 
             // Feedback and telemetry
             builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
