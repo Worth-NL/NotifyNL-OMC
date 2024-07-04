@@ -12,6 +12,8 @@ v.1.8.3
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
+- [**Objecten**](https://github.com/maykinmedia/objects-api) (Web API service)
+- [**ObjectTypen**](https://github.com/maykinmedia/objecttypes-api) (Web API service)
 - [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
 - [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
 
@@ -106,8 +108,9 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_AUTHORIZATION_JWT_USERID": "",
         "USER_AUTHORIZATION_JWT_USERNAME": "",
         
-        "USER_API_KEY_NOTIFYNL": "",
+        "USER_API_KEY_OPENKLANT_2": "",
         "USER_API_KEY_OBJECTEN": "",
+        "USER_API_KEY_NOTIFYNL": "",
         
         "USER_DOMAIN_OPENNOTIFICATIES": "",
         "USER_DOMAIN_OPENZAAK": "",
@@ -220,9 +223,9 @@ in order to run an already created **docker container**.
 | USER_AUTHORIZATION_JWT_USERNAME                     | string | Municipality of Rotterdam          | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
 | ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Authorization:** API Keys                         |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
-| USER_API_KEY_NOTIFYNL                               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                |
 | USER_API_KEY_OPENKLANT_2                            | string | 43dcba52d312d1e00bc...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Open Klant 2.0 web UI                                                                                                                                                                   |
 | USER_API_KEY_OBJECTEN                               | string | 56abcd24e75c02d44ee...             | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from Objecten web UI                                                                                                                                                                         |
+| USER_API_KEY_NOTIFYNL                               | string | name-8-4-4-4-12-8-4-4-4-12         | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                |
 | ---                                                 | ---    | ---                                | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Connection:** Base URLs to external API services  |        |                                    |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | OMC_API_BASEURL_NOTIFYNL                            | string | https://api.notify.nl              | false        | Cannot be missing and have null or empty value                                                                                             | The domain where your Notify API instance is listening (e.g.: "https://api.notifynl.nl")                                                                                                                              |
@@ -409,12 +412,16 @@ Here are the details which _workflows_ are using which versions of the external 
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - "OpenKlant" v1.0.0
+- "Objecten" v2.3.1
+- "ObjectTypen" v2.2.0
 - "Contactmomenten" v1.0.0
 
 #### OMC workflow v2:
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - <code>new</code> "OpenKlant" v2.0.0
+- "Objecten" v2.3.1
+- "ObjectTypen" v2.2.0
 - <code>new</code> "Klantcontacten" v2.0.0
 
 > **NOTE:** The OMC workflows can be defined in `appsettings[...].json` configuration file.
@@ -454,7 +461,7 @@ Any **OMC** workflow relies on receiving the (initial) notification from **Notif
 
 Currently, the following business **scenarios** are implemented:
 
-- Opening (creating) the _case_
+- Opening the _case_
 - Updating the _case_ status
 - Closing the _case_
 - Assignment of the _task_
@@ -599,11 +606,11 @@ Endpoints:
 Something went wrong when calling external API services: OpenZaak, OpenKlant, contactmomenten...
 
 You woull get the following outcome (separated by pipes):
-`The first possible error message`* | `Full URL to which request was tried to be send` | `The original JSON response from the called service`**
+`OMC` | `Log severity (Error / Warning / Info / Debug)` | `The first possible error message`* | `Full URL to which request was tried to be send` | `The original JSON response from the called service`** | `Notification: The initial notification`
 
 \*  That interrupted the happy path workflow due to connectivity issues, invalid configuration values, or service being down. Unfortunately, due to complexity of the system, the variety of potential errors is quite broad.
 
-\** **WARNING**: For some mysterious reasons, authors of the third-party software (used in OMC-NotifyNL workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
+\** **WARNING**: For some mysterious reasons, authors of the third-party software (used in **OMC-NotifyNL** workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
 
 > **NOTE**: Unfortunately, **OMC** Development Team cannot provide meaningful guidance how the external services were developed or configured.
 
