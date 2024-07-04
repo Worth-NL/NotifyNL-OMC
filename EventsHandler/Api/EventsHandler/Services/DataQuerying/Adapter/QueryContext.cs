@@ -133,7 +133,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
         {
             return await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
-                this._networkService, this._queryKlant.GetSpecificOpenKlantDomain(), body);
+                this._networkService, this._queryKlant.GetDomain(), body);
         }
         #endregion
     }
