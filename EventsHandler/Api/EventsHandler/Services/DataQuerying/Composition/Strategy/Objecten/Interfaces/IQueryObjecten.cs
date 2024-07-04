@@ -16,5 +16,16 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
+
+        #region Domain
+        /// <summary>
+        /// Gets the domain part of the organization-specific (e.g., municipality) "Objecten" Web API service URI:
+        /// <code>
+        ///   http(s)://[DOMAIN]/ApiEndpoint
+        /// </code>
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed string GetSpecificObjectenDomain() => this.Configuration.User.Domain.Objecten();
+        #endregion
     }
 }
