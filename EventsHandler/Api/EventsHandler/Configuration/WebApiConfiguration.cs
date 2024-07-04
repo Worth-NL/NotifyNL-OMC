@@ -531,16 +531,16 @@ namespace EventsHandler.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string NotifyNL()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string OpenKlant_2()
                         => GetValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Objecten()
                         => GetValue(this._loadersContext, this._currentPath, nameof(Objecten));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string NotifyNL()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
 
