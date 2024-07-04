@@ -9,7 +9,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
     /// The methods querying specific data from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
-    internal interface IQueryObjecten : IVersionDetails
+    internal interface IQueryObjecten : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }
@@ -17,15 +17,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-        #region Domain
-        /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "Objecten" Web API service URI:
-        /// <code>
-        ///   http(s)://[DOMAIN]/ApiEndpoint
-        /// </code>
-        /// </summary>
-        /// <exception cref="KeyNotFoundException"/>
-        internal sealed string GetSpecificObjectenDomain() => this.Configuration.User.Domain.Objecten();
+        #region Polymorphic (Domain)
+        /// <inheritdoc cref="IDomain.GetDomain"/>
+        string IDomain.GetDomain() => this.Configuration.User.Domain.Objecten();
         #endregion
     }
 }
