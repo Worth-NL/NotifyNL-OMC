@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), caseTypeUri, subjectType))
+            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetDomain(), caseTypeUri, subjectType))
                 .Citizen
                 .BsnNumber;
         }
@@ -88,7 +88,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetSpecificOpenZaakDomain()}/zaken/api/v1/zaakcontactmomenten");
+            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetDomain()}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
