@@ -27,6 +27,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         ///   <see langword="true"/> if "object type" in the <see cref="NotificationEvent"/> is
         ///   the same as the one defined in the app settings; otherwise, <see langword="false"/>.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal sealed bool IsValidType(NotificationEvent notification)
         {
             // ObjectType is missing or the notification is wrong type
