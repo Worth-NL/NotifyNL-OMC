@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 
@@ -16,6 +17,33 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";
+
+        #region IsValidType()        
+        /// <summary>
+        /// Determines whether the object type is valid.
+        /// </summary>
+        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
+        /// <returns>
+        ///   <see langword="true"/> if "object type" in the <see cref="NotificationEvent"/> is
+        ///   the same as the one defined in the app settings; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal sealed bool IsValidType(NotificationEvent notification)
+        {
+            // ObjectType is missing or the notification is wrong type
+            if (string.IsNullOrWhiteSpace(notification.Attributes.ObjectType?.AbsoluteUri))
+            {
+                return false;
+            }
+
+            ReadOnlySpan<char> expectedObjectType =
+                $"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.AppSettings.Variables.Objecten.TaskTypeGuid()}"
+                .AsSpan();
+
+            return MemoryExtensions.Equals(
+                notification.Attributes.ObjectType.AbsoluteUri, 
+                expectedObjectType, StringComparison.Ordinal);
+        }
+        #endregion
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
