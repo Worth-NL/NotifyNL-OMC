@@ -169,6 +169,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The version of Objecten service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionObjectenUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionObjectenUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of ObjectTypen service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionObjectTypenUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionObjectTypenUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
         /// </summary>
         internal static string Configuration_ERROR_VersionOpenKlantUnknown {
