@@ -324,8 +324,8 @@ namespace EventsHandler
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
-            builder.Services.AddSingleton<IQueryObjecten, QueryObjecten>();
-            builder.Services.AddSingleton<IQueryObjectTypen, QueryObjectTypen>();
+            builder.Services.AddSingleton(typeof(IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
 
             // Feedback and telemetry
             builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
@@ -349,6 +349,24 @@ namespace EventsHandler
                     1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenKlantUnknown)
+                };
+            }
+
+            static Type DetermineObjectenVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 or 2 => typeof(QueryObjecten),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectenUnknown)
+                };
+            }
+
+            static Type DetermineObjectTypenVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 or 2 => typeof(QueryObjectTypen),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectTypenUnknown)
                 };
             }
 

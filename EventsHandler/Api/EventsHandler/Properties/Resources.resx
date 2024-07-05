@@ -404,4 +404,10 @@
   <data name="Processing_ABORT_DoNotSendNotification_CaseStatusType" xml:space="preserve">
     <value>It was requested to not send notification for this type of case status. Processing aborted.</value>
   </data>
+  <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
+    <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
+  <data name="Configuration_ERROR_VersionObjectTypenUnknown" xml:space="preserve">
+    <value>The version of ObjectTypen service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+  </data>
 </root>
