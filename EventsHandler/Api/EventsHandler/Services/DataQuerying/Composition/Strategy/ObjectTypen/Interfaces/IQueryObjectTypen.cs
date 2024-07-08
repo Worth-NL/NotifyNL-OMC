@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces
 {
@@ -31,20 +32,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <exception cref="KeyNotFoundException"/>
         internal sealed bool IsValidType(NotificationEvent notification)
         {
-            // ObjectType is missing or the notification is wrong type
-            if (notification.Attributes.ObjectType == null ||
-                notification.Attributes.ObjectType == DefaultValues.Models.EmptyUri)
-            {
-                return false;
-            }
+            Guid typeGuid = notification.Attributes.ObjectType.GetGuid();
 
-            ReadOnlySpan<char> expectedObjectType =
-                $"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.AppSettings.Variables.Objecten.TaskTypeGuid()}"
-                .AsSpan();
-
-            return MemoryExtensions.Equals(
-                notification.Attributes.ObjectType.AbsoluteUri, 
-                expectedObjectType, StringComparison.Ordinal);
+            return typeGuid != default &&
+                   typeGuid == this.Configuration.AppSettings.Variables.Objecten.TaskTypeGuid();
         }
         #endregion
 
