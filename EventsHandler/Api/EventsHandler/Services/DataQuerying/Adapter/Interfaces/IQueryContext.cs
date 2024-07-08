@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
@@ -83,6 +84,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
         /// <inheritdoc cref="QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, HttpContent)"/>
         internal Task<string> LinkToSubjectObjectAsync(HttpContent body);
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryObjectTypen.IsValidType(NotificationEvent)"/>
+        internal bool IsValidType();
         #endregion
     }
 }
