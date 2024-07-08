@@ -140,5 +140,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
                 this._networkService, this._queryKlant.GetDomain(), body);
         }
         #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryContext.IsValidType()"/>
+        bool IQueryContext.IsValidType()
+        {
+            return this._queryObjectTypen.IsValidType(this._queryBase.Notification);
+        }
+        #endregion
     }
 }

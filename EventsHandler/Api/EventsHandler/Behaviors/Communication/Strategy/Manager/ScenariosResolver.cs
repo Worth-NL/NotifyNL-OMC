@@ -65,7 +65,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                IQueryContext queryContext = this._dataQuery.From(notification);
+
+                if (queryContext.IsValidType())
+                {
+                    return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                }
             }
 
             // No matching scenario. There is no clear instruction what to do with the received Notification
