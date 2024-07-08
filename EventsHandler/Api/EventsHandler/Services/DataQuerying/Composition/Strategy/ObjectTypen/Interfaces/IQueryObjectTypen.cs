@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
+using EventsHandler.Constants;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces
 {
@@ -31,7 +32,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         internal sealed bool IsValidType(NotificationEvent notification)
         {
             // ObjectType is missing or the notification is wrong type
-            if (string.IsNullOrWhiteSpace(notification.Attributes.ObjectType?.AbsoluteUri))
+            if (notification.Attributes.ObjectType == null ||
+                notification.Attributes.ObjectType == DefaultValues.Models.EmptyUri)
             {
                 return false;
             }
