@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Reflection;
 using EventsHandler.Extensions;
+using System.Reflection;
 
 namespace EventsHandler.UnitTests.Extensions
 {
