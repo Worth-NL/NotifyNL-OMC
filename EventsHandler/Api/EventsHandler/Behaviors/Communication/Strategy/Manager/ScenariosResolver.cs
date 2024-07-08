@@ -59,18 +59,18 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             // Scenario #4: "Task assigned"
             if (IsTaskScenario(notification))
             {
-                return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
+                IQueryContext queryContext = this._dataQuery.From(notification);
+
+                if (queryContext.IsValidType())
+                {
+                    return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
+                }
             }
             
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                IQueryContext queryContext = this._dataQuery.From(notification);
-
-                if (queryContext.IsValidType())
-                {
-                    return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
-                }
+                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
             // No matching scenario. There is no clear instruction what to do with the received Notification
