@@ -63,22 +63,29 @@ namespace EventsHandler.Services.DataReceiving
         #endregion
 
         #region HTTP Clients
+        private const string AcceptCrsHeader = "Accept-Crs";
+        private const string ContentCrsHeader = "Accept-Crs";
+        private const string AuthorizeHeader = "Authorization";
+
         private void InitializeAvailableHttpClients()
         {
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
-                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, "EPSG:4326"), (ContentCrsHeader, "EPSG:4326") }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
-                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, "EPSG:4326"), (ContentCrsHeader, "EPSG:4326") }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
+
+            this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
         }
 
         /// <summary>
@@ -95,8 +102,9 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.Telemetry_Contactmomenten
                     => AuthorizeWithGeneratedJwt(this._httpClients[httpClientType]),
                     
-                // Clients using static tokens from configuration
+                // Clients using static API keys from configuration
                 HttpClientTypes.OpenKlant_v2 or
+                HttpClientTypes.Objecten     or
                 HttpClientTypes.Telemetry_Klantinteracties
                     => this._httpClients[httpClientType],
                 
@@ -156,6 +164,9 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
                     => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant_2()}",
+
+                HttpClientTypes.Objecten
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.Objecten()}",
 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
