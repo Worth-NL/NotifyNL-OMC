@@ -182,6 +182,15 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
                 Channel = Channels.Objects,
                 Resource = Resources.Object
             };
+
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            mockedQueryContext
+                .Setup(mock => mock.IsValidType())
+                .Returns(true);
+
+            this._mockedDataQuery
+                .Setup(mock => mock.From(testNotification))
+                .Returns(mockedQueryContext.Object);
             
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
