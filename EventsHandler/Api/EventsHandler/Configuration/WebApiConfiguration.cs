@@ -634,6 +634,10 @@ namespace EventsHandler.Configuration
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string TaskAssigned()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string DecisionMade()
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
@@ -666,6 +670,10 @@ namespace EventsHandler.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string TaskAssigned()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string DecisionMade()
