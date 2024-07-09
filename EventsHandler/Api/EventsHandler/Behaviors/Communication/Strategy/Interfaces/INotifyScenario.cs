@@ -2,6 +2,7 @@
 
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Exceptions;
 using System.Text.Json;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
@@ -18,9 +19,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
-        /// <exception cref="InvalidOperationException">
-        ///   Some internal business logic failed (implementation mistake).
-        /// </exception>
         /// <exception cref="KeyNotFoundException">
         ///   The looked up key to configuration value is missing or invalid.
         /// </exception>
@@ -29,6 +27,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         /// </exception>
         /// <exception cref="JsonException">
         ///   The HTTP response wasn't deserialized properly.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///   Some internal business logic failed (implementation mistake).
+        /// </exception>
+        /// <exception cref="AbortedNotifyingException">
+        ///   The notification should not be sent.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
 
