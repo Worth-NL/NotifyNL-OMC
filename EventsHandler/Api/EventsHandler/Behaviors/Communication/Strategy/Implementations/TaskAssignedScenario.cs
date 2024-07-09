@@ -40,7 +40,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 
         #region Polymorphic (GetAllNotifyDataAsync)
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        /// <exception cref="AbortedNotifyingException"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
