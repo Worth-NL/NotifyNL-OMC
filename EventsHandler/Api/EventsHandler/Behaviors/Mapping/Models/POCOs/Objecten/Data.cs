@@ -20,13 +20,21 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
         public Uri CaseUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <summary>
+        /// Gets the title of the task.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("title")]
+        [JsonPropertyOrder(1)]
+        public string Title { get; internal set; } = string.Empty;
         
         /// <summary>
         /// Gets the status of the task.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("status")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public TaskStatuses Status { get; internal set; }
         
         /// <summary>
@@ -34,7 +42,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(3)]
         public DateTime ExpirationDate { get; internal set; }
         
         /// <summary>
@@ -42,7 +50,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]
-        [JsonPropertyOrder(3)]
+        [JsonPropertyOrder(4)]
         public Identification Identification { get; internal set; }
 
         /// <summary>
