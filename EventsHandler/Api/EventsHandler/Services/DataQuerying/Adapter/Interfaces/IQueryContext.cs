@@ -1,9 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
@@ -16,14 +18,15 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
     /// The adapter combining and adjusting functionalities from other data querying services.
     /// </summary>
     /// <remarks>
-    ///   This interface is modifying signatures of methods from related services (<see cref="IQueryBase"/>,
-    ///   <see cref="IQueryKlant"/>, <see cref="IQueryZaak"/>) to hide some dependencies inside the
-    ///   <see cref="IQueryContext"/> implementation, make the usage of these methods easier, and base
+    ///   This interface is modifying signatures of methods from related query services to hide some dependencies
+    ///   inside the <see cref="IQueryContext"/> implementation, make the usage of these methods easier, and base
     ///   on the injected/setup context.
     /// </remarks>
     /// <seealso cref="IQueryBase"/>
     /// <seealso cref="IQueryKlant"/>
     /// <seealso cref="IQueryZaak"/>
+    /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryObjecten"/>
     internal interface IQueryContext
     {
         #region IQueryBase
@@ -89,6 +92,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #region IQueryObjectTypen
         /// <inheritdoc cref="IQueryObjectTypen.IsValidType(NotificationEvent)"/>
         internal bool IsValidType();
+        #endregion
+
+        #region IQueryObjecten
+        /// <inheritdoc cref="IQueryObjecten.GetTaskAsync(IQueryBase)"/>
+        internal Task<TaskObject> GetTaskAsync();
         #endregion
     }
 }
