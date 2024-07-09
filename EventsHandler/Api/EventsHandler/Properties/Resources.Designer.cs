@@ -727,7 +727,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested to not send notification for this type of the case status. Processing aborted..
+        ///   Looks up a localized string similar to It was requested to not send the notification for this type of the case status. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_CaseStatusType {
             get {
@@ -736,7 +736,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested to not send notification for this type of the task. Processing aborted..
+        ///   Looks up a localized string similar to It was requested to not send the notification if the task is already closed. Processing aborted..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It was requested to not send the notification for this type of the task. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {
