@@ -3,6 +3,7 @@
 using EventsHandler.Behaviors.Communication.Strategy.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
+using EventsHandler.Behaviors.Mapping.Enums.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Configuration;
@@ -30,6 +31,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 
         #region Polymorphic (GetAllNotifyDataAsync)
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
+        /// <exception cref="AbortedNotifyingException"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             IQueryContext queryContext = this.DataQuery.From(notification);
@@ -38,6 +40,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
             if (!queryContext.IsValidType())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
+            }
+
+            if ((await queryContext.GetTaskAsync()).Record.Data.Status != TaskStatuses.Open)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             return await base.GetAllNotifyDataAsync(notification);
