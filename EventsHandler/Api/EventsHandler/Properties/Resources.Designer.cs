@@ -664,6 +664,51 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification could not be recognized (deserialized)..
+        /// </summary>
+        internal static string Operation_ERROR_Deserialization_Failure {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Deserialization_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bad request..
+        /// </summary>
+        internal static string Operation_ERROR_HttpRequest_Failure {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_HttpRequest_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: The query context was not set for this specific scenario..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NoQueryContext {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NoQueryContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: An unknown issue occurred..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_Unknown {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation is not implemented. Internal server error..
+        /// </summary>
+        internal static string Operation_ERROR_NotImplemented {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_NotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An unknown validation issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Unknown_ValidationIssue_Message {
@@ -673,56 +718,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Notification could not be recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was partially recognized (deserialized)..
         /// </summary>
-        internal static string Operation_RESULT_Deserialization_Failure {
+        internal static string Operation_SUCCESS_Deserialization_Partial {
             get {
-                return ResourceManager.GetString("Operation_RESULT_Deserialization_Failure", resourceCulture);
+                return ResourceManager.GetString("Operation_SUCCESS_Deserialization_Partial", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Notification was partially recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was successfully recognized (deserialized)..
         /// </summary>
-        internal static string Operation_RESULT_Deserialization_Partial {
+        internal static string Operation_SUCCESS_Deserialization_Success {
             get {
-                return ResourceManager.GetString("Operation_RESULT_Deserialization_Partial", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Notification was successfully recognized (deserialized)..
-        /// </summary>
-        internal static string Operation_RESULT_Deserialization_Success {
-            get {
-                return ResourceManager.GetString("Operation_RESULT_Deserialization_Success", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bad request..
-        /// </summary>
-        internal static string Operation_RESULT_HttpRequest_Failure {
-            get {
-                return ResourceManager.GetString("Operation_RESULT_HttpRequest_Failure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unknown issue occurred. Internal server error..
-        /// </summary>
-        internal static string Operation_RESULT_Internal {
-            get {
-                return ResourceManager.GetString("Operation_RESULT_Internal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This operation is not implemented. Internal server error..
-        /// </summary>
-        internal static string Operation_RESULT_NotImplemented {
-            get {
-                return ResourceManager.GetString("Operation_RESULT_NotImplemented", resourceCulture);
+                return ResourceManager.GetString("Operation_SUCCESS_Deserialization_Success", resourceCulture);
             }
         }
         

@@ -77,7 +77,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<UnprocessableEntityObjectResult, DeserializationFailed>(
                 actualResult,
                 HttpStatusCode.UnprocessableEntity,
-                Resources.Operation_RESULT_Deserialization_Failure,
+                Resources.Operation_ERROR_Deserialization_Failure,
                 Resources.Deserialization_ERROR_InvalidJson_Message);
         }
 
@@ -102,7 +102,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<UnprocessableEntityObjectResult, DeserializationFailed>(
                 actualResult,
                 HttpStatusCode.UnprocessableEntity,
-                Resources.Operation_RESULT_Deserialization_Failure,
+                Resources.Operation_ERROR_Deserialization_Failure,
                 Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message);
         }
         
@@ -122,7 +122,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             AssertWithConditions<BadRequestObjectResult, HttpRequestFailed.Detailed>(
                 actualResult,
                 HttpStatusCode.BadRequest,
-                Resources.Operation_RESULT_HttpRequest_Failure,
+                Resources.Operation_ERROR_HttpRequest_Failure,
                 Resources.HttpRequest_ERROR_Message);
         }
 
@@ -151,7 +151,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 actualResult,
                 HttpStatusCode.Accepted,
                 Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
-                Resources.Operation_RESULT_Deserialization_Partial);
+                Resources.Operation_SUCCESS_Deserialization_Partial);
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 actualResult,
                 HttpStatusCode.Accepted,
                 Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
-                Resources.Operation_RESULT_Deserialization_Success);
+                Resources.Operation_SUCCESS_Deserialization_Success);
         }
         #endregion
 
@@ -199,12 +199,12 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private static InfoDetails GetTestInfoDetails_Partial()
         {
-            return new InfoDetails(Resources.Operation_RESULT_Deserialization_Partial, string.Empty, Array.Empty<string>());
+            return new InfoDetails(Resources.Operation_SUCCESS_Deserialization_Partial, string.Empty, Array.Empty<string>());
         }
 
         private static InfoDetails GetTestInfoDetails_Success()
         {
-            return new InfoDetails(Resources.Operation_RESULT_Deserialization_Success, string.Empty, Array.Empty<string>());
+            return new InfoDetails(Resources.Operation_SUCCESS_Deserialization_Success, string.Empty, Array.Empty<string>());
         }
 
         private EventsController GetTestEventsController_WithRealResponder()

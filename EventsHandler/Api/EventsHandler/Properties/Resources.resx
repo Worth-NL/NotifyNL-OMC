@@ -214,28 +214,28 @@
     <value>An unknown validation issue occurred.</value>
     <comment>HTTP Status Code = 500</comment>
   </data>
-  <data name="Operation_RESULT_Deserialization_Failure" xml:space="preserve">
-    <value>Notification could not be recognized (deserialized).</value>
+  <data name="Operation_ERROR_Deserialization_Failure" xml:space="preserve">
+    <value>The notification could not be recognized (deserialized).</value>
     <comment>HTTP Status Code = 406</comment>
   </data>
-  <data name="Operation_RESULT_Deserialization_Partial" xml:space="preserve">
-    <value>Notification was partially recognized (deserialized).</value>
+  <data name="Operation_SUCCESS_Deserialization_Partial" xml:space="preserve">
+    <value>The notification was partially recognized (deserialized).</value>
     <comment>HTTP Status Code = 206</comment>
   </data>
-  <data name="Operation_RESULT_Deserialization_Success" xml:space="preserve">
-    <value>Notification was successfully recognized (deserialized).</value>
+  <data name="Operation_SUCCESS_Deserialization_Success" xml:space="preserve">
+    <value>The notification was successfully recognized (deserialized).</value>
     <comment>HTTP Status Code = 200</comment>
   </data>
-  <data name="Operation_RESULT_HttpRequest_Failure" xml:space="preserve">
+  <data name="Operation_ERROR_HttpRequest_Failure" xml:space="preserve">
     <value>Bad request.</value>
     <comment>HTTP Status Code = 400</comment>
   </data>
-  <data name="Operation_RESULT_NotImplemented" xml:space="preserve">
+  <data name="Operation_ERROR_NotImplemented" xml:space="preserve">
     <value>This operation is not implemented. Internal server error.</value>
     <comment>HTTP Status Code = 501</comment>
   </data>
-  <data name="Operation_RESULT_Internal" xml:space="preserve">
-    <value>An unknown issue occurred. Internal server error.</value>
+  <data name="Operation_ERROR_Internal_Unknown" xml:space="preserve">
+    <value>Internal error: An unknown issue occurred.</value>
     <comment>HTTP Status Code = 501</comment>
   </data>
   <data name="Processing_ERROR_Notification_DeliveryMethodUnknown" xml:space="preserve">
@@ -412,6 +412,9 @@
   </data>
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_NoQueryContext" xml:space="preserve">
+    <value>Internal error: The query context was not set for this specific scenario.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
     <value>It was requested not to send the notification if the task is already closed. Processing aborted.</value>
