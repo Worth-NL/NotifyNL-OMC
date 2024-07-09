@@ -3,7 +3,6 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
-using EventsHandler.Constants;
 using EventsHandler.Extensions;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces
