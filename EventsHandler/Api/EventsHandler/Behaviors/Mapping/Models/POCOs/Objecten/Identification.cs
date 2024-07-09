@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
 {
     /// <summary>
-    /// The identification related to <see cref="Data"/> retrieved from "Objecten" Web API service.
+    /// The identification related to the <see cref="Data"/> retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct Identification : IJsonSerializable
