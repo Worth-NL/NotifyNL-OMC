@@ -44,7 +44,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.B
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            this.CachedCommonPartyData ??= await this.DataQuery.From(notification).GetPartyDataAsync();
+            this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedCommonPartyData ??= await this.QueryContext.GetPartyDataAsync();
             
             return await base.GetAllNotifyDataAsync(notification);
         }
