@@ -12,7 +12,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
     public struct Record : IJsonSerializable
     {
         /// <summary>
-        /// Gets the data from record.
+        /// Gets the data related to the <see cref="Record"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("data")]
