@@ -5,6 +5,7 @@ using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Enums.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
@@ -42,9 +43,16 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
 
-            if ((await queryContext.GetTaskAsync()).Record.Data.Status != TaskStatuses.Open)
+            Data taskData = (await queryContext.GetTaskAsync()).Record.Data;
+
+            if (taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
+            }
+
+            if (taskData.Identification.Type != IdTypes.Bsn)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
 
             return await base.GetAllNotifyDataAsync(notification);
