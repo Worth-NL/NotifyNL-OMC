@@ -154,6 +154,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakCreate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakUpdate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakClose)}",    "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.TaskAssigned)}", "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE"),
 
                 ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
@@ -161,6 +162,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.TaskAssigned)}", "USER_TEMPLATEIDS_SMS_TASKASSIGNED"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE")
             };
 
