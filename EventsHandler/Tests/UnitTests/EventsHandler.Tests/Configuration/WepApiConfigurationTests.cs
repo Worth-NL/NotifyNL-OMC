@@ -66,11 +66,13 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.DecisionMade(), Is.Not.Null.Or.Empty);
 
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
             });
         }
@@ -114,7 +116,9 @@ namespace EventsHandler.UnitTests.Configuration
             // Invalid: 8-4-(2-2)-4-12
             yield return ("#9", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#10", () => configuration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => configuration.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: Special characters
+            yield return ("#11", () => configuration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
         #endregion
     }
