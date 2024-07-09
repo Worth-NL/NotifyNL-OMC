@@ -76,7 +76,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-            => throw new NotImplementedException();
+            => this.Configuration.User.TemplateIds.Email.TaskAssigned();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
@@ -105,7 +105,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         #region Polymorphic (SMS logic)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()
-          => throw new NotImplementedException();
+            => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
