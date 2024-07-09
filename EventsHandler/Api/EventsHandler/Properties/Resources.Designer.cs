@@ -628,6 +628,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The task could not be retrieved from Objecten Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoTask {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RECEIVER: The requested resource is unavailable or not existing..
         /// </summary>
         internal static string HttpRequest_ERROR_Reason1 {
