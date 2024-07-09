@@ -143,7 +143,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         [TestCase(typeof(CaseCaseStatusUpdatedScenario))]
         [TestCase(typeof(CaseCaseFinishedScenario))]
         [TestCase(typeof(DecisionMadeScenario))]
-        public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ReturnsEmptyData_DoesNotThrowException(Type scenarioType)
+        public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ThrowsInvalidOperationException(Type scenarioType)
         {
             // Arrange
             Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Unknown);
