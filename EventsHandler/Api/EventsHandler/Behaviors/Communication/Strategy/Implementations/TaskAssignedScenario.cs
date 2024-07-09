@@ -111,7 +111,23 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
             NotificationEvent notification, CommonPartyData partyData)
         {
-            throw new NotImplementedException();
+            IQueryContext queryContext = this.DataQuery.From(notification);
+
+            this.CachedCase ??= await queryContext.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
+
+            bool hasExpirationDate = this.CachedTaskData!.Value.ExpirationDate == default;
+            string expirationDate = hasExpirationDate
+                ? this.CachedTaskData!.Value.ExpirationDate.ToString(new CultureInfo("nl-NL"))
+                : DefaultValues.Models.DefaultEnumValueName;
+
+            return new Dictionary<string, object>
+            {
+                { "taak.verloopdatum", expirationDate },
+                { "taak.heeft_verloopdatum", hasExpirationDate ? "yes" : "no" },
+                { "taak.record.data.title", this.CachedTaskData!.Value.Title },
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification }
+            };
         }
         #endregion
         
