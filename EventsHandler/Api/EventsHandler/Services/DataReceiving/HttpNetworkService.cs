@@ -69,6 +69,7 @@ namespace EventsHandler.Services.DataReceiving
 
         private void InitializeAvailableHttpClients()
         {
+            // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
                 .GetHttpClient(new[] { (AcceptCrsHeader, "EPSG:4326"), (ContentCrsHeader, "EPSG:4326") }));
 
