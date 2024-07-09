@@ -264,7 +264,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         {
             if (scenarioType.Name == nameof(DecisionMadeScenario))
             {
-                VerifyMethodCalls_Decision(mockedQueryContext, mockedDataQuery, fromInvokeCount, partyInvokeCount, 1, caseInvokeCount);
+                VerifyMethodCalls_Decision(mockedQueryContext, mockedDataQuery, fromInvokeCount, partyInvokeCount, caseInvokeCount);
             }
             else
             {
@@ -293,7 +293,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 
         private static void VerifyMethodCalls_Decision(
             Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedDataQuery,
-            int fromInvokeCount, int partyInvokeCount, int decisionInvokeCount, int caseInvokeCount)
+            int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             mockedDataQuery
                 .Verify(mock => mock.From(
@@ -307,7 +307,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 
             mockedQueryContext
                 .Verify(mock => mock.GetDecisionAsync(),
-                    Times.Exactly(decisionInvokeCount));
+                    Times.Once);
 
             mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
