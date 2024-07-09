@@ -59,12 +59,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             // Scenario #4: "Task assigned"
             if (IsTaskScenario(notification))
             {
-                IQueryContext queryContext = this._dataQuery.From(notification);
-
-                if (queryContext.IsValidType())
-                {
-                    return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
-                }
+                return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
             }
             
             // Scenario #5: "Decision made"
