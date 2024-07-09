@@ -12,7 +12,6 @@ using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using System.Globalization;
 
@@ -44,15 +43,15 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <exception cref="AbortedNotifyingException"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            IQueryContext queryContext = this.DataQuery.From(notification);
+            this.QueryContext ??= this.DataQuery.From(notification);
 
             // Validation #1: The task needs to be of a specific type
-            if (!queryContext.IsValidType())
+            if (!this.QueryContext.IsValidType())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
 
-            this.CachedTaskData ??= (await queryContext.GetTaskAsync()).Record.Data;
+            this.CachedTaskData ??= (await this.QueryContext.GetTaskAsync()).Record.Data;
 
             // Validation #2: The task needs to have an open status
             if (this.CachedTaskData.Value.Status != TaskStatuses.Open)
@@ -67,7 +66,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
             }
 
             this.CachedCommonPartyData ??=
-                await queryContext.GetPartyDataAsync(this.CachedTaskData.Value.Identification.Value);
+                await this.QueryContext.GetPartyDataAsync(this.CachedTaskData.Value.Identification.Value);
 
             return await base.GetAllNotifyDataAsync(notification);
         }
@@ -78,13 +77,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override string GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.TaskAssigned();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            IQueryContext queryContext = this.DataQuery.From(notification);
-
-            this.CachedCase ??= await queryContext.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
 
             bool hasExpirationDate = this.CachedTaskData!.Value.ExpirationDate == default;
             string expirationDate = hasExpirationDate
@@ -107,11 +103,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override string GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(notification, partyData);  // NOTE: Both implementations are identical
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
@@ -125,10 +120,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// </remarks>
         protected override void DropCache()
         {
+            base.DropCache();
+
             this.CachedTaskData = null;
             this.CachedCase = null;
-
-            base.DropCache();
         }
         #endregion
     }

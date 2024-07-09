@@ -7,6 +7,7 @@ using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Configuration;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
@@ -23,10 +24,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
     internal abstract class BaseScenario : INotifyScenario
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
-        protected WebApiConfiguration Configuration { get; private set; }
+        protected WebApiConfiguration Configuration { get; }
 
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
+
+        /// <inheritdoc cref="IQueryContext"/>
+        protected IQueryContext? QueryContext { get; set; }
         
         /// <inheritdoc cref="CommonPartyData"/>
         protected CommonPartyData? CachedCommonPartyData { get; set; }
@@ -54,6 +58,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal virtual async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
+            if (this.QueryContext == null)  // NOTE: Needs to be set by a respective strategy
+            {
+                throw new InvalidOperationException(Resources.Operation_ERROR_Internal_NoQueryContext);
+            }
+
             if (this.CachedCommonPartyData == null)  // NOTE: Needs to be set by a respective strategy
             {
                 throw new InvalidOperationException(Resources.HttpRequest_ERROR_NoPartyData);
@@ -62,13 +71,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
             // Determine which types of notifications should be published
             return this.CachedCommonPartyData.Value.DistributionChannel switch
             {
-                DistributionChannels.Email => new[] { await GetEmailNotifyDataAsync(notification, this.CachedCommonPartyData.Value) },
+                DistributionChannels.Email => new[] { await GetEmailNotifyDataAsync(this.CachedCommonPartyData.Value) },
 
-                DistributionChannels.Sms   => new[] { await GetSmsNotifyDataAsync(notification, this.CachedCommonPartyData.Value) },
+                DistributionChannels.Sms   => new[] { await GetSmsNotifyDataAsync(this.CachedCommonPartyData.Value) },
                 
                 // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
-                DistributionChannels.Both  => new[] { await GetEmailNotifyDataAsync(notification, this.CachedCommonPartyData.Value),
-                                                      await GetSmsNotifyDataAsync(notification, this.CachedCommonPartyData.Value) },
+                DistributionChannels.Both  => new[] { await GetEmailNotifyDataAsync(this.CachedCommonPartyData.Value),
+                                                      await GetSmsNotifyDataAsync(this.CachedCommonPartyData.Value) },
                 
                 DistributionChannels.None  => Array.Empty<NotifyData>(),
                 
@@ -84,19 +93,18 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
                 contactDetails: partyData.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: await GetEmailPersonalizationAsync(notification, partyData)  // TODO: Refactor and remove notification => cache QueryContext instead
+                personalization: await GetEmailPersonalizationAsync(partyData)
             );
         }
         #endregion
@@ -105,19 +113,18 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
                 contactDetails: partyData.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: await GetSmsPersonalizationAsync(notification, partyData)
+                personalization: await GetSmsPersonalizationAsync(partyData)
             );
         }
         #endregion
@@ -126,11 +133,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// <inheritdoc cref="INotifyScenario.DropCache()"/>
         /// <list type="bullet">
+        ///   <item><see cref="QueryContext"/></item>
         ///   <item><see cref="CachedCommonPartyData"/></item>
         /// </list>
         /// </summary>
         protected virtual void DropCache()
         {
+            this.QueryContext = null;
             this.CachedCommonPartyData = null;
         }
         #endregion
@@ -147,13 +156,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the e-mail "personalization" for this strategy.
         /// </summary>
-        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData);
         #endregion
 
         #region Abstract (SMS logic)
@@ -168,13 +175,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <summary>
         /// Gets the SMS "personalization" for this strategy.
         /// </summary>
-        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
         #endregion
     }
 }

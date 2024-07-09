@@ -7,7 +7,6 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
@@ -36,21 +35,19 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override string GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.ZaakClose();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            IQueryContext queryContext = this.DataQuery.From(notification);
-            this.CachedCase ??= await queryContext.GetCaseAsync();
-            this.CachedCaseStatuses ??= await queryContext.GetCaseStatusesAsync();
-            this.CachedLastCaseStatusType ??= await queryContext.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
+            this.CachedCaseStatuses ??= await this.QueryContext!.GetCaseStatusesAsync();
+            this.CachedLastCaseStatusType ??= await this.QueryContext!.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
 
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
                 { "zaak.identificatie", this.CachedCase.Value.Identification },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname },
                 { "status.omschrijving", this.CachedLastCaseStatusType.Value.Description }
             };
@@ -62,24 +59,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override string GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.ZaakClose();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            IQueryContext queryContext = this.DataQuery.From(notification);
-            this.CachedCase ??= await queryContext.GetCaseAsync();
-            this.CachedCaseStatuses ??= await queryContext.GetCaseStatusesAsync();
-            this.CachedLastCaseStatusType ??= await queryContext.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
-
-            return new Dictionary<string, object>
-            {
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification },
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname },
-                { "status.omschrijving", this.CachedLastCaseStatusType.Value.Description }
-            };
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
