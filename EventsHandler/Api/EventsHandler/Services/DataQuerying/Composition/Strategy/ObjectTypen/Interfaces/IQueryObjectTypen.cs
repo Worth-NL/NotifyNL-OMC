@@ -19,7 +19,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";
 
-        #region IsValidType()        
+        #region Parent
         /// <summary>
         /// Determines whether the object type is valid.
         /// </summary>
