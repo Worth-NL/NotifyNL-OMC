@@ -587,11 +587,11 @@ namespace EventsHandler.Configuration
             /// </summary>
             internal sealed record TemplateIdsComponent
             {
-                /// <inheritdoc cref="SmsComponent"/>
-                internal SmsComponent Sms { get; }
-
                 /// <inheritdoc cref="EmailComponent"/>
                 internal EmailComponent Email { get; }
+
+                /// <inheritdoc cref="SmsComponent"/>
+                internal SmsComponent Sms { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
@@ -600,25 +600,25 @@ namespace EventsHandler.Configuration
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
 
-                    this.Sms = new SmsComponent(loadersContext, currentPath);
                     this.Email = new EmailComponent(loadersContext, currentPath);
+                    this.Sms = new SmsComponent(loadersContext, currentPath);
                 }
 
                 /// <summary>
-                /// The "Sms" part of the settings.
+                /// The "Email" part of the settings.
                 /// </summary>
-                internal sealed record SmsComponent
+                internal sealed record EmailComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
+                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
                     /// </summary>
-                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
+                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
@@ -639,20 +639,20 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <summary>
-                /// The "Email" part of the settings.
+                /// The "Sms" part of the settings.
                 /// </summary>
-                internal sealed record EmailComponent
+                internal sealed record SmsComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
+                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
                     /// </summary>
-                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
+                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>

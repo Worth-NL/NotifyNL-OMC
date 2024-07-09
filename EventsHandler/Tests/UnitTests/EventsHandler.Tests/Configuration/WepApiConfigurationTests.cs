@@ -63,15 +63,15 @@ namespace EventsHandler.UnitTests.Configuration
 
                 // Templates
                 var templateIds = userConfiguration.TemplateIds;
-                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
-
                 Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Email.DecisionMade(), Is.Not.Null.Or.Empty);
+
+                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
             });
         }
         #pragma warning restore IDE0008
