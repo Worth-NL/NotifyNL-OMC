@@ -6,6 +6,9 @@ using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Configuration;
+using EventsHandler.Exceptions;
+using EventsHandler.Properties;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
@@ -29,6 +32,14 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
+            IQueryContext queryContext = this.DataQuery.From(notification);
+
+            // Validation #1: Only the matching types (configuration) of the tasks should be processed
+            if (!queryContext.IsValidType())
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
+            }
+
             return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
