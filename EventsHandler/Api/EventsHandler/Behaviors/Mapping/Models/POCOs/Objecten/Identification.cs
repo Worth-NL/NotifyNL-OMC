@@ -19,5 +19,13 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         [JsonPropertyName("type")]
         [JsonPropertyOrder(0)]
         public IdTypes Type { get; internal set; }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Identification"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("value")]
+        [JsonPropertyOrder(1)]
+        public string Value { get; internal set; }
     }
 }
