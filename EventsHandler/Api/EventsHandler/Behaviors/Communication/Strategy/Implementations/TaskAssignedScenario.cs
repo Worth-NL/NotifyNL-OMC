@@ -37,7 +37,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         {
             IQueryContext queryContext = this.DataQuery.From(notification);
 
-            // Validation #1: Only the matching types (configuration) of the tasks should be processed
+            // Validation #1: The task needs to be of a specific type
             if (!queryContext.IsValidType())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
@@ -45,11 +45,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 
             Data taskData = (await queryContext.GetTaskAsync()).Record.Data;
 
+            // Validation #2: The task needs to have an open status
             if (taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
+            // Validation #3: The task needs to be assigned to a person
             if (taskData.Identification.Type != IdTypes.Bsn)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
