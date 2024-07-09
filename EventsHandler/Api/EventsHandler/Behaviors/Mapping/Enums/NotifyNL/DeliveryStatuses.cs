@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Converters;
+using EventsHandler.Constants;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
@@ -27,6 +28,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
         ///   (for example if the API was recently changed).
         /// </para>
         /// </summary>
+        [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         #region Email statuses (common with SMS as well)
