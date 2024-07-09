@@ -57,6 +57,9 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
 
+            this.CachedCommonPartyData ??=
+                await queryContext.GetPartyDataAsync(taskData.Identification.Value);
+
             return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
