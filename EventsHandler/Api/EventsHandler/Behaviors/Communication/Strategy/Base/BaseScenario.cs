@@ -96,7 +96,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                 notificationMethod: NotifyMethods.Email,
                 contactDetails: partyData.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: await GetEmailPersonalizationAsync(notification, partyData)
+                personalization: await GetEmailPersonalizationAsync(notification, partyData)  // TODO: Refactor and remove notification => cache QueryContext instead
             );
         }
         #endregion
