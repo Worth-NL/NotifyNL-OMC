@@ -35,13 +35,5 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
         ///   The notification should not be sent.
         /// </exception>
         internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
-
-        /// <summary>
-        /// Drops (clears) the scenario internal cache.
-        /// <para>
-        ///   Clears:
-        /// </para>
-        /// </summary>
-        internal void DropCache();
     }
 }

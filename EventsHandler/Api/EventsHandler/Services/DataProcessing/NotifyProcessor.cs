@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);
-                                                   scenario.DropCache();
+
                 if (!allNotifyData.HasAny())
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
