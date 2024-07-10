@@ -81,15 +81,34 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         {
             this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
 
-            bool hasExpirationDate = this.CachedTaskData!.Value.ExpirationDate == default;
-            string expirationDate = hasExpirationDate
-                ? this.CachedTaskData!.Value.ExpirationDate.ToString(new CultureInfo("nl-NL"))
-                : DefaultValues.Models.DefaultEnumValueName;
+            DateTime expirationDate = this.CachedTaskData!.Value.ExpirationDate;
+
+            string formattedExpirationDate;
+            string isExpirationDateProvided;
+
+            if (expirationDate == default)
+            {
+                formattedExpirationDate = DefaultValues.Models.DefaultEnumValueName;
+                isExpirationDateProvided = "no";
+            }
+            else
+            {
+                // Convert time zone from UTC to CET (if necessary)
+                if (expirationDate.Kind == DateTimeKind.Utc)
+                {
+                    var cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+                    expirationDate = TimeZoneInfo.ConvertTimeFromUtc(expirationDate, cetTimeZone);
+                }
+
+                // Formatting the date and time
+                formattedExpirationDate = expirationDate.ToString("f", new CultureInfo("nl-NL"));
+                isExpirationDateProvided = "yes";
+            }
 
             return new Dictionary<string, object>
             {
-                { "taak.verloopdatum", expirationDate },
-                { "taak.heeft_verloopdatum", hasExpirationDate ? "yes" : "no" },
+                { "taak.verloopdatum", formattedExpirationDate },
+                { "taak.heeft_verloopdatum", isExpirationDateProvided },
                 { "taak.record.data.title", this.CachedTaskData!.Value.Title },
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
                 { "zaak.identificatie", this.CachedCase.Value.Identification }

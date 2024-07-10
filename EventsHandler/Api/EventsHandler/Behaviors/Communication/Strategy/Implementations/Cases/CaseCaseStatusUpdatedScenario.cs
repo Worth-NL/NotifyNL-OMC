@@ -78,7 +78,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
             base.DropCache();
 
             this.CachedCaseStatuses = null;
-            this.CachedLastCaseStatusType = null;
         }
         #endregion
     }
