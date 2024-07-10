@@ -25,13 +25,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         private const string TestEmailAddress = "test@gmail.com";
         private const string TestPhoneNumber = "+310123456789";
 
-        private WebApiConfiguration _testConfiguration = null!;
-
-        [OneTimeSetUp]
-        public void InitializeTests()
-        {
-            this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
-        }
+        private readonly WebApiConfiguration _testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
 
         #region GetAllNotifyDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
@@ -139,20 +133,32 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             });
         }
 
-        [TestCase(typeof(CaseCreatedScenario))]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario))]
-        [TestCase(typeof(CaseCaseFinishedScenario))]
-        [TestCase(typeof(DecisionMadeScenario))]
-        public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ThrowsInvalidOperationException(Type scenarioType)
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(CaseCreatedScenario), (DistributionChannels)(-1))]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(CaseCaseStatusUpdatedScenario), (DistributionChannels)(-1))]
+        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(CaseCaseFinishedScenario), (DistributionChannels)(-1))]
+        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(DecisionMadeScenario), (DistributionChannels)(-1))]
+        public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ThrowsInvalidOperationException(
+            Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Unknown);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel);
             Mock<IDataQueryService<NotificationEvent>> mockedDataQuery = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedDataQuery.Object)!;
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
+            Assert.Multiple(() =>
+            {
+                Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
+
+                VerifyMethodCalls(
+                    scenarioType, mockedQueryContext, mockedDataQuery,
+                    fromInvokeCount: 1, partyInvokeCount: 1, caseInvokeCount: 0);
+            });
         }
 
         [Test]
@@ -164,7 +170,15 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             INotifyScenario scenario = new NotImplementedScenario(this._testConfiguration, mockedQueryService.Object);
 
             // Act & Assert
-            Assert.ThrowsAsync<NotImplementedException>(() => scenario.GetAllNotifyDataAsync(default));
+            Assert.Multiple(() =>
+            {
+                Assert.ThrowsAsync<NotImplementedException>(() => scenario.GetAllNotifyDataAsync(default));
+
+                VerifyMethodCalls(
+                    typeof(NotImplementedScenario), new Mock<IQueryContext>(),
+                    new Mock<IDataQueryService<NotificationEvent>>(),
+                    fromInvokeCount: 0, partyInvokeCount: 0, caseInvokeCount: 0);
+            });
         }
         #endregion
 
