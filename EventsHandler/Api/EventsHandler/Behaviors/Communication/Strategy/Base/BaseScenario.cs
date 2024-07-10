@@ -48,10 +48,6 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         async Task<NotifyData[]> INotifyScenario.GetAllNotifyDataAsync(NotificationEvent notification)
             => await this.GetAllNotifyDataAsync(notification);
-
-        /// <inheritdoc cref="INotifyScenario.DropCache()"/>
-        void INotifyScenario.DropCache()
-            => this.DropCache();
         #endregion
 
         #region Virtual (GetAllNotifyDataAsync)
@@ -69,7 +65,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
             }
 
             // Determine which types of notifications should be published
-            return this.CachedCommonPartyData.Value.DistributionChannel switch
+            NotifyData[] notifyData = this.CachedCommonPartyData.Value.DistributionChannel switch
             {
                 DistributionChannels.Email => new[] { await GetEmailNotifyDataAsync(this.CachedCommonPartyData.Value) },
 
@@ -86,6 +82,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                   => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
                 _ => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
             };
+
+            DropCache();
+
+            return notifyData;
         }
         #endregion
 
@@ -131,7 +131,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         
         #region Virtual (DropCache)
         /// <summary>
-        /// <inheritdoc cref="INotifyScenario.DropCache()"/>
+        /// Drops (clears) the scenario internal cache.
+        /// <para>
+        ///   Clears:
+        /// </para>
         /// <list type="bullet">
         ///   <item><see cref="QueryContext"/></item>
         ///   <item><see cref="CachedCommonPartyData"/></item>
