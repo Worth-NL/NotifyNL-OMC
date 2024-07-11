@@ -82,6 +82,9 @@ namespace EventsHandler.Services.DataReceiving
             this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
                 .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
 
+            this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)) }));
+
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
 
@@ -106,6 +109,7 @@ namespace EventsHandler.Services.DataReceiving
                 // Clients using static API keys from configuration
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Objecten     or
+                HttpClientTypes.ObjectTypen  or
                 HttpClientTypes.Telemetry_Klantinteracties
                     => this._httpClients[httpClientType],
                 
@@ -169,6 +173,9 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.Objecten
                     => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.Objecten()}",
 
+                HttpClientTypes.ObjectTypen
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.ObjectTypen()}",
+
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
             };
@@ -189,7 +196,7 @@ namespace EventsHandler.Services.DataReceiving
                     return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
-                // TODO: To be removed after tests
+                // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
                 if (httpClientType is HttpClientTypes.OpenKlant_v2 or HttpClientTypes.Telemetry_Klantinteracties)
                 {
                     uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
