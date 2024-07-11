@@ -49,9 +49,10 @@ namespace EventsHandler.UnitTests.Configuration
 
                 // Authorization | Key
                 var key = userConfiguration.API.Key;
-                Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty);
                 Assert.That(key.OpenKlant_2(), Is.Not.Null.Or.Empty);
                 Assert.That(key.Objecten(), Is.Not.Null.Or.Empty);
+                Assert.That(key.ObjectTypen(), Is.Not.Null.Or.Empty);
+                Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty);
 
                 // API | Domain
                 var apiDomain = userConfiguration.Domain;
