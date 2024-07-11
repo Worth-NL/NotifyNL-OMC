@@ -72,9 +72,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_AUTHORIZATION_JWT_USERID",     GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
 
-                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OPENKLANT_2",          GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OBJECTTYPEN",          GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENZAAK",              GetTestValue(isValid, testDomain) },
@@ -140,9 +141,10 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 ("User",         $"{nameof(WebApiConfiguration.User.API)}",                 "USER_API"),
                 ("USER_API",     $"{nameof(WebApiConfiguration.User.API.Key)}",             "USER_API_KEY"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
                 ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.OpenKlant_2)}", "USER_API_KEY_OPENKLANT_2"),
                 ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.Objecten)}",    "USER_API_KEY_OBJECTEN"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.ObjectTypen)}", "USER_API_KEY_OBJECTTYPEN"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
 
                 ("User",        $"{nameof(WebApiConfiguration.User.Domain)}",                  "USER_DOMAIN"),
                 ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenNotificaties)}", "USER_DOMAIN_OPENNOTIFICATIES"),
