@@ -11,6 +11,7 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
@@ -116,7 +117,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskType));
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -142,7 +145,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed));
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -168,7 +173,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson));
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -212,7 +219,10 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
                 .ReturnsAsync(new CommonPartyData
                 {
-                    DistributionChannel = testDistributionChannel
+                    DistributionChannel = testDistributionChannel,
+                    Name = "Faye",
+                    Surname = "Valentine",
+                    EmailAddress = "cowboy@bebop.org"
                 });
 
             this._mockedDataQuery
@@ -224,7 +234,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
+                InvalidOperationException? exception =
+                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 0);
             });

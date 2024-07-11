@@ -413,9 +413,6 @@
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
   </data>
-  <data name="Operation_ERROR_Internal_NoQueryContext" xml:space="preserve">
-    <value>Internal error: The query context was not set for this specific scenario.</value>
-  </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
     <value>It was requested not to send the notification if the task is already closed. Processing aborted.</value>
   </data>
