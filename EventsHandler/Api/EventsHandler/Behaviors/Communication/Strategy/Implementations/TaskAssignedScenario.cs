@@ -79,19 +79,28 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
+            string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
             this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
 
-            DateTime expirationDate = this.CachedTaskData!.Value.ExpirationDate;
-
-            string formattedExpirationDate;
-            string isExpirationDateProvided;
-
-            if (expirationDate == default)
+            return new Dictionary<string, object>
             {
-                formattedExpirationDate = DefaultValues.Models.DefaultEnumValueName;
-                isExpirationDateProvided = "no";
-            }
-            else
+                { "taak.verloopdatum", formattedExpirationDate },
+                { "taak.heeft_verloopdatum", expirationDateProvided },
+                { "taak.record.data.title", this.CachedTaskData!.Value.Title },
+                { "zaak.omschrijving", this.CachedCase.Value.Name },
+                { "zaak.identificatie", this.CachedCase.Value.Identification }
+            };
+        }
+
+        private static bool IsValid(DateTime expirationDate)
+        {
+            return expirationDate != default;  // 0001-01-01, 00:00:00
+        }
+
+        private static string GetFormattedExpirationDate(DateTime expirationDate)
+        {
+            if (IsValid(expirationDate))
             {
                 // Convert time zone from UTC to CET (if necessary)
                 if (expirationDate.Kind == DateTimeKind.Utc)
@@ -101,18 +110,15 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
                 }
 
                 // Formatting the date and time
-                formattedExpirationDate = expirationDate.ToString("f", new CultureInfo("nl-NL"));
-                isExpirationDateProvided = "yes";
+                return expirationDate.ToString("f", new CultureInfo("nl-NL"));
             }
 
-            return new Dictionary<string, object>
-            {
-                { "taak.verloopdatum", formattedExpirationDate },
-                { "taak.heeft_verloopdatum", isExpirationDateProvided },
-                { "taak.record.data.title", this.CachedTaskData!.Value.Title },
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification }
-            };
+            return DefaultValues.Models.DefaultEnumValueName;
+        }
+
+        private static string GetExpirationDateProvided(DateTime expirationDate)
+        {
+            return IsValid(expirationDate) ? "yes" : "no";
         }
         #endregion
 
