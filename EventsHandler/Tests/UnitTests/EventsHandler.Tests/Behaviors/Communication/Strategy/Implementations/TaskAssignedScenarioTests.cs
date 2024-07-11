@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Text.Json;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
@@ -16,6 +15,7 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
+using System.Text.Json;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementations
 {
