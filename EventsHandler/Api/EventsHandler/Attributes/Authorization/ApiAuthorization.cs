@@ -3,6 +3,7 @@
 using EventsHandler.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventsHandler.Attributes.Authorization
 {
@@ -12,6 +13,7 @@ namespace EventsHandler.Attributes.Authorization
     /// <seealso cref="AuthorizeAttribute"/>
     /// <seealso cref="IAuthorizationFilter"/>
     [AttributeUsage(AttributeTargets.Method)]
+    [ExcludeFromCodeCoverage]
     internal sealed class ApiAuthorization : AuthorizeAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
