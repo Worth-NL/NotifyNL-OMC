@@ -46,5 +46,18 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant
         /// The telephone number of the citizen.
         /// </summary>
         internal string TelephoneNumber { get; init; }
+
+        /// <summary>
+        /// Determines whether this instance is not initialized properly.
+        /// </summary>
+        internal bool IsDefault()
+        {
+            return this.DistributionChannel == DistributionChannels.Unknown &&
+                   this.Name                == null &&
+                   this.SurnamePrefix       == null &&
+                   this.Surname             == null &&
+                   this.EmailAddress        == null &&
+                   this.TelephoneNumber     == null;
+        }
     }
 }
