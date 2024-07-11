@@ -682,15 +682,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: The query context was not set for this specific scenario..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NoQueryContext {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NoQueryContext", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Internal error: An unknown issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Internal_Unknown {

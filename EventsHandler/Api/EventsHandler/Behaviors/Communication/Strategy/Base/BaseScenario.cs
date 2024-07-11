@@ -54,12 +54,9 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal virtual async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            if (this.QueryContext == null)  // NOTE: Needs to be set by a respective strategy
-            {
-                throw new InvalidOperationException(Resources.Operation_ERROR_Internal_NoQueryContext);
-            }
-
-            if (this.CachedCommonPartyData == null)  // NOTE: Needs to be set by a respective strategy
+            // Validation: This model needs to be set by a respective strategy
+            if (this.CachedCommonPartyData == null ||
+                this.CachedCommonPartyData.Value.IsDefault())
             {
                 throw new InvalidOperationException(Resources.HttpRequest_ERROR_NoPartyData);
             }
