@@ -28,9 +28,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 
         #region Polymorphic
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        internal override Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
+        [ExcludeFromCodeCoverage]
+        internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            return NotImplemented<Task<NotifyData[]>>();
+            return await Task.FromResult(NotImplemented<NotifyData[]>());
         }
 
         /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(CommonPartyData)"/>
