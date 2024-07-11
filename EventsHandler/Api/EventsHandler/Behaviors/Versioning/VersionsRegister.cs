@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
@@ -26,6 +28,8 @@ namespace EventsHandler.Behaviors.Versioning
             {
                 this._serviceProvider.GetRequiredService<IQueryZaak>(),
                 this._serviceProvider.GetRequiredService<IQueryKlant>(),
+                this._serviceProvider.GetRequiredService<IQueryObjecten>(),
+                this._serviceProvider.GetRequiredService<IQueryObjectTypen>(),
                 this._serviceProvider.GetRequiredService<ITelemetryService>()
             };
 
