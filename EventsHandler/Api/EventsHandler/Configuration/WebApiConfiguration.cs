@@ -539,6 +539,10 @@ namespace EventsHandler.Configuration
                         => GetValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string ObjectTypen()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string NotifyNL()
                         => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
