@@ -682,7 +682,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provided URI is not a case type..
+        ///   Looks up a localized string similar to Internal error: Provided URI is not a case type..
         /// </summary>
         internal static string Operation_ERROR_Internal_NotCaseTypeUri {
             get {
