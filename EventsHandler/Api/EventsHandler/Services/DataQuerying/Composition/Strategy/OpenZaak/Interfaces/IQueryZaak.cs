@@ -36,8 +36,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
 
         /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
+        /// <exception cref="ArgumentException"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Uri? caseTypeUrl)
         {
+            if (!caseTypeUrl?.AbsoluteUri.Contains("zaaktypen") ?? false)
+            {
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
+            }
+
             caseTypeUrl ??= await GetCaseTypeUriAsync(queryBase);
 
             return await queryBase.ProcessGetAsync<Case>(

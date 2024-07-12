@@ -422,4 +422,7 @@
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
     <value>It was requested not to send the notification for this type of the task. Processing aborted.</value>
   </data>
+  <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
+    <value>Provided URI is not a case type.</value>
+  </data>
 </root>
