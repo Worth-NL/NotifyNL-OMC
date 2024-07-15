@@ -62,6 +62,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             return await GetCaseAsync(queryBase, caseTypeUri);
         }
         
+        /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
+        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Decision decision)
+        {
+            Uri caseTypeUri = await RequestCaseTypeUriAsync(queryBase, decision.CaseUrl);
+
+            return await GetCaseAsync(queryBase, caseTypeUri);
+        }
+        
         /// <summary>
         /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
