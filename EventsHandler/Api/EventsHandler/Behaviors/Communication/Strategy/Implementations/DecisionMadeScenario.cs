@@ -41,7 +41,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
             this.CachedCommonPartyData ??=
                 await this.QueryContext.GetPartyDataAsync(
                 await this.QueryContext.GetBsnNumberAsync(
-                      this.CachedDecision.Value.CaseTypeUrl));
+                      this.CachedDecision.Value.CaseUrl));
             
             return await base.GetAllNotifyDataAsync(notification);
         }
@@ -55,7 +55,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision!.Value.CaseTypeUrl);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision!.Value);
 
             return new Dictionary<string, object>
             {
