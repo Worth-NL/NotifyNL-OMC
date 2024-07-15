@@ -65,7 +65,8 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                // TODO: The Hague requested to disable this feature for now
+                // return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
             // No matching scenario. There is no clear instruction what to do with the received Notification
