@@ -48,6 +48,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Data)"/>
         internal Task<Case> GetCaseAsync(Data taskData);
 
+        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Decision)"/>
+        internal Task<Case> GetCaseAsync(Decision decision);
+
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
 
