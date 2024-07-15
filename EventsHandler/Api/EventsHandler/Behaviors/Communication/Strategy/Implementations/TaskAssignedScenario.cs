@@ -81,7 +81,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         {
             string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value.CaseUrl);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value);
 
             return new Dictionary<string, object>
             {

@@ -66,18 +66,18 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         #endregion
 
         #region Polimorphic (Case type)
-        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
-        async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
+        /// <inheritdoc cref="IQueryZaak.RequestCaseTypeUriAsync"/>
+        async Task<Uri> IQueryZaak.RequestCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
-            return (await GetCaseDetailsV2Async(queryBase))
+            return (await GetCaseDetailsV2Async(queryBase, caseUri))
                 .CaseTypeUrl;
         }
         
-        private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase)
+        private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase, Uri caseUri)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObject,
+                uri: caseUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion

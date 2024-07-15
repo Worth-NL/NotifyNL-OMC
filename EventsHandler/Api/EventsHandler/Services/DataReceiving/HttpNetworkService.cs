@@ -64,17 +64,18 @@ namespace EventsHandler.Services.DataReceiving
 
         #region HTTP Clients
         private const string AcceptCrsHeader = "Accept-Crs";
-        private const string ContentCrsHeader = "Accept-Crs";
+        private const string ContentCrsHeader = "Content-Crs";
+        private const string CrsValue = "EPSG:4326";
         private const string AuthorizeHeader = "Authorization";
 
         private void InitializeAvailableHttpClients()
         {
             // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
-                .GetHttpClient(new[] { (AcceptCrsHeader, "EPSG:4326"), (ContentCrsHeader, "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
-                .GetHttpClient(new[] { (AcceptCrsHeader, "EPSG:4326"), (ContentCrsHeader, "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
                 .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));

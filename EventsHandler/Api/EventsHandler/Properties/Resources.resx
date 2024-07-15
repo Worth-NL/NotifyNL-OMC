@@ -426,4 +426,12 @@
     <value>Internal error: Provided URI is not a case type.</value>
     <comment>HTTP Status Code = 422</comment>
   </data>
+  <data name="Operation_ERROR_Internal_NotCaseUri" xml:space="preserve">
+    <value>Internal error: Provided URI is not a case.</value>
+    <comment>HTTP Status Code = 422</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_NotDecisionUri" xml:space="preserve">
+    <value>Internal error: Provided URI is not a decision.</value>
+    <comment>HTTP Status Code = 422</comment>
+  </data>
 </root>
