@@ -298,7 +298,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                     DistributionChannel = testDistributionChannel
                 });
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Data>()))
                 .ReturnsAsync(new Case());
 
             this._mockedDataQuery
@@ -321,7 +321,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 Times.Exactly(getPartyDataAsyncInvokeCount));
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
+                mock => mock.GetCaseAsync(It.IsAny<Data>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
         }
         #endregion

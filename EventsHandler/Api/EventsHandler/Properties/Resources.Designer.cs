@@ -691,6 +691,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: Provided URI is not a case..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotCaseUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotCaseUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: Provided URI is not a decision..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotDecisionUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: An unknown issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Internal_Unknown {
