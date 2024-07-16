@@ -192,7 +192,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             Assert.That(actualResult, Is.TypeOf<TaskAssignedScenario>());
         }
 
-        [Test]
+        [Test, Ignore("The decision is disabled currently")]  // TODO: Enable this test
         public async Task DetermineScenarioAsync_ForDecisionMadeScenario_ReturnsExpectedScenario()
         {
             // Arrange

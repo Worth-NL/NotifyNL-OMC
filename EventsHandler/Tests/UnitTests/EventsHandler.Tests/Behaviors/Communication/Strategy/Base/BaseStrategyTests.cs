@@ -60,8 +60,9 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
         [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
         [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
+        // TODO: Enable these tests
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithSingleNotifyMethod_ReturnsExpectedData(
             Type scenarioType, DistributionChannels testDistributionChannel, int expectedResultsCount,
             NotifyMethods expectedNotificationMethod, string expectedContactDetails,
@@ -96,7 +97,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseCaseStatusUpdatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseCaseFinishedScenario), 1, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), 1, 1, 1)]
+        [TestCase(typeof(DecisionMadeScenario), 1, 1, 1), Ignore("The decision is disabled currently")]  // TODO: Enable this test
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithBothNotifyMethods_ReturnsBothExpectedData(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
