@@ -1,9 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
@@ -15,14 +18,15 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
     /// The adapter combining and adjusting functionalities from other data querying services.
     /// </summary>
     /// <remarks>
-    ///   This interface is modifying signatures of methods from related services (<see cref="IQueryBase"/>,
-    ///   <see cref="IQueryKlant"/>, <see cref="IQueryZaak"/>) to hide some dependencies inside the
-    ///   <see cref="IQueryContext"/> implementation, make the usage of these methods easier, and base
+    ///   This interface is modifying signatures of methods from related query services to hide some dependencies
+    ///   inside the <see cref="IQueryContext"/> implementation, make the usage of these methods easier, and base
     ///   on the injected/setup context.
     /// </remarks>
     /// <seealso cref="IQueryBase"/>
     /// <seealso cref="IQueryKlant"/>
     /// <seealso cref="IQueryZaak"/>
+    /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryObjecten"/>
     internal interface IQueryContext
     {
         #region IQueryBase
@@ -40,6 +44,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Case> GetCaseAsync(Uri? caseTypeUri);
+
+        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Data)"/>
+        internal Task<Case> GetCaseAsync(Data taskData);
+
+        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Decision)"/>
+        internal Task<Case> GetCaseAsync(Decision decision);
 
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
@@ -83,6 +93,16 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
         /// <inheritdoc cref="QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, HttpContent)"/>
         internal Task<string> LinkToSubjectObjectAsync(HttpContent body);
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryObjectTypen.IsValidType(NotificationEvent)"/>
+        internal bool IsValidType();
+        #endregion
+
+        #region IQueryObjecten
+        /// <inheritdoc cref="IQueryObjecten.GetTaskAsync(IQueryBase)"/>
+        internal Task<TaskObject> GetTaskAsync();
         #endregion
     }
 }

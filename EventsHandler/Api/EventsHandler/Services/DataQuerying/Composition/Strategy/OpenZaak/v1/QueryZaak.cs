@@ -14,7 +14,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web API service | "OMC workflow" v1.
+    ///   Version: "OpenZaak" (v1+) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryZaak : IQueryZaak
@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), caseTypeUri, subjectType))
+            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetDomain(), caseTypeUri, subjectType))
                 .Citizen
                 .BsnNumber;
         }
@@ -67,18 +67,18 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         #endregion
 
         #region Polimorphic (Case type)
-        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
-        async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
+        /// <inheritdoc cref="IQueryZaak.RequestCaseTypeUriAsync"/>
+        async Task<Uri> IQueryZaak.RequestCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
-            return (await GetCaseDetailsV1Async(queryBase))
-                .CaseType;
+            return (await GetCaseDetailsV1Async(queryBase, caseUri))
+                .CaseTypeUrl;
         }
 
-        private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase)
+        private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase, Uri caseUri)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObject,
+                uri: caseUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion
@@ -88,7 +88,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetSpecificOpenZaakDomain()}/zaken/api/v1/zaakcontactmomenten");
+            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetDomain()}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(

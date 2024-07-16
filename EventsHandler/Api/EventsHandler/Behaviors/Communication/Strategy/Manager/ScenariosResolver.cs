@@ -55,14 +55,21 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
 
                 return strategy;
             }
+
+            // Scenario #4: "Task assigned"
+            if (IsTaskScenario(notification))
+            {
+                return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
+            }
             
-            // Scenario #4: "Decision made"
+            // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                // TODO: The Hague requested to disable this feature for now
+                // return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
-            // There is no matching scenario to be applied. There is no clear instruction what to do with received Notification
+            // No matching scenario. There is no clear instruction what to do with the received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
@@ -79,6 +86,22 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
                 Action:   Actions.Create,
                 Channel:  Channels.Cases,
                 Resource: Resources.Status
+            };
+        }
+
+        /// <summary>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        /// </summary>
+        /// <remarks>
+        ///   This check is verifying whether task scenarios would be processed.
+        /// </remarks>
+        private static bool IsTaskScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action:   Actions.Create,
+                Channel:  Channels.Objects,
+                Resource: Resources.Object
             };
         }
 

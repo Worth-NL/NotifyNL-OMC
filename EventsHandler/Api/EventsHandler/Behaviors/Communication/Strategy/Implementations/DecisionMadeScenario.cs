@@ -7,7 +7,6 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Configuration;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
@@ -37,12 +36,12 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
-            IQueryContext queryContext = this.DataQuery.From(notification);
-            this.CachedDecision ??= await queryContext.GetDecisionAsync();
+            this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedDecision ??= await this.QueryContext.GetDecisionAsync();
             this.CachedCommonPartyData ??=
-                await queryContext.GetPartyDataAsync(
-                await queryContext.GetBsnNumberAsync(
-                      this.CachedDecision.Value.CaseTypeUrl));
+                await this.QueryContext.GetPartyDataAsync(
+                await this.QueryContext.GetBsnNumberAsync(
+                      this.CachedDecision.Value.CaseUrl));
             
             return await base.GetAllNotifyDataAsync(notification);
         }
@@ -53,12 +52,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override string GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.DecisionMade();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification)
-                                                    .GetCaseAsync(this.CachedDecision!.Value.CaseTypeUrl);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision!.Value);
+
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
@@ -72,17 +70,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
         protected override string GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.DecisionMade();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification)
-                                                    .GetCaseAsync(this.CachedDecision!.Value.CaseTypeUrl);
-            return new Dictionary<string, object>
-            {
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification }
-            };
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
         

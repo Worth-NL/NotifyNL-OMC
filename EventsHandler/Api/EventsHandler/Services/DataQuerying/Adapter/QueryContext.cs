@@ -1,12 +1,15 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
@@ -21,17 +24,27 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         private readonly IQueryBase _queryBase;
         private readonly IQueryKlant _queryKlant;
         private readonly IQueryZaak _queryZaak;
+        private readonly IQueryObjecten _queryObjecten;
+        private readonly IQueryObjectTypen _queryObjectTypen;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(IHttpNetworkService networkService, IQueryBase queryBase, IQueryKlant queryKlant, IQueryZaak queryZaak)
+        public QueryContext(
+            IHttpNetworkService networkService,
+            IQueryBase queryBase,
+            IQueryKlant queryKlant,
+            IQueryZaak queryZaak,
+            IQueryObjecten queryObjecten,
+            IQueryObjectTypen queryObjectTypen)
         {
             // Composition
             this._networkService = networkService;
             this._queryBase = queryBase;
             this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
+            this._queryObjecten = queryObjecten;
+            this._queryObjectTypen = queryObjectTypen;
         }
 
         #region IQueryBase
@@ -50,6 +63,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
         async Task<Case> IQueryContext.GetCaseAsync(Uri? caseTypeUri)
             => await this._queryZaak.GetCaseAsync(this._queryBase, caseTypeUri);
+
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Data)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(Data taskData)
+            => await this._queryZaak.GetCaseAsync(this._queryBase, taskData);
+
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Decision)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(Decision decision)
+            => await this._queryZaak.GetCaseAsync(this._queryBase, decision);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
@@ -125,7 +146,23 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
         {
             return await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
-                this._networkService, this._queryKlant.GetSpecificOpenKlantDomain(), body);
+                this._networkService, this._queryKlant.GetDomain(), body);
+        }
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryContext.IsValidType()"/>
+        bool IQueryContext.IsValidType()
+        {
+            return this._queryObjectTypen.IsValidType(this._queryBase.Notification);
+        }
+        #endregion
+
+        #region IQueryObjecten
+        /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
+        Task<TaskObject> IQueryContext.GetTaskAsync()
+        {
+            return this._queryObjecten.GetTaskAsync(this._queryBase);
         }
         #endregion
     }

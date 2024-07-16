@@ -18,7 +18,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
-        public Uri CaseTypeUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
         
         /// <summary>
         /// Gets the date when the decision will be in effect.
