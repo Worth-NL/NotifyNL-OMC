@@ -14,7 +14,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
 {
     /// <inheritdoc cref="IQueryKlant"/>
     /// <remarks>
-    ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
+    ///   Version: "OpenKlant" (v1+) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryKlant : IQueryKlant
@@ -38,7 +38,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
             // Predefined URL components
-            string citizensEndpoint = $"https://{((IQueryKlant)this).GetSpecificOpenKlantDomain()}/klanten/api/v1/klanten";
+            string citizensEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klanten/api/v1/klanten";
             
             // Request URL
             var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
@@ -62,7 +62,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, HttpContent body)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetSpecificOpenKlantDomain()}/contactmomenten/api/v1/contactmomenten");
+            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/contactmomenten/api/v1/contactmomenten");
             
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(

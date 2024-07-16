@@ -21,7 +21,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
             /// </summary>
             /// <param name="details">The details to be included.</param>
             internal Detailed(BaseEnhancedDetails details)
-                : base(HttpStatusCode.BadRequest, Resources.Operation_RESULT_HttpRequest_Failure, details)
+                : base(HttpStatusCode.BadRequest, Resources.Operation_ERROR_HttpRequest_Failure, details)
             {
             }
         }
@@ -35,7 +35,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
             /// </summary>
             /// <param name="details">The details to be included.</param>
             internal Simplified(BaseSimpleDetails details)
-                : base(HttpStatusCode.BadRequest, Resources.Operation_RESULT_HttpRequest_Failure, details)
+                : base(HttpStatusCode.BadRequest, Resources.Operation_ERROR_HttpRequest_Failure, details)
             {
             }
         }

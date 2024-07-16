@@ -58,7 +58,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 
         #region Case properties
         /// <summary>
-        /// Gets the URI of case type.
+        /// Gets the URI of a case type.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]

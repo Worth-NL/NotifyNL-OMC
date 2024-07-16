@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
     /// The methods querying specific data from "OpenKlant" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
-    internal interface IQueryKlant : IVersionDetails
+    internal interface IQueryKlant : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }
@@ -41,15 +41,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         internal Task<ContactMoment> SendFeedbackAsync(IQueryBase queryBase, HttpContent body);
         #endregion
 
-        #region Domain
-        /// <summary>
-        /// Gets the domain part of the organization-specific (e.g., municipality) "OpenKlant" Web API service URI:
-        /// <code>
-        ///   http(s)://[DOMAIN]/ApiEndpoint
-        /// </code>
-        /// </summary>
-        /// <exception cref="KeyNotFoundException"/>
-        internal sealed string GetSpecificOpenKlantDomain() => this.Configuration.User.Domain.OpenKlant();
+        #region Polymorphic (Domain)
+        /// <inheritdoc cref="IDomain.GetDomain"/>
+        string IDomain.GetDomain() => this.Configuration.User.Domain.OpenKlant();
         #endregion
     }
 }

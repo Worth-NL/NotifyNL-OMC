@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);
-                                                   scenario.DropCache();
+
                 if (!allNotifyData.HasAny())
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
@@ -81,6 +81,7 @@ namespace EventsHandler.Services.DataProcessing
                 // NOTE: The notification was sent and the completion status was reported to the telemetry API
                 return (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
+            // TODO: Replace exception handling by (ProcessingResult result, string message) value tuple to further optimize the OMC workflow
             catch (TelemetryException exception)
             {
                 // NOTE: The notification was sent, but the communication with the telemetry API failed. Do not retry

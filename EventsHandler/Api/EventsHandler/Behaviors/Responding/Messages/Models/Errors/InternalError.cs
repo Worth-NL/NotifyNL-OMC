@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         /// </summary>
         /// <param name="details">The details to be included.</param>
         internal InternalError(BaseSimpleDetails details)
-            : base(HttpStatusCode.InternalServerError, Resources.Operation_RESULT_Internal, details)
+            : base(HttpStatusCode.InternalServerError, Resources.Operation_ERROR_Internal_Unknown, details)
         {
         }
         
@@ -28,7 +28,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         /// </summary>
         /// <param name="details">The details to be included.</param>
         internal InternalError(string details)
-            : base(HttpStatusCode.InternalServerError, Resources.Operation_RESULT_Internal, new UnknownDetails(details))
+            : base(HttpStatusCode.InternalServerError, Resources.Operation_ERROR_Internal_Unknown, new UnknownDetails(details))
         {
         }
     }

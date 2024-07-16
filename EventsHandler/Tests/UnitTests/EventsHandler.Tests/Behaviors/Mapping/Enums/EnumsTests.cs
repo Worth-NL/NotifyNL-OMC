@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
+using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using System.Text.Json;
 
@@ -28,10 +29,24 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         [TestCase(typeof(Resources), Resources.Decision, "besluit")]
         // Distribution channels
         [TestCase(typeof(DistributionChannels), DistributionChannels.None, "geen")]
-        [TestCase(typeof(DistributionChannels), DistributionChannels.Sms, "sms")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Email, "email")]
+        [TestCase(typeof(DistributionChannels), DistributionChannels.Sms, "sms")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Both, "beiden")]
-        // TODO: Add missing enum mappings
+        // Notification types
+        [TestCase(typeof(NotificationTypes), NotificationTypes.Email, "email")]
+        [TestCase(typeof(NotificationTypes), NotificationTypes.Sms, "sms")]
+        // Delivery statuses
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Created, "created")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Sending, "sending")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Delivered, "delivered")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Pending, "pending")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Sent, "sent")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Accepted, "accepted")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Received, "received")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Cancelled, "cancelled")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.PermanentFailure, "permanent-failure")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.TemporaryFailure, "temporary-failure")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.TechnicalFailure, "technical-failure")]
         public void JsonSerializer_CustomEnumSerialization_FromEnglishEnum_ToDutchJson(Type testEnumType, int testEnumValue, string expectedJsonValue)
         {
             // Arrange
@@ -65,10 +80,24 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         [TestCase("besluit", typeof(Resources), Resources.Decision)]
         // Distribution channels
         [TestCase("geen", typeof(DistributionChannels), DistributionChannels.None)]
-        [TestCase("sms", typeof(DistributionChannels), DistributionChannels.Sms)]
         [TestCase("email", typeof(DistributionChannels), DistributionChannels.Email)]
+        [TestCase("sms", typeof(DistributionChannels), DistributionChannels.Sms)]
         [TestCase("beiden", typeof(DistributionChannels), DistributionChannels.Both)]
-        // TODO: Add missing enum mappings
+        // Notification types
+        [TestCase("email", typeof(NotificationTypes), NotificationTypes.Email)]
+        [TestCase("sms", typeof(NotificationTypes), NotificationTypes.Sms)]
+        // Delivery statuses
+        [TestCase("created", typeof(DeliveryStatuses), DeliveryStatuses.Created)]
+        [TestCase("sending", typeof(DeliveryStatuses), DeliveryStatuses.Sending)]
+        [TestCase("delivered", typeof(DeliveryStatuses), DeliveryStatuses.Delivered)]
+        [TestCase("pending", typeof(DeliveryStatuses), DeliveryStatuses.Pending)]
+        [TestCase("sent", typeof(DeliveryStatuses), DeliveryStatuses.Sent)]
+        [TestCase("accepted", typeof(DeliveryStatuses), DeliveryStatuses.Accepted)]
+        [TestCase("received", typeof(DeliveryStatuses), DeliveryStatuses.Received)]
+        [TestCase("cancelled", typeof(DeliveryStatuses), DeliveryStatuses.Cancelled)]
+        [TestCase("permanent-failure", typeof(DeliveryStatuses), DeliveryStatuses.PermanentFailure)]
+        [TestCase("temporary-failure", typeof(DeliveryStatuses), DeliveryStatuses.TemporaryFailure)]
+        [TestCase("technical-failure", typeof(DeliveryStatuses), DeliveryStatuses.TechnicalFailure)]
         public void JsonSerializer_CustomEnumSerialization_FromDutchJson_ToEnglishEnum(string testJsonValue, Type testEnumType, int expectedEnumValue)
         {
             // Act
@@ -83,7 +112,8 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Enums
         [TestCase("", typeof(PrivacyNotices), PrivacyNotices.Unknown)]
         [TestCase("123", typeof(Resources), Resources.Unknown)]
         [TestCase("$#%", typeof(DistributionChannels), DistributionChannels.Unknown)]
-        // TODO: Add missing unknown tests
+        [TestCase("-", typeof(NotificationTypes), NotificationTypes.Unknown)]
+        [TestCase(" ", typeof(DeliveryStatuses), DeliveryStatuses.Unknown)]
         public void JsonSerializer_CustomEnumSerialization_FromUndefinedOption_ToDefaultEnum(string testJsonValue, Type testEnumType, int expectedEnumValue)
         {
             // Act

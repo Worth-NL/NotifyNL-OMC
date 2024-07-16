@@ -19,7 +19,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   The output enum of type B.
         /// </returns>
-        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)
+        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)  // TODO: Missing code coverage
         {
             return processingResult switch
             {
@@ -43,15 +43,16 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static NotifyMethods ConvertToNotifyMethod(this NotificationTypes notificationType)
         {
-            // Get value of the enum A
-            int notificationTypeValue = (int)notificationType;
-
-            // Ensure if the conversion is possible
-            return Enum.IsDefined(typeof(NotifyMethods), notificationTypeValue)
-                // SUCCESS: Convert to enum B by direct value-to-enum casting
-                ? (NotifyMethods)notificationTypeValue
+            // SUCCESS: Convert to enum B
+            return notificationType switch
+            {
+                NotificationTypes.Email => NotifyMethods.Email,
+                
+                NotificationTypes.Sms => NotifyMethods.Sms,
+                
                 // FAILURE: Return fallback enum B
-                : NotifyMethods.None;
+                _ => NotifyMethods.None
+            };
         }
         
         /// <summary>
@@ -64,19 +65,22 @@ namespace EventsHandler.Extensions
         internal static FeedbackTypes ConvertToFeedbackStatus(this DeliveryStatuses deliveryStatus)
         {
             if (deliveryStatus == DeliveryStatuses.Unknown ||
-                !Enum.IsDefined(typeof(DeliveryStatuses), (int)deliveryStatus))  // Can't determine based on the value
+                !Enum.IsDefined(typeof(DeliveryStatuses), deliveryStatus))  // Can't determine based on the value
             {
+                // FAILURE: Return fallback enum B
                 return FeedbackTypes.Unknown;
             }
 
+            // SUCCESS: Convert to enum B
             return deliveryStatus switch
             {
-                DeliveryStatuses.Delivered
-                    => FeedbackTypes.Success,
+                DeliveryStatuses.Delivered => FeedbackTypes.Success,
                 
-                DeliveryStatuses.PermanentFailure or DeliveryStatuses.TemporaryFailure or DeliveryStatuses.TechnicalFailure
-                    => FeedbackTypes.Failure,
+                DeliveryStatuses.PermanentFailure or
+                DeliveryStatuses.TemporaryFailure or
+                DeliveryStatuses.TechnicalFailure => FeedbackTypes.Failure,
                 
+                // FAILURE: Return fallback enum B
                 _ => FeedbackTypes.Info
             };
         }
