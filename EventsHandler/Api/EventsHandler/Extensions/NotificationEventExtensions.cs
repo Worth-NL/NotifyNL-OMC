@@ -30,9 +30,12 @@ namespace EventsHandler.Extensions
             {
                 Channels.Cases     => notification.Attributes.SourceOrganization,
                 Channels.Decisions => notification.Attributes.ResponsibleOrganization,
+                Channels.Objects   => "missing",  // TODO: Object notification / tasks workflow doesn't have organization id
+                
                 _ => null
             };
 
+            // Validation: Wrong type of Channel in notification or the Organization ID is not initialized properly
             return organizationId
                 ?? throw new HttpRequestException(Resources.HttpRequest_ERROR_NoSourceOrganization + $" [{notification.Channel}]");
         }

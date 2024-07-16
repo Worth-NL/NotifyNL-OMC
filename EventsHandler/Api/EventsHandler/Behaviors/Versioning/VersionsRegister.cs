@@ -1,8 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventsHandler.Behaviors.Versioning
 {
@@ -22,14 +25,27 @@ namespace EventsHandler.Behaviors.Versioning
         /// <inheritdoc cref="IVersionsRegister.GetVersions()"/>
         string IVersionsRegister.GetVersions()
         {
-            var services = new IVersionDetails[]
-            {
-                this._serviceProvider.GetRequiredService<IQueryZaak>(),
-                this._serviceProvider.GetRequiredService<IQueryKlant>(),
-                this._serviceProvider.GetRequiredService<ITelemetryService>()
-            };
+            IVersionDetails[] services;
 
-            return $"({string.Join(", ", services.Select(service => $"{service.Name} v{service.Version}"))})";
+            try
+            {
+                services = new IVersionDetails[]
+                {
+                    this._serviceProvider.GetRequiredService<IQueryZaak>(),
+                    this._serviceProvider.GetRequiredService<IQueryKlant>(),
+                    this._serviceProvider.GetRequiredService<IQueryObjecten>(),
+                    this._serviceProvider.GetRequiredService<IQueryObjectTypen>(),
+                    this._serviceProvider.GetRequiredService<ITelemetryService>()
+                };
+            }
+            catch (InvalidOperationException)
+            {
+                services = Array.Empty<IVersionDetails>();
+            }
+
+            return services.IsNullOrEmpty()
+                ? string.Empty
+                : $"({string.Join(", ", services.Select(service => $"{service.Name} v{service.Version}"))})";
         }
     }
 }

@@ -72,9 +72,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_AUTHORIZATION_JWT_USERID",     GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
 
-                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OPENKLANT_2",          GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OBJECTTYPEN",          GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
 
                 { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENZAAK",              GetTestValue(isValid, testDomain) },
@@ -82,15 +83,17 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OBJECTEN",              GetTestValue(isValid, testDomain, "https://domain") },
                 { "USER_DOMAIN_OBJECTTYPEN",           GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",    GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testTempId) }
+                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED", GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testTempId) },
+
+                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
@@ -138,9 +141,10 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 ("User",         $"{nameof(WebApiConfiguration.User.API)}",                 "USER_API"),
                 ("USER_API",     $"{nameof(WebApiConfiguration.User.API.Key)}",             "USER_API_KEY"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
                 ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.OpenKlant_2)}", "USER_API_KEY_OPENKLANT_2"),
                 ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.Objecten)}",    "USER_API_KEY_OBJECTEN"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.ObjectTypen)}", "USER_API_KEY_OBJECTTYPEN"),
+                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
 
                 ("User",        $"{nameof(WebApiConfiguration.User.Domain)}",                  "USER_DOMAIN"),
                 ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenNotificaties)}", "USER_DOMAIN_OPENNOTIFICATIES"),
@@ -149,19 +153,21 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.Objecten)}",         "USER_DOMAIN_OBJECTEN"),
                 ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.ObjectTypen)}",      "USER_DOMAIN_OBJECTTYPEN"),
 
-                ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
-                ("USER_TEMPLATEIDS",     $"{nameof(WebApiConfiguration.User.TemplateIds.Sms)}",              "USER_TEMPLATEIDS_SMS"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE"),
-
                 ("User",                   $"{nameof(WebApiConfiguration.User.TemplateIds)}",                    "USER_TEMPLATEIDS"),
                 ("USER_TEMPLATEIDS",       $"{nameof(WebApiConfiguration.User.TemplateIds.Email)}",              "USER_TEMPLATEIDS_EMAIL"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakCreate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakUpdate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakClose)}",    "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE")
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.TaskAssigned)}", "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED"),
+                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE"),
+
+                ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
+                ("USER_TEMPLATEIDS",     $"{nameof(WebApiConfiguration.User.TemplateIds.Sms)}",              "USER_TEMPLATEIDS_SMS"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.TaskAssigned)}", "USER_TEMPLATEIDS_SMS_TASKASSIGNED"),
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE")
             };
 
             foreach ((string Path, string Node, string ResultPath) data in testData)

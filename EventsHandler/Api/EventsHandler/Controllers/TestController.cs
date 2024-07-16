@@ -62,7 +62,7 @@ namespace EventsHandler.Controllers
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                               // REASON: The API service is up and running
+        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The API service is up and running
         [ProducesResponseType(StatusCodes.Status400BadRequest)]                                                       // REASON: The API service is currently down
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()

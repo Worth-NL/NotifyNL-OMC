@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations;
+using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
@@ -22,6 +23,10 @@ using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Base;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataReceiving;
 using EventsHandler.Services.DataReceiving.Factories;
@@ -50,8 +55,6 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Responder = EventsHandler.Services.UserCommunication;
@@ -306,9 +309,8 @@ namespace EventsHandler
             services.AddSingleton<CaseCreatedScenario>();
             services.AddSingleton<CaseCaseStatusUpdatedScenario>();
             services.AddSingleton<CaseCaseFinishedScenario>();
-            
+            services.AddSingleton<TaskAssignedScenario>();
             services.AddSingleton<DecisionMadeScenario>();
-
             services.AddSingleton<NotImplementedScenario>();
         }
 
@@ -322,6 +324,8 @@ namespace EventsHandler
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
 
             // Feedback and telemetry
             builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
@@ -345,6 +349,24 @@ namespace EventsHandler
                     1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionOpenKlantUnknown)
+                };
+            }
+
+            static Type DetermineObjectenVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 or 2 => typeof(QueryObjecten),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectenUnknown)
+                };
+            }
+
+            static Type DetermineObjectTypenVersion(byte omcWorkflowVersion)
+            {
+                return omcWorkflowVersion switch
+                {
+                    1 or 2 => typeof(QueryObjectTypen),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectTypenUnknown)
                 };
             }
 

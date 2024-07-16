@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataReceiving
 
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
-        private readonly IHttpClientFactory<HttpClient, (string, string)[]> _httpClientFactory;
+        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
@@ -63,22 +63,34 @@ namespace EventsHandler.Services.DataReceiving
         #endregion
 
         #region HTTP Clients
+        private const string AcceptCrsHeader = "Accept-Crs";
+        private const string ContentCrsHeader = "Content-Crs";
+        private const string CrsValue = "EPSG:4326";
+        private const string AuthorizeHeader = "Authorization";
+
         private void InitializeAvailableHttpClients()
         {
+            // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
-                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
-                .GetHttpClient(new[] { ("Accept-Crs", "EPSG:4326"), ("Content-Crs", "EPSG:4326") }));
+                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.OpenKlant_v2)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
+
+            this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
+
+            this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
-                .GetHttpClient(new[] { ("Authorization", AuthorizeWithStaticToken(HttpClientTypes.Telemetry_Klantinteracties)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
         }
 
         /// <summary>
@@ -93,12 +105,14 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.OpenZaak_v1  or
                 HttpClientTypes.OpenKlant_v1 or
                 HttpClientTypes.Telemetry_Contactmomenten
-                    => AuthorizeWithGeneratedJwt(this._httpClients.GetValueOrDefault(httpClientType)!),
+                    => AuthorizeWithGeneratedJwt(this._httpClients[httpClientType]),
                     
-                // Clients using static tokens from configuration
+                // Clients using static API keys from configuration
                 HttpClientTypes.OpenKlant_v2 or
+                HttpClientTypes.Objecten     or
+                HttpClientTypes.ObjectTypen  or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => this._httpClients.GetValueOrDefault(httpClientType)!,
+                    => this._httpClients[httpClientType],
                 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
@@ -149,13 +163,19 @@ namespace EventsHandler.Services.DataReceiving
         /// <returns>
         /// The Key and Value of the "Header" used for authorization purpose.
         /// </returns>
-        private string AuthorizeWithStaticToken(HttpClientTypes httpClientType)
+        private string AuthorizeWithStaticApiKey(HttpClientTypes httpClientType)
         {
             return httpClientType switch
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
                     => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant_2()}",
+
+                HttpClientTypes.Objecten
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.Objecten()}",
+
+                HttpClientTypes.ObjectTypen
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
@@ -177,7 +197,7 @@ namespace EventsHandler.Services.DataReceiving
                     return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
-                // TODO: To be removed after tests
+                // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
                 if (httpClientType is HttpClientTypes.OpenKlant_v2 or HttpClientTypes.Telemetry_Klantinteracties)
                 {
                     uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));

@@ -184,6 +184,9 @@ namespace EventsHandler.Configuration
                 /// <inheritdoc cref="OpenKlantComponent"/>
                 internal OpenKlantComponent OpenKlant { get; }
 
+                /// <inheritdoc cref="ObjectenComponent"/>
+                internal ObjectenComponent Objecten { get; }
+
                 /// <inheritdoc cref="MessagesComponent"/>
                 internal MessagesComponent Messages { get; }
                 
@@ -196,6 +199,7 @@ namespace EventsHandler.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
+                    this.Objecten = new ObjectenComponent(loadersContext, this._currentPath);
                     this.Messages = new MessagesComponent(loadersContext, this._currentPath);
                 }
 
@@ -247,6 +251,28 @@ namespace EventsHandler.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string CodeObjectTypeId()
                         => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
+                }
+                
+                /// <summary>
+                /// The "Objecten" part of the settings.
+                /// </summary>
+                internal sealed class ObjectenComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
+                    /// </summary>
+                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal Guid TaskTypeGuid()
+                        => GetValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
                 }
 
                 /// <summary>
@@ -505,16 +531,20 @@ namespace EventsHandler.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string NotifyNL()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string OpenKlant_2()
                         => GetValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Objecten()
                         => GetValue(this._loadersContext, this._currentPath, nameof(Objecten));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string ObjectTypen()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string NotifyNL()
+                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
 
@@ -561,11 +591,11 @@ namespace EventsHandler.Configuration
             /// </summary>
             internal sealed record TemplateIdsComponent
             {
-                /// <inheritdoc cref="SmsComponent"/>
-                internal SmsComponent Sms { get; }
-
                 /// <inheritdoc cref="EmailComponent"/>
                 internal EmailComponent Email { get; }
+
+                /// <inheritdoc cref="SmsComponent"/>
+                internal SmsComponent Sms { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
@@ -574,8 +604,46 @@ namespace EventsHandler.Configuration
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
 
-                    this.Sms = new SmsComponent(loadersContext, currentPath);
                     this.Email = new EmailComponent(loadersContext, currentPath);
+                    this.Sms = new SmsComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "Email" part of the settings.
+                /// </summary>
+                internal sealed record EmailComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
+                    /// </summary>
+                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string ZaakCreate()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string ZaakUpdate()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string ZaakClose()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string TaskAssigned()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    internal string DecisionMade()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
 
                 /// <summary>
@@ -608,38 +676,8 @@ namespace EventsHandler.Configuration
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string DecisionMade()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
-                }
-
-                /// <summary>
-                /// The "Email" part of the settings.
-                /// </summary>
-                internal sealed record EmailComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
-                    /// </summary>
-                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string ZaakCreate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string ZaakUpdate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string ZaakClose()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+                    internal string TaskAssigned()
+                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string DecisionMade()

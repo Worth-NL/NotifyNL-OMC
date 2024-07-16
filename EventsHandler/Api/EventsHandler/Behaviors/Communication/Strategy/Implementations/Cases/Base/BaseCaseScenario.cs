@@ -29,17 +29,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.B
         {
         }
 
-        #region Polymorphic (GetAllNotifyDataAsync)
-        /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
-        {
-            this.CachedCommonPartyData ??= await this.DataQuery.From(notification).GetPartyDataAsync();
-            
-            return await base.GetAllNotifyDataAsync(notification);
-        }
-        #endregion
-
-        #region PassAlreadyQueriedResult()
+        #region Parent
         /// <summary>
         /// Passes the already queried result.
         /// </summary>
@@ -47,6 +37,17 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.B
         internal void PassAlreadyQueriedResult(CaseStatusType caseStatusType)
         {
             this.CachedLastCaseStatusType = caseStatusType;
+        }
+        #endregion
+
+        #region Polymorphic (GetAllNotifyDataAsync)
+        /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
+        internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
+        {
+            this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedCommonPartyData ??= await this.QueryContext.GetPartyDataAsync();
+            
+            return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
 

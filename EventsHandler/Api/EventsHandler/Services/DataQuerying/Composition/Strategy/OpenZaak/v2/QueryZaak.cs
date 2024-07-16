@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web API service | "OMC workflow" v2.
+    ///   Version: "OpenZaak" (v1+) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryZaak : IQueryZaak
@@ -44,7 +44,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         {
             string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
-            return (await GetCaseRolesV2Async(queryBase, ((IQueryZaak)this).GetSpecificOpenZaakDomain(), caseTypeUri, subjectType))
+            return (await GetCaseRolesV2Async(queryBase, ((IQueryZaak)this).GetDomain(), caseTypeUri, subjectType))
                 .Citizen(((IQueryZaak)this).Configuration)
                 .BsnNumber;
         }
@@ -66,18 +66,18 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         #endregion
 
         #region Polimorphic (Case type)
-        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase)"/>
-        async Task<Uri> IQueryZaak.GetCaseTypeUriFromDetailsAsync(IQueryBase queryBase)
+        /// <inheritdoc cref="IQueryZaak.RequestCaseTypeUriAsync"/>
+        async Task<Uri> IQueryZaak.RequestCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
-            return (await GetCaseDetailsV2Async(queryBase))
+            return (await GetCaseDetailsV2Async(queryBase, caseUri))
                 .CaseTypeUrl;
         }
         
-        private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase)
+        private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase, Uri caseUri)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObject,
+                uri: caseUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion

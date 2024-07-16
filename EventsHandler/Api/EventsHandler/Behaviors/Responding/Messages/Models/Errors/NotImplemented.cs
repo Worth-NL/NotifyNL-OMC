@@ -16,7 +16,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         /// Initializes a new instance of the <see cref="NotImplemented"/> class.
         /// </summary>
         internal NotImplemented()
-            : base(HttpStatusCode.NotImplemented, Resources.Operation_RESULT_NotImplemented)
+            : base(HttpStatusCode.NotImplemented, Resources.Operation_ERROR_NotImplemented)
         {
         }
     }

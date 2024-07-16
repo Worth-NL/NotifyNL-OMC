@@ -31,11 +31,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override string GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
 
             return new Dictionary<string, object>
             {
@@ -53,20 +52,10 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
         protected override string GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(NotificationEvent, CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(
-            NotificationEvent notification, CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.DataQuery.From(notification).GetCaseAsync();
-
-            return new Dictionary<string, object>
-            {
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification },
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname }
-            };
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
     }

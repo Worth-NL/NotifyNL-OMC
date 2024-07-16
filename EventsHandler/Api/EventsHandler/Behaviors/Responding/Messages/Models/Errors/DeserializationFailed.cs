@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
         /// </summary>
         /// <param name="details">The details to be included.</param>
         internal DeserializationFailed(BaseEnhancedDetails details)
-            : base(HttpStatusCode.UnprocessableEntity, Resources.Operation_RESULT_Deserialization_Failure, details)
+            : base(HttpStatusCode.UnprocessableEntity, Resources.Operation_ERROR_Deserialization_Failure, details)
         {
         }
     }
