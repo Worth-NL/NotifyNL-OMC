@@ -9,7 +9,7 @@
 
 ---
 
-# NotifyNL Open Management Component (OMC)
+# NotifyNL Output Management Component (OMC)
 
 - [Events Listener](Documentation/OMC%20-%20Documentation.md)
 
