@@ -10,6 +10,14 @@ namespace EventsHandler.UnitTests.Configuration
     [TestFixture]
     public sealed class WepApiConfigurationTests
     {
+        private static WebApiConfiguration s_testConfiguration = null!;
+        
+        [TearDown]
+        public void TestCleanup()
+        {
+            s_testConfiguration.Dispose();
+        }
+
         #region Environment variables
         #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
                                          // ReSharper disable SuggestVarOrType_SimpleTypes
@@ -17,14 +25,14 @@ namespace EventsHandler.UnitTests.Configuration
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {
             // Arrange
-            WebApiConfiguration configuration =
+            s_testConfiguration =
                 ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
-                var omcConfiguration = configuration.OMC;
-                var userConfiguration = configuration.User;
+                var omcConfiguration = s_testConfiguration.OMC;
+                var userConfiguration = s_testConfiguration.User;
 
                 // Authorization | JWT | Notify
                 var notifyJwt = omcConfiguration.Authorization.JWT;
@@ -91,6 +99,10 @@ namespace EventsHandler.UnitTests.Configuration
         public void WebApiConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
+            // Arrange
+            s_testConfiguration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
+
             // Act & Assert
             Assert.Multiple(() =>
             {
@@ -103,32 +115,28 @@ namespace EventsHandler.UnitTests.Configuration
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
-            // Arrange
-            WebApiConfiguration configuration =
-                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
-
             // Invalid: Not existing
-            yield return ("#1", () => configuration.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => s_testConfiguration.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#2", () => configuration.User.Authorization.JWT.Audience(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => s_testConfiguration.User.Authorization.JWT.Audience(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#3", () => configuration.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#3", () => s_testConfiguration.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#4", () => configuration.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => s_testConfiguration.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#5", () => configuration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#5", () => s_testConfiguration.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: domain/api/v1/typen
-            yield return ("#6", () => configuration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
+            yield return ("#6", () => s_testConfiguration.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
             // Invalid: Empty
-            yield return ("#7", () => configuration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => s_testConfiguration.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#8", () => configuration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#8", () => s_testConfiguration.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#9", () => configuration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => s_testConfiguration.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#10", () => configuration.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#11", () => configuration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#11", () => s_testConfiguration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
 
         [TestCase("1", true)]
@@ -138,11 +146,11 @@ namespace EventsHandler.UnitTests.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            WebApiConfiguration configuration =
+            s_testConfiguration =
                 ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
 
             // Act
-            var whitelistedIDs = configuration.User.Whitelist.ZaakCreate_IDs();
+            var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
             bool isAllowed = whitelistedIDs.IsAllowed(caseId);
 
             // Assert
@@ -157,11 +165,11 @@ namespace EventsHandler.UnitTests.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            WebApiConfiguration configuration =
+            s_testConfiguration =
                 ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
 
             // Act
-            var whitelistedIDs = configuration.User.Whitelist.ZaakCreate_IDs();
+            var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
             bool isAllowed = whitelistedIDs.IsAllowed("1");
 
             // Assert

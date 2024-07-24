@@ -27,8 +27,22 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
 
         #region Test data
-        private static readonly WebApiConfiguration s_emptyConfiguration = ConfigurationHandler.GetWebApiConfiguration();
-        private static readonly WebApiConfiguration s_testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+        private WebApiConfiguration _emptyConfiguration = null!;
+        private WebApiConfiguration _testConfiguration = null!;
+
+        [OneTimeSetUp]
+        public void TestsInitialize()
+        {
+            this._emptyConfiguration = ConfigurationHandler.GetWebApiConfiguration();
+            this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._emptyConfiguration.Dispose();
+            this._testConfiguration.Dispose();
+        }
 
         private static readonly TaskObject s_taskClosed = new()
         {
@@ -112,7 +126,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(s_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -140,7 +154,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(s_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -168,7 +182,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(s_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -229,7 +243,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(s_testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(_testConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -305,7 +319,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            return new TaskAssignedScenario(s_testConfiguration, this._mockedDataQuery.Object);
+            return new TaskAssignedScenario(_testConfiguration, this._mockedDataQuery.Object);
         }
         #endregion
 

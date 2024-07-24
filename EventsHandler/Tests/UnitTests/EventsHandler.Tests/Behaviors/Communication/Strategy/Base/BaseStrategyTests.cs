@@ -26,7 +26,19 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         private const string TestEmailAddress = "test@gmail.com";
         private const string TestPhoneNumber = "+310123456789";
 
-        private readonly WebApiConfiguration _testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+        private WebApiConfiguration _testConfiguration = null!;
+
+        [OneTimeSetUp]
+        public void TestsInitialize()
+        {
+            this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._testConfiguration.Dispose();
+        }
 
         #region GetAllNotifyDataAsync()
         [Test]

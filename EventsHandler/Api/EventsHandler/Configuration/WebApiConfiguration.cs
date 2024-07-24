@@ -7,6 +7,7 @@ using EventsHandler.Services.DataLoading.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Interfaces;
 using EventsHandler.Services.DataLoading.Strategy.Manager;
 using JetBrains.Annotations;
+using System.Collections.Concurrent;
 
 namespace EventsHandler.Configuration
 {
@@ -24,7 +25,7 @@ namespace EventsHandler.Configuration
     ///   </list>
     /// </para>
     /// </summary>
-    public sealed record WebApiConfiguration
+    public sealed record WebApiConfiguration : IDisposable
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -717,10 +718,11 @@ namespace EventsHandler.Configuration
             /// <summary>
             /// The "Whitelist" part of the settings.
             /// </summary>
-            internal sealed record WhitelistComponent
+            internal sealed record WhitelistComponent : IDisposable
             {
                 private static readonly object s_whitelistLock = new();
                 private static readonly HashSet<string> s_allWhitelistedCaseIds = new();  // All whitelisted Case IDs from different scenarios
+                private static readonly ConcurrentDictionary<string /* Node name */, IDs> s_cachedIDs = new();  // Cached IDs nested models
 
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
@@ -736,27 +738,37 @@ namespace EventsHandler.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakCreate_IDs()
-                    => new(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakUpdate_IDs()
-                    => new(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
                     
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakClose_IDs()
-                    => new(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs TaskAssigned_IDs()
-                    => new(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs DecisionMade_IDs()
-                    => new(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool Message_Allowed()
                     => GetValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+
+                /// <summary>
+                /// Returns cached <see cref="IDs"/> or creates a new one.
+                /// </summary>
+                private static IDs GetIDs(ILoadingService loadersContext, string currentPath, string nodeName)
+                {
+                    return s_cachedIDs.GetOrAdd(
+                        key: nodeName,
+                        value: new IDs(loadersContext, currentPath, nodeName));
+                }
 
                 // ReSharper disable once InconsistentNaming
                 /// <summary>
@@ -819,8 +831,23 @@ namespace EventsHandler.Configuration
                         return $"{finalPath}:{caseId}";
                     }
                 }
+
+                /// <inheritdoc cref="IDisposable.Dispose()"/>
+                public void Dispose()
+                {
+                    lock (s_whitelistLock)
+                    {
+                        s_allWhitelistedCaseIds.Clear();
+                    }
+
+                    s_cachedIDs.Clear();
+                }
             }
         }
+        #endregion
+
+        #region Cached data
+        private static readonly ConcurrentDictionary<string /* Node name */, string> s_cachedValues = new();
         #endregion
 
         #region Helper methods
@@ -892,5 +919,11 @@ namespace EventsHandler.Configuration
                 .ValidTemplateId();
         }
         #endregion
+
+        /// <inheritdoc cref="IDisposable.Dispose()"/>
+        public void Dispose()
+        {
+            this.User.Whitelist.Dispose();
+        }
     }
 }
