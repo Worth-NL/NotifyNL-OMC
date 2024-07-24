@@ -46,6 +46,7 @@ namespace EventsHandler.Utilities._TestHelpers
             var mockedEnvironmentLoader = new Mock<EnvironmentLoader>();
 
             const string testValue = "Test";
+            const string testValues = "1, 2, 3";
             const string testDomain = "test.domain";
             const string testTempId = "00000000-0000-0000-0000-000000000000";
 
@@ -58,30 +59,30 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetData<T>() mocking
             Dictionary<string /* Key */, string /* Value */> keyValueMapping = new()
             {
-                { "OMC_AUTHORIZATION_JWT_SECRET",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_ISSUER",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_AUDIENCE",    GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_USERID",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_USERNAME",    GetTestValue(isValid, testValue) },
-
-                { "OMC_API_BASEURL_NOTIFYNL",          GetTestValue(isValid, "https://www.test.nl/") },
-                
-                { "USER_AUTHORIZATION_JWT_SECRET",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_ISSUER",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",   GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_USERID",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
-
-                { "USER_API_KEY_OPENKLANT_2",          GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_OBJECTTYPEN",          GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
-
-                { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENZAAK",              GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENKLANT",             GetTestValue(isValid, testDomain, "http://domain") },
-                { "USER_DOMAIN_OBJECTEN",              GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",           GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
+                { "OMC_AUTHORIZATION_JWT_SECRET",        GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_ISSUER",        GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_AUDIENCE",      GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testValue) },
+                                                         
+                { "OMC_API_BASEURL_NOTIFYNL",            GetTestValue(isValid, "https://www.test.nl/") },
+                                                         
+                { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_USERID",       GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_USERNAME",     GetTestValue(isValid, testValue) },
+                                                         
+                { "USER_API_KEY_OPENKLANT_2",            GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OBJECTEN",               GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_OBJECTTYPEN",            GetTestValue(isValid, testValue) },
+                { "USER_API_KEY_NOTIFYNL",               GetTestValue(isValid, testValue) },
+                                                         
+                { "USER_DOMAIN_OPENNOTIFICATIES",        GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENZAAK",                GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENKLANT",               GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_OBJECTEN",                GetTestValue(isValid, testDomain, "https://domain") },
+                { "USER_DOMAIN_OBJECTTYPEN",             GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
@@ -93,7 +94,14 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
                 { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") }
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") },
+
+                { "USER_WHITELIST_ZAAKCREATE_IDS",       GetTestValue(isValid, testValues) },
+                { "USER_WHITELIST_ZAAKUPDATE_IDS",       GetTestValue(isValid, testValues) },
+                { "USER_WHITELIST_ZAAKCLOSE_IDS",        GetTestValue(isValid, testValues) },
+                { "USER_WHITELIST_TASKASSIGNED_IDS",     GetTestValue(isValid, testValues) },
+                { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testValues) },
+                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, "false") }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
