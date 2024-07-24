@@ -786,7 +786,7 @@ namespace EventsHandler.Configuration
                         // Construct the IDs object
                         this.Count = caseIds.Length;
 
-                        if (this.Count <= 0)
+                        if (this.Count == 0)
                         {
                             return;
                         }
@@ -808,7 +808,9 @@ namespace EventsHandler.Configuration
                     {
                         lock (s_whitelistLock)
                         {
-                            return s_allWhitelistedCaseIds.Contains(ComposeID(this._finalPath, caseId));
+                            return !string.IsNullOrWhiteSpace(caseId) &&
+                                   s_allWhitelistedCaseIds.Count != 0 &&
+                                   s_allWhitelistedCaseIds.Contains(ComposeID(this._finalPath, caseId));
                         }
                     }
 
@@ -840,7 +842,9 @@ namespace EventsHandler.Configuration
         {
             // Validation #1: Checking if the string value is not null or empty
             string[] values = GetValue<string>(loadersContext, finalPath, disableValidation)
-                .Split(',');
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
+                .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
+                .ToArray();
 
             // Validation #2: Checking if the comma-separated string was properly split into array
             return disableValidation
