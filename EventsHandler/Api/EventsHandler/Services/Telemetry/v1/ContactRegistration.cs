@@ -4,11 +4,11 @@ using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using System.Text;
 
 namespace EventsHandler.Services.Telemetry.v1

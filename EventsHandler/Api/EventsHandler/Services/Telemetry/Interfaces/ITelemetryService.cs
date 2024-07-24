@@ -2,8 +2,8 @@
 
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Exceptions;
+using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.Telemetry.Interfaces
 {
