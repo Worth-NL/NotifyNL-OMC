@@ -719,6 +719,9 @@ namespace EventsHandler.Configuration
             /// </summary>
             internal sealed record WhitelistComponent
             {
+                private static readonly object s_whitelistLock = new();
+                private static readonly HashSet<string> s_allWhitelistedCaseIds = new();  // All whitelisted Case IDs from different scenarios
+
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
 
@@ -732,52 +735,135 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string[] ZaakCreate_IDs()
-                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
+                internal IDs ZaakCreate_IDs()
+                    => new(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string[] ZaakUpdate_IDs()
-                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
+                internal IDs ZaakUpdate_IDs()
+                    => new(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
                     
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string[] ZaakClose_IDs()
-                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
+                internal IDs ZaakClose_IDs()
+                    => new(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string[] TaskAssigned_IDs()
-                    => GetValues(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
+                internal IDs TaskAssigned_IDs()
+                    => new(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string[] DecisionMade_IDs()
-                    => GetValues(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+                internal IDs DecisionMade_IDs()
+                    => new(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool Message_Allowed()
                     => GetValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+
+                // ReSharper disable once InconsistentNaming
+                /// <summary>
+                /// A helper class encapsulating vulnerable hashed IDs and common operations on them.
+                /// </summary>
+                internal sealed record IDs
+                {
+                    private readonly string _finalPath;
+
+                    /// <summary>
+                    /// Gets the count of the whitelisted IDs.
+                    /// </summary>
+                    /// <remarks>
+                    /// NOTE: To keep the data integrity do not expose the cached whitelist IDs directly.
+                    /// </remarks>
+                    internal int Count { get; }
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="IDs"/> class.
+                    /// </summary>
+                    internal IDs(ILoadingService loadersContext, string currentPath, string nodeName)
+                    {
+                        // Get values
+                        this._finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
+                        string[] caseIds = GetValues(loadersContext, this._finalPath, disableValidation: true);
+
+                        // Construct the IDs object
+                        this.Count = caseIds.Length;
+
+                        if (this.Count <= 0)
+                        {
+                            return;
+                        }
+
+                        // Cache the current IDs among all scenario-specific IDs
+                        lock (s_whitelistLock)
+                        {
+                            foreach (string value in caseIds)
+                            {
+                                s_allWhitelistedCaseIds.Add(ComposeID(this._finalPath, value));
+                            }
+                        }
+                    }
+
+                    /// <summary>
+                    /// Determines whether the specified case identifier is whitelisted.
+                    /// </summary>
+                    internal bool IsAllowed(string caseId)
+                    {
+                        lock (s_whitelistLock)
+                        {
+                            return s_allWhitelistedCaseIds.Contains(ComposeID(this._finalPath, caseId));
+                        }
+                    }
+
+                    private static string ComposeID(string finalPath, string caseId)
+                    {
+                        return $"{finalPath}:{caseId}";
+                    }
+                }
             }
         }
         #endregion
 
         #region Helper methods
         /// <summary>
-        /// Retrieves cached settings value.
+        /// Retrieves settings <see langword="string"/> value (with optional validation).
         /// </summary>
+        /// <remarks>
+        /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation.
+        /// </remarks>
         private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
-            string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
-
-            return disableValidation
-                ? loadersContext.GetData<string>(finalPath)
-                : loadersContext.GetData<string>(finalPath).NotEmpty(finalPath);
+            return GetValue<string>(loadersContext, currentPath, nodeName, disableValidation);
         }
-
+        
         /// <summary>
-        /// Retrieves cached settings value.
+        /// Retrieves multiple settings <see langword="string"/> values (with optional validation).
+        /// </summary>
+        private static string[] GetValues(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
+        {
+            // Validation #1: Checking if the string value is not null or empty
+            string[] values = GetValue<string>(loadersContext, finalPath, disableValidation)
+                .Split(',');
+
+            // Validation #2: Checking if the comma-separated string was properly split into array
+            return disableValidation
+                ? values
+                : values.NotEmpty(finalPath);
+        }
+        
+        /// <summary>
+        /// Retrieves settings <typeparamref name="TData"/> value (with optional validation).
         /// </summary>
         private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
+            return GetValue<TData>(loadersContext, finalPath, disableValidation);
+        }
+        
+        /// <summary>
+        /// Retrieves settings <typeparamref name="TData"/> value using final path
+        /// instead of path + node concatenation (with optional validation).
+        /// </summary>
+        private static TData GetValue<TData>(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
+        {
             return disableValidation
                 ? loadersContext.GetData<TData>(finalPath)
                 : loadersContext.GetData<TData>(finalPath).NotEmpty(finalPath);
@@ -800,12 +886,6 @@ namespace EventsHandler.Configuration
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
                 .ValidTemplateId();
-        }
-
-        private static string[] GetValues(ILoadingService loadingService, string currentPath, string nodeName)
-        {
-            return GetValue(loadingService, currentPath, nodeName, disableValidation: true)
-                .Split(',');
         }
         #endregion
     }

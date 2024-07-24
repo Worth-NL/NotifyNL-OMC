@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Collections;
 using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
@@ -39,14 +40,19 @@ namespace EventsHandler.Extensions
         /// <exception cref="ArgumentException"/>
         internal static T NotEmpty<T>(this T? value, string key)
         {
-            if (value is string stringValue)
+            return value switch
             {
-                return string.IsNullOrEmpty(stringValue)
+                string stringValue => string.IsNullOrEmpty(stringValue)
                     ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
-                    : value;
-            }
+                    : value,
 
-            return value ?? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key));
+                ICollection collection => collection.Count == 0
+                    ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
+                    : value,
+
+                _ => value ??
+                     throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
+            };
         }
 
         /// <summary>
