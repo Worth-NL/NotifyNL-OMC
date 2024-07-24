@@ -732,24 +732,24 @@ namespace EventsHandler.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string ZaakCreate_IDs()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
+                internal string[] ZaakCreate_IDs()
+                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs), disableValidation: true);
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string ZaakUpdate_IDs()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
+                internal string[] ZaakUpdate_IDs()
+                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs), disableValidation: true);
                     
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string ZaakClose_IDs()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
+                internal string[] ZaakClose_IDs()
+                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs), disableValidation: true);
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string TaskAssigned_IDs()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
+                internal string[] TaskAssigned_IDs()
+                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs), disableValidation: true);
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                internal string DecisionMade_IDs()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+                internal string[] DecisionMade_IDs()
+                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs), disableValidation: true);
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool Message_Allowed()
