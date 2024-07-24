@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-namespace EventsHandler.Behaviors.Versioning
+namespace EventsHandler.Services.Versioning.Interfaces
 {
     /// <summary>
     /// Stores information about version of a specific service or component.

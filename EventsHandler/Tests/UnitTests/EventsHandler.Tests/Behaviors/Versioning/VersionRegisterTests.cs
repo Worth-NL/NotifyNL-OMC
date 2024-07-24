@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
@@ -11,6 +10,8 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfac
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Telemetry.v2;
+using EventsHandler.Services.Versioning;
+using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
