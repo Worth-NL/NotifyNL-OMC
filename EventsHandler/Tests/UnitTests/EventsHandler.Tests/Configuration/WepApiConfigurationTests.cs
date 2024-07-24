@@ -16,11 +16,11 @@ namespace EventsHandler.UnitTests.Configuration
         [Test]
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {
-            // Initializing Web API Configuration
+            // Arrange
             WebApiConfiguration configuration =
                 ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
 
-            // Assert
+            // Act & Assert
             Assert.Multiple(() =>
             {
                 var omcConfiguration = configuration.OMC;
@@ -86,7 +86,6 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(whitelist.Message_Allowed(), Is.Not.False);
             });
         }
-        #pragma warning restore IDE0008
 
         [TestCaseSource(nameof(GetTestCases))]
         public void WebApiConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
@@ -104,6 +103,7 @@ namespace EventsHandler.UnitTests.Configuration
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
+            // Arrange
             WebApiConfiguration configuration =
                 ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
 
@@ -130,6 +130,48 @@ namespace EventsHandler.UnitTests.Configuration
             // Invalid: Special characters
             yield return ("#11", () => configuration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
+
+        [TestCase("1", true)]
+        [TestCase("9", false)]
+        [TestCase("", false)]
+        [TestCase(" ", false)]
+        public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
+        {
+            // Arrange
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
+
+            // Act
+            var whitelistedIDs = configuration.User.Whitelist.ZaakCreate_IDs();
+            bool isAllowed = whitelistedIDs.IsAllowed(caseId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(whitelistedIDs.Count, Is.EqualTo(3));
+                Assert.That(isAllowed, Is.EqualTo(expectedResult));
+            });
+        }
+
+        [Test]
+        public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
+        {
+            // Arrange
+            WebApiConfiguration configuration =
+                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
+
+            // Act
+            var whitelistedIDs = configuration.User.Whitelist.ZaakCreate_IDs();
+            bool isAllowed = whitelistedIDs.IsAllowed("1");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(whitelistedIDs.Count, Is.Zero);
+                Assert.That(isAllowed, Is.False);
+            });
+        }
+        #pragma warning restore IDE0008
         #endregion
     }
 }
