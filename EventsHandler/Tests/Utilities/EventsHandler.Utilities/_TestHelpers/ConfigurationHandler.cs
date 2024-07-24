@@ -111,6 +111,7 @@ namespace EventsHandler.Utilities._TestHelpers
                     .Returns(keyValue.Value);
             }
 
+            // NOTE: These environment variables are the numeric ones
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
