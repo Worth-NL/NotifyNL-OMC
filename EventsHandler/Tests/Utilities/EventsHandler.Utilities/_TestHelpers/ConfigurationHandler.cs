@@ -110,7 +110,7 @@ namespace EventsHandler.Utilities._TestHelpers
                     .Returns(keyValue.Value);
             }
 
-            // NOTE: These environment variables have specific types, different than strings
+            // NOTE: These environment variables have specific types, different from strings
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
