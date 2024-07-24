@@ -169,13 +169,20 @@ namespace EventsHandler.Utilities._TestHelpers
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.TaskAssigned)}", "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED"),
                 ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE"),
 
-                ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
                 ("USER_TEMPLATEIDS",     $"{nameof(WebApiConfiguration.User.TemplateIds.Sms)}",              "USER_TEMPLATEIDS_SMS"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
                 ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.TaskAssigned)}", "USER_TEMPLATEIDS_SMS_TASKASSIGNED"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE")
+                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE"),
+
+                ("User",           $"{nameof(WebApiConfiguration.User.Whitelist)}",                  "USER_WHITELIST"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.ZaakCreate_IDs)}",   "USER_WHITELIST_ZAAKCREATE_IDS"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.ZaakUpdate_IDs)}",   "USER_WHITELIST_ZAAKUPDATE_IDS"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.ZaakClose_IDs)}",    "USER_WHITELIST_ZAAKCLOSE_IDS"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.TaskAssigned_IDs)}", "USER_WHITELIST_TASKASSIGNED_IDS"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.DecisionMade_IDs)}", "USER_WHITELIST_DECISIONMADE_IDS"),
+                ("USER_WHITELIST", $"{nameof(WebApiConfiguration.User.Whitelist.Message_Allowed)}",  "USER_WHITELIST_MESSAGE_ALLOWED")
             };
 
             foreach ((string Path, string Node, string ResultPath) data in testData)
