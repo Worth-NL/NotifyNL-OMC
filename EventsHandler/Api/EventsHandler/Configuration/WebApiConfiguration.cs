@@ -64,6 +64,31 @@ namespace EventsHandler.Configuration
             this._omc = OMC;
             this._user = User;
         }
+        
+        /// <summary>
+        /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"/>
+        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType,
+            string name)
+            where TComponent : class
+        {
+            if (component == null)
+            {
+                // Initialize new loaders context
+                ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+
+                // Set what type of loading service is going to be used
+                loaderContext.SetLoader(loaderType);
+
+                // Set value to reference
+                component = (TComponent?)Activator.CreateInstance(typeof(TComponent), loaderContext, name)
+                            ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
+            }
+            
+            // Return reference
+            return component;
+        }
 
         #region Settings
         /// <summary>
@@ -484,6 +509,9 @@ namespace EventsHandler.Configuration
             /// <inheritdoc cref="TemplateIdsComponent"/>
             internal TemplateIdsComponent TemplateIds { get; }
 
+            /// <inheritdoc cref="WhitelistComponent"/>
+            internal WhitelistComponent Whitelist { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="UserComponent"/> class.
             /// </summary>
@@ -493,6 +521,7 @@ namespace EventsHandler.Configuration
                 this.API = new ApiComponent(loadersContext, parentName);
                 this.Domain = new DomainComponent(loadersContext, parentName);
                 this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
+                this.Whitelist = new WhitelistComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -684,35 +713,52 @@ namespace EventsHandler.Configuration
                         => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
             }
+
+            /// <summary>
+            /// The "Whitelist" part of the settings.
+            /// </summary>
+            internal sealed record WhitelistComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="WhitelistComponent"/> class.
+                /// </summary>
+                internal WhitelistComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Whitelist));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string ZaakCreate_IDs()
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
+                
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string ZaakUpdate_IDs()
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
+                    
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string ZaakClose_IDs()
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string TaskAssigned_IDs()
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal string DecisionMade_IDs()
+                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                internal bool Message_Allowed()
+                    => GetValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+            }
         }
         #endregion
 
         #region Helper methods
-        /// <summary>
-        /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"/>
-        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType,
-            string name)
-            where TComponent : class
-        {
-            if (component == null)
-            {
-                // Initialize new loaders context
-                ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
-
-                // Set what type of loading service is going to be used
-                loaderContext.SetLoader(loaderType);
-
-                // Set value to reference
-                component = (TComponent?)Activator.CreateInstance(typeof(TComponent), loaderContext, name)
-                            ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
-            }
-            
-            // Return reference
-            return component;
-        }
-
         /// <summary>
         /// Retrieves cached settings value.
         /// </summary>
