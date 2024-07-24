@@ -100,8 +100,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_WHITELIST_ZAAKUPDATE_IDS",       GetTestValue(isValid, testValues) },
                 { "USER_WHITELIST_ZAAKCLOSE_IDS",        GetTestValue(isValid, testValues) },
                 { "USER_WHITELIST_TASKASSIGNED_IDS",     GetTestValue(isValid, testValues) },
-                { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testValues) },
-                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, "false") }
+                { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testValues) }
             };
 
             foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
@@ -111,7 +110,7 @@ namespace EventsHandler.Utilities._TestHelpers
                     .Returns(keyValue.Value);
             }
 
-            // NOTE: These environment variables are the numeric ones
+            // NOTE: These environment variables have specific types, different than strings
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
@@ -119,6 +118,10 @@ namespace EventsHandler.Utilities._TestHelpers
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("USER_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
+
+            mockedEnvironmentLoader
+                .Setup(mock => mock.GetData<bool>("USER_WHITELIST_MESSAGE_ALLOWED"))
+                .Returns(isValid);
             #endregion
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change

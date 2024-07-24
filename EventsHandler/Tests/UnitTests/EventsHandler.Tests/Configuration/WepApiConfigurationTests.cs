@@ -75,6 +75,15 @@ namespace EventsHandler.UnitTests.Configuration
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Null.Or.Empty);
                 Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
+
+                // Whitelist
+                var whitelist = userConfiguration.Whitelist;
+                Assert.That(whitelist.ZaakCreate_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.ZaakUpdate_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.ZaakClose_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.TaskAssigned_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.DecisionMade_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.Message_Allowed(), Is.Not.False);
             });
         }
         #pragma warning restore IDE0008

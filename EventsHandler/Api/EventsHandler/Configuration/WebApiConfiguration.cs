@@ -733,23 +733,23 @@ namespace EventsHandler.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string[] ZaakCreate_IDs()
-                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs), disableValidation: true);
+                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
                 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string[] ZaakUpdate_IDs()
-                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs), disableValidation: true);
+                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
                     
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string[] ZaakClose_IDs()
-                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs), disableValidation: true);
+                    => GetValues(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string[] TaskAssigned_IDs()
-                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs), disableValidation: true);
+                    => GetValues(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string[] DecisionMade_IDs()
-                    => GetValue<string[]>(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs), disableValidation: true);
+                    => GetValues(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool Message_Allowed()
@@ -800,6 +800,12 @@ namespace EventsHandler.Configuration
         {
             return GetValue<string>(loadersContext, currentPath, nodeName)
                 .ValidTemplateId();
+        }
+
+        private static string[] GetValues(ILoadingService loadingService, string currentPath, string nodeName)
+        {
+            return GetValue(loadingService, currentPath, nodeName, disableValidation: true)
+                .Split(',');
         }
         #endregion
     }
