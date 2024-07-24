@@ -1,12 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2;
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2

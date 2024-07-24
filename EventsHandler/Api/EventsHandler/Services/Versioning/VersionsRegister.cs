@@ -5,15 +5,16 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Inter
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EventsHandler.Behaviors.Versioning
+namespace EventsHandler.Services.Versioning
 {
     /// <inheritdoc cref="IVersionsRegister"/>
     internal sealed class VersionsRegister : IVersionsRegister
     {
         private readonly IServiceProvider _serviceProvider;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionsRegister"/> class.
         /// </summary>
