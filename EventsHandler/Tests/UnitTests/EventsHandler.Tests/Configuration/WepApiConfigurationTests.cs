@@ -78,11 +78,11 @@ namespace EventsHandler.UnitTests.Configuration
 
                 // Whitelist
                 var whitelist = userConfiguration.Whitelist;
-                Assert.That(whitelist.ZaakCreate_IDs(), Has.Length.Not.Zero);
-                Assert.That(whitelist.ZaakUpdate_IDs(), Has.Length.Not.Zero);
-                Assert.That(whitelist.ZaakClose_IDs(), Has.Length.Not.Zero);
-                Assert.That(whitelist.TaskAssigned_IDs(), Has.Length.Not.Zero);
-                Assert.That(whitelist.DecisionMade_IDs(), Has.Length.Not.Zero);
+                Assert.That(whitelist.ZaakCreate_IDs().Count, Is.Not.Zero);
+                Assert.That(whitelist.ZaakUpdate_IDs().Count, Is.Not.Zero);
+                Assert.That(whitelist.ZaakClose_IDs().Count, Is.Not.Zero);
+                Assert.That(whitelist.TaskAssigned_IDs().Count, Is.Not.Zero);
+                Assert.That(whitelist.DecisionMade_IDs().Count, Is.Not.Zero);
                 Assert.That(whitelist.Message_Allowed(), Is.Not.False);
             });
         }
