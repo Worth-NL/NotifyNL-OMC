@@ -98,7 +98,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]
         public Uri? DecisionType { get; internal set; }
-        
+
         /// <summary>
         /// Gets the name of the responsible organization.
         /// </summary>

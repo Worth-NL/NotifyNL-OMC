@@ -179,7 +179,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             });
         }
         #endregion
-        
+
         #region Validation
         [Test]
         public void IsInvalidEvent_InvalidModel_ReturnsTrue()
@@ -197,7 +197,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(invalidPropertiesIndices, Has.Length.EqualTo(3));
             });
         }
-        
+
         [Test]
         public void IsInvalidEvent_ValidModel_ReturnsFalse()
         {

@@ -28,7 +28,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         [JsonPropertyName("title")]
         [JsonPropertyOrder(1)]
         public string Title { get; internal set; } = string.Empty;
-        
+
         /// <summary>
         /// Gets the status of the task.
         /// </summary>
@@ -36,7 +36,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         [JsonPropertyName("status")]
         [JsonPropertyOrder(2)]
         public TaskStatuses Status { get; internal set; }
-        
+
         /// <summary>
         /// Gets the deadline by which the task should be completed.
         /// </summary>
@@ -44,7 +44,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten
         [JsonPropertyName("verloopdatum")]
         [JsonPropertyOrder(3)]
         public DateTime ExpirationDate { get; internal set; }
-        
+
         /// <summary>
         /// Gets the identification details of the task.
         /// </summary>

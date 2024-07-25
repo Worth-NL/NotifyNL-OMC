@@ -12,8 +12,8 @@ using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using System.Globalization;
 using EventsHandler.Services.Settings.Configuration;
+using System.Globalization;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 {
@@ -70,7 +70,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
             return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
-        
+
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()

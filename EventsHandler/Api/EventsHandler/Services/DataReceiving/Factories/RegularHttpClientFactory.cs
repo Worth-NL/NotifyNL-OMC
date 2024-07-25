@@ -2,8 +2,8 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
-using System.Net.Http.Headers;
 using EventsHandler.Services.Settings.Configuration;
+using System.Net.Http.Headers;
 
 namespace EventsHandler.Services.DataReceiving.Factories
 {
@@ -19,7 +19,7 @@ namespace EventsHandler.Services.DataReceiving.Factories
         {
             this._configuration = configuration;
         }
-        
+
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
         HttpClient IHttpClientFactory<HttpClient, (string Name, string Value)[]>.GetHttpClient((string Name, string Value)[] requestHeaders)
         {

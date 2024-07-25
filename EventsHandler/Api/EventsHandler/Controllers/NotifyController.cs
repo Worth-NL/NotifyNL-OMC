@@ -20,7 +20,7 @@ namespace EventsHandler.Controllers
     public sealed class NotifyController : OmcController
     {
         private readonly NotifyResponder _responder;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyController"/> class.
         /// </summary>

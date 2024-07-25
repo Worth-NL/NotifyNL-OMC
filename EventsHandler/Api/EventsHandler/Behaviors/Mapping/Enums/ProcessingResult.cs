@@ -23,7 +23,7 @@ namespace EventsHandler.Behaviors.Mapping.Enums
         /// The processing of <see cref="NotificationEvent"/> was aborted (intentionally). DO NOT retry sending.
         /// </summary>
         Aborted = 2,
-        
+
         /// <summary>
         /// The processing of <see cref="NotificationEvent"/> wasn't possible (e.g., due to missing data). DO NOT retry sending.
         /// </summary>

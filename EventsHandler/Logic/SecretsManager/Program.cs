@@ -74,7 +74,7 @@ namespace SecretsManager
             }
 
             futureDateTime = currentDateTime.AddMinutes(validForNextMinutes);
-            
+
             Console.WriteLine($"The token will be valid for the next {validForNextMinutes} minutes");
 
             return futureDateTime;

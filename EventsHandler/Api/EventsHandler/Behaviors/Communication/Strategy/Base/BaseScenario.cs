@@ -31,7 +31,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
 
         /// <inheritdoc cref="IQueryContext"/>
         protected IQueryContext? QueryContext { get; set; }
-        
+
         /// <inheritdoc cref="CommonPartyData"/>
         protected CommonPartyData? CachedCommonPartyData { get; set; }
 
@@ -67,13 +67,13 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
                 DistributionChannels.Email => new[] { await GetEmailNotifyDataAsync(this.CachedCommonPartyData.Value) },
 
                 DistributionChannels.Sms   => new[] { await GetSmsNotifyDataAsync(this.CachedCommonPartyData.Value) },
-                
+
                 // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
                 DistributionChannels.Both  => new[] { await GetEmailNotifyDataAsync(this.CachedCommonPartyData.Value),
                                                       await GetSmsNotifyDataAsync(this.CachedCommonPartyData.Value) },
-                
+
                 DistributionChannels.None  => Array.Empty<NotifyData>(),
-                
+
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
                 DistributionChannels.Unknown
                   => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
@@ -105,7 +105,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
             );
         }
         #endregion
-        
+
         #region Virtual (SMS logic)
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
@@ -125,7 +125,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Base
             );
         }
         #endregion
-        
+
         #region Virtual (DropCache)
         /// <summary>
         /// Drops (clears) the scenario internal cache.

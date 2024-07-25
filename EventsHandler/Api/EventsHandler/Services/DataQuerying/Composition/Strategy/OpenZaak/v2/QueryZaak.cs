@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
     {
         /// <inheritdoc cref="IQueryZaak.Configuration"/>
         WebApiConfiguration IQueryZaak.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.12.1";
 
@@ -72,7 +72,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
             return (await GetCaseDetailsV2Async(queryBase, caseUri))
                 .CaseTypeUrl;
         }
-        
+
         private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase, Uri caseUri)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(

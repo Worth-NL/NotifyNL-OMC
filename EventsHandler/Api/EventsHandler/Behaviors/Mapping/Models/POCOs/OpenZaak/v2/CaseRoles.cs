@@ -2,9 +2,9 @@
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {

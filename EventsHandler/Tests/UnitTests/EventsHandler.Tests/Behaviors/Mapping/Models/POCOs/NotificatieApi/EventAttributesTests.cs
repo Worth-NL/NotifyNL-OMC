@@ -51,7 +51,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
                // Decisions
                $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
                $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.ResponsibleOrganization_Real_TheHague}\", " +
-                // Orphans
+               // Orphans
                $"\"{NotificationEventHandler.Orphan_Test_Property_1}\": \"{NotificationEventHandler.Orphan_Test_Value_1}\", " +
                $"\"{NotificationEventHandler.Orphan_Test_Property_2}\": \"{NotificationEventHandler.Orphan_Test_Value_2}\"" +
             "}";
@@ -145,7 +145,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.That(actualResult, Is.True);
         }
-        
+
         [Test]
         public void IsInvalidCase_ValidModel_ReturnsFalse()
         {
@@ -158,7 +158,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.That(actualResult, Is.False);
         }
-        
+
         [Test]
         public void IsInvalidObject_InvalidModel_ReturnsTrue()
         {
@@ -171,7 +171,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.That(actualResult, Is.True);
         }
-        
+
         [Test]
         public void IsInvalidObject_ValidModel_ReturnsFalse()
         {
@@ -184,7 +184,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.That(actualResult, Is.False);
         }
-        
+
         [Test]
         public void IsInvalidDecision_InvalidModel_ReturnsTrue()
         {
@@ -197,7 +197,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.NotificatieApi
             // Assert
             Assert.That(actualResult, Is.True);
         }
-        
+
         [Test]
         public void IsInvalidDecision_ValidModel_ReturnsFalse()
         {

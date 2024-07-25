@@ -37,7 +37,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 ? new AppSettingsLoader(GetConfiguration())
                 : new AppSettingsLoader(new Mock<IConfiguration>().Object);
         }
-        
+
         /// <summary>
         /// Gets the mocked <see cref="EnvironmentLoader"/>.
         /// </summary>
@@ -64,20 +64,20 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_AUDIENCE",      GetTestValue(isValid, testValue) },
                 { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testValue) },
                 { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testValue) },
-                                                         
+
                 { "OMC_API_BASEURL_NOTIFYNL",            GetTestValue(isValid, "https://www.test.nl/") },
-                                                         
+
                 { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_USERID",       GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_USERNAME",     GetTestValue(isValid, testValue) },
-                                                         
+
                 { "USER_API_KEY_OPENKLANT_2",            GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OBJECTEN",               GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_OBJECTTYPEN",            GetTestValue(isValid, testValue) },
                 { "USER_API_KEY_NOTIFYNL",               GetTestValue(isValid, testValue) },
-                                                         
+
                 { "USER_DOMAIN_OPENNOTIFICATIES",        GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENZAAK",                GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENKLANT",               GetTestValue(isValid, testDomain, "http://domain") },
@@ -225,7 +225,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 case LoaderTypes.AppSettings:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid));
                     break;
-                
+
                 case LoaderTypes.Environment:
                     serviceCollection.AddSingleton(GetEnvironmentLoader(isValid));
                     break;

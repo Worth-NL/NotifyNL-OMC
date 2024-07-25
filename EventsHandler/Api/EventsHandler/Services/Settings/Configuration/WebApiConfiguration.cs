@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections.Concurrent;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Enums;
@@ -8,6 +7,7 @@ using EventsHandler.Services.Settings.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
 using JetBrains.Annotations;
+using System.Collections.Concurrent;
 
 namespace EventsHandler.Services.Settings.Configuration
 {
@@ -65,7 +65,7 @@ namespace EventsHandler.Services.Settings.Configuration
             this._omc = OMC;
             this._user = User;
         }
-        
+
         /// <summary>
         /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
         /// </summary>
@@ -86,7 +86,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 component = (TComponent?)Activator.CreateInstance(typeof(TComponent), loaderContext, name)
                             ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
             }
-            
+
             // Return reference
             return component;
         }
@@ -99,16 +99,16 @@ namespace EventsHandler.Services.Settings.Configuration
         internal sealed record AppSettingsComponent
         {
             // NOTE: Property "Logging" (from "appsettings.json") is skipped because it's not used anywhere in the code
-            
+
             /// <inheritdoc cref="NetworkComponent"/>
             internal NetworkComponent Network { get; }
 
             /// <inheritdoc cref="EncryptionComponent"/>
             internal EncryptionComponent Encryption { get; }
-            
+
             /// <inheritdoc cref="FeaturesComponent"/>
             internal FeaturesComponent Features { get; }
-            
+
             /// <inheritdoc cref="VariablesComponent"/>
             internal VariablesComponent Variables { get; }
 
@@ -124,7 +124,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 this.Features = new FeaturesComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
             }
-            
+
             /// <summary>
             /// The "Network" part of the settings.
             /// </summary>
@@ -132,7 +132,7 @@ namespace EventsHandler.Services.Settings.Configuration
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
-                
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="NetworkComponent"/> class.
                 /// </summary>
@@ -162,7 +162,7 @@ namespace EventsHandler.Services.Settings.Configuration
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
-                
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="EncryptionComponent"/> class.
                 /// </summary>
@@ -176,7 +176,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal bool IsAsymmetric()
                     => GetValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
             }
-            
+
             /// <summary>
             /// The "Features" part of the settings.
             /// </summary>
@@ -184,7 +184,7 @@ namespace EventsHandler.Services.Settings.Configuration
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
-                
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
                 /// </summary>
@@ -198,7 +198,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal byte OmcWorkflowVersion()
                     => GetValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
-            
+
             /// <summary>
             /// The "Variables" part of the settings.
             /// </summary>
@@ -215,7 +215,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="MessagesComponent"/>
                 internal MessagesComponent Messages { get; }
-                
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
                 /// </summary>
@@ -232,15 +232,15 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string SubjectType()
                     => GetValue(this._loadersContext, this._currentPath, "BetrokkeneType");
-                
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string InitiatorRole()
                     => GetValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
-                
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PartyIdentifier()
                     => GetValue(this._loadersContext, this._currentPath, "PartijIdentificator");
-                
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string EmailGenericDescription()
                     => GetValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
@@ -248,7 +248,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PhoneGenericDescription()
                     => GetValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
-                
+
                 /// <summary>
                 /// The "OpenKlant" part of the settings.
                 /// </summary>
@@ -278,7 +278,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal string CodeObjectTypeId()
                         => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
                 }
-                
+
                 /// <summary>
                 /// The "Objecten" part of the settings.
                 /// </summary>
@@ -443,7 +443,7 @@ namespace EventsHandler.Services.Settings.Configuration
         {
             /// <inheritdoc cref="ApiComponent"/>
             internal ApiComponent API { get; }
-            
+
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -470,7 +470,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     this.BaseUrl = new BaseUrlComponent(loadersContext, currentPath);
                 }
-                
+
                 /// <summary>
                 /// The "Base URL" part of the settings.
                 /// </summary>
@@ -598,11 +598,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenNotificaties()
                     => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
-                
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenZaak()
                     => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
-                    
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenKlant()
                     => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
@@ -739,11 +739,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
-                
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakUpdate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
-                    
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal IDs ZaakClose_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
@@ -861,7 +861,7 @@ namespace EventsHandler.Services.Settings.Configuration
         {
             return GetValue<string>(loadersContext, currentPath, nodeName, disableValidation);
         }
-        
+
         /// <summary>
         /// Retrieves multiple settings <see langword="string"/> values (with optional validation).
         /// </summary>
@@ -878,7 +878,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 ? values
                 : values.NotEmpty(finalPath);
         }
-        
+
         /// <summary>
         /// Retrieves settings <typeparamref name="TData"/> value (with optional validation).
         /// </summary>
@@ -888,7 +888,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
             return GetValue<TData>(loadersContext, finalPath, disableValidation);
         }
-        
+
         /// <summary>
         /// Retrieves settings <typeparamref name="TData"/> value using final path
         /// instead of path + node concatenation (with optional validation).

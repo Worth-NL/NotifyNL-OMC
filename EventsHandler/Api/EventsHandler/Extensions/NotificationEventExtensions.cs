@@ -31,7 +31,7 @@ namespace EventsHandler.Extensions
                 Channels.Cases     => notification.Attributes.SourceOrganization,
                 Channels.Decisions => notification.Attributes.ResponsibleOrganization,
                 Channels.Objects   => "missing",  // TODO: Object notification / tasks workflow doesn't have organization id
-                
+
                 _ => null
             };
 

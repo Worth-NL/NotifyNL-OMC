@@ -13,10 +13,10 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
 using System.Reflection;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 {
@@ -88,7 +88,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
-            
+
             // Assert
             Assert.Multiple(() =>
             {
@@ -105,7 +105,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
-        
+
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseCaseStatusUpdatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseCaseFinishedScenario), 1, 1, 1)]
@@ -121,7 +121,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
-            
+
             // Assert
             Assert.Multiple(() =>
             {
@@ -160,7 +160,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
-            
+
             // Assert
             Assert.Multiple(() =>
             {
@@ -242,7 +242,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
             mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(testCase);
-            
+
             // GetPartyDataAsync(string)
             var testParty = new CommonPartyData
             {
@@ -264,7 +264,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
         private static Mock<IDataQueryService<NotificationEvent>> GetMockedQueryService(IMock<IQueryContext> mockedQueryContext)
         {
             var mockedQueryService = new Mock<IDataQueryService<NotificationEvent>>();
-            
+
             mockedQueryService
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(mockedQueryContext.Object);
@@ -284,7 +284,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakCreate(),
                         _ => string.Empty
                     },
-                
+
                 nameof(CaseCaseStatusUpdatedScenario) =>
                     notifyMethod switch
                     {
@@ -292,7 +292,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakUpdate(),
                         _ => string.Empty
                     },
-                
+
                 nameof(CaseCaseFinishedScenario) =>
                     notifyMethod switch
                     {
@@ -300,7 +300,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakClose(),
                         _ => string.Empty
                     },
-                
+
                 nameof(DecisionMadeScenario) =>
                     notifyMethod switch
                     {

@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
-using System.Text.RegularExpressions;
 using EventsHandler.Services.Settings.Configuration;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace EventsHandler.Extensions
 {
@@ -23,7 +23,7 @@ namespace EventsHandler.Extensions
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
             => configuration.GetValue<bool>(key: $"{nameof(WebApiConfiguration.AppSettings.Encryption)}:" +
                                                  $"{nameof(WebApiConfiguration.AppSettings.Encryption.IsAsymmetric)}");
-        
+
         /// <summary>
         /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
         /// </summary>

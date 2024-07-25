@@ -15,7 +15,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v
     {
         /// <inheritdoc cref="IQueryObjectTypen.Configuration"/>
         WebApiConfiguration IQueryObjectTypen.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Version => "2.2.0";
 

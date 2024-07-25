@@ -98,7 +98,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act
@@ -130,7 +130,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act
@@ -162,7 +162,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act
@@ -182,7 +182,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
                 Channel = Channels.Objects,
                 Resource = Resources.Object
             };
-            
+
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act
@@ -202,7 +202,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Manager
                 Channel = Channels.Decisions,
                 Resource = Resources.Decision
             };
-            
+
             IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
 
             // Act

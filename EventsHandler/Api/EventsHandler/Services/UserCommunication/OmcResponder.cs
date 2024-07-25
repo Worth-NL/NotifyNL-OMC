@@ -113,7 +113,7 @@ namespace EventsHandler.Services.UserCommunication
             return false;
         }
         #endregion
-        
+
         #region IRespondingService<TResult, TDetails>
         /// <inheritdoc cref="IRespondingService{TResult, TDetails}.Get_Processing_Status_ActionResult(TResult, TDetails)"/>
         ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.Get_Processing_Status_ActionResult((ProcessingResult, string) result, BaseEnhancedDetails details)

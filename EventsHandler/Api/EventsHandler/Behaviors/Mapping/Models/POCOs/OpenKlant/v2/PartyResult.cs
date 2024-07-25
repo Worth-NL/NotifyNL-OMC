@@ -35,7 +35,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyName("voorkeursDigitaalAdres")]
         [JsonPropertyOrder(1)]
         public DigitalAddressShort PreferredDigitalAddress { get; internal set; }
-        
+
         /// <inheritdoc cref="PartyIdentification"/>
         [JsonInclude]
         [JsonPropertyName("partijIdentificatie")]

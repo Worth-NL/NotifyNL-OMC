@@ -19,13 +19,13 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
         [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
         public string SurnamePrefix { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.Surname"/>
         [JsonInclude]
         [JsonPropertyName("achternaam")]

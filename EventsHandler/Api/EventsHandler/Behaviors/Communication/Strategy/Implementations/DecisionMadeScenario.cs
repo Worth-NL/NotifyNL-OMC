@@ -42,11 +42,11 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
                 await this.QueryContext.GetPartyDataAsync(
                 await this.QueryContext.GetBsnNumberAsync(
                       this.CachedDecision.Value.CaseUrl));
-            
+
             return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
-        
+
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
@@ -76,7 +76,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
             return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
-        
+
         #region Polymorphic (DropCache)
         /// <inheritdoc cref="BaseScenario.DropCache()"/>
         /// <remarks>

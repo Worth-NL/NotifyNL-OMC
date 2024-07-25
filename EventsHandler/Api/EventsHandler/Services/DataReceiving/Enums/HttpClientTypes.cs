@@ -74,7 +74,7 @@ namespace EventsHandler.Services.DataReceiving.Enums
         /// Authorization: JSON Web Token.
         /// </remarks>
         Telemetry_Contactmomenten = 41,
-        
+
         /// <summary>
         /// The <see cref="HttpClient"/> used for feedback and telemetry purposes in "OMC workflow" v2.
         /// </summary>

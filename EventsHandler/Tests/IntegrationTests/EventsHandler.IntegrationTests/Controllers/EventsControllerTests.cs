@@ -55,7 +55,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             this._validatorMock.Setup(mock => mock.Validate(
                     ref It.Ref<NotificationEvent>.IsAny))
                 .Returns(HealthCheck.OK_Inconsistent);
-            
+
             this._processorMock.Reset();
             this._responderMock.Reset();
         }
@@ -105,7 +105,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 Resources.Operation_ERROR_Deserialization_Failure,
                 Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message);
         }
-        
+
         [Test]
         public async Task ListenAsync_Failure_ProcessAsync_ReturnsErrorResult()
         {
@@ -241,7 +241,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 {
                     Assert.That(simpleResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode), "Status code");
                     Assert.That(simpleResponse.StatusDescription, Is.EqualTo(expectedStatusDescription), "Status description");
-                    
+
                     if (castResult.Value is BaseEnhancedStandardResponseBody enhancedResponse)
                     {
                         Assert.That(enhancedResponse.Details.Message, Is.EqualTo(expectedDetailsMessage), "Details message");

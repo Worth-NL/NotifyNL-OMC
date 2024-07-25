@@ -6,9 +6,9 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details;
 using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using EventsHandler.Extensions;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
 {
@@ -134,7 +134,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi
         public NotificationEvent()
         {
         }
-        
+
         #region Validation
         /// <summary>
         /// Checks whether the <see cref="NotificationEvent"/> model wasn't

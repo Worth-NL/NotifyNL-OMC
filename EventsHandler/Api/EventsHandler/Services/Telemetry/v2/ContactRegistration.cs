@@ -5,10 +5,10 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Constants;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.Telemetry.v2
 {
@@ -24,10 +24,10 @@ namespace EventsHandler.Services.Telemetry.v2
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Klantcontacten";
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "2.0.0";
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>

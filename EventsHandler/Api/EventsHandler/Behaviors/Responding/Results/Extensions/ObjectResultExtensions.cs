@@ -39,7 +39,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
             };
         }
         #endregion
-        
+
         #region HTTP Status Code 206
         /// <summary>
         /// Creates <see cref="HttpStatusCode.PartialContent"/> object result.
@@ -53,7 +53,7 @@ namespace EventsHandler.Behaviors.Responding.Results.Extensions
             };
         }
         #endregion
-        
+
         #region HTTP Status Code 400
         /// <summary>
         /// Creates <see cref="HttpStatusCode.BadRequest"/> object result.

@@ -13,10 +13,10 @@ using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
 using System.Text.Json;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementations
 {
@@ -54,7 +54,7 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 }
             }
         };
-        
+
         private static readonly TaskObject s_taskOpenNotAssignedToPerson = new()
         {
             Record = new Record

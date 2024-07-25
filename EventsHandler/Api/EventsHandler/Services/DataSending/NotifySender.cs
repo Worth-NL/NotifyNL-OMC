@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataSending
         {
             string serializedNotification = this._serializer.Serialize(notification);
             string encodedNotification = serializedNotification.Base64Encode();
-            
+
             _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
                                                                        templateId:      package.TemplateId,
                                                                        personalization: package.Personalization,
