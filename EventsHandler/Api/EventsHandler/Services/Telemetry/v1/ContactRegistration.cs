@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;

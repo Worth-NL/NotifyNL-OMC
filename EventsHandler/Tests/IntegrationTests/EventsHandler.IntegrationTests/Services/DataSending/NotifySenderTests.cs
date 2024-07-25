@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
