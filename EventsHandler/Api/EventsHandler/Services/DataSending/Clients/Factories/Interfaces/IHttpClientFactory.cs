@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-namespace EventsHandler.Services.DataReceiving.Factories.Interfaces
+namespace EventsHandler.Services.DataSending.Clients.Factories.Interfaces
 {
     /// <summary>
     /// The service to return a specific instance of <typeparamref name="THttpClient"/>.

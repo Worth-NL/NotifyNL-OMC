@@ -20,14 +20,14 @@ namespace EventsHandler.Services.DataProcessing
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
         private readonly IScenariosResolver _resolver;
-        private readonly ISendingService<NotificationEvent, NotifyData> _sender;
+        private readonly INotifyService<NotificationEvent, NotifyData> _sender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
         public NotifyProcessor(
             IScenariosResolver resolver,
-            ISendingService<NotificationEvent, NotifyData> sender)
+            INotifyService<NotificationEvent, NotifyData> sender)
         {
             this._resolver = resolver;
             this._sender = sender;

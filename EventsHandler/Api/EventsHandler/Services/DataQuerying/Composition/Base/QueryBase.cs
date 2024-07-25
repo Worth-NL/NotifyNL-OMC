@@ -4,8 +4,8 @@ using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Base

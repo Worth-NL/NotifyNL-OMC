@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;

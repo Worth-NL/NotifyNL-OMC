@@ -2,16 +2,16 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 
-namespace EventsHandler.Services.DataReceiving
+namespace EventsHandler.Services.DataSending
 {
     /// <inheritdoc cref="IHttpNetworkService"/>
     internal sealed class HttpNetworkService : IHttpNetworkService

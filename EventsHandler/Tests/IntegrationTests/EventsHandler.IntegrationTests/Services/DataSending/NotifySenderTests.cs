@@ -2,8 +2,8 @@
 
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -16,7 +16,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
     [TestFixture]
     public sealed class NotifySenderTests
     {
-        private ISendingService<NotificationEvent, NotifyData>? _testNotifySender;
+        private INotifyService<NotificationEvent, NotifyData>? _testNotifySender;
 
         [TearDown]
         public void CleanupTests()
@@ -110,7 +110,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
 
             Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
 
-            this._testNotifySender = new NotifySender(firstMockedClientFactory.Object, mockedSerializer.Object);
+            this._testNotifySender = new NotifyService(firstMockedClientFactory.Object, mockedSerializer.Object);
 
             NotificationEvent testNotification =
                 NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
@@ -135,7 +135,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(secondMockedNotifyClient.Object);
 
-            this._testNotifySender = new NotifySender(secondMockedClientFactory.Object, mockedSerializer.Object);
+            this._testNotifySender = new NotifyService(secondMockedClientFactory.Object, mockedSerializer.Object);
 
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
@@ -157,7 +157,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         #endregion
 
         #region Helper methods
-        private static ISendingService<NotificationEvent, NotifyData> GetTestSendingService(
+        private static INotifyService<NotificationEvent, NotifyData> GetTestSendingService(
             Mock<INotifyClient>? mockedClient = null)
         {
             var mockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
@@ -166,7 +166,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
 
             Mock<ISerializationService> mockedSerializer = GetMockedSerializer();
 
-            return new NotifySender(mockedClientFactory.Object, mockedSerializer.Object);
+            return new NotifyService(mockedClientFactory.Object, mockedSerializer.Object);
         }
 
         private static Mock<INotifyClient> GetMockedNotifyClient()
