@@ -7,14 +7,14 @@ using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
 using System.Text.RegularExpressions;
 
-namespace EventsHandler.Services.UserCommunication
+namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
     public abstract partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach

@@ -3,7 +3,7 @@
 using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Extensions;
-using EventsHandler.Services.UserCommunication.Enums.v2;
+using EventsHandler.Services.Responding.Enums.v2;
 
 namespace EventsHandler.UnitTests.Extensions
 {
