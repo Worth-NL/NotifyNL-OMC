@@ -34,12 +34,9 @@
     <ProjectReference Include="..\..\Utilities\EventsHandler.Utilities\EventsHandler.Utilities.csproj" />
   </ItemGroup>
 
+  <!-- Code coverage -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
   </ItemGroup>
 
 </Project>
