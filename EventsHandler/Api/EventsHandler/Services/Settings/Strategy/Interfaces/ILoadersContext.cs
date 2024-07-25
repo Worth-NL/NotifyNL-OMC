@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Services.DataLoading.Enums;
-using EventsHandler.Services.DataLoading.Interfaces;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Interfaces;
 
-namespace EventsHandler.Services.DataLoading.Strategy.Interfaces
+namespace EventsHandler.Services.Settings.Strategy.Interfaces
 {
     /// <summary>
     /// The strategy which purpose is to retrieve data using a specific <see cref="ILoadingService"/> data providers.

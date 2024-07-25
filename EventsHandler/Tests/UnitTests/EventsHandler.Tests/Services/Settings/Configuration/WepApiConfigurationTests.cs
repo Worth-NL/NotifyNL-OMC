@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Enums;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Utilities._TestHelpers;
 
-namespace EventsHandler.UnitTests.Configuration
+namespace EventsHandler.UnitTests.Services.Settings.Configuration
 {
     [TestFixture]
     public sealed class WepApiConfigurationTests

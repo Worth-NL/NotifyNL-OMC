@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Configuration;
 using EventsHandler.Properties;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
 {

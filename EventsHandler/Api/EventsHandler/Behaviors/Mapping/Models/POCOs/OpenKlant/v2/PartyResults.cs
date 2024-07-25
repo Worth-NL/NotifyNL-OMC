@@ -2,11 +2,11 @@
 
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Configuration;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {

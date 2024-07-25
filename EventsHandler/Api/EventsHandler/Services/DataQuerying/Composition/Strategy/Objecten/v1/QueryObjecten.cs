@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1

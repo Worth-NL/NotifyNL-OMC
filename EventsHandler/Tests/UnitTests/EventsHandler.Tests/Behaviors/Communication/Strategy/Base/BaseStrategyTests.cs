@@ -10,13 +10,13 @@ using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Configuration;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
 using System.Reflection;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Base
 {

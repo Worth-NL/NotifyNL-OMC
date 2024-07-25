@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
 using System.Collections;
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using System.Text.RegularExpressions;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Extensions
 {

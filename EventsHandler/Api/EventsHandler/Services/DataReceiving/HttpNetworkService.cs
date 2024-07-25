@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Enums;
@@ -10,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataReceiving
 {
