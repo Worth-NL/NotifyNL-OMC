@@ -14,7 +14,7 @@ using EventsHandler.Utilities._TestHelpers;
 namespace EventsHandler.IntegrationTests.Services.DataSending
 {
     [TestFixture]
-    public sealed class NotifySenderTests
+    public sealed class NotifyServiceTests
     {
         private INotifyService<NotificationEvent, NotifyData>? _testNotifySender;
 
