@@ -9,6 +9,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
@@ -18,7 +19,6 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Controllers
 {
@@ -81,7 +81,7 @@ namespace EventsHandler.Controllers
                     // HttpStatus Code: 202 Accepted
                     ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
-                    
+
                     // HttpStatus Code: 400 Bad Request
                     : LogApiResponse(LogLevel.Error,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
@@ -284,7 +284,7 @@ namespace EventsHandler.Controllers
                                 this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
                     }
                 }
-                
+
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
                     this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(templateType)));

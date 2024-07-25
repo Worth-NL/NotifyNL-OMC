@@ -61,7 +61,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Manager
             {
                 return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
             }
-            
+
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {

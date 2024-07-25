@@ -23,7 +23,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
             // Act & Assert
             AssertThrows<HttpRequestException>(testConfiguration, caseRoles, Resources.HttpRequest_ERROR_EmptyCaseRoles);
         }
-        
+
         [Test]
         public void Citizen_Method_ForExistingResults_WithoutInitiatorRole_ThrowsHttpRequestException()
         {
@@ -31,11 +31,11 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
             WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
 
             CaseRoles caseRoles = GetTestCaseRoles();  // Invalid "Results" inside
-            
+
             // Act & Assert
             AssertThrows<HttpRequestException>(testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MissingInitiatorRole);
         }
-        
+
         [Test]
         public void Citizen_Method_ForExistingResults_WithMultipleInitiatorRoles_ReturnsHttpRequestException()
         {
@@ -46,11 +46,11 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenZaak.v2
             CaseRoles caseRoles = GetTestCaseRoles(
                 new CaseRole { InitiatorRole = existingInitiatorRole },
                 new CaseRole { InitiatorRole = existingInitiatorRole });  // Multiple matching results
-            
+
             // Act & Assert
             AssertThrows<HttpRequestException>(testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
         }
-        
+
         [Test]
         public void Citizen_Method_ForExistingResults_WithSingleInitiatorRole_ReturnsCitizenData()
         {

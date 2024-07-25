@@ -27,7 +27,7 @@ namespace EventsHandler.UnitTests.Services.Settings
             // Loaders context
             this._loadersContext = new LoadersContext(serviceProvider);
         }
-        
+
         #region SetLoader
         [Test]
         public void SetLoader_ForInvalidEnum_ThrowsNotImplementedException()
@@ -45,7 +45,7 @@ namespace EventsHandler.UnitTests.Services.Settings
             });
         }
         #endregion
-        
+
         #region GetData
         #endregion
 

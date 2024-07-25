@@ -47,14 +47,14 @@ namespace EventsHandler.Extensions
             return notificationType switch
             {
                 NotificationTypes.Email => NotifyMethods.Email,
-                
+
                 NotificationTypes.Sms => NotifyMethods.Sms,
-                
+
                 // FAILURE: Return fallback enum B
                 _ => NotifyMethods.None
             };
         }
-        
+
         /// <summary>
         /// Converts from <see cref="DeliveryStatuses"/> enum to <see cref="FeedbackTypes"/> enum.
         /// </summary>
@@ -75,11 +75,11 @@ namespace EventsHandler.Extensions
             return deliveryStatus switch
             {
                 DeliveryStatuses.Delivered => FeedbackTypes.Success,
-                
+
                 DeliveryStatuses.PermanentFailure or
                 DeliveryStatuses.TemporaryFailure or
                 DeliveryStatuses.TechnicalFailure => FeedbackTypes.Failure,
-                
+
                 // FAILURE: Return fallback enum B
                 _ => FeedbackTypes.Info
             };

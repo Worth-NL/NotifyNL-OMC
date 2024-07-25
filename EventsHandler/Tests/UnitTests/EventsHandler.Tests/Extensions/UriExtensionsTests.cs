@@ -17,7 +17,7 @@ namespace EventsHandler.UnitTests.Extensions
             // Assert
             Assert.That(actualGuid, Is.Default);
         }
-        
+
         [Test]
         public void GetGuid_ForDefaultUri_ReturnsEmptyGuid()
         {
@@ -37,13 +37,13 @@ namespace EventsHandler.UnitTests.Extensions
             // Assert
             Assert.That(actualGuid, Is.Default);
         }
-        
+
         [Test]
         public void GetGuid_ForValidUri_ReturnsExtractedGuid()
         {
             // Arrange
             var expectedGuid = new Guid("12345678-1234-1234-1234-123456789012");
-            
+
             // Act
             Guid actualGuid = new Uri($"https://www.google.com/{expectedGuid}").GetGuid();
 

@@ -17,13 +17,13 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,
-        
+
         /// <summary>
         /// Notification type: e-mail.
         /// </summary>
         [JsonPropertyName("email")]
         Email = 1,
-        
+
         /// <summary>
         /// Notification type: SMS.
         /// </summary>

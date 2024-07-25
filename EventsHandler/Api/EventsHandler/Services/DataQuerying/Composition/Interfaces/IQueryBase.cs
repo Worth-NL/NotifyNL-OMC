@@ -17,7 +17,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// The notification from "OpenNotificaties" Web API service.
         /// </summary>
         internal NotificationEvent Notification { get; set; }
-        
+
         /// <summary>
         /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and deserializes received JSON result.
         /// </summary>

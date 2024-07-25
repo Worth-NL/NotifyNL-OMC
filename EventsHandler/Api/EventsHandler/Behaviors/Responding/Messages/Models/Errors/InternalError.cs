@@ -22,7 +22,7 @@ namespace EventsHandler.Behaviors.Responding.Messages.Models.Errors
             : base(HttpStatusCode.InternalServerError, Resources.Operation_ERROR_Internal_Unknown, details)
         {
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalError"/> class.
         /// </summary>

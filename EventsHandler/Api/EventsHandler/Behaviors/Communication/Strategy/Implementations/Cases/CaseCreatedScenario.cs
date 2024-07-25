@@ -25,7 +25,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
             : base(configuration, dataQuery)
         {
         }
-        
+
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
@@ -46,7 +46,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
             };
         }
         #endregion
-        
+
         #region Polymorphic (SMS logic)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override string GetSmsTemplateId()

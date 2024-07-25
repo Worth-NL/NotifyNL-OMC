@@ -70,7 +70,7 @@ namespace EventsHandler.Services.UserCommunication
         // ------------------
         [GeneratedRegex("not a valid UUID", RegexOptions.Compiled)]
         private static partial Regex InvalidTemplateIdFormatPattern();
-        
+
         [GeneratedRegex("Template not found", RegexOptions.Compiled)]
         private static partial Regex NotFoundTemplatePattern();
 
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.UserCommunication
                         // NOTE: This specific error message is inconsistently returned from Notify .NET client with 403 Forbidden status code (unlike others - with 400 BadRequest code)
                         return ObjectResultExtensions.AsResult_403(message);
                     }
-                
+
                     // HttpStatus Code: 400 BadRequest
                     if ((match = InvalidEmailSymbolsPattern().Match(exception.Message)).Success)  // NOTE: The email address is invalid
                     {
@@ -156,7 +156,7 @@ namespace EventsHandler.Services.UserCommunication
             {
                 message = GetPhoneErrorMessage(match);
             }
-            
+
             // HttpStatus Code: 400 BadRequest
             return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
         }
@@ -205,10 +205,10 @@ namespace EventsHandler.Services.UserCommunication
             {
                 // HttpStatus Code: 202 Accepted
                 ProcessingResult.Success => ObjectResultExtensions.AsResult_202(details),
-                
+
                 // HttpStatus Code: 400 BadRequest
                 ProcessingResult.Failure => ((IRespondingService)this).Get_Exception_ActionResult(details),
-                
+
                 // HttpStatus Code: 501 Not Implemented
                 _ => ObjectResultExtensions.AsResult_501()
             };
@@ -262,14 +262,14 @@ namespace EventsHandler.Services.UserCommunication
 
             return $"{email}{match.Value}";
         }
-        
+
         private static string GetPhoneErrorMessage(Capture match)
         {
             const string phone = "Phone: ";
 
             return $"{phone}{match.Value}";
         }
-        
+
         private static string GetTemplateErrorMessage(Capture match)
         {
             const string template = "Template: Is ";  // "is" is not capitalized in the original error message

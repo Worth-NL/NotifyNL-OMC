@@ -87,7 +87,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, HttpContent)"/>
         internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(HttpContent body);
-        
+
         // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",
         //       because it's not sending any requests to "OpenZaak" Web API service anymore. Due to that,
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)

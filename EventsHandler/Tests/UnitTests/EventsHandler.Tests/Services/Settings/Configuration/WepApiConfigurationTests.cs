@@ -11,7 +11,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
     public sealed class WepApiConfigurationTests
     {
         private static WebApiConfiguration s_testConfiguration = null!;
-        
+
         [TearDown]
         public void TestCleanup()
         {
@@ -20,7 +20,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
         #region Environment variables
         #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
-                                         // ReSharper disable SuggestVarOrType_SimpleTypes
+        // ReSharper disable SuggestVarOrType_SimpleTypes
         [Test]
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {

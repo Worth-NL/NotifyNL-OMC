@@ -117,10 +117,10 @@ namespace EventsHandler.Services.DataProcessing
             const string testUrl = "http://some.hoofdobject.nl/";
 
             return notification is
-                   {
-                       Channel: Channels.Unknown,
-                       Resource: ResourcesEnum.Unknown
-                   } &&
+            {
+                Channel: Channels.Unknown,
+                Resource: ResourcesEnum.Unknown
+            } &&
                    string.Equals(notification.MainObject.AbsoluteUri, testUrl) &&
                    string.Equals(notification.ResourceUrl.AbsoluteUri, testUrl);
         }

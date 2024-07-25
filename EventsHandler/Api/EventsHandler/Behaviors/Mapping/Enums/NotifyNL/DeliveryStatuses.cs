@@ -74,20 +74,20 @@ namespace EventsHandler.Behaviors.Mapping.Enums.NotifyNL
         [JsonPropertyName("sent")]
         Sent = 5,
         #endregion
-        
+
         #region Mail statuses (exclusive)
         /// <summary>
         /// Mail: Notify has sent the letter to the provider to be printed.
         /// </summary>
         [JsonPropertyName("accepted")]
         Accepted = 6,
-        
+
         /// <summary>
         /// Mail: The provider has printed and dispatched the letter.
         /// </summary>
         [JsonPropertyName("received")]
         Received = 7,
-        
+
         /// <summary>
         /// Mail: Sending cancelled. The letter will not be printed or dispatched.
         /// </summary>

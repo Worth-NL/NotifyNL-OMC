@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
 
         /// <inheritdoc cref="IQueryBase.Notification"/>
         NotificationEvent IQueryBase.Notification { get; set; }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBase"/> class.
         /// </summary>
@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         {
             (bool isSuccess, string jsonResult) = await this._networkService.GetAsync(httpClientType, uri);
 
-            return GetApiResult<TModel>(httpClientType,isSuccess, jsonResult, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>

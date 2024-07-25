@@ -63,7 +63,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             Assert.That(actualResult, Is.EqualTo(_testJson));
         }
-        
+
         [Test]
         public void Serialize_TakesUnknownModel_DoesNotThrowException_AndReturnsDefaultJson()
         {

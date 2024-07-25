@@ -32,6 +32,10 @@ using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
@@ -52,10 +56,6 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using EventsHandler.Services.Settings;
-using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Services.Settings.Strategy.Interfaces;
-using EventsHandler.Services.Settings.Strategy.Manager;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Responder = EventsHandler.Services.UserCommunication;
@@ -104,10 +104,10 @@ namespace EventsHandler
             const string settingsFileName = "appsettings";
             builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
                                  .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
-            
+
             // API Controllers
             builder.Services.AddControllers();
-            
+
             // Navigate directly to the endpoints from API Controllers (instead of using explicit .Map() routing in config)
             builder.Services.AddEndpointsApiExplorer();
 
@@ -226,10 +226,10 @@ namespace EventsHandler
 
             // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
-                
+
             // Version of the application ("OMC Web API" in this case)
             options.Release = DefaultValues.ApiController.Version;
-            
+
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment) ??
@@ -321,7 +321,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
             byte omcWorkflowVersion = builder.Configuration.OmcWorkflowVersion();
-            
+
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
@@ -392,7 +392,7 @@ namespace EventsHandler
         {
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
             builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
-            
+
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
             builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(builder));
 
@@ -420,7 +420,7 @@ namespace EventsHandler
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
-            
+
             // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
@@ -432,7 +432,7 @@ namespace EventsHandler
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.MapControllers();  // Mapping actions from API controllers
 
             app.UseSentryTracing();  // Enable Sentry to capture transactions

@@ -4,9 +4,9 @@ using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
 {
@@ -111,7 +111,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                                    // If any e-mail address was found during this run then the phone
                                    // number doesn't matter anymore since it will not be returned anyway
                     }
-                    
+
                     if (fallbackPhoneNumber.IsEmpty() &&  // Only the first encountered one matters
                         phoneNumber.IsNotEmpty())
                     {
@@ -141,7 +141,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
             //     neither any existing email address nor telephone number, then process can't be finished
             throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
-        
+
         #region Helper methods
         /// <summary>
         /// Checks if the value from generic JSON property "Type" is
@@ -152,7 +152,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         {
             return digitalAddress.Type == configuration.AppSettings.Variables.EmailGenericDescription()
                 ? DistributionChannels.Email
-                
+
                 : digitalAddress.Type == configuration.AppSettings.Variables.PhoneGenericDescription()
                     ? DistributionChannels.Sms
 

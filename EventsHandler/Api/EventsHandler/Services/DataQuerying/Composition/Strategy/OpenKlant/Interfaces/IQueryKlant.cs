@@ -3,9 +3,9 @@
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {
@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> GetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
         #endregion
-        
+
         #region Abstract (Telemetry)
         /// <summary>
         /// Sends the completion feedback to "OpenKlant" Web API service.

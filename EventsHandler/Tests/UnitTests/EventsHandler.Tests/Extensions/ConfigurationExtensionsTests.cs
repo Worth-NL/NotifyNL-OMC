@@ -27,7 +27,7 @@ namespace EventsHandler.UnitTests.Extensions
             // Assert
             Assert.That(actualValue, Is.False);
         }
-        
+
         [Test]
         public void Features_ReturnsExpectedValue()
         {

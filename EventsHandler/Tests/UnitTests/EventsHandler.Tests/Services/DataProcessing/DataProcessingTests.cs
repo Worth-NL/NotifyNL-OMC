@@ -28,7 +28,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         {
             this._mockedScenariosManager = new Mock<IScenariosResolver>(MockBehavior.Strict);
             this._mockedSender = new Mock<ISendingService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
-            
+
             this._processor = new NotifyProcessor(_mockedScenariosManager.Object, _mockedSender.Object);
         }
 
@@ -238,7 +238,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         private void SetupScenariosManager(NotifyData testNotifyData)
         {
             IMock<INotifyScenario> mockedNotifyScenario = GetMockedNotifyScenario(new[] { testNotifyData });
-            
+
             this._mockedScenariosManager?.Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(mockedNotifyScenario.Object);

@@ -75,7 +75,7 @@ namespace EventsHandler.Constants
         internal static class Validation
         {
             internal static string ErrorsOccurred => "One or more validation errors occurred.";
-            
+
             internal static string Deserialization_MissingProperty => "JSON deserialization";
 
             internal static string Deserialization_InvalidValue => "The JSON value";
