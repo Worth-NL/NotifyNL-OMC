@@ -3,15 +3,15 @@
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Extensions;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataSending
 {
-    /// <inheritdoc cref="ISendingService{TModel, TPackage}"/>
-    internal sealed class NotifySender : ISendingService<NotificationEvent, NotifyData>
+    /// <inheritdoc cref="INotifyService{TModel, TPackage}"/>
+    internal sealed class NotifyService : INotifyService<NotificationEvent, NotifyData>
     {
         #region Cached HttpClient
         private static readonly object s_padlock = new();
@@ -23,9 +23,9 @@ namespace EventsHandler.Services.DataSending
         private readonly ISerializationService _serializer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifySender"/> class.
+        /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
-        public NotifySender(
+        public NotifyService(
             IHttpClientFactory<INotifyClient, string> clientFactory,
             ISerializationService serializer)
         {
@@ -33,8 +33,8 @@ namespace EventsHandler.Services.DataSending
             this._serializer = serializer;
         }
 
-        /// <inheritdoc cref="ISendingService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
-        async Task ISendingService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
+        async Task INotifyService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
             string encodedNotification = serializedNotification.Base64Encode();
@@ -45,8 +45,8 @@ namespace EventsHandler.Services.DataSending
                                                                      reference:       encodedNotification);
         }
 
-        /// <inheritdoc cref="ISendingService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
-        async Task ISendingService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
+        async Task INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
             string encodedNotification = serializedNotification.Base64Encode();

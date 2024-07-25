@@ -23,11 +23,9 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using EventsHandler.Services.DataReceiving;
-using EventsHandler.Services.DataReceiving.Factories;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Services.DataSending;
+using EventsHandler.Services.DataSending.Clients.Factories;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization;
@@ -256,7 +254,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
-            builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
+            builder.Services.AddSingleton<INotifyService<NotificationEvent, NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
