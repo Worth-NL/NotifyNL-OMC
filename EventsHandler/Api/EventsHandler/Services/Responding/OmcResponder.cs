@@ -13,12 +13,12 @@ using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.UserCommunication.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace EventsHandler.Services.UserCommunication
+namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
     internal sealed class OmcResponder : IRespondingService<NotificationEvent>

@@ -5,7 +5,7 @@ using EventsHandler.Attributes.Validation;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Services.UserCommunication;
+using EventsHandler.Services.Responding;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;

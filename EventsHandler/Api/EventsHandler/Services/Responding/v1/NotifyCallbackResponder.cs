@@ -6,12 +6,12 @@ using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Controllers.Base;
+using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventsHandler.Services.UserCommunication.v1
+namespace EventsHandler.Services.Responding.v1
 {
     /// <inheritdoc cref="NotifyResponder"/>
     /// <remarks>

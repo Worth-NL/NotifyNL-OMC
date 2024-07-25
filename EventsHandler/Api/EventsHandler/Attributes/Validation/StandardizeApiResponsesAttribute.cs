@@ -6,7 +6,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
 using EventsHandler.Properties;
-using EventsHandler.Services.UserCommunication.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Models.Responses;

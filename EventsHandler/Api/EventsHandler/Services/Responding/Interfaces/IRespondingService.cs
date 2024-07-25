@@ -6,7 +6,7 @@ using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace EventsHandler.Services.UserCommunication.Interfaces
+namespace EventsHandler.Services.Responding.Interfaces
 {
     /// <summary>
     /// The service producing human user-friendly <see cref="IActionResult"/> API responses.

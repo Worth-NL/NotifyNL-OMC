@@ -28,6 +28,7 @@ using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Settings;
@@ -37,8 +38,6 @@ using EventsHandler.Services.Settings.Strategy.Manager;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
-using EventsHandler.Services.UserCommunication;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning;
@@ -56,7 +55,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
-using Responder = EventsHandler.Services.UserCommunication;
+using Responder = EventsHandler.Services.Responding;
 using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
@@ -389,10 +388,10 @@ namespace EventsHandler
         private static void RegisterResponders(this WebApplicationBuilder builder)
         {
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
+            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(builder));
+            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion(builder));
 
             return;
 
