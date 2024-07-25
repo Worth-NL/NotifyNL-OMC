@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using EventsHandler.Services.Settings.Configuration;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces

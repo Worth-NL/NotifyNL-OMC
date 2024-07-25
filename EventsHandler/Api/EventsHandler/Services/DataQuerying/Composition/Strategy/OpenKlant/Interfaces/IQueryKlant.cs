@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {

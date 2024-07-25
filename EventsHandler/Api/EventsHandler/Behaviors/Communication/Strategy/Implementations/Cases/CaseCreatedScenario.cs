@@ -5,8 +5,8 @@ using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases
 {

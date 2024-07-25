@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Enums;
-using EventsHandler.Services.DataLoading.Interfaces;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
 
-namespace EventsHandler.Services.DataLoading.Strategy.Manager
+namespace EventsHandler.Services.Settings.Strategy.Manager
 {
     /// <inheritdoc cref="ILoadersContext"/>
     internal sealed class LoadersContext : ILoadersContext

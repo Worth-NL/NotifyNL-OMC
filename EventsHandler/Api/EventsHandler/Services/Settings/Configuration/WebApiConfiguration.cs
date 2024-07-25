@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Collections.Concurrent;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Enums;
-using EventsHandler.Services.DataLoading.Interfaces;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
-using EventsHandler.Services.DataLoading.Strategy.Manager;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using JetBrains.Annotations;
-using System.Collections.Concurrent;
 
-namespace EventsHandler.Configuration
+namespace EventsHandler.Services.Settings.Configuration
 {
     /// <summary>
     /// The object representing all application settings.
