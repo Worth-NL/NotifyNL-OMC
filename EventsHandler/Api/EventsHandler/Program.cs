@@ -2,8 +2,8 @@
 
 using EventsHandler.Behaviors.Communication.Strategy.Implementations;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
-using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Manager;
+using EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces;
 using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Results.Builder;
