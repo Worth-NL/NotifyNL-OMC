@@ -2,18 +2,18 @@
 
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Responding.Messages.Models.Information;
-using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
-using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
-using EventsHandler.Behaviors.Responding.Results.Enums;
-using EventsHandler.Behaviors.Responding.Results.Extensions;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Messages.Models.Details.Base;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
+using EventsHandler.Services.Responding.Messages.Models.Information;
+using EventsHandler.Services.Responding.Messages.Models.Successes;
+using EventsHandler.Services.Responding.Results.Builder.Interface;
+using EventsHandler.Services.Responding.Results.Enums;
+using EventsHandler.Services.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
