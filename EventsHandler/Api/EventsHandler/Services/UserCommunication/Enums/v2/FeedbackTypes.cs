@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
 
-namespace EventsHandler.Behaviors.Communication.Enums.v2
+namespace EventsHandler.Services.UserCommunication.Enums.v2
 {
     /// <summary>
     /// The types of feedback mapping "Notify NL" Web API service <see cref="DeliveryStatuses"/>.
