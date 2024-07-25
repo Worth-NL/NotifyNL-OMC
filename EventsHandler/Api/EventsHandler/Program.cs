@@ -1,16 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy.Implementations;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
-using EventsHandler.Behaviors.Communication.Strategy.Manager;
-using EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Manager;
+using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;

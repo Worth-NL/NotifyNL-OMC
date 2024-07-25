@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Interfaces;
 using Notify.Exceptions;
 using ResourcesEnum = EventsHandler.Mapping.Enums.NotificatieApi.Resources;

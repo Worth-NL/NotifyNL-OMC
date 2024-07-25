@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.Telemetry.Interfaces

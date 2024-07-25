@@ -1,8 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotifyNL;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Enums.v2;
 
 namespace EventsHandler.UnitTests.Extensions

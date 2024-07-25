@@ -2,11 +2,11 @@
 
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Serialization.Interfaces;
