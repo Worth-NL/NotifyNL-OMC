@@ -4,6 +4,7 @@ using EventsHandler.Behaviors.Communication.Strategy.Implementations;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
 using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.Base;
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
+using EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces;
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;

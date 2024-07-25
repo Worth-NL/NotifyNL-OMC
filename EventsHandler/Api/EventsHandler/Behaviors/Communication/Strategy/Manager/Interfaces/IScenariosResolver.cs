@@ -1,10 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
 using System.Text.Json;
 
-namespace EventsHandler.Behaviors.Communication.Strategy.Interfaces
+namespace EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces
 {
     /// <summary>
     /// The strategy manager to control <see cref="INotifyScenario"/>s strategies - determining a specific business workflow.
