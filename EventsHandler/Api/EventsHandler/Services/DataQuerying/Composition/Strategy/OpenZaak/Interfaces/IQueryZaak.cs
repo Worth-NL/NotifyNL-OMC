@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;

@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Services.DataSending.Interfaces
 {

@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Utilities._TestHelpers;

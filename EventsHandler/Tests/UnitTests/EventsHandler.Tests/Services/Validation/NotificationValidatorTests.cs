@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Responding.Results.Enums;
