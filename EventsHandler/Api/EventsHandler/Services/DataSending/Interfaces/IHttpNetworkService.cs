@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataSending.Clients.Enums;
 
-namespace EventsHandler.Services.DataReceiving.Interfaces
+namespace EventsHandler.Services.DataSending.Interfaces
 {
     /// <summary>
     /// The service to retrieve data from different services supplying them to business logic.

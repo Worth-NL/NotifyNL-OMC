@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Constants;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Net.Http.Headers;
 
-namespace EventsHandler.Services.DataReceiving.Factories
+namespace EventsHandler.Services.DataSending.Clients.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
     internal sealed class RegularHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>

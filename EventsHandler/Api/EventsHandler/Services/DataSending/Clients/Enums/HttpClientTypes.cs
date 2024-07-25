@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-namespace EventsHandler.Services.DataReceiving.Enums
+namespace EventsHandler.Services.DataSending.Clients.Enums
 {
     /// <summary>
     /// A specific types of <see cref="HttpClient"/>s used by internal business logic.

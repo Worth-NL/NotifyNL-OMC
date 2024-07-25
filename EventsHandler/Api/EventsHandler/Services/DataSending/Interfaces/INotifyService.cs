@@ -8,7 +8,7 @@ namespace EventsHandler.Services.DataSending.Interfaces
     /// <summary>
     /// The service responsible for transmission of data to the other external service.
     /// </summary>
-    public interface ISendingService<in TModel, in TPackage> : IDisposable
+    public interface INotifyService<in TModel, in TPackage> : IDisposable
         where TModel : struct, IJsonSerializable
         where TPackage : struct
     {

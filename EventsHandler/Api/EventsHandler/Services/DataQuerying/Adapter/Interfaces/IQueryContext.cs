@@ -10,7 +10,7 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Inter
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {

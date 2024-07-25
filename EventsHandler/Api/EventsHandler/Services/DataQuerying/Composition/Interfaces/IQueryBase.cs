@@ -3,7 +3,7 @@
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataSending.Clients.Enums;
 using System.Text.Json;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
