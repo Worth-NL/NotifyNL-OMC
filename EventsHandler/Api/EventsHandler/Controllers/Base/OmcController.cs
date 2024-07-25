@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
 using Asp.Versioning;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base

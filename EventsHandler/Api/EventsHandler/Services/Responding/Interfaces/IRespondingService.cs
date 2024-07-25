@@ -2,7 +2,7 @@
 
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
+using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

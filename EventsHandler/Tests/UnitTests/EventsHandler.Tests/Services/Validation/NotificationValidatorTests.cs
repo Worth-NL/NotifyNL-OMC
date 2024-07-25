@@ -2,9 +2,9 @@
 
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
-using EventsHandler.Behaviors.Responding.Results.Enums;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Results.Builder.Interface;
+using EventsHandler.Services.Responding.Results.Enums;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
