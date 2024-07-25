@@ -3,10 +3,10 @@
 using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Helpers;
 using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

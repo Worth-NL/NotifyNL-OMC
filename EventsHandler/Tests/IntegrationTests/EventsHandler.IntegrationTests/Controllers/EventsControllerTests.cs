@@ -2,16 +2,16 @@
 
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
-using EventsHandler.Behaviors.Responding.Results.Builder;
 using EventsHandler.Controllers;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Base;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
+using EventsHandler.Services.Responding.Messages.Models.Successes;
+using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
