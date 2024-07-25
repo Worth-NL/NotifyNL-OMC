@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Enums.v2;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
+using EventsHandler.Services.UserCommunication.Enums.v2;
 
 namespace EventsHandler.Extensions
 {

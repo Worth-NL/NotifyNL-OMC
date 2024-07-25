@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Enums.v2;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
@@ -10,6 +9,7 @@ using EventsHandler.Extensions;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.UserCommunication.Enums.v2;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
