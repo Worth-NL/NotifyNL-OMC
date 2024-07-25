@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
+using EventsHandler.Mapping.Enums.NotifyNL;
 
 namespace EventsHandler.Services.Responding.Enums.v2
 {

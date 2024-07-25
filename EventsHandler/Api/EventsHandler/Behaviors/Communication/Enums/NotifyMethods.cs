@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
+using EventsHandler.Mapping.Enums.OpenKlant;
 
 namespace EventsHandler.Behaviors.Communication.Enums
 {

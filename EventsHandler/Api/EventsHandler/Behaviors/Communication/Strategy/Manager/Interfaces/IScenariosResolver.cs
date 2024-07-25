@@ -1,8 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using System.Text.Json;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Manager.Interfaces

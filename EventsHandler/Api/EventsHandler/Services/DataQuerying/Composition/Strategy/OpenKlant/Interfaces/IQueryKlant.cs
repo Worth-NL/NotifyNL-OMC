@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
