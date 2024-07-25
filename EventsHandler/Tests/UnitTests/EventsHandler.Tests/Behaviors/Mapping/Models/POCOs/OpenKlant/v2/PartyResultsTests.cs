@@ -2,8 +2,8 @@
 
 using EventsHandler.Behaviors.Mapping.Enums.OpenKlant;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2;
-using EventsHandler.Configuration;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2

@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Decorator;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using Notify.Client;
 
 namespace EventsHandler.Services.DataReceiving.Factories

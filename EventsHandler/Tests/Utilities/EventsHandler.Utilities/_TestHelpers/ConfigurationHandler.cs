@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
-using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Enums;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Settings.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

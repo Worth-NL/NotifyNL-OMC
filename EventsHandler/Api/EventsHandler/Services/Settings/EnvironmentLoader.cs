@@ -2,9 +2,9 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading.Interfaces;
+using EventsHandler.Services.Settings.Interfaces;
 
-namespace EventsHandler.Services.DataLoading
+namespace EventsHandler.Services.Settings
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>

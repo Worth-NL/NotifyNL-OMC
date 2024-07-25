@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-namespace EventsHandler.Services.DataLoading.Enums
+namespace EventsHandler.Services.Settings.Enums
 {
     /// <summary>
     /// The types of DAO (Data Access Object) data providers.

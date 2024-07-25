@@ -6,7 +6,6 @@ using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Behaviors.Mapping.Enums;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Configuration;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -19,6 +18,7 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Controllers
 {

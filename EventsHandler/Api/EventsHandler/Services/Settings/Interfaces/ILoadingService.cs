@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-namespace EventsHandler.Services.DataLoading.Interfaces
+namespace EventsHandler.Services.Settings.Interfaces
 {
     /// <summary>
     /// The service responsible for loading a specific data from an associated resource.

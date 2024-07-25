@@ -1,14 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Enums;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
-using EventsHandler.Services.DataLoading.Strategy.Manager;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsHandler.UnitTests.Services.DataLoading
+namespace EventsHandler.UnitTests.Services.Settings
 {
     [TestFixture]
     public class LoadersContextTests

@@ -1,9 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using System.Net.Http.Headers;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataReceiving.Factories
 {
