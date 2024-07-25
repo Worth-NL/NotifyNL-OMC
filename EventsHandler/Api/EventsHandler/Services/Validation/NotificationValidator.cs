@@ -173,7 +173,7 @@ namespace EventsHandler.Services.Validation
 
             return false;
         }
-        
+
         /// <summary>
         /// Gets only the keys from a given dictionary.
         /// </summary>

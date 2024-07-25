@@ -7,9 +7,9 @@ using EventsHandler.Extensions;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
-using EventsHandler.Services.Settings.Configuration;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
@@ -53,7 +53,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: caseTypeUrl,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
-        
+
         /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Data taskData)
         {
@@ -61,7 +61,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return await GetCaseAsync(queryBase, caseTypeUri);
         }
-        
+
         /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Decision decision)
         {
@@ -69,7 +69,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return await GetCaseAsync(queryBase, caseTypeUri);
         }
-        
+
         /// <summary>
         /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -89,8 +89,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: caseStatuses,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
-        
-        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
+
+#pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
         /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -139,7 +139,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: queryBase.Notification.MainObject,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
-        #pragma warning restore CA1822
+#pragma warning restore CA1822
         #endregion
 
         #region Abstract (BSN Number)

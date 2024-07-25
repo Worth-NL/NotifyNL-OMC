@@ -32,7 +32,7 @@ namespace EventsHandler.UnitTests.Services.Validation
             mockedBuilder.Setup(mock => mock.Get<ErrorDetails>(
                     It.IsAny<Reasons>(), It.IsAny<string>()))
                 .Returns(new ErrorDetails());
-            
+
             this._validator = new NotificationValidator(mockedBuilder.Object);
         }
 

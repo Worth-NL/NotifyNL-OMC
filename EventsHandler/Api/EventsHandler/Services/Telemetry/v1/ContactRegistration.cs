@@ -26,7 +26,7 @@ namespace EventsHandler.Services.Telemetry.v1
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Contactmomenten";
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.0.0";
 

@@ -10,6 +10,7 @@ using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
@@ -17,7 +18,6 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
-using EventsHandler.Services.Settings.Configuration;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Controllers
@@ -97,7 +97,7 @@ namespace EventsHandler.Controllers
                     ? await Task.Run<IActionResult>(async () =>
                     {
                         (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
-                        
+
                         return LogApiResponse(result.Status.ConvertToLogLevel(),
                             this._responder.Get_Processing_Status_ActionResult(
                                 GetResult(result, json), notification.Details));

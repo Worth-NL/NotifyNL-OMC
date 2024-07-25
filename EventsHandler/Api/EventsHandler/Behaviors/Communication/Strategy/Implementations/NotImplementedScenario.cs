@@ -6,8 +6,8 @@ using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using System.Diagnostics.CodeAnalysis;
 using EventsHandler.Services.Settings.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventsHandler.Behaviors.Communication.Strategy.Implementations
 {

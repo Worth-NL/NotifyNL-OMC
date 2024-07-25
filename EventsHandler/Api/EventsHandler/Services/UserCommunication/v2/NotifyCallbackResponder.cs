@@ -39,7 +39,7 @@ namespace EventsHandler.Services.UserCommunication.v2
             this._responder = this;  // NOTE: Shortcut to use interface methods faster (parent of this class derives from this interface)
             this._telemetry = telemetry;
         }
-        
+
         /// <inheritdoc cref="NotifyResponder.HandleNotifyCallbackAsync(object)"/>
         internal override async Task<IActionResult> HandleNotifyCallbackAsync(object json)
         {
@@ -113,7 +113,7 @@ namespace EventsHandler.Services.UserCommunication.v2
         {
             return feedbackType switch
             {
-                FeedbackTypes.Success => 
+                FeedbackTypes.Success =>
                     notificationMethod switch
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Success_Subject(),
@@ -121,7 +121,7 @@ namespace EventsHandler.Services.UserCommunication.v2
                         _ => string.Empty
                     },
 
-                FeedbackTypes.Failure => 
+                FeedbackTypes.Failure =>
                     notificationMethod switch
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Failure_Subject(),
@@ -138,7 +138,7 @@ namespace EventsHandler.Services.UserCommunication.v2
         {
             return feedbackType switch
             {
-                FeedbackTypes.Success => 
+                FeedbackTypes.Success =>
                     notificationMethod switch
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Success_Body(),
@@ -146,7 +146,7 @@ namespace EventsHandler.Services.UserCommunication.v2
                         _ => string.Empty
                     },
 
-                FeedbackTypes.Failure => 
+                FeedbackTypes.Failure =>
                     notificationMethod switch
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Failure_Body(),

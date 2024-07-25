@@ -42,7 +42,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("reference")]
         [JsonPropertyOrder(1)]
         public string? Reference { get; internal set; }
-        
+
         /// <summary>
         /// The email address or phone number of the recipient.
         /// </summary>
@@ -52,7 +52,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("to")]
         [JsonPropertyOrder(2)]
         public string Recipient { get; internal set; } = string.Empty;
-        
+
         /// <summary>
         /// The status of the notification.
         /// </summary>
@@ -62,7 +62,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("status")]
         [JsonPropertyOrder(3)]
         public DeliveryStatuses Status { get; internal set; }
-        
+
         /// <summary>
         /// The time the service sent the request.
         /// </summary>
@@ -72,7 +72,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("created_at")]
         [JsonPropertyOrder(4)]
         public DateTime CreatedAt { get; internal set; }
-        
+
         /// <summary>
         /// The last time the status was updated.
         /// </summary>
@@ -82,7 +82,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("completed_at")]
         [JsonPropertyOrder(5)]
         public DateTime CompletedAt { get; internal set; }
-        
+
         /// <summary>
         /// The time the notification was sent.
         /// </summary>
@@ -92,7 +92,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("sent_at")]
         [JsonPropertyOrder(6)]
         public DateTime SentAt { get; internal set; }
-        
+
         /// <summary>
         /// The notification type.
         /// </summary>
@@ -112,7 +112,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL
         [JsonPropertyName("template_id")]
         [JsonPropertyOrder(8)]
         public Guid TemplateId { get; internal set; }
-        
+
         /// <summary>
         /// The version number of the template that was used.
         /// </summary>

@@ -62,7 +62,7 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Extensions
             // Response-based extensions
             yield return (testSimpleResponse.AsResult_206,   206, "#1");
             yield return (testSimpleResponse.AsResult_400,   400, "#2");
-            
+
             yield return (testDetailedResponse.AsResult_202, 202, "#3");
             yield return (testDetailedResponse.AsResult_206, 206, "#4");
             yield return (testDetailedResponse.AsResult_400, 400, "#5");

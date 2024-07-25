@@ -19,7 +19,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
         public Uri CaseUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
-        
+
         /// <summary>
         /// Gets the date when the decision will be in effect.
         /// </summary>
@@ -27,7 +27,7 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyName("ingangsdatum")]
         [JsonPropertyOrder(1)]
         public DateTime StartDate { get; internal set; }
-        
+
         /// <summary>
         /// Gets the final date up to which user can respond / appeal to the <see cref="Decision"/>.
         /// </summary>

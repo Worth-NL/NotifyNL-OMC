@@ -21,31 +21,31 @@ namespace EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
         [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
         public string SurnamePrefix { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.Surname"/>
         [JsonInclude]
         [JsonPropertyName("achternaam")]
         [JsonPropertyOrder(2)]
         public string Surname { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.DistributionChannel"/>
         [JsonInclude]
         [JsonPropertyName("aanmaakkanaal")]
         [JsonPropertyOrder(3)]
         public DistributionChannels DistributionChannel { get; internal set; }
-        
+
         /// <inheritdoc cref="CommonPartyData.TelephoneNumber"/>
         [JsonInclude]
         [JsonPropertyName("telefoonnummer")]
         [JsonPropertyOrder(4)]
         public string TelephoneNumber { get; internal set; } = string.Empty;
-        
+
         /// <inheritdoc cref="CommonPartyData.EmailAddress"/>
         [JsonInclude]
         [JsonPropertyName("emailadres")]

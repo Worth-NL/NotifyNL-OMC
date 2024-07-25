@@ -12,7 +12,7 @@ namespace EventsHandler.UnitTests.Behaviors.Responding.Results.Builder
     public sealed class DetailsBuilderTests
     {
         private const string TestCase = "TEST: Example text %$#!";
-        
+
         private IDetailsBuilder? _detailsBuilder;
 
         [OneTimeSetUp]

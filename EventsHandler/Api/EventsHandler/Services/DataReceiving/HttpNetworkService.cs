@@ -5,11 +5,11 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataReceiving.Enums;
 using EventsHandler.Services.DataReceiving.Factories.Interfaces;
 using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
-using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataReceiving
 {
@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataReceiving
             // NOTE: Prevents "TaskCanceledException" in case there is a lot of simultaneous HTTP Requests being called
             this._semaphore = new SemaphoreSlim(
                 this._configuration.AppSettings.Network.HttpRequestsSimultaneousNumber());
-            
+
             // NOTE: This method is working like IHttpClientFactory: builder.Services.AddHttpClient("type_1", client => { });
             InitializeAvailableHttpClients();
         }
@@ -106,14 +106,14 @@ namespace EventsHandler.Services.DataReceiving
                 HttpClientTypes.OpenKlant_v1 or
                 HttpClientTypes.Telemetry_Contactmomenten
                     => AuthorizeWithGeneratedJwt(this._httpClients[httpClientType]),
-                    
+
                 // Clients using static API keys from configuration
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Objecten     or
                 HttpClientTypes.ObjectTypen  or
                 HttpClientTypes.Telemetry_Klantinteracties
                     => this._httpClients[httpClientType],
-                
+
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
             };
@@ -202,7 +202,7 @@ namespace EventsHandler.Services.DataReceiving
                 {
                     uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
                 }
-                
+
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await this._semaphore.WaitAsync();
                 HttpResponseMessage result = body is null

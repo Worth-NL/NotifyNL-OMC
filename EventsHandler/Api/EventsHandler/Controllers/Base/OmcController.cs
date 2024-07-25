@@ -89,7 +89,7 @@ namespace EventsHandler.Controllers.Base
                 // Description with message
                 BaseEnhancedStandardResponseBody enhancedResponse => enhancedResponse.ToString(),
                 BaseSimpleStandardResponseBody simpleResponse => simpleResponse.ToString(),
-                
+
                 // Only description
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 

@@ -134,7 +134,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
             });
         }
-        
+
         [Test]
         public void Party_Method_ForExistingResults_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone()
         {
@@ -184,7 +184,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
         #region Helper methods
         private const string TestEmail = "john.doe@gmail.com";
         private const string TestPhone = "+44 7911 123456";
-        
+
         /// <summary>
         /// In this set of test data there are phone numbers and e-mails combined, so e-mail should be always prioritized.
         /// </summary>
@@ -321,7 +321,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                 }
             };
         }
-        
+
         private static Guid GetUniqueId(Guid addressId)
         {
             var newId = Guid.NewGuid();
@@ -340,7 +340,7 @@ namespace EventsHandler.UnitTests.Behaviors.Mapping.Models.POCOs.OpenKlant.v2
                     new()  // Just empty result to always have at least a few of them + to handle uninitialized ones
                 }
             };
-            
+
             partyResults.Results.AddRange(parties);
 
             return partyResults;

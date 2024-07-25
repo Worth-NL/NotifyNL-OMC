@@ -46,7 +46,7 @@ namespace EventsHandler.Extensions
                 ? string.Empty
                 : Base64UrlEncoder.Encode(originalTextValue);
         }
-        
+
         /// <summary>
         /// Encodes the <see cref="Base64"/> value back to a raw plain <see langword="string"/>.
         /// </summary>

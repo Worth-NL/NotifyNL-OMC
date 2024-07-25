@@ -115,7 +115,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             NotificationEvent testNotification =
                 NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
                     .Deserialized();
-            
+
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
 
@@ -136,7 +136,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 .Returns(secondMockedNotifyClient.Object);
 
             this._testNotifySender = new NotifySender(secondMockedClientFactory.Object, mockedSerializer.Object);
-            
+
             // Act
             await this._testNotifySender.SendEmailAsync(testNotification, new NotifyData());
 

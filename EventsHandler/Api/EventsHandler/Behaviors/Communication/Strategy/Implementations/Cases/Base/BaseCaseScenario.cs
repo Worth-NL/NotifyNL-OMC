@@ -46,7 +46,7 @@ namespace EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases.B
         {
             this.QueryContext ??= this.DataQuery.From(notification);
             this.CachedCommonPartyData ??= await this.QueryContext.GetPartyDataAsync();
-            
+
             return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion

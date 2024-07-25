@@ -15,24 +15,24 @@ namespace EventsHandler.Utilities._TestHelpers
     internal static class NotificationEventHandler
     {
         #region Constants
-        internal const string SourceOrganization_Real_TheHague      = "286130270";
+        internal const string SourceOrganization_Real_TheHague = "286130270";
         internal const string ResponsibleOrganization_Real_TheHague = "999990639";
 
         // Regulars
-        internal const string Regular_Real_Property_Channel            = "kanaal";
+        internal const string Regular_Real_Property_Channel = "kanaal";
         internal const string Regular_Real_Property_SourceOrganization = "bronorganisatie";
 
-        private const Channels Regular_Real_Value_Channel_Enum       = Channels.Objects;
-        internal const string  Regular_Real_Value_Channel_String     = "objecten";
-        internal const string  Regular_Test_Value_SourceOrganization = "123456789";
+        private const Channels Regular_Real_Value_Channel_Enum = Channels.Objects;
+        internal const string Regular_Real_Value_Channel_String = "objecten";
+        internal const string Regular_Test_Value_SourceOrganization = "123456789";
 
         // Orphans
         internal const string Orphan_Test_Property_1 = "orphan_1";
         internal const string Orphan_Test_Property_2 = "orphan_2";
         internal const string Orphan_Test_Property_3 = "orphan_3";
 
-        internal const int    Orphan_Test_Value_1 = 1;
-        internal const bool   Orphan_Test_Value_2 = false;
+        internal const int Orphan_Test_Value_1 = 1;
+        internal const bool Orphan_Test_Value_2 = false;
         internal const string Orphan_Test_Value_3 = "maybe";
         #endregion
 
