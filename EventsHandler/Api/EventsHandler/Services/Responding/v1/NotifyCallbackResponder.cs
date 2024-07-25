@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
