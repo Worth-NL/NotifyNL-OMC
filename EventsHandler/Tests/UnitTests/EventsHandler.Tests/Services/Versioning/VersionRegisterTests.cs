@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MoqExt;
 
-namespace EventsHandler.UnitTests.Behaviors.Versioning
+namespace EventsHandler.UnitTests.Services.Versioning
 {
     [TestFixture]
     public sealed class VersionRegisterTests
@@ -28,7 +28,7 @@ namespace EventsHandler.UnitTests.Behaviors.Versioning
             // Arrange
             IServiceProvider serviceProvider = new Mock<IServiceProvider>().Object;
             IVersionsRegister register = new VersionsRegister(serviceProvider);
-            
+
             // Act
             string actualResult = register.GetVersions();
 
@@ -51,7 +51,7 @@ namespace EventsHandler.UnitTests.Behaviors.Versioning
 
             IServiceProvider serviceProvider = new MockingContext(serviceCollection);
             IVersionsRegister register = new VersionsRegister(serviceProvider);
-            
+
             // Act
             string actualResult = register.GetVersions();
 
