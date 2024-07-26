@@ -27,6 +27,7 @@ namespace EventsHandler.Services.Settings
         /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
         /// <exception cref="ArgumentException"/>
         public virtual TData GetData<TData>(string key)
+            where TData : notnull
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))

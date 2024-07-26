@@ -21,7 +21,8 @@ namespace EventsHandler.Services.Settings.Interfaces
         /// <exception cref="KeyNotFoundException">
         ///   The provided key is missing or invalid.
         /// </exception>
-        TData GetData<TData>(string key);
+        TData GetData<TData>(string key)
+            where TData : notnull;
 
         /// <summary>
         /// Combines the configuration predeceasing path with the specific node name.
