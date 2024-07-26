@@ -27,6 +27,16 @@ namespace EventsHandler.Services.Settings.Configuration
     /// </summary>
     public sealed record WebApiConfiguration : IDisposable
     {
+        #region Dictionaries (cached values)
+        private static readonly ConcurrentDictionary<
+            string /* Unique final path */,
+            string /* Setting value */> s_cachedStrings = new();
+
+        private static readonly ConcurrentDictionary<
+            string /* Unique final path */,
+            string[] /* Setting value */> s_cachedArrays = new();
+        #endregion
+
         private readonly IServiceProvider _serviceProvider;
 
         private AppSettingsComponent? _appSettings;
@@ -144,15 +154,15 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal ushort ConnectionLifetimeInSeconds()
-                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
+                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal ushort HttpRequestTimeoutInSeconds()
-                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
+                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal ushort HttpRequestsSimultaneousNumber()
-                    => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
+                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
             }
 
             /// <summary>
@@ -174,7 +184,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool IsAsymmetric()
-                    => GetValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
+                    => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
             }
 
             /// <summary>
@@ -196,7 +206,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal byte OmcWorkflowVersion()
-                    => GetValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
+                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
 
             /// <summary>
@@ -231,23 +241,23 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string SubjectType()
-                    => GetValue(this._loadersContext, this._currentPath, "BetrokkeneType");
+                    => GetCachedValue(this._loadersContext, this._currentPath, "BetrokkeneType");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string InitiatorRole()
-                    => GetValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
+                    => GetCachedValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PartyIdentifier()
-                    => GetValue(this._loadersContext, this._currentPath, "PartijIdentificator");
+                    => GetCachedValue(this._loadersContext, this._currentPath, "PartijIdentificator");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string EmailGenericDescription()
-                    => GetValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
+                    => GetCachedValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string PhoneGenericDescription()
-                    => GetValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
+                    => GetCachedValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
 
                 /// <summary>
                 /// The "OpenKlant" part of the settings.
@@ -268,15 +278,15 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string CodeObjectType()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string CodeRegister()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string CodeObjectTypeId()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
                 }
 
                 /// <summary>
@@ -298,7 +308,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal Guid TaskTypeGuid()
-                        => GetValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
+                        => GetCachedValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
                 }
 
                 /// <summary>
@@ -321,37 +331,37 @@ namespace EventsHandler.Services.Settings.Configuration
                     #region SMS
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string SMS_Success_Subject()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string SMS_Success_Body()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string SMS_Failure_Subject()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string SMS_Failure_Body()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
                     #endregion
 
                     #region E-mail
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Email_Success_Subject()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Email_Success_Body()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Email_Failure_Subject()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Email_Failure_Body()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
                     #endregion
                 }
             }
@@ -410,27 +420,27 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Secret()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Secret));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Issuer()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Issuer));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Audience()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Audience));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal ushort ExpiresInMin()
-                        => GetValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string UserId()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(UserId));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string UserName()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(UserName));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
             }
         }
@@ -490,7 +500,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string NotifyNL()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
         }
@@ -562,19 +572,19 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string OpenKlant_2()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string Objecten()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(Objecten));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ObjectTypen()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string NotifyNL()
-                        => GetValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
 
@@ -597,23 +607,23 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenNotificaties()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenZaak()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string OpenKlant()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string Objecten()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal string ObjectTypen()
-                    => GetDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
             }
 
             /// <summary>
@@ -657,23 +667,23 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakCreate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakUpdate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string TaskAssigned()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string DecisionMade()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
 
                 /// <summary>
@@ -695,23 +705,23 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakCreate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakUpdate()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string ZaakClose()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string TaskAssigned()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                     internal string DecisionMade()
-                        => GetTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
             }
 
@@ -758,7 +768,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
                 internal bool Message_Allowed()
-                    => GetValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+                    => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
@@ -793,7 +803,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     {
                         // Get values
                         this._finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
-                        string[] caseIds = GetValues(loadersContext, this._finalPath, disableValidation: true);
+                        string[] caseIds = GetCachedValues(loadersContext, nodeName, this._finalPath, disableValidation: true);
 
                         // Construct the IDs object
                         this.Count = caseIds.Length;
@@ -846,83 +856,119 @@ namespace EventsHandler.Services.Settings.Configuration
         }
         #endregion
 
-        #region Cached data
-        private static readonly ConcurrentDictionary<string /* Node name */, string> s_cachedValues = new();
-        #endregion
-
-        #region Helper methods
+        #region Caching
         /// <summary>
         /// Retrieves settings <see langword="string"/> value (with optional validation).
         /// </summary>
         /// <remarks>
-        /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation.
+        /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation for the most common settings value type.
         /// </remarks>
-        private static string GetValue(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
+        private static string GetCachedValue(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
-            return GetValue<string>(loadersContext, currentPath, nodeName, disableValidation);
+            // NOTE: Shorthand to not use the most popular <string> type in most cases
+            return s_cachedStrings.GetOrAdd(
+                nodeName,
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation));  // Validate not empty
         }
 
+        /// <summary>
+        /// Retrieves cached settings value, ensuring it will be a domain (without http/s and API endpoint).
+        /// </summary>
+        private static string GetCachedDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return s_cachedStrings.GetOrAdd(
+                nodeName,
+                // Validation happens once during initial loading, before caching the value
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
+                    .WithoutHttp()
+                    .WithoutEndpoint());
+        }
+
+        /// <summary>
+        /// Retrieves cached settings value, ensuring it will be a valid Template Id.
+        /// </summary>
+        private static string GetCachedTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return s_cachedStrings.GetOrAdd(
+                nodeName,
+                // Validation happens once during initial loading, before caching the value
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
+                    .ValidTemplateId());
+        }
+        
         /// <summary>
         /// Retrieves multiple settings <see langword="string"/> values (with optional validation).
         /// </summary>
-        private static string[] GetValues(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
+        private static string[] GetCachedValues(ILoadingService loadersContext, string nodeName, string finalPath, bool disableValidation = false)
         {
-            // Validation #1: Checking if the string value is not null or empty
-            string[] values = GetValue<string>(loadersContext, finalPath, disableValidation)
-                .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
-                .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
-                .ToArray();
+            return s_cachedArrays.GetOrAdd(
+                nodeName,
+                _ =>
+                {
+                    // Validation #1: Checking if the string value is not null or empty
+                    string[] values = GetValue<string>(loadersContext, finalPath, disableValidation)  // Handles the cases: "" or null
+                        .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
+                        .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
+                        .ToArray();
 
-            // Validation #2: Checking if the comma-separated string was properly split into array
-            return disableValidation
-                ? values
-                : values.NotEmpty(finalPath);
+                    // Validation #2: Checking if the comma-separated string was properly split into array
+                    return disableValidation
+                        ? values
+                        : values.NotEmpty(finalPath);  // Handles the case: "," => RemoveEmptyEntries => { }
+                });
         }
 
+        private static TData GetCachedValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
+            where TData : notnull
+        {
+            string value = s_cachedStrings.GetOrAdd(
+                nodeName,
+                // Save as string (to not maintain type-specific or <string, object> dictionary requiring unboxing overhead, since most values are strings)
+                $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty
+
+            // Retrieve as TData => Guid
+            if (typeof(TData) == typeof(Guid))
+            {
+                return (TData)Convert.ChangeType(new Guid(value), typeof(TData));
+            }
+
+            // Retrieve as TData => int, ushort, bool
+            return (TData)Convert.ChangeType(value, typeof(TData));
+        }
+        #endregion
+
+        #region Reading
         /// <summary>
         /// Retrieves settings <typeparamref name="TData"/> value (with optional validation).
         /// </summary>
-        private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
+        private static TData GetValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation)
+            where TData : notnull
         {
+            // NOTE: Shorthand to combine the settings path and node name in one place
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return GetValue<TData>(loadersContext, finalPath, disableValidation);
+            return GetValue<TData>(loadersContext, finalPath, disableValidation);  // Validate not empty
         }
 
         /// <summary>
         /// Retrieves settings <typeparamref name="TData"/> value using final path
         /// instead of path + node concatenation (with optional validation).
         /// </summary>
-        private static TData GetValue<TData>(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
+        private static TData GetValue<TData>(ILoadingService loadersContext, string finalPath, bool disableValidation)
+            where TData : notnull
         {
+            // NOTE: Shorthand to validate whether value is null or empty in one place
             return disableValidation
                 ? loadersContext.GetData<TData>(finalPath)
                 : loadersContext.GetData<TData>(finalPath).NotEmpty(finalPath);
-        }
-
-        /// <summary>
-        /// Retrieves cached settings value, ensuring it will be a domain (without http/s and API endpoint).
-        /// </summary>
-        private static string GetDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
-        {
-            return GetValue<string>(loadersContext, currentPath, nodeName)
-                .WithoutHttp()
-                .WithoutEndpoint();
-        }
-
-        /// <summary>
-        /// Retrieves cached settings value, ensuring it will be a valid Template Id.
-        /// </summary>
-        private static string GetTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
-        {
-            return GetValue<string>(loadersContext, currentPath, nodeName)
-                .ValidTemplateId();
         }
         #endregion
 
         /// <inheritdoc cref="IDisposable.Dispose()"/>
         public void Dispose()
         {
+            s_cachedStrings.Clear();
+            s_cachedArrays.Clear();
             this.User.Whitelist.Dispose();
         }
     }
