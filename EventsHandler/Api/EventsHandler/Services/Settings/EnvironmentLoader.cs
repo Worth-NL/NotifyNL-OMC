@@ -17,6 +17,7 @@ namespace EventsHandler.Services.Settings
         /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
         /// <exception cref="NotImplementedException">The operating system (OS) is not supported.</exception>
         public virtual TData GetData<TData>(string key)
+            where TData : notnull
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
@@ -24,7 +25,6 @@ namespace EventsHandler.Services.Settings
                 throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
             }
 
-            // Support for modern Windows OS (e.g., Windows XP, Vista, 7, 8+, 10, 11), macOS, and Unix systems (e.g. Linux)
             if (Environment.OSVersion.Platform is PlatformID.Win32NT
                                                or PlatformID.MacOSX
                                                or PlatformID.Unix)

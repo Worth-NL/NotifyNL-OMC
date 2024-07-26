@@ -1,5 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Collections;
+
 namespace EventsHandler.Extensions
 {
     /// <summary>
@@ -18,9 +20,9 @@ namespace EventsHandler.Extensions
         {
             return collection.Length > 0;  // NOTE: Faster than Any()
         }
-
+        
         /// <inheritdoc cref="HasAny{T}(T[])"/>
-        internal static bool HasAny<T>(this ICollection<T>? collection)
+        internal static bool HasAny(this ICollection? collection)
         {
             return collection?.Count > 0;  // NOTE: Faster than Any()
         }

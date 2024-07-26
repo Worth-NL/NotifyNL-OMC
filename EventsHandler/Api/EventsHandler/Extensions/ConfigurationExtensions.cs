@@ -46,7 +46,7 @@ namespace EventsHandler.Extensions
                     ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
                     : value,
 
-                ICollection collection => collection.Count == 0
+                ICollection collection => collection.HasAny()
                     ? throw new ArgumentException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + Separated(key))
                     : value,
 

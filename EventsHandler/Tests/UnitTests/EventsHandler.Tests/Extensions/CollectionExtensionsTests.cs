@@ -12,7 +12,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void HasMany_ForValidArray_ReturnsTrue()
         {
             // Arrange
-            int[] testArray = new[] { 1, 2 };
+            int[] testArray = { 1, 2 };
 
             // Act
             bool actualResult = testArray.HasAny();
