@@ -200,7 +200,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
-                DistributionChannels.Email, s_taskOpenAssignedToPersonWithoutExpirationDate, isCaseIdWhitelisted: false);
+                DistributionChannels.Email,
+                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                isCaseIdWhitelisted: false,
+                isNotificationExpected: true);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -208,11 +211,32 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
 
-                const string expectedErrorMessage =
-                    "Notification can not be sent because case type with identification 4 is not " +
-                    "included in the whitelist for task assigned notifications. Processing aborted.";
-                
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseId
+                    .Replace("{0}", "4")
+                    .Replace("{1}", "task assigned");
+
                 Assert.That(exception?.Message, Is.EqualTo(expectedErrorMessage));
+
+                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
+            });
+        }
+
+        [Test]
+        public void GetAllNotifyDataAsync_WithInformSetToFalse_ThrowsAbortedNotifyingException()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.Email,
+                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                isCaseIdWhitelisted: true,
+                isNotificationExpected: false);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_Informeren));
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
             });
@@ -226,7 +250,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount)
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, s_taskOpenAssignedToPersonWithoutExpirationDate, isCaseIdWhitelisted: true);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                testDistributionChannel,
+                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                isCaseIdWhitelisted: true,
+                isNotificationExpected: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -292,7 +320,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, testTask, isCaseIdWhitelisted: true);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                testDistributionChannel,
+                testTask,
+                isCaseIdWhitelisted: true,
+                isNotificationExpected: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -320,20 +352,25 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Helper methods
-        private INotifyScenario ArrangeTaskScenario(DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted)
+        private INotifyScenario ArrangeTaskScenario(
+            DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted, bool isNotificationExpected)
         {
+            // IQueryContext
             this._mockedQueryContext
                 .Setup(mock => mock.IsValidType())
                 .Returns(true);
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
                 .ReturnsAsync(testTask);
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
                 .ReturnsAsync(new CommonPartyData
                 {
                     DistributionChannel = testDistributionChannel
                 });
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Data>()))
                 .ReturnsAsync(new Case
@@ -341,6 +378,18 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Identification = isCaseIdWhitelisted ? "1" : "4"
                 });
 
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseType
+                {
+                    IsNotificationExpected = isNotificationExpected
+                });
+
+            // IDataQueryService
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);

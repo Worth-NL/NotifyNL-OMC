@@ -83,11 +83,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                this.CachedCase.Value.Identification);
+                this.CachedCase.Value.Identification, GetScenarioName());
+
+            ValidateNotifyPermit((
+                await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
+                await this.QueryContext!.GetCaseStatusesAsync()))  // Case status
+                .IsNotificationExpected);
 
             string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
-
 
             return new Dictionary<string, object>
             {
