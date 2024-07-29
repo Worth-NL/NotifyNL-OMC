@@ -756,9 +756,9 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_CaseId {
+        internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseId", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted", resourceCulture);
             }
         }
         
