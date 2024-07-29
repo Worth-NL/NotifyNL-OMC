@@ -54,12 +54,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetLastCaseStatusTypeAsync(IQueryBase, CaseStatuses)"/>
+        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="CaseStatus"/>es, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="CaseStatuses"/>, but it produces an additional
         ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<CaseStatusType> GetLastCaseStatusTypeAsync(CaseStatuses? statuses = null);
+        internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? statuses = null);
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         internal Task<string> GetBsnNumberAsync();

@@ -195,6 +195,29 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
+        [Test]
+        public void GetAllNotifyDataAsync_WithoutCaseIdWhitelisted_ThrowsAbortedNotifyingException()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.Email, s_taskOpenAssignedToPersonWithoutExpirationDate, isCaseIdWhitelisted: false);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+
+                const string expectedErrorMessage =
+                    "Notification can not be sent because case type with identification 4 is not " +
+                    "included in the whitelist for task assigned notifications. Processing aborted.";
+                
+                Assert.That(exception?.Message, Is.EqualTo(expectedErrorMessage));
+
+                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
+            });
+        }
+
         [TestCase(DistributionChannels.Email, 1, 1)]
         [TestCase(DistributionChannels.Sms, 1, 1)]
         [TestCase(DistributionChannels.Both, 2, 1)]
@@ -203,7 +226,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount)
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, s_taskOpenAssignedToPersonWithoutExpirationDate);
+            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, s_taskOpenAssignedToPersonWithoutExpirationDate, isCaseIdWhitelisted: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -269,7 +292,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, testTask);
+            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, testTask, isCaseIdWhitelisted: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -286,7 +309,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
                       $"\"taak.record.data.title\":\"{TestTaskTitle}\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"zaak.identificatie\":\"\"" +
+                      $"\"zaak.identificatie\":\"1\"" +
                     $"}}";
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
@@ -297,7 +320,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Helper methods
-        private INotifyScenario ArrangeTaskScenario(DistributionChannels testDistributionChannel, TaskObject testTask)
+        private INotifyScenario ArrangeTaskScenario(DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted)
         {
             this._mockedQueryContext
                 .Setup(mock => mock.IsValidType())
@@ -313,7 +336,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 });
             this._mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Data>()))
-                .ReturnsAsync(new Case());
+                .ReturnsAsync(new Case
+                {
+                    Identification = isCaseIdWhitelisted ? "1" : "4"
+                });
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))

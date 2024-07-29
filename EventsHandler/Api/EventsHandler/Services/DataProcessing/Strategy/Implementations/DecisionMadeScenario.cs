@@ -3,6 +3,7 @@
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
@@ -57,6 +58,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision!.Value);
 
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
+                this.CachedCase.Value.Identification);
+
+
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
@@ -92,6 +98,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.CachedDecision = null;
             this.CachedCase = null;
         }
+        #endregion
+
+        #region Polymorphic (GetScenarioName)
+        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        protected override string GetScenarioName() => Resources.Scenario_Name_DecisionMade;
         #endregion
     }
 }

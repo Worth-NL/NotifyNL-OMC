@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
@@ -36,6 +37,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
 
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
+                this.CachedCase.Value.Identification);
+
+
+
             return new Dictionary<string, object>
             {
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
@@ -57,6 +64,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
+        #endregion
+
+        #region Polymorphic (GetScenarioName)
+        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        protected override string GetScenarioName() => Resources.Scenario_Name_CaseCreated;
         #endregion
     }
 }

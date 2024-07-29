@@ -43,16 +43,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
                 }
 
-                CaseStatusType lastCaseStatusType =
-                    await queryContext.GetLastCaseStatusTypeAsync(caseStatuses);
+                CaseType lastCaseStatusType =
+                    await queryContext.GetLastCaseTypeAsync(caseStatuses);
 
                 BaseCaseScenario strategy = !lastCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"
-                    ? this._serviceProvider.GetRequiredService<CaseCaseStatusUpdatedScenario>()
+                    ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
-                    : this._serviceProvider.GetRequiredService<CaseCaseFinishedScenario>();
+                    : this._serviceProvider.GetRequiredService<CaseClosedScenario>();
 
-                strategy.PassAlreadyQueriedResult(lastCaseStatusType);
+                strategy.CacheCaseType(lastCaseStatusType);
 
                 return strategy;
             }

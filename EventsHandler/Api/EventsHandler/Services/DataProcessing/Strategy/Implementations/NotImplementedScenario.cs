@@ -75,6 +75,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return await Task.FromResult(NotImplemented<Dictionary<string, object>>());
         }
+
+        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        [ExcludeFromCodeCoverage]
+        protected override string GetScenarioName()
+        {
+            return NotImplemented<string>();
+        }
         #endregion
 
         /// <summary>

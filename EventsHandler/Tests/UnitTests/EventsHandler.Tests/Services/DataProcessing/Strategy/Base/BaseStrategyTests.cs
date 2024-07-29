@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -68,10 +69,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
         // TODO: Enable these tests
         //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
         //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
@@ -81,7 +82,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: true);
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -106,15 +107,50 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             });
         }
 
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        // TODO: Enable these tests
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, 1, 1)]
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, 1, 1)]
+        public void GetAllNotifyDataAsync_WithoutCaseIdWhitelisted_ThrowsAbortedNotifyingException(
+            Type scenarioType, DistributionChannels testDistributionChannel, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
+        {
+            // Arrange
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: false);
+            Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
+
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+
+                const string expectedErrorMessage =
+                    "Notification can not be sent because case type with identification 4 is not included in the whitelist for ";
+
+                Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
+                
+                VerifyMethodCalls(
+                    scenarioType, mockedQueryContext, mockedQueryService,
+                    fromInvokeCount, partyInvokeCount, caseInvokeCount);
+            });
+        }
+
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 1)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 1, 1, 1)]
-        [TestCase(typeof(CaseCaseFinishedScenario), 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), 1, 1, 1)]
         [TestCase(typeof(DecisionMadeScenario), 1, 1, 1), Ignore("The decision is disabled currently")]  // TODO: Enable this test
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithBothNotifyMethods_ReturnsBothExpectedData(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Both);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Both, isCaseIdWhitelisted: true);
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -146,14 +182,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         }
 
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 0)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), 1, 1, 0)]
-        [TestCase(typeof(CaseCaseFinishedScenario), 1, 1, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), 1, 1, 0)]
+        [TestCase(typeof(CaseClosedScenario), 1, 1, 0)]
         [TestCase(typeof(DecisionMadeScenario), 1, 1, 0)]
         public async Task GetAllNotifyDataAsync_ForNotification_WithoutNotifyMethod_ReturnsEmptyData_DoesNotThrowException(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.None);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.None, isCaseIdWhitelisted: true);
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -174,17 +210,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(CaseCreatedScenario), (DistributionChannels)(-1))]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), DistributionChannels.Unknown)]
-        [TestCase(typeof(CaseCaseStatusUpdatedScenario), (DistributionChannels)(-1))]
-        [TestCase(typeof(CaseCaseFinishedScenario), DistributionChannels.Unknown)]
-        [TestCase(typeof(CaseCaseFinishedScenario), (DistributionChannels)(-1))]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), (DistributionChannels)(-1))]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Unknown)]
+        [TestCase(typeof(CaseClosedScenario), (DistributionChannels)(-1))]
         [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(DecisionMadeScenario), (DistributionChannels)(-1))]
         public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ThrowsInvalidOperationException(
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: true);
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -224,7 +260,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         #endregion
 
         #region Helper methods
-        private static Mock<IQueryContext> MockQueryContextMethods(DistributionChannels testDistributionChannel)
+        private static Mock<IQueryContext> MockQueryContextMethods(DistributionChannels testDistributionChannel, bool isCaseIdWhitelisted)
         {
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Loose);
 
@@ -232,7 +268,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             var testCase = new Case
             {
                 Name = "Test case",
-                Identification = "Test case Id"
+                Identification = isCaseIdWhitelisted ? "1" : "4"
             };
 
             mockedQueryContext
@@ -285,7 +321,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                         _ => string.Empty
                     },
 
-                nameof(CaseCaseStatusUpdatedScenario) =>
+                nameof(CaseStatusUpdatedScenario) =>
                     notifyMethod switch
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakUpdate(),
@@ -293,7 +329,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                         _ => string.Empty
                     },
 
-                nameof(CaseCaseFinishedScenario) =>
+                nameof(CaseClosedScenario) =>
                     notifyMethod switch
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakClose(),

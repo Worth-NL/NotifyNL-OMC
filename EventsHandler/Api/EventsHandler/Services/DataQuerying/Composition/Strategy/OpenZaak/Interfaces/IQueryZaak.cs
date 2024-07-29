@@ -97,12 +97,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="AbortedNotifyingException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<CaseStatusType> GetLastCaseStatusTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
+        internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
         {
             // Request URL
             Uri lastStatusTypeUri = statuses.LastStatus().Type;
 
-            return await queryBase.ProcessGetAsync<CaseStatusType>(
+            return await queryBase.ProcessGetAsync<CaseType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
