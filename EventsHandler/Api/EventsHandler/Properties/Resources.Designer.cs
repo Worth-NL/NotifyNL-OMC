@@ -754,16 +754,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification for this type of the case status. Processing aborted..
+        ///   Looks up a localized string similar to Notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_CaseStatusType {
+        internal static string Processing_ABORT_DoNotSendNotification_CaseId {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseStatusType", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseId", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification if the task is already closed. Processing aborted..
+        ///   Looks up a localized string similar to Notification can not be send if the task is already closed. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
             get {
@@ -772,7 +772,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification if the task is not assigned to a person (missing BSN number). Processing aborted..
+        ///   Looks up a localized string similar to Notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
             get {
@@ -781,7 +781,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification for this type of the task. Processing aborted..
+        ///   Looks up a localized string similar to Notification can not be send for this type of the task. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {
@@ -885,6 +885,60 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to case closed.
+        /// </summary>
+        internal static string Scenario_Name_CaseClosed {
+            get {
+                return ResourceManager.GetString("Scenario_Name_CaseClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to case created.
+        /// </summary>
+        internal static string Scenario_Name_CaseCreated {
+            get {
+                return ResourceManager.GetString("Scenario_Name_CaseCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to case updated.
+        /// </summary>
+        internal static string Scenario_Name_CaseStatusUpdated {
+            get {
+                return ResourceManager.GetString("Scenario_Name_CaseStatusUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to decision made.
+        /// </summary>
+        internal static string Scenario_Name_DecisionMade {
+            get {
+                return ResourceManager.GetString("Scenario_Name_DecisionMade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to message received.
+        /// </summary>
+        internal static string Scenario_Name_MessageReceived {
+            get {
+                return ResourceManager.GetString("Scenario_Name_MessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to task assigned.
+        /// </summary>
+        internal static string Scenario_Name_TaskAssigned {
+            get {
+                return ResourceManager.GetString("Scenario_Name_TaskAssigned", resourceCulture);
             }
         }
         

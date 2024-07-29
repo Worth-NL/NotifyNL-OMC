@@ -18,8 +18,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         /// <inheritdoc cref="Case"/>
         protected Case? CachedCase { get; set; }
 
-        /// <inheritdoc cref="CaseStatusType"/>
-        protected CaseStatusType? CachedLastCaseStatusType { get; set; }
+        /// <inheritdoc cref="CaseType"/>
+        protected CaseType? CachedCaseType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
@@ -31,12 +31,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
 
         #region Parent
         /// <summary>
-        /// Passes the already queried result.
+        /// Passes an already queried result.
         /// </summary>
         /// <param name="caseStatusType">Type of the case status.</param>
-        internal void PassAlreadyQueriedResult(CaseStatusType caseStatusType)
+        internal void CacheCaseType(CaseType caseStatusType)
         {
-            this.CachedLastCaseStatusType = caseStatusType;
+            this.CachedCaseType = caseStatusType;
         }
         #endregion
 
@@ -57,7 +57,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         ///   <para>
         ///   <list type="bullet">
         ///     <item><see cref="CachedCase"/></item>
-        ///     <item><see cref="CachedLastCaseStatusType"/></item>
+        ///     <item><see cref="CachedCaseType"/></item>
         ///   </list>
         ///   </para>
         /// </summary>
@@ -66,7 +66,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
             base.DropCache();
 
             this.CachedCase = null;
-            this.CachedLastCaseStatusType = null;
+            this.CachedCaseType = null;
         }
         #endregion
     }
