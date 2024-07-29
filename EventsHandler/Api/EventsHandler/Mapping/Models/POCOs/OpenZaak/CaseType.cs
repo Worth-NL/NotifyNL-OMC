@@ -9,7 +9,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     /// A type of the <see cref="CaseStatus"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CaseStatusType : IJsonSerializable
+    public struct CaseType : IJsonSerializable
     {
         /// <summary>
         /// The name of the updated status.
@@ -29,7 +29,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// Determines whether the party (e.g., user or organization) wants to be notified about
-        /// this certain <see cref="CaseStatusType"/>.
+        /// this certain <see cref="CaseType"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informeren")]
@@ -37,9 +37,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public bool IsNotificationExpected { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CaseStatusType"/> struct.
+        /// Initializes a new instance of the <see cref="CaseType"/> struct.
         /// </summary>
-        public CaseStatusType()
+        public CaseType()
         {
         }
     }

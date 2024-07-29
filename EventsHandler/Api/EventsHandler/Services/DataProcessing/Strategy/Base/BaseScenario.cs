@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -48,6 +49,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
         async Task<NotifyData[]> INotifyScenario.GetAllNotifyDataAsync(NotificationEvent notification)
             => await this.GetAllNotifyDataAsync(notification);
+        #endregion
+
+        #region Parent        
+        /// <summary>
+        /// Validates whether the case identifier is whitelisted in <see cref="WebApiConfiguration"/> settings.
+        /// </summary>
+        /// <param name="isCaseIdWhitelistedValidation">The scenario-specific validation delegate to be invoked.</param>
+        /// <param name="caseId">The case identifier to be checked.</param>
+        /// <exception cref="AbortedNotifyingException"/>
+        protected void ValidateCaseId(Predicate<string> isCaseIdWhitelistedValidation, string caseId)
+        {
+            if (isCaseIdWhitelistedValidation.Invoke(caseId))
+            {
+                return;
+            }
+
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseId, caseId, GetScenarioName()));
+        }
         #endregion
 
         #region Virtual (GetAllNotifyDataAsync)
@@ -180,6 +199,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
         protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
+        #endregion
+
+        #region Abstract (GetScenarioName)        
+        /// <summary>
+        /// Gets the name of this specific scenario.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract string GetScenarioName();
         #endregion
     }
 }

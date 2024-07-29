@@ -401,8 +401,8 @@
   <data name="HttpRequest_ERROR_NoPartyData" xml:space="preserve">
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_CaseStatusType" xml:space="preserve">
-    <value>It was requested not to send the notification for this type of the case status. Processing aborted.</value>
+  <data name="Processing_ABORT_DoNotSendNotification_CaseId" xml:space="preserve">
+    <value>Notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
     <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
@@ -414,13 +414,13 @@
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
-    <value>It was requested not to send the notification if the task is already closed. Processing aborted.</value>
+    <value>Notification can not be send if the task is already closed. Processing aborted.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskNotPerson" xml:space="preserve">
-    <value>It was requested not to send the notification if the task is not assigned to a person (missing BSN number). Processing aborted.</value>
+    <value>Notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
-    <value>It was requested not to send the notification for this type of the task. Processing aborted.</value>
+    <value>Notification can not be send for this type of the task. Processing aborted.</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
     <value>Internal error: Provided URI is not a case type.</value>
@@ -433,5 +433,23 @@
   <data name="Operation_ERROR_Internal_NotDecisionUri" xml:space="preserve">
     <value>Internal error: Provided URI is not a decision.</value>
     <comment>HTTP Status Code = 422</comment>
+  </data>
+  <data name="Scenario_Name_CaseClosed" xml:space="preserve">
+    <value>case closed</value>
+  </data>
+  <data name="Scenario_Name_CaseCreated" xml:space="preserve">
+    <value>case created</value>
+  </data>
+  <data name="Scenario_Name_CaseStatusUpdated" xml:space="preserve">
+    <value>case updated</value>
+  </data>
+  <data name="Scenario_Name_DecisionMade" xml:space="preserve">
+    <value>decision made</value>
+  </data>
+  <data name="Scenario_Name_MessageReceived" xml:space="preserve">
+    <value>message received</value>
+  </data>
+  <data name="Scenario_Name_TaskAssigned" xml:space="preserve">
+    <value>task assigned</value>
   </data>
 </root>

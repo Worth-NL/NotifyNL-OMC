@@ -44,8 +44,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             serviceCollection.AddSingleton(webApiConfiguration);
             serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new CaseCaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new CaseCaseFinishedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new CaseClosedScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new TaskAssignedScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object));
             serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object));
@@ -125,8 +125,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.GetCaseStatusesAsync())
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
-                .Setup(mock => mock.GetLastCaseStatusTypeAsync(It.IsAny<CaseStatuses>()))
-                .ReturnsAsync(new CaseStatusType { IsFinalStatus = false });
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseType { IsFinalStatus = false });
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
@@ -138,7 +138,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
 
             // Assert
-            Assert.That(actualResult, Is.TypeOf<CaseCaseStatusUpdatedScenario>());
+            Assert.That(actualResult, Is.TypeOf<CaseStatusUpdatedScenario>());
         }
 
         [Test]
@@ -157,8 +157,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.GetCaseStatusesAsync())
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
-                .Setup(mock => mock.GetLastCaseStatusTypeAsync(It.IsAny<CaseStatuses>()))
-                .ReturnsAsync(new CaseStatusType { IsFinalStatus = true });
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseType { IsFinalStatus = true });
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
@@ -170,7 +170,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
 
             // Assert
-            Assert.That(actualResult, Is.TypeOf<CaseCaseFinishedScenario>());
+            Assert.That(actualResult, Is.TypeOf<CaseClosedScenario>());
         }
 
         [Test]

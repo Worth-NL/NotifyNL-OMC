@@ -79,9 +79,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value);
+
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
+                this.CachedCase.Value.Identification);
+
             string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value);
+
 
             return new Dictionary<string, object>
             {
@@ -149,6 +155,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.CachedTaskData = null;
             this.CachedCase = null;
         }
+        #endregion
+
+        #region Polymorphic (GetScenarioName)
+        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        protected override string GetScenarioName() => Resources.Scenario_Name_TaskAssigned;
         #endregion
     }
 }

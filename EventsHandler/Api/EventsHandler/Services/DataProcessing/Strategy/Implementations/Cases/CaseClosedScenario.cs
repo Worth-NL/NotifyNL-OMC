@@ -3,6 +3,7 @@
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
@@ -13,19 +14,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 {
     /// <summary>
     /// <inheritdoc cref="INotifyScenario"/>
-    /// The strategy for "Case status updated" scenario.
+    /// The strategy for "Case finished" scenario.
     /// </summary>
     /// <seealso cref="BaseScenario"/>
     /// <seealso cref="BaseCaseScenario"/>
-    internal sealed class CaseCaseStatusUpdatedScenario : BaseCaseScenario
+    internal sealed class CaseClosedScenario : BaseCaseScenario
     {
         /// <inheritdoc cref="CaseStatuses"/>
         private CaseStatuses? CachedCaseStatuses { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CaseCaseStatusUpdatedScenario"/> class.
+        /// Initializes a new instance of the <see cref="CaseClosedScenario"/> class.
         /// </summary>
-        public CaseCaseStatusUpdatedScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
+        public CaseClosedScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
             : base(configuration, dataQuery)
         {
         }
@@ -33,14 +34,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override string GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
+            => this.Configuration.User.TemplateIds.Email.ZaakClose();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
             this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
+
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.ZaakClose_IDs().IsAllowed,
+                this.CachedCase.Value.Identification);
+
             this.CachedCaseStatuses ??= await this.QueryContext!.GetCaseStatusesAsync();
-            this.CachedLastCaseStatusType ??= await this.QueryContext!.GetLastCaseStatusTypeAsync(this.CachedCaseStatuses);
+            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(this.CachedCaseStatuses);
 
             return new Dictionary<string, object>
             {
@@ -49,15 +55,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname },
-                { "status.omschrijving", this.CachedLastCaseStatusType.Value.Description }
+                { "status.omschrijving", this.CachedCaseType.Value.Description }
             };
         }
         #endregion
 
         #region Polymorphic (SMS logic)
-        /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsTemplateId"/>
         protected override string GetSmsTemplateId()
-          => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
+            => this.Configuration.User.TemplateIds.Sms.ZaakClose();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
@@ -79,6 +85,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
             this.CachedCaseStatuses = null;
         }
+        #endregion
+
+        #region Polymorphic (GetScenarioName)
+        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        protected override string GetScenarioName() => Resources.Scenario_Name_CaseClosed;
         #endregion
     }
 }
