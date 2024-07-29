@@ -66,7 +66,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 return;
             }
 
-            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseId, caseId, scenarioName));
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted, caseId, scenarioName));
         }
         
         /// <summary>

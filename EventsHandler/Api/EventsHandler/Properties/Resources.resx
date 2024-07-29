@@ -401,7 +401,7 @@
   <data name="HttpRequest_ERROR_NoPartyData" xml:space="preserve">
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_CaseId" xml:space="preserve">
+  <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
     <value>The notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
