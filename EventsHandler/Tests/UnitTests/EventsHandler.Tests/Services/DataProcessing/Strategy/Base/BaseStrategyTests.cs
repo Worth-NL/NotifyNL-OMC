@@ -82,7 +82,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: true);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                testDistributionChannel, isCaseIdWhitelisted: true, isNotificationExpected: true);
+            
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -120,7 +122,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, DistributionChannels testDistributionChannel, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: false);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                testDistributionChannel, isCaseIdWhitelisted: false, isNotificationExpected: true);
+            
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -132,9 +136,42 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
 
                 const string expectedErrorMessage =
-                    "Notification can not be sent because case type with identification 4 is not included in the whitelist for ";
+                    "The notification can not be sent because case type with identification 4 is not included in the whitelist for ";
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
+                
+                VerifyMethodCalls(
+                    scenarioType, mockedQueryContext, mockedQueryService,
+                    fromInvokeCount, partyInvokeCount, caseInvokeCount);
+            });
+        }
+
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, 1, 1)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, 1, 1)]
+        // TODO: Enable these tests
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, 1, 1)]
+        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, 1, 1)]
+        public void GetAllNotifyDataAsync_WithInformSetToFalse_ThrowsAbortedNotifyingException(
+            Type scenarioType, DistributionChannels testDistributionChannel, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
+        {
+            // Arrange
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                testDistributionChannel, isCaseIdWhitelisted: true, isNotificationExpected: false);
+            
+            Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
+
+            INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.That(exception?.Message, Is.EqualTo((Resources.Processing_ABORT_DoNotSendNotification_Informeren)));
                 
                 VerifyMethodCalls(
                     scenarioType, mockedQueryContext, mockedQueryService,
@@ -150,7 +187,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.Both, isCaseIdWhitelisted: true);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                DistributionChannels.Both, isCaseIdWhitelisted: true, isNotificationExpected: true);
+            
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -189,7 +228,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(DistributionChannels.None, isCaseIdWhitelisted: true);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                DistributionChannels.None, isCaseIdWhitelisted: true, isNotificationExpected: true);
+            
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -220,7 +261,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
-            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(testDistributionChannel, isCaseIdWhitelisted: true);
+            Mock<IQueryContext> mockedQueryContext = MockQueryContextMethods(
+                testDistributionChannel, isCaseIdWhitelisted: true, isNotificationExpected: true);
+            
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
@@ -260,10 +303,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         #endregion
 
         #region Helper methods
-        private static Mock<IQueryContext> MockQueryContextMethods(DistributionChannels testDistributionChannel, bool isCaseIdWhitelisted)
+        private static Mock<IQueryContext> MockQueryContextMethods(
+            DistributionChannels testDistributionChannel, bool isCaseIdWhitelisted, bool isNotificationExpected)
         {
-            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Loose);
-
             // GetCaseAsync()
             var testCase = new Case
             {
@@ -271,6 +313,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Identification = isCaseIdWhitelisted ? "1" : "4"
             };
 
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Loose);
             mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync())
                 .ReturnsAsync(testCase);
@@ -278,6 +321,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(testCase);
+
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses());
+
+            mockedQueryContext
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseType
+                {
+                    IsNotificationExpected = isNotificationExpected
+                });
 
             // GetPartyDataAsync(string)
             var testParty = new CommonPartyData
@@ -300,7 +354,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         private static Mock<IDataQueryService<NotificationEvent>> GetMockedQueryService(IMock<IQueryContext> mockedQueryContext)
         {
             var mockedQueryService = new Mock<IDataQueryService<NotificationEvent>>();
-
             mockedQueryService
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(mockedQueryContext.Object);
