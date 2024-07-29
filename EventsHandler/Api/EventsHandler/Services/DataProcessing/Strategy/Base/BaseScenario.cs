@@ -51,21 +51,35 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             => await this.GetAllNotifyDataAsync(notification);
         #endregion
 
-        #region Parent        
+        #region Parent
         /// <summary>
         /// Validates whether the case identifier is whitelisted in <see cref="WebApiConfiguration"/> settings.
         /// </summary>
         /// <param name="isCaseIdWhitelistedValidation">The scenario-specific validation delegate to be invoked.</param>
         /// <param name="caseId">The case identifier to be checked.</param>
+        /// <param name="scenarioName">The name of the scenario used for logging.</param>
         /// <exception cref="AbortedNotifyingException"/>
-        protected void ValidateCaseId(Predicate<string> isCaseIdWhitelistedValidation, string caseId)
+        protected static void ValidateCaseId(Predicate<string> isCaseIdWhitelistedValidation, string caseId, string scenarioName)
         {
             if (isCaseIdWhitelistedValidation.Invoke(caseId))
             {
                 return;
             }
 
-            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseId, caseId, GetScenarioName()));
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseId, caseId, scenarioName));
+        }
+        
+        /// <summary>
+        /// Validates whether the inform field is set to false.
+        /// </summary>
+        /// <param name="isNotificationExpected">The value of the inform field.</param>
+        /// <exception cref="AbortedNotifyingException"/>
+        protected static void ValidateNotifyPermit(bool isNotificationExpected)
+        {
+            if (!isNotificationExpected)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_Informeren);
+            }
         }
         #endregion
 
