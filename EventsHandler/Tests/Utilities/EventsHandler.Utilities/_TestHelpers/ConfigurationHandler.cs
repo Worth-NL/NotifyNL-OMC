@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.Enums;
@@ -65,8 +66,6 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testValue) },
                 { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testValue) },
 
-                { "OMC_API_BASEURL_NOTIFYNL",            GetTestValue(isValid, "https://www.test.nl/") },
-
                 { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testValue) },
                 { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testValue) },
@@ -114,6 +113,10 @@ namespace EventsHandler.Utilities._TestHelpers
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
                 .Returns((ushort)(isValid ? 60 : 0));
+
+            mockedEnvironmentLoader
+                .Setup(mock => mock.GetData<Uri>("OMC_API_BASEURL_NOTIFYNL"))
+                .Returns(isValid ? new Uri("https://www.test.nl/") : DefaultValues.Models.EmptyUri);
 
             mockedEnvironmentLoader
                 .Setup(mock => mock.GetData<ushort>("USER_AUTHORIZATION_JWT_EXPIRESINMIN"))
