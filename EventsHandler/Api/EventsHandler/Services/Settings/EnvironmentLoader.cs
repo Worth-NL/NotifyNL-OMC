@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Interfaces;
 
@@ -22,7 +21,7 @@ namespace EventsHandler.Services.Settings
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
+                throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_EnvironmentVariableGetNull, key));
             }
 
             if (Environment.OSVersion.Platform is PlatformID.Win32NT
@@ -31,7 +30,7 @@ namespace EventsHandler.Services.Settings
             {
                 // The value is null
                 object value = Environment.GetEnvironmentVariable(key)
-                    ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_EnvironmentVariableGetNull + key.Separated());
+                    ?? throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_EnvironmentVariableGetNull, key));
 
                 return (TData)Convert.ChangeType(value, typeof(TData));
             }

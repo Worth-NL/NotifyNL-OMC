@@ -235,7 +235,7 @@ namespace EventsHandler.Controllers
             {
                 // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
-                    this._configuration.OMC.API.BaseUrl.NotifyNL(),
+                    this._configuration.OMC.API.BaseUrl.NotifyNL().ToString(),
                     this._configuration.User.API.Key.NotifyNL());
 
                 // Determine template type

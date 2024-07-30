@@ -279,16 +279,16 @@
     <comment>Swagger UI</comment>
   </data>
   <data name="Configuration_ERROR_ContainsEndpoint" xml:space="preserve">
-    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found:</value>
+    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}.</value>
   </data>
   <data name="Configuration_ERROR_ContainsHttp" xml:space="preserve">
-    <value>In the settings representing domain unnecessary protocol (http or https) was found:</value>
+    <value>In the settings representing domain unnecessary protocol (http or https) was found: {0}.</value>
   </data>
   <data name="Configuration_ERROR_InvalidTemplateId" xml:space="preserve">
-    <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):</value>
+    <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}.</value>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
-    <value>The settings does not contain a given value, or the value is empty:</value>
+    <value>The settings does not contain a given value, or the value is empty: {0}.</value>
   </data>
   <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
     <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
@@ -454,5 +454,8 @@
   </data>
   <data name="Scenario_Name_TaskAssigned" xml:space="preserve">
     <value>task assigned</value>
+  </data>
+  <data name="Configuration_ERROR_InvalidUri" xml:space="preserve">
+    <value>In the settings the given URI is invalid (e.g., default): {0}.</value>
   </data>
 </root>
