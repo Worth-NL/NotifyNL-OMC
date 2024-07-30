@@ -499,8 +499,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-                    internal string NotifyNL()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                    internal Uri NotifyNL()
+                        => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
         }
@@ -803,7 +803,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     {
                         // Get values
                         this._finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
-                        string[] caseIds = GetCachedValues(loadersContext, nodeName, this._finalPath, disableValidation: true);
+                        string[] caseIds = GetCachedValues(loadersContext, this._finalPath, disableValidation: true);
 
                         // Construct the IDs object
                         this.Count = caseIds.Length;
@@ -858,7 +858,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
         #region Caching
         /// <summary>
-        /// Retrieves settings <see langword="string"/> value (with optional validation).
+        /// Retrieves cached <see langword="string"/> value (with optional validation).
         /// </summary>
         /// <remarks>
         /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation for the most common settings value type.
@@ -867,42 +867,42 @@ namespace EventsHandler.Services.Settings.Configuration
         {
             // NOTE: Shorthand to not use the most popular <string> type in most cases
             return s_cachedStrings.GetOrAdd(
-                nodeName,
+                currentPath + nodeName,  // More unique than just node name
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation));  // Validate not empty
         }
 
         /// <summary>
-        /// Retrieves cached settings value, ensuring it will be a domain (without http/s and API endpoint).
+        /// Retrieves cached domain value (without http/s and API endpoint).
         /// </summary>
         private static string GetCachedDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
-                nodeName,
+                currentPath + nodeName,  // More unique than just node name
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
-                    .WithoutHttp()
-                    .WithoutEndpoint());
+                    .ValidateNoHttp()
+                    .ValidateNoEndpoint());
         }
 
         /// <summary>
-        /// Retrieves cached settings value, ensuring it will be a valid Template Id.
+        /// Retrieves cached template ID value (in correct UUID format).
         /// </summary>
         private static string GetCachedTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
-                nodeName,
+                currentPath + nodeName,  // More unique than just node name
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
-                    .ValidTemplateId());
+                    .ValidateTemplateId());
         }
         
         /// <summary>
-        /// Retrieves multiple settings <see langword="string"/> values (with optional validation).
+        /// Retrieves cached multiple <see langword="string"/> values (with optional validation).
         /// </summary>
-        private static string[] GetCachedValues(ILoadingService loadersContext, string nodeName, string finalPath, bool disableValidation = false)
+        private static string[] GetCachedValues(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
         {
             return s_cachedArrays.GetOrAdd(
-                nodeName,
+                finalPath,  // More unique than just node name
                 _ =>
                 {
                     // Validation #1: Checking if the string value is not null or empty
@@ -914,15 +914,27 @@ namespace EventsHandler.Services.Settings.Configuration
                     // Validation #2: Checking if the comma-separated string was properly split into array
                     return disableValidation
                         ? values
-                        : values.NotEmpty(finalPath);  // Handles the case: "," => RemoveEmptyEntries => { }
+                        : values.ValidateNotEmpty(finalPath);  // Handles the case: "," => RemoveEmptyEntries => { }
                 });
+        }
+        
+        /// <summary>
+        /// Retrieves cached <see cref="Uri"/> value (not default and in correct format).
+        /// </summary>
+        private static Uri GetCachedUri(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return new Uri(s_cachedStrings.GetOrAdd(
+                currentPath + nodeName,  // More unique than just node name
+                // Validation happens once during initial loading, before caching the value
+                $"{GetValue<Uri>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty + URI format
+                    .ValidateUri()}"));
         }
 
         private static TData GetCachedValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
             where TData : notnull
         {
             string value = s_cachedStrings.GetOrAdd(
-                nodeName,
+                currentPath + nodeName,  // More unique than just node name
                 // Save as string (to not maintain type-specific or <string, object> dictionary requiring unboxing overhead, since most values are strings)
                 $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty
 
@@ -960,7 +972,7 @@ namespace EventsHandler.Services.Settings.Configuration
             // NOTE: Shorthand to validate whether value is null or empty in one place
             return disableValidation
                 ? loadersContext.GetData<TData>(finalPath)
-                : loadersContext.GetData<TData>(finalPath).NotEmpty(finalPath);
+                : loadersContext.GetData<TData>(finalPath).ValidateNotEmpty(finalPath);
         }
         #endregion
 

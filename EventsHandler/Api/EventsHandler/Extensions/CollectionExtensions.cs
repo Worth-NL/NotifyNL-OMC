@@ -9,6 +9,7 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static class CollectionExtensions
     {
+        #region HasAny
         /// <summary>
         /// Determines whether the given collection has any elements.
         /// </summary>
@@ -26,5 +27,26 @@ namespace EventsHandler.Extensions
         {
             return collection?.Count > 0;  // NOTE: Faster than Any()
         }
+        #endregion
+
+        #region IsEmpty
+        /// <summary>
+        /// Determines whether the given collection doesn't have any elements.
+        /// </summary>
+        /// <param name="collection">The collection to be checked.</param>
+        /// <returns>
+        ///   <see langword="true"/> if empty; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsEmpty<T>(this T[] collection)
+        {
+            return !collection.HasAny();
+        }
+        
+        /// <inheritdoc cref="IsEmpty{T}(T[])"/>
+        internal static bool IsEmpty(this ICollection? collection)
+        {
+            return !collection.HasAny();
+        }
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Interfaces;
 
@@ -32,12 +31,12 @@ namespace EventsHandler.Services.Settings
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + key.Separated());
+                throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key));
             }
 
             return this._configuration.GetValue<TData>(key)
                 // The value is null
-                ?? throw new KeyNotFoundException(Resources.Configuration_ERROR_ValueNotFoundOrEmpty + key.Separated());
+                ?? throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key));
         }
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>

@@ -88,7 +88,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found:.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
             get {
@@ -97,7 +97,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found:.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {
             get {
@@ -124,11 +124,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):.
+        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}..
         /// </summary>
         internal static string Configuration_ERROR_InvalidTemplateId {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_InvalidTemplateId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the settings the given URI is invalid (e.g., default): {0}..
+        /// </summary>
+        internal static string Configuration_ERROR_InvalidUri {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_InvalidUri", resourceCulture);
             }
         }
         
@@ -151,7 +160,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
+        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {

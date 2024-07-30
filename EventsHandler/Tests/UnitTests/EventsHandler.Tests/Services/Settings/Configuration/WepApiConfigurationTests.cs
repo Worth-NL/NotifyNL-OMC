@@ -108,7 +108,11 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             {
                 ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);
 
-                Assert.That(exception?.Message.StartsWith(test.ExpectedErrorMessage), Is.True,
+                string expectedFullMessage = test.ExpectedErrorMessage;
+                int leftCurlyBracketIndex = expectedFullMessage.IndexOf("{", StringComparison.Ordinal);
+                string expectedTrimmedMessage = expectedFullMessage[..leftCurlyBracketIndex];
+
+                Assert.That(exception?.Message.StartsWith(expectedTrimmedMessage), Is.True,
                     message: $"{test.CaseId}: {exception?.Message}");
             });
         }
@@ -137,6 +141,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             yield return ("#10", () => s_testConfiguration.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
             yield return ("#11", () => s_testConfiguration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: Default URI
+            yield return ("#12", () => s_testConfiguration.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
         }
 
         [TestCase("1", true)]
