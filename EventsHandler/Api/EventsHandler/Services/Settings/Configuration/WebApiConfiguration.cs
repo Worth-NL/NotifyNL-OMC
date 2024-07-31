@@ -862,24 +862,31 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </summary>
         /// <remarks>
         /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation for the most common settings value type.
+        /// <para>
+        /// Validation: optional
+        /// </para>
         /// </remarks>
         private static string GetCachedValue(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
         {
             // NOTE: Shorthand to not use the most popular <string> type in most cases
             return s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,  // More unique than just node name
-                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation));  // Validate not empty
+                currentPath + nodeName,
+                // Validation happens once during initial loading, before caching the value
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation));  // Validate not empty (if validation is enabled)
         }
 
         /// <summary>
         /// Retrieves cached domain value (without http/s and API endpoint).
         /// </summary>
+        /// <remarks>
+        /// Validation: enabled
+        /// </remarks>
         private static string GetCachedDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,  // More unique than just node name
+                currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .ValidateNoHttp()
                     .ValidateNoEndpoint());
         }
@@ -887,26 +894,33 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <summary>
         /// Retrieves cached template ID value (in correct UUID format).
         /// </summary>
+        /// <remarks>
+        /// Validation: enabled
+        /// </remarks>
         private static string GetCachedTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,  // More unique than just node name
+                currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .ValidateTemplateId());
         }
         
         /// <summary>
-        /// Retrieves cached multiple <see langword="string"/> values (with optional validation).
+        /// Retrieves cached multiple <see langword="string"/> values.
         /// </summary>
+        /// <remarks>
+        /// Validation: optional
+        /// </remarks>
         private static string[] GetCachedValues(ILoadingService loadersContext, string finalPath, bool disableValidation = false)
         {
             return s_cachedArrays.GetOrAdd(
-                finalPath,  // More unique than just node name
+                finalPath,
+                // Validation happens once during initial loading, before caching the value
                 _ =>
                 {
                     // Validation #1: Checking if the string value is not null or empty
-                    string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)
+                    string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
                         .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
                         .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
                         .ToArray();
@@ -919,24 +933,34 @@ namespace EventsHandler.Services.Settings.Configuration
         }
         
         /// <summary>
-        /// Retrieves cached <see cref="Uri"/> value (not default and in correct format).
+        /// Retrieves cached <see cref="Uri"/> value (in correct format).
         /// </summary>
+        /// <remarks>
+        /// Validation: enabled
+        /// </remarks>
         private static Uri GetCachedUri(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return new Uri(s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,  // More unique than just node name
+                currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                $"{GetValue<Uri>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty + URI format
+                $"{GetValue<Uri>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .ValidateUri()}"));
         }
-
+        
+        /// <summary>
+        /// Retrieves cached <typeparamref name="TData"/> value.
+        /// </summary>
+        /// <remarks>
+        /// Validation: optional
+        /// </remarks>
         private static TData GetCachedValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
             where TData : notnull
         {
             string value = s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,  // More unique than just node name
+                currentPath + nodeName,
+                // Validation happens once during initial loading, before caching the value
                 // Save as string (to not maintain type-specific or <string, object> dictionary requiring unboxing overhead, since most values are strings)
-                $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty
+                $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty (if validation is enabled)
 
             return value.ChangeType<TData>();
         }
@@ -952,7 +976,7 @@ namespace EventsHandler.Services.Settings.Configuration
             // NOTE: Shorthand to combine the settings path and node name in one place
             string finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
 
-            return GetValue<TData>(loadersContext, finalPath, disableValidation);  // Validate not empty
+            return GetValue<TData>(loadersContext, finalPath, disableValidation);  // Validate not empty (if validation is enabled)
         }
 
         /// <summary>
