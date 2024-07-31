@@ -1,13 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v1;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
@@ -21,7 +21,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
     {
         /// <inheritdoc cref="IQueryKlant.Configuration"/>
         WebApiConfiguration IQueryKlant.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.0.0";
 
@@ -32,14 +32,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         {
             ((IQueryKlant)this).Configuration = configuration;
         }
-        
+
         #region Polymorphic (Citizen details)
         /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
             // Predefined URL components
             string citizensEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klanten/api/v1/klanten";
-            
+
             // Request URL
             var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
 
@@ -63,7 +63,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         {
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/contactmomenten/api/v1/contactmomenten");
-            
+
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,

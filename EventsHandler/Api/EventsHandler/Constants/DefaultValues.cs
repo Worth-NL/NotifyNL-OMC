@@ -12,7 +12,7 @@ namespace EventsHandler.Constants
         {
             internal const string Route = "[controller]";
 
-            internal const string Version = "1.83";
+            internal const string Version = "1.84";
         }
         #endregion
 
@@ -75,7 +75,7 @@ namespace EventsHandler.Constants
         internal static class Validation
         {
             internal static string ErrorsOccurred => "One or more validation errors occurred.";
-            
+
             internal static string Deserialization_MissingProperty => "JSON deserialization";
 
             internal static string Deserialization_InvalidValue => "The JSON value";

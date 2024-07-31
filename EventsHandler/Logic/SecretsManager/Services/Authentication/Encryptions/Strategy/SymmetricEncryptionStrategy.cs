@@ -29,11 +29,11 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy
 
             // Retrieves HMAC key
             byte[] hmacKey = hmac.Key;
-            
+
             /* NOTE: "0-padding" of the HMAC key (if the secret was shorter than 64 bytes). Thanks to that
                      even the keys from short passwords (secrets) can be used with HMAC SHA 256 algorithm */
             Array.Resize(ref hmacKey, 64);  // Good, long key = "shortKey__________________"
-            
+
             return hmacKey;  // Valid 64 bytes key
         }
 

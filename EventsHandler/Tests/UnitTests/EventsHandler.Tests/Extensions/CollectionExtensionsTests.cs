@@ -7,12 +7,12 @@ namespace EventsHandler.UnitTests.Extensions
     [TestFixture]
     public sealed class CollectionExtensionsTests
     {
-        #region HasMany<T>(this T[])
+        #region HasAny<T>(this T[])
         [Test]
-        public void HasMany_ForValidArray_ReturnsTrue()
+        public void HasAny_ForValidArray_ReturnsTrue()
         {
             // Arrange
-            int[] testArray = new[] { 1, 2 };
+            int[] testArray = { 1, 2 };
 
             // Act
             bool actualResult = testArray.HasAny();
@@ -22,7 +22,7 @@ namespace EventsHandler.UnitTests.Extensions
         }
 
         [Test]
-        public void HasMany_ForEmptyArray_ReturnsFalse()
+        public void HasAny_ForEmptyArray_ReturnsFalse()
         {
             // Arrange
             int[] testArray = Array.Empty<int>();
@@ -35,9 +35,9 @@ namespace EventsHandler.UnitTests.Extensions
         }
         #endregion
 
-        #region HasMany<T>(this ICollection<T>)
+        #region HasAny<T>(this ICollection)
         [Test]
-        public void HasMany_ForValidCollection_ReturnsTrue()
+        public void HasAny_ForValidCollection_ReturnsTrue()
         {
             // Arrange
             List<int> testArray = new() { 1, 2, 3 };
@@ -50,7 +50,7 @@ namespace EventsHandler.UnitTests.Extensions
         }
 
         [Test]
-        public void HasMany_ForEmptyCollection_ReturnsFalse()
+        public void HasAny_ForEmptyCollection_ReturnsFalse()
         {
             // Arrange
             Dictionary<int, string> testArray = new();
@@ -60,6 +60,62 @@ namespace EventsHandler.UnitTests.Extensions
 
             // Assert
             Assert.That(actualResult, Is.False);
+        }
+        #endregion
+
+        #region IsEmpty<T>(this T[])
+        [Test]
+        public void IsEmpty_ForValidArray_ReturnsFalse()
+        {
+            // Arrange
+            int[] testArray = { 1, 2 };
+
+            // Act
+            bool actualResult = testArray.IsEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.False);
+        }
+
+        [Test]
+        public void IsEmpty_ForEmptyArray_ReturnsTrue()
+        {
+            // Arrange
+            int[] testArray = Array.Empty<int>();
+
+            // Act
+            bool actualResult = testArray.IsEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.True);
+        }
+        #endregion
+
+        #region IsEmpty<T>(this ICollection)
+        [Test]
+        public void IsEmpty_ForValidCollection_ReturnsFalse()
+        {
+            // Arrange
+            List<int> testArray = new() { 1, 2, 3 };
+
+            // Act
+            bool actualResult = testArray.IsEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.False);
+        }
+
+        [Test]
+        public void IsEmpty_ForEmptyCollection_ReturnsTrue()
+        {
+            // Arrange
+            Dictionary<int, string> testArray = new();
+
+            // Act
+            bool actualResult = testArray.IsEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.True);
         }
         #endregion
     }

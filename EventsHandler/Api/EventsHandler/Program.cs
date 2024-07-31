@@ -1,23 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Strategy.Implementations;
-using EventsHandler.Behaviors.Communication.Strategy.Implementations.Cases;
-using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Manager;
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Results.Builder;
-using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Strategy.Interfaces;
-using EventsHandler.Services.DataLoading.Strategy.Manager;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Manager;
+using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
@@ -28,22 +21,27 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
-using EventsHandler.Services.DataReceiving;
-using EventsHandler.Services.DataReceiving.Factories;
-using EventsHandler.Services.DataReceiving.Factories.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
 using EventsHandler.Services.DataSending;
+using EventsHandler.Services.DataSending.Clients.Factories;
+using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Results.Builder;
+using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
-using EventsHandler.Services.UserCommunication;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
+using EventsHandler.Services.Versioning;
+using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -57,7 +55,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
-using Responder = EventsHandler.Services.UserCommunication;
+using Responder = EventsHandler.Services.Responding;
 using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
@@ -103,10 +101,10 @@ namespace EventsHandler
             const string settingsFileName = "appsettings";
             builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
                                  .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
-            
+
             // API Controllers
             builder.Services.AddControllers();
-            
+
             // Navigate directly to the endpoints from API Controllers (instead of using explicit .Map() routing in config)
             builder.Services.AddEndpointsApiExplorer();
 
@@ -225,10 +223,10 @@ namespace EventsHandler
 
             // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
-                
+
             // Version of the application ("OMC Web API" in this case)
             options.Release = DefaultValues.ApiController.Version;
-            
+
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment) ??
@@ -255,7 +253,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
-            builder.Services.AddSingleton<ISendingService<NotificationEvent, NotifyData>, NotifySender>();
+            builder.Services.AddSingleton<INotifyService<NotificationEvent, NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -307,8 +305,8 @@ namespace EventsHandler
 
             // Strategies
             services.AddSingleton<CaseCreatedScenario>();
-            services.AddSingleton<CaseCaseStatusUpdatedScenario>();
-            services.AddSingleton<CaseCaseFinishedScenario>();
+            services.AddSingleton<CaseStatusUpdatedScenario>();
+            services.AddSingleton<CaseClosedScenario>();
             services.AddSingleton<TaskAssignedScenario>();
             services.AddSingleton<DecisionMadeScenario>();
             services.AddSingleton<NotImplementedScenario>();
@@ -320,7 +318,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
             byte omcWorkflowVersion = builder.Configuration.OmcWorkflowVersion();
-            
+
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
@@ -390,10 +388,10 @@ namespace EventsHandler
         private static void RegisterResponders(this WebApplicationBuilder builder)
         {
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
-            
+            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
+
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(builder));
+            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion(builder));
 
             return;
 
@@ -419,7 +417,7 @@ namespace EventsHandler
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
-            
+
             // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
@@ -431,7 +429,7 @@ namespace EventsHandler
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.MapControllers();  // Mapping actions from API controllers
 
             app.UseSentryTracing();  // Enable Sentry to capture transactions

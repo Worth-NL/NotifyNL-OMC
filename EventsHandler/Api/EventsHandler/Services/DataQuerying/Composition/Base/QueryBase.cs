@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Base
@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
 
         /// <inheritdoc cref="IQueryBase.Notification"/>
         NotificationEvent IQueryBase.Notification { get; set; }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBase"/> class.
         /// </summary>
@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         {
             (bool isSuccess, string jsonResult) = await this._networkService.GetAsync(httpClientType, uri);
 
-            return GetApiResult<TModel>(httpClientType,isSuccess, jsonResult, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, isSuccess, jsonResult, uri, fallbackErrorMessage);
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>

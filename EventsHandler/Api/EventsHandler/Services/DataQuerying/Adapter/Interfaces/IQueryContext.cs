@@ -1,16 +1,16 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {
@@ -54,12 +54,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetLastCaseStatusTypeAsync(IQueryBase, CaseStatuses)"/>
+        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="CaseStatus"/>es, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="CaseStatuses"/>, but it produces an additional
         ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<CaseStatusType> GetLastCaseStatusTypeAsync(CaseStatuses? statuses = null);
+        internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? statuses = null);
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
         internal Task<string> GetBsnNumberAsync();
@@ -87,7 +87,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, HttpContent)"/>
         internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(HttpContent body);
-        
+
         // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",
         //       because it's not sending any requests to "OpenZaak" Web API service anymore. Due to that,
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
