@@ -2,18 +2,18 @@
 
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Constants;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.UserCommunication.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Validation.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -97,7 +97,7 @@ namespace EventsHandler.Controllers
                     ? await Task.Run<IActionResult>(async () =>
                     {
                         (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
-                        
+
                         return LogApiResponse(result.Status.ConvertToLogLevel(),
                             this._responder.Get_Processing_Status_ActionResult(
                                 GetResult(result, json), notification.Details));

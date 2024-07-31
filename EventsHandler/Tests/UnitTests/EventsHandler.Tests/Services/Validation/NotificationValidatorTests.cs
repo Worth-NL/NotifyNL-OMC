@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
-using EventsHandler.Behaviors.Responding.Results.Enums;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Results.Builder.Interface;
+using EventsHandler.Services.Responding.Results.Enums;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
@@ -32,7 +32,7 @@ namespace EventsHandler.UnitTests.Services.Validation
             mockedBuilder.Setup(mock => mock.Get<ErrorDetails>(
                     It.IsAny<Reasons>(), It.IsAny<string>()))
                 .Returns(new ErrorDetails());
-            
+
             this._validator = new NotificationValidator(mockedBuilder.Object);
         }
 

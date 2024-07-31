@@ -1,13 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v1;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
@@ -21,7 +21,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
     {
         /// <inheritdoc cref="IQueryZaak.Configuration"/>
         WebApiConfiguration IQueryZaak.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.12.1";
 

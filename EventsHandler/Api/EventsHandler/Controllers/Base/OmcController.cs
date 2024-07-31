@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
 using Asp.Versioning;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base
@@ -89,7 +89,7 @@ namespace EventsHandler.Controllers.Base
                 // Description with message
                 BaseEnhancedStandardResponseBody enhancedResponse => enhancedResponse.ToString(),
                 BaseSimpleStandardResponseBody simpleResponse => simpleResponse.ToString(),
-                
+
                 // Only description
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 

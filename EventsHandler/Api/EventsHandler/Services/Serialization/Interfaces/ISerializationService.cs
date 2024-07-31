@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json;
 
 namespace EventsHandler.Services.Serialization.Interfaces

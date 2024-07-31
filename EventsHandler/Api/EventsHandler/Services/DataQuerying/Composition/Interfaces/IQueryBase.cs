@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
-using EventsHandler.Services.DataReceiving.Enums;
+using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataSending.Clients.Enums;
 using System.Text.Json;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
@@ -17,7 +17,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// The notification from "OpenNotificaties" Web API service.
         /// </summary>
         internal NotificationEvent Notification { get; set; }
-        
+
         /// <summary>
         /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and deserializes received JSON result.
         /// </summary>

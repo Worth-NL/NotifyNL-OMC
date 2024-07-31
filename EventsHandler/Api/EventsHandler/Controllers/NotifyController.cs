@@ -2,10 +2,10 @@
 
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotifyNL;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Services.UserCommunication;
+using EventsHandler.Mapping.Models.POCOs.NotifyNL;
+using EventsHandler.Services.Responding;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -20,7 +20,7 @@ namespace EventsHandler.Controllers
     public sealed class NotifyController : OmcController
     {
         private readonly NotifyResponder _responder;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyController"/> class.
         /// </summary>
