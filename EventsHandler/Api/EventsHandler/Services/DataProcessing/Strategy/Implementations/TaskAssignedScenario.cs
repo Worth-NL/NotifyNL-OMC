@@ -83,7 +83,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetScenarioName());
+                this.CachedCase.Value.Identification, GetWhitelistName());
 
             ValidateNotifyPermit((
                 await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
@@ -161,9 +161,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetScenarioName)
-        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
-        protected override string GetScenarioName() => Resources.Scenario_Name_TaskAssigned;
+        #region Polymorphic (GetWhitelistName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
         #endregion
     }
 }
