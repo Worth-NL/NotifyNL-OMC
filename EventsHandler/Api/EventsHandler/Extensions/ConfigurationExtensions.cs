@@ -42,7 +42,7 @@ namespace EventsHandler.Extensions
         {
             return value switch
             {
-                string stringValue => string.IsNullOrEmpty(stringValue)
+                string stringValue => string.IsNullOrWhiteSpace(stringValue)
                     ? throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
                     : value,
 

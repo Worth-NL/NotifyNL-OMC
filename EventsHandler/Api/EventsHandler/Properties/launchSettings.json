@@ -39,7 +39,7 @@
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
         "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
         "USER_AUTHORIZATION_JWT_ISSUER": "goc",
-        "USER_AUTHORIZATION_JWT_AUDIENCE": " ",
+        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
         "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
         "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
         "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
@@ -97,7 +97,7 @@
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
         "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
         "USER_AUTHORIZATION_JWT_ISSUER": "goc",
-        "USER_AUTHORIZATION_JWT_AUDIENCE": " ",
+        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
         "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
         "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
         "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",

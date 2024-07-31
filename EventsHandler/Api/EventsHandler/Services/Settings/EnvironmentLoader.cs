@@ -1,54 +1,61 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.DAO;
+using EventsHandler.Services.Settings.DAO.Interfaces;
 using EventsHandler.Services.Settings.Interfaces;
 
 namespace EventsHandler.Services.Settings
 {
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>
     /// <remarks>
     ///   This data provider is using system's Environment Variables.
     /// </remarks>
     internal class EnvironmentLoader : ILoadingService
     {
+        /// <inheritdoc cref="IEnvironment"/>
+        internal IEnvironment Environment { get; init; } = new EnvironmentReader();
+
         #region Polymorphism
-        /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
+        /// <inheritdoc cref="ILoadingService.GetData{T}(string, bool)"/>
         /// <exception cref="NotImplementedException">The operating system (OS) is not supported.</exception>
-        public virtual TData GetData<TData>(string key)
-            where TData : notnull
+        TData ILoadingService.GetData<TData>(string key, bool disableValidation)
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_EnvironmentVariableGetNull, key));
+                throw new KeyNotFoundException(Resources.Configuration_ERROR_InvalidKey);
             }
 
-            if (Environment.OSVersion.Platform is PlatformID.Win32NT
-                                               or PlatformID.MacOSX
-                                               or PlatformID.Unix)
-            {
-                // The value is null
-                object value = Environment.GetEnvironmentVariable(key)
-                    ?? throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_EnvironmentVariableGetNull, key));
+            string? value = this.Environment.GetEnvironmentVariable(key);
+            value = disableValidation
+                ? value ?? string.Empty
+                : value.ValidateNotEmpty(key);
 
-                return (TData)Convert.ChangeType(value, typeof(TData));
-            }
-
-            throw new NotImplementedException(Resources.Configuration_ERROR_EnvironmentNotSupported);
+            return value.ChangeType<TData>();
         }
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
-        public virtual string GetPathWithNode(string currentPath, string nodeName)
+        string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
         {
-            return $"{currentPath.ToUpper()}{(string.IsNullOrWhiteSpace(nodeName)
-                ? string.Empty
-                : GetNodePath(nodeName))}";
+            if (string.IsNullOrWhiteSpace(currentPath))
+            {
+                return string.Empty;
+            }
+
+            return $"{currentPath.ToUpper()}" +
+                   $"{((ILoadingService)this).GetNodePath(nodeName)}";
         }
 
         /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
-        public virtual string GetNodePath(string nodeName)
+        string ILoadingService.GetNodePath(string nodeName)
         {
+            if (string.IsNullOrWhiteSpace(nodeName))
+            {
+                return string.Empty;
+            }
+
             const string separator = "_";
 
             return $"{separator}{nodeName.ToUpper()}";

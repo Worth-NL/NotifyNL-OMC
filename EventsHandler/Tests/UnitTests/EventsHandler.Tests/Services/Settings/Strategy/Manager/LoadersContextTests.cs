@@ -8,7 +8,7 @@ using EventsHandler.Services.Settings.Strategy.Manager;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsHandler.UnitTests.Services.Settings
+namespace EventsHandler.UnitTests.Services.Settings.Strategy.Manager
 {
     [TestFixture]
     public class LoadersContextTests
@@ -18,7 +18,7 @@ namespace EventsHandler.UnitTests.Services.Settings
         [OneTimeSetUp]
         public void SetupTests()
         {
-            // Service Provider // TODO: Introduce mocks
+            // Service Provider
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(new AppSettingsLoader(ConfigurationHandler.GetConfiguration()));
             serviceCollection.AddSingleton(new EnvironmentLoader());
@@ -44,9 +44,6 @@ namespace EventsHandler.UnitTests.Services.Settings
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_Loader_NotImplemented));
             });
         }
-        #endregion
-
-        #region GetData
         #endregion
 
         #region GetPathWithNode
