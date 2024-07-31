@@ -2,9 +2,9 @@
 
 using EventsHandler.Controllers.Base;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataSending.Clients.Decorator;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Proxy;
 using EventsHandler.Services.Settings.Configuration;
 using Notify.Client;
 
@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
         {
             OmcController.LogMessage(LogLevel.Trace, $"{Resources.Events_NotifyClientInitialized} {organizationId}.");
 
-            return new NotifyClientDecorator(
+            return new NotifyClientProxy(
                 new NotificationClient(
                     baseUrl: this._configuration.OMC.API.BaseUrl.NotifyNL().ToString(),  // The base URL to "Notify NL" API Service
                     apiKey:  this._configuration.User.API.Key.NotifyNL()));              // 3rd party-specific "Notify NL" API Key

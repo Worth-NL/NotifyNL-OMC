@@ -4,17 +4,17 @@ using EventsHandler.Services.DataSending.Clients.Interfaces;
 using Notify.Client;
 using Notify.Exceptions;
 
-namespace EventsHandler.Services.DataSending.Clients.Decorator
+namespace EventsHandler.Services.DataSending.Clients.Proxy
 {
     /// <inheritdoc cref="INotifyClient"/>
-    internal sealed class NotifyClientDecorator : INotifyClient
+    internal sealed class NotifyClientProxy : INotifyClient
     {
         private readonly NotificationClient _notificationClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyClientDecorator"/> class.
+        /// Initializes a new instance of the <see cref="NotifyClientProxy"/> class.
         /// </summary>
-        public NotifyClientDecorator(NotificationClient notificationClient)
+        public NotifyClientProxy(NotificationClient notificationClient)
         {
             this._notificationClient = notificationClient;
         }

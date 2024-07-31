@@ -152,15 +152,15 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Network));
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal ushort ConnectionLifetimeInSeconds()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal ushort HttpRequestTimeoutInSeconds()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal ushort HttpRequestsSimultaneousNumber()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
             }
@@ -182,7 +182,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Encryption));
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal bool IsAsymmetric()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
             }
@@ -204,7 +204,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal byte OmcWorkflowVersion()
                     => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
@@ -239,23 +239,23 @@ namespace EventsHandler.Services.Settings.Configuration
                     this.Messages = new MessagesComponent(loadersContext, this._currentPath);
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string SubjectType()
                     => GetCachedValue(this._loadersContext, this._currentPath, "BetrokkeneType");
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string InitiatorRole()
                     => GetCachedValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string PartyIdentifier()
                     => GetCachedValue(this._loadersContext, this._currentPath, "PartijIdentificator");
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string EmailGenericDescription()
                     => GetCachedValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string PhoneGenericDescription()
                     => GetCachedValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
 
@@ -276,15 +276,15 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string CodeObjectType()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string CodeRegister()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string CodeObjectTypeId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
                 }
@@ -306,7 +306,7 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal Guid TaskTypeGuid()
                         => GetCachedValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
                 }
@@ -329,37 +329,37 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     #region SMS
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string SMS_Success_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string SMS_Success_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string SMS_Failure_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string SMS_Failure_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
                     #endregion
 
                     #region E-mail
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Email_Success_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Email_Success_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Email_Failure_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Email_Failure_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
                     #endregion
@@ -418,27 +418,27 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Secret()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Issuer()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Audience()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience), disableValidation: true);
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal ushort ExpiresInMin()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string UserId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
@@ -498,7 +498,7 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(BaseUrl));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal Uri NotifyNL()
                         => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
@@ -570,19 +570,19 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string OpenKlant_2()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string Objecten()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string NotifyNL()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
@@ -605,23 +605,23 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Domain));
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string OpenNotificaties()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string OpenZaak()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string OpenKlant()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string Objecten()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal string ObjectTypen()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
             }
@@ -665,23 +665,23 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakCreate()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakUpdate()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakClose()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string TaskAssigned()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string DecisionMade()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
@@ -703,23 +703,23 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakCreate()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakUpdate()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string ZaakClose()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string TaskAssigned()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     internal string DecisionMade()
                         => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
@@ -746,27 +746,27 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Whitelist));
                 }
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs ZaakUpdate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs ZaakClose_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs TaskAssigned_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
@@ -906,7 +906,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 _ =>
                 {
                     // Validation #1: Checking if the string value is not null or empty
-                    string[] values = GetValue<string>(loadersContext, finalPath, disableValidation)  // Handles the cases: "" or null
+                    string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)
                         .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
                         .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
                         .ToArray();
@@ -938,14 +938,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 // Save as string (to not maintain type-specific or <string, object> dictionary requiring unboxing overhead, since most values are strings)
                 $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty
 
-            // Retrieve as TData => Guid
-            if (typeof(TData) == typeof(Guid))
-            {
-                return (TData)Convert.ChangeType(new Guid(value), typeof(TData));
-            }
-
-            // Retrieve as TData => int, ushort, bool
-            return (TData)Convert.ChangeType(value, typeof(TData));
+            return value.ChangeType<TData>();
         }
         #endregion
 
@@ -969,10 +962,7 @@ namespace EventsHandler.Services.Settings.Configuration
         private static TData GetValue<TData>(ILoadingService loadersContext, string finalPath, bool disableValidation)
             where TData : notnull
         {
-            // NOTE: Shorthand to validate whether value is null or empty in one place
-            return disableValidation
-                ? loadersContext.GetData<TData>(finalPath)
-                : loadersContext.GetData<TData>(finalPath).ValidateNotEmpty(finalPath);
+            return loadersContext.GetData<TData>(finalPath, disableValidation);
         }
         #endregion
 
