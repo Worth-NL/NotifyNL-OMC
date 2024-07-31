@@ -76,9 +76,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return await Task.FromResult(NotImplemented<Dictionary<string, object>>());
         }
 
-        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
         [ExcludeFromCodeCoverage]
-        protected override string GetScenarioName()
+        protected override string GetWhitelistName()
         {
             return NotImplemented<string>();
         }

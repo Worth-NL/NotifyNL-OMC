@@ -754,7 +754,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted {
             get {
@@ -894,60 +894,6 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to case closed.
-        /// </summary>
-        internal static string Scenario_Name_CaseClosed {
-            get {
-                return ResourceManager.GetString("Scenario_Name_CaseClosed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to case created.
-        /// </summary>
-        internal static string Scenario_Name_CaseCreated {
-            get {
-                return ResourceManager.GetString("Scenario_Name_CaseCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to case updated.
-        /// </summary>
-        internal static string Scenario_Name_CaseStatusUpdated {
-            get {
-                return ResourceManager.GetString("Scenario_Name_CaseStatusUpdated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to decision made.
-        /// </summary>
-        internal static string Scenario_Name_DecisionMade {
-            get {
-                return ResourceManager.GetString("Scenario_Name_DecisionMade", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to message received.
-        /// </summary>
-        internal static string Scenario_Name_MessageReceived {
-            get {
-                return ResourceManager.GetString("Scenario_Name_MessageReceived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to task assigned.
-        /// </summary>
-        internal static string Scenario_Name_TaskAssigned {
-            get {
-                return ResourceManager.GetString("Scenario_Name_TaskAssigned", resourceCulture);
             }
         }
         

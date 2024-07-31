@@ -136,7 +136,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
 
                 const string expectedErrorMessage =
-                    "The notification can not be sent because case type with identification 4 is not included in the whitelist for ";
+                    "The notification can not be sent because case type with identification 4 is not included in the ";
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 

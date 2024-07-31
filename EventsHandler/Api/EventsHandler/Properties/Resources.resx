@@ -399,7 +399,7 @@
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
-    <value>The notification can not be sent because case type with identification {0} is not included in the whitelist for {1} notifications. Processing aborted.</value>
+    <value>The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
     <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
@@ -433,24 +433,6 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">
     <value>The notification can not be sent because the inform field is set to false.</value>
-  </data>
-  <data name="Scenario_Name_CaseClosed" xml:space="preserve">
-    <value>case closed</value>
-  </data>
-  <data name="Scenario_Name_CaseCreated" xml:space="preserve">
-    <value>case created</value>
-  </data>
-  <data name="Scenario_Name_CaseStatusUpdated" xml:space="preserve">
-    <value>case updated</value>
-  </data>
-  <data name="Scenario_Name_DecisionMade" xml:space="preserve">
-    <value>decision made</value>
-  </data>
-  <data name="Scenario_Name_MessageReceived" xml:space="preserve">
-    <value>message received</value>
-  </data>
-  <data name="Scenario_Name_TaskAssigned" xml:space="preserve">
-    <value>task assigned</value>
   </data>
   <data name="Configuration_ERROR_InvalidUri" xml:space="preserve">
     <value>In the settings the given URI is invalid (e.g., default): {0}.</value>

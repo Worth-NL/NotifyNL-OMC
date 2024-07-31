@@ -215,12 +215,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
         #endregion
 
-        #region Abstract (GetScenarioName)        
+        #region Abstract (GetWhitelistName)        
         /// <summary>
         /// Gets the name of this specific scenario.
         /// </summary>
         /// <returns></returns>
-        protected abstract string GetScenarioName();
+        protected abstract string GetWhitelistName();
         #endregion
     }
 }

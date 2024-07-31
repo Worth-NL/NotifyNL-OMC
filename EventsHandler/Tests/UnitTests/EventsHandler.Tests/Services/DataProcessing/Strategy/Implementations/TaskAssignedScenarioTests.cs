@@ -213,7 +213,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
                     .Replace("{0}", "4")
-                    .Replace("{1}", "task assigned");
+                    .Replace("{1}", "USER_WHITELIST_TASKASSIGNED_IDS");
 
                 Assert.That(exception?.Message, Is.EqualTo(expectedErrorMessage));
 

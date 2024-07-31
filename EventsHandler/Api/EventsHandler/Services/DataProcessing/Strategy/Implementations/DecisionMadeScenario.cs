@@ -3,7 +3,6 @@
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
@@ -60,7 +59,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetScenarioName());
+                this.CachedCase.Value.Identification, GetWhitelistName());
 
             ValidateNotifyPermit((
                 await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
@@ -104,9 +103,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetScenarioName)
-        /// <inheritdoc cref="BaseScenario.GetScenarioName()"/>
-        protected override string GetScenarioName() => Resources.Scenario_Name_DecisionMade;
+        #region Polymorphic (GetWhitelistName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
         #endregion
     }
 }
