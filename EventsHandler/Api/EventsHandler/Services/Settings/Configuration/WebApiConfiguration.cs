@@ -840,6 +840,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     {
                         return $"{finalPath}:{caseId}";
                     }
+
+                    public override string ToString() => this._finalPath;
                 }
 
                 /// <inheritdoc cref="IDisposable.Dispose()"/>
