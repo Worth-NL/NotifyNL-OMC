@@ -2,16 +2,16 @@
 
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Configuration;
 using EventsHandler.Controllers.Base;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Telemetry.Interfaces;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Notify.Client;
@@ -81,7 +81,7 @@ namespace EventsHandler.Controllers
                     // HttpStatus Code: 202 Accepted
                     ? LogApiResponse(LogLevel.Information,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
-                    
+
                     // HttpStatus Code: 400 Bad Request
                     : LogApiResponse(LogLevel.Error,
                         this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
@@ -235,7 +235,7 @@ namespace EventsHandler.Controllers
             {
                 // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
-                    this._configuration.OMC.API.BaseUrl.NotifyNL(),
+                    this._configuration.OMC.API.BaseUrl.NotifyNL().ToString(),
                     this._configuration.User.API.Key.NotifyNL());
 
                 // Determine template type
@@ -284,7 +284,7 @@ namespace EventsHandler.Controllers
                                 this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
                     }
                 }
-                
+
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
                     this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(templateType)));

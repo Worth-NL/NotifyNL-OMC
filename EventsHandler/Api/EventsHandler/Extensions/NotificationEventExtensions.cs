@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Extensions
@@ -31,7 +31,7 @@ namespace EventsHandler.Extensions
                 Channels.Cases     => notification.Attributes.SourceOrganization,
                 Channels.Decisions => notification.Attributes.ResponsibleOrganization,
                 Channels.Objects   => "missing",  // TODO: Object notification / tasks workflow doesn't have organization id
-                
+
                 _ => null
             };
 

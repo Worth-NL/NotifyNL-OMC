@@ -1,6 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Properties;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
 
@@ -27,7 +29,7 @@ namespace EventsHandler.UnitTests.Extensions
             // Assert
             Assert.That(actualValue, Is.False);
         }
-        
+
         [Test]
         public void Features_ReturnsExpectedValue()
         {
@@ -39,77 +41,92 @@ namespace EventsHandler.UnitTests.Extensions
         }
         #endregion
 
-        #region NotEmpty<T>
+        #region ValidateNotEmpty<T>
+        [TestCase("")]
+        public void ValidateNotEmpty_ForInvalidValue_ThrowsArgumentException(string testValue)
+        {
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => testValue.ValidateNotEmpty(testValue));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
+                                                  .Replace("{0}", testValue)));
+            });
+        }
+
         [Test]
-        public void GetConfigValue_Generic_ForExistingPathOrValue_ReturnsExpectedValue()
+        public void ValidateNotEmpty_ForValidValue_ReturnsExpectedValue()
         {
             // Arrange
             const string testValue = "Valid";
 
             // Act
-            string actualValue = testValue.NotEmpty(testValue);
+            string actualValue = testValue.ValidateNotEmpty(testValue);
 
             // Assert
             Assert.That(actualValue, Is.EqualTo(testValue));
         }
-
-        [TestCase("")]
-        public void GetConfigValue_Generic_ForNotExistingPathOrValue_ThrowsArgumentException(string testValue)
-        {
-            // Act & Assert
-            Assert.Throws<ArgumentException>(() => testValue.NotEmpty(testValue));
-        }
         #endregion
 
-        #region WithoutHttp
+        #region ValidateNoHttp
         [TestCase("http://google.com/")]
         [TestCase("https://google.com/")]
-        public void WithoutHttp_ForInvalidValue_ThrowsArgumentException(string testUrl)
+        public void ValidateNoHttp_ForInvalidValue_ThrowsArgumentException(string testUrl)
         {
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => testUrl.WithoutHttp());
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => testUrl.ValidateNoHttp());
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ContainsHttp
+                                                  .Replace("{0}", testUrl)));
+            });
         }
 
         [Test]
-        public void WithoutHttp_ForValidValue_ReturnsOriginalValue()
+        public void ValidateNoHttp_ForValidValue_ReturnsOriginalValue()
         {
             // Arrange
             const string testUrl = "www.google.com";
 
             // Act
-            string actualResult = testUrl.WithoutHttp();
+            string actualResult = testUrl.ValidateNoHttp();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(testUrl));
         }
         #endregion
 
-        #region WithoutEndpoint
+        #region ValidateNoEndpoint
         [Test]
-        public void WithoutEndpoint_ForValidValue_ThrowsArgumentException()
+        public void ValidateNoEndpoint_ForInvalidValue_ThrowsArgumentException()
         {
             // Arrange
             const string testUrl = "testUrl/api/endpoint";
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => testUrl.WithoutEndpoint());
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => testUrl.ValidateNoEndpoint());
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ContainsEndpoint
+                                                  .Replace("{0}", testUrl)));
+            });
         }
 
         [Test]
-        public void WithoutEndpoint_ForInvalidValue_ReturnsOriginalValue()
+        public void ValidateNoEndpoint_ForValidValue_ReturnsOriginalValue()
         {
             // Arrange
             const string testUrl = "testUrl";
 
             // Act
-            string actualResult = testUrl.WithoutEndpoint();
+            string actualResult = testUrl.ValidateNoEndpoint();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(testUrl));
         }
         #endregion
 
-        #region WithoutEndpoint
+        #region ValidateTemplateId
         // ReSharper disable StringLiteralTypo
         [TestCase("")]
         [TestCase(" ")]
@@ -125,23 +142,55 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase("abcdefgh-1234-abcde-abcd-abcdefghijkl")]
         [TestCase("abcdefgh-1234-abcd-abcde-abcdefghijkl")]
         [TestCase("abcdefgh-1234-abcd-abcd-abcdefghijklm")]
-        public void ValidTemplateId_ForValidValue_ThrowsArgumentException(string testTemplateId)
+        public void ValidateTemplateId_ForInvalidValue_ThrowsArgumentException(string testTemplateId)
         {
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => testTemplateId.ValidTemplateId());
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => testTemplateId.ValidateTemplateId());
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_InvalidTemplateId
+                                                  .Replace("{0}", testTemplateId)));
+            });
         }
 
         [Test]
-        public void ValidTemplateId_ForInvalidValue_ReturnsOriginalValue()
+        public void ValidTemplateId_ForValidValue_ReturnsOriginalValue()
         {
             // Arrange
             const string testTemplateId = "abcdefgh-1234-abcd-abcd-abcdefghijkl";
 
             // Act
-            string actualResult = testTemplateId.ValidTemplateId();
+            string actualResult = testTemplateId.ValidateTemplateId();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(testTemplateId));
+        }
+        #endregion
+
+        #region ValidateUri
+        [Test]
+        public void ValidateUri_ForInvalidValue_ThrowsArgumentException()
+        {
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => DefaultValues.Models.EmptyUri.ValidateUri());
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_InvalidUri
+                                                  .Replace("{0}", DefaultValues.Models.EmptyUri.ToString())));
+            });
+        }
+
+        [Test]
+        public void ValidateUri_ForValidValue_ReturnsOriginalValue()
+        {
+            // Arrange
+            var testUri = new Uri("https://www.bing.com/");
+
+            // Act
+            Uri actualResult = testUri.ValidateUri();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(testUri));
         }
         #endregion
     }

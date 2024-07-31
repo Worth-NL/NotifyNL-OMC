@@ -1,17 +1,18 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Interfaces;
 using Notify.Exceptions;
-using ResourcesEnum = EventsHandler.Behaviors.Mapping.Enums.NotificatieApi.Resources;
+using ResourcesEnum = EventsHandler.Mapping.Enums.NotificatieApi.Resources;
 using ResourcesText = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing
@@ -20,14 +21,14 @@ namespace EventsHandler.Services.DataProcessing
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
         private readonly IScenariosResolver _resolver;
-        private readonly ISendingService<NotificationEvent, NotifyData> _sender;
+        private readonly INotifyService<NotificationEvent, NotifyData> _sender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
         public NotifyProcessor(
             IScenariosResolver resolver,
-            ISendingService<NotificationEvent, NotifyData> sender)
+            INotifyService<NotificationEvent, NotifyData> sender)
         {
             this._resolver = resolver;
             this._sender = sender;
@@ -117,12 +118,12 @@ namespace EventsHandler.Services.DataProcessing
             const string testUrl = "http://some.hoofdobject.nl/";
 
             return notification is
-                   {
-                       Channel: Channels.Unknown,
-                       Resource: ResourcesEnum.Unknown
-                   } &&
-                   string.Equals(notification.MainObject.AbsoluteUri, testUrl) &&
-                   string.Equals(notification.ResourceUrl.AbsoluteUri, testUrl);
+            {
+                Channel: Channels.Unknown,
+                Resource: ResourcesEnum.Unknown
+            } &&
+            string.Equals(notification.MainObject.AbsoluteUri, testUrl) &&
+            string.Equals(notification.ResourceUrl.AbsoluteUri, testUrl);
         }
     }
 }
