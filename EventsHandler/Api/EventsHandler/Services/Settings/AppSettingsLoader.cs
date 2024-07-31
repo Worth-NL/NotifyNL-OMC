@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Interfaces;
 
 namespace EventsHandler.Services.Settings
 {
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     /// <inheritdoc cref="ILoadingService"/>
     /// <remarks>
     ///   This data provider is using "appsettings.json" configuration file.
@@ -23,38 +23,49 @@ namespace EventsHandler.Services.Settings
         }
 
         #region Polymorphism
-        /// <inheritdoc cref="ILoadingService.GetData{T}(string)"/>
+        /// <inheritdoc cref="ILoadingService.GetData{T}(string, bool)"/>
         /// <exception cref="ArgumentException"/>
-        public virtual TData GetData<TData>(string key)
-            where TData : notnull
+        TData ILoadingService.GetData<TData>(string key, bool disableValidation)
         {
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key));
+                throw new KeyNotFoundException(Resources.Configuration_ERROR_InvalidKey);
             }
 
-            return this._configuration.GetValue<TData>(key)
-                // The value is null
-                ?? throw new KeyNotFoundException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key));
+            TData? value = this._configuration.GetValue<TData>(key);
+            value = disableValidation
+                ? value ?? default!
+                : value.ValidateNotEmpty(key);
+
+            return value;
         }
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
-        public virtual string GetPathWithNode(string currentPath, string nodeName)
+        string ILoadingService.GetPathWithNode(string currentPath, string nodeName)
         {
+            if (string.IsNullOrWhiteSpace(currentPath))
+            {
+                return string.Empty;
+            }
+
             if (currentPath == "AppSettings")  // Skip "AppSettings" as part of the configuration path
             {
                 return nodeName;
             }
 
-            return $"{currentPath}{(string.IsNullOrWhiteSpace(nodeName)
-                ? string.Empty
-                : GetNodePath(nodeName))}";
+            return $"{currentPath}" +
+                   $"{((ILoadingService)this).GetNodePath(nodeName)}";
         }
 
         /// <inheritdoc cref="ILoadingService.GetNodePath(string)"/>
-        public virtual string GetNodePath(string nodeName)
+        string ILoadingService.GetNodePath(string nodeName)
         {
+            if (string.IsNullOrWhiteSpace(nodeName))
+            {
+                return string.Empty;
+            }
+
             const string separator = ":";
 
             return $"{separator}{nodeName}";

@@ -40,9 +40,9 @@ namespace EventsHandler.Services.Settings.Strategy.Manager
         #endregion
 
         #region ILoadingService
-        /// <inheritdoc cref="ILoadingService.GetData{TData}(string)"/>
-        TData ILoadingService.GetData<TData>(string key)
-            => FromLoader().GetData<TData>(key);
+        /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+        TData ILoadingService.GetData<TData>(string key, bool disableValidation)
+            => FromLoader().GetData<TData>(key, disableValidation);
 
         /// <inheritdoc cref="ILoadingService.GetPathWithNode(string, string)"/>
         string ILoadingService.GetPathWithNode(string currentPath, string nodeName)

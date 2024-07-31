@@ -15,13 +15,14 @@ namespace EventsHandler.Services.Settings.Interfaces
         /// </summary>
         /// <typeparam name="TData">The generic type of data to be returned.</typeparam>
         /// <param name="key">The key to be used to check up a specific value.</param>
+        /// <param name="disableValidation">Turns ON/OFF the validation of retrieved configuration value.</param>
         /// <returns>
         ///   The generic data value associated with the key.
         /// </returns>
         /// <exception cref="KeyNotFoundException">
         ///   The provided key is missing or invalid.
         /// </exception>
-        TData GetData<TData>(string key)
+        internal TData GetData<TData>(string key, bool disableValidation)
             where TData : notnull;
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace EventsHandler.Services.Settings.Interfaces
         /// <returns>
         ///   The formatted node path.
         /// </returns>
-        string GetPathWithNode(string currentPath, string nodeName);
+        internal string GetPathWithNode(string currentPath, string nodeName);
 
         /// <summary>
         /// Precedes the (eventually formatted) node name with a respective separator.
@@ -41,6 +42,6 @@ namespace EventsHandler.Services.Settings.Interfaces
         /// <returns>
         ///   The formatted node path.
         /// </returns>
-        string GetNodePath(string nodeName);
+        internal string GetNodePath(string nodeName);
     }
 }

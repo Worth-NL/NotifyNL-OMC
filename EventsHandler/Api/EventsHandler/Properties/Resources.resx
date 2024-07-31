@@ -290,11 +290,8 @@
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
     <value>The settings does not contain a given value, or the value is empty: {0}.</value>
   </data>
-  <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
-    <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
-  </data>
-  <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
-    <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
+  <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
+    <value>Internal error: The key used to retrieve configuration value is null, empty, or whitespace.</value>
   </data>
   <data name="Configuration_ERROR_Loader_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine the given data provider. It might be not implemented yet.</value>

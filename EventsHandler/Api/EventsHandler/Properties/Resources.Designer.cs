@@ -106,20 +106,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The retrieving of Environment Variable failed. The operating system (OS) is not yet supported..
+        ///   Looks up a localized string similar to Internal error: The key used to retrieve configuration value is null, empty, or whitespace..
         /// </summary>
-        internal static string Configuration_ERROR_EnvironmentNotSupported {
+        internal static string Configuration_ERROR_InvalidKey {
             get {
-                return ResourceManager.GetString("Configuration_ERROR_EnvironmentNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The looked up Environment Variable could not be found or the key is missing / not existing..
-        /// </summary>
-        internal static string Configuration_ERROR_EnvironmentVariableGetNull {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_EnvironmentVariableGetNull", resourceCulture);
+                return ResourceManager.GetString("Configuration_ERROR_InvalidKey", resourceCulture);
             }
         }
         
