@@ -189,7 +189,11 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
             DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount)
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, s_taskOpenAssignedToPersonWithoutExpirationDate);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                testDistributionChannel,
+                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                isCaseIdWhitelisted: true,
+                isNotificationExpected: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -255,7 +259,11 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
-            INotifyScenario scenario = ArrangeTaskScenario(testDistributionChannel, testTask);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                testDistributionChannel,
+                testTask,
+                isCaseIdWhitelisted: true,
+                isNotificationExpected: true);
 
             // Act
             NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
@@ -272,7 +280,10 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
                       $"\"taak.record.data.title\":\"{TestTaskTitle}\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"zaak.identificatie\":\"\"" +
+                      $"\"zaak.identificatie\":\"1\"," +
+                      $"\"klant.voornaam\":\"Jackie\"," +
+                      $"\"klant.voorvoegselAchternaam\":null," +
+                      $"\"klant.achternaam\":\"Chan\"" +
                     $"}}";
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
@@ -283,24 +294,46 @@ namespace EventsHandler.UnitTests.Behaviors.Communication.Strategy.Implementatio
         #endregion
 
         #region Helper methods
-        private INotifyScenario ArrangeTaskScenario(DistributionChannels testDistributionChannel, TaskObject testTask)
+        private INotifyScenario ArrangeTaskScenario(
+            DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted, bool isNotificationExpected)
         {
+            // IQueryContext
             this._mockedQueryContext
                 .Setup(mock => mock.IsValidType())
                 .Returns(true);
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
                 .ReturnsAsync(testTask);
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
                 .ReturnsAsync(new CommonPartyData
                 {
+                    Name = "Jackie",
+                    Surname = "Chan",
                     DistributionChannel = testDistributionChannel
                 });
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Data>()))
-                .ReturnsAsync(new Case());
+                .ReturnsAsync(new Case
+                {
+                    Identification = isCaseIdWhitelisted ? "1" : "4"
+                });
 
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .ReturnsAsync(new CaseType
+                {
+                    IsNotificationExpected = isNotificationExpected
+                });
+
+            // IDataQueryService
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
