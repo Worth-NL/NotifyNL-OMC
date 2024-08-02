@@ -341,7 +341,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
                       $"\"taak.record.data.title\":\"{TestTaskTitle}\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"zaak.identificatie\":\"1\"" +
+                      $"\"zaak.identificatie\":\"1\"," +
+                      $"\"klant.voornaam\":\"Jackie\"," +
+                      $"\"klant.voorvoegselAchternaam\":null," +
+                      $"\"klant.achternaam\":\"Chan\"" +
                     $"}}";
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
@@ -368,6 +371,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
                 .ReturnsAsync(new CommonPartyData
                 {
+                    Name = "Jackie",
+                    Surname = "Chan",
                     DistributionChannel = testDistributionChannel
                 });
 
