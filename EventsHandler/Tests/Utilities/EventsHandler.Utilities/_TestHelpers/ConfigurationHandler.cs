@@ -1,8 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Configuration;
-using EventsHandler.Services.DataLoading;
-using EventsHandler.Services.DataLoading.Enums;
+using EventsHandler.Constants;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Settings.DAO.Interfaces;
+using EventsHandler.Services.Settings.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -37,51 +39,51 @@ namespace EventsHandler.Utilities._TestHelpers
                 ? new AppSettingsLoader(GetConfiguration())
                 : new AppSettingsLoader(new Mock<IConfiguration>().Object);
         }
-        
+
         /// <summary>
         /// Gets the mocked <see cref="EnvironmentLoader"/>.
         /// </summary>
         private static EnvironmentLoader GetEnvironmentLoader(bool isValid = true)
         {
-            var mockedEnvironmentLoader = new Mock<EnvironmentLoader>();
+            var mockedEnvironmentReader = new Mock<IEnvironment>();
 
-            const string testValue = "Test";
+            const string testString = "xyz";
+            const string testArray = "1, 2, 3";
+            const string testExpire = "60";
             const string testDomain = "test.domain";
             const string testTempId = "00000000-0000-0000-0000-000000000000";
-
-            static string GetTestValue(bool isValid, string validString, string? invalidString = null)
-            {
-                return isValid ? validString : invalidString ?? string.Empty;
-            }
+            const string testBool = "true";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
-            #region GetData<T>() mocking
-            Dictionary<string /* Key */, string /* Value */> keyValueMapping = new()
+            #region GetEnvironmentVariable<T>() mocking
+            Dictionary<string /* Key */, string? /* Value */> keyValueMapping = new()
             {
-                { "OMC_AUTHORIZATION_JWT_SECRET",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_ISSUER",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_AUDIENCE",    GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_USERID",      GetTestValue(isValid, testValue) },
-                { "OMC_AUTHORIZATION_JWT_USERNAME",    GetTestValue(isValid, testValue) },
+                { "OMC_AUTHORIZATION_JWT_SECRET",        GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_ISSUER",        GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_AUDIENCE",      GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",  GetTestValue(isValid, testExpire) },
+                { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testString) },
 
-                { "OMC_API_BASEURL_NOTIFYNL",          GetTestValue(isValid, "https://www.test.nl/") },
-                
-                { "USER_AUTHORIZATION_JWT_SECRET",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_ISSUER",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",   GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_USERID",     GetTestValue(isValid, testValue) },
-                { "USER_AUTHORIZATION_JWT_USERNAME",   GetTestValue(isValid, testValue) },
+                { "OMC_API_BASEURL_NOTIFYNL",            GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
 
-                { "USER_API_KEY_OPENKLANT_2",          GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_OBJECTEN",             GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_OBJECTTYPEN",          GetTestValue(isValid, testValue) },
-                { "USER_API_KEY_NOTIFYNL",             GetTestValue(isValid, testValue) },
+                { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN", GetTestValue(isValid, testExpire) },
+                { "USER_AUTHORIZATION_JWT_USERID",       GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_USERNAME",     GetTestValue(isValid, testString) },
 
-                { "USER_DOMAIN_OPENNOTIFICATIES",      GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENZAAK",              GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENKLANT",             GetTestValue(isValid, testDomain, "http://domain") },
-                { "USER_DOMAIN_OBJECTEN",              GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",           GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
+                { "USER_API_KEY_OPENKLANT_2",            GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OBJECTEN",               GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OBJECTTYPEN",            GetTestValue(isValid, testString) },
+                { "USER_API_KEY_NOTIFYNL",               GetTestValue(isValid, testString) },
+
+                { "USER_DOMAIN_OPENNOTIFICATIES",        GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENZAAK",                GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENKLANT",               GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_OBJECTEN",                GetTestValue(isValid, testDomain, "https://domain") },
+                { "USER_DOMAIN_OBJECTTYPEN",             GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
@@ -93,92 +95,33 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
                 { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") }
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") },
+
+                { "USER_WHITELIST_ZAAKCREATE_IDS",       GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_ZAAKUPDATE_IDS",       GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_ZAAKCLOSE_IDS",        GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_TASKASSIGNED_IDS",     GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, testBool)  }
             };
 
-            foreach (KeyValuePair<string, string> keyValue in keyValueMapping)
+            static string? GetTestValue(bool isValid, string validString, string? invalidString = null)
             {
-                mockedEnvironmentLoader
-                    .Setup(mock => mock.GetData<string>(keyValue.Key))
+                return isValid ? validString : invalidString;  // Simulates behavior of real Environment.GetEnvironmentVariable(string)
+            }
+
+            foreach (KeyValuePair<string, string?> keyValue in keyValueMapping)
+            {
+                mockedEnvironmentReader
+                    .Setup(mock => mock.GetEnvironmentVariable(keyValue.Key))
                     .Returns(keyValue.Value);
             }
-
-            mockedEnvironmentLoader
-                .Setup(mock => mock.GetData<ushort>("OMC_AUTHORIZATION_JWT_EXPIRESINMIN"))
-                .Returns((ushort)(isValid ? 60 : 0));
-
-            mockedEnvironmentLoader
-                .Setup(mock => mock.GetData<ushort>("USER_AUTHORIZATION_JWT_EXPIRESINMIN"))
-                .Returns((ushort)(isValid ? 60 : 0));
             #endregion
 
-            // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
-            #region GetPathWithNode() mocking
-            (string Path, string Node, string ResultPath)[] testData =
+            return new EnvironmentLoader
             {
-                ($"{nameof(WebApiConfiguration.OMC)}",  $"{nameof(WebApiConfiguration.OMC.Authorization)}", "OMC_AUTHORIZATION"),
-                ($"{nameof(WebApiConfiguration.User)}", $"{nameof(WebApiConfiguration.OMC.Authorization)}", "USER_AUTHORIZATION"),
-
-                ("OMC_AUTHORIZATION",     $"{nameof(WebApiConfiguration.OMC.Authorization.JWT)}",              "OMC_AUTHORIZATION_JWT"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Secret)}",       "OMC_AUTHORIZATION_JWT_SECRET"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Issuer)}",       "OMC_AUTHORIZATION_JWT_ISSUER"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.Audience)}",     "OMC_AUTHORIZATION_JWT_AUDIENCE"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.ExpiresInMin)}", "OMC_AUTHORIZATION_JWT_EXPIRESINMIN"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.UserId)}",       "OMC_AUTHORIZATION_JWT_USERID"),
-                ("OMC_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.OMC.Authorization.JWT.UserName)}",     "OMC_AUTHORIZATION_JWT_USERNAME"),
-
-                ("OMC",             $"{nameof(WebApiConfiguration.OMC.API)}",                  "OMC_API"),
-                ("OMC_API",         $"{nameof(WebApiConfiguration.OMC.API.BaseUrl)}",          "OMC_API_BASEURL"),
-                ("OMC_API_BASEURL", $"{nameof(WebApiConfiguration.OMC.API.BaseUrl.NotifyNL)}", "OMC_API_BASEURL_NOTIFYNL"),
-
-                ("USER_AUTHORIZATION",     $"{nameof(WebApiConfiguration.User.Authorization.JWT)}",              "USER_AUTHORIZATION_JWT"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Secret)}",       "USER_AUTHORIZATION_JWT_SECRET"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Issuer)}",       "USER_AUTHORIZATION_JWT_ISSUER"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.Audience)}",     "USER_AUTHORIZATION_JWT_AUDIENCE"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.ExpiresInMin)}", "USER_AUTHORIZATION_JWT_EXPIRESINMIN"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.UserId)}",       "USER_AUTHORIZATION_JWT_USERID"),
-                ("USER_AUTHORIZATION_JWT", $"{nameof(WebApiConfiguration.User.Authorization.JWT.UserName)}",     "USER_AUTHORIZATION_JWT_USERNAME"),
-
-                ("User",         $"{nameof(WebApiConfiguration.User.API)}",                 "USER_API"),
-                ("USER_API",     $"{nameof(WebApiConfiguration.User.API.Key)}",             "USER_API_KEY"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.OpenKlant_2)}", "USER_API_KEY_OPENKLANT_2"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.Objecten)}",    "USER_API_KEY_OBJECTEN"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.ObjectTypen)}", "USER_API_KEY_OBJECTTYPEN"),
-                ("USER_API_KEY", $"{nameof(WebApiConfiguration.User.API.Key.NotifyNL)}",    "USER_API_KEY_NOTIFYNL"),
-
-                ("User",        $"{nameof(WebApiConfiguration.User.Domain)}",                  "USER_DOMAIN"),
-                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenNotificaties)}", "USER_DOMAIN_OPENNOTIFICATIES"),
-                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}",         "USER_DOMAIN_OPENZAAK"),
-                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}",        "USER_DOMAIN_OPENKLANT"),
-                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.Objecten)}",         "USER_DOMAIN_OBJECTEN"),
-                ("USER_DOMAIN", $"{nameof(WebApiConfiguration.User.Domain.ObjectTypen)}",      "USER_DOMAIN_OBJECTTYPEN"),
-
-                ("User",                   $"{nameof(WebApiConfiguration.User.TemplateIds)}",                    "USER_TEMPLATEIDS"),
-                ("USER_TEMPLATEIDS",       $"{nameof(WebApiConfiguration.User.TemplateIds.Email)}",              "USER_TEMPLATEIDS_EMAIL"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakCreate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakUpdate)}",   "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.ZaakClose)}",    "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.TaskAssigned)}", "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED"),
-                ("USER_TEMPLATEIDS_EMAIL", $"{nameof(WebApiConfiguration.User.TemplateIds.Email.DecisionMade)}", "USER_TEMPLATEIDS_EMAIL_DECISIONMADE"),
-
-                ("User",                 $"{nameof(WebApiConfiguration.User.TemplateIds)}",                  "USER_TEMPLATEIDS"),
-                ("USER_TEMPLATEIDS",     $"{nameof(WebApiConfiguration.User.TemplateIds.Sms)}",              "USER_TEMPLATEIDS_SMS"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakCreate)}",   "USER_TEMPLATEIDS_SMS_ZAAKCREATE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakUpdate)}",   "USER_TEMPLATEIDS_SMS_ZAAKUPDATE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.ZaakClose)}",    "USER_TEMPLATEIDS_SMS_ZAAKCLOSE"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.TaskAssigned)}", "USER_TEMPLATEIDS_SMS_TASKASSIGNED"),
-                ("USER_TEMPLATEIDS_SMS", $"{nameof(WebApiConfiguration.User.TemplateIds.Sms.DecisionMade)}", "USER_TEMPLATEIDS_SMS_DECISIONMADE")
+                Environment = mockedEnvironmentReader.Object
             };
-
-            foreach ((string Path, string Node, string ResultPath) data in testData)
-            {
-                mockedEnvironmentLoader
-                    .Setup(mock => mock.GetPathWithNode(data.Path, data.Node))
-                    .Returns(data.ResultPath);
-            }
-            #endregion
-
-            return mockedEnvironmentLoader.Object;
         }
         #endregion
 
@@ -206,7 +149,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 case LoaderTypes.AppSettings:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid));
                     break;
-                
+
                 case LoaderTypes.Environment:
                     serviceCollection.AddSingleton(GetEnvironmentLoader(isValid));
                     break;

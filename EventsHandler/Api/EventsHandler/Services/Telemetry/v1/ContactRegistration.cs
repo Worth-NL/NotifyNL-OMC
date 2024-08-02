@@ -1,14 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using System.Text;
 
 namespace EventsHandler.Services.Telemetry.v1
@@ -26,7 +26,7 @@ namespace EventsHandler.Services.Telemetry.v1
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Contactmomenten";
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.0.0";
 

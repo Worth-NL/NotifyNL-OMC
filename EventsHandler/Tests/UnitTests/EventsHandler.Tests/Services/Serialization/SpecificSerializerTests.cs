@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.Interfaces;
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
 using System.Text.Json;
@@ -63,7 +63,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             Assert.That(actualResult, Is.EqualTo(_testJson));
         }
-        
+
         [Test]
         public void Serialize_TakesUnknownModel_DoesNotThrowException_AndReturnsDefaultJson()
         {

@@ -279,22 +279,19 @@
     <comment>Swagger UI</comment>
   </data>
   <data name="Configuration_ERROR_ContainsEndpoint" xml:space="preserve">
-    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found:</value>
+    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}.</value>
   </data>
   <data name="Configuration_ERROR_ContainsHttp" xml:space="preserve">
-    <value>In the settings representing domain unnecessary protocol (http or https) was found:</value>
+    <value>In the settings representing domain unnecessary protocol (http or https) was found: {0}.</value>
   </data>
   <data name="Configuration_ERROR_InvalidTemplateId" xml:space="preserve">
-    <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):</value>
+    <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}.</value>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
-    <value>The settings does not contain a given value, or the value is empty:</value>
+    <value>The settings does not contain a given value, or the value is empty: {0}.</value>
   </data>
-  <data name="Configuration_ERROR_EnvironmentVariableGetNull" xml:space="preserve">
-    <value>The looked up Environment Variable could not be found or the key is missing / not existing.</value>
-  </data>
-  <data name="Configuration_ERROR_EnvironmentNotSupported" xml:space="preserve">
-    <value>The retrieving of Environment Variable failed. The operating system (OS) is not yet supported.</value>
+  <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
+    <value>Internal error: The key used to retrieve configuration value is null, empty, or whitespace.</value>
   </data>
   <data name="Configuration_ERROR_Loader_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine the given data provider. It might be not implemented yet.</value>
@@ -401,8 +398,8 @@
   <data name="HttpRequest_ERROR_NoPartyData" xml:space="preserve">
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_CaseStatusType" xml:space="preserve">
-    <value>It was requested not to send the notification for this type of the case status. Processing aborted.</value>
+  <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
+    <value>The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
     <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
@@ -414,13 +411,13 @@
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
-    <value>It was requested not to send the notification if the task is already closed. Processing aborted.</value>
+    <value>The notification can not be send if the task is already closed. Processing aborted.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskNotPerson" xml:space="preserve">
-    <value>It was requested not to send the notification if the task is not assigned to a person (missing BSN number). Processing aborted.</value>
+    <value>The notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
-    <value>It was requested not to send the notification for this type of the task. Processing aborted.</value>
+    <value>The notification can not be send for this type of the task. Processing aborted.</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
     <value>Internal error: Provided URI is not a case type.</value>
@@ -433,5 +430,11 @@
   <data name="Operation_ERROR_Internal_NotDecisionUri" xml:space="preserve">
     <value>Internal error: Provided URI is not a decision.</value>
     <comment>HTTP Status Code = 422</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">
+    <value>The notification can not be sent because the inform field is set to false.</value>
+  </data>
+  <data name="Configuration_ERROR_InvalidUri" xml:space="preserve">
+    <value>In the settings the given URI is invalid (e.g., default): {0}.</value>
   </data>
 </root>

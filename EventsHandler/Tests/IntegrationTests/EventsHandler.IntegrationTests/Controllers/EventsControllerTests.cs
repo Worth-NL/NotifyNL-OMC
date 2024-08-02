@@ -1,20 +1,20 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Messages.Models.Errors;
-using EventsHandler.Behaviors.Responding.Messages.Models.Successes;
-using EventsHandler.Behaviors.Responding.Results.Builder;
-using EventsHandler.Behaviors.Versioning;
 using EventsHandler.Controllers;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.Responding;
+using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Base;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
+using EventsHandler.Services.Responding.Messages.Models.Successes;
+using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.UserCommunication;
-using EventsHandler.Services.UserCommunication.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
+using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -55,7 +55,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             this._validatorMock.Setup(mock => mock.Validate(
                     ref It.Ref<NotificationEvent>.IsAny))
                 .Returns(HealthCheck.OK_Inconsistent);
-            
+
             this._processorMock.Reset();
             this._responderMock.Reset();
         }
@@ -105,7 +105,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 Resources.Operation_ERROR_Deserialization_Failure,
                 Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message);
         }
-        
+
         [Test]
         public async Task ListenAsync_Failure_ProcessAsync_ReturnsErrorResult()
         {
@@ -241,7 +241,7 @@ namespace EventsHandler.IntegrationTests.Controllers
                 {
                     Assert.That(simpleResponse.StatusCode, Is.EqualTo(expectedHttpStatusCode), "Status code");
                     Assert.That(simpleResponse.StatusDescription, Is.EqualTo(expectedStatusDescription), "Status description");
-                    
+
                     if (castResult.Value is BaseEnhancedStandardResponseBody enhancedResponse)
                     {
                         Assert.That(enhancedResponse.Details.Message, Is.EqualTo(expectedDetailsMessage), "Details message");

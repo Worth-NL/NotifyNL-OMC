@@ -88,7 +88,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found:.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {
             get {
@@ -97,7 +97,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found:.
+        ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {
             get {
@@ -106,29 +106,29 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The retrieving of Environment Variable failed. The operating system (OS) is not yet supported..
+        ///   Looks up a localized string similar to Internal error: The key used to retrieve configuration value is null, empty, or whitespace..
         /// </summary>
-        internal static string Configuration_ERROR_EnvironmentNotSupported {
+        internal static string Configuration_ERROR_InvalidKey {
             get {
-                return ResourceManager.GetString("Configuration_ERROR_EnvironmentNotSupported", resourceCulture);
+                return ResourceManager.GetString("Configuration_ERROR_InvalidKey", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The looked up Environment Variable could not be found or the key is missing / not existing..
-        /// </summary>
-        internal static string Configuration_ERROR_EnvironmentVariableGetNull {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_EnvironmentVariableGetNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000):.
+        ///   Looks up a localized string similar to In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}..
         /// </summary>
         internal static string Configuration_ERROR_InvalidTemplateId {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_InvalidTemplateId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the settings the given URI is invalid (e.g., default): {0}..
+        /// </summary>
+        internal static string Configuration_ERROR_InvalidUri {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_InvalidUri", resourceCulture);
             }
         }
         
@@ -151,7 +151,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty:.
+        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
@@ -754,16 +754,25 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification for this type of the case status. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_CaseStatusType {
+        internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseStatusType", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification if the task is already closed. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent because the inform field is set to false..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_Informeren {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Informeren", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be send if the task is already closed. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
             get {
@@ -772,7 +781,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification if the task is not assigned to a person (missing BSN number). Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
             get {
@@ -781,7 +790,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was requested not to send the notification for this type of the task. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be send for this type of the task. Processing aborted..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {

@@ -1,16 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Helpers;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details;
-using EventsHandler.Behaviors.Responding.Results.Builder.Interface;
-using EventsHandler.Behaviors.Responding.Results.Enums;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Helpers;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.Responding.Messages.Models.Details;
+using EventsHandler.Services.Responding.Results.Builder.Interface;
+using EventsHandler.Services.Responding.Results.Enums;
 using EventsHandler.Services.Validation.Interfaces;
 using System.Reflection;
-using EventAttributes = EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
+using EventAttributes = EventsHandler.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
 
 namespace EventsHandler.Services.Validation
 {
@@ -173,7 +173,7 @@ namespace EventsHandler.Services.Validation
 
             return false;
         }
-        
+
         /// <summary>
         /// Gets only the keys from a given dictionary.
         /// </summary>
