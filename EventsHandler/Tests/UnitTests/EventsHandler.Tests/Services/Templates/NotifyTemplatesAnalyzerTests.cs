@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
@@ -39,8 +39,8 @@ namespace EventsHandler.UnitTests.Services.Templates
             "Met vriendelijke groet,\\r\\nDe gemeente Den Haag\"";
 
         // Subject is invalid
-        [TestCase("",   SimpleBody)]
-        [TestCase(" ",  SimpleBody)]
+        [TestCase("", SimpleBody)]
+        [TestCase(" ", SimpleBody)]
         // Body is invalid
         [TestCase(SimpleSubject, "")]
         [TestCase(SimpleSubject, " ")]
@@ -62,11 +62,11 @@ namespace EventsHandler.UnitTests.Services.Templates
 
         [TestCase(SimpleSubject, SimpleBody)]
         // Subject
-        [TestCase(MissingEnd1,         SimpleBody)]
-        [TestCase(MissingEnd2,         SimpleBody)]
-        [TestCase(MissingStart1,       SimpleBody)]
-        [TestCase(MissingStart2,       SimpleBody)]
-        [TestCase(SingleBrackets,      SimpleBody)]
+        [TestCase(MissingEnd1, SimpleBody)]
+        [TestCase(MissingEnd2, SimpleBody)]
+        [TestCase(MissingStart1, SimpleBody)]
+        [TestCase(MissingStart2, SimpleBody)]
+        [TestCase(SingleBrackets, SimpleBody)]
         [TestCase(EmptySingleBrackets, SimpleBody)]
         [TestCase(EmptyDoubleBrackets, SimpleBody)]
         // Body

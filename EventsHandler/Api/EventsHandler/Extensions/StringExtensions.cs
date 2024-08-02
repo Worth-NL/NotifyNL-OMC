@@ -46,7 +46,7 @@ namespace EventsHandler.Extensions
                 ? string.Empty
                 : Base64UrlEncoder.Encode(originalTextValue);
         }
-        
+
         /// <summary>
         /// Encodes the <see cref="Base64"/> value back to a raw plain <see langword="string"/>.
         /// </summary>
@@ -58,6 +58,32 @@ namespace EventsHandler.Extensions
             return string.IsNullOrWhiteSpace(encodedTextValue)
                 ? string.Empty
                 : Base64UrlEncoder.Decode(encodedTextValue);
+        }
+
+        /// <summary>
+        /// Converts a given <see langword="string"/> into a target generic <typeparamref name="TData"/> type.
+        /// </summary>
+        /// <typeparam name="TData">The target type onto which the conversion should be handled.</typeparam>
+        /// <param name="originalTextValue">The original text value.</param>
+        /// <returns>
+        ///   The converted generic value.
+        /// </returns>
+        internal static TData ChangeType<TData>(this string originalTextValue)
+        {
+            // Retrieve as TData => Guid
+            if (typeof(TData) == typeof(Guid))
+            {
+                return (TData)Convert.ChangeType(new Guid(originalTextValue), typeof(TData));
+            }
+            
+            // Retrieve as TData => Guid
+            if (typeof(TData) == typeof(Uri))
+            {
+                return (TData)Convert.ChangeType(new Uri(originalTextValue), typeof(TData));
+            }
+
+            // Retrieve as TData => int, ushort, bool
+            return (TData)Convert.ChangeType(originalTextValue, typeof(TData));
         }
     }
 }
