@@ -99,7 +99,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "taak.heeft_verloopdatum", expirationDateProvided },
                 { "taak.record.data.title", this.CachedTaskData!.Value.Title },
                 { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification }
+                { "zaak.identificatie", this.CachedCase.Value.Identification },
+                { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.achternaam", partyData.Surname }
             };
         }
 
