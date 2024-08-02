@@ -1,8 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1
 {
@@ -15,7 +15,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1
     {
         /// <inheritdoc cref="IQueryObjecten.Configuration"/>
         WebApiConfiguration IQueryObjecten.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Version => "2.3.1";
 

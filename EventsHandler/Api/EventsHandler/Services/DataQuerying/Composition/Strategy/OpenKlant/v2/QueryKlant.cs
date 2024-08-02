@@ -1,15 +1,15 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.Converters;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant.v2;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
@@ -23,7 +23,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
     {
         /// <inheritdoc cref="IQueryKlant.Configuration"/>
         WebApiConfiguration IQueryKlant.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "2.0.0";
 
@@ -34,14 +34,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         {
             ((IQueryKlant)this).Configuration = configuration;
         }
-        
+
         #region Polymorphic (Citizen details)
         /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
             // Predefined URL components
             string partiesEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/partijen";
-            
+
             string partyTypeParameter = $"?partijIdentificator__codeSoortObjectId={((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier()}";
             string partyObjectIdParameter = $"&partijIdentificator__objectId={bsnNumber}";
             const string expandParameter = "&expand=digitaleAdressen";
@@ -69,7 +69,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         {
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/klantcontacten");
-            
+
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,

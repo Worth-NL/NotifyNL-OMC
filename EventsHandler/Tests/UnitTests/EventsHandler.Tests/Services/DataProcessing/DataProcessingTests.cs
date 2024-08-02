@@ -1,14 +1,15 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Strategy.Interfaces;
-using EventsHandler.Behaviors.Communication.Strategy.Models.DTOs;
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
@@ -21,14 +22,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
     {
         private IProcessingService<NotificationEvent>? _processor;
         private Mock<IScenariosResolver>? _mockedScenariosManager;
-        private Mock<ISendingService<NotificationEvent, NotifyData>>? _mockedSender;
+        private Mock<INotifyService<NotificationEvent, NotifyData>>? _mockedSender;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
             this._mockedScenariosManager = new Mock<IScenariosResolver>(MockBehavior.Strict);
-            this._mockedSender = new Mock<ISendingService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
-            
+            this._mockedSender = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
+
             this._processor = new NotifyProcessor(_mockedScenariosManager.Object, _mockedSender.Object);
         }
 
@@ -238,7 +239,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         private void SetupScenariosManager(NotifyData testNotifyData)
         {
             IMock<INotifyScenario> mockedNotifyScenario = GetMockedNotifyScenario(new[] { testNotifyData });
-            
+
             this._mockedScenariosManager?.Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(mockedNotifyScenario.Object);

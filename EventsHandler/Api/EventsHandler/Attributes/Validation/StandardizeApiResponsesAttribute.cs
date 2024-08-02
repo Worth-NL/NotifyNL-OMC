@@ -1,12 +1,12 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Responding.Messages.Models.Base;
-using EventsHandler.Behaviors.Responding.Messages.Models.Details.Base;
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
-using EventsHandler.Services.UserCommunication.Interfaces;
+using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Base;
+using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Models.Responses;

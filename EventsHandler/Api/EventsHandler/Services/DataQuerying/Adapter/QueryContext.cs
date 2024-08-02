@@ -1,18 +1,16 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Exceptions;
-using EventsHandler.Properties;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
@@ -76,18 +74,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
             => await this._queryZaak.GetCaseStatusesAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses?)"/>
-        async Task<CaseStatusType> IQueryContext.GetLastCaseStatusTypeAsync(CaseStatuses? statuses)
+        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync"/>
+        async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? statuses)
         {
             // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
             statuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
 
             // 2. Fetch the case status type from the last case status from "OpenZaak" Web API service
-            CaseStatusType statusType = await this._queryZaak.GetLastCaseStatusTypeAsync(this._queryBase, statuses.Value);
-
-            return statusType.IsNotificationExpected
-                ? statusType
-                : throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_CaseStatusType);
+            return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, statuses.Value);
         }
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>

@@ -1,12 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.OpenZaak.v2;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataReceiving.Enums;
-using EventsHandler.Services.DataReceiving.Interfaces;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
     {
         /// <inheritdoc cref="IQueryZaak.Configuration"/>
         WebApiConfiguration IQueryZaak.Configuration { get; set; } = null!;
-        
+
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "1.12.1";
 
@@ -72,7 +72,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
             return (await GetCaseDetailsV2Async(queryBase, caseUri))
                 .CaseTypeUrl;
         }
-        
+
         private static async Task<CaseDetails> GetCaseDetailsV2Async(IQueryBase queryBase, Uri caseUri)
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(

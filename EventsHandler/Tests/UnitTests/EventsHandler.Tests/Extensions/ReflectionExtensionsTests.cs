@@ -18,7 +18,7 @@ namespace EventsHandler.UnitTests.Extensions
             this.TestProperty = default;
 
             PropertyInfo propertyInfo = GetPropertyInfo();
-            
+
             // Act
             bool actualResult = this.NotInitializedProperty(propertyInfo);
 
@@ -33,7 +33,7 @@ namespace EventsHandler.UnitTests.Extensions
             this.TestProperty = 42;
 
             PropertyInfo propertyInfo = GetPropertyInfo();
-            
+
             // Act
             bool actualResult = this.NotInitializedProperty(propertyInfo);
 

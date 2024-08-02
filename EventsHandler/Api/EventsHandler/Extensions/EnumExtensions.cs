@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Communication.Enums;
-using EventsHandler.Behaviors.Communication.Enums.v2;
-using EventsHandler.Behaviors.Mapping.Enums;
-using EventsHandler.Behaviors.Mapping.Enums.NotifyNL;
+using EventsHandler.Mapping.Enums;
+using EventsHandler.Mapping.Enums.NotifyNL;
+using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.Responding.Enums.v2;
 
 namespace EventsHandler.Extensions
 {
@@ -47,14 +47,14 @@ namespace EventsHandler.Extensions
             return notificationType switch
             {
                 NotificationTypes.Email => NotifyMethods.Email,
-                
+
                 NotificationTypes.Sms => NotifyMethods.Sms,
-                
+
                 // FAILURE: Return fallback enum B
                 _ => NotifyMethods.None
             };
         }
-        
+
         /// <summary>
         /// Converts from <see cref="DeliveryStatuses"/> enum to <see cref="FeedbackTypes"/> enum.
         /// </summary>
@@ -75,11 +75,11 @@ namespace EventsHandler.Extensions
             return deliveryStatus switch
             {
                 DeliveryStatuses.Delivered => FeedbackTypes.Success,
-                
+
                 DeliveryStatuses.PermanentFailure or
                 DeliveryStatuses.TemporaryFailure or
                 DeliveryStatuses.TechnicalFailure => FeedbackTypes.Failure,
-                
+
                 // FAILURE: Return fallback enum B
                 _ => FeedbackTypes.Info
             };

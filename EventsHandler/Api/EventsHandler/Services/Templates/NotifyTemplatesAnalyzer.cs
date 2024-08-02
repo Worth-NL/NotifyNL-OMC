@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Templates.Interfaces;
 using Notify.Models.Responses;
 using System.Text.RegularExpressions;
-using EventsHandler.Behaviors.Mapping.Enums.NotificatieApi;
 
 namespace EventsHandler.Services.Templates
 {
@@ -97,7 +97,7 @@ namespace EventsHandler.Services.Templates
             // BIT SLOWER + MORE PROBABLE: Check the instance properties of EventAttributes POCO model
             if (notification.Attributes.Properties(Channels.Cases)
                     .TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue) ||
-                
+
                 notification.Attributes.Properties(Channels.Objects)
                     .TryGetPropertyValueByDutchName(placeholder, notification.Attributes, out propertyValue) ||
 
@@ -106,7 +106,7 @@ namespace EventsHandler.Services.Templates
             {
                 return propertyValue;
             }
-            
+
             // BIT SLOWER + LESS PROBABLE: Check the instance properties of NotificationEvent POCO model
             if (notification.Properties.TryGetPropertyValueByDutchName(placeholder, notification, out propertyValue))
             {

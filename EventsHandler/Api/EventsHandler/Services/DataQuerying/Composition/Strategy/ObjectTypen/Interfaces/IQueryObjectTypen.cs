@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Behaviors.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Behaviors.Versioning;
-using EventsHandler.Configuration;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.Settings.Configuration;
+using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces
 {
