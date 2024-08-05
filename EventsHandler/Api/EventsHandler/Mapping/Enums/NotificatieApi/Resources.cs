@@ -39,7 +39,7 @@ namespace EventsHandler.Mapping.Enums.NotificatieApi
         /// <summary>
         /// Decision resource.
         /// </summary>
-        [JsonPropertyName("besluit")]
+        [JsonPropertyName("besluitinformatieobject")]
         Decision = 4
     }
 }

@@ -195,7 +195,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 $"{{\r\n" +
                   $"\"actie\": \"create\", \r\n" +
                   $"\"kanaal\": \"besluiten\", \r\n" +
-                  $"\"resource\": \"besluit\", \r\n" +
+                  $"\"resource\": \"besluitinformatieobject\", \r\n" +
                   $"\"kenmerken\": {{\r\n" +
                     // Decisions
                     $"\"besluittype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/besluittypen/7002077e-0358-4301-8aac-5b440093f214\", \r\n" +
