@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using System.Text.Json;
+using EventsHandler.Mapping.Enums.Objecten;
 
 namespace EventsHandler.UnitTests.Mapping.Enums
 {
@@ -35,6 +36,11 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase(typeof(DistributionChannels), DistributionChannels.Both, "beiden")]
         // OpenZaak: MessageStatus
         [TestCase(typeof(MessageStatus), MessageStatus.Definitive, "definitief")]
+        // Objecten: IdTypes
+        [TestCase(typeof(IdTypes), IdTypes.Bsn, "bsn")]
+        // Objecten: TaskStatuses
+        [TestCase(typeof(TaskStatuses), TaskStatuses.Open, "open")]
+        [TestCase(typeof(TaskStatuses), TaskStatuses.Closed, "gesloten")]
         // NotifyNL: Notification types
         [TestCase(typeof(NotificationTypes), NotificationTypes.Email, "email")]
         [TestCase(typeof(NotificationTypes), NotificationTypes.Sms, "sms")]
@@ -88,6 +94,11 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase("beiden", typeof(DistributionChannels), DistributionChannels.Both)]
         // OpenZaak: MessageStatus
         [TestCase("definitief", typeof(MessageStatus), MessageStatus.Definitive)]
+        // Objecten: IdTypes
+        [TestCase("bsn", typeof(IdTypes), IdTypes.Bsn)]
+        // Objecten: TaskStatuses
+        [TestCase("open", typeof(TaskStatuses), TaskStatuses.Open)]
+        [TestCase("gesloten", typeof(TaskStatuses), TaskStatuses.Closed)]
         // NotifyNL: Notification types
         [TestCase("email", typeof(NotificationTypes), NotificationTypes.Email)]
         [TestCase("sms", typeof(NotificationTypes), NotificationTypes.Sms)]
@@ -121,6 +132,9 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase("$#%", typeof(DistributionChannels), DistributionChannels.Unknown)]
         // OpenZaak
         [TestCase("!", typeof(MessageStatus), MessageStatus.Unknown)]
+        // Objecten
+        [TestCase(":", typeof(IdTypes), IdTypes.Unknown)]
+        [TestCase(";", typeof(TaskStatuses), TaskStatuses.Unknown)]
         // NotifyNL
         [TestCase("-", typeof(NotificationTypes), NotificationTypes.Unknown)]
         [TestCase(" ", typeof(DeliveryStatuses), DeliveryStatuses.Unknown)]
