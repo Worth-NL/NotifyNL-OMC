@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
@@ -13,28 +14,23 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct Decision : IJsonSerializable
     {
         /// <summary>
-        /// Gets the URL of the <see cref="Case"/> type.
+        /// Gets the URL of the <see cref="InfoObject"/>.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("zaak")]
+        [JsonPropertyName("informatieobject")]
         [JsonPropertyOrder(0)]
-        public Uri CaseUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri InfoObjectUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// Gets the date when the decision will be in effect.
+        /// Gets the URL of the <see cref="Decision"/>.
         /// </summary>
+        /// <remarks>
+        /// The same as "hoofdObject" from <see cref="NotificationEvent"/>
+        /// </remarks>
         [JsonInclude]
-        [JsonPropertyName("ingangsdatum")]
+        [JsonPropertyName("besluit")]
         [JsonPropertyOrder(1)]
-        public DateTime StartDate { get; internal set; }
-
-        /// <summary>
-        /// Gets the final date up to which user can respond / appeal to the <see cref="Decision"/>.
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("uiterlijkeReactiedatum")]
-        [JsonPropertyOrder(2)]
-        public DateTime FinalResponseDate { get; internal set; }
+        public Uri DecisionUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Decision"/> struct.
