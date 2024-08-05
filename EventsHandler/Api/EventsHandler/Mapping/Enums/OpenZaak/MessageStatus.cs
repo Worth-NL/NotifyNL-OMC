@@ -23,5 +23,7 @@ namespace EventsHandler.Mapping.Enums.OpenZaak
         /// </summary>
         [JsonPropertyName("definitief")]
         Definitive = 1
+
+        // TODO: What is option other than "definitief"?
     }
 }
