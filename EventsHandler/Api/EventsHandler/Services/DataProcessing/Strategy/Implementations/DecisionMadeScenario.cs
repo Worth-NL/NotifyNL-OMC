@@ -37,11 +37,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
+
+            // TODO: Is this still needed?
             this.CachedDecision ??= await this.QueryContext.GetDecisionAsync();
-            this.CachedCommonPartyData ??=
-                await this.QueryContext.GetPartyDataAsync(
-                await this.QueryContext.GetBsnNumberAsync(
-                      this.CachedDecision.Value.CaseUrl));
+
+            // TODO: Different way to obtain case
+            //this.CachedCommonPartyData ??=
+            //    await this.QueryContext.GetPartyDataAsync(
+            //    await this.QueryContext.GetBsnNumberAsync(
+            //          this.CachedDecision.Value.CaseUrl));
 
             return await base.GetAllNotifyDataAsync(notification);
         }
