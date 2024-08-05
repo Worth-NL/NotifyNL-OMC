@@ -73,8 +73,7 @@ namespace EventsHandler.Controllers
                 string healthCheckUrl = $"{this._configuration.OMC.API.BaseUrl.NotifyNL()}/_status?simple=true";
 
                 // Request
-                using var httpClient = new HttpClient();
-                HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
+                using HttpResponseMessage result = await new HttpClient().GetAsync(healthCheckUrl);
 
                 // Response
                 return result.IsSuccessStatusCode
