@@ -17,7 +17,6 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
-using System.Reflection;
 
 namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 {
@@ -61,8 +60,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.HttpRequest_ERROR_NoPartyData));
 
-                VerifyMethodCalls(
-                    typeof(CaseCreatedScenario), mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount: 1, partyInvokeCount: 1, caseInvokeCount: 0);
             });
         }
@@ -73,9 +71,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
-        // TODO: Enable these tests
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, NotifyMethods.Email, "test@gmail.com", 1, 1, 1)]
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, NotifyMethods.Sms, "+310123456789", 1, 1, 1)]
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithSingleNotifyMethod_ReturnsExpectedData(
             Type scenarioType, DistributionChannels testDistributionChannel, int expectedResultsCount,
             NotifyMethods expectedNotificationMethod, string expectedContactDetails,
@@ -103,8 +98,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(firstResult.TemplateId, Is.EqualTo(
                     DetermineTemplateId(scenarioType, firstResult.NotificationMethod, this._testConfiguration)));
 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
@@ -115,9 +109,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, 1, 1)]
-        // TODO: Enable these tests
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, 1, 1)]
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, 1, 1)]
         public void GetAllNotifyDataAsync_WithoutCaseIdWhitelisted_ThrowsAbortedNotifyingException(
             Type scenarioType, DistributionChannels testDistributionChannel, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
@@ -140,8 +131,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
@@ -152,9 +142,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, 1, 1, 1)]
-        // TODO: Enable these tests
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Email, 1, 1, 1)]
-        //[TestCase(typeof(DecisionMadeScenario), DistributionChannels.Sms, 1, 1, 1)]
         public void GetAllNotifyDataAsync_WithInformSetToFalse_ThrowsAbortedNotifyingException(
             Type scenarioType, DistributionChannels testDistributionChannel, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
@@ -173,8 +160,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
                 Assert.That(exception?.Message, Is.EqualTo((Resources.Processing_ABORT_DoNotSendNotification_Informeren)));
                 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
@@ -182,7 +168,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseStatusUpdatedScenario), 1, 1, 1)]
         [TestCase(typeof(CaseClosedScenario), 1, 1, 1)]
-        [TestCase(typeof(DecisionMadeScenario), 1, 1, 1), Ignore("The decision is disabled currently")]  // TODO: Enable this test
         public async Task GetAllNotifyDataAsync_ForValidNotification_WithBothNotifyMethods_ReturnsBothExpectedData(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
@@ -214,8 +199,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(secondResult.TemplateId, Is.EqualTo(
                     DetermineTemplateId(scenarioType, secondResult.NotificationMethod, this._testConfiguration)));
 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
@@ -223,7 +207,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario), 1, 1, 0)]
         [TestCase(typeof(CaseStatusUpdatedScenario), 1, 1, 0)]
         [TestCase(typeof(CaseClosedScenario), 1, 1, 0)]
-        [TestCase(typeof(DecisionMadeScenario), 1, 1, 0)]
         public async Task GetAllNotifyDataAsync_ForNotification_WithoutNotifyMethod_ReturnsEmptyData_DoesNotThrowException(
             Type scenarioType, int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
@@ -243,8 +226,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             {
                 Assert.That(actualResult, Has.Length.EqualTo(0));
 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
             });
         }
@@ -255,8 +237,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), (DistributionChannels)(-1))]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(CaseClosedScenario), (DistributionChannels)(-1))]
-        [TestCase(typeof(DecisionMadeScenario), DistributionChannels.Unknown)]
-        [TestCase(typeof(DecisionMadeScenario), (DistributionChannels)(-1))]
         public void GetAllNotifyDataAsync_ForNotification_WithUnknownNotifyMethod_ThrowsInvalidOperationException(
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
@@ -275,8 +255,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
-                VerifyMethodCalls(
-                    scenarioType, mockedQueryContext, mockedQueryService,
+                VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount: 1, partyInvokeCount: 1, caseInvokeCount: 0);
             });
         }
@@ -294,8 +273,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             {
                 Assert.ThrowsAsync<NotImplementedException>(() => scenario.GetAllNotifyDataAsync(default));
 
-                VerifyMethodCalls(
-                    typeof(NotImplementedScenario), new Mock<IQueryContext>(),
+                VerifyMethodCalls(new Mock<IQueryContext>(),
                     new Mock<IDataQueryService<NotificationEvent>>(),
                     fromInvokeCount: 0, partyInvokeCount: 0, caseInvokeCount: 0);
             });
@@ -313,7 +291,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Identification = isCaseIdWhitelisted ? "1" : "4"
             };
 
-            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Loose);
+            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync())
                 .ReturnsAsync(testCase);
@@ -390,34 +368,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                         _ => string.Empty
                     },
 
-                nameof(DecisionMadeScenario) =>
-                    notifyMethod switch
-                    {
-                        NotifyMethods.Email => configuration.User.TemplateIds.Email.DecisionMade(),
-                        NotifyMethods.Sms => configuration.User.TemplateIds.Sms.DecisionMade(),
-                        _ => string.Empty
-                    },
-
                 _ => string.Empty
             };
         }
 
-        private static void VerifyMethodCalls(MemberInfo scenarioType,
-            Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedQueryService,
-            int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
-        {
-            if (scenarioType.Name == nameof(DecisionMadeScenario))
-            {
-                VerifyMethodCalls_Decision(mockedQueryContext, mockedQueryService, fromInvokeCount, partyInvokeCount, caseInvokeCount);
-            }
-            else
-            {
-                VerifyMethodCalls_Case(mockedQueryContext, mockedQueryService, fromInvokeCount, partyInvokeCount, caseInvokeCount);
-            }
-        }
-
-        private static void VerifyMethodCalls_Case(
-            Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedQueryService,
+        private static void VerifyMethodCalls(Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedQueryService,
             int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
             mockedQueryService
@@ -432,29 +387,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
             mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(),
-                    Times.Exactly(caseInvokeCount));
-        }
-
-        private static void VerifyMethodCalls_Decision(
-            Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedQueryService,
-            int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
-        {
-            mockedQueryService
-                .Verify(mock => mock.From(
-                        It.IsAny<NotificationEvent>()),
-                    Times.Exactly(fromInvokeCount));
-
-            mockedQueryContext
-                .Verify(mock => mock.GetPartyDataAsync(
-                        It.IsAny<string>()),
-                    Times.Exactly(partyInvokeCount));
-
-            mockedQueryContext
-                .Verify(mock => mock.GetDecisionAsync(),
-                    Times.Once);
-
-            mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
                     Times.Exactly(caseInvokeCount));
         }
         #endregion
