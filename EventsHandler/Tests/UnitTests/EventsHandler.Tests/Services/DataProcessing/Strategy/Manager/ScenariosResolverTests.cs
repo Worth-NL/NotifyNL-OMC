@@ -193,7 +193,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             Assert.That(actualResult, Is.TypeOf<TaskAssignedScenario>());
         }
 
-        [Test, Ignore("The decision is disabled currently")]  // TODO: Enable this test
+        [Test]
         public async Task DetermineScenarioAsync_ForDecisionMadeScenario_ReturnsExpectedScenario()
         {
             // Arrange
