@@ -8,8 +8,8 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2;
-using EventsHandler.Services.Telemetry.Interfaces;
-using EventsHandler.Services.Telemetry.v2;
+using EventsHandler.Services.Register.Interfaces;
+using EventsHandler.Services.Register.v2;
 using EventsHandler.Services.Versioning;
 using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities._TestHelpers;

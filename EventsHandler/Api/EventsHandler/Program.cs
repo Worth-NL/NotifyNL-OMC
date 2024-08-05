@@ -26,6 +26,7 @@ using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
@@ -35,7 +36,6 @@ using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
-using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Services.Validation;
@@ -55,8 +55,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using Register = EventsHandler.Services.Register;
 using Responder = EventsHandler.Services.Responding;
-using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
 {
@@ -372,8 +372,8 @@ namespace EventsHandler
             {
                 return omcWorkflowVersion switch
                 {
-                    1 => typeof(Telemetry.v1.ContactRegistration),
-                    2 => typeof(Telemetry.v2.ContactRegistration),
+                    1 => typeof(Register.v1.ContactRegistration),
+                    2 => typeof(Register.v2.ContactRegistration),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionTelemetryUnknown)
                 };
             }
