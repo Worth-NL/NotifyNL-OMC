@@ -6,9 +6,9 @@ using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.Telemetry.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Services.Responding.v1
