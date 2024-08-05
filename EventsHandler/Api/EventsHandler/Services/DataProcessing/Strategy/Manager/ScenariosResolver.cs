@@ -66,14 +66,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                // TODO: The Hague requested to disable this feature for now
-                // return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
             // No matching scenario. There is no clear instruction what to do with the received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
+        #region Filters
         /// <summary>
         /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
@@ -121,5 +121,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Resource: Resources.Decision
             };
         }
+        #endregion
     }
 }
