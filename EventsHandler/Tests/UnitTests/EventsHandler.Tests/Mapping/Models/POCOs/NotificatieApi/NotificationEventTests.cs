@@ -37,7 +37,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
             $"{{" +
               $"\"actie\":\"create\"," +
               $"\"kanaal\":\"besluiten\"," +
-              $"\"resource\":\"besluit\"," +
+              $"\"resource\":\"besluitinformatieobject\"," +
               $"\"kenmerken\":{{" +
                 // Cases
                 $"\"zaaktype\":null," +
