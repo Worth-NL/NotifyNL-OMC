@@ -7,11 +7,11 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text;
 
-namespace EventsHandler.Services.Telemetry.v1
+namespace EventsHandler.Services.Register.v1
 {
     /// <summary>
     /// <inheritdoc cref="ITelemetryService"/>
