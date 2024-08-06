@@ -73,7 +73,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
-        protected override string GetEmailTemplateId()
+        protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.TaskAssigned();
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
@@ -137,7 +137,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (SMS logic)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
-        protected override string GetSmsTemplateId()
+        protected override Guid GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>

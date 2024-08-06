@@ -72,17 +72,17 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
                 // Templates
                 var templateIds = userConfiguration.TemplateIds;
-                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Empty);
+                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Empty);
+                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Empty);
+                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Empty);
+                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Empty);
 
-                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Null.Or.Empty);
-                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Null.Or.Empty);
+                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Empty);
+                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Empty);
+                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Empty);
+                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Empty);
+                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Empty);
 
                 // Whitelist
                 var whitelist = userConfiguration.Whitelist;
@@ -92,6 +92,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 Assert.That(whitelist.TaskAssigned_IDs().Count, Is.Not.Zero);
                 Assert.That(whitelist.DecisionMade_IDs().Count, Is.Not.Zero);
                 Assert.That(whitelist.Message_Allowed(), Is.Not.False);
+                Assert.That(whitelist.TaskType_Uuid(), Is.Not.Empty);
+                Assert.That(whitelist.MessageType_Uuid(), Is.Not.Empty);
             });
         }
 
