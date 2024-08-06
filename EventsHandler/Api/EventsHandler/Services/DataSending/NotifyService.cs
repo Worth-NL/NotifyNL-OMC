@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataSending
             string encodedNotification = serializedNotification.Base64Encode();
 
             _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
-                                                                     templateId:      package.TemplateId,
+                                                                     templateId:      package.TemplateId.ToString(),
                                                                      personalization: package.Personalization,
                                                                      reference:       encodedNotification);
         }
@@ -52,7 +52,7 @@ namespace EventsHandler.Services.DataSending
             string encodedNotification = serializedNotification.Base64Encode();
 
             _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
-                                                                       templateId:      package.TemplateId,
+                                                                       templateId:      package.TemplateId.ToString(),
                                                                        personalization: package.Personalization,
                                                                        reference:       encodedNotification);
         }
