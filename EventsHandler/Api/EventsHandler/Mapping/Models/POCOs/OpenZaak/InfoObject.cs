@@ -4,6 +4,7 @@ using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Constants;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
@@ -24,6 +25,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyName("status")]
         [JsonPropertyOrder(1)]
         public MessageStatus Status { get; internal set; }
+
+        /// <inheritdoc cref="PrivacyNotices"/>
+        [JsonInclude]
+        [JsonPropertyName("informatieobjecttype")]
+        [JsonPropertyOrder(2)]
+        public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoObject"/> struct.
