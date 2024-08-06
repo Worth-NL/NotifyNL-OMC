@@ -49,10 +49,10 @@ namespace EventsHandler.Utilities._TestHelpers
 
             const string testString = "xyz";
             const string testArray = "1, 2, 3";
-            const string testExpire = "60";
-            const string testDomain = "test.domain";
-            const string testTempId = "00000000-0000-0000-0000-000000000000";
+            const string testUshort = "60";
+            const string testGuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
             const string testBool = "true";
+            const string testDomain = "test.domain";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetEnvironmentVariable<T>() mocking
@@ -61,7 +61,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_SECRET",        GetTestValue(isValid, testString) },
                 { "OMC_AUTHORIZATION_JWT_ISSUER",        GetTestValue(isValid, testString) },
                 { "OMC_AUTHORIZATION_JWT_AUDIENCE",      GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",  GetTestValue(isValid, testExpire) },
+                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",  GetTestValue(isValid, testUshort) },
                 { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testString) },
                 { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testString) },
 
@@ -70,7 +70,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN", GetTestValue(isValid, testExpire) },
+                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN", GetTestValue(isValid, testUshort) },
                 { "USER_AUTHORIZATION_JWT_USERID",       GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_USERNAME",     GetTestValue(isValid, testString) },
 
@@ -85,24 +85,26 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OBJECTEN",                GetTestValue(isValid, testDomain, "https://domain") },
                 { "USER_DOMAIN_OBJECTTYPEN",             GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",    GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED", GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",    GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED", GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testGuid) },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
 
                 { "USER_WHITELIST_ZAAKCREATE_IDS",       GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_ZAAKUPDATE_IDS",       GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_ZAAKCLOSE_IDS",        GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_TASKASSIGNED_IDS",     GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, testBool)  }
+                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, testBool)  },
+                { "USER_WHITELIST_TASKTYPE_UUID",        GetTestValue(isValid, testGuid)  },
+                { "USER_WHITELIST_MESSAGETYPE_UUID",     GetTestValue(isValid, testGuid)  }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)

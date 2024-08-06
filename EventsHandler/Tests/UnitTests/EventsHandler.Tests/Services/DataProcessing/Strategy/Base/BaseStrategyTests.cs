@@ -339,7 +339,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             return mockedQueryService;
         }
 
-        private static string DetermineTemplateId<TStrategy>(TStrategy strategy, NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        private static Guid DetermineTemplateId<TStrategy>(TStrategy strategy, NotifyMethods notifyMethod, WebApiConfiguration configuration)
             where TStrategy : Type
         {
             return strategy.Name switch
@@ -349,7 +349,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakCreate(),
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakCreate(),
-                        _ => string.Empty
+                        _ => Guid.Empty
                     },
 
                 nameof(CaseStatusUpdatedScenario) =>
@@ -357,7 +357,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakUpdate(),
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakUpdate(),
-                        _ => string.Empty
+                        _ => Guid.Empty
                     },
 
                 nameof(CaseClosedScenario) =>
@@ -365,10 +365,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.User.TemplateIds.Email.ZaakClose(),
                         NotifyMethods.Sms => configuration.User.TemplateIds.Sms.ZaakClose(),
-                        _ => string.Empty
+                        _ => Guid.Empty
                     },
 
-                _ => string.Empty
+                _ => Guid.Empty
             };
         }
 

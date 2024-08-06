@@ -40,6 +40,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             this._mockedSender?.Reset();
         }
 
+        #region ProcessAsync()
         [Test]
         public async Task ProcessAsync_ForTestNotification_ReturnsProcessingResult_Skipped()
         {
@@ -216,13 +217,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 Assert.That(message, Does.StartWith("HttpRequestException | Exception of type 'System.Net.Http.HttpRequestException' was"));
             });
         }
+        #endregion
 
         #region Helper methods
         private static NotifyData GetNotifyData(NotifyMethods method)
         {
             return new NotifyData(method,
                 string.Empty,
-                string.Empty,
+                Guid.Empty,
                 new Dictionary<string, object>());
         }
 

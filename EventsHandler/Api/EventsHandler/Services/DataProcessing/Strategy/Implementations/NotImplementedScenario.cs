@@ -43,9 +43,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         [ExcludeFromCodeCoverage]
-        protected override string GetSmsTemplateId()
+        protected override Guid GetSmsTemplateId()
         {
-            return NotImplemented<string>();
+            return NotImplemented<Guid>();
         }
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
@@ -64,9 +64,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         [ExcludeFromCodeCoverage]
-        protected override string GetEmailTemplateId()
+        protected override Guid GetEmailTemplateId()
         {
-            return NotImplemented<string>();
+            return NotImplemented<Guid>();
         }
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>

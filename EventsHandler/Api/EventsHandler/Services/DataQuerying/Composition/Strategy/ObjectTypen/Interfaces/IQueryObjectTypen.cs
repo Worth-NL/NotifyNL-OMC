@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
             Guid typeGuid = notification.Attributes.ObjectType.GetGuid();
 
             return typeGuid != default &&
-                   typeGuid == this.Configuration.AppSettings.Variables.Objecten.TaskTypeGuid();
+                   typeGuid == this.Configuration.User.Whitelist.TaskType_Uuid();
         }
         #endregion
 

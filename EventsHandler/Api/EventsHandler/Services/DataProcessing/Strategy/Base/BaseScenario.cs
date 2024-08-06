@@ -184,7 +184,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The template ID from "Notify NL" Web API service in format "00000000-0000-0000-0000-00000000" (UUID).
         /// </returns>
-        protected abstract string GetEmailTemplateId();
+        protected abstract Guid GetEmailTemplateId();
 
         /// <summary>
         /// Gets the e-mail "personalization" for this strategy.
@@ -203,7 +203,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The template ID from "Notify NL" Web API service in format "00000000-0000-0000-0000-00000000".
         /// </returns>
-        protected abstract string GetSmsTemplateId();
+        protected abstract Guid GetSmsTemplateId();
 
         /// <summary>
         /// Gets the SMS "personalization" for this strategy.
