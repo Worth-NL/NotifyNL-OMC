@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
+
 namespace EventsHandler.Exceptions
 {
     /// <summary>
@@ -12,7 +14,7 @@ namespace EventsHandler.Exceptions
         /// Initializes a new instance of the <see cref="AbortedNotifyingException"/> class.
         /// </summary>
         public AbortedNotifyingException(string message)
-            : base(message)
+            : base($"{message} {Resources.Processing_ABORT}")
         {
         }
     }

@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.QueryContext ??= this.DataQuery.From(notification);
 
             // Validation #1: The task needs to be of a specific type
-            if (!this.QueryContext.IsValidType())
+            if (!this.QueryContext.IsValidTaskTypeId())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }

@@ -399,7 +399,7 @@
     <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
-    <value>The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted.</value>
+    <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
     <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
@@ -411,20 +411,20 @@
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
-    <value>The notification can not be send if the task is already closed. Processing aborted.</value>
+    <value>The notification can not be send if the task is already closed.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskNotPerson" xml:space="preserve">
-    <value>The notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted.</value>
+    <value>The notification can not be send if the task is not assigned to a person (missing BSN number).</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
-    <value>The notification can not be send for this type of the task. Processing aborted.</value>
+    <value>The notification can not be send for this type of the task.</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
-    <value>Internal error: Provided URI is not a case type.</value>
+    <value>Internal error: The given URI is not a case type.</value>
     <comment>HTTP Status Code = 422</comment>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseUri" xml:space="preserve">
-    <value>Internal error: Provided URI is not a case.</value>
+    <value>Internal error: The given URI is not a case.</value>
     <comment>HTTP Status Code = 422</comment>
   </data>
   <data name="Operation_ERROR_Internal_NotDecisionUri" xml:space="preserve">
@@ -432,9 +432,16 @@
     <comment>HTTP Status Code = 422</comment>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">
-    <value>The notification can not be sent because the inform field is set to false.</value>
+    <value>The notification can not be sent because the inform field in the case type is set to false.</value>
   </data>
   <data name="Configuration_ERROR_InvalidUri" xml:space="preserve">
     <value>In the settings the given URI is invalid (e.g., default): {0}.</value>
+  </data>
+  <data name="Processing_ABORT" xml:space="preserve">
+    <value>Processing aborted.</value>
+    <comment>Suffix to Processing_ABORT_[...] messages</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_DecisionConfidentiality" xml:space="preserve">
+    <value>The notification can not be send because of the confidentiality setting '{0}' in information object related to decision.</value>
   </data>
 </root>

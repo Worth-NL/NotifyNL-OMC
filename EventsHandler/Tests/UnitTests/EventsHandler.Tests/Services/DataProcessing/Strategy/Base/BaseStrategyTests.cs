@@ -126,10 +126,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
 
-                const string expectedErrorMessage =
-                    "The notification can not be sent because case type with identification 4 is not included in the ";
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
+                    .Replace("{0}", "4")
+                    // Get substring
+                    [..(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted.Length -
+                        Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted.IndexOf("{1}", StringComparison.Ordinal))];
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
@@ -158,7 +162,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo((Resources.Processing_ABORT_DoNotSendNotification_Informeren)));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     fromInvokeCount, partyInvokeCount, caseInvokeCount);
