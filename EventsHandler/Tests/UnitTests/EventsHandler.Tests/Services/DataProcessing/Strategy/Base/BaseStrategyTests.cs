@@ -293,11 +293,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync())
-                .ReturnsAsync(testCase);
-
-            mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
+                .Setup(mock => mock.GetCaseAsync(
+                    It.IsAny<object?>()))
                 .ReturnsAsync(testCase);
 
             mockedQueryContext
@@ -305,7 +302,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 .ReturnsAsync(new CaseStatuses());
 
             mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .Setup(mock => mock.GetLastCaseTypeAsync(
+                    It.IsAny<CaseStatuses>()))
                 .ReturnsAsync(new CaseType
                 {
                     IsNotificationExpected = isNotificationExpected
@@ -323,7 +321,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             };
 
             mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
+                .Setup(mock => mock.GetPartyDataAsync(
+                    It.IsAny<string>()))
                 .ReturnsAsync(testParty);
 
             return mockedQueryContext;
@@ -333,7 +332,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         {
             var mockedQueryService = new Mock<IDataQueryService<NotificationEvent>>();
             mockedQueryService
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Setup(mock => mock.From(
+                    It.IsAny<NotificationEvent>()))
                 .Returns(mockedQueryContext.Object);
 
             return mockedQueryService;
@@ -386,7 +386,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                     Times.Exactly(partyInvokeCount));
 
             mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(),
+                .Verify(mock => mock.GetCaseAsync(
+                        It.IsAny<object?>()),
                     Times.Exactly(caseInvokeCount));
         }
         #endregion
