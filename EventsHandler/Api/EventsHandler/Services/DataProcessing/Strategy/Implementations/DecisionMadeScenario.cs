@@ -2,6 +2,7 @@
 
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -42,7 +43,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.QueryContext ??= this.DataQuery.From(notification);
             this.CachedInfoObject ??= await this.QueryContext.GetInfoObjectAsync();
 
-            // Validation #1: Confidentiality setting
+            // Validation #1: Confidentiality
             if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
             {
                 throw new AbortedNotifyingException(
@@ -50,6 +51,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         this.CachedInfoObject.Value.Confidentiality));
             }
 
+            // Validation #2: Status
+            if (this.CachedInfoObject.Value.Status != MessageStatus.Definitive)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
+            }
 
             // TODO: Different way to obtain case
             //this.CachedCommonPartyData ??=

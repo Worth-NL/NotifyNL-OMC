@@ -781,6 +781,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification can not be send because the status of the decision is not definitive..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_DecisionStatus {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_DecisionStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent because the inform field in the case type is set to false..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Informeren {
