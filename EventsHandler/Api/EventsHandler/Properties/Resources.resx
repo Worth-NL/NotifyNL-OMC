@@ -417,7 +417,7 @@
     <value>The notification can not be send if the task is not assigned to a person (missing BSN number).</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
-    <value>The notification can not be send for this type of the task.</value>
+    <value>The notification can not be send for this type of the task (whitelisted UUID).</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
     <value>Internal error: The given URI is not a case type.</value>
@@ -446,5 +446,8 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_DecisionStatus" xml:space="preserve">
     <value>The notification can not be send because the status of the decision is not definitive.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_MessageType" xml:space="preserve">
+    <value>The notification can not be send for this type of the message (whitelisted UUID).</value>
   </data>
 </root>

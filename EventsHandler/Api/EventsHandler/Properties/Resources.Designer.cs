@@ -799,6 +799,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification can not be send for this type of the message (whitelisted UUID)..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_MessageType {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification can not be send if the task is already closed..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
@@ -817,7 +826,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send for this type of the task..
+        ///   Looks up a localized string similar to The notification can not be send for this type of the task (whitelisted UUID)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {
