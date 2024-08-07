@@ -41,24 +41,24 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             if (parameter == null)
             {
                 caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObject);
-        }
+            }
 
             // Case #2: The URI was provided (but it might be the incorrect one)
             if (parameter is Uri uri)
-        {
-                if (!uri.AbsoluteUri.Contains("/zaaktypen/"))  // Needs to be the case type URI
             {
-                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
-            }
+                if (!uri.AbsoluteUri.Contains("/zaaktypen/"))  // Needs to be the case type URI
+                {
+                    throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
+                }
 
                 caseTypeUri = uri;
-        }
+            }
 
             // Case #3: The case type URI can be requested from Data
             if (parameter is Data taskData)
-        {
+            {
                 caseTypeUri = await GetCaseTypeUriAsync(queryBase, taskData.CaseUrl);
-        }
+            }
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -118,21 +118,37 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
 
         /// <summary>
-        /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<Decision> GetDecisionAsync(IQueryBase queryBase)
+        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase)
         {
-            if (!queryBase.Notification.MainObject.AbsoluteUri.Contains("/besluiten/"))
+            Uri infoObjectUri = (await GetDecisionResourceAsync(queryBase)).InfoObjectUrl;
+
+            return await queryBase.ProcessGetAsync<InfoObject>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: infoObjectUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DecisionResource"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        private async Task<DecisionResource> GetDecisionResourceAsync(IQueryBase queryBase)
+        {
+            if (!queryBase.Notification.ResourceUrl.AbsoluteUri.Contains("/besluitinformatieobjecten/"))
             {
-                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotDecisionUri);
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotDecisionResourceUri);
             }
 
-            return await queryBase.ProcessGetAsync<Decision>(
+            return await queryBase.ProcessGetAsync<DecisionResource>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObject,  // Decision URL
+                uri: queryBase.Notification.ResourceUrl,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
         #pragma warning restore CA1822

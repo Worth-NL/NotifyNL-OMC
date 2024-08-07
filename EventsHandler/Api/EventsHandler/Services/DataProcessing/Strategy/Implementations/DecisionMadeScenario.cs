@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Exceptions;
+using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -8,6 +10,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
+using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -18,8 +21,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        /// <inheritdoc cref="Decision"/>
-        private Decision? CachedDecision { get; set; }
+        /// <inheritdoc cref="DecisionResource"/>
+        private InfoObject? CachedInfoObject { get; set; }
 
         /// <inheritdoc cref="Case"/>
         private Case? CachedCase { get; set; }
@@ -37,15 +40,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedInfoObject ??= await this.QueryContext.GetInfoObjectAsync();
 
-            // TODO: Is this still needed?
-            this.CachedDecision ??= await this.QueryContext.GetDecisionAsync();
+            // Validation #1: Confidentiality setting
+            if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+            {
+                throw new AbortedNotifyingException(
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
+                        this.CachedInfoObject.Value.Confidentiality));
+            }
+
 
             // TODO: Different way to obtain case
             //this.CachedCommonPartyData ??=
             //    await this.QueryContext.GetPartyDataAsync(
             //    await this.QueryContext.GetBsnNumberAsync(
-            //          this.CachedDecision.Value.CaseUrl));
+            //          this.CachedInfoObject.Value.CaseUrl));
 
             return await base.GetAllNotifyDataAsync(notification);
         }
@@ -59,7 +69,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision!.Value);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedInfoObject!.Value);  // TODO: To be updated
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
@@ -94,7 +104,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.DropCache()"/>
         /// <remarks>
         /// <list type="bullet">
-        ///   <item><see cref="CachedDecision"/></item>
+        ///   <item><see cref="CachedInfoObject"/></item>
         ///   <item><see cref="CachedCase"/></item>
         /// </list>
         /// </remarks>
@@ -102,7 +112,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             base.DropCache();
 
-            this.CachedDecision = null;
+            this.CachedInfoObject = null;
             this.CachedCase = null;
         }
         #endregion

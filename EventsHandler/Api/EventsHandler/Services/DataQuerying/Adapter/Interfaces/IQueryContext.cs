@@ -61,8 +61,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetDecisionAsync(IQueryBase)"/>
-        internal Task<Decision> GetDecisionAsync();
+        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase)"/>
+        internal Task<InfoObject> GetInfoObjectAsync();
 
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);

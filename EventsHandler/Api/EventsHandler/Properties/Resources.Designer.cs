@@ -702,9 +702,9 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Internal error: The given URI is not a decision resource..
         /// </summary>
-        internal static string Operation_ERROR_Internal_NotDecisionUri {
+        internal static string Operation_ERROR_Internal_NotDecisionResourceUri {
             get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionUri", resourceCulture);
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionResourceUri", resourceCulture);
             }
         }
         
@@ -772,7 +772,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because the inform field is set to false..
+        ///   Looks up a localized string similar to The notification can not be send because of the confidentiality setting &apos;{0}&apos; in information object related to decision..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_DecisionConfidentiality {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_DecisionConfidentiality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because the inform field in the case type is set to false..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Informeren {
             get {
