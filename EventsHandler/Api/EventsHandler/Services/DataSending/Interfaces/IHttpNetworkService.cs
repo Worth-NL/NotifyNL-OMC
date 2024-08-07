@@ -5,7 +5,7 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 namespace EventsHandler.Services.DataSending.Interfaces
 {
     /// <summary>
-    /// The service to retrieve data from different services supplying them to business logic.
+    /// The service defining basic HTTP Requests contracts (e.g., GET, POST).
     /// </summary>
     public interface IHttpNetworkService
     {
