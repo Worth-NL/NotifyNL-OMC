@@ -119,21 +119,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // Arrange
             this._mockedQueryContext
-                .Setup(mock => mock.IsValidType())
+                .Setup(mock => mock.IsValidTaskTypeId())
                 .Returns(false);  // Invalid condition
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(this._emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskType));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -144,7 +145,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // Arrange
             this._mockedQueryContext
-                .Setup(mock => mock.IsValidType())
+                .Setup(mock => mock.IsValidTaskTypeId())
                 .Returns(true);
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
@@ -154,14 +155,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(this._emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -172,7 +174,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // Arrange
             this._mockedQueryContext
-                .Setup(mock => mock.IsValidType())
+                .Setup(mock => mock.IsValidTaskTypeId())
                 .Returns(true);
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
@@ -182,14 +184,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(_emptyConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(this._emptyConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
             });
@@ -215,7 +218,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     .Replace("{0}", "4")
                     .Replace("{1}", "USER_WHITELIST_TASKASSIGNED_IDS");
 
-                Assert.That(exception?.Message, Is.EqualTo(expectedErrorMessage));
+                Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
             });
@@ -236,7 +240,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ABORT_DoNotSendNotification_Informeren));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
                 VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
             });
@@ -275,7 +280,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // Arrange
             this._mockedQueryContext
-                .Setup(mock => mock.IsValidType())
+                .Setup(mock => mock.IsValidTaskTypeId())
                 .Returns(true);
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
@@ -294,7 +299,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            INotifyScenario scenario = new TaskAssignedScenario(_testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -360,7 +365,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // IQueryContext
             this._mockedQueryContext
-                .Setup(mock => mock.IsValidType())
+                .Setup(mock => mock.IsValidTaskTypeId())
                 .Returns(true);
 
             this._mockedQueryContext
@@ -399,7 +404,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
-            return new TaskAssignedScenario(_testConfiguration, this._mockedDataQuery.Object);
+            return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
         }
         #endregion
 
