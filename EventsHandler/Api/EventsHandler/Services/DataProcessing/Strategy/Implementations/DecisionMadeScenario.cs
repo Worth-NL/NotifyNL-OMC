@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
@@ -43,7 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.QueryContext ??= this.DataQuery.From(notification);
             this.CachedInfoObject ??= await this.QueryContext.GetInfoObjectAsync();
 
-            // Validation #1: Confidentiality
+            // Validation #1: Confidentiality needs to be acceptable
             if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
             {
                 throw new AbortedNotifyingException(
@@ -51,10 +52,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         this.CachedInfoObject.Value.Confidentiality));
             }
 
-            // Validation #2: Status
+            // Validation #2: Status needs to be definitive
             if (this.CachedInfoObject.Value.Status != MessageStatus.Definitive)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
+            }
+
+            // Validation #3: The message needs to be of a specific type
+            if (this.CachedInfoObject.Value.TypeUri.GetGuid() !=
+                this.Configuration.User.Whitelist.MessageType_Uuid())
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
             }
 
             // TODO: Different way to obtain case
