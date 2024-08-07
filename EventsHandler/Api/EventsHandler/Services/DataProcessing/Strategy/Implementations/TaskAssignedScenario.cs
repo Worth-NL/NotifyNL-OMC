@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
@@ -45,7 +46,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.QueryContext ??= this.DataQuery.From(notification);
 
             // Validation #1: The task needs to be of a specific type
-            if (!this.QueryContext.IsValidTaskTypeId())
+            if (notification.Attributes.ObjectType.GetGuid() !=
+                this.Configuration.User.Whitelist.TaskType_Uuid())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
