@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         ///   the same as the one defined in the app settings; otherwise, <see langword="false"/>.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
-        internal sealed bool IsValidType(NotificationEvent notification)
+        internal sealed bool IsValidTaskTypeId(NotificationEvent notification)
         {
             Guid typeGuid = notification.Attributes.ObjectType.GetGuid();
 
