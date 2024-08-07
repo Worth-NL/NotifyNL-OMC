@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync"/>
+        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync(IQueryBase, CaseStatuses)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="CaseStatuses"/>, but it produces an additional
         ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
@@ -87,8 +87,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryObjectTypen
-        /// <inheritdoc cref="IQueryObjectTypen.IsValidType(NotificationEvent)"/>
-        internal bool IsValidType();
+        /// <inheritdoc cref="IQueryObjectTypen.IsValidTaskTypeId"/>
+        internal bool IsValidTaskTypeId();
         #endregion
 
         #region IQueryObjecten

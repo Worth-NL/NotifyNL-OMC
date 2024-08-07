@@ -133,10 +133,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryObjectTypen
-        /// <inheritdoc cref="IQueryContext.IsValidType()"/>
-        bool IQueryContext.IsValidType()
+        /// <inheritdoc cref="IQueryContext.IsValidTaskTypeId"/>
+        bool IQueryContext.IsValidTaskTypeId()
         {
-            return this._queryObjectTypen.IsValidType(this._queryBase.Notification);
+            return this._queryObjectTypen.IsValidTaskTypeId(this._queryBase.Notification);
         }
         #endregion
 
