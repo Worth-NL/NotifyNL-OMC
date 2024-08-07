@@ -67,8 +67,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         #endregion
 
         #region Polimorphic (Case type)
-        /// <inheritdoc cref="IQueryZaak.RequestCaseTypeUriAsync"/>
-        async Task<Uri> IQueryZaak.RequestCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
+        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriAsync"/>
+        async Task<Uri> IQueryZaak.GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
             return (await GetCaseDetailsV1Async(queryBase, caseUri))
                 .CaseTypeUrl;
