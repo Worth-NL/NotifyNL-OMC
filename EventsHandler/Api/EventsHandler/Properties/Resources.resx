@@ -444,4 +444,7 @@
   <data name="Processing_ABORT_DoNotSendNotification_DecisionConfidentiality" xml:space="preserve">
     <value>The notification can not be send because of the confidentiality setting '{0}' in information object related to decision.</value>
   </data>
+  <data name="Processing_ABORT_DoNotSendNotification_DecisionStatus" xml:space="preserve">
+    <value>The notification can not be send because the status of the decision is not definitive.</value>
+  </data>
 </root>
