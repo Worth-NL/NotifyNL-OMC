@@ -78,7 +78,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
 
             // Request URL
-            Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");
+            Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");  // TODO: Main Object validation
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
