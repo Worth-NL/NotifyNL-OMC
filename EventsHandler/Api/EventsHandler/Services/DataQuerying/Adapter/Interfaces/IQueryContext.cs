@@ -35,21 +35,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase)"/>
-        internal Task<Case> GetCaseAsync();
-
-        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Uri?)"/>
+        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, object?)"/>
         /// <remarks>
-        ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/> or extracted
-        ///   internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
+        ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
+        ///   be extracted internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<Case> GetCaseAsync(Uri? caseTypeUri);
-
-        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Data)"/>
-        internal Task<Case> GetCaseAsync(Data taskData);
-
-        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, Decision)"/>
-        internal Task<Case> GetCaseAsync(Decision decision);
+        internal Task<Case> GetCaseAsync(object? parameter = null);
 
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
         internal Task<CaseStatuses> GetCaseStatusesAsync();
