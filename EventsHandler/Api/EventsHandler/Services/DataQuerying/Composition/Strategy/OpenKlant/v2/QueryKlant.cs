@@ -39,15 +39,18 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
+            // TODO: BSN number validation
+
             // Predefined URL components
             string partiesEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/partijen";
 
-            string partyTypeParameter = $"?partijIdentificator__codeSoortObjectId={((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier()}";
+            string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
+            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
             string partyObjectIdParameter = $"&partijIdentificator__objectId={bsnNumber}";
             const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            var partiesByTypeIdAndExpand = new Uri($"{partiesEndpoint}{partyTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            var partiesByTypeIdAndExpand = new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetCitizenDetailsV2Async(queryBase, partiesByTypeIdAndExpand))
                 .Party(((IQueryKlant)this).Configuration)
