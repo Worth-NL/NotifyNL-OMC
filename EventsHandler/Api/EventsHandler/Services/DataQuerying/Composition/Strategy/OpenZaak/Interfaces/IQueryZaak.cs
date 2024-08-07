@@ -30,46 +30,40 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase)
+        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, object? parameter = null)
         {
-            return await GetCaseAsync(queryBase, null);
+            Uri? caseTypeUri = null;
+
+            // Case #1: The case type URI isn't provided so, it needs to be re-queried
+            if (parameter == null)
+            {
+                caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObject);
         }
 
-        /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
-        /// <exception cref="ArgumentException"/>
-        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Uri? caseTypeUrl)
+            // Case #2: The URI was provided (but it might be the incorrect one)
+            if (parameter is Uri uri)
         {
-            if (caseTypeUrl != null && !caseTypeUrl.AbsoluteUri.Contains("/zaaktypen/"))
+                if (!uri.AbsoluteUri.Contains("/zaaktypen/"))  // Needs to be the case type URI
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
             }
 
-            caseTypeUrl ??= await GetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObject);
+                caseTypeUri = uri;
+        }
+
+            // Case #3: The case type URI can be requested from Data
+            if (parameter is Data taskData)
+        {
+                caseTypeUri = await GetCaseTypeUriAsync(queryBase, taskData.CaseUrl);
+        }
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseTypeUrl,
+                uri: caseTypeUri ?? throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri),
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
-        }
-
-        /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
-        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Data taskData)
-        {
-            Uri caseTypeUri = await RequestCaseTypeUriAsync(queryBase, taskData.CaseUrl);
-
-            return await GetCaseAsync(queryBase, caseTypeUri);
-        }
-
-        /// <inheritdoc cref="GetCaseAsync(IQueryBase)"/>
-        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, Decision decision)
-        {
-            throw new NotImplementedException();
-            // TODO: Update
-            //Uri caseTypeUri = await RequestCaseTypeUriAsync(queryBase, decision.CaseUrl);
-
-            //return await GetCaseAsync(queryBase, caseTypeUri);
         }
 
         /// <summary>
@@ -164,7 +158,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private async Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
+        private async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
             // Case type URI was already provided in the initial notification
             if (queryBase.Notification.Attributes.CaseType?.AbsoluteUri.IsNotEmpty() ?? false)
@@ -179,11 +173,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             // Case type URI needs to be queried from Main Object
-            return await RequestCaseTypeUriAsync(queryBase, caseUri);  // Fallback, providing case type URI anyway
+            return await GetCaseTypeUriAsync(queryBase, caseUri);  // Fallback, providing case type URI anyway
         }
 
-        /// <inheritdoc cref="GetCaseTypeUriAsync(IQueryBase, Uri)"/>
-        protected Task<Uri> RequestCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
+        /// <inheritdoc cref="TryGetCaseTypeUriAsync"/>
+        protected Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Telemetry)

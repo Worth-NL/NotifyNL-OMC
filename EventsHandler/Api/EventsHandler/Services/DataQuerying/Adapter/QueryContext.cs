@@ -54,21 +54,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync()"/>
-        async Task<Case> IQueryContext.GetCaseAsync()
-            => await this._queryZaak.GetCaseAsync(this._queryBase);
-
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
-        async Task<Case> IQueryContext.GetCaseAsync(Uri? caseTypeUri)
-            => await this._queryZaak.GetCaseAsync(this._queryBase, caseTypeUri);
-
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Data)"/>
-        async Task<Case> IQueryContext.GetCaseAsync(Data taskData)
-            => await this._queryZaak.GetCaseAsync(this._queryBase, taskData);
-
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Decision)"/>
-        async Task<Case> IQueryContext.GetCaseAsync(Decision decision)
-            => await this._queryZaak.GetCaseAsync(this._queryBase, decision);
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(object?)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(object? parameter)
+            => await this._queryZaak.GetCaseAsync(this._queryBase, parameter);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
