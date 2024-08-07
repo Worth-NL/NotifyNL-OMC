@@ -427,8 +427,8 @@
     <value>Internal error: The given URI is not a case.</value>
     <comment>HTTP Status Code = 422</comment>
   </data>
-  <data name="Operation_ERROR_Internal_NotDecisionUri" xml:space="preserve">
-    <value>Internal error: Provided URI is not a decision.</value>
+  <data name="Operation_ERROR_Internal_NotDecisionResourceUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a decision resource.</value>
     <comment>HTTP Status Code = 422</comment>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">

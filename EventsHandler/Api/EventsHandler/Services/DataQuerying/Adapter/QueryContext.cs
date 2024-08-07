@@ -96,9 +96,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<MainObject> IQueryContext.GetMainObjectAsync()
             => await this._queryZaak.GetMainObjectAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionAsync()"/>
-        async Task<Decision> IQueryContext.GetDecisionAsync()
-            => await this._queryZaak.GetDecisionAsync(this._queryBase);
+        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync"/>
+        async Task<InfoObject> IQueryContext.GetInfoObjectAsync()
+            => await this._queryZaak.GetInfoObjectAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
