@@ -1,15 +1,15 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
-using EventsHandler.Constants;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The information object related to the <see cref="Decision"/> retrieved from "OpenZaak" Web API service.
+    /// The information object related to the <see cref="DecisionResource"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable" />
     public struct InfoObject : IJsonSerializable
