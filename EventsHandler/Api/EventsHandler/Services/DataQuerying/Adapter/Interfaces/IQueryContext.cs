@@ -86,11 +86,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         internal Task<string> LinkToSubjectObjectAsync(HttpContent body);
         #endregion
 
-        #region IQueryObjectTypen
-        /// <inheritdoc cref="IQueryObjectTypen.IsValidTaskTypeId"/>
-        internal bool IsValidTaskTypeId();
-        #endregion
-
         #region IQueryObjecten
         /// <inheritdoc cref="IQueryObjecten.GetTaskAsync(IQueryBase)"/>
         internal Task<TaskObject> GetTaskAsync();
