@@ -160,19 +160,19 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         private async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
-            // Case type URI was already provided in the initial notification
+            // Case #1: The case type URI was already provided in the initial notification
             if (queryBase.Notification.Attributes.CaseType?.AbsoluteUri.IsNotEmpty() ?? false)
             {
                 return queryBase.Notification.Attributes.CaseType;
             }
 
-            // Main Object doesn't contain Case URI (e.g., the initial notification isn't a case scenario)
+            // Case #2: The Main Object doesn't contain case URI (e.g., the initial notification isn't a case scenario)
             if (!caseUri.AbsoluteUri.Contains("/zaken/"))
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
-            // Case type URI needs to be queried from Main Object
+            // Case #3: The case type URI needs to be queried from the Main Object
             return await GetCaseTypeUriAsync(queryBase, caseUri);  // Fallback, providing case type URI anyway
         }
 
