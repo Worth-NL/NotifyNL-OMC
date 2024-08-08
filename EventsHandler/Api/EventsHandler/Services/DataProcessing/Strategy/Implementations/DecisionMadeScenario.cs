@@ -44,12 +44,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.QueryContext ??= this.DataQuery.From(notification);
             this.CachedInfoObject ??= await this.QueryContext.GetInfoObjectAsync();
 
-            // Validation #1: Confidentiality needs to be acceptable
-            if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+            // Validation #1: The message needs to be of a specific type
+            if (this.CachedInfoObject.Value.TypeUri.GetGuid() !=
+                this.Configuration.User.Whitelist.MessageType_Uuid())
             {
-                throw new AbortedNotifyingException(
-                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
-                        this.CachedInfoObject.Value.Confidentiality));
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
             }
 
             // Validation #2: Status needs to be definitive
@@ -58,11 +57,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
-            // Validation #3: The message needs to be of a specific type
-            if (this.CachedInfoObject.Value.TypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.MessageType_Uuid())
+            // Validation #3: Confidentiality needs to be acceptable
+            if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
             {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
+                throw new AbortedNotifyingException(
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
+                        this.CachedInfoObject.Value.Confidentiality));
             }
 
             // TODO: Different way to obtain case
