@@ -46,7 +46,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             Attributes = new EventAttributes
             {
-                ObjectType = new Uri("http://www.domain.com/0236e468-2ad8-43d6-a723-219cb22acb37")
+                ObjectType = new Uri($"http://www.domain.com/{ConfigurationHandler.TestTypeUuid}")
             }
         };
 
@@ -400,16 +400,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #region Verify
         private void VerifyInvoke(int getPartyDataAsyncInvokeCount, int getCaseAsyncInvokeCount)
         {
-            this._mockedDataQuery.Verify(mock =>
-                    mock.From(It.IsAny<NotificationEvent>()),
+            this._mockedDataQuery.Verify(mock => mock.From(
+                    It.IsAny<NotificationEvent>()),
                 Times.Once);
 
-            this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataAsync(It.IsAny<string>()),
+            this._mockedQueryContext.Verify(mock => mock.GetPartyDataAsync(
+                    It.IsAny<string>()),
                 Times.Exactly(getPartyDataAsyncInvokeCount));
 
-            this._mockedQueryContext.Verify(
-                mock => mock.GetCaseAsync(It.IsAny<Data>()),
+            this._mockedQueryContext.Verify(mock => mock.GetCaseAsync(
+                    It.IsAny<Data>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
         }
         #endregion

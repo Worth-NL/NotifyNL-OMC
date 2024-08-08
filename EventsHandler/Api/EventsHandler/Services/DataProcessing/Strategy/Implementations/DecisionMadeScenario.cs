@@ -23,9 +23,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        /// <inheritdoc cref="DecisionResource"/>
-        private InfoObject? CachedInfoObject { get; set; }
-
         /// <inheritdoc cref="Case"/>
         private Case? CachedCase { get; set; }
 
@@ -42,27 +39,27 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
-            this.CachedInfoObject ??= await this.QueryContext.GetInfoObjectAsync();
+            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync();
 
             // Validation #1: The message needs to be of a specific type
-            if (this.CachedInfoObject.Value.TypeUri.GetGuid() !=
+            if (infoObject.TypeUri.GetGuid() !=
                 this.Configuration.User.Whitelist.MessageType_Uuid())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
             }
 
             // Validation #2: Status needs to be definitive
-            if (this.CachedInfoObject.Value.Status != MessageStatus.Definitive)
+            if (infoObject.Status != MessageStatus.Definitive)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
             // Validation #3: Confidentiality needs to be acceptable
-            if (this.CachedInfoObject.Value.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+            if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
-                        this.CachedInfoObject.Value.Confidentiality));
+                        infoObject.Confidentiality));
             }
 
             // TODO: Different way to obtain case
@@ -83,7 +80,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedInfoObject!.Value);  // TODO: To be updated
+            //this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedInfoObject!.Value);  // TODO: To be updated
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
@@ -118,7 +115,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.DropCache()"/>
         /// <remarks>
         /// <list type="bullet">
-        ///   <item><see cref="CachedInfoObject"/></item>
         ///   <item><see cref="CachedCase"/></item>
         /// </list>
         /// </remarks>
@@ -126,7 +122,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             base.DropCache();
 
-            this.CachedInfoObject = null;
             this.CachedCase = null;
         }
         #endregion
