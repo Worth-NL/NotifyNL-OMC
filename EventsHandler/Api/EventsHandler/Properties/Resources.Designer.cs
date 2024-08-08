@@ -421,7 +421,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID:.
+        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID: {0}..
         /// </summary>
         internal static string Events_NotifyClientInitialized {
             get {

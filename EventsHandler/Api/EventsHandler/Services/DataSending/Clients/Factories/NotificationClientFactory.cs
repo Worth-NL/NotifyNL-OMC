@@ -26,7 +26,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
         INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string organizationId)
         {
-            OmcController.LogMessage(LogLevel.Trace, $"{Resources.Events_NotifyClientInitialized} {organizationId}.");
+            OmcController.LogMessage(LogLevel.Trace, string.Format(Resources.Events_NotifyClientInitialized, organizationId));
 
             return new NotifyClientProxy(
                 new NotificationClient(
