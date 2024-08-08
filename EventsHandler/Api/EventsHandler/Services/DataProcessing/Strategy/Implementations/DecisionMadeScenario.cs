@@ -66,7 +66,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             //this.CachedCommonPartyData ??=
             //    await this.QueryContext.GetPartyDataAsync(
             //    await this.QueryContext.GetBsnNumberAsync(
-            //          this.CachedInfoObject.Value.CaseUrl));
+            //          this.CachedInfoObject.Value.CaseUri));
 
             return await base.GetAllNotifyDataAsync(notification);
         }

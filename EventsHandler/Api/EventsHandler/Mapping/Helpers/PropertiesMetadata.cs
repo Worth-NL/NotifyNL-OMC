@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Helpers
 {
     /// <summary>
-    /// Special collection, containing metadata of business objects properties (<see cref="PropertyInfo"/>s)
+    /// A special collection, containing metadata of business objects properties (<see cref="PropertyInfo"/>s)
     /// including their names in two languages (English and Dutch) using bidirectional mapping (EN => NL => EN).
     /// </summary>
     /// <seealso cref="IReadOnlyList{T}"/>

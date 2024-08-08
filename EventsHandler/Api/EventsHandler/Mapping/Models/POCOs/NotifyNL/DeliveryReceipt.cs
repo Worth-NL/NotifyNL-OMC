@@ -8,7 +8,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
 {
     /// <summary>
-    /// When you send an email or text message, Notify will send a receipt to your callback URL with the status of the message.
+    /// The delivery receipt coming from "Notify" Web API service.
+    /// </summary>
+    /// <remarks>
+    /// When you send an email or text message, "Notify" will send a receipt to your callback URL with the status of the message.
     /// This is an automated method to get the status of messages. The callback message is formatted in JSON. All the values are
     /// strings, apart from the template version, which is a number.
     /// <para>
@@ -18,13 +21,16 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
     ///     https://docs.notifications.service.gov.uk/rest-api.html#delivery-receipts
     ///   </code> 
     /// </para>
-    /// </summary>
+    /// </remarks>
     internal struct DeliveryReceipt : IJsonSerializable
     {
+        /// <summary>
+        /// The default <see cref="DeliveryReceipt"/>.
+        /// </summary>
         internal static DeliveryReceipt Default { get; } = new();
 
         /// <summary>
-        /// Notify’s id for the status receipts.
+        /// The "Notify" ID for the status receipts.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -34,7 +40,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         public Guid Id { get; internal set; }
 
         /// <summary>
-        /// The reference sent by the service.
+        /// The reference sent by the "Notify" Web API service.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -64,7 +70,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         public DeliveryStatuses Status { get; internal set; }
 
         /// <summary>
-        /// The time the service sent the request.
+        /// The time when the "Notify" Web API service sent the request.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -74,7 +80,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         public DateTime CreatedAt { get; internal set; }
 
         /// <summary>
-        /// The last time the status was updated.
+        /// The last time when the status of the notification was updated.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -84,7 +90,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         public DateTime CompletedAt { get; internal set; }
 
         /// <summary>
-        /// The time the notification was sent.
+        /// The time when the notification was sent.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -104,7 +110,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         public NotificationTypes Type { get; internal set; }
 
         /// <summary>
-        /// The id of the template that was used.
+        /// The ID of the template that was used.
         /// </summary>
         [Required]
         [JsonInclude]

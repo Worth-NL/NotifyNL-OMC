@@ -781,7 +781,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     private readonly string _finalPath;
 
                     /// <summary>
-                    /// Gets the count of the whitelisted IDs.
+                    /// The count of the whitelisted IDs.
                     /// </summary>
                     /// <remarks>
                     /// NOTE: To keep the data integrity do not expose the cached whitelist IDs directly.
