@@ -92,15 +92,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<MainObject> IQueryContext.GetMainObjectAsync()
             => await this._queryZaak.GetMainObjectAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync"/>
-        async Task<InfoObject> IQueryContext.GetInfoObjectAsync()
-            => await this._queryZaak.GetInfoObjectAsync(this._queryBase);
+        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync()"/>
+        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync()
+            => await this._queryZaak.GetDecisionResourceAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
-        {
-            return await this._queryZaak.SendFeedbackAsync(this._networkService, body);
-        }
+            => await this._queryZaak.SendFeedbackAsync(this._networkService, body);
         #endregion
 
         #region IQueryKlant
@@ -116,24 +114,17 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent)"/>
         async Task<ContactMoment> IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent body)
-        {
-            return await this._queryKlant.SendFeedbackAsync(this._queryBase, body);
-        }
+            => await this._queryKlant.SendFeedbackAsync(this._queryBase, body);
 
         /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(HttpContent)"/>
         async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
-        {
-            return await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(
-                this._networkService, this._queryKlant.GetDomain(), body);
-        }
+            => await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(this._networkService, this._queryKlant.GetDomain(), body);
         #endregion
 
         #region IQueryObjecten
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
         Task<TaskObject> IQueryContext.GetTaskAsync()
-        {
-            return this._queryObjecten.GetTaskAsync(this._queryBase);
-        }
+            => this._queryObjecten.GetTaskAsync(this._queryBase);
         #endregion
     }
 }
