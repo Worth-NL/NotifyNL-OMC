@@ -149,6 +149,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
+        #region Polymorphic (GetWhitelistName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
+        #endregion
+
         #region Polymorphic (DropCache)
         /// <inheritdoc cref="BaseScenario.DropCache()"/>
         /// <remarks>
@@ -164,11 +169,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this.CachedTaskData = null;
             this.CachedCase = null;
         }
-        #endregion
-
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
         #endregion
     }
 }
