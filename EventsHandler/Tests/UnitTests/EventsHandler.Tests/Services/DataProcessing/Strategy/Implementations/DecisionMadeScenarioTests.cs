@@ -118,6 +118,31 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 VerifyInvoke(getLastCaseTypeInvokeCount: 0, getCaseStatusesInvokeCount: 0);
             });
         }
+
+        [Test]
+        public void GetAllNotifyDataAsync_ForInvalidConfidentiality_ThrowsAbortedNotifyingException()
+        {
+            // Arrange
+            SetMockedQueryContext(s_invalidInfoObjectConfidentiality);
+            SetMockedDataQueryService();
+
+            INotifyScenario scenario = new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+
+                string expectedMessage = Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality
+                    .Replace("{0}", s_invalidInfoObjectConfidentiality.Confidentiality.ToString());
+
+                Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
+
+                VerifyInvoke(getLastCaseTypeInvokeCount: 0, getCaseStatusesInvokeCount: 0);
+            });
+        }
         #endregion
 
         #region Helper methods
