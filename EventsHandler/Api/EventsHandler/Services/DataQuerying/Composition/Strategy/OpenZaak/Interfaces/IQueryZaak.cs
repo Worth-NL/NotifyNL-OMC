@@ -26,7 +26,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenZaak";
 
-        #region Parent
+        #region Parent (Case)
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -103,7 +103,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
+        #endregion
 
+        #region Parent (Main Object)
         /// <summary>
         /// Gets the <see cref="MainObject"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -116,7 +118,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: queryBase.Notification.MainObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoMainObject);
         }
+        #endregion
 
+        #region Parent (Decision)
         /// <summary>
         /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
         /// </summary>
