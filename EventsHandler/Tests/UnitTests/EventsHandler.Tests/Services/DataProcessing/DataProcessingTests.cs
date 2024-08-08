@@ -51,8 +51,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             {
                 Channel = Channels.Unknown,
                 Resource = Resources.Unknown,
-                MainObject = testUri,
-                ResourceUrl = testUri
+                MainObjectUri = testUri,
+                ResourceUri = testUri
             };
 
             // Act

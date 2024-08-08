@@ -56,7 +56,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname },
-                { "status.omschrijving", this.CachedCaseType.Value.Description }
+                { "status.omschrijving", this.CachedCaseType.Value.Name }
             };
         }
         #endregion

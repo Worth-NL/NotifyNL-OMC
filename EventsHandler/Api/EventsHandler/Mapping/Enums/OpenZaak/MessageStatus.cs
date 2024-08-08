@@ -7,19 +7,19 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Enums.OpenZaak
 {
     /// <summary>
-    /// Gets the status of the message.
+    /// The status of the message.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<MessageStatus>))]
     public enum MessageStatus
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         /// <summary>
-        /// Have to be confidential.
+        /// The status is definitive / complete.
         /// </summary>
         [JsonPropertyName("definitief")]
         Definitive = 1

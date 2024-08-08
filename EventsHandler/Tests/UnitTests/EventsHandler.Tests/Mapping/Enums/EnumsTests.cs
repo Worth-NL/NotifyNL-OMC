@@ -2,10 +2,10 @@
 
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.NotifyNL;
+using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using System.Text.Json;
-using EventsHandler.Mapping.Enums.Objecten;
 
 namespace EventsHandler.UnitTests.Mapping.Enums
 {
@@ -25,9 +25,8 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.Confidential, "vertrouwelijk")]
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.NonConfidential, "openbaar")]
         // NotificatieApi: Resources
-        [TestCase(typeof(Resources), Resources.Case, "zaak")]
-        [TestCase(typeof(Resources), Resources.Object, "object")]
         [TestCase(typeof(Resources), Resources.Status, "status")]
+        [TestCase(typeof(Resources), Resources.Object, "object")]
         [TestCase(typeof(Resources), Resources.Decision, "besluitinformatieobject")]
         // OpenKlant: Distribution channels
         [TestCase(typeof(DistributionChannels), DistributionChannels.None, "geen")]
@@ -83,9 +82,8 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase("vertrouwelijk", typeof(PrivacyNotices), PrivacyNotices.Confidential)]
         [TestCase("openbaar", typeof(PrivacyNotices), PrivacyNotices.NonConfidential)]
         // NotificatieApi: Resources
-        [TestCase("zaak", typeof(Resources), Resources.Case)]
-        [TestCase("object", typeof(Resources), Resources.Object)]
         [TestCase("status", typeof(Resources), Resources.Status)]
+        [TestCase("object", typeof(Resources), Resources.Object)]
         [TestCase("besluitinformatieobject", typeof(Resources), Resources.Decision)]
         // OpenKlant: Distribution channels
         [TestCase("geen", typeof(DistributionChannels), DistributionChannels.None)]

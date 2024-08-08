@@ -16,7 +16,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
     public struct CaseDetails : IJsonSerializable
     {
         /// <summary>
-        /// Gets the case identification.
+        /// The <see cref="Case"/> identification.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]
@@ -24,7 +24,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         public string Identification { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Gets the case description.
+        /// The <see cref="Case"/> description.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         public string Description { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Gets the case type.
+        /// The <see cref="CaseType"/> in <seealso cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]

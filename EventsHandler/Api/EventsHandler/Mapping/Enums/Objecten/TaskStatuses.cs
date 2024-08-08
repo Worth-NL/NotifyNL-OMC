@@ -2,18 +2,19 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.Objecten
 {
     /// <summary>
-    /// The status of the task from "Objecten" Web API service.
+    /// The status of the <see cref="TaskObject"/> from "Objecten" Web API service.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<TaskStatuses>))]
     public enum TaskStatuses
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,

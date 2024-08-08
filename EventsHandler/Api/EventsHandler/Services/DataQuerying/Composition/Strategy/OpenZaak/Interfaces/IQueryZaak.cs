@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             // Case #1: The case type URI isn't provided so, it needs to be re-queried
             if (parameter == null)
             {
-                caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObject);
+                caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObjectUri);
             }
 
             // Case #2: The URI was provided (but it might be the incorrect one)
@@ -57,7 +57,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             // Case #3: The case type URI can be requested from Data
             if (parameter is Data taskData)
             {
-                caseTypeUri = await GetCaseTypeUriAsync(queryBase, taskData.CaseUrl);
+                caseTypeUri = await GetCaseTypeUriAsync(queryBase, taskData.CaseUri);
             }
 
             return await queryBase.ProcessGetAsync<Case>(
@@ -78,7 +78,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
 
             // Request URL
-            Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObject}");  // TODO: Main Object validation
+            Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObjectUri}");  // TODO: Main Object validation
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -96,7 +96,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
         {
             // Request URL
-            Uri lastStatusTypeUri = statuses.LastStatus().Type;
+            Uri lastStatusTypeUri = statuses.LastStatus().TypeUri;
 
             return await queryBase.ProcessGetAsync<CaseType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -113,7 +113,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         {
             return await queryBase.ProcessGetAsync<MainObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObject,  // Request URL
+                uri: queryBase.Notification.MainObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoMainObject);
         }
 
@@ -177,9 +177,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         private async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
             // Case #1: The case type URI was already provided in the initial notification
-            if (queryBase.Notification.Attributes.CaseType?.AbsoluteUri.IsNotEmpty() ?? false)
+            if (queryBase.Notification.Attributes.CaseTypeUri?.AbsoluteUri.IsNotEmpty() ?? false)
             {
-                return queryBase.Notification.Attributes.CaseType;
+                return queryBase.Notification.Attributes.CaseTypeUri;
             }
 
             // Case #2: The Main Object doesn't contain case URI (e.g., the initial notification isn't a case scenario)

@@ -70,8 +70,11 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         public Resources Resource { get; internal set; }
 
         /// <summary>
-        /// Mapping of attributes (key/value) of the notification. The publishing API specifies the allowed attributes.
+        /// The generic attributes of the <see cref="NotificationEvent"/>.
         /// </summary>
+        /// <remarks>
+        /// The source Web API service specifies attributes.
+        /// </remarks>
         [Required]
         [JsonInclude]
         [JsonRequired]
@@ -80,27 +83,27 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         public EventAttributes Attributes { get; internal set; }
 
         /// <summary>
-        /// URL reference to the main publishing API object related to the resource.
+        /// The reference to the domain object in <see cref="Uri"/> format.
         /// </summary>
         [Required]
         [JsonInclude]
         [JsonRequired]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
-        public Uri MainObject { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri MainObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// URL reference to the resource publishing API.
+        /// The reference to the resource in <see cref="Uri"/> format.
         /// </summary>
         [Required]
         [JsonInclude]
         [JsonRequired]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
-        public Uri ResourceUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri ResourceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// Date and time the action took place.
+        /// The date and time when the action took place.
         /// </summary>
         [Required]
         [JsonInclude]
@@ -144,11 +147,11 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         {
             bool[] validatedProperties =
             {
-                this.Action      == Actions.Unknown,
-                this.Channel     == Channels.Unknown,
-                this.Resource    == Resources.Unknown,
-                this.MainObject  == DefaultValues.Models.EmptyUri,
-                this.ResourceUrl == DefaultValues.Models.EmptyUri
+                this.Action        == Actions.Unknown,
+                this.Channel       == Channels.Unknown,
+                this.Resource      == Resources.Unknown,
+                this.MainObjectUri == DefaultValues.Models.EmptyUri,
+                this.ResourceUri   == DefaultValues.Models.EmptyUri
             };
 
             List<int>? invalidIndices = null;
