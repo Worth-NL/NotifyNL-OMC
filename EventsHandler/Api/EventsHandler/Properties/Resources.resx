@@ -369,7 +369,7 @@
     <value>The version of Telemetry service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="Events_NotifyClientInitialized" xml:space="preserve">
-    <value>The Notify HttpClient was initialized for organization ID:</value>
+    <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
   </data>
   <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
     <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
