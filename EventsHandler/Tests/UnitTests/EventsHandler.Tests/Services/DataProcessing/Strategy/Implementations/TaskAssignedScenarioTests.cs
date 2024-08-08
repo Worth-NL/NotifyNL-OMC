@@ -46,7 +46,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             Attributes = new EventAttributes
             {
-                ObjectType = new Uri($"http://www.domain.com/{ConfigurationHandler.TestTypeUuid}")
+                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestTypeUuid}")
             }
         };
 
@@ -134,7 +134,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_invalidNotification));  // Notification doesn't have matching ObjectType GUID
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_invalidNotification));  // Notification doesn't have matching GUID in task type
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 

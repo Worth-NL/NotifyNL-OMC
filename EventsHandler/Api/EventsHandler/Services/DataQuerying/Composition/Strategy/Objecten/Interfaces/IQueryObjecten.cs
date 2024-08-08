@@ -33,7 +33,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         {
             return await queryBase.ProcessGetAsync<TaskObject>(
                 httpClientType: HttpClientTypes.Objecten,
-                uri: queryBase.Notification.MainObject,  // Request URL
+                uri: queryBase.Notification.MainObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoTask);
         }
 #pragma warning restore CA1822

@@ -13,15 +13,15 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct DecisionResource : IJsonSerializable
     {
         /// <summary>
-        /// Gets the URL of the <see cref="InfoObject"/>.
+        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informatieobject")]
         [JsonPropertyOrder(0)]
-        public Uri InfoObjectUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri InfoObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// Gets the URL of the Decision.
+        /// The reference to the <see cref="Decision"/> in <see cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("besluit")]

@@ -60,7 +60,7 @@ namespace EventsHandler.Services.Responding.v1
             }
             catch (Exception exception)
             {
-                // NOTE: If callback.Id == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
+                // NOTE: If callback.IdUri == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
                 callbackDetails = GetDeliveryErrorLogMessage(callback, exception);
 
                 return OmcController.LogApiResponse(exception,
@@ -84,7 +84,7 @@ namespace EventsHandler.Services.Responding.v1
             }
             catch (Exception exception)
             {
-                // It wasn't possible to report completion because of issue with Telemetry Service or Reference
+                // It wasn't possible to report completion because of issue with Telemetry Service
                 OmcController.LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }

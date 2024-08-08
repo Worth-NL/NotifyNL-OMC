@@ -16,7 +16,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
     public struct CaseDetails : IJsonSerializable
     {
         /// <summary>
-        /// Gets the case type.
+        /// The <see cref="CaseType"/> in <seealso cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]

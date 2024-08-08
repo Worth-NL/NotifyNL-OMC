@@ -11,7 +11,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     /// <summary>
     /// The information object related to the <see cref="DecisionResource"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
-    /// <seealso cref="IJsonSerializable" />
+    /// <seealso cref="IJsonSerializable"/>
     public struct InfoObject : IJsonSerializable
     {
         /// <inheritdoc cref="PrivacyNotices"/>
@@ -26,7 +26,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyOrder(1)]
         public MessageStatus Status { get; internal set; }
 
-        /// <inheritdoc cref="PrivacyNotices"/>
+        /// <summary>
+        /// The type of the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("informatieobjecttype")]
         [JsonPropertyOrder(2)]

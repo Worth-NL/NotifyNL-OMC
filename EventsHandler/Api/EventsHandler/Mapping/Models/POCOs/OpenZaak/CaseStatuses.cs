@@ -40,7 +40,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         internal readonly bool WereNeverUpdated() => this.Count == 1;
 
         /// <summary>
-        /// Gets the newest <see cref="CaseStatus"/> from multiple ones.
+        /// The newest <see cref="CaseStatus"/> from multiple ones.
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         internal readonly CaseStatus LastStatus()

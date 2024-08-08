@@ -13,7 +13,7 @@ namespace EventsHandler.Services.Responding.Enums.v2
     public enum FeedbackTypes
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         Unknown = 0,
 

@@ -7,31 +7,31 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// A single status from <see cref="CaseStatuses"/> retrieved from "OpenZaak" Web API service.
+    /// The decision related to the <see cref="DecisionResource"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CaseStatus : IJsonSerializable
+    public struct Decision : IJsonSerializable
     {
         /// <summary>
-        /// The type of the <see cref="CaseStatus"/> in <see cref="Uri"/> format.
+        /// The type of the <see cref="Decision"/> in <see cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("statustype")]
+        [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(0)]
         public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The date and time when the <see cref="CaseStatus"/> was created.
+        /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("datumStatusGezet")]
+        [JsonPropertyName("zaak")]
         [JsonPropertyOrder(1)]
-        public DateTime Created { get; internal set; } = new();
+        public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CaseStatus"/> struct.
+        /// Initializes a new instance of the <see cref="MainObject"/> struct.
         /// </summary>
-        public CaseStatus()
+        public Decision()
         {
         }
     }

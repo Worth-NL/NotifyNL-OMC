@@ -6,21 +6,21 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// A type of the <see cref="CaseStatus"/> retrieved from "OpenZaak" Web API service.
+    /// The type of the <see cref="CaseStatus"/> retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseType : IJsonSerializable
     {
         /// <summary>
-        /// The name of the updated status.
+        /// The description of the <see cref="CaseType"/> which is an equivalent of its name.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(0)]
-        public string Description { get; internal set; } = string.Empty;
+        public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Determines whether the status is the final one => The <see cref="Case"/> was closed.
+        /// Determines whether the <see cref="CaseStatus"/> is final, which means that the <see cref="Case"/> is closed.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("isEindstatus")]
@@ -29,7 +29,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// Determines whether the party (e.g., user or organization) wants to be notified about
-        /// this certain <see cref="CaseType"/>.
+        /// this certain <see cref="CaseStatus"/> update.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informeren")]

@@ -77,8 +77,8 @@ namespace EventsHandler.Services.Register.v1
             // Prepare the body
             string jsonBody =
                 $"{{" +
-                $"  \"zaak\": \"{notification.MainObject}\", " +   // ENG: Case
-                $"  \"contactmoment\": \"{contactMoment.Url}\"" +  // ENG: Moment of contact
+                $"  \"zaak\": \"{notification.MainObjectUri}\", " +         // ENG: Case
+                $"  \"contactmoment\": \"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
                 $"}}";
 
             HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);

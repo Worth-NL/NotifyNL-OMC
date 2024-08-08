@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct Case : IJsonSerializable
     {
         /// <summary>
-        /// Gets the description of the case which is an equivalent to the case name.
+        /// The description of the <see cref="Case"/> which is an equivalent of its name.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
@@ -20,7 +20,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Gets the identification of the case which is an equivalent to the case number.
+        /// The identification of the <see cref="Case"/> which is an equivalent to the <see cref="Case"/> number.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]

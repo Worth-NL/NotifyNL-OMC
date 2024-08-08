@@ -2,44 +2,39 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.NotificatieApi
 {
     /// <summary>
-    /// The resource name that the notification is about.
+    /// The name of the notification resource.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<Resources>))]
     public enum Resources
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         /// <summary>
-        /// Case resource.
+        /// The <see cref="Models.POCOs.OpenZaak.CaseStatus"/> resource.
         /// </summary>
-        [JsonPropertyName("zaak")]
-        Case = 1,
+        [JsonPropertyName("status")]
+        Status = 1,
 
         /// <summary>
-        /// Object resource.
+        /// The <see cref="TaskObject"/> resource.
         /// </summary>
         [JsonPropertyName("object")]
         Object = 2,
 
         /// <summary>
-        /// Case status.
-        /// </summary>
-        [JsonPropertyName("status")]
-        Status = 3,
-
-        /// <summary>
-        /// Decision resource.
+        /// The <see cref="Models.POCOs.OpenZaak.Decision"/> resource.
         /// </summary>
         [JsonPropertyName("besluitinformatieobject")]
-        Decision = 4
+        Decision = 3
     }
 }

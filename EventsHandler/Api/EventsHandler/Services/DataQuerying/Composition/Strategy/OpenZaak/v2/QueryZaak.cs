@@ -37,7 +37,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
         {
             // TODO: Validate Main Object
-            return await ((IQueryZaak)this).GetBsnNumberAsync(queryBase, queryBase.Notification.MainObject);
+            return await ((IQueryZaak)this).GetBsnNumberAsync(queryBase, queryBase.Notification.MainObjectUri);
         }
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
