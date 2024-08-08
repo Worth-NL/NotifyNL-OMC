@@ -376,7 +376,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 _ => Guid.Empty
             };
         }
+        #endregion
 
+        #region Verify
         private static void VerifyMethodCalls(Mock<IQueryContext> mockedQueryContext, Mock<IDataQueryService<NotificationEvent>> mockedQueryService,
             int fromInvokeCount, int partyInvokeCount, int caseInvokeCount)
         {
