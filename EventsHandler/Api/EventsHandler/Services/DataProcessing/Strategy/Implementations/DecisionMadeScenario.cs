@@ -26,6 +26,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="Case"/>
         private Case? CachedCase { get; set; }
 
+        /// <inheritdoc cref="CaseType"/>
+        private CaseType? CachedCaseType { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
         /// </summary>
@@ -86,10 +89,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
 
-            ValidateNotifyPermit((
-                await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
-                await this.QueryContext!.GetCaseStatusesAsync()))  // Case status
-                .IsNotificationExpected);
+            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
+                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
+
+            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
             return new Dictionary<string, object>
             {
@@ -121,6 +124,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <remarks>
         /// <list type="bullet">
         ///   <item><see cref="CachedCase"/></item>
+        ///   <item><see cref="CachedCaseType"/></item>
         /// </list>
         /// </remarks>
         protected override void DropCache()
@@ -128,6 +132,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             base.DropCache();
 
             this.CachedCase = null;
+            this.CachedCaseType = null;
         }
         #endregion
     }

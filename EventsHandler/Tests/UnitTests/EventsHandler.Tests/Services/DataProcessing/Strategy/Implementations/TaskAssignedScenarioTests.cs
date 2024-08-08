@@ -138,7 +138,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
 
@@ -163,8 +163,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
+                
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
 
@@ -189,8 +189,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 0, getCaseAsyncInvokeCount: 0);
+                
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
 
@@ -216,8 +216,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
+                
+                VerifyInvoke(1, 1, 0, 0);
             });
         }
 
@@ -238,17 +238,18 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
+                
+                VerifyInvoke(1, 1, 1, 1);
             });
         }
 
-        [TestCase(DistributionChannels.Email, 1, 1)]
-        [TestCase(DistributionChannels.Sms, 1, 1)]
-        [TestCase(DistributionChannels.Both, 2, 1)]
-        [TestCase(DistributionChannels.None, 0, 0)]
+        [TestCase(DistributionChannels.Email, 1, 1, 1, 1)]
+        [TestCase(DistributionChannels.Sms, 1, 1, 1, 1)]
+        [TestCase(DistributionChannels.Both, 2, 1, 1, 1)]
+        [TestCase(DistributionChannels.None, 0, 0, 0, 0)]
         public async Task GetAllNotifyDataAsync_ForOpenTask_AssignedToPerson_WithValidDistChannels_ReturnsExpectedNotifyDataCount(
-            DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount)
+            DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount,
+            int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -264,8 +265,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult, Has.Length.EqualTo(notifyDataCount));
-
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount);
+                
+                VerifyInvoke(1, getCaseAsyncInvokeCount, getLastCaseTypeInvokeCount, getCaseStatusesInvokeCount);
             });
         }
 
@@ -278,6 +279,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Setup(mock => mock.GetTaskAsync())
                 .ReturnsAsync(s_taskOpenAssignedToPersonWithoutExpirationDate);
+
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
                 .ReturnsAsync(new CommonPartyData
@@ -301,7 +303,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 0);
+                VerifyInvoke(1, 0, 0, 0);
             });
         }
         #endregion
@@ -347,7 +349,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
 
-                VerifyInvoke(getPartyDataAsyncInvokeCount: 1, getCaseAsyncInvokeCount: 1);
+                VerifyInvoke(1, 1, 1, 1);
             });
         }
         #endregion
@@ -378,15 +380,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 });
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
-                .ReturnsAsync(new CaseStatuses());
-
-            this._mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
+                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType
                 {
                     IsNotificationExpected = isNotificationExpected
                 });
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses());
 
             // IDataQueryService
             this._mockedDataQuery
@@ -398,19 +400,27 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getPartyDataAsyncInvokeCount, int getCaseAsyncInvokeCount)
+        private void VerifyInvoke(int getPartyDataAsyncInvokeCount, int getCaseAsyncInvokeCount, int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount)
         {
-            this._mockedDataQuery.Verify(mock => mock.From(
-                    It.IsAny<NotificationEvent>()),
+            this._mockedDataQuery
+                .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
                 Times.Once);
 
-            this._mockedQueryContext.Verify(mock => mock.GetPartyDataAsync(
-                    It.IsAny<string>()),
+            this._mockedQueryContext
+                .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
                 Times.Exactly(getPartyDataAsyncInvokeCount));
 
-            this._mockedQueryContext.Verify(mock => mock.GetCaseAsync(
-                    It.IsAny<Data>()),
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Data>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
+                Times.Exactly(getLastCaseTypeInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseStatusesAsync(),
+                Times.Exactly(getCaseStatusesInvokeCount));
         }
         #endregion
     }

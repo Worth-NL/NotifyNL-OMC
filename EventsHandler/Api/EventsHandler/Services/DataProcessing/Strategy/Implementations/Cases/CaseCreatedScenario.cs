@@ -39,11 +39,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
+            
+            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
+                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
 
-            ValidateNotifyPermit((
-                await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
-                await this.QueryContext!.GetCaseStatusesAsync()))  // Case status
-                .IsNotificationExpected);
+            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
             return new Dictionary<string, object>
             {
