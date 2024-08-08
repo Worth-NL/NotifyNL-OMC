@@ -31,6 +31,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="Case"/>
         private Case? CachedCase { get; set; }
 
+        /// <inheritdoc cref="CaseType"/>
+        private CaseType? CachedCaseType { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
         /// </summary>
@@ -86,11 +89,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
+            
+            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
+                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
 
-            ValidateNotifyPermit((
-                await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
-                await this.QueryContext!.GetCaseStatusesAsync()))  // Case status
-                .IsNotificationExpected);
+            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
             string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
@@ -160,6 +163,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <list type="bullet">
         ///   <item><see cref="CachedTaskData"/></item>
         ///   <item><see cref="CachedCase"/></item>
+        ///   <item><see cref="CachedCaseType"/></item>
         /// </list>
         /// </remarks>
         protected override void DropCache()
@@ -168,6 +172,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             this.CachedTaskData = null;
             this.CachedCase = null;
+            this.CachedCaseType = null;
         }
         #endregion
     }
