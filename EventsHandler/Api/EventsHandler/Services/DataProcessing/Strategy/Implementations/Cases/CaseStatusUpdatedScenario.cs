@@ -2,7 +2,6 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
@@ -19,9 +18,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     /// <seealso cref="BaseCaseScenario"/>
     internal sealed class CaseStatusUpdatedScenario : BaseCaseScenario
     {
-        /// <inheritdoc cref="CaseStatuses"/>
-        private CaseStatuses? CachedCaseStatuses { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusUpdatedScenario"/> class.
         /// </summary>
@@ -43,9 +39,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakUpdate_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
-
-            this.CachedCaseStatuses ??= await this.QueryContext!.GetCaseStatusesAsync();
-            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(this.CachedCaseStatuses);
+            
+            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
+                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
 
             ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
@@ -76,21 +72,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         #region Polymorphic (GetWhitelistName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.ZaakUpdate_IDs().ToString();
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <inheritdoc cref="BaseCaseScenario.DropCache()"/>
-        /// <remarks>
-        /// <list type="bullet">
-        ///   <item><see cref="CachedCaseStatuses"/></item>
-        /// </list>
-        /// </remarks>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedCaseStatuses = null;
-        }
         #endregion
     }
 }
