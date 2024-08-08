@@ -61,8 +61,22 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase)"/>
-        internal Task<InfoObject> GetInfoObjectAsync();
+        /// <inheritdoc cref="IQueryZaak.GetDecisionResourceAsync(IQueryBase)"/>
+        internal Task<DecisionResource> GetDecisionResourceAsync();
+
+        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase, DecisionResource?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<InfoObject> GetInfoObjectAsync(DecisionResource? decisionResource = null);
+
+        /// <inheritdoc cref="IQueryZaak.GetDecisionAsync(IQueryBase, DecisionResource?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
 
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);

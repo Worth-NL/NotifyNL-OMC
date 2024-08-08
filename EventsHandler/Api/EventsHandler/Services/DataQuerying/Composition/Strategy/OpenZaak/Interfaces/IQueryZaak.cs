@@ -122,37 +122,55 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Parent (Decision)
         /// <summary>
-        /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
-        /// </summary>
-        /// <exception cref="ArgumentException"/>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="JsonException"/>
-        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase)
-        {
-            Uri infoObjectUri = (await GetDecisionResourceAsync(queryBase)).InfoObjectUrl;
-
-            return await queryBase.ProcessGetAsync<InfoObject>(
-                httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: infoObjectUri,  // Request URL
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
-        }
-
-        /// <summary>
         /// Gets the <see cref="DecisionResource"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private async Task<DecisionResource> GetDecisionResourceAsync(IQueryBase queryBase)
+        internal async Task<DecisionResource> GetDecisionResourceAsync(IQueryBase queryBase)
         {
-            if (!queryBase.Notification.ResourceUrl.AbsoluteUri.Contains("/besluitinformatieobjecten/"))
+            if (!queryBase.Notification.ResourceUri.AbsoluteUri.Contains("/besluitinformatieobjecten/"))
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotDecisionResourceUri);
             }
 
             return await queryBase.ProcessGetAsync<DecisionResource>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.ResourceUrl,  // Request URL
+                uri: queryBase.Notification.ResourceUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecisionResource);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        {
+            Uri infoObjectUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+                .InfoObjectUri;
+
+            return await queryBase.ProcessGetAsync<InfoObject>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: infoObjectUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoInfoObject);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        {
+            Uri infoObjectUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+                .InfoObjectUri;
+
+            return await queryBase.ProcessGetAsync<Decision>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: infoObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
         #pragma warning restore CA1822

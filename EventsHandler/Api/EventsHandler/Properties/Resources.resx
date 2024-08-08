@@ -450,4 +450,10 @@
   <data name="Processing_ABORT_DoNotSendNotification_MessageType" xml:space="preserve">
     <value>The notification can not be send for this type of the message (whitelisted UUID).</value>
   </data>
+  <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
+    <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoInfoObject" xml:space="preserve">
+    <value>HTTP Request: The information object could not be retrieved from OpenZaak Web API service.</value>
+  </data>
 </root>

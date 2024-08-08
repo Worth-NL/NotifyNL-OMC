@@ -96,6 +96,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync()
             => await this._queryZaak.GetDecisionResourceAsync(this._queryBase);
 
+        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(DecisionResource?)"/>
+        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(DecisionResource? decisionResource)
+            => await this._queryZaak.GetInfoObjectAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
+        async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
+            => await this._queryZaak.GetDecisionAsync(this._queryBase, decisionResource);
+
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
             => await this._queryZaak.SendFeedbackAsync(this._networkService, body);
