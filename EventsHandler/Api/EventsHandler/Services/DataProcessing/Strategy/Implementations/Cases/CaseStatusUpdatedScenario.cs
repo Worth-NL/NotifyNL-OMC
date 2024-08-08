@@ -73,6 +73,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         }
         #endregion
 
+        #region Polymorphic (GetWhitelistName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.ZaakUpdate_IDs().ToString();
+        #endregion
+
         #region Polymorphic (DropCache)
         /// <inheritdoc cref="BaseCaseScenario.DropCache()"/>
         /// <remarks>
@@ -86,11 +91,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
             this.CachedCaseStatuses = null;
         }
-        #endregion
-
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.ZaakUpdate_IDs().ToString();
         #endregion
     }
 }
