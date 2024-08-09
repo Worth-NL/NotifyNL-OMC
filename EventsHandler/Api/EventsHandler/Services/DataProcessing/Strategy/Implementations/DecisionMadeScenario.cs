@@ -23,6 +23,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
+        /// <inheritdoc cref="DecisionResource"/>
+        private DecisionResource? CachedDecisionResource { get; set; }
+
+        /// <inheritdoc cref="Decision"/>
+        private Decision? CachedDecision { get; set; }
+
         /// <inheritdoc cref="Case"/>
         private Case? CachedCase { get; set; }
 
@@ -42,9 +48,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedDecisionResource ??= await this.QueryContext.GetDecisionResourceAsync();
 
-            DecisionResource decisionResource = await this.QueryContext.GetDecisionResourceAsync();
-            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync(decisionResource);
+            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync(this.CachedDecisionResource);
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
@@ -67,8 +73,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            Decision decision = await this.QueryContext.GetDecisionAsync(decisionResource);
-
             // TODO: Different way to obtain case
             //this.CachedCommonPartyData ??=
             //    await this.QueryContext.GetPartyDataAsync(
@@ -87,7 +91,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            //this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedInfoObject!.Value);  // TODO: To be updated
+            this.CachedDecision ??= await this.QueryContext!.GetDecisionAsync(this.CachedDecisionResource);
+            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedDecision.Value.CaseUri);
 
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
@@ -127,6 +132,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.DropCache()"/>
         /// <remarks>
         /// <list type="bullet">
+        ///   <item><see cref="CachedDecisionResource"/></item>
+        ///   <item><see cref="CachedDecision"/></item>
         ///   <item><see cref="CachedCase"/></item>
         ///   <item><see cref="CachedCaseType"/></item>
         /// </list>
@@ -135,6 +142,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             base.DropCache();
 
+            this.CachedDecisionResource = null;
+            this.CachedDecision = null;
             this.CachedCase = null;
             this.CachedCaseType = null;
         }
