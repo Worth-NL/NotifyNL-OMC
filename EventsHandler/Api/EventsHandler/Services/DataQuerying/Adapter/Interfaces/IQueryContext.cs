@@ -72,12 +72,19 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetDecisionResourceAsync(IQueryBase)"/>
         internal Task<DecisionResource> GetDecisionResourceAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase, DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase, object?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<InfoObject> GetInfoObjectAsync(DecisionResource? decisionResource = null);
+        /// <param name="parameter">
+        ///   <list type="number">
+        ///     <item>Nothing => Info Object <see cref="Uri"/> will be queried from 2. <see cref="DecisionResource"/></item>
+        ///     <item><see cref="DecisionResource"/> => containing Info Object <see cref="Uri"/></item>
+        ///     <item><see cref="Document"/> => containing Info Object <see cref="Uri"/></item>
+        ///   </list>
+        /// </param>
+        internal Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
 
         /// <inheritdoc cref="IQueryZaak.GetDecisionAsync(IQueryBase, DecisionResource?)"/>
         /// <remarks>

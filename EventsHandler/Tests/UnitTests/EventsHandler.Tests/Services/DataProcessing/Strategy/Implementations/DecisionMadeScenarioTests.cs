@@ -152,7 +152,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .ReturnsAsync(new DecisionResource());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetInfoObjectAsync(It.IsAny<DecisionResource?>()))
+                .Setup(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()))
                 .ReturnsAsync(infoObject);
 
             this._mockedQueryContext
@@ -188,7 +188,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Times.Once);
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<DecisionResource?>()),
+                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
                 Times.Once);
 
             this._mockedQueryContext

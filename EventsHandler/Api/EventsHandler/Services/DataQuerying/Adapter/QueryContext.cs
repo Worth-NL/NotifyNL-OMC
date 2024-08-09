@@ -97,9 +97,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync()
             => await this._queryZaak.GetDecisionResourceAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(DecisionResource?)"/>
-        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.GetInfoObjectAsync(this._queryBase, decisionResource);
+        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
+        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
+            => await this._queryZaak.GetInfoObjectAsync(this._queryBase, parameter);
 
         /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
         async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)

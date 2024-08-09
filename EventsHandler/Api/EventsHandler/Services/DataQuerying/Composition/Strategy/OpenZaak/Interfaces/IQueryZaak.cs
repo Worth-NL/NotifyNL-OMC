@@ -36,7 +36,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, object? parameter = null)
         {
-            // Request URL
             Uri caseTypeUri;
 
             // Case #1: The case type URI isn't provided so, it needs to be re-queried
@@ -66,7 +65,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseTypeUri,
+                uri: caseTypeUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
 
@@ -155,15 +154,33 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase, object? parameter)
         {
-            // Request URL
-            Uri infoObjectUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
-                .InfoObjectUri;
+            Uri infoObjectUri;
+
+            // Case #1: The information object URI isn't provided so, it needs to be re-queried
+            if (parameter == null)
+            {
+                infoObjectUri = (await GetDecisionResourceAsync(queryBase)).InfoObjectUri;
+            }
+            // Case #2: The info object URI can be used directly from decision resource
+            else if (parameter is DecisionResource decisionResource)
+            {
+                infoObjectUri = decisionResource.InfoObjectUri;
+            }
+            // Case #3: The info object URI can be used directly from document
+            else if (parameter is Document document)
+            {
+                infoObjectUri = document.InfoObjectUri;
+            }
+            else
+            {
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotInfoObjectUri);
+            }
 
             return await queryBase.ProcessGetAsync<InfoObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: infoObjectUri,
+                uri: infoObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoInfoObject);
         }
 

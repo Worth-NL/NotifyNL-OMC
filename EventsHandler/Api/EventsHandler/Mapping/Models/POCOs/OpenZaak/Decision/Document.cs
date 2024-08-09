@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
     public struct Document : IJsonSerializable
     {
         /// <summary>
-        /// The reference to the <see cref="Document"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format.
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -21,7 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonInclude]
         [JsonPropertyName("informatieobject")]
         [JsonPropertyOrder(0)]
-        public Uri ReferenceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri InfoObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Document"/> struct.
