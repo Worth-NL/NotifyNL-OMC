@@ -80,7 +80,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         {
             return await queryBase.ProcessGetAsync<CaseDetails>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseUri,
+                uri: caseUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion
@@ -95,7 +95,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
-                uri: klantContactMomentUri,
+                uri: klantContactMomentUri,  // Request URL
                 body: body);
 
             // Getting the response

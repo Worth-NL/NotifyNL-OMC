@@ -54,7 +54,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         {
             return await queryBase.ProcessGetAsync<CitizenResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
-                uri: citizenByBsnUri,
+                uri: citizenByBsnUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         #endregion
@@ -69,7 +69,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
-                uri: klantContactMomentUri,
+                uri: klantContactMomentUri,  // Request URL
                 body: body,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
