@@ -40,6 +40,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
         ///   be extracted internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
+        /// <param name="parameter">
+        ///   <list type="number">
+        ///     <item>Nothing => 2. Case <see cref="Uri"/> will be queried from the Main Object URI</item>
+        ///     <item>Case <see cref="Uri"/> => to be used directly</item>
+        ///     <item>Task <see cref="Data"/> => containing 2. Case <see cref="Uri"/></item>
+        ///   </list>
+        /// </param>
         internal Task<Case> GetCaseAsync(object? parameter = null);
 
         /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
