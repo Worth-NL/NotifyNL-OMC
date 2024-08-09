@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonInclude]
         [JsonPropertyName("besluit")]
         [JsonPropertyOrder(1)]
-        public Uri DecisionUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri DecisionUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionResource"/> struct.

@@ -171,12 +171,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
-            Uri infoObjectUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
-                .InfoObjectUri;
+            Uri decisionUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+                .DecisionUri;
 
             return await queryBase.ProcessGetAsync<Decision>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: infoObjectUri,  // Request URL
+                uri: decisionUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
         #pragma warning restore CA1822
