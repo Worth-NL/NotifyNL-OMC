@@ -201,7 +201,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: decisionUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
-
+        
+        /// <summary>
+        /// Gets the <see cref="Documents"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         internal async Task<Documents> GetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Predefined request URL components
