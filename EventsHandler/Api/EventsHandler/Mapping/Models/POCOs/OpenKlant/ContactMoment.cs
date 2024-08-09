@@ -22,6 +22,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
 
         /// <summary>
         /// The reference to the <see cref="ContactMoment"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("url")]

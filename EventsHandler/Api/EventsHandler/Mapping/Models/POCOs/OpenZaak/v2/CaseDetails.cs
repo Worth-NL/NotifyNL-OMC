@@ -33,6 +33,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
 
         /// <summary>
         /// The <see cref="CaseType"/> in <seealso cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]

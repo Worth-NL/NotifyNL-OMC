@@ -61,10 +61,10 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         #region Case properties
         /// <summary>
         /// The <see cref="Case"/> type in <see cref="Uri"/> format.
-        /// </summary>
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
@@ -88,10 +88,10 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         #region Object properties
         /// <summary>
         /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format.
-        /// </summary>
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("objectType")]
         [JsonPropertyOrder(3)]
@@ -101,10 +101,10 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         #region Decision properties
         /// <summary>
         /// The <see cref="Decision"/> type in <see cref="Uri"/> format.
-        /// </summary>
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]

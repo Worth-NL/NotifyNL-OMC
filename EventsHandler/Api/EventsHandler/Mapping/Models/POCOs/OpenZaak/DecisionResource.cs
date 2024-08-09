@@ -14,6 +14,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     {
         /// <summary>
         /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informatieobject")]
@@ -22,6 +25,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// The reference to the <see cref="Decision"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("besluit")]

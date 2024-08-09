@@ -16,6 +16,9 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
     {
         /// <summary>
         /// The reference to <see cref="Case"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaak")]
