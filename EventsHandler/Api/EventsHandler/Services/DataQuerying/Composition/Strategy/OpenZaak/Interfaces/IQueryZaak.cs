@@ -181,6 +181,23 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: decisionUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
+
+        internal async Task<Documents> GetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        {
+            // Predefined request URL components
+            string documentsEndpoint = $"https://{GetDomain()}/besluiten/api/v1/besluitinformatieobjecten";
+
+            Uri decisionUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+                .DecisionUri;
+
+            // Request URL
+            Uri documentsUri = new($"{documentsEndpoint}?besluit={decisionUri}");
+            
+            return await queryBase.ProcessGetAsync<Documents>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: documentsUri,
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDocuments);
+        }
         #pragma warning restore CA1822
         #endregion
 
