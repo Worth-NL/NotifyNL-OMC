@@ -36,6 +36,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, object? parameter = null)
         {
+            // Request URL
             Uri caseTypeUri;
 
             // Case #1: The case type URI isn't provided so, it needs to be re-queried
@@ -156,12 +157,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
+            // Request URL
             Uri infoObjectUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
                 .InfoObjectUri;
 
             return await queryBase.ProcessGetAsync<InfoObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: infoObjectUri,  // Request URL
+                uri: infoObjectUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoInfoObject);
         }
 
@@ -173,12 +175,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
+            // Request URL
             Uri decisionUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
                 .DecisionUri;
 
             return await queryBase.ProcessGetAsync<Decision>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: decisionUri,  // Request URL
+                uri: decisionUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecision);
         }
 
