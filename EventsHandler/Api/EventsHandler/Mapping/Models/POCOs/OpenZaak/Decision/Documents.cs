@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Extensions;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
 {
@@ -25,6 +26,24 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// </summary>
         public Documents()
         {
+        }
+
+        /// <summary>
+        /// Gets <see cref="InfoObject"/> <see cref="Uri"/>s extracted from <see cref="Document"/>s.
+        /// </summary>
+        /// <returns>
+        ///   The collection of references to <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// </returns>
+        internal IReadOnlyCollection<Uri> GetInfoObjectUris()
+        {
+            if (this.Results.IsEmpty())
+            {
+                return Array.Empty<Uri>();
+            }
+
+            return this.Results
+                .Select(document => document.InfoObjectUri)
+                .ToArray();
         }
     }
 }
