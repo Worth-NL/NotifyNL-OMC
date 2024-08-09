@@ -20,7 +20,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
+        /// <summary>
+        /// The collection of:
         /// <inheritdoc cref="CaseStatus"/>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
