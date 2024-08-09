@@ -42,7 +42,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
         {
             this.QueryContext ??= this.DataQuery.From(notification);
-            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync();
+
+            DecisionResource decisionResource = await this.QueryContext.GetDecisionResourceAsync();
+            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync(decisionResource);
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
@@ -64,6 +66,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
                         infoObject.Confidentiality));
             }
+
+            Decision decision = await this.QueryContext.GetDecisionAsync(decisionResource);
 
             // TODO: Different way to obtain case
             //this.CachedCommonPartyData ??=
@@ -88,7 +92,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
-
+            
             this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
                                     await this.QueryContext!.GetCaseStatusesAsync());  // Case status
 
