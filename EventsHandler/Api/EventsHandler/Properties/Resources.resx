@@ -453,6 +453,9 @@
   <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
     <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
   </data>
+  <data name="HttpRequest_ERROR_NoDocuments" xml:space="preserve">
+    <value>HTTP Request: The documents could not be retrieved from OpenZaak Web API service.</value>
+  </data>
   <data name="HttpRequest_ERROR_NoInfoObject" xml:space="preserve">
     <value>HTTP Request: The information object could not be retrieved from OpenZaak Web API service.</value>
   </data>
