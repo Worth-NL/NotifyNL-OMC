@@ -15,6 +15,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The type of the <see cref="Decision"/> in <see cref="Uri"/> format.
         /// </summary>
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(0)]
@@ -22,6 +25,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaak")]

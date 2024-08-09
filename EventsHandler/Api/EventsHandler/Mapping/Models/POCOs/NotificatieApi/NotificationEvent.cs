@@ -84,6 +84,9 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         /// <summary>
         /// The reference to the domain object in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [Required]
         [JsonInclude]
@@ -94,6 +97,9 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         /// <summary>
         /// The reference to the resource in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [Required]
         [JsonInclude]
