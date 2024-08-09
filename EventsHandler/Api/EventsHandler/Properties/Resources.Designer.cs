@@ -736,6 +736,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not an information object..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotInfoObjectUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotInfoObjectUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: An unknown issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Internal_Unknown {
