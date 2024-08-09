@@ -86,11 +86,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             // Request URL
-            Uri caseStatuses = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObjectUri}");
+            Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObjectUri}");
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseStatuses,
+                uri: caseStatusesUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
 
