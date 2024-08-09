@@ -6,6 +6,7 @@ using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
