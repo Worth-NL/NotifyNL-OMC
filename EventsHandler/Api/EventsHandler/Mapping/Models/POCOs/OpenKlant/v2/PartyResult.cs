@@ -19,7 +19,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The ID of party (e.g., citizen, organization) in <see cref="Uri"/> format.
         /// <code>
-        /// http(s)://OpenKlantDomain/ApiEndpoint/[UUID]
+        /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
         [JsonInclude]
