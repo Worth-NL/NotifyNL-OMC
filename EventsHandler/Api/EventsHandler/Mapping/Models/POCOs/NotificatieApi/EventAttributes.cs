@@ -62,6 +62,9 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// <summary>
         /// The <see cref="Case"/> type in <see cref="Uri"/> format.
         /// </summary>
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
@@ -86,6 +89,9 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// <summary>
         /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format.
         /// </summary>
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         [JsonInclude]
         [JsonPropertyName("objectType")]
         [JsonPropertyOrder(3)]
@@ -96,6 +102,9 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// <summary>
         /// The <see cref="Decision"/> type in <see cref="Uri"/> format.
         /// </summary>
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]

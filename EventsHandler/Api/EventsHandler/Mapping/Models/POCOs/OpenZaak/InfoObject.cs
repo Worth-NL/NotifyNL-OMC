@@ -28,6 +28,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 
         /// <summary>
         /// The type of the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("informatieobjecttype")]
