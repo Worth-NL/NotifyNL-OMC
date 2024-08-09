@@ -4,7 +4,7 @@ using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
+namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
 {
     /// <summary>
     /// The decision resource retrieved from "OpenZaak" Web API service.

@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Enums.NotificatieApi
         Object = 2,
 
         /// <summary>
-        /// The <see cref="Models.POCOs.OpenZaak.Decision"/> resource.
+        /// The <see cref="Models.POCOs.OpenZaak.Decision.Decision"/> resource.
         /// </summary>
         [JsonPropertyName("besluitinformatieobject")]
         Decision = 3

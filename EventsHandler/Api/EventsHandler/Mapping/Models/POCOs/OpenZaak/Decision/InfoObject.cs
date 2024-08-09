@@ -6,7 +6,7 @@ using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
+namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
 {
     /// <summary>
     /// The information object related to the <see cref="DecisionResource"/> retrieved from "OpenZaak" Web API service.
