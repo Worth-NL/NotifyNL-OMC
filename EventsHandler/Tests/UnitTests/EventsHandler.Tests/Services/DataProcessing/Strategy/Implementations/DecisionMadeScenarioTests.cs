@@ -3,10 +3,8 @@
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
@@ -93,8 +91,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getLastCaseTypeInvokeCount: 0, getCaseStatusesInvokeCount: 0);
+                
+                VerifyInvoke(0, 0, 0);
             });
         }
 
@@ -114,8 +112,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyInvoke(getLastCaseTypeInvokeCount: 0, getCaseStatusesInvokeCount: 0);
+                
+                VerifyInvoke(0, 0, 0);
             });
         }
 
@@ -140,7 +138,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(getLastCaseTypeInvokeCount: 0, getCaseStatusesInvokeCount: 0);
+                VerifyInvoke(0, 0, 0);
             });
         }
         #endregion
@@ -149,16 +147,24 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         private void SetMockedQueryContext(InfoObject infoObject)
         {
             this._mockedQueryContext
-                .Setup(mock => mock.GetInfoObjectAsync())
+                .Setup(mock => mock.GetDecisionResourceAsync())
+                .ReturnsAsync(new DecisionResource());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetInfoObjectAsync(It.IsAny<DecisionResource?>()))
                 .ReturnsAsync(infoObject);
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
-                .ReturnsAsync(new CaseStatuses());
+                .Setup(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()))
+                .ReturnsAsync(new Decision());
 
             this._mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusesAsync())
+                .ReturnsAsync(new CaseStatuses());
         }
 
         private void SetMockedDataQueryService()
@@ -170,19 +176,30 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount)
+        private void VerifyInvoke(int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount, int getDecisionInvokeCount)
         {
-            this._mockedDataQuery.Verify(mock => mock.From(
-                    It.IsAny<NotificationEvent>()),
+            this._mockedDataQuery
+                .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
                 Times.Once);
 
-            this._mockedQueryContext.Verify(mock => mock.GetInfoObjectAsync(),
+            this._mockedQueryContext
+                .Verify(mock => mock.GetDecisionResourceAsync(),
                 Times.Once);
 
-            this._mockedQueryContext.Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
+            this._mockedQueryContext
+                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<DecisionResource?>()),
+                Times.Once);
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()),
+                Times.Exactly(getDecisionInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getLastCaseTypeInvokeCount));
 
-            this._mockedQueryContext.Verify(mock => mock.GetCaseStatusesAsync(),
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseStatusesAsync(),
                 Times.Exactly(getCaseStatusesInvokeCount));
         }
         #endregion
