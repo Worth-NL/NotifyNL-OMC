@@ -111,22 +111,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             };
         }
 
+        private static readonly TimeZoneInfo s_cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        private static readonly CultureInfo s_dutchCulture = new("nl-NL");
+
         private static string GetFormattedExpirationDate(DateTime expirationDate)
         {
-            if (IsValid(expirationDate))
+            if (!IsValid(expirationDate))
             {
-                // Convert time zone from UTC to CET (if necessary)
-                if (expirationDate.Kind == DateTimeKind.Utc)
-                {
-                    var cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-                    expirationDate = TimeZoneInfo.ConvertTimeFromUtc(expirationDate, cetTimeZone);
-                }
-
-                // Formatting the date and time
-                return expirationDate.ToString("f", new CultureInfo("nl-NL"));
+                return DefaultValues.Models.DefaultEnumValueName;
             }
 
-            return DefaultValues.Models.DefaultEnumValueName;
+            // Convert time zone from UTC to CET (if necessary)
+            if (expirationDate.Kind == DateTimeKind.Utc)
+            {
+                expirationDate = TimeZoneInfo.ConvertTimeFromUtc(expirationDate, s_cetTimeZone);
+            }
+
+            // Formatting the date and time
+            return expirationDate.ToString("f", s_dutchCulture);
         }
 
         private static string GetExpirationDateProvided(DateTime expirationDate)
