@@ -111,11 +111,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             };
         }
 
-        private static bool IsValid(DateTime expirationDate)
-        {
-            return expirationDate != default;  // 0001-01-01, 00:00:00
-        }
-
         private static string GetFormattedExpirationDate(DateTime expirationDate)
         {
             if (IsValid(expirationDate))
@@ -137,6 +132,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static string GetExpirationDateProvided(DateTime expirationDate)
         {
             return IsValid(expirationDate) ? "yes" : "no";
+        }
+
+        private static bool IsValid(DateTime expirationDate)
+        {
+            return expirationDate != default;  // 0001-01-01, 00:00:00
         }
         #endregion
 
