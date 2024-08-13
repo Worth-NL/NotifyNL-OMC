@@ -320,8 +320,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"taak.verloopdatum\":\"{testExpirationDate}\"," +
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
                       $"\"taak.record.data.title\":\"{TestTaskTitle}\"," +
-                      $"\"zaak.omschrijving\":\"\"," +
                       $"\"zaak.identificatie\":\"1\"," +
+                      $"\"zaak.omschrijving\":\"\"," +
                       $"\"klant.voornaam\":\"Jackie\"," +
                       $"\"klant.voorvoegselAchternaam\":null," +
                       $"\"klant.achternaam\":\"Chan\"" +
