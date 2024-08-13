@@ -126,8 +126,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "zaak.omschrijving", this.CachedCase.Name },
                 { "zaak.registratiedatum", this.CachedCase.RegistrationDate },
 
-                { "zaaktype.omschrijving", "" },
-                { "zaaktype.omschrijvinggeneriek", "" }
+                { "zaaktype.omschrijving", this.CachedCaseType.Name },
+                { "zaaktype.omschrijvinggeneriek", this.CachedCaseType.Description }
             };
         }
 
