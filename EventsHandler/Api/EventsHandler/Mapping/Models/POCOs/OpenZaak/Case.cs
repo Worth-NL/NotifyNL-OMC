@@ -40,6 +40,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public Uri CaseTypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
+        /// The date when the <see cref="Case"/> was registered.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("registratiedatum")]
+        [JsonPropertyOrder(3)]
+        public DateOnly RegistrationDate { get; internal set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Case"/> struct.
         /// </summary>
         public Case()
