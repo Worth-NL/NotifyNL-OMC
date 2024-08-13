@@ -51,14 +51,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         internal readonly CitizenData Citizen(WebApiConfiguration configuration)
         {
             // Response does not contain any results (check notification or project configuration)
-            if (Results.IsNullOrEmpty())
+            if (this.Results.IsNullOrEmpty())
             {
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
             }
 
             CitizenData? citizen = null;
 
-            foreach (CaseRole caseRole in Results)
+            foreach (CaseRole caseRole in this.Results)
             {
                 if (caseRole.InitiatorRole != configuration.AppSettings.Variables.InitiatorRole())
                 {
