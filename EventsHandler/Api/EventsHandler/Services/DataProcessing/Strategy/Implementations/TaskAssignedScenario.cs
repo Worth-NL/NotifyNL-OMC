@@ -11,6 +11,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Globalization;
@@ -25,13 +26,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     internal sealed class TaskAssignedScenario : BaseScenario
     {
         /// <inheritdoc cref="Data"/>
-        private Data? CachedTaskData { get; set; }
+        private Data CachedTaskData { get; set; }
 
         /// <inheritdoc cref="Case"/>
-        private Case? CachedCase { get; set; }
-
-        /// <inheritdoc cref="CaseType"/>
-        private CaseType? CachedCaseType { get; set; }
+        private Case CachedCase { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
@@ -46,7 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
-            this.QueryContext ??= this.DataQuery.From(notification);
+            IQueryContext queryContext = this.DataQuery.From(notification);
 
             // Validation #1: The task needs to be of a specific type
             if (notification.Attributes.ObjectTypeUri.GetGuid() !=
@@ -55,36 +53,37 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
 
-            this.CachedTaskData ??= (await this.QueryContext.GetTaskAsync()).Record.Data;
+            this.CachedTaskData = (await queryContext.GetTaskAsync()).Record.Data;
 
             // Validation #2: The task needs to have an open status
-            if (this.CachedTaskData.Value.Status != TaskStatuses.Open)
+            if (this.CachedTaskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             // Validation #3: The task needs to be assigned to a person
-            if (this.CachedTaskData.Value.Identification.Type != IdTypes.Bsn)
+            if (this.CachedTaskData.Identification.Type != IdTypes.Bsn)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
             
-            this.CachedCase ??= await this.QueryContext.GetCaseAsync(this.CachedTaskData.Value);
+            this.CachedCase = await queryContext.GetCaseAsync(this.CachedTaskData);
             
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
+                this.CachedCase.Identification, GetWhitelistName());
             
-            this.CachedCaseType ??= await this.QueryContext.GetLastCaseTypeAsync(  // 3. Case type
-                                    await this.QueryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                          this.CachedTaskData.Value.CaseUri));     // 1. Case URI
+            CaseType caseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
+                                await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                      this.CachedTaskData.CaseUri));      // 1. Case URI
 
             // Validation #5: The notifications must be enabled
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
+            ValidateNotifyPermit(caseType.IsNotificationExpected);
 
             // Preparing citizen details
-            return await this.QueryContext.GetPartyDataAsync(this.CachedTaskData.Value.Identification.Value);
+            return await queryContext.GetPartyDataAsync(
+                this.CachedTaskData.Identification.Value);  // BSN number
         }
         #endregion
 
@@ -96,16 +95,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
-            string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
+            string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData.ExpirationDate);
 
             return new Dictionary<string, object>
             {
                 { "taak.verloopdatum", formattedExpirationDate },
                 { "taak.heeft_verloopdatum", expirationDateProvided },
-                { "taak.record.data.title", this.CachedTaskData!.Value.Title },
-                { "zaak.omschrijving", this.CachedCase!.Value.Name },
-                { "zaak.identificatie", this.CachedCase!.Value.Identification },
+                { "taak.record.data.title", this.CachedTaskData.Title },
+                { "zaak.omschrijving", this.CachedCase.Name },
+                { "zaak.identificatie", this.CachedCase.Identification },
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname }
@@ -158,25 +157,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <inheritdoc cref="BaseScenario.DropCache()"/>
-        /// <remarks>
-        /// <list type="bullet">
-        ///   <item><see cref="CachedTaskData"/></item>
-        ///   <item><see cref="CachedCase"/></item>
-        ///   <item><see cref="CachedCaseType"/></item>
-        /// </list>
-        /// </remarks>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedTaskData = null;
-            this.CachedCase = null;
-            this.CachedCaseType = null;
-        }
         #endregion
     }
 }
