@@ -62,8 +62,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", this.CachedCase.Name },
                 { "zaak.identificatie", this.CachedCase.Identification },
+                { "zaak.omschrijving", this.CachedCase.Name },
 
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
