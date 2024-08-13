@@ -395,9 +395,6 @@
   <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
     <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
-  <data name="HttpRequest_ERROR_NoPartyData" xml:space="preserve">
-    <value>HTTP Request: The party data (e.g., citizen, organization) are missing.</value>
-  </data>
   <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
     <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
   </data>

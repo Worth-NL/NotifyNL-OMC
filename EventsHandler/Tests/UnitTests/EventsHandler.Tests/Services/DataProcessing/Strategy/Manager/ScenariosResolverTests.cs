@@ -93,7 +93,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 1 });
 
             this._mockedDataQuery
@@ -122,7 +122,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
@@ -154,7 +154,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))

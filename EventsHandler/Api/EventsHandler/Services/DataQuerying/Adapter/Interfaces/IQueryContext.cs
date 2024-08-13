@@ -36,22 +36,23 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryZaak.GetCaseAsync(IQueryBase, object?)"/>
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseAsync(IQueryBase, object?)"/>
         /// <remarks>
         ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
         ///   be extracted internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
-        /// <param name="parameter">
-        ///   <list type="number">
-        ///     <item>Nothing => 2. Case <see cref="Uri"/> will be queried from the Main Object URI</item>
-        ///     <item>Case <see cref="Uri"/> => to be used directly</item>
-        ///     <item>Task <see cref="Data"/> => containing 2. Case <see cref="Uri"/></item>
-        ///   </list>
-        /// </param>
         internal Task<Case> GetCaseAsync(object? parameter = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetCaseStatusesAsync(IQueryBase)"/>
-        internal Task<CaseStatuses> GetCaseStatusesAsync();
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusesAsync(IQueryBase, Uri?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/>.
+        ///   <para>
+        ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
+        ///     directly from the initial notification <see cref="NotificationEvent.MainObjectUri"/> (which
+        ///     will work only if the notification was meant to be used with Case scenarios).
+        ///   </para>
+        /// </remarks>
+        internal Task<CaseStatuses> GetCaseStatusesAsync(Uri? caseUri = null);
 
         /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync(IQueryBase, CaseStatuses)"/>
         /// <remarks>
@@ -60,48 +61,70 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? statuses = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
-        internal Task<string> GetBsnNumberAsync();
-
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
-        internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
-
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
 
-        /// <inheritdoc cref="IQueryZaak.GetDecisionResourceAsync(IQueryBase)"/>
-        internal Task<DecisionResource> GetDecisionResourceAsync();
+        /// <inheritdoc cref="IQueryZaak.TryGetDecisionResourceAsync(IQueryBase, Uri?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
+        ///   <para>
+        ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
+        ///     directly from the initial notification <see cref="NotificationEvent.ResourceUri"/> (which will
+        ///     work only if the notification was meant to be used with Decision scenarios).
+        ///   </para>
+        /// </remarks>
+        internal Task<DecisionResource> GetDecisionResourceAsync(Uri? resourceUri = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetInfoObjectAsync(IQueryBase, object?)"/>
+        /// <inheritdoc cref="IQueryZaak.TryGetInfoObjectAsync(IQueryBase, object?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
-        /// <param name="parameter">
-        ///   <list type="number">
-        ///     <item>Nothing => Info Object <see cref="Uri"/> will be queried from 2. <see cref="DecisionResource"/></item>
-        ///     <item><see cref="DecisionResource"/> => containing Info Object <see cref="Uri"/></item>
-        ///     <item><see cref="Document"/> => containing Info Object <see cref="Uri"/></item>
-        ///   </list>
-        /// </param>
         internal Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetDecisionAsync(IQueryBase, DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryZaak.TryGetDecisionAsync(IQueryBase, DecisionResource?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
 
+        /// <inheritdoc cref="IQueryZaak.TryGetDocumentsAsync(IQueryBase, DecisionResource?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
+
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);
+
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
+        internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
+
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/> as query parameter.
+        ///   <para>
+        ///     NOTE: Bear in mind that if the <see cref="Case"/> <see cref="Uri"/> is missing, the looked
+        ///     up <see cref="CaseType"/> <see cref="Uri"/> will be attempted to retrieve directly from the
+        ///     initial notification from <see cref="EventAttributes.CaseTypeUri"/> (which will work only if
+        ///     the notification was meant to be used with Case scenarios).
+        ///   </para>
+        /// </remarks>
+        internal Task<Uri> GetCaseTypeUriAsync(Uri? caseUri = null);
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
+        ///   <para>
+        ///     NOTE: While querying BSN the missing <see cref="CaseType"/> <see cref="Uri"/> will be attempted to
+        ///     retrieve directly from the initial notification from <seealso cref="NotificationEvent.MainObjectUri"/>
+        ///     (which is <see cref="CaseType"/> <see cref="Uri"/> for Case scenarios).
+        ///   </para>
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
