@@ -121,14 +121,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region GetAllNotifyDataAsync()
         [Test]
-        public void GetAllNotifyDataAsync_ForInvalidTaskType_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            this._mockedDataQuery
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
-                .Returns(this._mockedQueryContext.Object);
-
-            INotifyScenario scenario = new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.Email,
+                s_taskOpenAssignedToPersonWithExpirationDate,
+                true,
+                true);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -138,23 +138,19 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyInvoke(0, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ForClosedTask_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            this._mockedQueryContext
-                .Setup(mock => mock.GetTaskAsync())
-                .ReturnsAsync(s_taskClosed);  // Invalid condition
-
-            this._mockedDataQuery
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
-                .Returns(this._mockedQueryContext.Object);
-
-            INotifyScenario scenario = new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.Email,
+                s_taskClosed,
+                true,
+                true);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -164,23 +160,19 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyInvoke(0, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ForOpenTask_NotAssignedToPerson_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            this._mockedQueryContext
-                .Setup(mock => mock.GetTaskAsync())
-                .ReturnsAsync(s_taskOpenNotAssignedToPerson);  // Invalid condition
-
-            this._mockedDataQuery
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
-                .Returns(this._mockedQueryContext.Object);
-
-            INotifyScenario scenario = new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.Email,
+                s_taskOpenNotAssignedToPerson,
+                true,
+                true);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -190,17 +182,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyInvoke(0, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_WithoutCaseIdWhitelisted_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
                 DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: false,
                 isNotificationExpected: true);
 
@@ -217,17 +209,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(1, 1, 0, 0);
+                VerifyInvoke(1, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_WithInformSetToFalse_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
                 DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: true,
                 isNotificationExpected: false);
 
@@ -239,22 +231,47 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(1, 1, 1, 1);
+                VerifyInvoke(1, 1, 0);
             });
         }
 
-        [TestCase(DistributionChannels.Email, 1, 1, 1, 1)]
-        [TestCase(DistributionChannels.Sms, 1, 1, 1, 1)]
-        [TestCase(DistributionChannels.Both, 2, 1, 1, 1)]
-        [TestCase(DistributionChannels.None, 0, 0, 0, 0)]
-        public async Task GetAllNotifyDataAsync_ForOpenTask_AssignedToPerson_WithValidDistChannels_ReturnsExpectedNotifyDataCount(
-            DistributionChannels testDistributionChannel, int notifyDataCount, int getCaseAsyncInvokeCount,
-            int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount)
+        [TestCase(DistributionChannels.Unknown)]
+        [TestCase((DistributionChannels)(-1))]
+        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithInvalidDistChannels_ThrowsInvalidOperationException(
+            DistributionChannels invalidDistributionChannel)
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario(
+                invalidDistributionChannel,
+                s_taskOpenAssignedToPersonWithExpirationDate,
+                true,
+                true);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                InvalidOperationException? exception =
+                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+
+                VerifyInvoke(1, 1, 1);
+            });
+        }
+
+        // Single
+        [TestCase(DistributionChannels.Email, 1)]
+        [TestCase(DistributionChannels.Sms, 1)]
+        // Both
+        [TestCase(DistributionChannels.Both, 2)]
+        // Unspecified
+        [TestCase(DistributionChannels.None, 0)]
+        public async Task GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithValidDistChannels_ReturnsExpectedNotifyDataCount(
+            DistributionChannels testDistributionChannel, int notifyDataCount)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
                 testDistributionChannel,
-                s_taskOpenAssignedToPersonWithoutExpirationDate,
+                s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: true,
                 isNotificationExpected: true);
 
@@ -266,44 +283,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult, Has.Length.EqualTo(notifyDataCount));
                 
-                VerifyInvoke(1, getCaseAsyncInvokeCount, getLastCaseTypeInvokeCount, getCaseStatusesInvokeCount);
-            });
-        }
-
-        [TestCase(DistributionChannels.Unknown)]
-        [TestCase((DistributionChannels)(-1))]
-        public void GetAllNotifyDataAsync_ForOpenTask_AssignedToPerson_WithInvalidDistChannels_ThrowsInvalidOperationException(
-            DistributionChannels testDistributionChannel)
-        {
-            // Arrange
-            this._mockedQueryContext
-                .Setup(mock => mock.GetTaskAsync())
-                .ReturnsAsync(s_taskOpenAssignedToPersonWithoutExpirationDate);
-
-            this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
-                .ReturnsAsync(new CommonPartyData
-                {
-                    DistributionChannel = testDistributionChannel,
-                    Name = "Faye",
-                    Surname = "Valentine",
-                    EmailAddress = "cowboy@bebop.org"
-                });
-
-            this._mockedDataQuery
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
-                .Returns(this._mockedQueryContext.Object);
-
-            INotifyScenario scenario = new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
-
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                InvalidOperationException? exception =
-                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
-
-                VerifyInvoke(1, 0, 0, 0);
+                VerifyInvoke(1, 1, 1);
             });
         }
         #endregion
@@ -313,7 +293,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [TestCase(DistributionChannels.Email, true, "woensdag 24 juli 2024 16:10", "yes")]
         [TestCase(DistributionChannels.Sms, false, "-", "no")]
         [TestCase(DistributionChannels.Sms, true, "woensdag 24 juli 2024 16:10", "yes")]
-        public async Task GetPersonalizationAsync_ForSpecificDateTime_ReturnsExpectedPersonalization(
+        public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
             TaskObject testTask = isExpirationDateGiven
@@ -349,7 +329,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
 
-                VerifyInvoke(1, 1, 1, 1);
+                VerifyInvoke(1, 1, 1);
             });
         }
         #endregion
@@ -364,16 +344,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .ReturnsAsync(testTask);
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
-                .ReturnsAsync(new CommonPartyData
-                {
-                    Name = "Jackie",
-                    Surname = "Chan",
-                    DistributionChannel = testDistributionChannel
-                });
-
-            this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Data>()))
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<object?>()))
                 .ReturnsAsync(new Case
                 {
                     Identification = isCaseIdWhitelisted ? "1" : "4"
@@ -387,40 +358,49 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 });
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
+                .ReturnsAsync(new CommonPartyData
+                {
+                    Name = "Jackie",
+                    Surname = "Chan",
+                    DistributionChannel = testDistributionChannel
+                });
 
             // IDataQueryService
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
+            // Task Scenario
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
         }
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getPartyDataAsyncInvokeCount, int getCaseAsyncInvokeCount, int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount)
+        private void VerifyInvoke(int getCaseAsyncInvokeCount, int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
         {
             this._mockedDataQuery
                 .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
                 Times.Once);
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
-                Times.Exactly(getPartyDataAsyncInvokeCount));
-
-            this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<Data>()),
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
 
             this._mockedQueryContext
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
-                Times.Exactly(getLastCaseTypeInvokeCount));
+                Times.Exactly(getCaseTypeInvokeCount));
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()),
+                Times.Exactly(getCaseTypeInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseStatusesAsync(),
-                Times.Exactly(getCaseStatusesInvokeCount));
+                .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
+                    Times.Exactly(getPartyDataAsyncInvokeCount));
         }
         #endregion
     }

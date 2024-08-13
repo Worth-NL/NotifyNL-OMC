@@ -31,33 +31,44 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="parameter">
+        ///   <list type="number">
+        ///     <item>Nothing => 2. Case <see cref="Uri"/> will be queried from the Main Object URI</item>
+        ///     <item>Case <see cref="Uri"/> => to be used directly</item>
+        ///     <item>Task <see cref="Data"/> => containing 2. Case <see cref="Uri"/></item>
+        ///   </list>
+        /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<Case> GetCaseAsync(IQueryBase queryBase, object? parameter = null)
+        internal sealed async Task<Case> TryGetCaseAsync(IQueryBase queryBase, object? parameter = null)
         {
+            // Request URL
             Uri caseTypeUri;
 
-            // Case #1: The case type URI isn't provided so, it needs to be re-queried
+            // Case #1: The Case Type URI isn't provided so, it needs to be re-queried
             if (parameter == null)
             {
                 caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObjectUri);
             }
-            // Case #2: The URI was provided (but it might be the incorrect one)
+            // Case #2: The URI was provided
             else if (parameter is Uri uri)
             {
-                if (!uri.AbsoluteUri.Contains("/zaaktypen/"))  // Needs to be the case type URI
+                // But it's invalid
+                if (uri.IsNotCaseTypeUri())
                 {
                     throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
                 }
 
                 caseTypeUri = uri;
             }
-            // Case #3: The case type URI can be requested from Data
+            // Case #3: The Case Type URI can be retrieved directly from Data
             else if (parameter is Data taskData)
             {
-                caseTypeUri = await GetCaseTypeUriAsync(queryBase, taskData.CaseUri);
+                caseTypeUri = await PolymorphicGetCaseTypeUriAsync(queryBase, taskData.CaseUri);
             }
+            // Case #4: Unhandled situation occurred
             else
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
@@ -65,28 +76,32 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseTypeUri,  // Request URL
+                uri: caseTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
 
         /// <summary>
-        /// Gets the status(es) of the specific <see cref="Case"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="CaseStatuses"/> of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<CaseStatuses> GetCaseStatusesAsync(IQueryBase queryBase)
+        internal sealed async Task<CaseStatuses> TryGetCaseStatusesAsync(IQueryBase queryBase, Uri? caseUri)
         {
             // Predefined URL components
             string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
-
-            if (!queryBase.Notification.MainObjectUri.AbsoluteUri.Contains("zaken"))
+            
+            // Case #1: The Case URI was provided
+            // Case #2: The Case URI needs to obtained from elsewhere
+            if ((caseUri ??= queryBase.Notification.MainObjectUri).IsNotCaseUri())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
             // Request URL
-            Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={queryBase.Notification.MainObjectUri}");
+            Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");
 
             return await queryBase.ProcessGetAsync<CaseStatuses>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
@@ -96,9 +111,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
-        /// Gets the type of <see cref="CaseStatus"/> from "OpenZaak" Web API service.
+        /// Gets the most recent <see cref="CaseType"/> from <see cref="CaseStatuses"/> from "OpenZaak" Web API service.
         /// </summary>
-        /// <exception cref="AbortedNotifyingException"/>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="statuses">The case statuses to be analyzed.</param>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
@@ -111,9 +127,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: lastStatusTypeUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatusType);
         }
+        #pragma warning restore CA1822
         #endregion
 
         #region Parent (Main Object)
+        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
         /// Gets the <see cref="MainObject"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -126,53 +144,69 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: queryBase.Notification.MainObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoMainObject);
         }
+        #pragma warning restore CA1822
         #endregion
 
         #region Parent (Decision)
         /// <summary>
         /// Gets the <see cref="DecisionResource"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="resourceUri">The resource <see cref="Uri"/>.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<DecisionResource> GetDecisionResourceAsync(IQueryBase queryBase)
+        internal async Task<DecisionResource> TryGetDecisionResourceAsync(IQueryBase queryBase, Uri? resourceUri)
         {
-            if (!queryBase.Notification.ResourceUri.AbsoluteUri.Contains("/besluitinformatieobjecten/"))
+            // Case #1: The Resource URI was provided
+            // Case #2: The Resource URI needs to obtained from elsewhere
+            if ((resourceUri ??= queryBase.Notification.ResourceUri).IsNotDecisionResourceUri())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotDecisionResourceUri);
             }
 
             return await queryBase.ProcessGetAsync<DecisionResource>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.ResourceUri,  // Request URL
+                uri: resourceUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecisionResource);
         }
 
         /// <summary>
         /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="parameter">
+        ///   <list type="number">
+        ///     <item>Nothing => Info Object <see cref="Uri"/> will be queried from 2. <see cref="DecisionResource"/></item>
+        ///     <item><see cref="DecisionResource"/> => containing Info Object <see cref="Uri"/></item>
+        ///     <item><see cref="Document"/> => containing Info Object <see cref="Uri"/></item>
+        ///   </list>
+        /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<InfoObject> GetInfoObjectAsync(IQueryBase queryBase, object? parameter)
+        internal async Task<InfoObject> TryGetInfoObjectAsync(IQueryBase queryBase, object? parameter)
         {
+            // Request URL
             Uri infoObjectUri;
 
-            // Case #1: The information object URI isn't provided so, it needs to be re-queried
+            // Case #1: The InfoObject URI isn't provided so, it needs to be re-queried
             if (parameter == null)
             {
-                infoObjectUri = (await GetDecisionResourceAsync(queryBase)).InfoObjectUri;
+                infoObjectUri = (await TryGetDecisionResourceAsync(queryBase, queryBase.Notification.ResourceUri))
+                                .InfoObjectUri;
             }
-            // Case #2: The info object URI can be used directly from decision resource
+            // Case #2: The info object URI can be used directly from DecisionResource
             else if (parameter is DecisionResource decisionResource)
             {
                 infoObjectUri = decisionResource.InfoObjectUri;
             }
-            // Case #3: The info object URI can be used directly from document
+            // Case #3: The InfoObject URI can be used directly from Document
             else if (parameter is Document document)
             {
                 infoObjectUri = document.InfoObjectUri;
             }
+            // Case #4: Unhandled situation occurred
             else
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotInfoObjectUri);
@@ -180,20 +214,25 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return await queryBase.ProcessGetAsync<InfoObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: infoObjectUri,  // Request URL
+                uri: infoObjectUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoInfoObject);
         }
 
         /// <summary>
         /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="decisionResource">The model containing references in <see cref="Uri"/> formats.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<Decision> GetDecisionAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        internal async Task<Decision> TryGetDecisionAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Request URL
-            Uri decisionUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+            Uri decisionUri =
+                // Case #1: The Decision URI can be extracted directly from DecisionResource
+                // Case #2: Re-querying DecisionResource first to get the Decision URI later
+                (decisionResource ?? await TryGetDecisionResourceAsync(queryBase, queryBase.Notification.ResourceUri))
                 .DecisionUri;
 
             return await queryBase.ProcessGetAsync<Decision>(
@@ -205,15 +244,20 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <summary>
         /// Gets the <see cref="Documents"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="decisionResource">The model containing references in <see cref="Uri"/> formats.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<Documents> GetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
+        internal async Task<Documents> TryGetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Predefined request URL components
             string documentsEndpoint = $"https://{GetDomain()}/besluiten/api/v1/besluitinformatieobjecten";
 
-            Uri decisionUri = (decisionResource ?? await GetDecisionResourceAsync(queryBase))  // Fallback to re-query resource
+            Uri decisionUri =
+                // Case #1: The Decision URI can be extracted directly from DecisionResource
+                // Case #2: Re-querying DecisionResource first to get the Decision URI later
+                (decisionResource ?? await TryGetDecisionResourceAsync(queryBase, queryBase.Notification.ResourceUri))
                 .DecisionUri;
 
             // Request URL
@@ -224,55 +268,77 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: documentsUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDocuments);
         }
-        #pragma warning restore CA1822
         #endregion
 
         #region Abstract (BSN Number)
         /// <summary>
-        /// Gets BSN number of a specific citizen from "OpenZaak" Web API service.
+        /// Gets BSN number of a specific citizen linked to the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseTypeUri">The <see cref="CaseType"/> in <see cref="Uri"/> format.</param>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<string> GetBsnNumberAsync(IQueryBase queryBase);
+        internal async Task<string> GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
+        {
+            // The provided URI is invalid
+            if (caseTypeUri.IsNotCaseTypeUri())
+            {
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
+            }
 
-        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase)"/>
-        internal Task<string> GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri);
+            return await PolymorphicGetBsnNumberAsync(queryBase, caseTypeUri);
+        }
+
+        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, Uri)"/>
+        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri);
         #endregion
 
-        #region Abstract (Case type)
+        #region Abstract (Case type URI)
         /// <summary>
-        /// Gets the callback <see cref="Uri"/> to obtain <see cref="Case"/> type from "OpenZaak" Web API service.
+        /// Gets the <see cref="Case"/> type in <see cref="Uri"/> format from version-specific CaseDetails from "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
+        internal async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri? caseUri = null)
         {
-            // Case #1: The case type URI was already provided in the initial notification
-            if (queryBase.Notification.Attributes.CaseTypeUri?.AbsoluteUri.IsNotEmpty() ?? false)
+            // Case #1: The required URI is not provided so, it needs to be obtained from elsewhere
+            if (caseUri == null)
             {
-                return queryBase.Notification.Attributes.CaseTypeUri;
+                // The Case type URI might be present in the initial notification; it can be returned
+                if (queryBase.Notification.Attributes.CaseTypeUri?.AbsoluteUri.IsNotEmpty() ?? false)
+                {
+                    return queryBase.Notification.Attributes.CaseTypeUri;
+                }
+
+                // There is no obvious place from where the desired URI can be obtained
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
             }
 
-            // Case #2: The Main Object doesn't contain case URI (e.g., the initial notification isn't a case scenario)
-            if (!caseUri.AbsoluteUri.Contains("/zaken/"))
+            // Case #2: The provided URI is invalid
+            if (caseUri.IsNotCaseUri())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
-            // Case #3: The case type URI needs to be queried from the Main Object
-            return await GetCaseTypeUriAsync(queryBase, caseUri);  // Fallback, providing case type URI anyway
+            // Case #3: The Case type URI needs to be queried from Case URI
+            return await PolymorphicGetCaseTypeUriAsync(queryBase, caseUri);
         }
 
-        /// <inheritdoc cref="TryGetCaseTypeUriAsync"/>
-        protected Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
+        /// <inheritdoc cref="TryGetCaseTypeUriAsync(IQueryBase, Uri)"/>
+        protected Task<Uri> PolymorphicGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Telemetry)
         /// <summary>
         /// Sends the completion feedback to "OpenZaak" Web API service.
         /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <param name="body">The HTTP Body to be passed with POST request.</param>
         /// <returns>
         ///   The JSON response from an external Telemetry Web API service.
         /// </returns>

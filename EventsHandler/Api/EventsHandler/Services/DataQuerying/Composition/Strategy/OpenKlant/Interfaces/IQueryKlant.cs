@@ -25,16 +25,21 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <summary>
         /// Gets the details of a specific citizen from "OpenKlant" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="bsnNumber">The BSN (Citizen Service Number).</param>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> GetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
         #endregion
 
         #region Abstract (Telemetry)
         /// <summary>
         /// Sends the completion feedback to "OpenKlant" Web API service.
         /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="body">The HTTP Body to be passed with POST request.</param>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>

@@ -26,29 +26,42 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
         }
 
+        #region Polymorphic (PrepareDataAsync)
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
+        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        {
+            // Setup
+            this.QueryContext ??= this.DataQuery.From(notification);
+            this.CachedCase ??= await this.QueryContext.GetCaseAsync();
+
+            // Validation #1: The case identifier must be whitelisted
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
+                this.CachedCase.Value.Identification, GetWhitelistName());
+            
+            this.CachedCaseType ??= await this.QueryContext.GetLastCaseTypeAsync(     // 2. Case type
+                                    await this.QueryContext.GetCaseStatusesAsync());  // 1. Case statuses
+
+            // Validation #2: The notifications must be enabled
+            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
+
+            // Preparing citizen details
+            return await this.QueryContext.GetPartyDataAsync();
+        }
+        #endregion
+
         #region Polymorphic (Email logic)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
-
-            ValidateCaseId(
-                this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
-            
-            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
-                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
-
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
-
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification },
+                { "zaak.omschrijving", this.CachedCase!.Value.Name },
+                { "zaak.identificatie", this.CachedCase!.Value.Identification },
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname }
@@ -61,10 +74,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
