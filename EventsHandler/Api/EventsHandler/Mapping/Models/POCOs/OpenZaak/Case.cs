@@ -21,7 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public string Identification { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The description of the <see cref="Case"/> which is an equivalent of its name.
+        /// The name of the <see cref="Case"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
