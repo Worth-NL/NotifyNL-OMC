@@ -51,7 +51,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         {
             get
             {
-                if (Results.IsNullOrEmpty())
+                if (this.Results.IsNullOrEmpty())
                 {
                     throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
                 }
