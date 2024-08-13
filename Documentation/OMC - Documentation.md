@@ -535,7 +535,7 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 {
   "actie": "create",
   "kanaal": "besluiten",
-  "resource": "besluit",
+  "resource": "besluitinformatieobject",
   "kenmerken": {
     "besluittype": "https://...",
     "verantwoordelijkeOrganisatie": "000000000"
