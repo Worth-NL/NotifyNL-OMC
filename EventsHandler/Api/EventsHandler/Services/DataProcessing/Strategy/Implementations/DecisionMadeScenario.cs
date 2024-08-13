@@ -25,14 +25,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        /// <inheritdoc cref="DecisionResource"/>
-        private DecisionResource? CachedDecisionResource { get; set; }
-
         /// <inheritdoc cref="Case"/>
-        private Case? CachedCase { get; set; }
+        private Case CachedCase { get; set; }
 
         /// <inheritdoc cref="CaseType"/>
-        private CaseType? CachedCaseType { get; set; }
+        private CaseType CachedCaseType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
@@ -48,8 +45,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             // Setup
             IQueryContext queryContext = this.DataQuery.From(notification);
-            this.CachedDecisionResource ??= await queryContext.GetDecisionResourceAsync();
-            InfoObject infoObject = await queryContext.GetInfoObjectAsync(this.CachedDecisionResource);
+            
+            DecisionResource decisionResource = await queryContext.GetDecisionResourceAsync();
+            InfoObject infoObject = await queryContext.GetInfoObjectAsync(decisionResource);
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
@@ -72,25 +70,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            Decision decision = await queryContext.GetDecisionAsync(this.CachedDecisionResource);
-            this.CachedCase ??= await queryContext.GetCaseAsync(decision.CaseUri);
+            Decision decision = await queryContext.GetDecisionAsync(decisionResource);
+            this.CachedCase = await queryContext.GetCaseAsync(decision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
+                this.CachedCase.Identification, GetWhitelistName());
             
-            this.CachedCaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
-                                    await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
+            this.CachedCaseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
+                                  await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                        decision.CaseUri));                 // 1. Case URI
 
             // Validation #5: The notifications must be enabled
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
+            ValidateNotifyPermit(this.CachedCaseType.IsNotificationExpected);
 
             // Preparing citizen details
             return await queryContext.GetPartyDataAsync(    // 4. Citizen details
                    await queryContext.GetBsnNumberAsync(    // 3. BSN number
-                   await queryContext.GetCaseTypeUriAsync(  // 2. Case Type Uri
-                   decision.CaseUri)));                          // 1. Case Uri
+                   await queryContext.GetCaseTypeUriAsync(  // 2. Case Type URI
+                   decision.CaseUri)));                     // 1. Case URI
         }
         #endregion
 
@@ -104,8 +103,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", this.CachedCase!.Value.Name },
-                { "zaak.identificatie", this.CachedCase!.Value.Identification }
+                { "zaak.omschrijving", this.CachedCase.Name },
+                { "zaak.identificatie", this.CachedCase.Identification }
             };
         }
 
