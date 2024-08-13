@@ -64,6 +64,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             {
                 { "zaak.omschrijving", this.CachedCase.Name },
                 { "zaak.identificatie", this.CachedCase.Identification },
+
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname }
