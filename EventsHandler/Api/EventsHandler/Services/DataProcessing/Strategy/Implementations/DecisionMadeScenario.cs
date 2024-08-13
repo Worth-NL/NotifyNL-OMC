@@ -123,8 +123,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "besluittype.publicatietermijn", "" },
                 { "besluittype.toelichting", "" },
 
-                { "zaak.omschrijving", this.CachedCase.Name },
                 { "zaak.identificatie", this.CachedCase.Identification },
+                { "zaak.omschrijving", this.CachedCase.Name },
                 { "zaak.registratiedatum", "" },
 
                 { "zaaktype.omschrijving", "" },
