@@ -103,8 +103,32 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return new Dictionary<string, object>
             {
+                { "besluit.identificatie", "" },
+                { "besluit.datum", "" },
+                { "besluit.toelichting", "" },
+                { "besluit.bestuursorgaan", "" },
+                { "besluit.ingangsdatum", "" },
+                { "besluit.vervaldatum", "" },
+                { "besluit.vervalreden", "" },
+                { "besluit.publicatiedatum", "" },
+                { "besluit.verzenddatum", "" },
+                { "besluit.uiterlijkereactiedatum", "" },
+
+                { "besluittype.omschrijving", "" },
+                { "besluittype.omschrijvinggeneriek", "" },
+                { "besluittype.besluitcategorie", "" },
+                { "besluittype.reactietermijn", "" },
+                { "besluittype.publicatieindicatie", "" },
+                { "besluittype.publicatietekst", "" },
+                { "besluittype.publicatietermijn", "" },
+                { "besluittype.toelichting", "" },
+
                 { "zaak.omschrijving", this.CachedCase.Name },
-                { "zaak.identificatie", this.CachedCase.Identification }
+                { "zaak.identificatie", this.CachedCase.Identification },
+                { "zaak.registratiedatum", "" },
+
+                { "zaak.registratiedatum", "" },
+                { "zaak.registratiedatum", "" }
             };
         }
 
@@ -138,7 +162,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 // Filter out info objects not meeting the specified criteria
                 if (infoObject.Status          != MessageStatus.Definitive &&
-                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)
+                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
                 {
                     continue;
                 }
