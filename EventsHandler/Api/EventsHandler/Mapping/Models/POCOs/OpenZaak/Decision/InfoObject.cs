@@ -27,7 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         public MessageStatus Status { get; internal set; }
 
         /// <summary>
-        /// The type of the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// The type of the <see cref="InfoObject"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

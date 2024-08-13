@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct CaseStatus : IJsonSerializable
     {
         /// <summary>
-        /// The type of the <see cref="CaseStatus"/> in <see cref="Uri"/> format.
+        /// The type of the <see cref="CaseStatus"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

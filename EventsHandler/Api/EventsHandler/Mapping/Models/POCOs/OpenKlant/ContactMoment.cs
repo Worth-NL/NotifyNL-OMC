@@ -21,7 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         public Guid Id { get; internal set; } = Guid.Empty;
 
         /// <summary>
-        /// The reference to the <see cref="ContactMoment"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="ContactMoment"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
