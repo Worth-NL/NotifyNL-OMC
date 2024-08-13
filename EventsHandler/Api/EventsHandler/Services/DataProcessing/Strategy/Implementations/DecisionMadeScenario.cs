@@ -86,10 +86,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             ValidateNotifyPermit(this.CachedCaseType.IsNotificationExpected);
 
             // Preparing citizen details
-            return await queryContext.GetPartyDataAsync(    // 4. Citizen details
-                   await queryContext.GetBsnNumberAsync(    // 3. BSN number
-                   await queryContext.GetCaseTypeUriAsync(  // 2. Case Type URI
-                         decision.CaseUri)));               // 1. Case URI
+            return await queryContext.GetPartyDataAsync(  // 3. Citizen details
+                   await queryContext.GetBsnNumberAsync(  // 2. BSN number
+                         this.CachedCase.CaseTypeUri));   // 1. Case Type URI
         }
         #endregion
 
