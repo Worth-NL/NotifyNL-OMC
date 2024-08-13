@@ -7,7 +7,6 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using Resources = EventsHandler.Properties.Resources;
@@ -30,9 +29,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
 
-        /// <inheritdoc cref="IQueryContext"/>
-        protected IQueryContext? QueryContext { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
@@ -49,7 +45,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             CommonPartyData commonPartyData = await PrepareDataAsync(notification);
 
             // Determine which types of notifications should be published
-            NotifyData[] notifyData = commonPartyData.DistributionChannel switch
+            return commonPartyData.DistributionChannel switch
             {
                 DistributionChannels.Email => new[] { GetEmailNotifyData(commonPartyData) },
 
@@ -66,10 +62,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                   => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
                 _ => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
             };
-
-            DropCache();
-
-            return notifyData;
         }
         #endregion
 
@@ -142,22 +134,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 templateId: GetSmsTemplateId(),
                 personalization: GetSmsPersonalization(partyData)
             );
-        }
-        #endregion
-
-        #region Virtual (DropCache)
-        /// <summary>
-        /// Drops (clears) the scenario internal cache.
-        /// <para>
-        ///   Clears:
-        /// </para>
-        /// <list type="bullet">
-        ///   <item><see cref="QueryContext"/></item>
-        /// </list>
-        /// </summary>
-        protected virtual void DropCache()
-        {
-            this.QueryContext = null;
         }
         #endregion
 

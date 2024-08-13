@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
@@ -31,22 +32,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
-            this.QueryContext ??= this.DataQuery.From(notification);
-            this.CachedCase ??= await this.QueryContext.GetCaseAsync();
+            IQueryContext queryContext = this.DataQuery.From(notification);
+
+            this.CachedCase = await queryContext.GetCaseAsync();
 
             // Validation #1: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakUpdate_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
+                this.CachedCase.Identification, GetWhitelistName());
             
-            this.CachedCaseType ??= await this.QueryContext.GetLastCaseTypeAsync(     // 2. Case type
-                                    await this.QueryContext.GetCaseStatusesAsync());  // 1. Case statuses
+            this.CachedCaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
+                                    await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
-            
+
             // Preparing citizen details
-            return await this.QueryContext.GetPartyDataAsync();
+            return await queryContext.GetPartyDataAsync();
         }
         #endregion
 
@@ -60,8 +62,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             return new Dictionary<string, object>
             {
-                { "zaak.omschrijving", this.CachedCase!.Value.Name },
-                { "zaak.identificatie", this.CachedCase!.Value.Identification },
+                { "zaak.omschrijving", this.CachedCase.Name },
+                { "zaak.identificatie", this.CachedCase.Identification },
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname },

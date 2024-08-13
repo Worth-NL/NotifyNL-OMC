@@ -15,7 +15,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
     internal abstract class BaseCaseScenario : BaseScenario
     {
         /// <inheritdoc cref="Case"/>
-        protected Case? CachedCase { get; set; }
+        protected Case CachedCase { get; set; }
 
         /// <inheritdoc cref="CaseType"/>
         protected CaseType? CachedCaseType { get; set; }
@@ -36,25 +36,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         internal void CacheCaseType(CaseType caseStatusType)
         {
             this.CachedCaseType = caseStatusType;
-        }
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <summary>
-        ///   <inheritdoc cref="BaseScenario.DropCache()"/>
-        ///   <para>
-        ///   <list type="bullet">
-        ///     <item><see cref="CachedCase"/></item>
-        ///     <item><see cref="CachedCaseType"/></item>
-        ///   </list>
-        ///   </para>
-        /// </summary>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedCase = null;
-            this.CachedCaseType = null;
         }
         #endregion
     }

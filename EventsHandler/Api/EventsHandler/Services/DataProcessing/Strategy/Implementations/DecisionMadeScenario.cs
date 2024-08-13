@@ -10,6 +10,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
@@ -46,9 +47,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
-            this.QueryContext ??= this.DataQuery.From(notification);
-            this.CachedDecisionResource ??= await this.QueryContext.GetDecisionResourceAsync();
-            InfoObject infoObject = await this.QueryContext.GetInfoObjectAsync(this.CachedDecisionResource);
+            IQueryContext queryContext = this.DataQuery.From(notification);
+            this.CachedDecisionResource ??= await queryContext.GetDecisionResourceAsync();
+            InfoObject infoObject = await queryContext.GetInfoObjectAsync(this.CachedDecisionResource);
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
@@ -71,24 +72,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            Decision decision = await this.QueryContext.GetDecisionAsync(this.CachedDecisionResource);
-            this.CachedCase ??= await this.QueryContext.GetCaseAsync(decision.CaseUri);
+            Decision decision = await queryContext.GetDecisionAsync(this.CachedDecisionResource);
+            this.CachedCase ??= await queryContext.GetCaseAsync(decision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
                 this.CachedCase.Value.Identification, GetWhitelistName());
             
-            this.CachedCaseType ??= await this.QueryContext.GetLastCaseTypeAsync(     // 2. Case type
-                                    await this.QueryContext.GetCaseStatusesAsync());  // 1. Case statuses
+            this.CachedCaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
+                                    await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
             // Preparing citizen details
-            return await this.QueryContext.GetPartyDataAsync(    // 4. Citizen details
-                   await this.QueryContext.GetBsnNumberAsync(    // 3. BSN number
-                   await this.QueryContext.GetCaseTypeUriAsync(  // 2. Case Type Uri
+            return await queryContext.GetPartyDataAsync(    // 4. Citizen details
+                   await queryContext.GetBsnNumberAsync(    // 3. BSN number
+                   await queryContext.GetCaseTypeUriAsync(  // 2. Case Type Uri
                    decision.CaseUri)));                          // 1. Case Uri
         }
         #endregion
@@ -117,10 +118,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private async Task<IReadOnlyCollection<Uri>> GetValidInfoObjectUrisAsync()
+        private static async Task<IReadOnlyCollection<Uri>> GetValidInfoObjectUrisAsync(IQueryContext queryContext, DecisionResource decisionResource)
         {
             // Retrieve documents
-            List<Document> documents = (await this.QueryContext!.GetDocumentsAsync(this.CachedDecisionResource))
+            List<Document> documents = (await queryContext.GetDocumentsAsync(decisionResource))
                                        .Results;
 
             if (documents.IsEmpty())
@@ -134,7 +135,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             foreach (Document document in documents)
             {
                 // Retrieve info objects from documents
-                InfoObject infoObject = await this.QueryContext!.GetInfoObjectAsync(document);
+                InfoObject infoObject = await queryContext.GetInfoObjectAsync(document);
 
                 // Filter out info objects not meeting the specified criteria
                 if (infoObject.Status          != MessageStatus.Definitive &&
@@ -166,25 +167,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <inheritdoc cref="BaseScenario.DropCache()"/>
-        /// <remarks>
-        /// <list type="bullet">
-        ///   <item><see cref="CachedDecisionResource"/></item>
-        ///   <item><see cref="CachedCase"/></item>
-        ///   <item><see cref="CachedCaseType"/></item>
-        /// </list>
-        /// </remarks>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedDecisionResource = null;
-            this.CachedCase = null;
-            this.CachedCaseType = null;
-        }
         #endregion
     }
 }
