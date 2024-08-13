@@ -5,6 +5,7 @@ using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
@@ -77,13 +78,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region GetAllNotifyDataAsync()
         [Test]
-        public void GetAllNotifyDataAsync_ForInvalidMessageType_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            SetMockedQueryContext(s_invalidInfoObjectType);
-            SetMockedDataQueryService();
-
-            INotifyScenario scenario = new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectType);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -93,18 +91,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0);
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ForInvalidStatus_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_ValidMessageType_InvalidStatus_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            SetMockedQueryContext(s_invalidInfoObjectStatus);
-            SetMockedDataQueryService();
-
-            INotifyScenario scenario = new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectStatus);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -114,18 +109,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0);
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ForInvalidConfidentiality_ThrowsAbortedNotifyingException()
+        public void GetAllNotifyDataAsync_InvalidConfidentiality_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            SetMockedQueryContext(s_invalidInfoObjectConfidentiality);
-            SetMockedDataQueryService();
-
-            INotifyScenario scenario = new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectConfidentiality);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -139,52 +131,71 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(0, 0, 0);
+                VerifyInvoke(0, 0, 0, 0);
             });
         }
         #endregion
 
         #region Helper methods
-        private void SetMockedQueryContext(InfoObject infoObject)
+        private INotifyScenario ArrangeDecisionScenario(InfoObject testInfoObject)
         {
+            // IQueryContext
             this._mockedQueryContext
-                .Setup(mock => mock.GetDecisionResourceAsync())
+                .Setup(mock => mock.GetDecisionResourceAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new DecisionResource());
 
             this._mockedQueryContext
                 .Setup(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()))
-                .ReturnsAsync(infoObject);
+                .ReturnsAsync(testInfoObject);
 
             this._mockedQueryContext
                 .Setup(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()))
                 .ReturnsAsync(new Decision());
 
             this._mockedQueryContext
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<object?>()))
+                .ReturnsAsync(new Case());
+
+            this._mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses());
-        }
 
-        private void SetMockedDataQueryService()
-        {
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string?>()))
+                .ReturnsAsync(new CommonPartyData());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetBsnNumberAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(string.Empty);
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseTypeUriAsync(It.IsAny<Uri?>()))
+                .ReturnsAsync(DefaultValues.Models.EmptyUri);
+
+            // IDataQueryService
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
+
+            // Decision Scenario
+            return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
         }
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getLastCaseTypeInvokeCount, int getCaseStatusesInvokeCount, int getDecisionInvokeCount)
+        private void VerifyInvoke(int getDecisionInvokeCount, int getCaseInvokeCount, int getCaseTypeInvokeCount,
+            int getCitizenDetailsInvokeCount)
         {
             this._mockedDataQuery
                 .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
                 Times.Once);
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetDecisionResourceAsync(),
+                .Verify(mock => mock.GetDecisionResourceAsync(It.IsAny<Uri?>()),
                 Times.Once);
 
             this._mockedQueryContext
@@ -196,12 +207,25 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Times.Exactly(getDecisionInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
-                Times.Exactly(getLastCaseTypeInvokeCount));
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
+                Times.Exactly(getCaseInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseStatusesAsync(),
-                Times.Exactly(getCaseStatusesInvokeCount));
+                .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
+                Times.Exactly(getCaseTypeInvokeCount));
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()),
+                Times.Exactly(getCaseTypeInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string?>()),
+                Times.Exactly(getCitizenDetailsInvokeCount));
+            this._mockedQueryContext
+                .Verify(mock => mock.GetBsnNumberAsync(It.IsAny<Uri>()),
+                Times.Exactly(getCitizenDetailsInvokeCount));
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseTypeUriAsync(It.IsAny<Uri?>()),
+                Times.Exactly(getCitizenDetailsInvokeCount));
         }
         #endregion
     }

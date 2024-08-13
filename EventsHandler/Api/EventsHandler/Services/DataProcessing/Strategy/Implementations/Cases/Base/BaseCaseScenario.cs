@@ -3,7 +3,6 @@
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
@@ -37,17 +36,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         internal void CacheCaseType(CaseType caseStatusType)
         {
             this.CachedCaseType = caseStatusType;
-        }
-        #endregion
-
-        #region Polymorphic (GetAllNotifyDataAsync)
-        /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
-        {
-            this.QueryContext ??= this.DataQuery.From(notification);
-            this.CachedCommonPartyData ??= await this.QueryContext.GetPartyDataAsync();
-
-            return await base.GetAllNotifyDataAsync(notification);
         }
         #endregion
 

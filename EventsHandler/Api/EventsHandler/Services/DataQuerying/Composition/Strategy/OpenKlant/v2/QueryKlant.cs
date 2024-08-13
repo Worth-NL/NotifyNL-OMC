@@ -36,8 +36,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         }
 
         #region Polymorphic (Citizen details)
-        /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
-        async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
             // TODO: BSN number validation
 

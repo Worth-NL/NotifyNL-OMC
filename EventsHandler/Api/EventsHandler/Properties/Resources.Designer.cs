@@ -637,15 +637,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The party data (e.g., citizen, organization) are missing..
-        /// </summary>
-        internal static string HttpRequest_ERROR_NoPartyData {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {

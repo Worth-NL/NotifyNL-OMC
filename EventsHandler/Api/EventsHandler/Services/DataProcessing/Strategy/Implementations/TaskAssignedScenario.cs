@@ -11,7 +11,6 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Globalization;
@@ -42,10 +41,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
         }
 
-        #region Polymorphic (GetAllNotifyDataAsync)
-        /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        internal override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
+        #region Polymorphic (PrepareDataAsync)
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
+        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
+            // Setup
             this.QueryContext ??= this.DataQuery.From(notification);
 
             // Validation #1: The task needs to be of a specific type
@@ -68,11 +68,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
+            
+            this.CachedCase ??= await this.QueryContext.GetCaseAsync(this.CachedTaskData.Value);
+            
+            // Validation #4: The case identifier must be whitelisted
+            ValidateCaseId(
+                this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
+                this.CachedCase.Value.Identification, GetWhitelistName());
+            
+            this.CachedCaseType ??= await this.QueryContext.GetLastCaseTypeAsync(  // 3. Case type
+                                    await this.QueryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                          this.CachedTaskData.Value.CaseUri));     // 1. Case URI
 
-            this.CachedCommonPartyData ??=
-                await this.QueryContext.GetPartyDataAsync(this.CachedTaskData.Value.Identification.Value);
+            // Validation #5: The notifications must be enabled
+            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
 
-            return await base.GetAllNotifyDataAsync(notification);
+            // Preparing citizen details
+            return await this.QueryContext.GetPartyDataAsync(this.CachedTaskData.Value.Identification.Value);
         }
         #endregion
 
@@ -81,20 +93,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.TaskAssigned();
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync(this.CachedTaskData!.Value);
-
-            ValidateCaseId(
-                this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
-            
-            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(     // Case type
-                                    await this.QueryContext!.GetCaseStatusesAsync());  // Case status
-
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
-
             string formattedExpirationDate = GetFormattedExpirationDate(this.CachedTaskData!.Value.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this.CachedTaskData!.Value.ExpirationDate);
 
@@ -103,8 +104,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "taak.verloopdatum", formattedExpirationDate },
                 { "taak.heeft_verloopdatum", expirationDateProvided },
                 { "taak.record.data.title", this.CachedTaskData!.Value.Title },
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification },
+                { "zaak.omschrijving", this.CachedCase!.Value.Name },
+                { "zaak.identificatie", this.CachedCase!.Value.Identification },
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
                 { "klant.achternaam", partyData.Surname }
@@ -147,10 +148,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

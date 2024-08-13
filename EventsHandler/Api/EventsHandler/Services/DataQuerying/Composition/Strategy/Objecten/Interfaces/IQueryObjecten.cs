@@ -22,7 +22,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-        #region Parent
+        #region Parent (Task)
         #pragma warning disable CA1822  // The method can be marked as static but that would be inconsistent for interfaces
         /// <summary>
         /// Gets the <see cref="TaskObject"/> from "Objecten" Web API service.

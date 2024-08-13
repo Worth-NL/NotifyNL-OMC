@@ -53,13 +53,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #region IQueryZaak
         /// <inheritdoc cref="IQueryContext.GetCaseAsync(object?)"/>
         async Task<Case> IQueryContext.GetCaseAsync(object? parameter)
-            => await this._queryZaak.GetCaseAsync(this._queryBase, parameter);
+            => await this._queryZaak.TryGetCaseAsync(this._queryBase, parameter);
 
-        /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync()"/>
-        async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync()
-            => await this._queryZaak.GetCaseStatusesAsync(this._queryBase);
+        /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync(Uri?)"/>
+        async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
+            => await this._queryZaak.TryGetCaseStatusesAsync(this._queryBase, caseUri);
 
-        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync"/>
+        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(CaseStatuses?)"/>
         async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? statuses)
         {
             // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
@@ -69,45 +69,46 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, statuses.Value);
         }
 
-        /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
-        async Task<string> IQueryContext.GetBsnNumberAsync()
-        {
-            // 1. MainObject from the NotificationEvent is case type URI
-            // 2. Fetch case roles from "OpenZaak"
-            // 3. Determine citizen data from case roles
-            // 4. Return BSN from citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase);
-        }
-
-        /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync()"/>
-        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
-        {
-            // 1. Pass case type URI from outside (MainObject is a different one in this situation)
-            // 2. Fetch case roles from "OpenZaak"
-            // 3. Determine citizen data from case roles
-            // 4. Return BSN from citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseTypeUri);  // TODO: Might be not used
-        }
-
         /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
         async Task<MainObject> IQueryContext.GetMainObjectAsync()
             => await this._queryZaak.GetMainObjectAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync()"/>
-        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync()
-            => await this._queryZaak.GetDecisionResourceAsync(this._queryBase);
+        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
+        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
+            => await this._queryZaak.TryGetDecisionResourceAsync(this._queryBase, resourceUri);
 
         /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
         async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
-            => await this._queryZaak.GetInfoObjectAsync(this._queryBase, parameter);
+            => await this._queryZaak.TryGetInfoObjectAsync(this._queryBase, parameter);
 
         /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
         async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.GetDecisionAsync(this._queryBase, decisionResource);
+            => await this._queryZaak.TryGetDecisionAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
+        async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
+            => await this._queryZaak.TryGetDocumentsAsync(this._queryBase, decisionResource);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
             => await this._queryZaak.SendFeedbackAsync(this._networkService, body);
+
+        /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
+        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
+        {
+            // 1. Fetch the case roles from "OpenZaak"
+            // 2. Determine the citizen data from the case roles
+            // 3. Return BSN from the citizen data
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseTypeUri);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
+        async Task<Uri> IQueryContext.GetCaseTypeUriAsync(Uri? caseUri)
+        {
+            // 1a. Gets the case type URI directly from the initial notification
+            // 1b. Use the provided case URI to retrieve the case type URI from CaseDetails
+            return await this._queryZaak.TryGetCaseTypeUriAsync(this._queryBase, caseUri);
+        }
         #endregion
 
         #region IQueryKlant
@@ -115,10 +116,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
         {
             // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
-            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync();
+            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(
+                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case type URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.GetPartyDataAsync(this._queryBase, bsnNumber);
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
         }
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent)"/>

@@ -34,19 +34,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase)"/>
-        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase)
-        {
-            // TODO: Validate Main Object
-            return await ((IQueryZaak)this).GetBsnNumberAsync(queryBase, queryBase.Notification.MainObjectUri);
-        }
-
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
-        async Task<string> IQueryZaak.GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
+        /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, Uri)"/>
+        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            // TODO: Validate caseTypeUri
             return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetDomain(), caseTypeUri, subjectType))
                 .Citizen
                 .BsnNumber;
@@ -61,16 +53,16 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseTypeUri}" +
                                           $"&betrokkeneType={subjectType}");
 
-            return await queryBase.ProcessGetAsync<CaseRoles>(
+            return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseWithRoleUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseRole);
         }
         #endregion
 
-        #region Polimorphic (Case type)
-        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriAsync"/>
-        async Task<Uri> IQueryZaak.GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
+        #region Polymorphic (Case type URI)
+        /// <inheritdoc cref="IQueryZaak.PolymorphicGetCaseTypeUriAsync(IQueryBase, Uri)"/>
+        async Task<Uri> IQueryZaak.PolymorphicGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
             return (await GetCaseDetailsV1Async(queryBase, caseUri))
                 .CaseTypeUrl;
@@ -78,7 +70,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 
         private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase, Uri caseUri)
         {
-            return await queryBase.ProcessGetAsync<CaseDetails>(
+            return await queryBase.ProcessGetAsync<CaseDetails>(  // NOTE: CaseDetails v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
