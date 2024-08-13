@@ -25,6 +25,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
+        /// <inheritdoc cref="Decision"/>
+        private Decision CachedDecision { get; set; }
+
         /// <inheritdoc cref="Case"/>
         private Case CachedCase { get; set; }
 
@@ -70,8 +73,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            Decision decision = await queryContext.GetDecisionAsync(decisionResource);
-            this.CachedCase = await queryContext.GetCaseAsync(decision.CaseUri);
+            this.CachedDecision = await queryContext.GetDecisionAsync(decisionResource);
+            this.CachedCase = await queryContext.GetCaseAsync(this.CachedDecision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
@@ -80,7 +83,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             this.CachedCaseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                   await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                        decision.CaseUri));                 // 1. Case URI
+                                        this.CachedDecision.CaseUri));      // 1. Case URI
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this.CachedCaseType.IsNotificationExpected);
@@ -102,7 +105,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return new Dictionary<string, object>
             {
-                { "besluit.identificatie", "" },
+                { "besluit.identificatie", this.CachedDecision.Identification },
                 { "besluit.datum", "" },
                 { "besluit.toelichting", "" },
                 { "besluit.bestuursorgaan", "" },
