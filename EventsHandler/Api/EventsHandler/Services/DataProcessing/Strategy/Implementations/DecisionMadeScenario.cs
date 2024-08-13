@@ -89,7 +89,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return await queryContext.GetPartyDataAsync(    // 4. Citizen details
                    await queryContext.GetBsnNumberAsync(    // 3. BSN number
                    await queryContext.GetCaseTypeUriAsync(  // 2. Case Type URI
-                   decision.CaseUri)));                     // 1. Case URI
+                         decision.CaseUri)));               // 1. Case URI
         }
         #endregion
 
