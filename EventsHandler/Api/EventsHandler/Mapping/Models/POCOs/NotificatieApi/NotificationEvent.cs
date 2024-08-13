@@ -83,7 +83,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         public EventAttributes Attributes { get; internal set; }
 
         /// <summary>
-        /// The reference to the domain object in <see cref="Uri"/> format.
+        /// The reference to the domain object in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -96,7 +96,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         public Uri MainObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The reference to the resource in <see cref="Uri"/> format.
+        /// The reference to the resource in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

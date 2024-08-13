@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
     public struct DecisionResource : IJsonSerializable
     {
         /// <summary>
-        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -24,7 +24,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         public Uri InfoObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The reference to the <see cref="Decision"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="Decision"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

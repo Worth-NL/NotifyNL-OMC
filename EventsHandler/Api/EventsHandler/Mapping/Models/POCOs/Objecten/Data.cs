@@ -15,7 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
     public struct Data : IJsonSerializable
     {
         /// <summary>
-        /// The reference to <see cref="Case"/> in <see cref="Uri"/> format.
+        /// The reference to <see cref="Case"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

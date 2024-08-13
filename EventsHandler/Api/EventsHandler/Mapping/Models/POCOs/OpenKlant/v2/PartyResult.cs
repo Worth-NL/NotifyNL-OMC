@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     public struct PartyResult : IJsonSerializable
     {
         /// <summary>
-        /// The ID of party (e.g., citizen, organization) in <see cref="Uri"/> format.
+        /// The ID of party (e.g., citizen, organization) in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

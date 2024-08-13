@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
     public struct Document : IJsonSerializable
     {
         /// <summary>
-        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="InfoObject"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

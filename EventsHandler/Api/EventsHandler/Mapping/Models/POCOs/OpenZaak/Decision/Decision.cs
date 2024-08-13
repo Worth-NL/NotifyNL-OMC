@@ -13,25 +13,25 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
     public struct Decision : IJsonSerializable
     {
         /// <summary>
-        /// The type of the <see cref="Decision"/> in <see cref="Uri"/> format.
-        /// </summary>
+        /// The type of the <see cref="Decision"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("besluittype")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format.
+        /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaak")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>

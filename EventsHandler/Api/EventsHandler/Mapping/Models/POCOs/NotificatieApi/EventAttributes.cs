@@ -61,7 +61,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Case properties
         /// <summary>
-        /// The <see cref="Case"/> type in <see cref="Uri"/> format.
+        /// The <see cref="Case"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -88,7 +88,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Object properties
         /// <summary>
-        /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format.
+        /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -101,7 +101,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Decision properties
         /// <summary>
-        /// The <see cref="Decision"/> type in <see cref="Uri"/> format.
+        /// The <see cref="Decision"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
