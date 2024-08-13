@@ -9,6 +9,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
+using System.Text.Json;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
@@ -142,7 +143,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// Prepares all the data required by this specific scenario.
         /// </summary>
         /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
-        /// <returns></returns>
+        /// <returns>
+        ///   The data containing basic information required to send the notification.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        /// <exception cref="AbortedNotifyingException"/>
         protected abstract Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification);
         #endregion
 
