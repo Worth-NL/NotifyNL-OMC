@@ -13,7 +13,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct Case : IJsonSerializable
     {
         /// <summary>
-        /// The identification of the <see cref="Case"/> which is an equivalent to the <see cref="Case"/> number.
+        /// The identification of the <see cref="Case"/> in the following format:
+        /// <code>
+        /// ZAAK-2023-0000000010
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]
@@ -29,11 +32,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The type of the <see cref="Case"/> in <see cref="Uri"/> format.
-        /// </summary>
+        /// The type of the <see cref="Case"/> in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(2)]
