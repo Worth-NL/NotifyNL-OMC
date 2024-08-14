@@ -459,4 +459,7 @@
   <data name="Operation_ERROR_Internal_NotInfoObjectUri" xml:space="preserve">
     <value>Internal error: The given URI is not an information object.</value>
   </data>
+  <data name="HttpRequest_ERROR_NoDecisionType" xml:space="preserve">
+    <value>HTTP Request: The decision type could not be retrieved from OpenZaak Web API service.</value>
+  </data>
 </root>

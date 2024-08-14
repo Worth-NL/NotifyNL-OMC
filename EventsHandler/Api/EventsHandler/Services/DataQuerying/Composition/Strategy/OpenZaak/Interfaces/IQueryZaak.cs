@@ -268,6 +268,40 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 uri: documentsUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDocuments);
         }
+        
+        /// <summary>
+        /// Gets the <see cref="DecisionType"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="decision"><inheritdoc cref="Decision" path="/summary"/></param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal async Task<DecisionType> TryGetDecisionTypeAsync(IQueryBase queryBase, Decision? decision)
+        {
+            // Request URL
+            Uri decisionTypeUri;
+
+            // Case #1: The Decision is missing
+            if (decision == null)
+            {
+                decisionTypeUri = queryBase.Notification.Attributes.DecisionTypeUri.IsNotNullOrDefault()
+                    // Variant A: But can be obtained directly from the initial notification
+                    ? queryBase.Notification.Attributes.DecisionTypeUri
+                    // Variant B: And it can be attempted to be re-queried from "OpenZaak"
+                    : (await TryGetDecisionAsync(queryBase, null)).TypeUri;
+            }
+            // Case #2: The required URI can be retrieved directly from the given Decision
+            else
+            {
+                decisionTypeUri = decision.Value.TypeUri;
+            }
+            
+            return await queryBase.ProcessGetAsync<DecisionType>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: decisionTypeUri,
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoDecisionType);
+        }
         #endregion
 
         #region Abstract (BSN Number)
