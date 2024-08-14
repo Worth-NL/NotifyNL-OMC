@@ -114,7 +114,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets the most recent <see cref="CaseType"/> from <see cref="CaseStatuses"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseStatuses">The case statuses to be analyzed.</param>
+        /// <param name="caseStatuses"><inheritdoc cref="CaseStatuses" path="/summary"/></param>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses caseStatuses)
@@ -222,7 +222,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="decisionResource">The model containing references in <see cref="Uri"/> formats.</param>
+        /// <param name="decisionResource"><inheritdoc cref="DecisionResource" path="/summary"/></param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
@@ -245,7 +245,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets the <see cref="Documents"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="decisionResource">The model containing references in <see cref="Uri"/> formats.</param>
+        /// <param name="decisionResource"><inheritdoc cref="DecisionResource" path="/summary"/></param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
