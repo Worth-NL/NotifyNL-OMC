@@ -114,13 +114,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets the most recent <see cref="CaseType"/> from <see cref="CaseStatuses"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="statuses">The case statuses to be analyzed.</param>
+        /// <param name="caseStatuses">The case statuses to be analyzed.</param>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses statuses)
+        internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses caseStatuses)
         {
             // Request URL
-            Uri lastStatusTypeUri = statuses.LastStatus().TypeUri;
+            Uri lastStatusTypeUri = caseStatuses.LastStatus().TypeUri;
 
             return await queryBase.ProcessGetAsync<CaseType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
