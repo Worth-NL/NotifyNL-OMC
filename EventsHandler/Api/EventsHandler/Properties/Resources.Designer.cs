@@ -583,6 +583,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The decision type could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDecisionType {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDecisionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoDigitalAddresses {
