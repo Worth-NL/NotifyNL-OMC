@@ -28,6 +28,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="Decision"/>
         private Decision CachedDecision { get; set; }
 
+        /// <inheritdoc cref="DecisionType"/>
+        private DecisionType CachedDecisionType { get; set; }
+
         /// <inheritdoc cref="Case"/>
         private Case CachedCase { get; set; }
 
@@ -74,6 +77,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             this.CachedDecision = await queryContext.GetDecisionAsync(decisionResource);
+            this.CachedDecisionType = await queryContext.GetDecisionTypeAsync(this.CachedDecision);
             this.CachedCase = await queryContext.GetCaseAsync(this.CachedDecision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
@@ -116,14 +120,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "besluit.verzenddatum", this.CachedDecision.ShippingDate },
                 { "besluit.uiterlijkereactiedatum", this.CachedDecision.ResponseDate },
 
-                { "besluittype.omschrijving", "" },
-                { "besluittype.omschrijvinggeneriek", "" },
-                { "besluittype.besluitcategorie", "" },
-                { "besluittype.reactietermijn", "" },
-                { "besluittype.publicatieindicatie", "" },
-                { "besluittype.publicatietekst", "" },
-                { "besluittype.publicatietermijn", "" },
-                { "besluittype.toelichting", "" },
+                { "besluittype.omschrijving", this.CachedDecisionType.Name },
+                { "besluittype.omschrijvinggeneriek", this.CachedDecisionType.Description },
+                { "besluittype.besluitcategorie", this.CachedDecisionType.Category },
+                { "besluittype.reactietermijn", this.CachedDecisionType.ResponseDeadline },
+                { "besluittype.publicatieindicatie", this.CachedDecisionType.PublicationIndicator },
+                { "besluittype.publicatietekst", this.CachedDecisionType.PublicationText },
+                { "besluittype.publicatietermijn", this.CachedDecisionType.PublicationDeadline },
+                { "besluittype.toelichting", this.CachedDecisionType.Explanation },
 
                 { "zaak.identificatie", this.CachedCase.Identification },
                 { "zaak.omschrijving", this.CachedCase.Name },

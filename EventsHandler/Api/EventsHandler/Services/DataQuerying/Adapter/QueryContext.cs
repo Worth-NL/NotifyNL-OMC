@@ -89,9 +89,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
             => await this._queryZaak.TryGetDocumentsAsync(this._queryBase, decisionResource);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(IQueryBase, Decision?)"/>
-        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(IQueryBase queryBase, Decision? decision)
-            => await this._queryZaak.TryGetDecisionTypeAsync(queryBase, decision);
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
+        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
+            => await this._queryZaak.TryGetDecisionTypeAsync(this._queryBase, decision);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
