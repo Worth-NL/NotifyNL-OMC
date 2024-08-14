@@ -59,7 +59,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing <see cref="CaseStatuses"/>, but it produces an additional
         ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? statuses = null);
+        internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? caseStatuses = null);
 
         /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
         internal Task<MainObject> GetMainObjectAsync();
@@ -95,6 +95,17 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
+
+        /// <inheritdoc cref="IQueryZaak.TryGetDecisionTypeAsync(IQueryBase, Decision?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="Decision"/>, but it produces an additional
+        ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
+        ///   service. One of alternatives is that just before querying <see cref="Decision"/> to get desired
+        ///   <seealso cref="DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
+        ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
+        ///   only if the notification was meant to be used with Decision scenarios).
+        /// </remarks>
+        internal Task<DecisionType> GetDecisionTypeAsync(IQueryBase queryBase, Decision? decision = null);
 
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);
