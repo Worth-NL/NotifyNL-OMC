@@ -25,10 +25,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        private Decision _cachedDecision;
-        private DecisionType _cachedDecisionType;
-        private Case _cachedCase;
-        private CaseType _cachedCaseType;
+        private Decision _decision;
+        private DecisionType _decisionType;
+        private Case _case;
+        private CaseType _caseType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
@@ -69,26 +69,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            this._cachedDecision = await queryContext.GetDecisionAsync(decisionResource);
-            this._cachedDecisionType = await queryContext.GetDecisionTypeAsync(this._cachedDecision);
-            this._cachedCase = await queryContext.GetCaseAsync(this._cachedDecision.CaseUri);
+            this._decision = await queryContext.GetDecisionAsync(decisionResource);
+            this._decisionType = await queryContext.GetDecisionTypeAsync(this._decision);
+            this._case = await queryContext.GetCaseAsync(this._decision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this._cachedCase.Identification, GetWhitelistName());
+                this._case.Identification, GetWhitelistName());
             
-            this._cachedCaseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
-                                   await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                         this._cachedDecision.CaseUri));     // 1. Case URI
+            this._caseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
+                             await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                   this._decision.CaseUri));           // 1. Case URI
 
             // Validation #5: The notifications must be enabled
-            ValidateNotifyPermit(this._cachedCaseType.IsNotificationExpected);
+            ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
             // Preparing citizen details
             return await queryContext.GetPartyDataAsync(  // 3. Citizen details
                    await queryContext.GetBsnNumberAsync(  // 2. BSN number
-                         this._cachedCase.CaseTypeUri));  // 1. Case Type URI
+                         this._case.CaseTypeUri));        // 1. Case Type URI
         }
         #endregion
 
@@ -102,32 +102,32 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return new Dictionary<string, object>
             {
-                { "besluit.identificatie", this._cachedDecision.Identification },
-                { "besluit.datum", this._cachedDecision.Date },
-                { "besluit.toelichting", this._cachedDecision.Explanation },
-                { "besluit.bestuursorgaan", this._cachedDecision.GoverningBody },
-                { "besluit.ingangsdatum", this._cachedDecision.EffectiveDate },
-                { "besluit.vervaldatum", this._cachedDecision.ExpirationDate },
-                { "besluit.vervalreden", this._cachedDecision.ExpirationReason },
-                { "besluit.publicatiedatum", this._cachedDecision.PublicationDate },
-                { "besluit.verzenddatum", this._cachedDecision.ShippingDate },
-                { "besluit.uiterlijkereactiedatum", this._cachedDecision.ResponseDate },
+                { "besluit.identificatie", this._decision.Identification },
+                { "besluit.datum", this._decision.Date },
+                { "besluit.toelichting", this._decision.Explanation },
+                { "besluit.bestuursorgaan", this._decision.GoverningBody },
+                { "besluit.ingangsdatum", this._decision.EffectiveDate },
+                { "besluit.vervaldatum", this._decision.ExpirationDate },
+                { "besluit.vervalreden", this._decision.ExpirationReason },
+                { "besluit.publicatiedatum", this._decision.PublicationDate },
+                { "besluit.verzenddatum", this._decision.ShippingDate },
+                { "besluit.uiterlijkereactiedatum", this._decision.ResponseDate },
 
-                { "besluittype.omschrijving", this._cachedDecisionType.Name },
-                { "besluittype.omschrijvinggeneriek", this._cachedDecisionType.Description },
-                { "besluittype.besluitcategorie", this._cachedDecisionType.Category },
-                { "besluittype.reactietermijn", this._cachedDecisionType.ResponseDeadline },
-                { "besluittype.publicatieindicatie", this._cachedDecisionType.PublicationIndicator },
-                { "besluittype.publicatietekst", this._cachedDecisionType.PublicationText },
-                { "besluittype.publicatietermijn", this._cachedDecisionType.PublicationDeadline },
-                { "besluittype.toelichting", this._cachedDecisionType.Explanation },
+                { "besluittype.omschrijving", this._decisionType.Name },
+                { "besluittype.omschrijvinggeneriek", this._decisionType.Description },
+                { "besluittype.besluitcategorie", this._decisionType.Category },
+                { "besluittype.reactietermijn", this._decisionType.ResponseDeadline },
+                { "besluittype.publicatieindicatie", this._decisionType.PublicationIndicator },
+                { "besluittype.publicatietekst", this._decisionType.PublicationText },
+                { "besluittype.publicatietermijn", this._decisionType.PublicationDeadline },
+                { "besluittype.toelichting", this._decisionType.Explanation },
 
-                { "zaak.identificatie", this._cachedCase.Identification },
-                { "zaak.omschrijving", this._cachedCase.Name },
-                { "zaak.registratiedatum", this._cachedCase.RegistrationDate },
+                { "zaak.identificatie", this._case.Identification },
+                { "zaak.omschrijving", this._case.Name },
+                { "zaak.registratiedatum", this._case.RegistrationDate },
 
-                { "zaaktype.omschrijving", this._cachedCaseType.Name },
-                { "zaaktype.omschrijvinggeneriek", this._cachedCaseType.Description }
+                { "zaaktype.omschrijving", this._caseType.Name },
+                { "zaaktype.omschrijvinggeneriek", this._caseType.Description }
             };
         }
 

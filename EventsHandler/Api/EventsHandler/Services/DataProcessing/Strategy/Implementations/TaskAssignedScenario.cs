@@ -25,8 +25,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class TaskAssignedScenario : BaseScenario
     {
-        private Data _cachedTaskData;
-        private Case _cachedCase;
+        private Data _taskData;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
@@ -50,37 +50,37 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
 
-            this._cachedTaskData = (await queryContext.GetTaskAsync()).Record.Data;
+            this._taskData = (await queryContext.GetTaskAsync()).Record.Data;
 
             // Validation #2: The task needs to have an open status
-            if (this._cachedTaskData.Status != TaskStatuses.Open)
+            if (this._taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             // Validation #3: The task needs to be assigned to a person
-            if (this._cachedTaskData.Identification.Type != IdTypes.Bsn)
+            if (this._taskData.Identification.Type != IdTypes.Bsn)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
             
-            this._cachedCase = await queryContext.GetCaseAsync(this._cachedTaskData);
+            this._case = await queryContext.GetCaseAsync(this._taskData);
             
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                this._cachedCase.Identification, GetWhitelistName());
+                this._case.Identification, GetWhitelistName());
             
             CaseType caseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                      this._cachedTaskData.CaseUri));     // 1. Case URI
+                                      this._taskData.CaseUri));           // 1. Case URI
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
 
             // Preparing citizen details
             return await queryContext.GetPartyDataAsync(
-                this._cachedTaskData.Identification.Value);  // BSN number
+                this._taskData.Identification.Value);  // BSN number
         }
         #endregion
 
@@ -92,17 +92,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            string formattedExpirationDate = GetFormattedExpirationDate(this._cachedTaskData.ExpirationDate);
-            string expirationDateProvided = GetExpirationDateProvided(this._cachedTaskData.ExpirationDate);
+            string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
 
             return new Dictionary<string, object>
             {
                 { "taak.verloopdatum", formattedExpirationDate },
                 { "taak.heeft_verloopdatum", expirationDateProvided },
-                { "taak.record.data.title", this._cachedTaskData.Title },
+                { "taak.record.data.title", this._taskData.Title },
 
-                { "zaak.identificatie", this._cachedCase.Identification },
-                { "zaak.omschrijving", this._cachedCase.Name },
+                { "zaak.identificatie", this._case.Identification },
+                { "zaak.omschrijving", this._case.Name },
 
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },

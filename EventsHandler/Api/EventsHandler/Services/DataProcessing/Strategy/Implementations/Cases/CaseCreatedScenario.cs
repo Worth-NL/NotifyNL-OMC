@@ -34,18 +34,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Setup
             IQueryContext queryContext = this.DataQuery.From(notification);
 
-            this.CachedCase = await queryContext.GetCaseAsync();
+            this.Case = await queryContext.GetCaseAsync();
 
             // Validation #1: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
-                this.CachedCase.Identification, GetWhitelistName());
+                this.Case.Identification, GetWhitelistName());
             
-            this.CachedCaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
-                                    await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
+            this.CaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
+                              await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
             // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
+            ValidateNotifyPermit(this.CaseType.Value.IsNotificationExpected);
 
             // Preparing citizen details
             return await queryContext.GetPartyDataAsync();
@@ -62,8 +62,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             return new Dictionary<string, object>
             {
-                { "zaak.identificatie", this.CachedCase.Identification },
-                { "zaak.omschrijving", this.CachedCase.Name },
+                { "zaak.identificatie", this.Case.Identification },
+                { "zaak.omschrijving", this.Case.Name },
 
                 { "klant.voornaam", partyData.Name },
                 { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
