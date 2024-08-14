@@ -14,11 +14,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
     /// <seealso cref="BaseScenario"/>
     internal abstract class BaseCaseScenario : BaseScenario
     {
-        /// <inheritdoc cref="Case"/>
-        protected Case CachedCase { get; set; }
+        /// <inheritdoc cref="Mapping.Models.POCOs.OpenZaak.Case"/>
+        protected Case Case { get; set; }
 
-        /// <inheritdoc cref="CaseType"/>
-        protected CaseType? CachedCaseType { get; set; }
+        /// <inheritdoc cref="Mapping.Models.POCOs.OpenZaak.CaseType"/>
+        protected CaseType? CaseType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
@@ -32,10 +32,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         /// <summary>
         /// Passes an already queried result.
         /// </summary>
-        /// <param name="caseStatusType">Type of the case status.</param>
-        internal void CacheCaseType(CaseType caseStatusType)
+        /// <param name="caseType">Type of the <see cref="Mapping.Models.POCOs.OpenZaak.Case"/>.</param>
+        internal void CacheCaseType(CaseType caseType)
         {
-            this.CachedCaseType = caseStatusType;
+            this.CaseType = caseType;
         }
         #endregion
     }
