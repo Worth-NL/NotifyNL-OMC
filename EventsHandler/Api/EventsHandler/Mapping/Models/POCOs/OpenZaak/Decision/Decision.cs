@@ -118,7 +118,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         public DateOnly ResponseDate { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainObject"/> struct.
+        /// Initializes a new instance of the <see cref="Decision"/> struct.
         /// </summary>
         public Decision()
         {
