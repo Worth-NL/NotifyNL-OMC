@@ -3,6 +3,7 @@
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace EventsHandler.Extensions
@@ -38,13 +39,37 @@ namespace EventsHandler.Extensions
 
         #region URI validation
         /// <summary>
+        /// Determines whether the given <see cref="Uri"/> is <see langword="null"/> or contains <see langword="default"/> value.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        private static bool IsNullOrDefault([NotNullWhen(false)]this Uri? uri)
+        {
+            return DefaultValues.Models.EmptyUri.Equals(uri);
+        }
+        
+        /// <summary>
+        /// Determines whether the given <see cref="Uri"/> isn't <see langword="null"/> or doesn't contain <see langword="default"/> value.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsNotNullOrDefault([NotNullWhen(true)] this Uri? uri)
+        {
+            return !uri.IsNullOrDefault();
+        }
+
+        /// <summary>
         /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="Case"/> <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
-        ///   <see langword="true"/> if the provided <see cref="Uri"/> IS NOT valid; otherwise, <see langword="false"/>.
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsNotCaseUri(this Uri? uri)
+        internal static bool IsNotCase(this Uri? uri)
         {
             return uri.DoesNotContain("/zaken/");
         }
@@ -54,9 +79,9 @@ namespace EventsHandler.Extensions
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
-        ///   <see langword="true"/> if the provided <see cref="Uri"/> IS NOT valid; otherwise, <see langword="false"/>.
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsNotCaseTypeUri(this Uri? uri)
+        internal static bool IsNotCaseType(this Uri? uri)
         {
             return uri.DoesNotContain("/zaaktypen/");
         }
@@ -66,9 +91,9 @@ namespace EventsHandler.Extensions
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
-        ///   <see langword="true"/> if the provided <see cref="Uri"/> IS NOT valid; otherwise, <see langword="false"/>.
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsNotDecisionResourceUri(this Uri? uri)
+        internal static bool IsNotDecisionResource(this Uri? uri)
         {
             return uri.DoesNotContain("/besluitinformatieobjecten/");
         }
