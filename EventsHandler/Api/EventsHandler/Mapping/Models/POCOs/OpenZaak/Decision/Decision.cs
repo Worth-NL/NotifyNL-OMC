@@ -1,4 +1,4 @@
-﻿// © 2023, Worth Systems.
+﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
@@ -44,6 +44,78 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(2)]
         public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <summary>
+        /// The date when the <see cref="Decision"/> was issued.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("datum")]
+        [JsonPropertyOrder(3)]
+        public DateOnly Date { get; internal set; }
+
+        /// <summary>
+        /// The explanation of the <see cref="Decision"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("toelichting")]
+        [JsonPropertyOrder(4)]
+        public string Explanation { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// The name of the institution issuing this <see cref="Decision"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("bestuursorgaan")]
+        [JsonPropertyOrder(5)]
+        public string GoverningBody { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// The date from which the <see cref="Decision"/> starts to operate (begins).
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("ingangsdatum")]
+        [JsonPropertyOrder(6)]
+        public DateOnly EffectiveDate { get; internal set; }
+
+        /// <summary>
+        /// The date after which the <see cref="Decision"/> will expire (ends).
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("vervaldatum")]
+        [JsonPropertyOrder(7)]
+        public DateOnly ExpirationDate { get; internal set; }
+
+        /// <summary>
+        /// The reason explaining the <see cref="Decision"/> expiration.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("vervalreden")]
+        [JsonPropertyOrder(8)]
+        public string ExpirationReason { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// The date when the <see cref="Decision"/> is meant to be published.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("publicatiedatum")]
+        [JsonPropertyOrder(9)]
+        public DateOnly PublicationDate { get; internal set; }
+
+        /// <summary>
+        /// The date when the <see cref="Decision"/> is meant to be shipped.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("verzenddatum")]
+        [JsonPropertyOrder(10)]
+        public DateOnly ShippingDate { get; internal set; }
+
+        /// <summary>
+        /// The date up to which party (e.g., citizen, or organization) can appeal the <see cref="Decision"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("uiterlijkeReactiedatum")]
+        [JsonPropertyOrder(11)]
+        public DateOnly ResponseDate { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainObject"/> struct.
