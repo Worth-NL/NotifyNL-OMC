@@ -103,28 +103,28 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return new Dictionary<string, object>
             {
                 { "besluit.identificatie", this._decision.Identification },
-                { "besluit.datum", this._decision.Date },
+                { "besluit.datum", $"{this._decision.Date}" },
                 { "besluit.toelichting", this._decision.Explanation },
                 { "besluit.bestuursorgaan", this._decision.GoverningBody },
-                { "besluit.ingangsdatum", this._decision.EffectiveDate },
-                { "besluit.vervaldatum", this._decision.ExpirationDate },
+                { "besluit.ingangsdatum", $"{this._decision.EffectiveDate}" },
+                { "besluit.vervaldatum", $"{this._decision.ExpirationDate}" },
                 { "besluit.vervalreden", this._decision.ExpirationReason },
-                { "besluit.publicatiedatum", this._decision.PublicationDate },
-                { "besluit.verzenddatum", this._decision.ShippingDate },
-                { "besluit.uiterlijkereactiedatum", this._decision.ResponseDate },
+                { "besluit.publicatiedatum", $"{this._decision.PublicationDate}" },
+                { "besluit.verzenddatum", $"{this._decision.ShippingDate}" },
+                { "besluit.uiterlijkereactiedatum", $"{this._decision.ResponseDate}" },
 
                 { "besluittype.omschrijving", this._decisionType.Name },
                 { "besluittype.omschrijvinggeneriek", this._decisionType.Description },
                 { "besluittype.besluitcategorie", this._decisionType.Category },
-                { "besluittype.reactietermijn", this._decisionType.ResponseDeadline },
+                { "besluittype.reactietermijn", $"{this._decisionType.ResponseDeadline}" },
                 { "besluittype.publicatieindicatie", this._decisionType.PublicationIndicator },
                 { "besluittype.publicatietekst", this._decisionType.PublicationText },
-                { "besluittype.publicatietermijn", this._decisionType.PublicationDeadline },
+                { "besluittype.publicatietermijn", $"{this._decisionType.PublicationDeadline}" },
                 { "besluittype.toelichting", this._decisionType.Explanation },
 
                 { "zaak.identificatie", this._case.Identification },
                 { "zaak.omschrijving", this._case.Name },
-                { "zaak.registratiedatum", this._case.RegistrationDate },
+                { "zaak.registratiedatum", $"{this._case.RegistrationDate}" },
 
                 { "zaaktype.omschrijving", this._caseType.Name },
                 { "zaaktype.omschrijvinggeneriek", this._caseType.Description }
