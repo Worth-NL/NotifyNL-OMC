@@ -60,13 +60,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             => await this._queryZaak.TryGetCaseStatusesAsync(this._queryBase, caseUri);
 
         /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(CaseStatuses?)"/>
-        async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? statuses)
+        async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? caseStatuses)
         {
             // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
-            statuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
+            caseStatuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
 
             // 2. Fetch the case status type from the last case status from "OpenZaak" Web API service
-            return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, statuses.Value);
+            return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, caseStatuses.Value);
         }
 
         /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
@@ -88,6 +88,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
         async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
             => await this._queryZaak.TryGetDocumentsAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(IQueryBase, Decision?)"/>
+        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(IQueryBase queryBase, Decision? decision)
+            => await this._queryZaak.TryGetDecisionTypeAsync(queryBase, decision);
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
