@@ -105,7 +105,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
         ///   only if the notification was meant to be used with Decision scenarios).
         /// </remarks>
-        internal Task<DecisionType> GetDecisionTypeAsync(IQueryBase queryBase, Decision? decision = null);
+        internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
 
         /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);
