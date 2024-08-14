@@ -56,7 +56,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             else if (parameter is Uri uri)
             {
                 // But it's invalid
-                if (uri.IsNotCaseTypeUri())
+                if (uri.IsNotCaseType())
                 {
                     throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
                 }
@@ -95,7 +95,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             
             // Case #1: The Case URI was provided
             // Case #2: The Case URI needs to obtained from elsewhere
-            if ((caseUri ??= queryBase.Notification.MainObjectUri).IsNotCaseUri())
+            if ((caseUri ??= queryBase.Notification.MainObjectUri).IsNotCase())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
@@ -160,7 +160,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         {
             // Case #1: The Resource URI was provided
             // Case #2: The Resource URI needs to obtained from elsewhere
-            if ((resourceUri ??= queryBase.Notification.ResourceUri).IsNotDecisionResourceUri())
+            if ((resourceUri ??= queryBase.Notification.ResourceUri).IsNotDecisionResource())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotDecisionResourceUri);
             }
@@ -283,7 +283,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal async Task<string> GetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
         {
             // The provided URI is invalid
-            if (caseTypeUri.IsNotCaseTypeUri())
+            if (caseTypeUri.IsNotCaseType())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
             }
@@ -310,7 +310,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             if (caseUri == null)
             {
                 // The Case type URI might be present in the initial notification; it can be returned
-                if (queryBase.Notification.Attributes.CaseTypeUri?.AbsoluteUri.IsNotEmpty() ?? false)
+                if (queryBase.Notification.Attributes.CaseTypeUri.IsNotNullOrDefault())
                 {
                     return queryBase.Notification.Attributes.CaseTypeUri;
                 }
@@ -320,7 +320,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             // Case #2: The provided URI is invalid
-            if (caseUri.IsNotCaseUri())
+            if (caseUri.IsNotCase())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
