@@ -8,12 +8,12 @@ namespace EventsHandler.Services.DataSending.Responses
     internal readonly struct NotifySendResponse  // NOTE: "NotificationResponse" is restricted name of the model from "Notify.Models.Responses"
     {
         /// <summary>
-        /// Gets the status of the <see cref="NotifySendResponse"/>.
+        /// The status of the <see cref="NotifySendResponse"/>.
         /// </summary>
         internal bool IsSuccess { get; }
 
         /// <summary>
-        /// Gets the content of the <see cref="NotifySendResponse"/>.
+        /// The content of the <see cref="NotifySendResponse"/>.
         /// </summary>
         internal string Content { get; }
 
