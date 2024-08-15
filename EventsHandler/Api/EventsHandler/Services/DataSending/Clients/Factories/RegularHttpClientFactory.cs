@@ -8,6 +8,9 @@ using System.Net.Http.Headers;
 namespace EventsHandler.Services.DataSending.Clients.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
+    /// <remarks>
+    ///   Customized to create a generic .NET <see cref="HttpClient"/>s.
+    /// </remarks>
     internal sealed class RegularHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>
     {
         private readonly WebApiConfiguration _configuration;
