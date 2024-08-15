@@ -128,7 +128,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 { "zaak.registratiedatum", $"{this._case.RegistrationDate}" },
 
                 { "zaaktype.omschrijving", this._caseType.Name },
-                { "zaaktype.omschrijvinggeneriek", this._caseType.Description }
+                { "zaaktype.omschrijvinggeneriek", this._caseType.Description },
+
+                { "klant.voornaam", partyData.Name },
+                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
+                { "klant.achternaam", partyData.Surname }
             };
         }
 
