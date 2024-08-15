@@ -316,11 +316,11 @@
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
     <value>An unexpected error occurred during processing the notification with ID: {0} | {1}.</value>
-    <comment>API Endpoint: Notify/Confirm</comment>
+    <comment>API Endpoint: Notify/Confirm. {0} = ID, {1} = Exception message</comment>
   </data>
   <data name="Feedback_NotifyNL_STATUS_NotificationStatus" xml:space="preserve">
     <value>The status of notification with ID: {0} | {1}.</value>
-    <comment>API Endpoint: Notify/Confirm</comment>
+    <comment>API Endpoint: Notify/Confirm. {0} = ID, {1} = Notification status</comment>
   </data>
   <data name="Events_ApiVersionRequested" xml:space="preserve">
     <value>The version of the API was requested.</value>
