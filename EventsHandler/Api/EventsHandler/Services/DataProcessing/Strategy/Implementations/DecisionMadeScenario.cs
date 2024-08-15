@@ -100,6 +100,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
+            // TODO: Use cached dictionary and update values
             return new Dictionary<string, object>
             {
                 { "besluit.identificatie", this._decision.Identification },
