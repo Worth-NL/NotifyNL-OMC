@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);  // TODO: If failure, return ProcessingResult here
+                IReadOnlyCollection<NotifyData> allNotifyData = await scenario.GetAllNotifyDataAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 if (!allNotifyData.HasAny())
                 {

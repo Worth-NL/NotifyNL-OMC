@@ -122,12 +122,12 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
 
             // Act
-            NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Length.EqualTo(0));
+                Assert.That(actualResult, Has.Count.EqualTo(0));
 
                 VerifyMethodCalls(mockedQueryContext, mockedQueryService,
                     1, 1, 1, 1);
@@ -181,14 +181,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
 
             // Act
-            NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Length.EqualTo(1));
+                Assert.That(actualResult, Has.Count.EqualTo(1));
 
-                NotifyData firstResult = actualResult[0];
+                NotifyData firstResult = actualResult.First();
                 Assert.That(firstResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod));
                 Assert.That(firstResult.ContactDetails, Is.EqualTo(expectedContactDetails));
                 Assert.That(firstResult.TemplateId, Is.EqualTo(
@@ -213,20 +213,20 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = (BaseScenario)Activator.CreateInstance(scenarioType, this._testConfiguration, mockedQueryService.Object)!;
 
             // Act
-            NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Length.EqualTo(2));
+                Assert.That(actualResult, Has.Count.EqualTo(2));
 
-                NotifyData firstResult = actualResult[0];
+                NotifyData firstResult = actualResult.First();
                 Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
                 Assert.That(firstResult.ContactDetails, Is.EqualTo(TestEmailAddress));
                 Assert.That(firstResult.TemplateId, Is.EqualTo(
                     DetermineTemplateId(scenarioType, firstResult.NotificationMethod, this._testConfiguration)));
 
-                NotifyData secondResult = actualResult[1];
+                NotifyData secondResult = actualResult.Last();
                 Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
                 Assert.That(secondResult.ContactDetails, Is.EqualTo(TestPhoneNumber));
                 Assert.That(secondResult.TemplateId, Is.EqualTo(

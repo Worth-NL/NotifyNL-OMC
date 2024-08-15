@@ -34,6 +34,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
         /// <exception cref="AbortedNotifyingException">
         ///   The notification should not be sent.
         /// </exception>
-        internal Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification);
+        internal Task<IReadOnlyCollection<NotifyData>> GetAllNotifyDataAsync(NotificationEvent notification);
     }
 }
