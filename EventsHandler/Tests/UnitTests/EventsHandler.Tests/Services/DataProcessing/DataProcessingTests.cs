@@ -11,6 +11,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
 using ResourcesText = EventsHandler.Properties.Resources;
@@ -30,7 +31,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             this._mockedScenariosManager = new Mock<IScenariosResolver>(MockBehavior.Strict);
             this._mockedSender = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
 
-            this._processor = new NotifyProcessor(_mockedScenariosManager.Object, _mockedSender.Object);
+            this._processor = new NotifyProcessor(this._mockedScenariosManager.Object, this._mockedSender.Object);
         }
 
         [SetUp]
@@ -59,8 +60,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(testNotification);
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Never());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -85,8 +86,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Never());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -95,24 +96,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             });
         }
 
-        [TestCase(2, 0, 1)]  // Only: email
-        [TestCase(3, 1, 0)]  // Only: SMS
+        [TestCase(2, 1, 0)]  // Only: Email
+        [TestCase(3, 0, 1)]  // Only: SMS
         public async Task ProcessAsync_ForValidNotifyData_WithValidNotifyMethods_CallsExpectedSendMethods_AndReturnsProcessingResult_Success(
-            int notifyMethod, int smsSendCount, int emailSendCount)
+                int notifyMethod, int emailSendCount, int smsSendCount)
         {
             // Arrange
             NotifyData testNotifyData = GetNotifyData((NotifyMethods)notifyMethod);
             SetupScenariosManager(testNotifyData);
-            SetupSender(smsNotifyData:   smsSendCount   > 0 ? testNotifyData : default,
-                        emailNotifyData: emailSendCount > 0 ? testNotifyData : default);
-
+            SetupSender(emailSendCount > 0 ? testNotifyData : default,
+                        smsSendCount > 0 ? testNotifyData : default);
             // Act
             (ProcessingResult status, string? message) = await this._processor!.ProcessAsync(
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(smsSendCount     > 0 ? Times.Once() : Times.Never());
             Verify_SendEmailAsync(emailSendCount > 0 ? Times.Once() : Times.Never());
+            Verify_SendSmsAsync(smsSendCount     > 0 ? Times.Once() : Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -134,8 +134,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Never());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -162,8 +162,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Once());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -185,8 +185,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Never());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
@@ -208,13 +208,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated());
 
             // Assert
-            Verify_SendSmsAsync(Times.Never());
             Verify_SendEmailAsync(Times.Never());
+            Verify_SendSmsAsync(Times.Never());
 
             Assert.Multiple(() =>
             {
                 Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-                Assert.That(message, Does.StartWith("HttpRequestException | Exception of type 'System.Net.Http.HttpRequestException' was"));
+                Assert.That(message, Does.StartWith($"{nameof(HttpRequestException)} | Exception of type '{typeof(HttpRequestException).FullName}' was"));
             });
         }
         #endregion
@@ -247,15 +247,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 .ReturnsAsync(mockedNotifyScenario.Object);
         }
 
-        private void SetupSender(NotifyData? smsNotifyData = default, NotifyData? emailNotifyData = default)
+        private void SetupSender(NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {
-            this._mockedSender?.Setup(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
-                .Returns(Task.CompletedTask);
-
             this._mockedSender?.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(new NotifySendResponse(true, "Test Email body"));
+
+            this._mockedSender?.Setup(mock => mock.SendSmsAsync(
+                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
         }
         #endregion
 
