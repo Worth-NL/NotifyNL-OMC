@@ -13,7 +13,7 @@ namespace EventsHandler.Attributes.Authorization
     /// <seealso cref="AuthorizeAttribute"/>
     /// <seealso cref="IAuthorizationFilter"/>
     [AttributeUsage(AttributeTargets.Method)]
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "There is nothing to test here.")]
     internal sealed class ApiAuthorization : AuthorizeAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)

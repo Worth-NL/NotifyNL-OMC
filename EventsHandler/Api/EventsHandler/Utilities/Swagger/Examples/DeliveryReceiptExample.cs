@@ -12,7 +12,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
     /// An example of delivery status received from "Notify NL" Web API service.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is example model used by Swagger UI; testing how third-party dependency is dealing with it is unnecessary.")]
     internal sealed class DeliveryReceiptExample : IExamplesProvider<DeliveryReceipt>
     {
         private const string SerializedNotification =

@@ -29,58 +29,42 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
-        {
-            return await Task.FromResult(NotImplemented<CommonPartyData>());
-        }
+            => await Task.FromResult(NotImplemented<CommonPartyData>());
 
         /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override NotifyData GetSmsNotifyData(CommonPartyData partyData)
-        {
-            return NotImplemented<NotifyData>();
-        }
+            => NotImplemented<NotifyData>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Guid GetSmsTemplateId()
-        {
-            return NotImplemented<Guid>();
-        }
+            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
-        {
-            return NotImplemented<Dictionary<string, object>>();
-        }
+            => NotImplemented<Dictionary<string, object>>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override NotifyData GetEmailNotifyData(CommonPartyData partyData)
-        {
-            return NotImplemented<NotifyData>();
-        }
+            => NotImplemented<NotifyData>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Guid GetEmailTemplateId()
-        {
-            return NotImplemented<Guid>();
-        }
+            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
-        {
-            return NotImplemented<Dictionary<string, object>>();
-        }
+            => NotImplemented<Dictionary<string, object>>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
-        [ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override string GetWhitelistName()
-        {
-            return NotImplemented<string>();
-        }
+            => NotImplemented<string>(); // NOTE: Only for compilation purposes
         #endregion
 
         /// <summary>
@@ -89,9 +73,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <returns>
         ///   The <see cref="NotImplementedException"/>.
         /// </returns>
+        /// <exception cref="NotImplementedException"/>
         private static TResult NotImplemented<TResult>()
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 }
