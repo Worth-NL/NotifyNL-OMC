@@ -60,6 +60,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
+            // TODO: Use cached dictionary and update values
             return new Dictionary<string, object>
             {
                 { "zaak.identificatie", this.Case.Identification },
