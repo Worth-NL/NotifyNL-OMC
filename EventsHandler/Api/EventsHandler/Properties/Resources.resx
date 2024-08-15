@@ -315,11 +315,11 @@
     <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
-    <value>An unexpected error occurred during processing the notification with ID</value>
+    <value>An unexpected error occurred during processing the notification with ID: {0} | {1}.</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
   <data name="Feedback_NotifyNL_STATUS_NotificationStatus" xml:space="preserve">
-    <value>The status of notification with ID</value>
+    <value>The status of notification with ID: {0} | {1}.</value>
     <comment>API Endpoint: Notify/Confirm</comment>
   </data>
   <data name="Events_ApiVersionRequested" xml:space="preserve">
