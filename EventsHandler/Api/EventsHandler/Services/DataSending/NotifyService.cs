@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataSending
 
         private static INotifyClient? s_httpClient;
         #endregion
-
+        
         /// <inheritdoc cref="NotificationClientFactory"/>
         private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
         private readonly ISerializationService _serializer;
@@ -56,17 +56,13 @@ namespace EventsHandler.Services.DataSending
                               reference:       GetEncodedNotification(notification));
         }
 
-        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
-        async Task<NotifySendResponse> INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.GenerateTemplatePreviewAsync(TModel, TPackage)"/>
+        async Task<NotifyTemplateResponse> INotifyService<NotificationEvent, NotifyData>.GenerateTemplatePreviewAsync(
+            NotificationEvent notification, NotifyData package)
         {
-            string serializedNotification = this._serializer.Serialize(notification);
-            string encodedNotification = serializedNotification.Base64Encode();
-
             return await ResolveNotifyClient(notification)
-                .SendEmailAsync(emailAddress:    package.ContactDetails,
-                                templateId:      package.TemplateId.ToString(),
-                                personalization: package.Personalization,
-                                reference:       encodedNotification);
+                .GenerateTemplatePreviewAsync(templateId: package.TemplateId.ToString(),
+                                              personalization: package.Personalization);
         }
 
         #region IDisposable
