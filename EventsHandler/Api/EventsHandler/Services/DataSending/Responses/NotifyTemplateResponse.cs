@@ -8,17 +8,17 @@ namespace EventsHandler.Services.DataSending.Responses
     internal readonly struct NotifyTemplateResponse  // NOTE: "TemplateResponse" is restricted name of the model from "Notify.Models.Responses"
     {
         /// <summary>
-        /// Gets the status of the <see cref="NotifyTemplateResponse"/>.
+        /// The status of the <see cref="NotifyTemplateResponse"/>.
         /// </summary>
         internal bool IsSuccess { get; }
 
         /// <summary>
-        /// Gets the subject of the <see cref="NotifyTemplateResponse"/>.
+        /// The subject of the <see cref="NotifyTemplateResponse"/>.
         /// </summary>
         internal string Subject { get; }
 
         /// <summary>
-        /// Gets the body of the <see cref="NotifyTemplateResponse"/>.
+        /// The body of the <see cref="NotifyTemplateResponse"/>.
         /// </summary>
         internal string Body { get; }
 
