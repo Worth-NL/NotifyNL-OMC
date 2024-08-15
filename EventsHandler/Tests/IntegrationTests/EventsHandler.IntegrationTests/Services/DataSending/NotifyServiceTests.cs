@@ -135,6 +135,30 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         }
         #endregion
 
+        #region GenerateTemplatePreviewAsync
+        [Test]
+        public async Task GenerateTemplatePreviewAsync_Calls_NotificationClientMethod()
+        {
+            // Arrange
+            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
+            this._testNotifyService = GetTestSendingService(mockedClient);
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
+
+            // Act
+            await this._testNotifyService.GenerateTemplatePreviewAsync(testNotification, new NotifyData());
+
+            // Assert
+            mockedClient.Verify(mock =>
+                mock.GenerateTemplatePreviewAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>()), Times.Once);
+        }
+        #endregion
+
         #region Helper methods
         private static INotifyService<NotificationEvent, NotifyData> GetTestSendingService(
             Mock<INotifyClient>? mockedClient = null)
@@ -165,6 +189,11 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
+
+            notificationClientMock.Setup(mock => mock.GenerateTemplatePreviewAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>()))
+                .ReturnsAsync(new NotifyTemplateResponse(true, "Test subject", "Test body"));
 
             return notificationClientMock;
         }
