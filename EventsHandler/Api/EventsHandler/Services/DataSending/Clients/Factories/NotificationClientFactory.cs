@@ -11,6 +11,9 @@ using Notify.Client;
 namespace EventsHandler.Services.DataSending.Clients.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
+    /// <remarks>
+    ///   Customized to create "Notify NL" Web API service <see cref="NotificationClient"/>s.
+    /// </remarks>
     internal sealed class NotificationClientFactory : IHttpClientFactory<INotifyClient, string>
     {
         private readonly WebApiConfiguration _configuration;
