@@ -24,25 +24,33 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         }
 
         /// <inheritdoc cref="INotifyClient.SendEmailAsync(string, string, Dictionary{string, object}, string)"/>
-        /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="NotifyClientException"/>
-        async Task<NotifyResponse> INotifyClient.SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference)
+        async Task<NotifySendResponse> INotifyClient.SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference)
         {
             EmailNotificationResponse emailNotificationResponse = await this._notificationClient.SendEmailAsync(emailAddress, templateId, personalization, reference);
 
-            return new NotifyResponse(emailNotificationResponse != null, emailNotificationResponse?.content.body);
+            return new NotifySendResponse(emailNotificationResponse != null, emailNotificationResponse?.content.body);
         }
 
         /// <inheritdoc cref="INotifyClient.SendSmsAsync(string, string, Dictionary{string, object}, string)"/>
-        /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="NotifyClientException"/>
-        async Task<NotifyResponse> INotifyClient.SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference)
+        async Task<NotifySendResponse> INotifyClient.SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference)
         {
             SmsNotificationResponse smsNotificationResponse = await this._notificationClient.SendSmsAsync(mobileNumber, templateId, personalization, reference);
 
-            return new NotifyResponse(smsNotificationResponse != null, smsNotificationResponse?.content.body);
+            return new NotifySendResponse(smsNotificationResponse != null, smsNotificationResponse?.content.body);
+        }
+
+        /// <inheritdoc cref="INotifyClient.GenerateTemplatePreviewAsync(string, Dictionary{string, object})"/>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="NotifyClientException"/>
+        async Task<NotifyTemplateResponse> INotifyClient.GenerateTemplatePreviewAsync(string templateId, Dictionary<string, object> personalization)
+        {
+            TemplatePreviewResponse templatePreviewResponse = await this._notificationClient.GenerateTemplatePreviewAsync(templateId, personalization);
+
+            return new NotifyTemplateResponse(templatePreviewResponse != null, templatePreviewResponse?.subject, templatePreviewResponse?.body);
         }
     }
 }
