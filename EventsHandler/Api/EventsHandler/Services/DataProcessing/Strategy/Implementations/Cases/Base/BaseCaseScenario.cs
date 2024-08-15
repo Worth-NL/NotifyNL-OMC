@@ -30,10 +30,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
 
         #region Parent
         /// <summary>
-        /// Passes an already queried result.
+        /// Passes an already queried <see cref="Mapping.Models.POCOs.OpenZaak.CaseType"/> result.
         /// </summary>
         /// <param name="caseType">Type of the <see cref="Mapping.Models.POCOs.OpenZaak.Case"/>.</param>
-        internal void CacheCaseType(CaseType caseType)
+        internal void Cache(CaseType caseType)
         {
             this.CaseType = caseType;
         }
