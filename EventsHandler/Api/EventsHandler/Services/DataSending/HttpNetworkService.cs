@@ -3,6 +3,7 @@
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
@@ -20,8 +21,10 @@ namespace EventsHandler.Services.DataSending
 
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
-        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
         private readonly SemaphoreSlim _semaphore;
+
+        /// <inheritdoc cref="RegularHttpClientFactory"/>
+        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
 
         /// <summary>
         /// Cached reusable HTTP Clients with preconfigured settings (etc., "Authorization" or "Headers").

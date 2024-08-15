@@ -3,6 +3,7 @@
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -20,14 +21,15 @@ namespace EventsHandler.Services.DataSending
         private static INotifyClient? s_httpClient;
         #endregion
 
-        private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
+        /// <inheritdoc cref="NotificationClientFactory"/>
+        private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
         private readonly ISerializationService _serializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
         public NotifyService(
-            IHttpClientFactory<INotifyClient, string> clientFactory,
+            IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ISerializationService serializer)
         {
             this._notifyClientFactory = notifyClientFactory;
@@ -78,9 +80,6 @@ namespace EventsHandler.Services.DataSending
         #region Helper methods
         /// <summary>
         /// Gets the cached <see cref="INotifyClient"/> or create a new one if not yet existing.
-        /// <para>
-        ///   The organization identifier (since it's unique) will be used as a key for <see cref="INotifyClient"/>.
-        /// </para>
         /// </summary>
         private INotifyClient ResolveNotifyClient(NotificationEvent notification)
         {
@@ -88,7 +87,8 @@ namespace EventsHandler.Services.DataSending
             {
                 lock (s_padlock)
                 {
-                    s_httpClient ??= this._clientFactory.GetHttpClient(notification.GetOrganizationId());
+                    s_httpClient ??= this._notifyClientFactory.GetHttpClient(
+                        notification.GetOrganizationId());  // NOTE: Used for logging purposes only
                 }
             }
 

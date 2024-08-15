@@ -3,7 +3,7 @@
 namespace EventsHandler.Services.DataSending.Clients.Factories.Interfaces
 {
     /// <summary>
-    /// The service to return a specific instance of <typeparamref name="THttpClient"/>.
+    /// The service to return a specific instance of HTTP Client.
     /// </summary>
     public interface IHttpClientFactory<out THttpClient, in TParameters>
         where THttpClient : class
