@@ -1,5 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Services.DataSending.Responses;
+
 namespace EventsHandler.Services.DataSending.Clients.Interfaces
 {
     /// <summary>
@@ -7,18 +9,6 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
     /// </summary>
     public interface INotifyClient
     {
-        /// <summary>
-        /// Sends the text message (SMS) asynchronously.
-        /// </summary>
-        /// <param name="mobileNumber">The mobile (phone) number.</param>
-        /// <param name="templateId">The template identifier.</param>
-        /// <param name="personalization">The personalization.</param>
-        /// <param name="reference">The reference representing original notification.</param>
-        /// <remarks>
-        /// NOTE: Throws exceptions from the external libraries.
-        /// </remarks>
-        internal Task<bool> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference);
-
         /// <summary>
         /// Sends the e-mail asynchronously.
         /// </summary>
@@ -29,6 +19,18 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         /// <remarks>
         /// NOTE: Throws exceptions from the external libraries.
         /// </remarks>
-        internal Task<bool> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference);
+        internal Task<NotifyResponse> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference);
+
+        /// <summary>
+        /// Sends the text message (SMS) asynchronously.
+        /// </summary>
+        /// <param name="mobileNumber">The mobile (phone) number.</param>
+        /// <param name="templateId">The template identifier.</param>
+        /// <param name="personalization">The personalization.</param>
+        /// <param name="reference">The reference representing original notification.</param>
+        /// <remarks>
+        /// NOTE: Throws exceptions from the external libraries.
+        /// </remarks>
+        internal Task<NotifyResponse> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference);
     }
 }
