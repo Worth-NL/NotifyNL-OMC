@@ -12,7 +12,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
     /// An example of <see cref="NotificationEvent"/> to be used in Swagger UI.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is example model used by Swagger UI; testing how third-party dependency is dealing with it is unnecessary.")]
     internal sealed class NotificationEventExample : IExamplesProvider<NotificationEvent>
     {
         /// <inheritdoc cref="IExamplesProvider{TModel}.GetExamples"/>

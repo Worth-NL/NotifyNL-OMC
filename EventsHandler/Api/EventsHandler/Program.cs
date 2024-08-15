@@ -63,7 +63,7 @@ namespace EventsHandler
     /// <summary>
     /// The entry point to the Web API application, responsible for configuring and starting the application.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
     {
         /// <summary>
