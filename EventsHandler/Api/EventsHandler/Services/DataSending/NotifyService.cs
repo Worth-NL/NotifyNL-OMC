@@ -6,6 +6,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataSending
@@ -34,27 +35,29 @@ namespace EventsHandler.Services.DataSending
         }
 
         /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
-        async Task INotifyService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
+        async Task<NotifySendResponse> INotifyService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
             string encodedNotification = serializedNotification.Base64Encode();
 
-            _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
-                                                                     templateId:      package.TemplateId.ToString(),
-                                                                     personalization: package.Personalization,
-                                                                     reference:       encodedNotification);
+            return await ResolveNotifyClient(notification)
+                .SendSmsAsync(mobileNumber:    package.ContactDetails,
+                              templateId:      package.TemplateId.ToString(),
+                              personalization: package.Personalization,
+                              reference:       encodedNotification);
         }
 
         /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
-        async Task INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
+        async Task<NotifySendResponse> INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
         {
             string serializedNotification = this._serializer.Serialize(notification);
             string encodedNotification = serializedNotification.Base64Encode();
 
-            _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
-                                                                       templateId:      package.TemplateId.ToString(),
-                                                                       personalization: package.Personalization,
-                                                                       reference:       encodedNotification);
+            return await ResolveNotifyClient(notification)
+                .SendEmailAsync(emailAddress:    package.ContactDetails,
+                                templateId:      package.TemplateId.ToString(),
+                                personalization: package.Personalization,
+                                reference:       encodedNotification);
         }
 
         #region IDisposable
