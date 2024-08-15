@@ -94,7 +94,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
-
+            
+            // TODO: Use cached dictionary and update values
             return new Dictionary<string, object>
             {
                 { "taak.verloopdatum", formattedExpirationDate },
