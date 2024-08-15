@@ -47,10 +47,10 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // Choose an adequate business-scenario (strategy) to process the notification
-                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);
+                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);
+                NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 if (!allNotifyData.HasAny())
                 {
@@ -65,12 +65,26 @@ namespace EventsHandler.Services.DataProcessing
                     switch (notifyData.NotificationMethod)
                     {
                         case NotifyMethods.Email:
-                            await this._sender.SendEmailAsync(notification, notifyData);
-                            break;
+                        {
+                            if ((await this._sender.SendEmailAsync(notification, notifyData)).IsSuccess)
+                            {
+                                break;
+                            }
+
+                            // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
+                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
+                        }
 
                         case NotifyMethods.Sms:
-                            await this._sender.SendSmsAsync(notification, notifyData);
-                            break;
+                        {
+                            if ((await this._sender.SendSmsAsync(notification, notifyData)).IsSuccess)
+                            {
+                                break;
+                            }
+
+                            // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
+                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
+                        }
 
                         case NotifyMethods.None:
                         default:
