@@ -5,10 +5,12 @@ using EventsHandler.Services.DataSending.Responses;
 using Notify.Client;
 using Notify.Exceptions;
 using Notify.Models.Responses;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventsHandler.Services.DataSending.Clients.Proxy
 {
     /// <inheritdoc cref="INotifyClient"/>
+    [ExcludeFromCodeCoverage(Justification = "The real implementation of NotificationClient from Notify.Client should not be tested.")]
     internal sealed class NotifyClientProxy : INotifyClient
     {
         private readonly NotificationClient _notificationClient;
