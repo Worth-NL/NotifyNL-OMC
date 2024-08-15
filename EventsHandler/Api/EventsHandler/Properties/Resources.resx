@@ -232,11 +232,11 @@
   </data>
   <data name="Operation_ERROR_NotImplemented" xml:space="preserve">
     <value>This operation is not implemented. Internal server error.</value>
-    <comment>HTTP Status Code = 501</comment>
+    <comment>HTTP Status Code = 501. Unhandled case</comment>
   </data>
   <data name="Operation_ERROR_Internal_Unknown" xml:space="preserve">
     <value>Internal error: An unknown issue occurred.</value>
-    <comment>HTTP Status Code = 501</comment>
+    <comment>HTTP Status Code = 501. Unhandled case</comment>
   </data>
   <data name="Processing_ERROR_Notification_DeliveryMethodUnknown" xml:space="preserve">
     <value>The notification method ('aanmaakkanaal') is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None.</value>
@@ -262,19 +262,19 @@
     <value>The notification has been successfully processed and sent to Notify NL.</value>
     <comment>HTTP Status Code = 202 or 206</comment>
   </data>
-  <data name="Swagger_Authentication_Description" xml:space="preserve">
+  <data name="Swagger_UI_Authentication_Description" xml:space="preserve">
     <value>Insert received JWT token here</value>
     <comment>Swagger UI</comment>
   </data>
-  <data name="Swagger_Description" xml:space="preserve">
+  <data name="Swagger_UI_Description" xml:space="preserve">
     <value>API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL.</value>
     <comment>Swagger UI</comment>
   </data>
-  <data name="Swagger_Title" xml:space="preserve">
+  <data name="Swagger_UI_Title" xml:space="preserve">
     <value>OMC (Output Management Component)</value>
     <comment>Swagger UI</comment>
   </data>
-  <data name="Swagger_Version" xml:space="preserve">
+  <data name="Swagger_UI_Version" xml:space="preserve">
     <value>1.0</value>
     <comment>Swagger UI</comment>
   </data>
@@ -408,25 +408,25 @@
     <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
-    <value>The notification can not be send if the task is already closed.</value>
+    <value>The notification can not be sent if the task is already closed.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskNotPerson" xml:space="preserve">
-    <value>The notification can not be send if the task is not assigned to a person (missing BSN number).</value>
+    <value>The notification can not be sent if the task is not assigned to a person (missing BSN number).</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskType" xml:space="preserve">
-    <value>The notification can not be send for this type of the task (whitelisted UUID).</value>
+    <value>The notification can not be sent for this type of the task (whitelisted UUID).</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
     <value>Internal error: The given URI is not a case type.</value>
-    <comment>HTTP Status Code = 422</comment>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseUri" xml:space="preserve">
     <value>Internal error: The given URI is not a case.</value>
-    <comment>HTTP Status Code = 422</comment>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Operation_ERROR_Internal_NotDecisionResourceUri" xml:space="preserve">
     <value>Internal error: The given URI is not a decision resource.</value>
-    <comment>HTTP Status Code = 422</comment>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">
     <value>The notification can not be sent because the inform field in the case type is set to false.</value>
@@ -439,13 +439,13 @@
     <comment>Suffix to Processing_ABORT_[...] messages</comment>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_DecisionConfidentiality" xml:space="preserve">
-    <value>The notification can not be send because of the confidentiality setting '{0}' in information object related to decision.</value>
+    <value>The notification can not be sent because of the confidentiality setting '{0}' in information object related to decision.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_DecisionStatus" xml:space="preserve">
-    <value>The notification can not be send because the status of the decision is not definitive.</value>
+    <value>The notification can not be sent because the status of the decision is not definitive.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_MessageType" xml:space="preserve">
-    <value>The notification can not be send for this type of the message (whitelisted UUID).</value>
+    <value>The notification can not be sent for this type of the message (whitelisted UUID).</value>
   </data>
   <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
     <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
@@ -458,6 +458,7 @@
   </data>
   <data name="Operation_ERROR_Internal_NotInfoObjectUri" xml:space="preserve">
     <value>Internal error: The given URI is not an information object.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="HttpRequest_ERROR_NoDecisionType" xml:space="preserve">
     <value>HTTP Request: The decision type could not be retrieved from OpenZaak Web API service.</value>

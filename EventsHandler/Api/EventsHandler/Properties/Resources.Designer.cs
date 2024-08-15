@@ -808,7 +808,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send because of the confidentiality setting &apos;{0}&apos; in information object related to decision..
+        ///   Looks up a localized string similar to The notification can not be sent because of the confidentiality setting &apos;{0}&apos; in information object related to decision..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_DecisionConfidentiality {
             get {
@@ -817,7 +817,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send because the status of the decision is not definitive..
+        ///   Looks up a localized string similar to The notification can not be sent because the status of the decision is not definitive..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_DecisionStatus {
             get {
@@ -835,7 +835,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send for this type of the message (whitelisted UUID)..
+        ///   Looks up a localized string similar to The notification can not be sent for this type of the message (whitelisted UUID)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_MessageType {
             get {
@@ -844,7 +844,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send if the task is already closed..
+        ///   Looks up a localized string similar to The notification can not be sent if the task is already closed..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
             get {
@@ -853,7 +853,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send if the task is not assigned to a person (missing BSN number)..
+        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
             get {
@@ -862,7 +862,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send for this type of the task (whitelisted UUID)..
+        ///   Looks up a localized string similar to The notification can not be sent for this type of the task (whitelisted UUID)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {
@@ -972,36 +972,36 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Insert received JWT token here.
         /// </summary>
-        internal static string Swagger_Authentication_Description {
+        internal static string Swagger_UI_Authentication_Description {
             get {
-                return ResourceManager.GetString("Swagger_Authentication_Description", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Authentication_Description", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL..
         /// </summary>
-        internal static string Swagger_Description {
+        internal static string Swagger_UI_Description {
             get {
-                return ResourceManager.GetString("Swagger_Description", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Description", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to OMC (Output Management Component).
         /// </summary>
-        internal static string Swagger_Title {
+        internal static string Swagger_UI_Title {
             get {
-                return ResourceManager.GetString("Swagger_Title", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Title", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 1.0.
         /// </summary>
-        internal static string Swagger_Version {
+        internal static string Swagger_UI_Version {
             get {
-                return ResourceManager.GetString("Swagger_Version", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Version", resourceCulture);
             }
         }
         
