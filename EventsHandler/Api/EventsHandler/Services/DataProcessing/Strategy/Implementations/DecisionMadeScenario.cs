@@ -97,43 +97,48 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.DecisionMade();
 
+        private static readonly object s_padlock = new();
+        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            // TODO: Use cached dictionary and update values
-            return new Dictionary<string, object>
+            lock (s_padlock)
             {
-                { "besluit.identificatie", this._decision.Identification },
-                { "besluit.datum", $"{this._decision.Date}" },
-                { "besluit.toelichting", this._decision.Explanation },
-                { "besluit.bestuursorgaan", this._decision.GoverningBody },
-                { "besluit.ingangsdatum", $"{this._decision.EffectiveDate}" },
-                { "besluit.vervaldatum", $"{this._decision.ExpirationDate}" },
-                { "besluit.vervalreden", this._decision.ExpirationReason },
-                { "besluit.publicatiedatum", $"{this._decision.PublicationDate}" },
-                { "besluit.verzenddatum", $"{this._decision.ShippingDate}" },
-                { "besluit.uiterlijkereactiedatum", $"{this._decision.ResponseDate}" },
+                // TODO: Names of parameters can be taken from models and properties(?)
+                s_emailPersonalization["klant.voornaam"] = partyData.Name;
+                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                { "besluittype.omschrijving", this._decisionType.Name },
-                { "besluittype.omschrijvinggeneriek", this._decisionType.Description },
-                { "besluittype.besluitcategorie", this._decisionType.Category },
-                { "besluittype.reactietermijn", $"{this._decisionType.ResponseDeadline}" },
-                { "besluittype.publicatieindicatie", this._decisionType.PublicationIndicator },
-                { "besluittype.publicatietekst", this._decisionType.PublicationText },
-                { "besluittype.publicatietermijn", $"{this._decisionType.PublicationDeadline}" },
-                { "besluittype.toelichting", this._decisionType.Explanation },
+                s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
+                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date}";
+                s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
+                s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate}";
+                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate}";
+                s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate}";
+                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate}";
+                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
 
-                { "zaak.identificatie", this._case.Identification },
-                { "zaak.omschrijving", this._case.Name },
-                { "zaak.registratiedatum", $"{this._case.RegistrationDate}" },
+                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
+                s_emailPersonalization["besluittype.omschrijvinggeneriek"] = this._decisionType.Description;
+                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+                s_emailPersonalization["besluittype.reactietermijn"] = $"{this._decisionType.ResponseDeadline}";
+                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+                s_emailPersonalization["besluittype.publicatietermijn"] = $"{this._decisionType.PublicationDeadline}";
+                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                { "zaaktype.omschrijving", this._caseType.Name },
-                { "zaaktype.omschrijvinggeneriek", this._caseType.Description },
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate}";
 
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname }
-            };
+                s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
+                s_emailPersonalization["zaaktype.omschrijvinggeneriek"] = this._caseType.Description;
+
+                return s_emailPersonalization;
+            }
         }
 
         /// <summary>

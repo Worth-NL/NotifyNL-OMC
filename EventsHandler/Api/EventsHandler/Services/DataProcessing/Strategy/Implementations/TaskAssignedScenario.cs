@@ -89,26 +89,31 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.TaskAssigned();
 
+        private static readonly object s_padlock = new();
+        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
             
-            // TODO: Use cached dictionary and update values
-            return new Dictionary<string, object>
+            lock (s_padlock)
             {
-                { "taak.verloopdatum", formattedExpirationDate },
-                { "taak.heeft_verloopdatum", expirationDateProvided },
-                { "taak.record.data.title", this._taskData.Title },
+                // TODO: Names of parameters can be taken from models and properties(?)
+                s_emailPersonalization["klant.voornaam"] = partyData.Name;
+                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                { "zaak.identificatie", this._case.Identification },
-                { "zaak.omschrijving", this._case.Name },
+                s_emailPersonalization["taak.verloopdatum"] = formattedExpirationDate;
+                s_emailPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
+                s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
 
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname }
-            };
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+
+                return s_emailPersonalization;
+            }
         }
 
         private static readonly TimeZoneInfo s_cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");

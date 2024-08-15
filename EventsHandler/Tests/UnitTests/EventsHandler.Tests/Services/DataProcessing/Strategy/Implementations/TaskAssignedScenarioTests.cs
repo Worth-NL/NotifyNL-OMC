@@ -317,14 +317,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult[0].Personalization);
                 string expectedSerializedPersonalization =
                     $"{{" +
+                      $"\"klant.voornaam\":\"Jackie\"," +
+                      $"\"klant.voorvoegselAchternaam\":null," +
+                      $"\"klant.achternaam\":\"Chan\"," +
+
                       $"\"taak.verloopdatum\":\"{testExpirationDate}\"," +
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
                       $"\"taak.record.data.title\":\"{TestTaskTitle}\"," +
+
                       $"\"zaak.identificatie\":\"1\"," +
-                      $"\"zaak.omschrijving\":\"\"," +
-                      $"\"klant.voornaam\":\"Jackie\"," +
-                      $"\"klant.voorvoegselAchternaam\":null," +
-                      $"\"klant.achternaam\":\"Chan\"" +
+                      $"\"zaak.omschrijving\":\"\"" +
                     $"}}";
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
