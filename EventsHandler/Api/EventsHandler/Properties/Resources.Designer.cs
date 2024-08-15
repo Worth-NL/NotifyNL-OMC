@@ -430,7 +430,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID.
+        ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID: {0} | {1}..
         /// </summary>
         internal static string Feedback_NotifyNL_ERROR_UnexpectedFailure {
             get {
@@ -439,7 +439,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The status of notification with ID.
+        ///   Looks up a localized string similar to The status of notification with ID: {0} | {1}..
         /// </summary>
         internal static string Feedback_NotifyNL_STATUS_NotificationStatus {
             get {

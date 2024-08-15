@@ -68,7 +68,7 @@ namespace EventsHandler.Services.Responding
         // ------------------
         // Template or its ID
         // ------------------
-        [GeneratedRegex("not a valid UUID", RegexOptions.Compiled)]
+        [GeneratedRegex("not a valid UUID", RegexOptions.Compiled)]  // NOTE: "is" is not capitalized; skip it
         private static partial Regex InvalidTemplateIdFormatPattern();
 
         [GeneratedRegex("Template not found", RegexOptions.Compiled)]
@@ -244,7 +244,7 @@ namespace EventsHandler.Services.Responding
         /// </summary>
         /// <param name="callback">The callback to be parsed.</param>
         internal static string GetDeliveryStatusLogMessage(DeliveryReceipt callback)
-            => $"{Resources.Feedback_NotifyNL_STATUS_NotificationStatus} {callback.Id}: {callback.Status}.";
+            => string.Format(Resources.Feedback_NotifyNL_STATUS_NotificationStatus, callback.Id, callback.Status);
 
         /// <summary>
         /// Gets the text confirming failed delivery receipt.
@@ -252,7 +252,7 @@ namespace EventsHandler.Services.Responding
         /// <param name="callback">The callback to be parsed.</param>
         /// <param name="exception">The exception that occurred during processing the callback.</param>
         internal static string GetDeliveryErrorLogMessage(DeliveryReceipt callback, Exception exception)
-            => $"{Resources.Feedback_NotifyNL_ERROR_UnexpectedFailure} {callback.Id}: {exception.Message}.";
+            => string.Format(Resources.Feedback_NotifyNL_ERROR_UnexpectedFailure, callback.Id, exception.Message);
         #endregion
 
         #region Helper methods
