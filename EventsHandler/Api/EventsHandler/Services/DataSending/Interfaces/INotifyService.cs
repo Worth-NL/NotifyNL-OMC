@@ -13,6 +13,16 @@ namespace EventsHandler.Services.DataSending.Interfaces
         where TPackage : struct
     {
         /// <summary>
+        /// Sends the package of data over e-mail method.
+        /// </summary>
+        /// <param name="model">The business model to be processed.</param>
+        /// <param name="package">The package of data to be sent.</param>
+        /// <returns>
+        ///   Standardized response from the Web API service.
+        /// </returns>
+        internal Task<NotifySendResponse> SendEmailAsync(TModel model, TPackage package);
+
+        /// <summary>
         /// Sends the package of data over SMS method.
         /// </summary>
         /// <param name="model">The business model to be processed.</param>
@@ -23,13 +33,13 @@ namespace EventsHandler.Services.DataSending.Interfaces
         internal Task<NotifySendResponse> SendSmsAsync(TModel model, TPackage package);
 
         /// <summary>
-        /// Sends the package of data over e-mail method.
+        /// Generates template preview from a given package.
         /// </summary>
         /// <param name="model">The business model to be processed.</param>
-        /// <param name="package">The package of data to be sent.</param>
+        /// <param name="package">The package of data to be used.</param>
         /// <returns>
         ///   Standardized response from the Web API service.
         /// </returns>
-        internal Task<NotifySendResponse> SendEmailAsync(TModel model, TPackage package);
+        internal Task<NotifyTemplateResponse> GenerateTemplatePreviewAsync(TModel model, TPackage package);
     }
 }
