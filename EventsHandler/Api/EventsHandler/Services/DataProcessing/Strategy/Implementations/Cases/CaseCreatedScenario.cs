@@ -41,7 +41,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
                 this.Case.Identification, GetWhitelistName());
             
-            this.CaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type
+            this.CaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type (might be already cached)
                               await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
             // Validation #2: The notifications must be enabled
@@ -57,19 +57,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.ZaakCreate();
 
+        private static readonly object s_padlock = new();
+        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            // TODO: Use cached dictionary and update values
-            return new Dictionary<string, object>
+            lock (s_padlock)
             {
-                { "zaak.identificatie", this.Case.Identification },
-                { "zaak.omschrijving", this.Case.Name },
+                // TODO: Names of parameters can be taken from models and properties(?)
+                s_emailPersonalization["klant.voornaam"] = partyData.Name;
+                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname }
-            };
+                s_emailPersonalization["zaak.identificatie"] = this.Case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this.Case.Name;
+
+                return s_emailPersonalization;
+            }
         }
         #endregion
 

@@ -257,6 +257,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         }
         #endregion
 
+        // TODO: Add GetPersonalization tests
+
         #region Helper methods
         private static Mock<IQueryContext> MockQueryContextMethods(
             DistributionChannels testDistributionChannel, bool isCaseIdWhitelisted, bool isNotificationExpected)
