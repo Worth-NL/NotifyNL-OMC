@@ -145,9 +145,9 @@ namespace EventsHandler
                 // Enable API documentation in Swagger UI
                 setup.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Version = Resources.Swagger_Version,
-                    Title = Resources.Swagger_Title,
-                    Description = Resources.Swagger_Description
+                    Version = Resources.Swagger_UI_Version,
+                    Title = Resources.Swagger_UI_Title,
+                    Description = Resources.Swagger_UI_Description
                 });
 
                 // Enable [SwaggerRequestExample] filter for parameters in Swagger UI
@@ -166,7 +166,7 @@ namespace EventsHandler
                     Name = DefaultValues.Authorization.Name,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Description = Resources.Swagger_Authentication_Description,
+                    Description = Resources.Swagger_UI_Authentication_Description,
                     Reference = new OpenApiReference
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
