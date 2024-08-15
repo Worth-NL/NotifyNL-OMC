@@ -136,6 +136,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
         #endregion
 
+        // TODO: Add GetPersonalization tests
+
         #region Helper methods
         private INotifyScenario ArrangeDecisionScenario(InfoObject testInfoObject)
         {
