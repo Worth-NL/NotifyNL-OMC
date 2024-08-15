@@ -23,57 +23,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             this._testNotifyService?.Dispose();
         }
 
-        #region SendEmailAsync
-        [Test]
-        public async Task SendEmailAsync_Calls_NotificationClientMethod()
-        {
-            // Arrange
-            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
-
-            this._testNotifyService = GetTestSendingService(mockedClient);
-
-            NotificationEvent testNotification =
-                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
-                    .Deserialized();
-
-            // Act
-            await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
-
-            // Assert
-            mockedClient.Verify(mock =>
-                mock.SendEmailAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>(),
-                    It.IsAny<string>()), Times.Once);
-        }
-        #endregion
-
-        #region SendSmsAsync
-        [Test]
-        public async Task SendSmsAsync_Calls_NotificationClientMethod()
-        {
-            // Arrange
-            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
-
-            this._testNotifyService = GetTestSendingService(mockedClient);
-
-            NotificationEvent testNotification =
-                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
-                    .Deserialized();
-
-            // Act
-            await this._testNotifyService.SendSmsAsync(testNotification, new NotifyData());
-
-            // Assert
-            mockedClient.Verify(mock =>
-                mock.SendSmsAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Dictionary<string, object>>(),
-                    It.IsAny<string>()), Times.Once);
-        }
-
+        #region Caching NotificationClient
         [Test]
         public async Task HttpClient_IsCached_AsExpected()
         {
@@ -130,6 +80,58 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<string>()), Times.Never);  // If the client is not cached, this method would be called again
             #endregion
+        }
+        #endregion
+
+        #region SendEmailAsync
+        [Test]
+        public async Task SendEmailAsync_Calls_NotificationClientMethod()
+        {
+            // Arrange
+            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
+            this._testNotifyService = GetTestSendingService(mockedClient);
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
+
+            // Act
+            await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
+
+            // Assert
+            mockedClient.Verify(mock =>
+                mock.SendEmailAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()), Times.Once);
+        }
+        #endregion
+
+        #region SendSmsAsync
+        [Test]
+        public async Task SendSmsAsync_Calls_NotificationClientMethod()
+        {
+            // Arrange
+            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
+            this._testNotifyService = GetTestSendingService(mockedClient);
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                    .Deserialized();
+
+            // Act
+            await this._testNotifyService.SendSmsAsync(testNotification, new NotifyData());
+
+            // Assert
+            mockedClient.Verify(mock =>
+                mock.SendSmsAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()), Times.Once);
         }
         #endregion
 
