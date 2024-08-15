@@ -1,7 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections;
-
 namespace EventsHandler.Extensions
 {
     /// <summary>
@@ -17,13 +15,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if not empty; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool HasAny<T>(this T[] collection)
-        {
-            return collection.Length > 0;  // NOTE: Faster than Any()
-        }
-        
-        /// <inheritdoc cref="HasAny{T}(T[])"/>
-        internal static bool HasAny(this ICollection? collection)
+        internal static bool HasAny<T>(this IReadOnlyCollection<T>? collection)
         {
             return collection?.Count > 0;  // NOTE: Faster than Any()
         }
@@ -37,13 +29,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if empty; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsEmpty<T>(this T[] collection)
-        {
-            return !collection.HasAny();
-        }
-        
-        /// <inheritdoc cref="IsEmpty{T}(T[])"/>
-        internal static bool IsEmpty(this ICollection? collection)
+        internal static bool IsEmpty<T>(this IReadOnlyCollection<T>? collection)
         {
             return !collection.HasAny();
         }

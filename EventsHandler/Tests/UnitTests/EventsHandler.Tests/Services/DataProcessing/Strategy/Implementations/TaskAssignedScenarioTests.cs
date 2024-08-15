@@ -276,12 +276,12 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Length.EqualTo(notifyDataCount));
+                Assert.That(actualResult, Has.Count.EqualTo(notifyDataCount));
                 
                 VerifyInvoke(1, 1, 1);
             });
@@ -307,14 +307,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            NotifyData[] actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Length.EqualTo(1));
+                Assert.That(actualResult, Has.Count.EqualTo(1));
 
-                string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult[0].Personalization);
+                string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.First().Personalization);
                 string expectedSerializedPersonalization =
                     $"{{" +
                       $"\"klant.voornaam\":\"Jackie\"," +

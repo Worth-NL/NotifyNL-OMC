@@ -3,7 +3,6 @@
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Configuration;
-using System.Collections;
 
 namespace EventsHandler.Extensions
 {
@@ -45,7 +44,7 @@ namespace EventsHandler.Extensions
                     ? throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
                     : value,
 
-                ICollection collection => collection.IsEmpty()
+                object objectValue => objectValue == null
                     ? throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
                     : value,
 
