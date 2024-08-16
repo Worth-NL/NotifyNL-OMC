@@ -10,7 +10,9 @@ using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using Resources = EventsHandler.Properties.Resources;
+using EventsHandler.Services.DataSending.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
 {
@@ -30,13 +32,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
 
+        private readonly INotifyService<NotificationEvent, NotifyData> _notifyService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
-        protected BaseScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
+        protected BaseScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
         {
             this.Configuration = configuration;
             this.DataQuery = dataQuery;
+            this._notifyService = notifyService;
         }
 
         #region Parent (GetAllNotifyDataAsync)
@@ -138,6 +146,36 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         }
         #endregion
 
+        #region Virtual (ProcessData)
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
+        async Task<ProcessingResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> allNotifyData)
+            => await ProcessDataAsync(notification, allNotifyData);
+
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
+        protected virtual async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> allNotifyData)
+        {
+            // Sending notifications (default behavior of the most scenarios/strategies)
+            foreach (NotifyData notifyData in allNotifyData)
+            {
+                bool isSuccess = 
+                    // Email notification method
+                    notifyData.NotificationMethod == NotifyMethods.Email
+                        ? (await this._notifyService.SendEmailAsync(notification, notifyData)).IsSuccess
+                        // Sms notification method
+                        : notifyData.NotificationMethod == NotifyMethods.Sms &&
+                          (await this._notifyService.SendSmsAsync(notification, notifyData)).IsSuccess;
+                          // "&&": None or unknown notification method => false
+
+                if (!isSuccess)
+                {
+                    return ProcessingResponse.Failure();  // Fail early
+                }
+            }
+
+            return ProcessingResponse.Success();
+        }
+        #endregion
+
         #region Abstract (PrepareData)        
         /// <summary>
         /// Prepares all the data required by this specific scenario.
@@ -153,7 +191,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         protected abstract Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification);
         #endregion
 
-        #region Abstract (Email logic)
+        #region Abstract (Email logic: template + personalization)
         /// <summary>
         /// Gets the e-mail template ID for this strategy.
         /// </summary>
@@ -172,7 +210,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         protected abstract Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData);
         #endregion
 
-        #region Abstract (SMS logic)
+        #region Abstract (SMS logic: template + personalization)
         /// <summary>
         /// Gets the SMS template ID for this strategy.
         /// </summary>

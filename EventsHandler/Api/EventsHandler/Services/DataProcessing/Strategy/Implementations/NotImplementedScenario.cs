@@ -6,6 +6,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
@@ -21,8 +22,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
-        public NotImplementedScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        public NotImplementedScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 

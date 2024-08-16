@@ -6,7 +6,7 @@ using Notify.Models.Responses;
 namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
 {
     /// <summary>
-    /// The set of data which "Notify NL" will understand and use for a specific communication strategy (SMS or e-mail).
+    /// The set of data which "Notify NL" will understand and use for a specific communication strategy.
     /// </summary>
     internal readonly struct NotifyData
     {

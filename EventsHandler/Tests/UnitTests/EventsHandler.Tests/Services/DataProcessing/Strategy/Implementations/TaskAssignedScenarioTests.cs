@@ -13,6 +13,8 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
@@ -25,8 +27,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
     {
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = new(MockBehavior.Strict);
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
-        #region Test data
         private WebApiConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
@@ -41,6 +43,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._testConfiguration.Dispose();
         }
 
+        [TearDown]
+        public void ResetTests()
+        {
+            this._mockedDataQuery.Reset();
+            this._mockedQueryContext.Reset();
+            this._mockedNotifyService.Reset();
+        }
+
+        #region Test data
         private static readonly NotificationEvent s_invalidNotification = new();
         private static readonly NotificationEvent s_validNotification = new()
         {
@@ -112,13 +123,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
         #endregion
 
-        [TearDown]
-        public void ResetTests()
-        {
-            this._mockedDataQuery.Reset();
-            this._mockedQueryContext.Reset();
-        }
-
         #region GetAllNotifyDataAsync()
         [Test]
         public void GetAllNotifyDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
@@ -138,7 +142,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -160,7 +164,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -182,7 +186,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -209,7 +213,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(1, 0, 0);
+                VerifyGetDataMethodCalls(1, 0, 0);
             });
         }
 
@@ -231,7 +235,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 0);
             });
         }
 
@@ -254,7 +258,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
-                VerifyInvoke(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1);
             });
         }
 
@@ -283,7 +287,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult, Has.Count.EqualTo(notifyDataCount));
                 
-                VerifyInvoke(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1);
             });
         }
         #endregion
@@ -331,12 +335,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
 
-                VerifyInvoke(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1);
             });
         }
         #endregion
 
-        #region Helper methods
+        // TODO: Add ProcessData tests
+
+        #region Setup
         private INotifyScenario ArrangeTaskScenario(
             DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted, bool isNotificationExpected)
         {
@@ -377,13 +383,24 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
+            // INotifyService
+            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()))
+                .ReturnsAsync(new NotifySendResponse(true, "Test Email body"));
+
+            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()))
+                .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
+
             // Task Scenario
-            return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getCaseAsyncInvokeCount, int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
+        private void VerifyGetDataMethodCalls(int getCaseAsyncInvokeCount, int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
         {
             this._mockedDataQuery
                 .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
@@ -403,6 +420,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
                     Times.Exactly(getPartyDataAsyncInvokeCount));
+        }
+
+        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            this._mockedNotifyService
+                .Verify(mock => mock.SendEmailAsync(
+                        It.IsAny<NotificationEvent>(),
+                        It.IsAny<NotifyData>()),
+                    Times.Exactly(sendEmailInvokeCount));
+            
+            this._mockedNotifyService
+                .Verify(mock => mock.SendSmsAsync(
+                        It.IsAny<NotificationEvent>(),
+                        It.IsAny<NotifyData>()),
+                    Times.Exactly(sendSmsInvokeCount));
         }
         #endregion
     }
