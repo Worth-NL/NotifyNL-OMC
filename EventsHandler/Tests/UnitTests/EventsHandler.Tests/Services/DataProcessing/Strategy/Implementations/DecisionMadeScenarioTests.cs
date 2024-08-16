@@ -80,7 +80,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
         #endregion
 
-        #region GetAllNotifyDataAsync()
+        #region TryGetDataAsync()
         [Test]
         public void GetAllNotifyDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
         {
@@ -91,7 +91,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -109,7 +109,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -127,7 +127,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
                 string expectedMessage = Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality
                     .Replace("{0}", s_invalidInfoObjectConfidentiality.Confidentiality.ToString());
