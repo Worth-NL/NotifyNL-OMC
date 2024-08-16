@@ -123,7 +123,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
         #endregion
 
-        #region GetAllNotifyDataAsync()
+        #region TryGetDataAsync()
         [Test]
         public void GetAllNotifyDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
         {
@@ -138,7 +138,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_invalidNotification));  // Notification doesn't have matching GUID in task type
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_invalidNotification));  // Notification doesn't have matching GUID in task type
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
@@ -160,7 +160,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -182,7 +182,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -204,7 +204,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
 
                 string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
                     .Replace("{0}", "4")
@@ -231,7 +231,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -255,7 +255,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 InvalidOperationException? exception =
-                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(s_validNotification));
+                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.TryGetDataAsync(s_validNotification));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
                 VerifyGetDataMethodCalls(1, 1, 1);
@@ -280,7 +280,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
@@ -311,7 +311,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(s_validNotification);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
