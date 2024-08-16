@@ -9,6 +9,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -35,7 +36,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             this._mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(Array.Empty<NotifyData>());
+                .ReturnsAsync(GettingResponse.Failure(string.Empty));
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
             this._mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);

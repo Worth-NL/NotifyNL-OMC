@@ -48,28 +48,38 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         }
 
         #region Parent (TryGetDataAsync)
-        /// <inheritdoc cref="INotifyScenario.TryGetDataAsync"/>
-        async Task<IReadOnlyCollection<NotifyData>> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
+        /// <inheritdoc cref="INotifyScenario.TryGetDataAsync(NotificationEvent)"/>
+        async Task<GettingResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
         {
             CommonPartyData commonPartyData = await PrepareDataAsync(notification);
 
             // Determine which types of notifications should be published
             return commonPartyData.DistributionChannel switch
             {
-                DistributionChannels.Email => new[] { GetEmailNotifyData(commonPartyData) },
+                DistributionChannels.Email
+                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                        new[] { GetEmailNotifyData(commonPartyData) }),
 
-                DistributionChannels.Sms   => new[] { GetSmsNotifyData(commonPartyData) },
+                DistributionChannels.Sms
+                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                        new[] { GetSmsNotifyData(commonPartyData) }),
 
-                // NOTE: Older version of "OpenKlant" was supporting option for many types of notifications
-                DistributionChannels.Both  => new[] { GetEmailNotifyData(commonPartyData),
-                                                      GetSmsNotifyData(commonPartyData) },
+                // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
+                DistributionChannels.Both
+                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                        new[]
+                        {
+                            GetEmailNotifyData(commonPartyData),
+                            GetSmsNotifyData(commonPartyData)
+                        }),
 
-                DistributionChannels.None  => Array.Empty<NotifyData>(),
+                DistributionChannels.None
+                    => GettingResponse.Failure(Resources.Processing_ERROR_Scenario_DataNotFound),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
                 DistributionChannels.Unknown
-                  => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
-                _ => throw new InvalidOperationException(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+                  => GettingResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
+                _ => GettingResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
             };
         }
         #endregion
@@ -148,22 +158,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
         #region Virtual (ProcessData)
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        async Task<ProcessingResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> allNotifyData)
-            => await ProcessDataAsync(notification, allNotifyData);
+        async Task<ProcessingResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+            => await ProcessDataAsync(notification, notifyData);
 
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        protected virtual async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> allNotifyData)
+        protected virtual async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
         {
             // Sending notifications (default behavior of the most scenarios/strategies)
-            foreach (NotifyData notifyData in allNotifyData)
+            foreach (NotifyData data in notifyData)
             {
                 bool isSuccess = 
                     // Email notification method
-                    notifyData.NotificationMethod == NotifyMethods.Email
-                        ? (await this._notifyService.SendEmailAsync(notification, notifyData)).IsSuccess
+                    data.NotificationMethod == NotifyMethods.Email
+                        ? (await this._notifyService.SendEmailAsync(notification, data)).IsSuccess
                         // Sms notification method
-                        : notifyData.NotificationMethod == NotifyMethods.Sms &&
-                          (await this._notifyService.SendSmsAsync(notification, notifyData)).IsSuccess;
+                        : data.NotificationMethod == NotifyMethods.Sms &&
+                          (await this._notifyService.SendSmsAsync(notification, data)).IsSuccess;
                           // "&&": None or unknown notification method => false
 
                 if (!isSuccess)

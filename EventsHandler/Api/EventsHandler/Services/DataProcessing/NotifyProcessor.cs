@@ -1,14 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using Notify.Exceptions;
 using ResourcesEnum = EventsHandler.Mapping.Enums.NotificatieApi.Resources;
 using ResourcesText = EventsHandler.Properties.Resources;
@@ -44,16 +43,15 @@ namespace EventsHandler.Services.DataProcessing
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                IReadOnlyCollection<NotifyData> allNotifyData = await scenario.TryGetDataAsync(notification);  // TODO: If failure, return ProcessingResult here
-
-                if (!allNotifyData.HasAny())  // TODO: Include in response from GetDataAsync method :)
+                GettingResponse gettingResponse;
+                if ((gettingResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
-                    return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_DataNotFound);
+                    return (ProcessingResult.Failure, gettingResponse.Message);
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
-                if ((await scenario.ProcessDataAsync(notification, allNotifyData)).IsFailure)
+                if ((await scenario.ProcessDataAsync(notification, gettingResponse.Content)).IsFailure)
                 {
                     // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
                     return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);

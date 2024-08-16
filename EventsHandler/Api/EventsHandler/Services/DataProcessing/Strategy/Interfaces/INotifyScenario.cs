@@ -3,8 +3,8 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using System.Text.Json;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
 {
@@ -35,16 +35,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
         /// <exception cref="AbortedNotifyingException">
         ///   The notification should not be sent.
         /// </exception>
-        internal Task<IReadOnlyCollection<NotifyData>> TryGetDataAsync(NotificationEvent notification);
+        internal Task<GettingResponse> TryGetDataAsync(NotificationEvent notification);
 
         /// <summary>
         /// Processes the prepared data in a specific way (determined by the scenario itself).
         /// </summary>
         /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
-        /// <param name="allNotifyData"><inheritdoc cref="NotifyData" path="/summary"/></param>
+        /// <param name="notifyData"><inheritdoc cref="NotifyData" path="/summary"/></param>
         /// <returns>
         ///   The status of the processing operation.
         /// </returns>
-        internal Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> allNotifyData);
+        internal Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData);
     }
 }

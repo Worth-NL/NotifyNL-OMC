@@ -5,14 +5,14 @@ using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 namespace EventsHandler.Services.DataProcessing.Strategy.Responses
 {
     /// <summary>
-    /// Contains details of processing response performed by a specific OMC <see cref="INotifyScenario"/>.
+    /// Contains details of processing operation performed by a specific OMC <see cref="INotifyScenario"/>.
     /// </summary>
     internal readonly struct ProcessingResponse
     {
         /// <summary>
         /// The affirmative status of the <see cref="ProcessingResponse"/>.
         /// </summary>
-        internal bool IsSuccess { get; }
+        private bool IsSuccess { get; }
         
         /// <summary>
         /// The negated status of the <see cref="ProcessingResponse"/>.
