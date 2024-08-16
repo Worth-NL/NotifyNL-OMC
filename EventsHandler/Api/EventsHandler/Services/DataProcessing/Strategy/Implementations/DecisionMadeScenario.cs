@@ -11,13 +11,13 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.DataSending.Responses;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
