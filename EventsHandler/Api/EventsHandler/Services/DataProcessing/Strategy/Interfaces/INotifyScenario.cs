@@ -45,6 +45,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
         /// <returns>
         ///   The status of the processing operation.
         /// </returns>
-        internal Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData);
+        internal Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData);
     }
 }

@@ -158,12 +158,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         #endregion
 
         #region Virtual (ProcessData)
-        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        async Task<ProcessingDataResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        async Task<ProcessingDataResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
             => await ProcessDataAsync(notification, notifyData);
 
-        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
             // Sending notifications (default behavior of the most scenarios/strategies)
             foreach (NotifyData data in notifyData)
@@ -177,9 +177,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                           (await this.NotifyService.SendSmsAsync(notification, data)).IsSuccess;
                           // "&&": None or unknown notification method => false
 
-                if (!isSuccess)
+                if (!isSuccess)  // Fail early (if there are two packages given, failure of just single one of it is enough)
                 {
-                    return ProcessingDataResponse.Failure();  // Fail early
+                    return ProcessingDataResponse.Failure();
                 }
             }
 
