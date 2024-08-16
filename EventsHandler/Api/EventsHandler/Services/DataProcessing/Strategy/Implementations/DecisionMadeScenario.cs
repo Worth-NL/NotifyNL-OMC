@@ -217,6 +217,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 {
                     return ProcessingDataResponse.Failure();
                 }
+
+                // Adjusting the body for Logius system
+                string modifiedBody = response.Body.Replace("\n\n", "\r\n");
             }
 
             return ProcessingDataResponse.Success();
