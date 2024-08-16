@@ -10,8 +10,10 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
 using Resources = EventsHandler.Properties.Resources;
@@ -33,8 +35,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
         /// </summary>
-        public DecisionMadeScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        public DecisionMadeScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 
@@ -92,7 +97,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (Email logic)
+        #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.DecisionMade();
@@ -184,7 +189,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (SMS logic)
+        #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.DecisionMade();

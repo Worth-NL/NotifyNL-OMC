@@ -5,8 +5,10 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
@@ -22,8 +24,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusUpdatedScenario"/> class.
         /// </summary>
-        public CaseStatusUpdatedScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        public CaseStatusUpdatedScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 
@@ -52,7 +57,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         }
         #endregion
 
-        #region Polymorphic (Email logic)
+        #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
@@ -80,7 +85,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         }
         #endregion
 
-        #region Polymorphic (SMS logic)
+        #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
