@@ -123,7 +123,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.ProcessDataAsync(
                     It.IsAny<NotificationEvent>(),
-                    It.IsAny<IEnumerable<NotifyData>>()))
+                    It.IsAny<IReadOnlyCollection<NotifyData>>()))
                 .ReturnsAsync(ProcessingDataResponse.Failure());
             
             this._mockedScenariosResolver
@@ -160,7 +160,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.ProcessDataAsync(
                     It.IsAny<NotificationEvent>(),
-                    It.IsAny<IEnumerable<NotifyData>>()))
+                    It.IsAny<IReadOnlyCollection<NotifyData>>()))
                 .ReturnsAsync(ProcessingDataResponse.Success);
             
             this._mockedScenariosResolver
