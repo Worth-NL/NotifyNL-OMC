@@ -10,16 +10,31 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
     internal readonly struct ProcessingResponse
     {
         /// <summary>
-        /// The status of the <see cref="ProcessingResponse"/>.
+        /// The affirmative status of the <see cref="ProcessingResponse"/>.
         /// </summary>
         internal bool IsSuccess { get; }
+        
+        /// <summary>
+        /// The negated status of the <see cref="ProcessingResponse"/>.
+        /// </summary>
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessingResponse"/> struct.
         /// </summary>
-        public ProcessingResponse(bool isSuccess)
+        private ProcessingResponse(bool isSuccess)
         {
             this.IsSuccess = isSuccess;
         }
+
+        /// <summary>
+        /// Success result.
+        /// </summary>
+        internal static ProcessingResponse Success() => new(true);
+
+        /// <summary>
+        /// Failure result.
+        /// </summary>
+        internal static ProcessingResponse Failure() => new(false);
     }
 }

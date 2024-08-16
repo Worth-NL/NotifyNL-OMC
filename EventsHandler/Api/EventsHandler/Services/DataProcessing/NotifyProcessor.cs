@@ -5,12 +5,10 @@ using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataSending.Interfaces;
 using Notify.Exceptions;
 using ResourcesEnum = EventsHandler.Mapping.Enums.NotificatieApi.Resources;
 using ResourcesText = EventsHandler.Properties.Resources;
@@ -21,17 +19,13 @@ namespace EventsHandler.Services.DataProcessing
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
         private readonly IScenariosResolver _resolver;
-        private readonly INotifyService<NotificationEvent, NotifyData> _sender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
-        public NotifyProcessor(
-            IScenariosResolver resolver,
-            INotifyService<NotificationEvent, NotifyData> sender)
+        public NotifyProcessor(IScenariosResolver resolver)
         {
             this._resolver = resolver;
-            this._sender = sender;
         }
 
         /// <inheritdoc cref="IProcessingService{TModel}.ProcessAsync(TModel)"/>
@@ -51,46 +45,18 @@ namespace EventsHandler.Services.DataProcessing
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 IReadOnlyCollection<NotifyData> allNotifyData = await scenario.GetAllNotifyDataAsync(notification);  // TODO: If failure, return ProcessingResult here
-
-                if (!allNotifyData.HasAny())
+                                                                                                                     // TODO: Rename to "GetDataAsync"
+                if (!allNotifyData.HasAny())  // TODO: Include in response from GetDataAsync method :)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
                     return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_DataNotFound);
                 }
 
-                // Sending notifications
-                foreach (NotifyData notifyData in allNotifyData)
+                // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
+                if ((await scenario.ProcessDataAsync(notification, allNotifyData)).IsFailure)
                 {
-                    // Determine how to handle certain types of notifications by "Notify NL"
-                    switch (notifyData.NotificationMethod)
-                    {
-                        case NotifyMethods.Email:
-                        {
-                            if ((await this._sender.SendEmailAsync(notification, notifyData)).IsSuccess)
-                            {
-                                break;
-                            }
-
-                            // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
-                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
-                        }
-
-                        case NotifyMethods.Sms:
-                        {
-                            if ((await this._sender.SendSmsAsync(notification, notifyData)).IsSuccess)
-                            {
-                                break;
-                            }
-
-                            // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
-                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
-                        }
-
-                        case NotifyMethods.None:
-                        default:
-                            // NOTE: NotifyMethods cannot be "None" or undefined
-                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
-                    }
+                    // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
+                    return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
                 }
 
                 // NOTE: The notification was sent and the completion status was reported to the telemetry API

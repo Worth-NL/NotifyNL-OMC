@@ -3,7 +3,9 @@
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base
@@ -23,8 +25,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
         /// </summary>
-        protected BaseCaseScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        protected BaseCaseScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 

@@ -10,8 +10,10 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
@@ -24,8 +26,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
     {
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = new(MockBehavior.Strict);
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
-        #region Test data
         private WebApiConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
@@ -40,6 +42,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._testConfiguration.Dispose();
         }
 
+        [TearDown]
+        public void ResetTests()
+        {
+            this._mockedDataQuery.Reset();
+            this._mockedQueryContext.Reset();
+            this._mockedNotifyService.Reset();
+        }
+
+        #region Test data
         private static readonly Uri s_validUri =
             new($"https://www.domain.com/{ConfigurationHandler.TestTypeUuid}");  // NOTE: Matches to UUID from test Environment Configuration
         
@@ -69,13 +80,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
         #endregion
 
-        [TearDown]
-        public void ResetTests()
-        {
-            this._mockedDataQuery.Reset();
-            this._mockedQueryContext.Reset();
-        }
-
         #region GetAllNotifyDataAsync()
         [Test]
         public void GetAllNotifyDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
@@ -91,7 +95,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0, 0);
             });
         }
 
@@ -109,7 +113,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0, 0);
             });
         }
 
@@ -131,14 +135,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyInvoke(0, 0, 0, 0);
+                VerifyGetDataMethodCalls(0, 0, 0, 0);
             });
         }
         #endregion
 
         // TODO: Add GetPersonalization tests
 
-        #region Helper methods
+        // TODO: Add ProcessData tests
+
+        #region Setup
         private INotifyScenario ArrangeDecisionScenario(InfoObject testInfoObject)
         {
             // IQueryContext
@@ -183,13 +189,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
+            // INotifyService
+
             // Decision Scenario
-            return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object);
+            return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
         #endregion
 
         #region Verify
-        private void VerifyInvoke(int getDecisionInvokeCount, int getCaseInvokeCount, int getCaseTypeInvokeCount,
+        private void VerifyGetDataMethodCalls(int getDecisionInvokeCount, int getCaseInvokeCount, int getCaseTypeInvokeCount,
             int getCitizenDetailsInvokeCount)
         {
             this._mockedDataQuery
@@ -228,6 +236,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseTypeUriAsync(It.IsAny<Uri?>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
+        }
+
+        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
         }
         #endregion
     }
