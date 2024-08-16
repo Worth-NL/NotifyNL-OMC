@@ -35,7 +35,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
         /// <exception cref="AbortedNotifyingException">
         ///   The notification should not be sent.
         /// </exception>
-        internal Task<GettingResponse> TryGetDataAsync(NotificationEvent notification);
+        internal Task<GettingDataResponse> TryGetDataAsync(NotificationEvent notification);
 
         /// <summary>
         /// Processes the prepared data in a specific way (determined by the scenario itself).
@@ -45,6 +45,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
         /// <returns>
         ///   The status of the processing operation.
         /// </returns>
-        internal Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData);
+        internal Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData);
     }
 }

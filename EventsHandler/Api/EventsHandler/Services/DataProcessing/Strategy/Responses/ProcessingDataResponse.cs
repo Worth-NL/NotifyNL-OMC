@@ -7,22 +7,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
     /// <summary>
     /// Contains details of processing operation performed by a specific OMC <see cref="INotifyScenario"/>.
     /// </summary>
-    internal readonly struct ProcessingResponse
+    internal readonly struct ProcessingDataResponse
     {
         /// <summary>
-        /// The affirmative status of the <see cref="ProcessingResponse"/>.
+        /// The affirmative status of the <see cref="ProcessingDataResponse"/>.
         /// </summary>
         private bool IsSuccess { get; }
         
         /// <summary>
-        /// The negated status of the <see cref="ProcessingResponse"/>.
+        /// The negated status of the <see cref="ProcessingDataResponse"/>.
         /// </summary>
         internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProcessingResponse"/> struct.
+        /// Initializes a new instance of the <see cref="ProcessingDataResponse"/> struct.
         /// </summary>
-        private ProcessingResponse(bool isSuccess)
+        private ProcessingDataResponse(bool isSuccess)
         {
             this.IsSuccess = isSuccess;
         }
@@ -30,11 +30,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static ProcessingResponse Success() => new(true);
+        internal static ProcessingDataResponse Success() => new(true);
 
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static ProcessingResponse Failure() => new(false);
+        internal static ProcessingDataResponse Failure() => new(false);
     }
 }

@@ -205,7 +205,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (ProcessDataAsync)
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        protected override async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
         {
             foreach (NotifyData data in notifyData)  // NOTE: Most likely there will be always only single a package of data here
             {
@@ -213,11 +213,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 if (response.IsFailure)
                 {
-                    return ProcessingResponse.Failure();  // Fail early
+                    return ProcessingDataResponse.Failure();  // Fail early
                 }
             }
 
-            return ProcessingResponse.Success();
+            return ProcessingDataResponse.Success();
         }
         #endregion
 

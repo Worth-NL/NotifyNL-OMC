@@ -131,7 +131,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -163,7 +163,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -195,7 +195,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -229,7 +229,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
