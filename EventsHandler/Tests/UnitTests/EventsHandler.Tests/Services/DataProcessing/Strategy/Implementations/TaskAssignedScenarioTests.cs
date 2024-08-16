@@ -427,12 +427,12 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<NotifyData>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test Email body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test Email body"));
 
             this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<NotifyData>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test SMS body"));
 
             // Task Scenario
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);

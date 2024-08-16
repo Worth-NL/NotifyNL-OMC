@@ -7,12 +7,12 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using Resources = EventsHandler.Properties.Resources;
-using EventsHandler.Services.DataSending.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
 {
@@ -32,7 +32,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
 
-        private readonly INotifyService<NotificationEvent, NotifyData> _notifyService;
+        /// <inheritdoc cref="INotifyService{TModel,TPackage}"/>
+        protected INotifyService<NotificationEvent, NotifyData> NotifyService { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
@@ -44,7 +45,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         {
             this.Configuration = configuration;
             this.DataQuery = dataQuery;
-            this._notifyService = notifyService;
+            this.NotifyService = notifyService;
         }
 
         #region Parent (TryGetDataAsync)
@@ -170,10 +171,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 bool isSuccess = 
                     // Email notification method
                     data.NotificationMethod == NotifyMethods.Email
-                        ? (await this._notifyService.SendEmailAsync(notification, data)).IsSuccess
+                        ? (await this.NotifyService.SendEmailAsync(notification, data)).IsSuccess
                         // Sms notification method
                         : data.NotificationMethod == NotifyMethods.Sms &&
-                          (await this._notifyService.SendSmsAsync(notification, data)).IsSuccess;
+                          (await this.NotifyService.SendSmsAsync(notification, data)).IsSuccess;
                           // "&&": None or unknown notification method => false
 
                 if (!isSuccess)

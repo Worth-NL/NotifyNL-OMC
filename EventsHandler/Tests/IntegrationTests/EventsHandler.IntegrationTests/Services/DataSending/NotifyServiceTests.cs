@@ -181,19 +181,19 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test Email body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test Email body"));
 
             notificationClientMock.Setup(mock => mock.SendSmsAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test SMS body"));
 
             notificationClientMock.Setup(mock => mock.GenerateTemplatePreviewAsync(
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>()))
-                .ReturnsAsync(new NotifyTemplateResponse(true, "Test subject", "Test body"));
+                .ReturnsAsync(NotifyTemplateResponse.Success("Test subject", "Test body"));
 
             return notificationClientMock;
         }

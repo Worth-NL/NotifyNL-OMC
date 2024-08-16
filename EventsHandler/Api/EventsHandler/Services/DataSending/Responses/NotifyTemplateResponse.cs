@@ -8,9 +8,14 @@ namespace EventsHandler.Services.DataSending.Responses
     internal readonly struct NotifyTemplateResponse  // NOTE: "TemplateResponse" is restricted name of the model from "Notify.Models.Responses"
     {
         /// <summary>
-        /// The status of the <see cref="NotifyTemplateResponse"/>.
+        /// The affirmative status of the <see cref="NotifyTemplateResponse"/>.
         /// </summary>
-        internal bool IsSuccess { get; }
+        private bool IsSuccess { get; }
+        
+        /// <summary>
+        /// The negated status of the <see cref="NotifyTemplateResponse"/>.
+        /// </summary>
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The subject of the <see cref="NotifyTemplateResponse"/>.
@@ -25,11 +30,23 @@ namespace EventsHandler.Services.DataSending.Responses
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyTemplateResponse"/> struct.
         /// </summary>
-        internal NotifyTemplateResponse(bool isSuccess, string? subject, string? body)
+        private NotifyTemplateResponse(bool isSuccess, string subject, string body)
         {
             this.IsSuccess = isSuccess;
-            this.Subject = subject ?? string.Empty;
-            this.Body = body ?? string.Empty;
+            this.Subject = subject;
+            this.Body = body;
         }
+        
+        /// <summary>
+        /// Success result.
+        /// </summary>
+        internal static NotifyTemplateResponse Success(string subject, string body)
+            => new(true, subject, body);
+        
+        /// <summary>
+        /// Failure result.
+        /// </summary>
+        internal static NotifyTemplateResponse Failure()
+            => new(false, string.Empty, string.Empty);
     }
 }
