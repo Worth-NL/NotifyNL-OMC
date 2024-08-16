@@ -118,13 +118,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingResponse.Failure(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent));
+                .ReturnsAsync(GettingDataResponse.Failure(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent));
 
             mockedNotifyScenario
                 .Setup(mock => mock.ProcessDataAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<IEnumerable<NotifyData>>()))
-                .ReturnsAsync(ProcessingResponse.Failure());
+                .ReturnsAsync(ProcessingDataResponse.Failure());
             
             this._mockedScenariosResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
@@ -152,7 +152,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingResponse.Success(string.Empty, new[]
+                .ReturnsAsync(GettingDataResponse.Success(string.Empty, new[]
                 {
                     GetNotifyData(NotifyMethods.Email)
                 }));
@@ -161,7 +161,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 .Setup(mock => mock.ProcessDataAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<IEnumerable<NotifyData>>()))
-                .ReturnsAsync(ProcessingResponse.Success);
+                .ReturnsAsync(ProcessingDataResponse.Success);
             
             this._mockedScenariosResolver
                 .Setup(mock => mock.DetermineScenarioAsync(

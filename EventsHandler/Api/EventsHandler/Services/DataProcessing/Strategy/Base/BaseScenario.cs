@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
         #region Parent (TryGetDataAsync)
         /// <inheritdoc cref="INotifyScenario.TryGetDataAsync(NotificationEvent)"/>
-        async Task<GettingResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
+        async Task<GettingDataResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
         {
             CommonPartyData commonPartyData = await PrepareDataAsync(notification);
 
@@ -58,16 +58,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return commonPartyData.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
                         new[] { GetEmailNotifyData(commonPartyData) }),
 
                 DistributionChannels.Sms
-                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
                         new[] { GetSmsNotifyData(commonPartyData) }),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
-                    => GettingResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
+                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
                         new[]
                         {
                             GetEmailNotifyData(commonPartyData),
@@ -75,12 +75,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                         }),
 
                 DistributionChannels.None
-                    => GettingResponse.Failure(Resources.Processing_ERROR_Scenario_DataNotFound),
+                    => GettingDataResponse.Failure(Resources.Processing_ERROR_Scenario_DataNotFound),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
                 DistributionChannels.Unknown
-                  => GettingResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
-                _ => GettingResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+                  => GettingDataResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
+                _ => GettingDataResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
             };
         }
         #endregion
@@ -159,11 +159,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
         #region Virtual (ProcessData)
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        async Task<ProcessingResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        async Task<ProcessingDataResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
             => await ProcessDataAsync(notification, notifyData);
 
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
-        protected virtual async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
         {
             // Sending notifications (default behavior of the most scenarios/strategies)
             foreach (NotifyData data in notifyData)
@@ -179,11 +179,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
                 if (!isSuccess)
                 {
-                    return ProcessingResponse.Failure();  // Fail early
+                    return ProcessingDataResponse.Failure();  // Fail early
                 }
             }
 
-            return ProcessingResponse.Success();
+            return ProcessingDataResponse.Success();
         }
         #endregion
 

@@ -252,7 +252,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 true);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -278,7 +278,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 true);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -307,7 +307,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
@@ -349,7 +349,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
