@@ -357,11 +357,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             var mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
             mockedNotifyService.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test Email body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test Email body"));
 
             mockedNotifyService.Setup(mock => mock.SendSmsAsync(
                     It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
-                .ReturnsAsync(new NotifySendResponse(true, "Test SMS body"));
+                .ReturnsAsync(NotifySendResponse.Success("Test SMS body"));
 
             return mockedNotifyService;
         }
