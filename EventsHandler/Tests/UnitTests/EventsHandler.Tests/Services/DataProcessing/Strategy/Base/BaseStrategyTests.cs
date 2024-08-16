@@ -12,6 +12,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -25,25 +26,26 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
     [TestFixture]
     public sealed class BaseStrategyTests
     {
-        private const string TestEmailAddress = "test@gmail.com";
-        private const string TestPhoneNumber = "+310123456789";
+        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _emptyMockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
-        private Mock<INotifyService<NotificationEvent, NotifyData>> _emptyMockedNotifyService = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()
         {
             this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
-            this._emptyMockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
         }
 
         [OneTimeTearDown]
         public void TestsCleanup()
         {
             this._testConfiguration.Dispose();
-            this._emptyMockedNotifyService.Reset();
         }
+
+        #region Test data
+        private const string TestEmailAddress = "test@gmail.com";
+        private const string TestPhoneNumber = "+310123456789";
+        #endregion
 
         #region TryGetDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email)]
@@ -52,7 +54,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
-        public void GetAllNotifyDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(
+        public void TryGetDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
@@ -63,6 +65,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
+            // TODO: Rewrite to check failures
             // Act & Assert
             Assert.Multiple(() =>
             {
@@ -89,7 +92,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
-        public void GetAllNotifyDataAsync_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException(
+        public void TryGetDataAsync_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException(
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
@@ -99,7 +102,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
-
+            
+            // TODO: Rewrite to check failures
             // Act & Assert
             Assert.Multiple(() =>
             {
@@ -116,7 +120,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario))]
         [TestCase(typeof(CaseStatusUpdatedScenario))]
         [TestCase(typeof(CaseClosedScenario))]
-        public async Task GetAllNotifyDataAsync_Whitelisted_InformSetToTrue_WithoutNotifyMethod_ReturnsEmptyData_DoesNotThrowException(Type scenarioType)
+        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithoutNotifyMethod_ReturnsFailure(Type scenarioType)
         {
             // Arrange
             Mock<IQueryContext> mockedQueryContext = GetMockedQueryContext(
@@ -127,12 +131,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
+            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Count.EqualTo(0));
+                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_DataNotFound));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(mockedQueryContext, mockedQueryService,
                     1, 1, 1, 1);
@@ -145,7 +151,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), (DistributionChannels)(-1))]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(CaseClosedScenario), (DistributionChannels)(-1))]
-        public void GetAllNotifyDataAsync_Whitelisted_InformSetToTrue_WithUnknownNotifyMethod_ThrowsInvalidOperationException(
+        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithUnknownNotifyMethod_ReturnsFailure(
             Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
@@ -156,12 +162,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
-            // Act & Assert
+            // Act
+            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
+
+            // Assert
             Assert.Multiple(() =>
             {
-                InvalidOperationException? exception =
-                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.TryGetDataAsync(default));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(mockedQueryContext, mockedQueryService,
                     1, 1, 1, 1);
@@ -174,7 +183,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, NotifyMethods.Sms, "+310123456789")]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, NotifyMethods.Email, "test@gmail.com")]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, NotifyMethods.Sms, "+310123456789")]
-        public async Task GetAllNotifyDataAsync_Whitelisted_InformSetToTrue_WithValidNotifyMethod_Single_ReturnsExpectedData(
+        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithValidNotifyMethod_Single_ReturnsSuccess(
             Type scenarioType, DistributionChannels testDistributionChannel, NotifyMethods expectedNotificationMethod, string expectedContactDetails)
         {
             // Arrange
@@ -186,14 +195,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
+            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Count.EqualTo(1));
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
-                NotifyData firstResult = actualResult.First();
+                NotifyData firstResult = actualResult.Content.First();
                 Assert.That(firstResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod));
                 Assert.That(firstResult.ContactDetails, Is.EqualTo(expectedContactDetails));
                 Assert.That(firstResult.TemplateId, Is.EqualTo(
@@ -207,7 +218,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario))]
         [TestCase(typeof(CaseStatusUpdatedScenario))]
         [TestCase(typeof(CaseClosedScenario))]
-        public async Task GetAllNotifyDataAsync_Whitelisted_InformSetToTrue_WithValidNotifyMethods_Both_ReturnsBothExpectedData(Type scenarioType)
+        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithValidNotifyMethods_Both_ReturnsSuccess(Type scenarioType)
         {
             // Arrange
             Mock<IQueryContext> mockedQueryContext = GetMockedQueryContext(
@@ -218,20 +229,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
+            GettingResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Count.EqualTo(2));
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(2));
 
-                NotifyData firstResult = actualResult.First();
+                NotifyData firstResult = actualResult.Content.First();
                 Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
                 Assert.That(firstResult.ContactDetails, Is.EqualTo(TestEmailAddress));
                 Assert.That(firstResult.TemplateId, Is.EqualTo(
                     DetermineTemplateId(scenarioType, firstResult.NotificationMethod, this._testConfiguration)));
 
-                NotifyData secondResult = actualResult.Last();
+                NotifyData secondResult = actualResult.Content.Last();
                 Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
                 Assert.That(secondResult.ContactDetails, Is.EqualTo(TestPhoneNumber));
                 Assert.That(secondResult.TemplateId, Is.EqualTo(
@@ -243,7 +256,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ForNotImplementedScenario_ThrowsNotImplementedException()
+        public void TryGetDataAsync_ForNotImplementedScenario_ThrowsNotImplementedException()
         {
             // Arrange
             var mockedQueryService = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);

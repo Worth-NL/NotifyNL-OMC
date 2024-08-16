@@ -82,7 +82,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region TryGetDataAsync()
         [Test]
-        public void GetAllNotifyDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectType);
@@ -100,7 +100,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ValidMessageType_InvalidStatus_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidMessageType_InvalidStatus_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectStatus);
@@ -118,7 +118,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_InvalidConfidentiality_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_InvalidConfidentiality_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectConfidentiality);
