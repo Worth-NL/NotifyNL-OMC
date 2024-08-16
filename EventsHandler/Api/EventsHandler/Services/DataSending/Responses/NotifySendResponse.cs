@@ -20,10 +20,22 @@ namespace EventsHandler.Services.DataSending.Responses
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySendResponse"/> struct.
         /// </summary>
-        internal NotifySendResponse(bool isSuccess, string? content)
+        private NotifySendResponse(bool isSuccess, string content)
         {
             this.IsSuccess = isSuccess;
-            this.Content = content ?? string.Empty;
+            this.Content = content;
         }
+        
+        /// <summary>
+        /// Success result.
+        /// </summary>
+        internal static NotifySendResponse Success(string content)
+            => new(true, content);
+        
+        /// <summary>
+        /// Failure result.
+        /// </summary>
+        internal static NotifySendResponse Failure()
+            => new(false, string.Empty);
     }
 }

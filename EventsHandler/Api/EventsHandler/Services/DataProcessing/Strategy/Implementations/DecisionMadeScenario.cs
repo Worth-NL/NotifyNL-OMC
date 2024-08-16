@@ -16,6 +16,8 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Services.DataSending.Responses;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
@@ -198,6 +200,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
             return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+        }
+        #endregion
+
+        #region Polymorphic (ProcessDataAsync)
+        /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IEnumerable{NotifyData})"/>
+        protected override async Task<ProcessingResponse> ProcessDataAsync(NotificationEvent notification, IEnumerable<NotifyData> notifyData)
+        {
+            foreach (NotifyData data in notifyData)  // NOTE: Most likely there will be always only single a package of data here
+            {
+                NotifyTemplateResponse response = await this.NotifyService.GenerateTemplatePreviewAsync(notification, data);
+
+                if (response.IsFailure)
+                {
+                    return ProcessingResponse.Failure();  // Fail early
+                }
+            }
+
+            return ProcessingResponse.Success();
         }
         #endregion
 

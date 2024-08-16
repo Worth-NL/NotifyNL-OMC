@@ -29,8 +29,10 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         async Task<NotifySendResponse> INotifyClient.SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference)
         {
             EmailNotificationResponse emailNotificationResponse = await this._notificationClient.SendEmailAsync(emailAddress, templateId, personalization, reference);
-
-            return new NotifySendResponse(emailNotificationResponse != null, emailNotificationResponse?.content.body);
+            
+            return emailNotificationResponse != null
+                ? NotifySendResponse.Success(emailNotificationResponse.content.body)
+                : NotifySendResponse.Failure();
         }
 
         /// <inheritdoc cref="INotifyClient.SendSmsAsync(string, string, Dictionary{string, object}, string)"/>
@@ -39,8 +41,10 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         async Task<NotifySendResponse> INotifyClient.SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference)
         {
             SmsNotificationResponse smsNotificationResponse = await this._notificationClient.SendSmsAsync(mobileNumber, templateId, personalization, reference);
-
-            return new NotifySendResponse(smsNotificationResponse != null, smsNotificationResponse?.content.body);
+            
+            return smsNotificationResponse != null
+                ? NotifySendResponse.Success(smsNotificationResponse.content.body)
+                : NotifySendResponse.Failure();
         }
 
         /// <inheritdoc cref="INotifyClient.GenerateTemplatePreviewAsync(string, Dictionary{string, object})"/>
@@ -50,7 +54,9 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         {
             TemplatePreviewResponse templatePreviewResponse = await this._notificationClient.GenerateTemplatePreviewAsync(templateId, personalization);
 
-            return new NotifyTemplateResponse(templatePreviewResponse != null, templatePreviewResponse?.subject, templatePreviewResponse?.body);
+            return templatePreviewResponse != null
+                ? NotifyTemplateResponse.Success(templatePreviewResponse.subject, templatePreviewResponse.body)
+                : NotifyTemplateResponse.Failure();
         }
     }
 }
