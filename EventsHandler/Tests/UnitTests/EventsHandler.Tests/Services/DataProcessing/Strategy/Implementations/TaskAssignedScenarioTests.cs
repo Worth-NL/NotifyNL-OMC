@@ -8,9 +8,11 @@ using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -125,7 +127,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region TryGetDataAsync()
         [Test]
-        public void GetAllNotifyDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -147,7 +149,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -169,7 +171,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -191,7 +193,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -218,7 +220,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario(
@@ -239,9 +241,33 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
+        [Test]
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithoutNotifyMethod_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario(
+                DistributionChannels.None,
+                s_taskOpenAssignedToPersonWithExpirationDate,
+                true,
+                true);
+
+            // Act
+            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_DataNotFound));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(0));
+
+                VerifyGetDataMethodCalls(1, 1, 1);
+            });
+        }
+
         [TestCase(DistributionChannels.Unknown)]
         [TestCase((DistributionChannels)(-1))]
-        public void GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithInvalidDistChannels_ThrowsInvalidOperationException(
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithUnknownNotifyMethod_ReturnsFailure(
             DistributionChannels invalidDistributionChannel)
         {
             // Arrange
@@ -251,12 +277,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 true,
                 true);
 
+            // Act
+            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+
             // Act & Assert
             Assert.Multiple(() =>
             {
-                InvalidOperationException? exception =
-                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.TryGetDataAsync(s_validNotification));
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(1, 1, 1);
             });
@@ -267,9 +296,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [TestCase(DistributionChannels.Sms, 1)]
         // Both
         [TestCase(DistributionChannels.Both, 2)]
-        // Unspecified
-        [TestCase(DistributionChannels.None, 0)]
-        public async Task GetAllNotifyDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithValidDistChannels_ReturnsExpectedNotifyDataCount(
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithValidDistChannels_ReturnsSuccess(
             DistributionChannels testDistributionChannel, int notifyDataCount)
         {
             // Arrange
@@ -280,12 +307,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Count.EqualTo(notifyDataCount));
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
+
+                if (testDistributionChannel == DistributionChannels.Both)
+                {
+                    NotifyData firstResult = actualResult.Content.First();
+                    Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
+
+                    NotifyData secondResult = actualResult.Content.Last();
+                    Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
+                }
                 
                 VerifyGetDataMethodCalls(1, 1, 1);
             });
@@ -311,14 +349,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 isNotificationExpected: true);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            GettingResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult, Has.Count.EqualTo(1));
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
-                string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.First().Personalization);
+                string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
                 string expectedSerializedPersonalization =
                     $"{{" +
                       $"\"klant.voornaam\":\"Jackie\"," +

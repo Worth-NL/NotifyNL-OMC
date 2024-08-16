@@ -907,7 +907,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was not possible to retrieve data necessary to process this notification..
+        ///   Looks up a localized string similar to It was not possible to retrieve the data necessary to process the received notification..
         /// </summary>
         internal static string Processing_ERROR_Scenario_DataNotFound {
             get {
@@ -948,6 +948,15 @@ namespace EventsHandler.Properties {
         internal static string Processing_ERROR_UnspecifiedResponse {
             get {
                 return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data, necessary to process the received notification, were retrieved successfully..
+        /// </summary>
+        internal static string Processing_SUCCESS_Scenario_DataRetrieved {
+            get {
+                return ResourceManager.GetString("Processing_SUCCESS_Scenario_DataRetrieved", resourceCulture);
             }
         }
         
