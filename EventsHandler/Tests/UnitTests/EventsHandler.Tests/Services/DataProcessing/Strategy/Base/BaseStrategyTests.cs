@@ -45,7 +45,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             this._emptyMockedNotifyService.Reset();
         }
 
-        #region GetAllNotifyDataAsync()
+        #region TryGetDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email)]
@@ -67,7 +67,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
                 string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
                     .Replace("{0}", "4")
@@ -104,7 +104,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
@@ -127,7 +127,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -160,7 +160,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Assert.Multiple(() =>
             {
                 InvalidOperationException? exception =
-                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.GetAllNotifyDataAsync(default));
+                    Assert.ThrowsAsync<InvalidOperationException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
                 VerifyGetDataMethodCalls(mockedQueryContext, mockedQueryService,
@@ -186,7 +186,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -218,7 +218,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, mockedQueryService, this._emptyMockedNotifyService);
 
             // Act
-            IReadOnlyCollection<NotifyData> actualResult = await scenario.GetAllNotifyDataAsync(default);
+            IReadOnlyCollection<NotifyData> actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -253,7 +253,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.ThrowsAsync<NotImplementedException>(() => scenario.GetAllNotifyDataAsync(default));
+                Assert.ThrowsAsync<NotImplementedException>(() => scenario.TryGetDataAsync(default));
 
                 VerifyGetDataMethodCalls(new Mock<IQueryContext>(),
                     new Mock<IDataQueryService<NotificationEvent>>(),

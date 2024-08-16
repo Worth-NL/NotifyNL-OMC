@@ -114,7 +114,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             // Arrange
             var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             mockedNotifyScenario
-                .Setup(mock => mock.GetAllNotifyDataAsync(
+                .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(Array.Empty<NotifyData>());  // NOTE: Empty collection is invalid
 
@@ -141,7 +141,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             // Arrange
             var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             mockedNotifyScenario
-                .Setup(mock => mock.GetAllNotifyDataAsync(
+                .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(new[]
                 {
@@ -178,7 +178,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             // Arrange
             var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             mockedNotifyScenario
-                .Setup(mock => mock.GetAllNotifyDataAsync(
+                .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(new[]
                 {

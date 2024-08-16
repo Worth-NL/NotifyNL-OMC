@@ -44,8 +44,8 @@ namespace EventsHandler.Services.DataProcessing
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                IReadOnlyCollection<NotifyData> allNotifyData = await scenario.GetAllNotifyDataAsync(notification);  // TODO: If failure, return ProcessingResult here
-                                                                                                                     // TODO: Rename to "GetDataAsync"
+                IReadOnlyCollection<NotifyData> allNotifyData = await scenario.TryGetDataAsync(notification);  // TODO: If failure, return ProcessingResult here
+
                 if (!allNotifyData.HasAny())  // TODO: Include in response from GetDataAsync method :)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary

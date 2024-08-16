@@ -47,9 +47,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             this._notifyService = notifyService;
         }
 
-        #region Parent (GetAllNotifyDataAsync)
-        /// <inheritdoc cref="INotifyScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        async Task<IReadOnlyCollection<NotifyData>> INotifyScenario.GetAllNotifyDataAsync(NotificationEvent notification)
+        #region Parent (TryGetDataAsync)
+        /// <inheritdoc cref="INotifyScenario.TryGetDataAsync"/>
+        async Task<IReadOnlyCollection<NotifyData>> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
         {
             CommonPartyData commonPartyData = await PrepareDataAsync(notification);
 
