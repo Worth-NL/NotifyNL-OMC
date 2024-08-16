@@ -8,20 +8,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
     /// <summary>
     /// Contains details of getting data operation performed by a specific OMC <see cref="INotifyScenario"/>.
     /// </summary>
-    internal readonly struct GettingResponse
+    internal readonly struct GettingDataResponse
     {
         /// <summary>
-        /// The affirmative status of the <see cref="GettingResponse"/>.
+        /// The affirmative status of the <see cref="GettingDataResponse"/>.
         /// </summary>
         internal bool IsSuccess { get; }
         
         /// <summary>
-        /// The negated status of the <see cref="GettingResponse"/>.
+        /// The negated status of the <see cref="GettingDataResponse"/>.
         /// </summary>
         internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
-        /// The details about result of <see cref="GettingResponse"/>.
+        /// The details about result of <see cref="GettingDataResponse"/>.
         /// </summary>
         internal string Message { get; }
 
@@ -34,9 +34,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         internal IReadOnlyCollection<NotifyData> Content { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GettingResponse"/> struct.
+        /// Initializes a new instance of the <see cref="GettingDataResponse"/> struct.
         /// </summary>
-        private GettingResponse(bool isSuccess, string message, IReadOnlyCollection<NotifyData> content)
+        private GettingDataResponse(bool isSuccess, string message, IReadOnlyCollection<NotifyData> content)
         {
             this.IsSuccess = isSuccess;
             this.Message = message;
@@ -46,13 +46,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static GettingResponse Success(string message, IReadOnlyCollection<NotifyData> content)
+        internal static GettingDataResponse Success(string message, IReadOnlyCollection<NotifyData> content)
             => new(true, message, content);
 
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static GettingResponse Failure(string message)
+        internal static GettingDataResponse Failure(string message)
             => new(false, message, Array.Empty<NotifyData>());
     }
 }

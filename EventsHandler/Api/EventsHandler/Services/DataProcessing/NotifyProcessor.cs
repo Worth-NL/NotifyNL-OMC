@@ -43,15 +43,15 @@ namespace EventsHandler.Services.DataProcessing
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                GettingResponse gettingResponse;
-                if ((gettingResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
+                GettingDataResponse gettingDataResponse;
+                if ((gettingDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
-                    return (ProcessingResult.Failure, gettingResponse.Message);
+                    return (ProcessingResult.Failure, gettingDataResponse.Message);
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
-                if ((await scenario.ProcessDataAsync(notification, gettingResponse.Content)).IsFailure)
+                if ((await scenario.ProcessDataAsync(notification, gettingDataResponse.Content)).IsFailure)
                 {
                     // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
                     return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
