@@ -186,7 +186,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 // Prepare HTTP Request Body
                 string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
 
-                string httpRequestBody = PrepareObjectData(
+                string objectData = PrepareObjectData(
                     response.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
                     this.Configuration.AppSettings.Variables.Objecten.MessageObjectTypeName(), this._bsnNumber, commaSeparatedUris);
             }
