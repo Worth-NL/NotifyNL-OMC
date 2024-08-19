@@ -4,7 +4,6 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
-using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
@@ -73,14 +72,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
-        }
-        #endregion
-
-        #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
-        Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody)
-        {
-            throw new NotImplementedException(Resources.HttpRequest_ERROR_TelemetryOpenZaakNotImplemented);  // TODO: To be removed and converted to static in OpenZaak v1
         }
         #endregion
     }
