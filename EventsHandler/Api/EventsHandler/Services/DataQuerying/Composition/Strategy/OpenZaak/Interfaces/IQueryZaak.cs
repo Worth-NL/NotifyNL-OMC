@@ -372,13 +372,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Sends the completion feedback to "OpenZaak" Web API service.
         /// </summary>
         /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
-        /// <param name="body">The HTTP Body to be passed with POST request.</param>
+        /// <param name="jsonBody">The content in JSON format to be passed with POST request as HTTP Request Body.</param>
         /// <returns>
         ///   The JSON response from an external Telemetry Web API service.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
-        internal Task<string> SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body);
+        internal Task<string> SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
         #region Polymorphic (Domain)

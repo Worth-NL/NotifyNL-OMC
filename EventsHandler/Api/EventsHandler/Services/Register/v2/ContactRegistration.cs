@@ -65,9 +65,7 @@ namespace EventsHandler.Services.Register.v2
                 $"  \"vertrouwelijk\": false" +                            // ENG: Confidentiality (of the notification)
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.SendFeedbackToOpenKlantAsync(body);
+            return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
         }
 
         private static async Task<string> SendFeedbackToSubjectObjectAsync(
@@ -91,9 +89,7 @@ namespace EventsHandler.Services.Register.v2
                 $"  }}" +
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.LinkToSubjectObjectAsync(body);
+            return await queryContext.LinkToSubjectObjectAsync(jsonBody);
         }
         #endregion
     }

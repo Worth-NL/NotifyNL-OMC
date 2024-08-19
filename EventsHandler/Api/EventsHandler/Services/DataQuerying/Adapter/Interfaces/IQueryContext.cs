@@ -107,8 +107,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
 
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
-        internal Task<string> SendFeedbackToOpenZaakAsync(HttpContent body);
+        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
+        internal Task<string> SendFeedbackToOpenZaakAsync(string jsonBody);
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
@@ -139,14 +139,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, HttpContent)"/>
-        internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(HttpContent body);
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string)"/>
+        internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(string jsonBody);
 
         // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",
         //       because it's not sending any requests to "OpenZaak" Web API service anymore. Due to that,
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
-        /// <inheritdoc cref="QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, HttpContent)"/>
-        internal Task<string> LinkToSubjectObjectAsync(HttpContent body);
+        /// <inheritdoc cref="QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, string)"/>
+        internal Task<string> LinkToSubjectObjectAsync(string jsonBody);
         #endregion
 
         #region IQueryObjecten

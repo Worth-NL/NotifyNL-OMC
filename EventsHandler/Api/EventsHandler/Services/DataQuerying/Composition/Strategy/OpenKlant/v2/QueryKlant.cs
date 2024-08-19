@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
@@ -10,6 +11,7 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
+using System.Text;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
@@ -67,17 +69,20 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, HttpContent body)
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string)"/>
+        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string jsonBody)
         {
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/klantcontacten");
+
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: klantContactMomentUri,  // Request URL
-                body: body,
+                body: requestBody,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
@@ -89,16 +94,19 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         /// </returns>
         /// <exception cref="TelemetryException"/>
         internal static async Task<string> LinkToSubjectObjectAsync(
-            IHttpNetworkService networkService, string openKlantDomain, HttpContent body)
+            IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
             var subjectObjectUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
+
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: subjectObjectUri,  // Request URL
-                body: body);
+                body: requestBody);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);

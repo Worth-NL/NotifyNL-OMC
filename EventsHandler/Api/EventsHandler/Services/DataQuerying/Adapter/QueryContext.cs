@@ -93,9 +93,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
             => await this._queryZaak.TryGetDecisionTypeAsync(this._queryBase, decision);
 
-        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent)"/>
-        async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(HttpContent body)
-            => await this._queryZaak.SendFeedbackAsync(this._networkService, body);
+        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(string)"/>
+        async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(string jsonBody)
+            => await this._queryZaak.SendFeedbackAsync(this._networkService, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
@@ -127,13 +127,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
         }
 
-        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent)"/>
-        async Task<ContactMoment> IQueryContext.SendFeedbackToOpenKlantAsync(HttpContent body)
-            => await this._queryKlant.SendFeedbackAsync(this._queryBase, body);
+        /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(string)"/>
+        async Task<ContactMoment> IQueryContext.SendFeedbackToOpenKlantAsync(string jsonBody)
+            => await this._queryKlant.SendFeedbackAsync(this._queryBase, jsonBody);
 
-        /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(HttpContent)"/>
-        async Task<string> IQueryContext.LinkToSubjectObjectAsync(HttpContent body)
-            => await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(this._networkService, this._queryKlant.GetDomain(), body);
+        /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(string)"/>
+        async Task<string> IQueryContext.LinkToSubjectObjectAsync(string jsonBody)
+            => await OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
         #endregion
 
         #region IQueryObjecten
