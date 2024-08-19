@@ -36,13 +36,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         }
 
         #region Polymorphic (Citizen details)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
             // TODO: BSN number validation
 
             // Predefined URL components
-            string partiesEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/partijen";
+            string partiesEndpoint = $"https://{openKlantDomain}/klantinteracties/api/v1/partijen";
 
             string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
             string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
@@ -67,11 +67,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string)"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/klantcontacten");
+            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/klantcontacten");
 
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(

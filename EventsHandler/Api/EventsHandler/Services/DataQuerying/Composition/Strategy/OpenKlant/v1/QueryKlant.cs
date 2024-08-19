@@ -34,13 +34,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         }
 
         #region Polymorphic (Citizen details)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
             // TODO: BSN number validation
 
             // Predefined URL components
-            string citizensEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klanten/api/v1/klanten";
+            string citizensEndpoint = $"https://{openKlantDomain}/klanten/api/v1/klanten";
 
             // Request URL
             var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
@@ -60,11 +60,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string)"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/contactmomenten/api/v1/contactmomenten");
+            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/contactmomenten/api/v1/contactmomenten");
 
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
