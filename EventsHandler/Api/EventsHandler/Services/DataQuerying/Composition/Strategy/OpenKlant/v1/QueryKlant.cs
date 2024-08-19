@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.v1;
@@ -9,7 +8,6 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
-using System.Text;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
@@ -68,14 +66,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/contactmomenten/api/v1/contactmomenten");
 
-            // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
-                body: requestBody,
+                jsonBody,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
         #endregion
