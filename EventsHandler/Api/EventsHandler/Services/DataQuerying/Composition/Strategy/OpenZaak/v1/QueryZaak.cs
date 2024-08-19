@@ -86,14 +86,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetDomain()}/zaken/api/v1/zaakcontactmomenten");
 
-            // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
-                body: requestBody);
+                jsonBody);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);
