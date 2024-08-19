@@ -9,9 +9,10 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
+using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {
@@ -107,7 +108,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
 
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
+        /// <inheritdoc cref="OpenZaak.v1.QueryZaak.SendFeedbackAsync(IHttpNetworkService, string, string)"/>
         internal Task<string> SendFeedbackToOpenZaakAsync(string jsonBody);
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, string, Uri)"/>
@@ -145,7 +146,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",
         //       because it's not sending any requests to "OpenZaak" Web API service anymore. Due to that,
         //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
-        /// <inheritdoc cref="QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, string)"/>
+        /// <inheritdoc cref="OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, string)"/>
         internal Task<string> LinkToSubjectObjectAsync(string jsonBody);
         #endregion
 
