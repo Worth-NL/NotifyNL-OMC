@@ -103,7 +103,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             // 1. Fetch the case roles from "OpenZaak"
             // 2. Determine the citizen data from the case roles
             // 3. Return BSN from the citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseTypeUri);
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseTypeUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
