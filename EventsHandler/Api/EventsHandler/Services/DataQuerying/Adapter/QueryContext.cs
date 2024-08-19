@@ -125,12 +125,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter
                 this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case type URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, this._queryKlant.GetDomain(), bsnNumber);
         }
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenKlantAsync(string)"/>
         async Task<ContactMoment> IQueryContext.SendFeedbackToOpenKlantAsync(string jsonBody)
-            => await this._queryKlant.SendFeedbackAsync(this._queryBase, jsonBody);
+            => await this._queryKlant.SendFeedbackAsync(this._queryBase, this._queryKlant.GetDomain(), jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkToSubjectObjectAsync(string)"/>
         async Task<string> IQueryContext.LinkToSubjectObjectAsync(string jsonBody)
