@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -9,7 +8,6 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
-using System.Text;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
@@ -36,12 +34,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, Uri)"/>
-        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseTypeUri)
+        /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, string, Uri)"/>
+        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, ((IQueryZaak)this).GetDomain(), caseTypeUri, subjectType))
+            return (await GetCaseRolesV1Async(queryBase, openZaakDomain, caseTypeUri, subjectType))
                 .Citizen
                 .BsnNumber;
         }
@@ -80,11 +78,21 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
-        async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody)
+        /// <summary>
+        /// Sends the completion feedback to "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <param name="openZaakDomain">The domain of <see cref="IQueryZaak"/> Web API service.</param>
+        /// <param name="jsonBody">The content in JSON format to be passed with POST request as HTTP Request Body.</param>
+        /// <returns>
+        ///   The JSON response from an external Telemetry Web API service.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="TelemetryException"/>
+        internal static async Task<string> SendFeedbackAsync(IHttpNetworkService networkService, string openZaakDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetDomain()}/zaken/api/v1/zaakcontactmomenten");
+            var klantContactMomentUri = new Uri($"https://{openZaakDomain}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
