@@ -39,11 +39,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// Sends the completion feedback to "OpenKlant" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="body">The HTTP Body to be passed with POST request.</param>
+        /// <param name="jsonBody">The content in JSON format to be passed with POST request as HTTP Request Body.</param>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>
-        internal Task<ContactMoment> SendFeedbackAsync(IQueryBase queryBase, HttpContent body);
+        internal Task<ContactMoment> SendFeedbackAsync(IQueryBase queryBase, string jsonBody);
         #endregion
 
         #region Polymorphic (Domain)

@@ -77,8 +77,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
-        Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
+        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
+        Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody)
         {
             throw new NotImplementedException(Resources.HttpRequest_ERROR_TelemetryOpenZaakNotImplemented);  // TODO: To be removed and converted to static in OpenZaak v1
         }
