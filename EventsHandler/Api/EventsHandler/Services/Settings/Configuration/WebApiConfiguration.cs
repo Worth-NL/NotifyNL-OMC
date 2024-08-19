@@ -228,8 +228,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="OpenKlantComponent"/>
                 internal OpenKlantComponent OpenKlant { get; }
 
-                /// <inheritdoc cref="MessagesComponent"/>
-                internal MessagesComponent Messages { get; }
+                /// <inheritdoc cref="ObjectenComponent"/>
+                internal ObjectenComponent Objecten { get; }
+
+                /// <inheritdoc cref="UxMessagesComponent"/>
+                internal UxMessagesComponent UxMessages { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
@@ -240,7 +243,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
-                    this.Messages = new MessagesComponent(loadersContext, this._currentPath);
+                    this.Objecten = new ObjectenComponent(loadersContext, this._currentPath);
+                    this.UxMessages = new UxMessagesComponent(loadersContext, this._currentPath);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -294,20 +298,46 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <summary>
-                /// The "Messages" part of the settings.
+                /// The "Objecten" part of the settings.
                 /// </summary>
-                internal sealed class MessagesComponent
+                internal sealed class ObjectenComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="MessagesComponent"/> class.
+                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
                     /// </summary>
-                    internal MessagesComponent(ILoadersContext loadersContext, string parentPath)
+                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Messages));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    internal ushort MessageObjectTypeVersion()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectTypeVersion));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    internal string MessageObjectTypeName()  // NOTE: Used by "Logius" system
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectTypeName));
+                }
+
+                /// <summary>
+                /// The "UX Messages" part of the settings.
+                /// </summary>
+                internal sealed class UxMessagesComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="UxMessagesComponent"/> class.
+                    /// </summary>
+                    internal UxMessagesComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(UxMessages));
                     }
 
                     #region SMS

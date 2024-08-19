@@ -188,7 +188,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 string httpRequestBody = PrepareObjectData(
                     response.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
-                    this._bsnNumber, commaSeparatedUris);
+                    this.Configuration.AppSettings.Variables.Objecten.MessageObjectTypeName(), this._bsnNumber, commaSeparatedUris);
             }
 
             return ProcessingDataResponse.Success();
@@ -235,7 +235,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         private static string PrepareObjectData(
             string subject, string body, DateOnly publicationDate, Uri decisionUri,
-            string bsnNumber, string commaSeparatedUris)
+            string messageObjectTypeName, string bsnNumber, string commaSeparatedUris)
         {
             return $"{{" +
                    $"  \"onderwerp\": \"{subject}\"," +
@@ -244,7 +244,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                    $"  \"referentie\": \"{decisionUri}\"," +
                    $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
                    $"  \"geopend\": false," +
-                   $"  \"berichttype\": \"ENV VAR MESSAGE_OBJECT_LOGIUS_MESSAGE_TYPE_DECISIONS\"," +
+                   $"  \"berichttype\": \"{messageObjectTypeName}\"," +
                    $"  \"identificatie\": {{" +
                    $"    \"type\": \"bsn\"," +
                    $"    \"value\": \"{bsnNumber}\"" +
