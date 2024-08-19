@@ -29,10 +29,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
+        private IQueryContext _queryContext = null!;
+        private DecisionResource _decisionResource;
         private Decision _decision;
         private DecisionType _decisionType;
         private Case _case;
         private CaseType _caseType;
+        private string _bsnNumber = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
@@ -50,10 +53,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
-            IQueryContext queryContext = this.DataQuery.From(notification);
+            this._queryContext = this.DataQuery.From(notification);
             
-            DecisionResource decisionResource = await queryContext.GetDecisionResourceAsync();
-            InfoObject infoObject = await queryContext.GetInfoObjectAsync(decisionResource);
+            this._decisionResource = await this._queryContext.GetDecisionResourceAsync();
+            InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
@@ -76,26 +79,27 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
-            this._decision = await queryContext.GetDecisionAsync(decisionResource);
-            this._decisionType = await queryContext.GetDecisionTypeAsync(this._decision);
-            this._case = await queryContext.GetCaseAsync(this._decision.CaseUri);
+            this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
+            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
+            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
                 this._case.Identification, GetWhitelistName());
             
-            this._caseType = await queryContext.GetLastCaseTypeAsync(  // 3. Case type
-                             await queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                   this._decision.CaseUri));           // 1. Case URI
+            this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
+                             await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                   this._decision.CaseUri));                 // 1. Case URI
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
             // Preparing citizen details
-            return await queryContext.GetPartyDataAsync(  // 3. Citizen details
-                   await queryContext.GetBsnNumberAsync(  // 2. BSN number
-                         this._case.CaseTypeUri));        // 1. Case Type URI
+            this._bsnNumber = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
+                                    this._case.CaseTypeUri);               // 1. Case Type URI
+
+            return await this._queryContext.GetPartyDataAsync(this._bsnNumber);  // 3. Citizen details
         }
         #endregion
 
@@ -147,48 +151,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return s_emailPersonalization;
             }
         }
-
-        /// <summary>
-        /// Gets references in <see cref="Uri"/> format to <see cref="InfoObject"/>s meeting certain criteria.
-        /// </summary>
-        /// <returns>
-        ///   The references to valid <see cref="InfoObject"/>s.
-        /// </returns>
-        /// <exception cref="ArgumentException"/>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="JsonException"/>
-        private static async Task<IReadOnlyCollection<Uri>> GetValidInfoObjectUrisAsync(IQueryContext queryContext, DecisionResource decisionResource)
-        {
-            // Retrieve documents
-            List<Document> documents = (await queryContext.GetDocumentsAsync(decisionResource))
-                                       .Results;
-
-            if (documents.IsEmpty())
-            {
-                return Array.Empty<Uri>();
-            }
-
-            // Prepare URIs
-            List<Uri> validInfoObjectsUris = new(documents.Count);
-
-            foreach (Document document in documents)
-            {
-                // Retrieve info objects from documents
-                InfoObject infoObject = await queryContext.GetInfoObjectAsync(document);
-
-                // Filter out info objects not meeting the specified criteria
-                if (infoObject.Status          != MessageStatus.Definitive &&
-                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
-                {
-                    continue;
-                }
-
-                // Keep the URI references to the valid info objects
-                validInfoObjectsUris.Add(document.InfoObjectUri);
-            }
-
-            return validInfoObjectsUris.ToArray();
-        }
         #endregion
 
         #region Polymorphic (SMS logic: template + personalization)
@@ -219,10 +181,78 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 }
 
                 // Adjusting the body for Logius system
-                string modifiedBody = response.Body.Replace("\n\n", "\r\n");
+                string modifiedResponseBody = response.Body.Replace("\n\n", "\r\n");
+
+                // Prepare HTTP Request Body
+                string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
+
+                string httpRequestBody = PrepareObjectData(
+                    response.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
+                    this._bsnNumber, commaSeparatedUris);
             }
 
             return ProcessingDataResponse.Success();
+        }
+
+        /// <summary>
+        /// Gets references in <see cref="Uri"/> format to <see cref="InfoObject"/>s meeting certain criteria.
+        /// </summary>
+        /// <returns>
+        ///   The comma-separated absolute <see cref="Uri"/> references to valid <see cref="InfoObject"/>s in the given format:
+        ///   <code>
+        ///     ""absoluteUri", "absoluteUri", "absoluteUri""
+        ///   </code>
+        /// </returns>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        private static async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext, DecisionResource decisionResource)
+        {
+            // Retrieve documents
+            List<Document> documents = (await queryContext.GetDocumentsAsync(decisionResource))
+                                       .Results;
+            // Prepare URIs
+            List<string> validInfoObjectsUris = new(documents.Count);
+
+            foreach (Document document in documents)
+            {
+                // Retrieve info objects from documents
+                InfoObject infoObject = await queryContext.GetInfoObjectAsync(document);
+
+                // Filter out info objects not meeting the specified criteria
+                if (infoObject.Status          != MessageStatus.Definitive &&
+                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+                {
+                    continue;
+                }
+
+                // Keep the URI references to the valid info objects
+                validInfoObjectsUris.Add($"\"{document.InfoObjectUri}\"");
+            }
+
+            return string.Join(", ", validInfoObjectsUris);
+        }
+
+        private static string PrepareObjectData(
+            string subject, string body, DateOnly publicationDate, Uri decisionUri,
+            string bsnNumber, string commaSeparatedUris)
+        {
+            return $"{{" +
+                   $"  \"onderwerp\": \"{subject}\"," +
+                   $"  \"berichttekst\": \"{body}\"," +
+                   $"  \"publicatiedatum\": \"{publicationDate}\"," +
+                   $"  \"referentie\": \"{decisionUri}\"," +
+                   $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
+                   $"  \"geopend\": false," +
+                   $"  \"berichttype\": \"ENV VAR MESSAGE_OBJECT_LOGIUS_MESSAGE_TYPE_DECISIONS\"," +
+                   $"  \"identificatie\": {{" +
+                   $"    \"type\": \"bsn\"," +
+                   $"    \"value\": \"{bsnNumber}\"" +
+                   $"  }}," +
+                   $"  \"bijlages\": [" +
+                   $"    {commaSeparatedUris}" +
+                   $"  ]" +
+                   $"}}";
         }
         #endregion
 
