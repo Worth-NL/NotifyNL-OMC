@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
@@ -8,7 +7,6 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
-using System.Text;
 
 namespace EventsHandler.Services.Register.v2
 {

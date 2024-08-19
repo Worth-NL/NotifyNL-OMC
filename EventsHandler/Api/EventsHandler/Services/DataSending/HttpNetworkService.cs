@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace EventsHandler.Services.DataSending
 {
@@ -58,10 +59,13 @@ namespace EventsHandler.Services.DataSending
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
-        /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, HttpContent)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, HttpContent body)
+        /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
+        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
-            return await ExecuteCallAsync(httpClientType, uri, body);
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
+
+            return await ExecuteCallAsync(httpClientType, uri, requestBody);
         }
         #endregion
 
