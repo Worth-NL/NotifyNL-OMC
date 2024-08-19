@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -8,6 +9,7 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
+using System.Text;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
@@ -78,17 +80,20 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, HttpContent)"/>
-        async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, HttpContent body)
+        /// <inheritdoc cref="IQueryZaak.SendFeedbackAsync(IHttpNetworkService, string)"/>
+        async Task<string> IQueryZaak.SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
             var klantContactMomentUri = new Uri($"https://{((IQueryZaak)this).GetDomain()}/zaken/api/v1/zaakcontactmomenten");
+
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
 
             // Sending the request
             (bool success, string jsonResponse) = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
-                body: body);
+                body: requestBody);
 
             // Getting the response
             return success ? jsonResponse : throw new TelemetryException(jsonResponse);
