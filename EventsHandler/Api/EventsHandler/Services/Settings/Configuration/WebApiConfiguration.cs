@@ -730,6 +730,10 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Whitelist));
                 }
 
+                // ----------------------------
+                // Allowed Case Identifications
+                // ----------------------------
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
@@ -750,9 +754,17 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
+                // --------------
+                // Flags (simple)
+                // --------------
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+
+                // ---------------------------
+                // Allowed types (UUID / GUID)
+                // ---------------------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal Guid TaskType_Uuid()
