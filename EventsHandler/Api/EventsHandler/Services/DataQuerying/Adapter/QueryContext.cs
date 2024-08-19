@@ -12,6 +12,7 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
+using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
 {
@@ -95,7 +96,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         /// <inheritdoc cref="IQueryContext.SendFeedbackToOpenZaakAsync(string)"/>
         async Task<string> IQueryContext.SendFeedbackToOpenZaakAsync(string jsonBody)
-            => await this._queryZaak.SendFeedbackAsync(this._networkService, jsonBody);
+            => await OpenZaak.v1.QueryZaak.SendFeedbackAsync(this._networkService, this._queryZaak.GetDomain(), jsonBody);
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)

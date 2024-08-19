@@ -682,15 +682,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow (&apos;Features:OmcWorkflowVersion&apos;)..
-        /// </summary>
-        internal static string HttpRequest_ERROR_TelemetryOpenZaakNotImplemented {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_TelemetryOpenZaakNotImplemented", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification could not be recognized (deserialized)..
         /// </summary>
         internal static string Operation_ERROR_Deserialization_Failure {

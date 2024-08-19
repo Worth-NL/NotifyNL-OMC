@@ -1,13 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
-using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
@@ -366,20 +364,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         /// <inheritdoc cref="TryGetCaseTypeUriAsync(IQueryBase, Uri)"/>
         protected Task<Uri> PolymorphicGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
-        #endregion
-
-        #region Abstract (Telemetry)
-        /// <summary>
-        /// Sends the completion feedback to "OpenZaak" Web API service.
-        /// </summary>
-        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
-        /// <param name="jsonBody">The content in JSON format to be passed with POST request as HTTP Request Body.</param>
-        /// <returns>
-        ///   The JSON response from an external Telemetry Web API service.
-        /// </returns>
-        /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="TelemetryException"/>
-        internal Task<string> SendFeedbackAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
         #region Polymorphic (Domain)
