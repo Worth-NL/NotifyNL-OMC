@@ -17,7 +17,7 @@ using ResourcesText = EventsHandler.Properties.Resources;
 namespace EventsHandler.UnitTests.Services.DataProcessing
 {
     [TestFixture]
-    public sealed class DataProcessingTests
+    public sealed class NotifyProcessorTests
     {
         private Mock<IScenariosResolver> _mockedScenariosResolver = null!;
         private IProcessingService<NotificationEvent> _processor = null!;
