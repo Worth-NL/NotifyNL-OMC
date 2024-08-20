@@ -165,7 +165,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 {
                     NotifyMethods.Email => await this.NotifyService.SendEmailAsync(notification, data),
                     NotifyMethods.Sms => await this.NotifyService.SendSmsAsync(notification, data),
-                    _ => NotifySendResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+                    _ => NotifySendResponse.Failure_Unknown()
                 };
 
                 if (response.IsFailure)  // Fail early (if there are two packages given, failure of just single one of them is enough)

@@ -3,6 +3,7 @@
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using Notify.Client;
+using Notify.Exceptions;
 using Notify.Models.Responses;
 using System.Diagnostics.CodeAnalysis;
 
@@ -27,13 +28,11 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         {
             try
             {
-                EmailNotificationResponse emailNotificationResponse = await this._notificationClient.SendEmailAsync(emailAddress, templateId, personalization, reference);
+                _ = await this._notificationClient.SendEmailAsync(emailAddress, templateId, personalization, reference);
 
-                return emailNotificationResponse != null
-                    ? NotifySendResponse.Success(emailNotificationResponse.content.body)
-                    : NotifySendResponse.Failure();
+                return NotifySendResponse.Success();
             }
-            catch (Exception exception)
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
             {
                 return NotifySendResponse.Failure(exception.Message);
             }
@@ -44,13 +43,11 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         {
             try
             {
-                SmsNotificationResponse smsNotificationResponse = await this._notificationClient.SendSmsAsync(mobileNumber, templateId, personalization, reference);
+                _ = await this._notificationClient.SendSmsAsync(mobileNumber, templateId, personalization, reference);
 
-                return smsNotificationResponse != null
-                    ? NotifySendResponse.Success(smsNotificationResponse.content.body)
-                    : NotifySendResponse.Failure();
+                return NotifySendResponse.Success();
             }
-            catch (Exception exception)
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
             {
                 return NotifySendResponse.Failure(exception.Message);
             }
@@ -64,11 +61,9 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
                 TemplatePreviewResponse templatePreviewResponse =
                     await this._notificationClient.GenerateTemplatePreviewAsync(templateId, personalization);
 
-                return templatePreviewResponse != null
-                    ? NotifyTemplateResponse.Success(templatePreviewResponse.subject, templatePreviewResponse.body)
-                    : NotifyTemplateResponse.Failure();
+                return NotifyTemplateResponse.Success(templatePreviewResponse.subject, templatePreviewResponse.body);
             }
-            catch (Exception exception)
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
             {
                 return NotifyTemplateResponse.Failure(exception.Message);
             }

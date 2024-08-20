@@ -190,7 +190,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(NotifySendResponse.Success("Test Email body"));
+                .ReturnsAsync(NotifySendResponse.Success());
 
             notificationClientMock
                 .Setup(mock => mock.SendSmsAsync(
@@ -198,7 +198,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(NotifySendResponse.Success("Test SMS body"));
+                .ReturnsAsync(NotifySendResponse.Success());
 
             notificationClientMock
                 .Setup(mock => mock.GenerateTemplatePreviewAsync(
