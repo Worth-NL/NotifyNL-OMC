@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 
@@ -46,13 +47,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static GettingDataResponse Success(string message, IReadOnlyCollection<NotifyData> content)
-            => new(true, message, content);
+        internal static GettingDataResponse Success(IReadOnlyCollection<NotifyData> content)
+            => new(true, Resources.Processing_SUCCESS_Scenario_DataRetrieved, content);
 
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static GettingDataResponse Failure(string message)
-            => new(false, message, Array.Empty<NotifyData>());
+        internal static GettingDataResponse Failure()
+            => new(false, Resources.Processing_ERROR_Scenario_NotificationMethod, Array.Empty<NotifyData>());
     }
 }

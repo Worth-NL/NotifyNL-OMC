@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Responses
@@ -37,7 +38,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// Success result.
         /// </summary>
         internal static ProcessingDataResponse Success()
-            => new(true, string.Empty);
+            => new(true, Resources.Processing_SUCCESS_Scenario_DataProcessed);
 
         /// <summary>
         /// Failure result.

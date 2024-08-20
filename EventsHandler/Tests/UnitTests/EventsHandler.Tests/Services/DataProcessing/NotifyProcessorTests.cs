@@ -111,20 +111,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         }
 
         [Test]
-        public async Task ProcessAsync_ValidNotification_InvalidNotifyData_ReturnsProcessingResult_Failure()
+        public async Task ProcessAsync_ValidNotification_ValidScenario_FailedGetDataResponse_ReturnsProcessingResult_Failure()
         {
             // Arrange
             var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Failure(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent));
-
-            mockedNotifyScenario
-                .Setup(mock => mock.ProcessDataAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<IReadOnlyCollection<NotifyData>>()))
-                .ReturnsAsync(ProcessingDataResponse.Failure("{ }"));
+                .ReturnsAsync(GettingDataResponse.Failure());
             
             this._mockedScenariosResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
@@ -140,7 +134,54 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             Assert.Multiple(() =>
             {
                 Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-                Assert.That(message, Is.EqualTo(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent));
+
+                string expectedMessage =
+                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}",
+                        ResourcesText.Processing_ERROR_Scenario_NotificationMethod);
+
+                Assert.That(message, Is.EqualTo(expectedMessage));
+            });
+        }
+
+        [Test]
+        public async Task ProcessAsync_ValidNotification_ValidScenario_SuccessGetDataResponse_FailedProcessDataResponse_ReturnsProcessingResult_Failure()
+        {
+            // Arrange
+            var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
+            mockedNotifyScenario
+                .Setup(mock => mock.TryGetDataAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(GettingDataResponse.Success(new[]
+                {
+                    GetNotifyData(NotifyMethods.Email)
+                }));
+
+            const string processingErrorText = "HTTP Bad Request";
+            mockedNotifyScenario
+                .Setup(mock => mock.ProcessDataAsync(
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<IReadOnlyCollection<NotifyData>>()))
+                .ReturnsAsync(ProcessingDataResponse.Failure(processingErrorText));
+            
+            this._mockedScenariosResolver
+                .Setup(mock => mock.DetermineScenarioAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(mockedNotifyScenario.Object);
+            
+            // Act
+            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+
+            // Assert
+            VerifyMethodsCalls(1);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
+
+                string expectedMessage =
+                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}", processingErrorText);
+
+                Assert.That(message, Is.EqualTo(expectedMessage));
             });
         }
 
@@ -152,7 +193,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Success(string.Empty, new[]
+                .ReturnsAsync(GettingDataResponse.Success(new[]
                 {
                     GetNotifyData(NotifyMethods.Email)
                 }));

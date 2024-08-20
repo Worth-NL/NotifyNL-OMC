@@ -36,7 +36,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             this._mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Failure(string.Empty));
+                .ReturnsAsync(GettingDataResponse.Failure());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
             this._mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);

@@ -258,7 +258,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.False);
-                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_DataNotFound));
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(1, 1, 1);
@@ -284,7 +284,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.False);
-                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(1, 1, 1);
