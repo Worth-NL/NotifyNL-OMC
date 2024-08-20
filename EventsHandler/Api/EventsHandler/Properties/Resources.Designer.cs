@@ -898,6 +898,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no data to be processed by the selected notification scenario..
+        /// </summary>
+        internal static string Processing_ERROR_Scenario_MissingData {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification method is missing, unknown, or not supported..
         /// </summary>
         internal static string Processing_ERROR_Scenario_NotificationMethod {
