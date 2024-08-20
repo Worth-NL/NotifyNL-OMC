@@ -2,7 +2,6 @@
 
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Responses
 {
