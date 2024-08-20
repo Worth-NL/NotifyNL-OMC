@@ -85,7 +85,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_InvalidMessageType_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectType);
+            INotifyScenario scenario = ArrangeDecisionScenario_TryGetData(s_invalidInfoObjectType);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -103,7 +103,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_ValidMessageType_InvalidStatus_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectStatus);
+            INotifyScenario scenario = ArrangeDecisionScenario_TryGetData(s_invalidInfoObjectStatus);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -121,7 +121,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_InvalidConfidentiality_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeDecisionScenario(s_invalidInfoObjectConfidentiality);
+            INotifyScenario scenario = ArrangeDecisionScenario_TryGetData(s_invalidInfoObjectConfidentiality);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -145,7 +145,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         // TODO: Add ProcessData tests
 
         #region Setup
-        private INotifyScenario ArrangeDecisionScenario(InfoObject testInfoObject)
+        private INotifyScenario ArrangeDecisionScenario_TryGetData(InfoObject testInfoObject)
         {
             // IQueryContext
             this._mockedQueryContext
@@ -188,8 +188,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedDataQuery
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
-
-            // INotifyService
 
             // Decision Scenario
             return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
