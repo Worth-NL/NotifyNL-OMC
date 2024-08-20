@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Responses
 {
