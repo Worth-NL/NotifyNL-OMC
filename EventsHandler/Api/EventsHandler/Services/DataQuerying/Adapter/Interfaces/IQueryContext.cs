@@ -129,7 +129,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
@@ -141,7 +141,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
         internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(string jsonBody);
 
         // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",

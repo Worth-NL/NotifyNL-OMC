@@ -124,7 +124,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 .Setup(mock => mock.ProcessDataAsync(
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<IReadOnlyCollection<NotifyData>>()))
-                .ReturnsAsync(ProcessingDataResponse.Failure());
+                .ReturnsAsync(ProcessingDataResponse.Failure("{ }"));
             
             this._mockedScenariosResolver
                 .Setup(mock => mock.DetermineScenarioAsync(

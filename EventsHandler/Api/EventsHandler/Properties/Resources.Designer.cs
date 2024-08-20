@@ -898,6 +898,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The HTTP Response from Notify NL was null..
+        /// </summary>
+        internal static string Processing_ERROR_NotifyResponseNull {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_NotifyResponseNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to It was not possible to retrieve the data necessary to process the received notification..
         /// </summary>
         internal static string Processing_ERROR_Scenario_DataNotFound {
@@ -907,7 +916,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification has not been sent to Notify NL..
+        ///   Looks up a localized string similar to The notification has not been sent to Notify NL: {0}..
         /// </summary>
         internal static string Processing_ERROR_Scenario_NotificationNotSent {
             get {
@@ -1015,7 +1024,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to was successfully send to NotifyNL..
+        ///   Looks up a localized string similar to was successfully send to Notify NL..
         /// </summary>
         internal static string Test_NotifyNL_SUCCESS_NotificationSent {
             get {
