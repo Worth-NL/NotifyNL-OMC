@@ -2,6 +2,7 @@
 
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Responses
 {
@@ -39,6 +40,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// </summary>
         internal static ProcessingDataResponse Success()
             => new(true, Resources.Processing_SUCCESS_Scenario_DataProcessed);
+        
+        /// <summary>
+        /// Failure result.
+        /// </summary>
+        internal static ProcessingDataResponse Failure_Empty()
+            => new(false, Resources.Processing_ERROR_Scenario_MissingData);
 
         /// <summary>
         /// Failure result.

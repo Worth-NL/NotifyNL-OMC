@@ -26,6 +26,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
     [TestFixture]
     public sealed class BaseStrategyTests
     {
+        private readonly Mock<IDataQueryService<NotificationEvent>> _emptyMockedQueryService = new(MockBehavior.Strict);
         private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _emptyMockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
@@ -55,11 +56,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
         public void TryGetDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(
-            Type scenarioType, DistributionChannels testDistributionChannel)
+            Type scenarioType, DistributionChannels testNotifyMethod)
         {
             // Arrange
             Mock<IQueryContext> mockedQueryContext = GetMockedQueryContext(
-                testDistributionChannel, isCaseIdWhitelisted: false, isNotificationExpected: true);
+                testNotifyMethod, isCaseIdWhitelisted: false, isNotificationExpected: true);
             
             Mock<IDataQueryService<NotificationEvent>> mockedQueryService = GetMockedQueryService(mockedQueryContext);
 
@@ -277,7 +278,126 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
         // TODO: Add GetPersonalization tests
 
-        // TODO: Add ProcessData tests
+        #region ProcessDataAsync()
+        [TestCase(typeof(CaseCreatedScenario))]
+        [TestCase(typeof(CaseStatusUpdatedScenario))]
+        [TestCase(typeof(CaseClosedScenario))]
+        public async Task ProcessDataAsync_InvalidNotifyData_ReturnsFailure(Type scenarioType)
+        {
+            // Arrange
+            Mock<INotifyService<NotificationEvent, NotifyData>> mockedNotifyService = GetMockedNotifyService(
+                isSendingSuccessful: true);
+
+            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, this._emptyMockedQueryService, mockedNotifyService);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingData));
+
+                VerifyProcessDataMethodCalls(mockedNotifyService, 0, 0);
+            });
+        }
+
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.None)]
+        [TestCase(typeof(CaseCreatedScenario), (NotifyMethods)(-1))]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.None)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), (NotifyMethods)(-1))]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.None)]
+        [TestCase(typeof(CaseClosedScenario), (NotifyMethods)(-1))]
+        public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(
+            Type scenarioType, NotifyMethods testNotifyMethod)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+
+            Mock<INotifyService<NotificationEvent, NotifyData>> mockedNotifyService = GetMockedNotifyService(
+                isSendingSuccessful: true,
+                testData);
+
+            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, this._emptyMockedQueryService, mockedNotifyService);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+
+                VerifyProcessDataMethodCalls(mockedNotifyService, 0, 0);
+            });
+        }
+
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
+            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+
+            Mock<INotifyService<NotificationEvent, NotifyData>> mockedNotifyService = GetMockedNotifyService(
+                isSendingSuccessful: false,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, this._emptyMockedQueryService, mockedNotifyService);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
+
+                VerifyProcessDataMethodCalls(mockedNotifyService, sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
+            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+
+            Mock<INotifyService<NotificationEvent, NotifyData>> mockedNotifyService = GetMockedNotifyService(
+                isSendingSuccessful: true,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType, this._emptyMockedQueryService, mockedNotifyService);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataProcessed));
+
+                VerifyProcessDataMethodCalls(mockedNotifyService, sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+        #endregion
 
         #region Setup
         private INotifyScenario ArrangeSpecificScenario<TScenario>(
@@ -351,17 +471,19 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             return mockedQueryService;
         }
 
+        private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
+
         private static Mock<INotifyService<NotificationEvent, NotifyData>> GetMockedNotifyService(
-            NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {
             var mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
             mockedNotifyService.Setup(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
-                .ReturnsAsync(NotifySendResponse.Success());
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             mockedNotifyService.Setup(mock => mock.SendSmsAsync(
                     It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
-                .ReturnsAsync(NotifySendResponse.Success());
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             return mockedNotifyService;
         }
@@ -397,6 +519,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 _ => Guid.Empty
             };
+        }
+        private static NotifyData GetNotifyData(NotifyMethods method)
+        {
+            return new NotifyData(method,
+                string.Empty,
+                Guid.Empty,
+                new Dictionary<string, object>());
         }
         #endregion
 

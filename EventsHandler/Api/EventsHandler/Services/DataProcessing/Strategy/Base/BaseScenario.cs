@@ -158,6 +158,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
+            if (notifyData.Count == 0)
+            {
+                return ProcessingDataResponse.Failure_Empty();
+            }
+
             // Sending notifications (default behavior of the most scenarios/strategies)
             foreach (NotifyData data in notifyData)
             {

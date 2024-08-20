@@ -186,7 +186,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         }
 
         [Test]
-        public async Task ProcessAsync_ValidNotification_ValidNotifyData_ValidNotifyMethod_ReturnsProcessingResult_Success()
+        public async Task ProcessAsync_ValidNotification_ValidScenario_SuccessGetDataResponse_SuccessProcessDataResponse_ReturnsProcessingResult_Success()
         {
             // Arrange
             var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
