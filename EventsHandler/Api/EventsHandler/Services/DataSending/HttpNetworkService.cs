@@ -6,6 +6,7 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
@@ -54,13 +55,13 @@ namespace EventsHandler.Services.DataSending
 
         #region Internal methods
         /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
+        async Task<ApiResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
         /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
+        async Task<ApiResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
             StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
@@ -194,14 +195,14 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
-        private async Task<(bool Success, string JsonResponse)> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
+        private async Task<ApiResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
         {
             try
             {
                 // HTTPS protocol validation
                 if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
                 {
-                    return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
+                    return ApiResponse.Failure(Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
                 // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
@@ -218,11 +219,13 @@ namespace EventsHandler.Services.DataSending
                     : await ResolveClient(httpClientType).PostAsync(uri, body);
                 this._semaphore.Release();
 
-                return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());  // Status + JSON response
+                return result.IsSuccessStatusCode
+                    ? ApiResponse.Success(await result.Content.ReadAsStringAsync())
+                    : ApiResponse.Failure(await result.Content.ReadAsStringAsync());
             }
             catch (Exception exception)
             {
-                return (false, exception.Message);
+                return ApiResponse.Failure(exception.Message);
             }
         }
         #endregion

@@ -8,6 +8,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
@@ -95,13 +96,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             var subjectObjectUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
 
             // Sending the request
-            (bool success, string jsonResponse) = await networkService.PostAsync(
+            ApiResponse response = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: subjectObjectUri,  // Request URL
                 jsonBody);
 
             // Getting the response
-            return success ? jsonResponse : throw new TelemetryException(jsonResponse);
+            return response.IsSuccess ? response.JsonResponse : throw new TelemetryException(response.JsonResponse);
         }
         #endregion
     }

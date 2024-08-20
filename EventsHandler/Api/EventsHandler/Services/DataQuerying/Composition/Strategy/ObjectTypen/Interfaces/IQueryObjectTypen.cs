@@ -2,6 +2,7 @@
 
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 
@@ -26,23 +27,21 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <returns>
         ///   The answer whether the message object was created successfully.
         /// </returns>
-        internal sealed async Task<bool> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
+        internal sealed async Task<ApiResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
         {
             // Predefined URL components
             string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
 
             // Request URL
-            Uri createObjectUri = new(uriString: createObjectEndpoint);
+            Uri createObjectUri = new(createObjectEndpoint);
 
             // Prepare HTTP Request Body
             string jsonBody = PrepareCreateObjectJson(objectDataJson);
 
-            (bool Success, string JsonResponse) result = await networkService.PostAsync(
+            return await networkService.PostAsync(
                 httpClientType: HttpClientTypes.ObjectTypen,
                 uri: createObjectUri,
                 jsonBody);
-
-            return result.Success;
         }
 
         private string PrepareCreateObjectJson(string objectDataJson)
