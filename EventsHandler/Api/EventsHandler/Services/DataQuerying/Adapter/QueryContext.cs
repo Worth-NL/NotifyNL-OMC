@@ -12,6 +12,7 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Inter
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 
@@ -149,7 +150,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         #region IObjectTypen
         /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(string)"/>
-        async Task<bool> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
+        async Task<ApiResponse> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
             => await this._queryObjectTypen.CreateMessageObjectAsync(this._networkService, objectDataJson);
         #endregion
     }
