@@ -907,11 +907,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was not possible to retrieve the data necessary to process the received notification..
+        ///   Looks up a localized string similar to The notification method is missing, unknown, or not supported..
         /// </summary>
-        internal static string Processing_ERROR_Scenario_DataNotFound {
+        internal static string Processing_ERROR_Scenario_NotificationMethod {
             get {
-                return ResourceManager.GetString("Processing_ERROR_Scenario_DataNotFound", resourceCulture);
+                return ResourceManager.GetString("Processing_ERROR_Scenario_NotificationMethod", resourceCulture);
             }
         }
         
@@ -934,15 +934,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was sent but the completion status could not be delivered to the external telemetry API endpoint..
-        /// </summary>
-        internal static string Processing_ERROR_Telemetry_CompletionNotSent {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Telemetry_CompletionNotSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Not standardized (unexpected) API response.
         /// </summary>
         internal static string Processing_ERROR_UnspecifiedResponse {
@@ -952,7 +943,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The data, necessary to process the received notification, were retrieved successfully..
+        ///   Looks up a localized string similar to The notification data were processed by the selected notification scenario successfully..
+        /// </summary>
+        internal static string Processing_SUCCESS_Scenario_DataProcessed {
+            get {
+                return ResourceManager.GetString("Processing_SUCCESS_Scenario_DataProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification data (required by notification scenarios) were retrieved successfully..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_DataRetrieved {
             get {

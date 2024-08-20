@@ -59,29 +59,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return commonPartyData.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
-                        new[] { GetEmailNotifyData(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { GetEmailNotifyData(commonPartyData) }),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
-                        new[] { GetSmsNotifyData(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { GetSmsNotifyData(commonPartyData) }),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
-                    => GettingDataResponse.Success(Resources.Processing_SUCCESS_Scenario_DataRetrieved,
-                        new[]
+                    => GettingDataResponse.Success(new[]
                         {
                             GetEmailNotifyData(commonPartyData),
                             GetSmsNotifyData(commonPartyData)
                         }),
 
-                DistributionChannels.None
-                    => GettingDataResponse.Failure(Resources.Processing_ERROR_Scenario_DataNotFound),
-
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
-                DistributionChannels.Unknown
-                  => GettingDataResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown),
-                _ => GettingDataResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+                _ => GettingDataResponse.Failure()
             };
         }
         #endregion

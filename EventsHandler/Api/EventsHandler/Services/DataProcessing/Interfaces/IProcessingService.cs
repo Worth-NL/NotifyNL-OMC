@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.Interfaces;
@@ -27,7 +26,6 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
         /// <exception cref="HttpRequestException">
         ///   Something could not be queried from external Web API services.
         /// </exception>
-        /// <exception cref="TelemetryException">The completion status could not be sent.</exception>
         /// <exception cref="JsonException">The HTTP response wasn't deserialized properly.</exception>
         /// <exception cref="InvalidOperationException">
         ///   Strategy could not be determined or <see cref="DistributionChannels"/> option is invalid.
