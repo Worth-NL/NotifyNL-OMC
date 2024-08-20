@@ -39,14 +39,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Interfaces
         /// <typeparam name="TModel">The target model into which the HTTP Response (JSON) will be deserialized.</typeparam>
         /// <param name="httpClientType">The type of <see cref="HttpClient"/> to be used.</param>
         /// <param name="uri">The URI to be used during <see cref="HttpMethods.Post"/> request.</param>
-        /// <param name="body">The HTTP Body to be sent along with <see cref="HttpMethods.Post"/> request.</param>
+        /// <param name="jsonBody">The content in JSON format to be passed with <see cref="HttpMethods.Post"/> request as HTTP Request Body.</param>
         /// <param name="fallbackErrorMessage">The message to be returned in case of failed request.</param>
         /// <returns>
         ///   Deserialized HTTP Response.
         /// </returns>
         /// <exception cref="HttpRequestException"/> or <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>
-        internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
+        internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
     }
 }

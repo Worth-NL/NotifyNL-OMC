@@ -1,16 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using Notify.Exceptions;
 using ResourcesEnum = EventsHandler.Mapping.Enums.NotificatieApi.Resources;
 using ResourcesText = EventsHandler.Properties.Resources;
@@ -21,17 +18,13 @@ namespace EventsHandler.Services.DataProcessing
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
         private readonly IScenariosResolver _resolver;
-        private readonly INotifyService<NotificationEvent, NotifyData> _sender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
-        public NotifyProcessor(
-            IScenariosResolver resolver,
-            INotifyService<NotificationEvent, NotifyData> sender)
+        public NotifyProcessor(IScenariosResolver resolver)
         {
             this._resolver = resolver;
-            this._sender = sender;
         }
 
         /// <inheritdoc cref="IProcessingService{TModel}.ProcessAsync(TModel)"/>
@@ -47,46 +40,25 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // Choose an adequate business-scenario (strategy) to process the notification
-                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);
+                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                NotifyData[] allNotifyData = await scenario.GetAllNotifyDataAsync(notification);
-
-                if (!allNotifyData.HasAny())
+                GettingDataResponse gettingDataResponse;
+                if ((gettingDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
-                    return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_DataNotFound);
+                    return (ProcessingResult.Failure, string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, gettingDataResponse.Message));
                 }
 
-                // Sending notifications
-                foreach (NotifyData notifyData in allNotifyData)
-                {
-                    // Determine how to handle certain types of notifications by "Notify NL"
-                    switch (notifyData.NotificationMethod)
-                    {
-                        case NotifyMethods.Email:
-                            await this._sender.SendEmailAsync(notification, notifyData);
-                            break;
+                // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
+                ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, gettingDataResponse.Content);
 
-                        case NotifyMethods.Sms:
-                            await this._sender.SendSmsAsync(notification, notifyData);
-                            break;
+                return processingDataResponse.IsFailure
+                    // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
+                    ? (ProcessingResult.Failure, string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, processingDataResponse.Message))
 
-                        case NotifyMethods.None:
-                        default:
-                            // NOTE: NotifyMethods cannot be "None" or undefined
-                            return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
-                    }
-                }
-
-                // NOTE: The notification was sent and the completion status was reported to the telemetry API
-                return (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
-            }
-            // TODO: Replace exception handling by (ProcessingResult result, string message) value tuple to further optimize the OMC workflow
-            catch (TelemetryException exception)
-            {
-                // NOTE: The notification was sent, but the communication with the telemetry API failed. Do not retry
-                return (ProcessingResult.Success, $"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | {exception.Message}");
+                    // NOTE: The notification was sent and the completion status was reported to the telemetry API
+                    : (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
             catch (NotImplementedException)
             {
@@ -122,8 +94,8 @@ namespace EventsHandler.Services.DataProcessing
                 Channel: Channels.Unknown,
                 Resource: ResourcesEnum.Unknown
             } &&
-            string.Equals(notification.MainObject.AbsoluteUri, testUrl) &&
-            string.Equals(notification.ResourceUrl.AbsoluteUri, testUrl);
+            string.Equals(notification.MainObjectUri.AbsoluteUri, testUrl) &&
+            string.Equals(notification.ResourceUri.AbsoluteUri, testUrl);
         }
     }
 }

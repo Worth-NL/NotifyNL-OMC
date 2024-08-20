@@ -7,11 +7,10 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
-using System.Text;
 
-namespace EventsHandler.Services.Telemetry.v1
+namespace EventsHandler.Services.Register.v1
 {
     /// <summary>
     /// <inheritdoc cref="ITelemetryService"/>
@@ -66,9 +65,7 @@ namespace EventsHandler.Services.Telemetry.v1
                 $"  \"medewerker\": \"{DefaultValues.Models.EmptyUri}\"" +        // ENG: Worker / collaborator / contributor
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.SendFeedbackToOpenKlantAsync(body);
+            return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
         }
 
         private static async Task<string> SendFeedbackToOpenZaakAsync(
@@ -77,13 +74,11 @@ namespace EventsHandler.Services.Telemetry.v1
             // Prepare the body
             string jsonBody =
                 $"{{" +
-                $"  \"zaak\": \"{notification.MainObject}\", " +   // ENG: Case
-                $"  \"contactmoment\": \"{contactMoment.Url}\"" +  // ENG: Moment of contact
+                $"  \"zaak\": \"{notification.MainObjectUri}\", " +         // ENG: Case
+                $"  \"contactmoment\": \"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.SendFeedbackToOpenZaakAsync(body);
+            return await queryContext.SendFeedbackToOpenZaakAsync(jsonBody);
         }
         #endregion
     }

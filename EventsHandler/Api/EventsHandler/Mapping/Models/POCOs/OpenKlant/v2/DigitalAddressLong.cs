@@ -15,7 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     public struct DigitalAddressLong : IJsonSerializable
     {
         /// <summary>
-        /// The UUID of the digital address.
+        /// The UUID / GUID of the digital address.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("uuid")]

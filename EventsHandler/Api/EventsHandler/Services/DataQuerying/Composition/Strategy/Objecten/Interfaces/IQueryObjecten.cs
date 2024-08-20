@@ -22,8 +22,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-        #region Parent
-#pragma warning disable CA1822  // The method can be marked as static but that would be inconsistent for interfaces
+        #region Parent (Task)
+        #pragma warning disable CA1822  // The method can be marked as static but that would be inconsistent for interfaces
         /// <summary>
         /// Gets the <see cref="TaskObject"/> from "Objecten" Web API service.
         /// </summary>
@@ -31,12 +31,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <exception cref="JsonException"/>
         internal sealed async Task<TaskObject> GetTaskAsync(IQueryBase queryBase)
         {
+            // TODO: Main Object validation
+
             return await queryBase.ProcessGetAsync<TaskObject>(
                 httpClientType: HttpClientTypes.Objecten,
-                uri: queryBase.Notification.MainObject,  // Request URL
+                uri: queryBase.Notification.MainObjectUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoTask);
         }
-#pragma warning restore CA1822
+        #pragma warning restore CA1822
         #endregion
 
         #region Polymorphic (Domain)

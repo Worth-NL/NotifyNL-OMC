@@ -7,11 +7,11 @@ using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Notify.Client;
@@ -73,8 +73,7 @@ namespace EventsHandler.Controllers
                 string healthCheckUrl = $"{this._configuration.OMC.API.BaseUrl.NotifyNL()}/_status?simple=true";
 
                 // Request
-                using var httpClient = new HttpClient();
-                HttpResponseMessage result = await httpClient.GetAsync(healthCheckUrl);
+                using HttpResponseMessage result = await new HttpClient().GetAsync(healthCheckUrl);
 
                 // Response
                 return result.IsSuccessStatusCode

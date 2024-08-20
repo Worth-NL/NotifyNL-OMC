@@ -14,13 +14,13 @@ namespace EventsHandler.Mapping.Enums.Objecten
     public enum IdTypes
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         /// <summary>
-        /// The BSN type of the <see cref="Identification"/>.
+        /// The BSN (citizen service number) type of the <see cref="Identification"/>.
         /// </summary>
         [JsonPropertyName("bsn")]
         Bsn = 1

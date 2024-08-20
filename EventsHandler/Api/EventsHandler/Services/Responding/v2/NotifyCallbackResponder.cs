@@ -6,11 +6,11 @@ using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Enums.v2;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Services.Telemetry.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Services.Responding.v2
@@ -60,7 +60,7 @@ namespace EventsHandler.Services.Responding.v2
             }
             catch (Exception exception)
             {
-                // NOTE: If callback.Id == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
+                // NOTE: If callback.IdUri == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
                 return OmcController.LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
@@ -102,7 +102,7 @@ namespace EventsHandler.Services.Responding.v2
             }
             catch (Exception exception)
             {
-                // It wasn't possible to report completion because of issue with Telemetry Service or Reference
+                // It wasn't possible to report completion because of issue with Telemetry Service
                 return OmcController.LogApiResponse(exception,
                     this._responder.Get_Exception_ActionResult(exception));
             }
@@ -116,16 +116,16 @@ namespace EventsHandler.Services.Responding.v2
                 FeedbackTypes.Success =>
                     notificationMethod switch
                     {
-                        NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Success_Subject(),
-                        NotifyMethods.Sms => configuration.AppSettings.Variables.Messages.SMS_Success_Subject(),
+                        NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Success_Subject(),
+                        NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Success_Subject(),
                         _ => string.Empty
                     },
 
                 FeedbackTypes.Failure =>
                     notificationMethod switch
                     {
-                        NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Failure_Subject(),
-                        NotifyMethods.Sms => configuration.AppSettings.Variables.Messages.SMS_Failure_Subject(),
+                        NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Failure_Subject(),
+                        NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Failure_Subject(),
                         _ => string.Empty
                     },
 
@@ -141,16 +141,16 @@ namespace EventsHandler.Services.Responding.v2
                 FeedbackTypes.Success =>
                     notificationMethod switch
                     {
-                        NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Success_Body(),
-                        NotifyMethods.Sms => configuration.AppSettings.Variables.Messages.SMS_Success_Body(),
+                        NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Success_Body(),
+                        NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Success_Body(),
                         _ => string.Empty
                     },
 
                 FeedbackTypes.Failure =>
                     notificationMethod switch
                     {
-                        NotifyMethods.Email => configuration.AppSettings.Variables.Messages.Email_Failure_Body(),
-                        NotifyMethods.Sms => configuration.AppSettings.Variables.Messages.SMS_Failure_Body(),
+                        NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Failure_Body(),
+                        NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Failure_Body(),
                         _ => string.Empty
                     },
 

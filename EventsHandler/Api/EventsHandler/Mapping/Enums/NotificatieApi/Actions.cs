@@ -7,13 +7,16 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Enums.NotificatieApi
 {
     /// <summary>
-    /// The action taken by the publishing API. The publishing API specifies the allowed actions.
+    /// The action taken by the publishing Web API service.
     /// </summary>
+    /// <remarks>
+    /// The publishing API specifies the allowed actions.
+    /// </remarks>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<Actions>))]
     public enum Actions
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,

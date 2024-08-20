@@ -96,23 +96,28 @@ namespace EventsHandler.Controllers
                     // Try to process the received notification
                     ? await Task.Run<IActionResult>(async () =>
                     {
-                        (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
+                        (ProcessingResult Status, string _) result = await this._processor.ProcessAsync(notification);
 
-                        return LogApiResponse(result.Status.ConvertToLogLevel(),
-                            this._responder.Get_Processing_Status_ActionResult(
-                                GetResult(result, json), notification.Details));
+                        return LogApiResponse(
+                            logLevel: result.Status.ConvertToLogLevel(),
+                            objectResult: this._responder.Get_Processing_Status_ActionResult(
+                                  result: GetResult(result, json),
+                                 details: notification.Details));
                     })
 
                     // The notification cannot be processed
-                    : LogApiResponse(LogLevel.Error,
-                        this._responder.Get_Processing_Status_ActionResult(
-                            GetAbortedResult(notification.Details.Message, json), notification.Details));
+                    : LogApiResponse(
+                        logLevel: LogLevel.Error,
+                        objectResult: this._responder.Get_Processing_Status_ActionResult(
+                              result: GetAbortedResult(notification.Details.Message, json),
+                             details: notification.Details));
             }
             catch (Exception exception)
             {
                 // Serious problems occurred during the attempt to process the notification
-                return LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                return LogApiResponse(
+                    exception,
+                    objectResult: this._responder.Get_Exception_ActionResult(exception));
             }
         }
 

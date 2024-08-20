@@ -30,6 +30,8 @@ namespace EventsHandler.Utilities._TestHelpers
         }
 
         #region ILoadingService mocks
+        internal const string TestTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
+
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.
         /// </summary>
@@ -49,60 +51,62 @@ namespace EventsHandler.Utilities._TestHelpers
 
             const string testString = "xyz";
             const string testArray = "1, 2, 3";
-            const string testExpire = "60";
-            const string testDomain = "test.domain";
-            const string testTempId = "00000000-0000-0000-0000-000000000000";
+            const string testUshort = "60";
+            const string testGuid = "01234567-89ab-cdef-1234-567890123456";
             const string testBool = "true";
+            const string testDomain = "test.domain";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetEnvironmentVariable<T>() mocking
             Dictionary<string /* Key */, string? /* Value */> keyValueMapping = new()
             {
-                { "OMC_AUTHORIZATION_JWT_SECRET",        GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_ISSUER",        GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_AUDIENCE",      GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",  GetTestValue(isValid, testExpire) },
-                { "OMC_AUTHORIZATION_JWT_USERID",        GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_USERNAME",      GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_SECRET",          GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_ISSUER",          GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_AUDIENCE",        GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",    GetTestValue(isValid, testUshort) },
+                { "OMC_AUTHORIZATION_JWT_USERID",          GetTestValue(isValid, testString) },
+                { "OMC_AUTHORIZATION_JWT_USERNAME",        GetTestValue(isValid, testString) },
 
-                { "OMC_API_BASEURL_NOTIFYNL",            GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
+                { "OMC_API_BASEURL_NOTIFYNL",              GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
 
-                { "USER_AUTHORIZATION_JWT_SECRET",       GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_ISSUER",       GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",     GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN", GetTestValue(isValid, testExpire) },
-                { "USER_AUTHORIZATION_JWT_USERID",       GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_USERNAME",     GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_SECRET",         GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_ISSUER",         GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_AUDIENCE",       GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN",   GetTestValue(isValid, testUshort) },
+                { "USER_AUTHORIZATION_JWT_USERID",         GetTestValue(isValid, testString) },
+                { "USER_AUTHORIZATION_JWT_USERNAME",       GetTestValue(isValid, testString) },
 
-                { "USER_API_KEY_OPENKLANT_2",            GetTestValue(isValid, testString) },
-                { "USER_API_KEY_OBJECTEN",               GetTestValue(isValid, testString) },
-                { "USER_API_KEY_OBJECTTYPEN",            GetTestValue(isValid, testString) },
-                { "USER_API_KEY_NOTIFYNL",               GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OPENKLANT_2",              GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OBJECTEN",                 GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OBJECTTYPEN",              GetTestValue(isValid, testString) },
+                { "USER_API_KEY_NOTIFYNL",                 GetTestValue(isValid, testString) },
 
-                { "USER_DOMAIN_OPENNOTIFICATIES",        GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENZAAK",                GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENKLANT",               GetTestValue(isValid, testDomain, "http://domain") },
-                { "USER_DOMAIN_OBJECTEN",                GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",             GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
+                { "USER_DOMAIN_OPENNOTIFICATIES",          GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENZAAK",                  GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_OPENKLANT",                 GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_OBJECTEN",                  GetTestValue(isValid, testDomain, "https://domain") },
+                { "USER_DOMAIN_OBJECTTYPEN",               GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
 
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",   GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",   GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",    GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED", GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE", GetTestValue(isValid, testTempId) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",     GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",     GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",      GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED",   GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE",   GetTestValue(isValid, testGuid) },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",     GetTestValue(isValid, testTempId) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",      GetTestValue(isValid, testTempId, "12345678-1234-12-34-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",   GetTestValue(isValid, testTempId, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",   GetTestValue(isValid, testTempId, "!2345678-1234-12-34-1234-123456789*12") },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",       GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",       GetTestValue(isValid, testGuid) },
+                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",        GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",     GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
+                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",     GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
 
-                { "USER_WHITELIST_ZAAKCREATE_IDS",       GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_ZAAKUPDATE_IDS",       GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_ZAAKCLOSE_IDS",        GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_TASKASSIGNED_IDS",     GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_DECISIONMADE_IDS",     GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_MESSAGE_ALLOWED",      GetTestValue(isValid, testBool)  }
+                { "USER_WHITELIST_ZAAKCREATE_IDS",         GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_ZAAKUPDATE_IDS",         GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_ZAAKCLOSE_IDS",          GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_TASKASSIGNED_IDS",       GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_DECISIONMADE_IDS",       GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_MESSAGE_ALLOWED",        GetTestValue(isValid, testBool)  },
+                { "USER_WHITELIST_TASKOBJECTTYPE_UUID",    GetTestValue(isValid, TestTypeUuid) },
+                { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID", GetTestValue(isValid, TestTypeUuid) }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)

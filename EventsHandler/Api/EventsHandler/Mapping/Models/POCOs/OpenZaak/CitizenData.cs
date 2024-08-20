@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct CitizenData : IJsonSerializable
     {
         /// <summary>
-        /// The BSN number of the citizen.
+        /// The BSN (citizen service number) of the citizen.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("inpBsn")]

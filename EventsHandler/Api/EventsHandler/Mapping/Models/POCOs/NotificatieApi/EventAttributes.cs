@@ -3,6 +3,9 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Helpers;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
 
@@ -27,27 +30,27 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
                 // Case
                 s_properties.TryAdd(Channels.Cases, new PropertiesMetadata(this,
                     // Exclude objects
-                    nameof(ObjectType),
+                    nameof(ObjectTypeUri),
                     // Exclude decisions
-                    nameof(DecisionType), nameof(ResponsibleOrganization),
+                    nameof(DecisionTypeUri), nameof(ResponsibleOrganization),
                     // Exclude orphans
                     nameof(this.Orphans)));
 
                 // Object
                 s_properties.TryAdd(Channels.Objects, new PropertiesMetadata(this,
                     // Exclude cases
-                    nameof(CaseType), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    nameof(CaseTypeUri), nameof(SourceOrganization), nameof(ConfidentialityNotice),
                     // Exclude decisions
-                    nameof(DecisionType), nameof(ResponsibleOrganization),
+                    nameof(DecisionTypeUri), nameof(ResponsibleOrganization),
                     // Exclude orphans
                     nameof(this.Orphans)));
 
                 // Decisions
                 s_properties.TryAdd(Channels.Decisions, new PropertiesMetadata(this,
                     // Exclude cases
-                    nameof(CaseType), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    nameof(CaseTypeUri), nameof(SourceOrganization), nameof(ConfidentialityNotice),
                     // Exclude objects
-                    nameof(ObjectType),
+                    nameof(ObjectTypeUri),
                     // Exclude orphans
                     nameof(this.Orphans)));
             }
@@ -58,15 +61,18 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Case properties
         /// <summary>
-        /// Gets the URI of a case type.
+        /// The <see cref="Case"/> type in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
-        public Uri? CaseType { get; internal set; }
+        public Uri? CaseTypeUri { get; internal set; }
 
         /// <summary>
-        /// Gets the name of the source organization.
+        /// The name of the source organization.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("bronorganisatie")]
@@ -82,25 +88,31 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Object properties
         /// <summary>
-        /// Gets the URI of object type.
+        /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("objectType")]
         [JsonPropertyOrder(3)]
-        public Uri? ObjectType { get; internal set; }
+        public Uri? ObjectTypeUri { get; internal set; }
         #endregion
 
         #region Decision properties
         /// <summary>
-        /// Gets the URI of decision type.
+        /// The <see cref="Decision"/> type in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]
-        public Uri? DecisionType { get; internal set; }
+        public Uri? DecisionTypeUri { get; internal set; }
 
         /// <summary>
-        /// Gets the name of the responsible organization.
+        /// The name of the responsible organization.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("verantwoordelijkeOrganisatie")]
@@ -135,7 +147,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsInvalidCase(EventAttributes attributes)
         {
             // Properties required for cases scenarios
-            return attributes.CaseType              == null || 
+            return attributes.CaseTypeUri           == null || 
                    attributes.SourceOrganization    == null ||
                    attributes.ConfidentialityNotice == null;
         }
@@ -151,7 +163,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsInvalidObject(EventAttributes attributes)
         {
             // Properties required for objects scenarios
-            return attributes.ObjectType == null;
+            return attributes.ObjectTypeUri == null;
         }
 
         /// <summary>
@@ -165,7 +177,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         internal static bool IsInvalidDecision(EventAttributes attributes)
         {
             // Properties required for decisions scenarios
-            return attributes.DecisionType            == null ||
+            return attributes.DecisionTypeUri         == null ||
                    attributes.ResponsibleOrganization == null;
         }
         #endregion

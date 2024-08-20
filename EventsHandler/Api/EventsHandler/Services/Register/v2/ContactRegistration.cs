@@ -1,16 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
-using System.Text;
 
-namespace EventsHandler.Services.Telemetry.v2
+namespace EventsHandler.Services.Register.v2
 {
     /// <inheritdoc cref="ITelemetryService"/>
     /// <remarks>
@@ -65,9 +63,7 @@ namespace EventsHandler.Services.Telemetry.v2
                 $"  \"vertrouwelijk\": false" +                            // ENG: Confidentiality (of the notification)
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.SendFeedbackToOpenKlantAsync(body);
+            return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
         }
 
         private static async Task<string> SendFeedbackToSubjectObjectAsync(
@@ -91,9 +87,7 @@ namespace EventsHandler.Services.Telemetry.v2
                 $"  }}" +
                 $"}}";
 
-            HttpContent body = new StringContent(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
-
-            return await queryContext.LinkToSubjectObjectAsync(body);
+            return await queryContext.LinkToSubjectObjectAsync(jsonBody);
         }
         #endregion
     }

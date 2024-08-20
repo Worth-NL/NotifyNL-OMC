@@ -2,11 +2,13 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
@@ -19,72 +21,79 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     /// <seealso cref="BaseCaseScenario"/>
     internal sealed class CaseStatusUpdatedScenario : BaseCaseScenario
     {
-        /// <inheritdoc cref="CaseStatuses"/>
-        private CaseStatuses? CachedCaseStatuses { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusUpdatedScenario"/> class.
         /// </summary>
-        public CaseStatusUpdatedScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        public CaseStatusUpdatedScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 
-        #region Polymorphic (Email logic)
-        /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
-        protected override string GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
-
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        #region Polymorphic (PrepareDataAsync)
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
+        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
-            this.CachedCase ??= await this.QueryContext!.GetCaseAsync();
+            // Setup
+            IQueryContext queryContext = this.DataQuery.From(notification);
 
+            this.Case = await queryContext.GetCaseAsync();
+
+            // Validation #1: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakUpdate_IDs().IsAllowed,
-                this.CachedCase.Value.Identification, GetWhitelistName());
+                this.Case.Identification, GetWhitelistName());
+            
+            this.CaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type (might be already cached)
+                              await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
-            this.CachedCaseStatuses ??= await this.QueryContext!.GetCaseStatusesAsync();
-            this.CachedCaseType ??= await this.QueryContext!.GetLastCaseTypeAsync(this.CachedCaseStatuses);
+            // Validation #2: The notifications must be enabled
+            ValidateNotifyPermit(this.CaseType.Value.IsNotificationExpected);
 
-            ValidateNotifyPermit(this.CachedCaseType.Value.IsNotificationExpected);
-
-            return new Dictionary<string, object>
-            {
-                { "zaak.omschrijving", this.CachedCase.Value.Name },
-                { "zaak.identificatie", this.CachedCase.Value.Identification },
-                { "klant.voornaam", partyData.Name },
-                { "klant.voorvoegselAchternaam", partyData.SurnamePrefix },
-                { "klant.achternaam", partyData.Surname },
-                { "status.omschrijving", this.CachedCaseType.Value.Description }
-            };
+            // Preparing citizen details
+            return await queryContext.GetPartyDataAsync();
         }
         #endregion
 
-        #region Polymorphic (SMS logic)
+        #region Polymorphic (Email logic: template + personalization)
+        /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
+        protected override Guid GetEmailTemplateId()
+            => this.Configuration.User.TemplateIds.Email.ZaakUpdate();
+
+        private static readonly object s_padlock = new();
+        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+        {
+            // TODO: Names of parameters can be taken from models and properties(?)
+            lock (s_padlock)
+            {
+                s_emailPersonalization["klant.voornaam"] = partyData.Name;
+                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+
+                s_emailPersonalization["zaak.identificatie"] = this.Case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this.Case.Name;
+
+                s_emailPersonalization["status.omschrijving"] = this.CaseType!.Value.Name;
+
+                return s_emailPersonalization;
+            }
+        }
+        #endregion
+
+        #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
-        protected override string GetSmsTemplateId()
+        protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
-        }
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <inheritdoc cref="BaseCaseScenario.DropCache()"/>
-        /// <remarks>
-        /// <list type="bullet">
-        ///   <item><see cref="CachedCaseStatuses"/></item>
-        /// </list>
-        /// </remarks>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedCaseStatuses = null;
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

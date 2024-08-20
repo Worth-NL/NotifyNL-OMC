@@ -421,7 +421,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID:.
+        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID: {0}..
         /// </summary>
         internal static string Events_NotifyClientInitialized {
             get {
@@ -430,7 +430,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID.
+        ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID: {0} | {1}..
         /// </summary>
         internal static string Feedback_NotifyNL_ERROR_UnexpectedFailure {
             get {
@@ -439,7 +439,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The status of notification with ID.
+        ///   Looks up a localized string similar to The status of notification with ID: {0} | {1}..
         /// </summary>
         internal static string Feedback_NotifyNL_STATUS_NotificationStatus {
             get {
@@ -574,6 +574,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDecisionResource {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDecisionResource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The decision type could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDecisionType {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDecisionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoDigitalAddresses {
@@ -583,11 +601,29 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The documents could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoDocuments {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoFeedbackKlant {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_NoFeedbackKlant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The information object could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoInfoObject {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoInfoObject", resourceCulture);
             }
         }
         
@@ -606,15 +642,6 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_NoMainObject {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_NoMainObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The party data (e.g., citizen, organization) are missing..
-        /// </summary>
-        internal static string HttpRequest_ERROR_NoPartyData {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyData", resourceCulture);
             }
         }
         
@@ -655,15 +682,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: This step is not implemented by OpenZaak Web API service for this specific OMC workflow (&apos;Features:OmcWorkflowVersion&apos;)..
-        /// </summary>
-        internal static string HttpRequest_ERROR_TelemetryOpenZaakNotImplemented {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_TelemetryOpenZaakNotImplemented", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification could not be recognized (deserialized)..
         /// </summary>
         internal static string Operation_ERROR_Deserialization_Failure {
@@ -682,7 +700,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: Provided URI is not a case type..
+        ///   Looks up a localized string similar to Internal error: The given URI is not a case type..
         /// </summary>
         internal static string Operation_ERROR_Internal_NotCaseTypeUri {
             get {
@@ -691,7 +709,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: Provided URI is not a case..
+        ///   Looks up a localized string similar to Internal error: The given URI is not a case..
         /// </summary>
         internal static string Operation_ERROR_Internal_NotCaseUri {
             get {
@@ -700,11 +718,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: Provided URI is not a decision..
+        ///   Looks up a localized string similar to Internal error: The given URI is not a decision resource..
         /// </summary>
-        internal static string Operation_ERROR_Internal_NotDecisionUri {
+        internal static string Operation_ERROR_Internal_NotDecisionResourceUri {
             get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionUri", resourceCulture);
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionResourceUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not an information object..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotInfoObjectUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotInfoObjectUri", resourceCulture);
             }
         }
         
@@ -754,7 +781,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because case type with identification {0} is not included in the {1}. Processing aborted..
+        ///   Looks up a localized string similar to Processing aborted..
+        /// </summary>
+        internal static string Processing_ABORT {
+            get {
+                return ResourceManager.GetString("Processing_ABORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because the case type with identification {0} is not included in the {1}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted {
             get {
@@ -763,7 +799,25 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because the inform field is set to false..
+        ///   Looks up a localized string similar to The notification can not be sent because of the confidentiality setting &apos;{0}&apos; in information object related to decision..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_DecisionConfidentiality {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_DecisionConfidentiality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because the status of the decision is not definitive..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_DecisionStatus {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_DecisionStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because the inform field in the case type is set to false..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Informeren {
             get {
@@ -772,7 +826,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send if the task is already closed. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent for this type of the message (whitelisted UUID)..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_MessageType {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent if the task is already closed..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
             get {
@@ -781,7 +844,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send if the task is not assigned to a person (missing BSN number). Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
             get {
@@ -790,7 +853,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be send for this type of the task. Processing aborted..
+        ///   Looks up a localized string similar to The notification can not be sent for this type of the task (whitelisted UUID)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskType {
             get {
@@ -835,16 +898,25 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It was not possible to retrieve data necessary to process this notification..
+        ///   Looks up a localized string similar to There are no data to be processed by the selected notification scenario..
         /// </summary>
-        internal static string Processing_ERROR_Scenario_DataNotFound {
+        internal static string Processing_ERROR_Scenario_MissingData {
             get {
-                return ResourceManager.GetString("Processing_ERROR_Scenario_DataNotFound", resourceCulture);
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingData", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification has not been sent to Notify NL..
+        ///   Looks up a localized string similar to The notification method is missing, unknown, or not supported..
+        /// </summary>
+        internal static string Processing_ERROR_Scenario_NotificationMethod {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Scenario_NotificationMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification has not been sent to Notify NL: {0}..
         /// </summary>
         internal static string Processing_ERROR_Scenario_NotificationNotSent {
             get {
@@ -862,20 +934,29 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was sent but the completion status could not be delivered to the external telemetry API endpoint..
-        /// </summary>
-        internal static string Processing_ERROR_Telemetry_CompletionNotSent {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Telemetry_CompletionNotSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Not standardized (unexpected) API response.
         /// </summary>
         internal static string Processing_ERROR_UnspecifiedResponse {
             get {
                 return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification data were processed by the selected notification scenario successfully..
+        /// </summary>
+        internal static string Processing_SUCCESS_Scenario_DataProcessed {
+            get {
+                return ResourceManager.GetString("Processing_SUCCESS_Scenario_DataProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification data (required by notification scenarios) were retrieved successfully..
+        /// </summary>
+        internal static string Processing_SUCCESS_Scenario_DataRetrieved {
+            get {
+                return ResourceManager.GetString("Processing_SUCCESS_Scenario_DataRetrieved", resourceCulture);
             }
         }
         
@@ -900,36 +981,36 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Insert received JWT token here.
         /// </summary>
-        internal static string Swagger_Authentication_Description {
+        internal static string Swagger_UI_Authentication_Description {
             get {
-                return ResourceManager.GetString("Swagger_Authentication_Description", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Authentication_Description", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL..
         /// </summary>
-        internal static string Swagger_Description {
+        internal static string Swagger_UI_Description {
             get {
-                return ResourceManager.GetString("Swagger_Description", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Description", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to OMC (Output Management Component).
         /// </summary>
-        internal static string Swagger_Title {
+        internal static string Swagger_UI_Title {
             get {
-                return ResourceManager.GetString("Swagger_Title", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Title", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 1.0.
         /// </summary>
-        internal static string Swagger_Version {
+        internal static string Swagger_UI_Version {
             get {
-                return ResourceManager.GetString("Swagger_Version", resourceCulture);
+                return ResourceManager.GetString("Swagger_UI_Version", resourceCulture);
             }
         }
         
@@ -943,7 +1024,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to was successfully send to NotifyNL..
+        ///   Looks up a localized string similar to was successfully send to Notify NL..
         /// </summary>
         internal static string Test_NotifyNL_SUCCESS_NotificationSent {
             get {

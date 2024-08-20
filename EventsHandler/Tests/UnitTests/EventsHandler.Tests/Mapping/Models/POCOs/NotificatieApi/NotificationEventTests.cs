@@ -37,7 +37,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
             $"{{" +
               $"\"actie\":\"create\"," +
               $"\"kanaal\":\"besluiten\"," +
-              $"\"resource\":\"besluit\"," +
+              $"\"resource\":\"besluitinformatieobject\"," +
               $"\"kenmerken\":{{" +
                 // Cases
                 $"\"zaaktype\":null," +
@@ -143,8 +143,8 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.Channel, Is.EqualTo(Channels.Cases));
                 Assert.That(actualObject.Resource, Is.EqualTo(Resources.Object));
                 // NOTE: EventAttributes are covered by other unit tests
-                Assert.That(actualObject.MainObject, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.ResourceUrl, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.MainObjectUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.ResourceUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
@@ -164,8 +164,8 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.Channel, Is.EqualTo(Channels.Cases));
                 Assert.That(actualObject.Resource, Is.EqualTo(Resources.Object));
                 // NOTE: EventAttributes are covered by other unit tests
-                Assert.That(actualObject.MainObject, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.ResourceUrl, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.MainObjectUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.ResourceUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(1));

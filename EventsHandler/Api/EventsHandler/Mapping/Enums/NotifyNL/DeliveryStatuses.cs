@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Enums.NotifyNL
     public enum DeliveryStatuses
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// <para>
         ///   It might occur in case of problems with receiving notification delivery statuses from "Notify NL"
         ///   (for example if the API was recently changed).

@@ -3,10 +3,10 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
@@ -43,16 +43,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
                 }
 
-                CaseType lastCaseStatusType =
+                CaseType recentCaseType =
                     await queryContext.GetLastCaseTypeAsync(caseStatuses);
 
-                BaseCaseScenario strategy = !lastCaseStatusType.IsFinalStatus
+                BaseCaseScenario strategy = !recentCaseType.IsFinalStatus
                     // Scenario #2: "Case status updated"
                     ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
                     : this._serviceProvider.GetRequiredService<CaseClosedScenario>();
 
-                strategy.CacheCaseType(lastCaseStatusType);
+                strategy.Cache(recentCaseType);
 
                 return strategy;
             }
@@ -66,14 +66,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(notification))
             {
-                // TODO: The Hague requested to disable this feature for now
-                // return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
+                return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
             // No matching scenario. There is no clear instruction what to do with the received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
+        #region Filters
         /// <summary>
         /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
@@ -121,5 +121,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Resource: Resources.Decision
             };
         }
+        #endregion
     }
 }

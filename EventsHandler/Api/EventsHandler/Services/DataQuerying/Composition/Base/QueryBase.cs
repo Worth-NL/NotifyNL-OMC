@@ -6,6 +6,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Base
@@ -32,17 +33,17 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
         {
-            (bool isSuccess, string jsonResult) = await this._networkService.GetAsync(httpClientType, uri);
+            RequestResponse response = await this._networkService.GetAsync(httpClientType, uri);
 
-            return GetApiResult<TModel>(httpClientType, isSuccess, jsonResult, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
 
-        /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, HttpContent, string)"/>
-        async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, HttpContent body, string fallbackErrorMessage)
+        /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, string, string)"/>
+        async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
         {
-            (bool isSuccess, string jsonResult) = await this._networkService.PostAsync(httpClientType, uri, body);
+            RequestResponse response = await this._networkService.PostAsync(httpClientType, uri, jsonBody);
 
-            return GetApiResult<TModel>(httpClientType, isSuccess, jsonResult, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
         #endregion
 

@@ -36,7 +36,7 @@ namespace EventsHandler.Services.Settings
             TData? value = this._configuration.GetValue<TData>(key);
             value = disableValidation
                 ? value ?? default!
-                : value.ValidateNotEmpty(key);
+                : value.GetNotEmpty(key);
 
             return value;
         }

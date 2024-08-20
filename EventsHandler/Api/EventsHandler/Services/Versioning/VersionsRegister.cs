@@ -4,7 +4,7 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfac
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.Telemetry.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 

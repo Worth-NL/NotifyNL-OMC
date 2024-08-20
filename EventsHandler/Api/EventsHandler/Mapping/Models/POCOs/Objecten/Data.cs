@@ -3,6 +3,7 @@
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
@@ -14,15 +15,18 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
     public struct Data : IJsonSerializable
     {
         /// <summary>
-        /// Gets the case <see cref="Uri"/>.
+        /// The reference to <see cref="Case"/> in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
-        public Uri CaseUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// Gets the title of the task.
+        /// The title of the task.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("title")]
@@ -30,7 +34,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         public string Title { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Gets the status of the task.
+        /// The status of the task.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("status")]
@@ -38,7 +42,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         public TaskStatuses Status { get; internal set; }
 
         /// <summary>
-        /// Gets the deadline by which the task should be completed.
+        /// The deadline by which the task should be completed.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
@@ -46,7 +50,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         public DateTime ExpirationDate { get; internal set; }
 
         /// <summary>
-        /// Gets the identification details of the task.
+        /// The identification details of the task.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]

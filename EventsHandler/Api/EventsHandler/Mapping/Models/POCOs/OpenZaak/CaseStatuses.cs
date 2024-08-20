@@ -20,7 +20,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
+        /// <summary>
+        /// The collection of:
         /// <inheritdoc cref="CaseStatus"/>
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
@@ -40,7 +43,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         internal readonly bool WereNeverUpdated() => this.Count == 1;
 
         /// <summary>
-        /// Gets the newest <see cref="CaseStatus"/> from multiple ones.
+        /// The newest <see cref="CaseStatus"/> from multiple ones.
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         internal readonly CaseStatus LastStatus()

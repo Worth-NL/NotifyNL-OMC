@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base
@@ -15,58 +16,31 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
     /// <seealso cref="BaseScenario"/>
     internal abstract class BaseCaseScenario : BaseScenario
     {
-        /// <inheritdoc cref="Case"/>
-        protected Case? CachedCase { get; set; }
+        /// <inheritdoc cref="Mapping.Models.POCOs.OpenZaak.Case"/>
+        protected Case Case { get; set; }
 
-        /// <inheritdoc cref="CaseType"/>
-        protected CaseType? CachedCaseType { get; set; }
+        /// <inheritdoc cref="Mapping.Models.POCOs.OpenZaak.CaseType"/>
+        protected CaseType? CaseType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
         /// </summary>
-        protected BaseCaseScenario(WebApiConfiguration configuration, IDataQueryService<NotificationEvent> dataQuery)
-            : base(configuration, dataQuery)
+        protected BaseCaseScenario(
+            WebApiConfiguration configuration,
+            IDataQueryService<NotificationEvent> dataQuery,
+            INotifyService<NotificationEvent, NotifyData> notifyService)
+            : base(configuration, dataQuery, notifyService)
         {
         }
 
         #region Parent
         /// <summary>
-        /// Passes an already queried result.
+        /// Passes an already queried <see cref="Mapping.Models.POCOs.OpenZaak.CaseType"/> result.
         /// </summary>
-        /// <param name="caseStatusType">Type of the case status.</param>
-        internal void CacheCaseType(CaseType caseStatusType)
+        /// <param name="caseType">Type of the <see cref="Mapping.Models.POCOs.OpenZaak.Case"/>.</param>
+        internal void Cache(CaseType caseType)
         {
-            this.CachedCaseType = caseStatusType;
-        }
-        #endregion
-
-        #region Polymorphic (GetAllNotifyDataAsync)
-        /// <inheritdoc cref="BaseScenario.GetAllNotifyDataAsync(NotificationEvent)"/>
-        internal sealed override async Task<NotifyData[]> GetAllNotifyDataAsync(NotificationEvent notification)
-        {
-            this.QueryContext ??= this.DataQuery.From(notification);
-            this.CachedCommonPartyData ??= await this.QueryContext.GetPartyDataAsync();
-
-            return await base.GetAllNotifyDataAsync(notification);
-        }
-        #endregion
-
-        #region Polymorphic (DropCache)
-        /// <summary>
-        ///   <inheritdoc cref="BaseScenario.DropCache()"/>
-        ///   <para>
-        ///   <list type="bullet">
-        ///     <item><see cref="CachedCase"/></item>
-        ///     <item><see cref="CachedCaseType"/></item>
-        ///   </list>
-        ///   </para>
-        /// </summary>
-        protected override void DropCache()
-        {
-            base.DropCache();
-
-            this.CachedCase = null;
-            this.CachedCaseType = null;
+            this.CaseType = caseType;
         }
         #endregion
     }
