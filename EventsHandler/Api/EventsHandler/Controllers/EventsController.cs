@@ -96,7 +96,7 @@ namespace EventsHandler.Controllers
                     // Try to process the received notification
                     ? await Task.Run<IActionResult>(async () =>
                     {
-                        (ProcessingResult Status, string) result = await this._processor.ProcessAsync(notification);
+                        (ProcessingResult Status, string _) result = await this._processor.ProcessAsync(notification);
 
                         return LogApiResponse(result.Status.ConvertToLogLevel(),
                             this._responder.Get_Processing_Status_ActionResult(
