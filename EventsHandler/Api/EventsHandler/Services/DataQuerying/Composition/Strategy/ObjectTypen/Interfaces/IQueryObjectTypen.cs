@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 
@@ -16,6 +18,48 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";
+
+        #region Parent (Create message object)        
+        /// <summary>
+        /// Creates the message object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The answer whether the message object was created successfully.
+        /// </returns>
+        internal sealed async Task<bool> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
+        {
+            // Predefined URL components
+            string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
+
+            // Request URL
+            Uri createObjectUri = new(uriString: createObjectEndpoint);
+
+            // Prepare HTTP Request Body
+            string jsonBody = PrepareCreateObjectJson(objectDataJson);
+
+            (bool Success, string JsonResponse) result = await networkService.PostAsync(
+                httpClientType: HttpClientTypes.ObjectTypen,
+                uri: createObjectUri,
+                jsonBody);
+
+            return result.Success;
+        }
+
+        private string PrepareCreateObjectJson(string objectDataJson)
+        {
+            return $"{{" +
+                   $"  \"type\": \"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\", " +
+                   $"  \"record\": {{" +
+                   $"    \"typeVersion\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\", " +
+                   $"    \"data\": {objectDataJson}, " +  // { data } => curly brackets are already included
+                   $"    \"geometry\": {{" +
+                   $"    }}, " +
+                   $"    \"startAt\": \"{DateTime.UtcNow}\", " +
+                   $"    \"correctionFor\": \"string\"" +
+                   $"  }}" +
+                   $"}}";
+        }
+        #endregion
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
