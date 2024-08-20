@@ -177,7 +177,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 if (templateResponse.IsFailure)
                 {
-                    return ProcessingDataResponse.Failure(templateResponse.Body);
+                    return ProcessingDataResponse.Failure(templateResponse.Error);
                 }
 
                 // Adjusting the body for Logius system
