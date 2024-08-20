@@ -47,7 +47,7 @@ namespace EventsHandler.Services.DataProcessing
                 if ((gettingDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
                     // NOTE: The notification COULD not be sent due to missing or inconsistent data. Retry is necessary
-                    return (ProcessingResult.Failure, gettingDataResponse.Message);
+                    return (ProcessingResult.Failure, string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, gettingDataResponse.Message));
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
