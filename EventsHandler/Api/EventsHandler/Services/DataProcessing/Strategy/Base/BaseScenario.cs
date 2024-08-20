@@ -12,6 +12,7 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using EventsHandler.Services.DataSending.Responses;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
@@ -168,18 +169,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             // Sending notifications (default behavior of the most scenarios/strategies)
             foreach (NotifyData data in notifyData)
             {
-                bool isSuccess = 
-                    // Email notification method
-                    data.NotificationMethod == NotifyMethods.Email
-                        ? (await this.NotifyService.SendEmailAsync(notification, data)).IsSuccess
-                        // Sms notification method
-                        : data.NotificationMethod == NotifyMethods.Sms &&
-                          (await this.NotifyService.SendSmsAsync(notification, data)).IsSuccess;
-                          // "&&": None or unknown notification method => false
-
-                if (!isSuccess)  // Fail early (if there are two packages given, failure of just single one of it is enough)
+                NotifySendResponse response = data.NotificationMethod switch
                 {
-                    return ProcessingDataResponse.Failure();
+                    NotifyMethods.Email => await this.NotifyService.SendEmailAsync(notification, data),
+                    NotifyMethods.Sms => await this.NotifyService.SendSmsAsync(notification, data),
+                    _ => NotifySendResponse.Failure(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown)
+                };
+
+                if (response.IsFailure)  // Fail early (if there are two packages given, failure of just single one of them is enough)
+                {
+                    return ProcessingDataResponse.Failure(response.Error);
                 }
             }
 

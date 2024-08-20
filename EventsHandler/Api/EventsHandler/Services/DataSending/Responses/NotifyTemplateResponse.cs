@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
+
 namespace EventsHandler.Services.DataSending.Responses
 {
     /// <summary>
@@ -28,25 +30,31 @@ namespace EventsHandler.Services.DataSending.Responses
         internal string Body { get; }
 
         /// <summary>
+        /// The error which occurred during the communication with "Notify NL".
+        /// </summary>
+        internal string Error { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NotifyTemplateResponse"/> struct.
         /// </summary>
-        private NotifyTemplateResponse(bool isSuccess, string subject, string body)
+        private NotifyTemplateResponse(bool isSuccess, string subject, string body, string exception)
         {
             this.IsSuccess = isSuccess;
             this.Subject = subject;
             this.Body = body;
+            this.Error = exception;
         }
         
         /// <summary>
         /// Success result.
         /// </summary>
         internal static NotifyTemplateResponse Success(string subject, string body)
-            => new(true, subject, body);
+            => new(true, subject, body, string.Empty);
         
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static NotifyTemplateResponse Failure()
-            => new(false, string.Empty, string.Empty);
+        internal static NotifyTemplateResponse Failure(string? error = null)
+            => new(false, string.Empty, string.Empty, error ?? Resources.Processing_ERROR_NotifyResponseNull);
     }
 }
