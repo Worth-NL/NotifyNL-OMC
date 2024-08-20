@@ -31,69 +31,73 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Act & Assert
             Assert.Multiple(() =>
             {
+                const string variableTestErrorMessage =
+                    $"Most likely the environment variable name was changed in {nameof(WebApiConfiguration)} " +
+                    $"but not adjusted in {nameof(ConfigurationHandler)}.GetEnvironmentLoader(bool).";
+
                 var omcConfiguration = s_testConfiguration.OMC;
                 var userConfiguration = s_testConfiguration.User;
 
                 // Authorization | JWT | Notify
                 var notifyJwt = omcConfiguration.Authorization.JWT;
-                Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty);
-                Assert.That(notifyJwt.Issuer(), Is.Not.Null.Or.Empty);
-                Assert.That(notifyJwt.Audience(), Is.Not.Null.Or.Empty);
-                Assert.That(notifyJwt.ExpiresInMin(), Is.Not.Zero);
-                Assert.That(notifyJwt.UserId(), Is.Not.Null.Or.Empty);
-                Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty);
+                Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(notifyJwt.Issuer(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(notifyJwt.Audience(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(notifyJwt.ExpiresInMin(), Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(notifyJwt.UserId(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
 
                 // API | BaseUrl
-                Assert.That(omcConfiguration.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty);
+                Assert.That(omcConfiguration.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
 
                 // Authorization | JWT | User
                 var userJwt = userConfiguration.Authorization.JWT;
-                Assert.That(userJwt.Secret(), Is.Not.Null.Or.Empty);
-                Assert.That(userJwt.Issuer(), Is.Not.Null.Or.Empty);
-                Assert.That(userJwt.Audience(), Is.Not.Null.Or.Empty);
-                Assert.That(userJwt.ExpiresInMin(), Is.Not.Zero);
-                Assert.That(userJwt.UserId(), Is.Not.Null.Or.Empty);
-                Assert.That(userJwt.UserName(), Is.Not.Null.Or.Empty);
+                Assert.That(userJwt.Secret(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(userJwt.Issuer(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(userJwt.Audience(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(userJwt.ExpiresInMin(), Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(userJwt.UserId(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(userJwt.UserName(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
 
                 // Authorization | Key
                 var key = userConfiguration.API.Key;
-                Assert.That(key.OpenKlant_2(), Is.Not.Null.Or.Empty);
-                Assert.That(key.Objecten(), Is.Not.Null.Or.Empty);
-                Assert.That(key.ObjectTypen(), Is.Not.Null.Or.Empty);
-                Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty);
+                Assert.That(key.OpenKlant_2(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(key.Objecten(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(key.ObjectTypen(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
 
                 // API | Domain
                 var apiDomain = userConfiguration.Domain;
-                Assert.That(apiDomain.OpenNotificaties(), Is.Not.Null.Or.Empty);
-                Assert.That(apiDomain.OpenZaak(), Is.Not.Null.Or.Empty);
-                Assert.That(apiDomain.OpenKlant(), Is.Not.Null.Or.Empty);
-                Assert.That(apiDomain.Objecten(), Is.Not.Null.Or.Empty);
-                Assert.That(apiDomain.ObjectTypen(), Is.Not.Null.Or.Empty);
+                Assert.That(apiDomain.OpenNotificaties(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(apiDomain.OpenZaak(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(apiDomain.OpenKlant(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(apiDomain.Objecten(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                Assert.That(apiDomain.ObjectTypen(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
 
                 // Templates
                 var templateIds = userConfiguration.TemplateIds;
-                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Empty);
-                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Empty);
-                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Empty);
-                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Empty);
-                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Empty);
+                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Empty, message: variableTestErrorMessage);
 
-                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Empty);
-                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Empty);
-                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Empty);
-                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Empty);
-                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Empty);
+                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Empty, message: variableTestErrorMessage);
 
                 // Whitelist
                 var whitelist = userConfiguration.Whitelist;
-                Assert.That(whitelist.ZaakCreate_IDs().Count, Is.Not.Zero);
-                Assert.That(whitelist.ZaakUpdate_IDs().Count, Is.Not.Zero);
-                Assert.That(whitelist.ZaakClose_IDs().Count, Is.Not.Zero);
-                Assert.That(whitelist.TaskAssigned_IDs().Count, Is.Not.Zero);
-                Assert.That(whitelist.DecisionMade_IDs().Count, Is.Not.Zero);
-                Assert.That(whitelist.Message_Allowed(), Is.Not.False);
-                Assert.That(whitelist.TaskType_Uuid(), Is.Not.Empty);
-                Assert.That(whitelist.MessageType_Uuid(), Is.Not.Empty);
+                Assert.That(whitelist.ZaakCreate_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(whitelist.ZaakUpdate_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(whitelist.ZaakClose_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(whitelist.TaskAssigned_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(whitelist.DecisionMade_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
+                Assert.That(whitelist.Message_Allowed(), Is.Not.False, message: variableTestErrorMessage);
+                Assert.That(whitelist.TaskObjectType_Uuid(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(whitelist.MessageObjectType_Uuid(), Is.Not.Empty, message: variableTestErrorMessage);
             });
         }
 

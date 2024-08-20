@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #1: The task needs to be of a specific type
             if (notification.Attributes.ObjectTypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.TaskType_Uuid())
+                this.Configuration.User.Whitelist.TaskObjectType_Uuid())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
