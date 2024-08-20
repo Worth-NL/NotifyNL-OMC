@@ -96,7 +96,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             var klantContactMomentUri = new Uri($"https://{openZaakDomain}/zaken/api/v1/zaakcontactmomenten");
 
             // Sending the request
-            ApiResponse response = await networkService.PostAsync(
+            RequestResponse response = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody);

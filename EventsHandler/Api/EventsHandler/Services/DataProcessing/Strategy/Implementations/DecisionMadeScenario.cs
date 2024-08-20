@@ -171,26 +171,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             if (notifyData.Count > 0)
             {
-                NotifyTemplateResponse response =
+                NotifyTemplateResponse templateResponse =
                     // NOTE: Most likely there will be only a single package of data received
                     await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
 
-                if (response.IsFailure)
+                if (templateResponse.IsFailure)
                 {
                     return ProcessingDataResponse.Failure();
                 }
 
                 // Adjusting the body for Logius system
-                string modifiedResponseBody = response.Body.Replace("\n\n", "\r\n");
+                string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
 
                 // Prepare HTTP Request Body
                 string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
 
                 string objectDataJson = PrepareObjectData(
-                    response.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
+                    templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
                     this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
 
-                await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+                RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
             }
 
             return ProcessingDataResponse.Success();

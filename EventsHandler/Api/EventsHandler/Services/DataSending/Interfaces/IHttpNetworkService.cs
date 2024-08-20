@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataSending.Interfaces
         /// <returns>
         ///   The <see langword="string"/> JSON response from the Web API service.
         /// </returns>
-        internal Task<ApiResponse> GetAsync(HttpClientTypes httpClientType, Uri uri);
+        internal Task<RequestResponse> GetAsync(HttpClientTypes httpClientType, Uri uri);
 
         /// <summary>
         /// Posts request to the given Web API service using a specific <see cref="HttpClient"/>.
@@ -29,6 +29,6 @@ namespace EventsHandler.Services.DataSending.Interfaces
         /// <returns>
         ///   The <see langword="string"/> JSON response from the Web API service.
         /// </returns>
-        internal Task<ApiResponse> PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody);
+        internal Task<RequestResponse> PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody);
     }
 }
