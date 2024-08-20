@@ -130,7 +130,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 true,
@@ -152,7 +152,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
                 s_taskClosed,
                 true,
@@ -174,7 +174,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
                 s_taskOpenNotAssignedToPerson,
                 true,
@@ -196,7 +196,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: false,
@@ -223,7 +223,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: true,
@@ -245,7 +245,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithoutNotifyMethod_ReturnsFailure()
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.None,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 true,
@@ -271,7 +271,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             DistributionChannels invalidDistributionChannel)
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 invalidDistributionChannel,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 true,
@@ -300,7 +300,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             DistributionChannels testDistributionChannel, int notifyDataCount)
         {
             // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
                 s_taskOpenAssignedToPersonWithExpirationDate,
                 isCaseIdWhitelisted: true,
@@ -342,7 +342,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
-            INotifyScenario scenario = ArrangeTaskScenario(
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
                 testTask,
                 isCaseIdWhitelisted: true,
@@ -380,10 +380,105 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
         #endregion
 
-        // TODO: Add ProcessData tests
+        #region ProcessDataAsync()
+        [Test]
+        public async Task ProcessDataAsync_InvalidNotifyData_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario_ProcessData(true);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingData));
+
+                VerifyProcessDataMethodCalls(0, 0);
+            });
+        }
+
+        [TestCase(NotifyMethods.None)]
+        [TestCase((NotifyMethods)(-1))]
+        public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(NotifyMethods invalidNotifyMethod)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(invalidNotifyMethod);
+
+            INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
+                isSendingSuccessful: false,
+                testData);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+
+                VerifyProcessDataMethodCalls(0, 0);
+            });
+        }
+
+        [TestCase(NotifyMethods.Email, 1, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+
+            INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
+                isSendingSuccessful: false,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
+
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+
+        [TestCase(NotifyMethods.Email, 1, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+
+            INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
+                isSendingSuccessful: true,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataProcessed));
+                
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+        #endregion
 
         #region Setup
-        private INotifyScenario ArrangeTaskScenario(
+        private INotifyScenario ArrangeTaskScenario_TryGetData(
             DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
@@ -423,19 +518,39 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
+            // Task Scenario
+            return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
+        }
+
+        private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
+
+        private INotifyScenario ArrangeTaskScenario_ProcessData(
+            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+        {
+            // IDataQueryService
+            this._mockedDataQuery
+                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Returns(this._mockedQueryContext.Object);
+
             // INotifyService
             this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()))
-                .ReturnsAsync(NotifySendResponse.Success());
+                    It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()))
-                .ReturnsAsync(NotifySendResponse.Success());
+                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             // Task Scenario
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
+        }
+
+        private static NotifyData GetNotifyData(NotifyMethods method)
+        {
+            return new NotifyData(method,
+                string.Empty,
+                Guid.Empty,
+                new Dictionary<string, object>());
         }
         #endregion
 

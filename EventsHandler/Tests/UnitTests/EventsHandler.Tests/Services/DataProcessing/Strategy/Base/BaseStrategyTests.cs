@@ -310,10 +310,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseClosedScenario), NotifyMethods.None)]
         [TestCase(typeof(CaseClosedScenario), (NotifyMethods)(-1))]
         public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(
-            Type scenarioType, NotifyMethods testNotifyMethod)
+            Type scenarioType, NotifyMethods invalidNotifyMethod)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = GetNotifyData(invalidNotifyMethod);
 
             Mock<INotifyService<NotificationEvent, NotifyData>> mockedNotifyService = GetMockedNotifyService(
                 isSendingSuccessful: true,
@@ -520,6 +520,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 _ => Guid.Empty
             };
         }
+
         private static NotifyData GetNotifyData(NotifyMethods method)
         {
             return new NotifyData(method,
