@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// <summary>
         /// The affirmative status of the <see cref="ProcessingDataResponse"/>.
         /// </summary>
-        private bool IsSuccess { get; }
+        internal bool IsSuccess { get; }
         
         /// <summary>
         /// The negated status of the <see cref="ProcessingDataResponse"/>.
