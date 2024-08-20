@@ -61,7 +61,7 @@ namespace EventsHandler.Services.DataProcessing
                     : (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
             // TODO: Replace exception handling by (ProcessingResult result, string message) value tuple to further optimize the OMC workflow
-            catch (TelemetryException exception)
+            catch (TelemetryException exception)  // TODO: This exception is probably not used anymore anywhere. This message can be returned by service itself in NotifyController
             {
                 // NOTE: The notification was sent, but the communication with the telemetry API failed. Do not retry
                 return (ProcessingResult.Success, $"{ResourcesText.Processing_ERROR_Telemetry_CompletionNotSent} | {exception.Message}");
