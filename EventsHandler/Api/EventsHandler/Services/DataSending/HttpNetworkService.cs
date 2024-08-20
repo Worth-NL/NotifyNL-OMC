@@ -55,13 +55,13 @@ namespace EventsHandler.Services.DataSending
 
         #region Internal methods
         /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
-        async Task<ApiResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
+        async Task<RequestResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
         /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
-        async Task<ApiResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
+        async Task<RequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
             StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
@@ -195,14 +195,14 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
-        private async Task<ApiResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
+        private async Task<RequestResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
         {
             try
             {
                 // HTTPS protocol validation
                 if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
                 {
-                    return ApiResponse.Failure(Resources.HttpRequest_ERROR_HttpsProtocolExpected);
+                    return RequestResponse.Failure(Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
                 // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
@@ -220,12 +220,12 @@ namespace EventsHandler.Services.DataSending
                 this._semaphore.Release();
 
                 return result.IsSuccessStatusCode
-                    ? ApiResponse.Success(await result.Content.ReadAsStringAsync())
-                    : ApiResponse.Failure(await result.Content.ReadAsStringAsync());
+                    ? RequestResponse.Success(await result.Content.ReadAsStringAsync())
+                    : RequestResponse.Failure(await result.Content.ReadAsStringAsync());
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(exception.Message);
+                return RequestResponse.Failure(exception.Message);
             }
         }
         #endregion

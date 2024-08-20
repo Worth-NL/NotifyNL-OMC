@@ -33,7 +33,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
         {
-            ApiResponse response = await this._networkService.GetAsync(httpClientType, uri);
+            RequestResponse response = await this._networkService.GetAsync(httpClientType, uri);
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
@@ -41,7 +41,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Base
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, string, string)"/>
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
         {
-            ApiResponse response = await this._networkService.PostAsync(httpClientType, uri, jsonBody);
+            RequestResponse response = await this._networkService.PostAsync(httpClientType, uri, jsonBody);
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }

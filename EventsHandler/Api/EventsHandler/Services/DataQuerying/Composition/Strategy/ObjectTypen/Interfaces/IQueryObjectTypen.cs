@@ -27,7 +27,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <returns>
         ///   The answer whether the message object was created successfully.
         /// </returns>
-        internal sealed async Task<ApiResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
+        internal sealed async Task<RequestResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
         {
             // Predefined URL components
             string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
