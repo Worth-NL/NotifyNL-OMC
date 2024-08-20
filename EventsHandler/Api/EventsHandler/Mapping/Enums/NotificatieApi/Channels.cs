@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Enums.NotificatieApi
     public enum Channels
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,

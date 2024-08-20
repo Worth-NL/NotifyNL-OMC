@@ -8,6 +8,9 @@ using System.Net.Http.Headers;
 namespace EventsHandler.Services.DataSending.Clients.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
+    /// <remarks>
+    ///   Customized to create a generic .NET <see cref="HttpClient"/>s.
+    /// </remarks>
     internal sealed class RegularHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>
     {
         private readonly WebApiConfiguration _configuration;
@@ -37,7 +40,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
 
             // Set universal Request Headers
             httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));
+                new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));  // Content-Type: application/json
 
             // Set custom Request Headers
             for (int index = 0; index < requestHeaders.Length; index++)

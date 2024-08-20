@@ -13,15 +13,18 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct CaseStatus : IJsonSerializable
     {
         /// <summary>
-        /// The type of the status.
+        /// The type of the <see cref="CaseStatus"/> in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("statustype")]
         [JsonPropertyOrder(0)]
-        public Uri Type { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The date and time when the status was created.
+        /// The date and time when the <see cref="CaseStatus"/> was created.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("datumStatusGezet")]

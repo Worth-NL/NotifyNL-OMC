@@ -3,14 +3,16 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
     {
         private Mock<INotifyScenario> _mockedNotifyScenario = null!;
         private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
+        private Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = null!;
 
         private ServiceProvider _serviceProvider = null!;
 
@@ -32,10 +35,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             // Mocked services
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             this._mockedNotifyScenario
-                .Setup(mock => mock.GetAllNotifyDataAsync(It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(Array.Empty<NotifyData>());
+                .Setup(mock => mock.TryGetDataAsync(It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(GettingDataResponse.Failure());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
+            this._mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
 
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
@@ -43,12 +47,12 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             WebApiConfiguration webApiConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
 
             serviceCollection.AddSingleton(webApiConfiguration);
-            serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new CaseClosedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new TaskAssignedScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object));
-            serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object));
+            serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseClosedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new TaskAssignedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
             this._serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -93,7 +97,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 1 });
 
             this._mockedDataQuery
@@ -122,7 +126,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
@@ -154,7 +158,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync())
+                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
             mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
@@ -193,7 +197,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             Assert.That(actualResult, Is.TypeOf<TaskAssignedScenario>());
         }
 
-        [Test, Ignore("The decision is disabled currently")]  // TODO: Enable this test
+        [Test]
         public async Task DetermineScenarioAsync_ForDecisionMadeScenario_ReturnsExpectedScenario()
         {
             // Arrange

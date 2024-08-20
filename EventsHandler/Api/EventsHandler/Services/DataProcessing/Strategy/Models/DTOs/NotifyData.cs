@@ -6,7 +6,7 @@ using Notify.Models.Responses;
 namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
 {
     /// <summary>
-    /// The set of data which "Notify NL" will understand and use for a specific communication strategy (SMS or e-mail).
+    /// The set of data which "Notify NL" will understand and use for a specific communication strategy.
     /// </summary>
     internal readonly struct NotifyData
     {
@@ -24,7 +24,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         ///   WARNING: The template ID should match selected notification method (SMS or e-mail).
         /// </para>
         /// </summary>
-        internal string TemplateId { get; }
+        internal Guid TemplateId { get; }
 
         /// <summary>
         /// The key-value pairs of notification data (values) to be fit into placeholders (keys)
@@ -35,7 +35,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyData"/> struct.
         /// </summary>
-        internal NotifyData(NotifyMethods notificationMethod, string contactDetails, string templateId, Dictionary<string, object> personalization)
+        internal NotifyData(NotifyMethods notificationMethod, string contactDetails, Guid templateId, Dictionary<string, object> personalization)
         {
             this.NotificationMethod = notificationMethod;
             this.ContactDetails = contactDetails;

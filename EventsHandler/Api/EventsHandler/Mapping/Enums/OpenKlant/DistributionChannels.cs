@@ -7,13 +7,13 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Enums.OpenKlant
 {
     /// <summary>
-    /// The distribution channel. The method how the recipient (a citizen) want to be notified.
+    /// The distribution channel. The method how the recipient (e.g., citizen or organization) wants to be notified.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<DistributionChannels>))]
     public enum DistributionChannels
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,

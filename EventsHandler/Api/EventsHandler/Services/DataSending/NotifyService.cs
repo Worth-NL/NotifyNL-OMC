@@ -3,9 +3,11 @@
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataSending
@@ -18,43 +20,49 @@ namespace EventsHandler.Services.DataSending
 
         private static INotifyClient? s_httpClient;
         #endregion
-
-        private readonly IHttpClientFactory<INotifyClient, string> _clientFactory;
+        
+        /// <inheritdoc cref="NotificationClientFactory"/>
+        private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
         private readonly ISerializationService _serializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
         public NotifyService(
-            IHttpClientFactory<INotifyClient, string> clientFactory,
+            IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ISerializationService serializer)
         {
-            this._clientFactory = clientFactory;
+            this._notifyClientFactory = notifyClientFactory;
             this._serializer = serializer;
         }
 
-        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
-        async Task INotifyService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
+        async Task<NotifySendResponse> INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
         {
-            string serializedNotification = this._serializer.Serialize(notification);
-            string encodedNotification = serializedNotification.Base64Encode();
-
-            _ = await ResolveNotifyClient(notification).SendSmsAsync(mobileNumber:    package.ContactDetails,
-                                                                     templateId:      package.TemplateId,
-                                                                     personalization: package.Personalization,
-                                                                     reference:       encodedNotification);
+            return await ResolveNotifyClient(notification)
+                .SendEmailAsync(emailAddress:    package.ContactDetails,
+                                templateId:      package.TemplateId.ToString(),
+                                personalization: package.Personalization,
+                                reference:       GetEncodedNotification(notification));
         }
 
-        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendEmailAsync(TModel, TPackage)"/>
-        async Task INotifyService<NotificationEvent, NotifyData>.SendEmailAsync(NotificationEvent notification, NotifyData package)
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.SendSmsAsync(TModel, TPackage)"/>
+        async Task<NotifySendResponse> INotifyService<NotificationEvent, NotifyData>.SendSmsAsync(NotificationEvent notification, NotifyData package)
         {
-            string serializedNotification = this._serializer.Serialize(notification);
-            string encodedNotification = serializedNotification.Base64Encode();
+            return await ResolveNotifyClient(notification)
+                .SendSmsAsync(mobileNumber:    package.ContactDetails,
+                              templateId:      package.TemplateId.ToString(),
+                              personalization: package.Personalization,
+                              reference:       GetEncodedNotification(notification));
+        }
 
-            _ = await ResolveNotifyClient(notification).SendEmailAsync(emailAddress:    package.ContactDetails,
-                                                                       templateId:      package.TemplateId,
-                                                                       personalization: package.Personalization,
-                                                                       reference:       encodedNotification);
+        /// <inheritdoc cref="INotifyService{TModel, TPackage}.GenerateTemplatePreviewAsync(TModel, TPackage)"/>
+        async Task<NotifyTemplateResponse> INotifyService<NotificationEvent, NotifyData>.GenerateTemplatePreviewAsync(
+            NotificationEvent notification, NotifyData package)
+        {
+            return await ResolveNotifyClient(notification)
+                .GenerateTemplatePreviewAsync(templateId: package.TemplateId.ToString(),
+                                              personalization: package.Personalization);
         }
 
         #region IDisposable
@@ -68,9 +76,6 @@ namespace EventsHandler.Services.DataSending
         #region Helper methods
         /// <summary>
         /// Gets the cached <see cref="INotifyClient"/> or create a new one if not yet existing.
-        /// <para>
-        ///   The organization identifier (since it's unique) will be used as a key for <see cref="INotifyClient"/>.
-        /// </para>
         /// </summary>
         private INotifyClient ResolveNotifyClient(NotificationEvent notification)
         {
@@ -78,11 +83,24 @@ namespace EventsHandler.Services.DataSending
             {
                 lock (s_padlock)
                 {
-                    s_httpClient ??= this._clientFactory.GetHttpClient(notification.GetOrganizationId());
+                    s_httpClient ??= this._notifyClientFactory.GetHttpClient(
+                        notification.GetOrganizationId());  // NOTE: Used for logging purposes only
                 }
             }
 
             return s_httpClient;
+        }
+
+        /// <summary>
+        /// Gets encoded version of the serialized notification to make it more compact and harder to read.
+        /// </summary>
+        private string GetEncodedNotification(NotificationEvent notification)
+        {
+            // Serialize object to string
+            string serializedNotification = this._serializer.Serialize(notification);
+
+            // Encode string
+            return serializedNotification.Base64Encode();
         }
         #endregion
     }

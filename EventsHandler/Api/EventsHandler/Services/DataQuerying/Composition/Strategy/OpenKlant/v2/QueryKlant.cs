@@ -8,6 +8,7 @@ using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
@@ -36,18 +37,21 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         }
 
         #region Polymorphic (Citizen details)
-        /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
-        async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
-            // Predefined URL components
-            string partiesEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/partijen";
+            // TODO: BSN number validation
 
-            string partyTypeParameter = $"?partijIdentificator__codeSoortObjectId={((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier()}";
+            // Predefined URL components
+            string partiesEndpoint = $"https://{openKlantDomain}/klantinteracties/api/v1/partijen";
+
+            string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
+            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
             string partyObjectIdParameter = $"&partijIdentificator__objectId={bsnNumber}";
             const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            var partiesByTypeIdAndExpand = new Uri($"{partiesEndpoint}{partyTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            var partiesByTypeIdAndExpand = new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetCitizenDetailsV2Async(queryBase, partiesByTypeIdAndExpand))
                 .Party(((IQueryKlant)this).Configuration)
@@ -58,23 +62,23 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
-                uri: citizenByBsnUri,
+                uri: citizenByBsnUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, HttpContent body)
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/klantinteracties/api/v1/klantcontacten");
+            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/klantcontacten");
 
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
-                uri: klantContactMomentUri,
-                body: body,
+                uri: klantContactMomentUri,  // Request URL
+                jsonBody,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
@@ -86,19 +90,19 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         /// </returns>
         /// <exception cref="TelemetryException"/>
         internal static async Task<string> LinkToSubjectObjectAsync(
-            IHttpNetworkService networkService, string openKlantDomain, HttpContent body)
+            IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
             var subjectObjectUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
 
             // Sending the request
-            (bool success, string jsonResponse) = await networkService.PostAsync(
+            RequestResponse response = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
-                uri: subjectObjectUri,
-                body: body);
+                uri: subjectObjectUri,  // Request URL
+                jsonBody);
 
             // Getting the response
-            return success ? jsonResponse : throw new TelemetryException(jsonResponse);
+            return response.IsSuccess ? response.JsonResponse : throw new TelemetryException(response.JsonResponse);
         }
         #endregion
     }

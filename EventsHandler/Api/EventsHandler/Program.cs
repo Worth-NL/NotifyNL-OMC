@@ -26,6 +26,7 @@ using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
@@ -35,7 +36,6 @@ using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
-using EventsHandler.Services.Telemetry.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Services.Validation;
@@ -55,15 +55,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using Register = EventsHandler.Services.Register;
 using Responder = EventsHandler.Services.Responding;
-using Telemetry = EventsHandler.Services.Telemetry;
 
 namespace EventsHandler
 {
     /// <summary>
     /// The entry point to the Web API application, responsible for configuring and starting the application.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
     {
         /// <summary>
@@ -145,9 +145,9 @@ namespace EventsHandler
                 // Enable API documentation in Swagger UI
                 setup.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Version = Resources.Swagger_Version,
-                    Title = Resources.Swagger_Title,
-                    Description = Resources.Swagger_Description
+                    Version = Resources.Swagger_UI_Version,
+                    Title = Resources.Swagger_UI_Title,
+                    Description = Resources.Swagger_UI_Description
                 });
 
                 // Enable [SwaggerRequestExample] filter for parameters in Swagger UI
@@ -166,7 +166,7 @@ namespace EventsHandler
                     Name = DefaultValues.Authorization.Name,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Description = Resources.Swagger_Authentication_Description,
+                    Description = Resources.Swagger_UI_Authentication_Description,
                     Reference = new OpenApiReference
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
@@ -372,8 +372,8 @@ namespace EventsHandler
             {
                 return omcWorkflowVersion switch
                 {
-                    1 => typeof(Telemetry.v1.ContactRegistration),
-                    2 => typeof(Telemetry.v2.ContactRegistration),
+                    1 => typeof(Register.v1.ContactRegistration),
+                    2 => typeof(Register.v2.ContactRegistration),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionTelemetryUnknown)
                 };
             }

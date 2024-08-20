@@ -3,13 +3,16 @@
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace EventsHandler.Services.DataSending
 {
@@ -20,8 +23,10 @@ namespace EventsHandler.Services.DataSending
 
         private readonly WebApiConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
-        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
         private readonly SemaphoreSlim _semaphore;
+
+        /// <inheritdoc cref="RegularHttpClientFactory"/>
+        private readonly IHttpClientFactory<HttpClient, (string /* Header key */, string /* Header value */)[]> _httpClientFactory;
 
         /// <summary>
         /// Cached reusable HTTP Clients with preconfigured settings (etc., "Authorization" or "Headers").
@@ -50,15 +55,18 @@ namespace EventsHandler.Services.DataSending
 
         #region Internal methods
         /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
+        async Task<RequestResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri);
         }
 
-        /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, HttpContent)"/>
-        async Task<(bool Success, string JsonResponse)> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, HttpContent body)
+        /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
+        async Task<RequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
-            return await ExecuteCallAsync(httpClientType, uri, body);
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
+
+            return await ExecuteCallAsync(httpClientType, uri, requestBody);
         }
         #endregion
 
@@ -84,7 +92,7 @@ namespace EventsHandler.Services.DataSending
                 .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
@@ -187,14 +195,14 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
-        private async Task<(bool Success, string JsonResponse)> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
+        private async Task<RequestResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
         {
             try
             {
                 // HTTPS protocol validation
                 if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
                 {
-                    return (false, Resources.HttpRequest_ERROR_HttpsProtocolExpected);
+                    return RequestResponse.Failure(Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
                 // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
@@ -211,11 +219,13 @@ namespace EventsHandler.Services.DataSending
                     : await ResolveClient(httpClientType).PostAsync(uri, body);
                 this._semaphore.Release();
 
-                return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());  // Status + JSON response
+                return result.IsSuccessStatusCode
+                    ? RequestResponse.Success(await result.Content.ReadAsStringAsync())
+                    : RequestResponse.Failure(await result.Content.ReadAsStringAsync());
             }
             catch (Exception exception)
             {
-                return (false, exception.Message);
+                return RequestResponse.Failure(exception.Message);
             }
         }
         #endregion

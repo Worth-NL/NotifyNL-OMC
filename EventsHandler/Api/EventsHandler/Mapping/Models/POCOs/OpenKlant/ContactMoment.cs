@@ -21,12 +21,15 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         public Guid Id { get; internal set; } = Guid.Empty;
 
         /// <summary>
-        /// The URL to the <see cref="ContactMoment"/>.
+        /// The reference to the <see cref="ContactMoment"/> in <see cref="Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(1)]
-        public Uri Url { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri ReferenceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactMoment"/> struct.

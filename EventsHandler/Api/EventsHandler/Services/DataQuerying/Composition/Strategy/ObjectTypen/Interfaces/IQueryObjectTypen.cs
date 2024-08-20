@@ -1,7 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 
@@ -19,22 +20,43 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";
 
-        #region Parent
+        #region Parent (Create message object)        
         /// <summary>
-        /// Determines whether the object type is valid.
+        /// Creates the message object in "Objecten" Web API service.
         /// </summary>
-        /// <param name="notification">The initial notification from "OpenNotificaties" Web API service.</param>
         /// <returns>
-        ///   <see langword="true"/> if "object type" in the <see cref="NotificationEvent"/> is
-        ///   the same as the one defined in the app settings; otherwise, <see langword="false"/>.
+        ///   The answer whether the message object was created successfully.
         /// </returns>
-        /// <exception cref="KeyNotFoundException"/>
-        internal sealed bool IsValidType(NotificationEvent notification)
+        internal sealed async Task<RequestResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, string objectDataJson)
         {
-            Guid typeGuid = notification.Attributes.ObjectType.GetGuid();
+            // Predefined URL components
+            string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
 
-            return typeGuid != default &&
-                   typeGuid == this.Configuration.AppSettings.Variables.Objecten.TaskTypeGuid();
+            // Request URL
+            Uri createObjectUri = new(createObjectEndpoint);
+
+            // Prepare HTTP Request Body
+            string jsonBody = PrepareCreateObjectJson(objectDataJson);
+
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.ObjectTypen,
+                uri: createObjectUri,
+                jsonBody);
+        }
+
+        private string PrepareCreateObjectJson(string objectDataJson)
+        {
+            return $"{{" +
+                   $"  \"type\": \"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\", " +
+                   $"  \"record\": {{" +
+                   $"    \"typeVersion\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\", " +
+                   $"    \"data\": {objectDataJson}, " +  // { data } => curly brackets are already included
+                   $"    \"geometry\": {{" +
+                   $"    }}, " +
+                   $"    \"startAt\": \"{DateTime.UtcNow}\", " +
+                   $"    \"correctionFor\": \"string\"" +
+                   $"  }}" +
+                   $"}}";
         }
         #endregion
 
