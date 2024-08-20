@@ -51,14 +51,14 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
-                if ((await scenario.ProcessDataAsync(notification, gettingDataResponse.Content)).IsFailure)
-                {
-                    // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
-                    return (ProcessingResult.Failure, ResourcesText.Processing_ERROR_Scenario_NotificationNotSent);
-                }
+                ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, gettingDataResponse.Content);
 
-                // NOTE: The notification was sent and the completion status was reported to the telemetry API
-                return (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
+                return processingDataResponse.IsFailure
+                    // NOTE: Something bad happened and "Notify NL" did not send the notification as expected
+                    ? (ProcessingResult.Failure, string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, processingDataResponse.Message))
+
+                    // NOTE: The notification was sent and the completion status was reported to the telemetry API
+                    : (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
             // TODO: Replace exception handling by (ProcessingResult result, string message) value tuple to further optimize the OMC workflow
             catch (TelemetryException exception)

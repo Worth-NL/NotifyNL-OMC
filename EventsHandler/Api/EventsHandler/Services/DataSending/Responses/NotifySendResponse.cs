@@ -1,5 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Properties;
+
 namespace EventsHandler.Services.DataSending.Responses
 {
     /// <summary>
@@ -8,34 +10,45 @@ namespace EventsHandler.Services.DataSending.Responses
     internal readonly struct NotifySendResponse  // NOTE: "NotificationResponse" is restricted name of the model from "Notify.Models.Responses"
     {
         /// <summary>
-        /// The status of the <see cref="NotifySendResponse"/>.
+        /// The affirmative status of the <see cref="NotifySendResponse"/>.
         /// </summary>
-        internal bool IsSuccess { get; }
+        private bool IsSuccess { get; }
+        
+        /// <summary>
+        /// The negated status of the <see cref="NotifySendResponse"/>.
+        /// </summary>
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
-        /// The content of the <see cref="NotifySendResponse"/>.
+        /// The body of the <see cref="NotifySendResponse"/>.
         /// </summary>
-        internal string Content { get; }
+        internal string Body { get; }
+
+        /// <summary>
+        /// The error which occurred during the communication with "Notify NL".
+        /// </summary>
+        internal string Error { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySendResponse"/> struct.
         /// </summary>
-        private NotifySendResponse(bool isSuccess, string content)
+        private NotifySendResponse(bool isSuccess, string body, string error)
         {
             this.IsSuccess = isSuccess;
-            this.Content = content;
+            this.Body = body;
+            this.Error = error;
         }
         
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static NotifySendResponse Success(string content)
-            => new(true, content);
+        internal static NotifySendResponse Success(string body)
+            => new(true, body, string.Empty);
         
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static NotifySendResponse Failure()
-            => new(false, string.Empty);
+        internal static NotifySendResponse Failure(string? error = null)
+            => new(false, string.Empty, error ?? Resources.Processing_ERROR_NotifyResponseNull);
     }
 }

@@ -9,9 +9,14 @@ namespace EventsHandler.Services.DataSending.Responses
     internal readonly struct RequestResponse
     {
         /// <summary>
-        /// The status of the HTTP Request.
+        /// The affirmative status of the HTTP Request.
         /// </summary>
         internal bool IsSuccess { get; }
+
+        /// <summary>
+        /// The negated status of the HTTP Request.
+        /// </summary>
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The JSON response from the Web API service.

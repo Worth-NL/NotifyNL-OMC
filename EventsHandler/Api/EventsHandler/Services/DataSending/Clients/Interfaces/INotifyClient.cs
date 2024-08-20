@@ -25,9 +25,6 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         ///   A unique identifier you can create if you need to. This reference
         ///   identifies a single unique notification or a batch of notifications.
         /// </param>
-        /// <remarks>
-        /// NOTE: Might throw exceptions from the external libraries.
-        /// </remarks>
         internal Task<NotifySendResponse> SendEmailAsync(string emailAddress, string templateId, Dictionary<string, object> personalization, string reference);
 
         /// <summary>
@@ -46,9 +43,6 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         ///   A unique identifier you can create if you need to. This reference
         ///   identifies a single unique notification or a batch of notifications.
         /// </param>
-        /// <remarks>
-        /// NOTE: Might throw exceptions from the external libraries.
-        /// </remarks>
         internal Task<NotifySendResponse> SendSmsAsync(string mobileNumber, string templateId, Dictionary<string, object> personalization, string reference);
         
         /// <summary>
@@ -62,9 +56,6 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
         ///     the actual template. The API notification client ignores any extra fields in the method.
         ///   </para>
         /// </param>
-        /// <remarks>
-        /// NOTE: Might throw exceptions from the external libraries.
-        /// </remarks>
         internal Task<NotifyTemplateResponse> GenerateTemplatePreviewAsync(string templateId, Dictionary<string, object> personalization);
     }
 }

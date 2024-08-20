@@ -249,7 +249,8 @@
     <value>It was not possible to retrieve the data necessary to process the received notification.</value>
   </data>
   <data name="Processing_ERROR_Scenario_NotificationNotSent" xml:space="preserve">
-    <value>The notification has not been sent to Notify NL.</value>
+    <value>The notification has not been sent to Notify NL: {0}.</value>
+    <comment>{0} = Error Message</comment>
   </data>
   <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine what to do with the received notification.</value>
@@ -307,7 +308,7 @@
     <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>was successfully send to NotifyNL.</value>
+    <value>was successfully send to Notify NL.</value>
     <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
@@ -462,5 +463,8 @@
   </data>
   <data name="Processing_SUCCESS_Scenario_DataRetrieved" xml:space="preserve">
     <value>The data, necessary to process the received notification, were retrieved successfully.</value>
+  </data>
+  <data name="Processing_ERROR_NotifyResponseNull" xml:space="preserve">
+    <value>The HTTP Response from Notify NL was null.</value>
   </data>
 </root>

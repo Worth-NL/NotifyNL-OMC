@@ -177,7 +177,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 if (templateResponse.IsFailure)
                 {
-                    return ProcessingDataResponse.Failure();
+                    return ProcessingDataResponse.Failure(templateResponse.Body);
                 }
 
                 // Adjusting the body for Logius system
@@ -191,6 +191,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                     this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
 
                 RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+
+                if (requestResponse.IsFailure)
+                {
+                    ProcessingDataResponse.Failure(requestResponse.JsonResponse);
+                }
             }
 
             return ProcessingDataResponse.Success();
