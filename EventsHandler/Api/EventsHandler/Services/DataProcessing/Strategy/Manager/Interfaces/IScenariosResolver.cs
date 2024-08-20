@@ -2,7 +2,7 @@
 
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using System.Text.Json;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
