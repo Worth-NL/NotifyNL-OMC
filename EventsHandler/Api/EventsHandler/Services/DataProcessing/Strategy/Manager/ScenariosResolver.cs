@@ -3,10 +3,10 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;

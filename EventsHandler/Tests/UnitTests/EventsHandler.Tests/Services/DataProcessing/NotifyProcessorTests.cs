@@ -6,7 +6,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;

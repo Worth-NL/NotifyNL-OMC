@@ -6,7 +6,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using System.Text.Json;
 
-namespace EventsHandler.Services.DataProcessing.Strategy.Interfaces
+namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
 {
     /// <summary>
     /// The "Notify NL" business-cases for notification scenarios.
