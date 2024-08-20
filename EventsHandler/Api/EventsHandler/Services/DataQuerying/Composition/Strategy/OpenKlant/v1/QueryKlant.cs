@@ -34,11 +34,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         }
 
         #region Polymorphic (Citizen details)
-        /// <inheritdoc cref="IQueryKlant.GetPartyDataAsync(IQueryBase, string)"/>
-        async Task<CommonPartyData> IQueryKlant.GetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
+            // TODO: BSN number validation
+
             // Predefined URL components
-            string citizensEndpoint = $"https://{((IQueryKlant)this).GetDomain()}/klanten/api/v1/klanten";
+            string citizensEndpoint = $"https://{openKlantDomain}/klanten/api/v1/klanten";
 
             // Request URL
             var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
@@ -52,23 +54,23 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         {
             return await queryBase.ProcessGetAsync<CitizenResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
-                uri: citizenByBsnUri,
+                uri: citizenByBsnUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, HttpContent body)
+        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{((IQueryKlant)this).GetDomain()}/contactmomenten/api/v1/contactmomenten");
+            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/contactmomenten/api/v1/contactmomenten");
 
             // Sending the request and getting the response (combined internal logic)
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
-                uri: klantContactMomentUri,
-                body: body,
+                uri: klantContactMomentUri,  // Request URL
+                jsonBody,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
         #endregion

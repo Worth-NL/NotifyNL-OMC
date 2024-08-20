@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
     public struct TaskObject : IJsonSerializable
     {
         /// <summary>
-        /// Gets the record related to the <see cref="TaskObject"/>.
+        /// The record related to the <see cref="TaskObject"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("record")]

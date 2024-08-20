@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     ///   depending on the business case scenario. For example, response might be case or decision.
     /// </remarks>
     /// </summary>
-    /// <seealso cref="IJsonSerializable" />
+    /// <seealso cref="IJsonSerializable"/>
     public struct MainObject : IJsonSerializable
     {
         /// <summary>

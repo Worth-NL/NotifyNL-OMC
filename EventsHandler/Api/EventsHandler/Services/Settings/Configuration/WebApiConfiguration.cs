@@ -31,6 +31,14 @@ namespace EventsHandler.Services.Settings.Configuration
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             string /* Setting value */> s_cachedStrings = new();
+        
+        private static readonly ConcurrentDictionary<
+            string /* Unique final path */,
+            Guid /* Setting value */> s_cachedGuids = new();
+        
+        private static readonly ConcurrentDictionary<
+            string /* Unique final path */,
+            Uri /* Setting value */> s_cachedUris = new();
 
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
@@ -103,7 +111,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
         #region Settings
         /// <summary>
-        /// The "appsettings[.xxx].json" part of the settings.
+        /// The "appsettings[.xxx].json" part of the settings (not changing frequently).
         /// </summary>
         [UsedImplicitly]
         internal sealed record AppSettingsComponent
@@ -223,8 +231,8 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ObjectenComponent"/>
                 internal ObjectenComponent Objecten { get; }
 
-                /// <inheritdoc cref="MessagesComponent"/>
-                internal MessagesComponent Messages { get; }
+                /// <inheritdoc cref="UxMessagesComponent"/>
+                internal UxMessagesComponent UxMessages { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
@@ -236,7 +244,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
                     this.Objecten = new ObjectenComponent(loadersContext, this._currentPath);
-                    this.Messages = new MessagesComponent(loadersContext, this._currentPath);
+                    this.UxMessages = new UxMessagesComponent(loadersContext, this._currentPath);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -303,29 +311,33 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal Guid TaskTypeGuid()
-                        => GetCachedValue<Guid>(this._loadersContext, this._currentPath, nameof(TaskTypeGuid));
+                    internal ushort MessageObjectType_Version()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    internal string MessageObjectType_Name()  // NOTE: Used by "Logius" system
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Name));
                 }
 
                 /// <summary>
-                /// The "Messages" part of the settings.
+                /// The "UX Messages" part of the settings.
                 /// </summary>
-                internal sealed class MessagesComponent
+                internal sealed class UxMessagesComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="MessagesComponent"/> class.
+                    /// Initializes a new instance of the <see cref="UxMessagesComponent"/> class.
                     /// </summary>
-                    internal MessagesComponent(ILoadersContext loadersContext, string parentPath)
+                    internal UxMessagesComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Messages));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(UxMessages));
                     }
 
                     #region SMS
@@ -366,6 +378,8 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
             }
         }
+
+        // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
 
         /// <summary>
         /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
@@ -666,24 +680,24 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakCreate()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakUpdate()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakClose()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string TaskAssigned()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string DecisionMade()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+                    internal Guid DecisionMade()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
 
                 /// <summary>
@@ -704,24 +718,24 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakCreate()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakUpdate()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string ZaakClose()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string TaskAssigned()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string DecisionMade()
-                        => GetCachedTemplateIdValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+                    internal Guid DecisionMade()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
                 }
             }
 
@@ -746,6 +760,10 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Whitelist));
                 }
 
+                // ----------------------------
+                // Allowed Case Identifications
+                // ----------------------------
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
@@ -766,9 +784,25 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
+                // --------------
+                // Flags (simple)
+                // --------------
+
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
+
+                // ---------------------------
+                // Allowed types (UUID / GUID)
+                // ---------------------------
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                internal Guid TaskObjectType_Uuid()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                internal Guid MessageObjectType_Uuid()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
@@ -789,7 +823,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     private readonly string _finalPath;
 
                     /// <summary>
-                    /// Gets the count of the whitelisted IDs.
+                    /// The count of the whitelisted IDs.
                     /// </summary>
                     /// <remarks>
                     /// NOTE: To keep the data integrity do not expose the cached whitelist IDs directly.
@@ -856,6 +890,8 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
             }
         }
+
+        // NOTE: Environment variables "SENTRY_DSN" and "SENTRY_ENVIRONMENT" are skipped because they are dependent on third-party (assured and validated)
         #endregion
 
         #region Caching
@@ -889,23 +925,8 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .ValidateNoHttp()
-                    .ValidateNoEndpoint());
-        }
-
-        /// <summary>
-        /// Retrieves cached template ID value (in correct UUID format).
-        /// </summary>
-        /// <remarks>
-        /// Validation: enabled
-        /// </remarks>
-        private static string GetCachedTemplateIdValue(ILoadingService loadersContext, string currentPath, string nodeName)
-        {
-            return s_cachedStrings.GetOrAdd(
-                currentPath + nodeName,
-                // Validation happens once during initial loading, before caching the value
-                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .ValidateTemplateId());
+                    .GetWithoutProtocol()
+                    .GetWithoutEndpoint());
         }
         
         /// <summary>
@@ -930,8 +951,23 @@ namespace EventsHandler.Services.Settings.Configuration
                     // Validation #2: Checking if the comma-separated string was properly split into array
                     return disableValidation
                         ? values
-                        : values.ValidateNotEmpty(finalPath);  // Handles the case: "," => RemoveEmptyEntries => { }
+                        : values.GetNotEmpty(finalPath);  // Handles the case: "," => RemoveEmptyEntries => { }
                 });
+        }
+
+        /// <summary>
+        /// Retrieves cached GUID value (in correct format).
+        /// </summary>
+        /// <remarks>
+        /// Validation: enabled
+        /// </remarks>
+        private static Guid GetCachedUuidValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return s_cachedGuids.GetOrAdd(
+                currentPath + nodeName,
+                // Validation happens once during initial loading, before caching the value
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
+                    .GetValidGuid());
         }
         
         /// <summary>
@@ -942,11 +978,11 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </remarks>
         private static Uri GetCachedUri(ILoadingService loadersContext, string currentPath, string nodeName)
         {
-            return new Uri(s_cachedStrings.GetOrAdd(
+            return s_cachedUris.GetOrAdd(
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                $"{GetValue<Uri>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .ValidateUri()}"));
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
+                    .GetValidUri());
         }
         
         /// <summary>
@@ -961,7 +997,6 @@ namespace EventsHandler.Services.Settings.Configuration
             string value = s_cachedStrings.GetOrAdd(
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                // Save as string (to not maintain type-specific or <string, object> dictionary requiring unboxing overhead, since most values are strings)
                 $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty (if validation is enabled)
 
             return value.ChangeType<TData>();
@@ -996,6 +1031,8 @@ namespace EventsHandler.Services.Settings.Configuration
         public void Dispose()
         {
             s_cachedStrings.Clear();
+            s_cachedGuids.Clear();
+            s_cachedUris.Clear();
             s_cachedArrays.Clear();
             this.User.Whitelist.Dispose();
         }

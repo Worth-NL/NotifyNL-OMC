@@ -13,7 +13,7 @@ namespace EventsHandler.Utilities.Diagnostics
     /// </summary>
     /// <seealso cref="OnMethodBoundaryAspect" />
     [PSerializable]
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is utility class, relying on third-party dependency.")]
     internal sealed class StopWatchProfilerAttribute : OnMethodBoundaryAspect
     {
         private Stopwatch? _stopwatch;

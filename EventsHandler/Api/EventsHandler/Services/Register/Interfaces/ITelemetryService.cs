@@ -5,7 +5,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 
-namespace EventsHandler.Services.Telemetry.Interfaces
+namespace EventsHandler.Services.Register.Interfaces
 {
     /// <summary>
     /// The service to collect and send feedback about the current business activities to the dedicated external API endpoint.

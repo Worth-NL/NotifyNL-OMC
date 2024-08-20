@@ -11,6 +11,9 @@ using Notify.Client;
 namespace EventsHandler.Services.DataSending.Clients.Factories
 {
     /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameter}"/>
+    /// <remarks>
+    ///   Customized to create "Notify NL" Web API service <see cref="NotificationClient"/>s.
+    /// </remarks>
     internal sealed class NotificationClientFactory : IHttpClientFactory<INotifyClient, string>
     {
         private readonly WebApiConfiguration _configuration;
@@ -26,7 +29,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
         INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string organizationId)
         {
-            OmcController.LogMessage(LogLevel.Trace, $"{Resources.Events_NotifyClientInitialized} {organizationId}.");
+            OmcController.LogMessage(LogLevel.Trace, string.Format(Resources.Events_NotifyClientInitialized, organizationId));
 
             return new NotifyClientProxy(
                 new NotificationClient(

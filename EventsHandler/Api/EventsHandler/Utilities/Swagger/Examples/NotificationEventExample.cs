@@ -12,7 +12,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
     /// An example of <see cref="NotificationEvent"/> to be used in Swagger UI.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "This is example model used by Swagger UI; testing how third-party dependency is dealing with it is unnecessary.")]
     internal sealed class NotificationEventExample : IExamplesProvider<NotificationEvent>
     {
         /// <inheritdoc cref="IExamplesProvider{TModel}.GetExamples"/>
@@ -26,17 +26,17 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 Attributes = new EventAttributes
                 {
                     // Cases
-                    CaseType = DefaultValues.Models.EmptyUri,
+                    CaseTypeUri = DefaultValues.Models.EmptyUri,
                     SourceOrganization = DefaultValues.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential,
                     // Objects
-                    ObjectType = DefaultValues.Models.EmptyUri,
+                    ObjectTypeUri = DefaultValues.Models.EmptyUri,
                     // Decisions
-                    DecisionType = DefaultValues.Models.EmptyUri,
+                    DecisionTypeUri = DefaultValues.Models.EmptyUri,
                     ResponsibleOrganization = DefaultValues.Models.DefaultOrganization
                 },
-                MainObject = DefaultValues.Models.EmptyUri,
-                ResourceUrl = DefaultValues.Models.EmptyUri,
+                MainObjectUri = DefaultValues.Models.EmptyUri,
+                ResourceUri = DefaultValues.Models.EmptyUri,
                 CreateDate = DateTime.UtcNow
             };
         }

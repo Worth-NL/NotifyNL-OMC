@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Enums.NotifyNL
     public enum NotificationTypes
     {
         /// <summary>
-        /// Default value.
+        /// The default value.
         /// </summary>
         [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
         Unknown = 0,

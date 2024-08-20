@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
     public struct Identification : IJsonSerializable
     {
         /// <summary>
-        /// Gets the type of the <see cref="Identification"/>.
+        /// The type of the <see cref="Identification"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("type")]
@@ -21,7 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         public IdTypes Type { get; internal set; }
 
         /// <summary>
-        /// Gets the value of the <see cref="Identification"/>.
+        /// The value of the <see cref="Identification"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("value")]

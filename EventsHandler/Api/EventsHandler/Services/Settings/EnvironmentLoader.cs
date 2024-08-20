@@ -31,7 +31,7 @@ namespace EventsHandler.Services.Settings
             string? value = this.Environment.GetEnvironmentVariable(key);
             value = disableValidation
                 ? value ?? string.Empty
-                : value.ValidateNotEmpty(key);
+                : value.GetNotEmpty(key);
 
             return value.ChangeType<TData>();
         }
