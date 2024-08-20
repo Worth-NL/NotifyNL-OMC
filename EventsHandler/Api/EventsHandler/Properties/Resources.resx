@@ -461,9 +461,6 @@
   <data name="Processing_SUCCESS_Scenario_DataRetrieved" xml:space="preserve">
     <value>The notification data (required by notification scenarios) were retrieved successfully.</value>
   </data>
-  <data name="Processing_ERROR_NotifyResponseNull" xml:space="preserve">
-    <value>The HTTP Response from Notify NL was null.</value>
-  </data>
   <data name="Processing_SUCCESS_Scenario_DataProcessed" xml:space="preserve">
     <value>The notification data were processed by the selected notification scenario successfully.</value>
   </data>

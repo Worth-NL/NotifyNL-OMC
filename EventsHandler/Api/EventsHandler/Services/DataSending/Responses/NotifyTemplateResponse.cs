@@ -1,7 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Properties;
-
 namespace EventsHandler.Services.DataSending.Responses
 {
     /// <summary>
@@ -54,7 +52,7 @@ namespace EventsHandler.Services.DataSending.Responses
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static NotifyTemplateResponse Failure(string? error = null)
-            => new(false, string.Empty, string.Empty, error ?? Resources.Processing_ERROR_NotifyResponseNull);
+        internal static NotifyTemplateResponse Failure(string error)
+            => new(false, string.Empty, string.Empty, error);
     }
 }

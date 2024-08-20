@@ -20,11 +20,6 @@ namespace EventsHandler.Services.DataSending.Responses
         internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
-        /// The body of the <see cref="NotifySendResponse"/>.
-        /// </summary>
-        internal string Body { get; }
-
-        /// <summary>
         /// The error which occurred during the communication with "Notify NL".
         /// </summary>
         internal string Error { get; }
@@ -32,23 +27,28 @@ namespace EventsHandler.Services.DataSending.Responses
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifySendResponse"/> struct.
         /// </summary>
-        private NotifySendResponse(bool isSuccess, string body, string error)
+        private NotifySendResponse(bool isSuccess, string error)
         {
             this.IsSuccess = isSuccess;
-            this.Body = body;
             this.Error = error;
         }
         
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static NotifySendResponse Success(string body)
-            => new(true, body, string.Empty);
+        internal static NotifySendResponse Success()
+            => new(true, string.Empty);
         
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static NotifySendResponse Failure(string? error = null)
-            => new(false, string.Empty, error ?? Resources.Processing_ERROR_NotifyResponseNull);
+        internal static NotifySendResponse Failure_Unknown()
+            => new(false, Resources.Processing_ERROR_Notification_DeliveryMethodUnknown);
+        
+        /// <summary>
+        /// Failure result.
+        /// </summary>
+        internal static NotifySendResponse Failure(string error)
+            => new(false, error);
     }
 }

@@ -898,15 +898,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The HTTP Response from Notify NL was null..
-        /// </summary>
-        internal static string Processing_ERROR_NotifyResponseNull {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_NotifyResponseNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification method is missing, unknown, or not supported..
         /// </summary>
         internal static string Processing_ERROR_Scenario_NotificationMethod {
