@@ -3,9 +3,10 @@
 namespace EventsHandler.Services.DataSending.Responses
 {
     /// <summary>
-    /// Contains details of response from Web API service after sending to it GET, POST or similar request.
+    /// Contains details of HTTP Response from a Web / Web API service after sending to it
+    /// <see cref="HttpMethod.Get"/>, <see cref="HttpMethod.Post"/> or similar HTTP Request.
     /// </summary>
-    internal readonly struct ApiResponse
+    internal readonly struct RequestResponse
     {
         /// <summary>
         /// The status of the HTTP Request.
@@ -18,9 +19,9 @@ namespace EventsHandler.Services.DataSending.Responses
         internal string JsonResponse { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResponse"/> struct.
+        /// Initializes a new instance of the <see cref="RequestResponse"/> struct.
         /// </summary>
-        private ApiResponse(bool isSuccess, string jsonResponse)
+        private RequestResponse(bool isSuccess, string jsonResponse)
         {
             this.IsSuccess = isSuccess;
             this.JsonResponse = jsonResponse;
@@ -29,13 +30,13 @@ namespace EventsHandler.Services.DataSending.Responses
         /// <summary>
         /// Success result.
         /// </summary>
-        internal static ApiResponse Success(string jsonResponse)
+        internal static RequestResponse Success(string jsonResponse)
             => new(true, jsonResponse);
         
         /// <summary>
         /// Failure result.
         /// </summary>
-        internal static ApiResponse Failure(string jsonResponse)
+        internal static RequestResponse Failure(string jsonResponse)
             => new(false, jsonResponse);
     }
 }

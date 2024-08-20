@@ -96,7 +96,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             var subjectObjectUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
 
             // Sending the request
-            ApiResponse response = await networkService.PostAsync(
+            RequestResponse response = await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: subjectObjectUri,  // Request URL
                 jsonBody);

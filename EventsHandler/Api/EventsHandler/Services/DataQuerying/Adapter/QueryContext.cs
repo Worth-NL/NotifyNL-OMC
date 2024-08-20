@@ -150,7 +150,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         #region IObjectTypen
         /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(string)"/>
-        async Task<ApiResponse> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
+        async Task<RequestResponse> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
             => await this._queryObjectTypen.CreateMessageObjectAsync(this._networkService, objectDataJson);
         #endregion
     }
