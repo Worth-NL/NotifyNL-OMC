@@ -91,7 +91,7 @@ namespace EventsHandler.Services.DataSending
                 .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)) }));
+                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), (ContentCrsHeader, CrsValue) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));

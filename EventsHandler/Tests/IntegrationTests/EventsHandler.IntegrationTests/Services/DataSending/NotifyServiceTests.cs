@@ -87,7 +87,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         }
         #endregion
 
-        #region SendEmailAsync
+        #region SendEmailAsync()
         [Test]
         public async Task SendEmailAsync_Calls_NotificationClientMethod()
         {
@@ -114,7 +114,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         }
         #endregion
 
-        #region SendSmsAsync
+        #region SendSmsAsync()
         [Test]
         public async Task SendSmsAsync_Calls_NotificationClientMethod()
         {
@@ -141,7 +141,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         }
         #endregion
 
-        #region GenerateTemplatePreviewAsync
+        #region GenerateTemplatePreviewAsync()
         [Test]
         public async Task GenerateTemplatePreviewAsync_Calls_NotificationClientMethod()
         {

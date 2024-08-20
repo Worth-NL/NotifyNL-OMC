@@ -8,6 +8,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -24,6 +25,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         private readonly IQueryKlant _queryKlant;
         private readonly IQueryZaak _queryZaak;
         private readonly IQueryObjecten _queryObjecten;
+        private readonly IQueryObjectTypen _queryObjectTypen;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -33,7 +35,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             IQueryBase queryBase,
             IQueryKlant queryKlant,
             IQueryZaak queryZaak,
-            IQueryObjecten queryObjecten)
+            IQueryObjecten queryObjecten,
+            IQueryObjectTypen queryObjectTypen)
         {
             // Composition
             this._networkService = networkService;
@@ -41,6 +44,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
             this._queryObjecten = queryObjecten;
+            this._queryObjectTypen = queryObjectTypen;
         }
 
         #region IQueryBase
@@ -141,6 +145,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
         Task<TaskObject> IQueryContext.GetTaskAsync()
             => this._queryObjecten.GetTaskAsync(this._queryBase);
+        #endregion
+
+        #region IObjectTypen
+        /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(string)"/>
+        async Task<bool> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
+            => await this._queryObjectTypen.CreateMessageObjectAsync(this._networkService, objectDataJson);
         #endregion
     }
 }

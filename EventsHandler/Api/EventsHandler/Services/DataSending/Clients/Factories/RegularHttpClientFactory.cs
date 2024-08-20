@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
 
             // Set universal Request Headers
             httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));
+                new MediaTypeWithQualityHeaderValue(DefaultValues.Request.ContentType));  // Content-Type: application/json
 
             // Set custom Request Headers
             for (int index = 0; index < requestHeaders.Length; index++)

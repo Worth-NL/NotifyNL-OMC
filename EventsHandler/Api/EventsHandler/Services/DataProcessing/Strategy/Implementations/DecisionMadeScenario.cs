@@ -60,7 +60,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #1: The message needs to be of a specific type
             if (infoObject.TypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.MessageType_Uuid())
+                this.Configuration.User.Whitelist.MessageObjectType_Uuid())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
             }
@@ -186,9 +186,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 // Prepare HTTP Request Body
                 string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
 
-                string objectData = PrepareObjectData(
+                string objectDataJson = PrepareObjectData(
                     response.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
-                    this.Configuration.AppSettings.Variables.Objecten.MessageObjectTypeName(), this._bsnNumber, commaSeparatedUris);
+                    this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
+
+                await this._queryContext.CreateMessageObjectAsync(objectDataJson);
             }
 
             return ProcessingDataResponse.Success();

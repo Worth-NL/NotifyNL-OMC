@@ -315,12 +315,12 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal ushort MessageObjectTypeVersion()
-                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectTypeVersion));
+                    internal ushort MessageObjectType_Version()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    internal string MessageObjectTypeName()  // NOTE: Used by "Logius" system
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectTypeName));
+                    internal string MessageObjectType_Name()  // NOTE: Used by "Logius" system
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Name));
                 }
 
                 /// <summary>
@@ -797,12 +797,12 @@ namespace EventsHandler.Services.Settings.Configuration
                 // ---------------------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid TaskType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskType_Uuid));
+                internal Guid TaskObjectType_Uuid()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid MessageType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageType_Uuid));
+                internal Guid MessageObjectType_Uuid()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
