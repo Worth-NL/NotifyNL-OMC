@@ -9,13 +9,23 @@ v.1.8.6
 
 **OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
+<h4 id="openServices-list"> Open services:</h4>
+
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
 - [**Objecten**](https://github.com/maykinmedia/objects-api) (Web API service)
 - [**ObjectTypen**](https://github.com/maykinmedia/objecttypes-api) (Web API service)
 - [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
+
+<h4 id="notify-list"> Notify:</h4>
+
 - [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
+    \- Web API service (Python)
+    \- Language-specific clients (e.g., C#, JavaScript, PHP)
+    > **OMC** is written in C# and using .NET Client for Notify.
+
+    \- Webpage: admin portal
 
 > **NOTE:** Different versions of these external API services are handled by, so called "[OMC Workflows](#workflow_versions)".
 
@@ -137,8 +147,8 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_WHITELIST_TASKASSIGNED_IDS": "",
         "USER_WHITELIST_DECISIONMADE_IDS": "",
         "USER_WHITELIST_MESSAGE_ALLOWED": "false",
-        "USER_WHITELIST_TASKTYPE_UUID": "",
-        "USER_WHITELIST_MESSAGETYPE_UUID": "",
+        "USER_WHITELIST_TASKOBJECTTYPE_UUID": "",
+        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID": "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
@@ -206,15 +216,100 @@ in order to run an already created **docker container**.
 
 ## 3.1. Different configurations
 
-> **OMC API** and related sub-systems (e.g., **Secrets Manager**) are using mix of configurations:
+**OMC API** and related sub-systems (e.g., **Secrets Manager**) are using two types of configurations:
 
-- `appsettings.json` (for public configurations, which are not meant to vary between customers/instances of OMC)
+> - public (`appsettings.json`)
+> - private (`environment variables`)
+
+Which can also be divided into other two categories:
+
+> - universal settings (not changing very often; basic/default behavior of **OMC**)
+> - customizable settings (which may vary between **OMC** instances; business)
+
+Easier to monitor, test, modify, and maintain by developers are `appsettings.json`,
+but `environment variables` are easier to be adjusted by the end users of **OMC**.
+
+### 3.1.1. `appsettings.json`
+
+> Made for public configurations (can be preserved in the code). They are not meant to be changed very often.
 
 ![Invalid base URL - Error](images/appsettings.png)
 
-> NOTE: These configurations are also reflecting the modes which **OMC** Web API application is supporting.
+> **NOTE:** Here you can set which modes (e.g., _Development_, _Production_, _Test_) or workflows (e.g., _v1_, _v2_, ...) the **OMC** Web API application is supporting. Other options are settings related to HTTP connection, encryption used to authorize HTTP requests to / from other Web API services, or default variables defining **OMC** domain setup - adjusting how the generic and agnostic [**Open Services**](#openServices-list) will be utilized.
 
-- `environment variables` (for sensitive configurations and/or customizable per customers/instances of **OMC**):
+<h4 id="appsettings-content"> Settings:</h4>
+
+> Full content of `appsettings.json` file.
+
+```JSON
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Information"
+    }
+  },
+  "Network": {
+    "ConnectionLifetimeInSeconds": 90,
+    "HttpRequestTimeoutInSeconds": 60,
+    "HttpRequestsSimultaneousNumber": 20
+  },
+  "Encryption": {
+    "IsAsymmetric": false
+  },
+  "Features": {
+    "OmcWorkflowVersion": 1 // NOTE: OpenNotificatie, OpenZaak, OpenKlant
+  },
+  // Predefined variables based on which the application workflow currently relies.
+  // NOTE: Their default values should not be changed, unless they are also adopted on
+  //       the OpenZaak and OpenKlant API sides (which are more dynamic than OMC API).
+  "Variables": {
+    // ENG: Subject type (e.g., person or organization)
+    "BetrokkeneType": "natuurlijk_persoon",
+    // ENG: General description => "initiator role"
+    "OmschrijvingGeneriek": "initiator",
+    // ENG: Party identifier => e.g., "citizen identifier"
+    "PartijIdentificator": "Burgerservicenummer",
+    // ENG: Email general description (e.g., "email", "e-mail", "Email"...)
+    "EmailOmschrijvingGeneriek": "Email",
+    // ENG: Phone general description (e.g., "phone", "mobile", "nummer"...)
+    "TelefoonOmschrijvingGeneriek": "Telefoon",
+
+    "OpenKlant": {
+      "CodeObjectType": "Zaak",
+      "CodeRegister": "ZRC",
+      "CodeObjectTypeId": "identificatie"
+    },
+
+    "Objecten": {
+      "MessageObjectType_Version": 13,
+      "MessageObjectType_Name": "Logius"
+    },
+
+    // User communication: Messages to be put into register exposed to citizens
+    "Messages": {
+      "SMS_Success_Subject": "Notificatie verzonden",
+      "SMS_Success_Body": "SMS notificatie succesvol verzonden.",
+
+      "SMS_Failure_Subject": "We konden uw notificatie niet afleveren.",
+      "SMS_Failure_Body": "Het afleveren van een SMS bericht is niet gelukt. Controleer het telefoonnumer in uw profiel.",
+
+      "Email_Success_Subject": "Notificatie verzonden",
+      "Email_Success_Body": "E-mail notificatie succesvol verzonden.",
+
+      "Email_Failure_Subject": "We konden uw notificatie niet afleveren.",
+      "Email_Failure_Body": "Het afleveren van een email bericht is niet gelukt. Controleer het emailadres in uw profiel."
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+
+### 3.1.2. `environment variables`
+
+> Meant to store sensitive configurations and / or customizable per instances of the **OMC** application).
+
+**Required variables:**
 
 | Name*                                               | .NET Type | Example                                | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
 | --------------------------------------------------- | --------- | -------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -269,8 +364,8 @@ in order to run an already created **docker container**.
 | USER_WHITELIST_TASKASSIGNED_IDS                     | string[]  | "1, 2, 3, 4"                           | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
 | USER_WHITELIST_DECISIONMADE_IDS                     | string[]  | "1, 2, 3, 4"                           | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
 | USER_WHITELIST_MESSAGE_ALLOWED                      | bool      | "true" or "false"                      | false        | Cannot be missing and have null or empty value                                                                                             | Is provided by the user                                                                                                                                                                                               |
-| USER_WHITELIST_TASKTYPE_UUID                        | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                             |
-| USER_WHITELIST_MESSAGETYPE_UUID                     | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                                   |
+| USER_WHITELIST_TASKOBJECTTYPE_UUID                  | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                             |
+| USER_WHITELIST_MESSAGEOBJECTTYPE_UUID               | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                                   |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Monitoring:** Configurations used by "Sentry"     |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | SENTRY_DSN                                          | URI       | "https://1abxxx@o1xxx.sentry.io/xxx"   | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |
@@ -279,7 +374,7 @@ in order to run an already created **docker container**.
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 \** GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the name used in .NET
 
-### 3.1.1. How to get some of these environment variables
+#### 3.1.2.1. How to get some of these environment variables
 
 `OMC_AUTHORIZATION_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
 
@@ -289,7 +384,7 @@ in order to run an already created **docker container**.
 
 `USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
-## 3.2. Setting environment variables
+#### 3.1.2.2. Setting environment variables
 
 1. On Windows:
 
@@ -305,9 +400,9 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > To be finished...
 
-## 3.3. Using HELM Charts
+#### 3.1.2.3. Using HELM Charts
 
-**NotifyNL** and **OMC** are meant to be used with [HELM Charts](https://helm.sh/) (helping to install them on your machine).
+**NotifyNL** and **OMC** are meant to be used with [HELM Charts](https://helm.sh/) (helping to install them on your local machine / server).
 
 - [NotifyNL HELM Charts (GitHub)](https://github.com/Worth-NL/helm-charts)
 
