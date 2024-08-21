@@ -943,7 +943,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification data were processed by the selected notification scenario successfully..
+        ///   Looks up a localized string similar to The notification data were processed successfully by the selected notification scenario..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_DataProcessed {
             get {
@@ -952,7 +952,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification data (required by notification scenarios) were retrieved successfully..
+        ///   Looks up a localized string similar to The notification data were retrieved successfully by the selected notification scenario..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_DataRetrieved {
             get {
