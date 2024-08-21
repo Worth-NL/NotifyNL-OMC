@@ -30,7 +30,7 @@ namespace EventsHandler.Utilities._TestHelpers
         }
 
         #region ILoadingService mocks
-        internal const string TestTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
+        internal const string TestTypeObjectUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
 
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.
@@ -105,8 +105,8 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_WHITELIST_TASKASSIGNED_IDS",       GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_DECISIONMADE_IDS",       GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_MESSAGE_ALLOWED",        GetTestValue(isValid, testBool)  },
-                { "USER_WHITELIST_TASKOBJECTTYPE_UUID",    GetTestValue(isValid, TestTypeUuid) },
-                { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID", GetTestValue(isValid, TestTypeUuid) }
+                { "USER_WHITELIST_TASKOBJECTTYPE_UUID",    GetTestValue(isValid, TestTypeObjectUuid) },
+                { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID", GetTestValue(isValid, TestTypeObjectUuid) }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)
