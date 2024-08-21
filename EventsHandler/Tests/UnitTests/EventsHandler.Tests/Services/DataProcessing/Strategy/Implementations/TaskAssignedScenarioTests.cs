@@ -59,7 +59,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             Attributes = new EventAttributes
             {
-                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestTypeUuid}")
+                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestTypeObjectUuid}")
             }
         };
 
@@ -123,6 +123,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 }
             }
         };
+
+        private const string TestEmailAddress = "test@email.com";
+        private const string TestPhoneNumber = "911";
         #endregion
 
         #region TryGetDataAsync()
@@ -220,7 +223,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToFalse_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
@@ -241,33 +244,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        [Test]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithoutNotifyMethod_ReturnsFailure()
-        {
-            // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
-                DistributionChannels.None,
-                s_taskOpenAssignedToPersonWithExpirationDate,
-                true,
-                true);
-
-            // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
-
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualResult.IsSuccess, Is.False);
-                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
-                Assert.That(actualResult.Content, Has.Count.EqualTo(0));
-
-                VerifyGetDataMethodCalls(1, 1, 1);
-            });
-        }
-
+        [TestCase(DistributionChannels.None)]
         [TestCase(DistributionChannels.Unknown)]
         [TestCase((DistributionChannels)(-1))]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithUnknownNotifyMethod_ReturnsFailure(
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithInvalidNotifyMethod_ReturnsFailure(
             DistributionChannels invalidDistributionChannel)
         {
             // Arrange
@@ -291,13 +271,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        // Single
-        [TestCase(DistributionChannels.Email, 1)]
-        [TestCase(DistributionChannels.Sms, 1)]
-        // Both
-        [TestCase(DistributionChannels.Both, 2)]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_WithInformSetToTrue_WithValidDistChannels_ReturnsSuccess(
-            DistributionChannels testDistributionChannel, int notifyDataCount)
+        [TestCase(DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
+        [TestCase(DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithValidDistChannels_ReturnsSuccess(
+            DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
@@ -316,14 +294,33 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
 
+                string contactDetails;
+
                 if (testDistributionChannel == DistributionChannels.Both)
                 {
                     NotifyData firstResult = actualResult.Content.First();
                     Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
+                    Assert.That(firstResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(firstResult.NotificationMethod, this._testConfiguration)));
 
                     NotifyData secondResult = actualResult.Content.Last();
                     Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
+                    Assert.That(secondResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(firstResult.NotificationMethod, this._testConfiguration)));
+
+                    contactDetails = firstResult.ContactDetails + secondResult.ContactDetails;
                 }
+                else
+                {
+                    NotifyData onlyResult = actualResult.Content.First();
+                    Assert.That(onlyResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod!.Value));
+                    Assert.That(onlyResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(onlyResult.NotificationMethod, this._testConfiguration)));
+
+                    contactDetails = onlyResult.ContactDetails;
+                }
+
+                Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
                 
                 VerifyGetDataMethodCalls(1, 1, 1);
             });
@@ -510,7 +507,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 {
                     Name = "Jackie",
                     Surname = "Chan",
-                    DistributionChannel = testDistributionChannel
+                    DistributionChannel = testDistributionChannel,
+                    EmailAddress = TestEmailAddress,
+                    TelephoneNumber = TestPhoneNumber
                 });
 
             // IDataQueryService
@@ -545,6 +544,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
+        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        {
+            return notifyMethod switch
+            {
+                NotifyMethods.Email => configuration.User.TemplateIds.Email.TaskAssigned(),
+                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.TaskAssigned(),
+                _ => Guid.Empty
+            };
+        }
+
         private static NotifyData GetNotifyData(NotifyMethods method)
         {
             return new NotifyData(method,
@@ -564,7 +573,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
-
+            
+            // Dependent queries
             this._mockedQueryContext
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
@@ -574,22 +584,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
-                    Times.Exactly(getPartyDataAsyncInvokeCount));
+                Times.Exactly(getPartyDataAsyncInvokeCount));
         }
 
         private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             this._mockedNotifyService
                 .Verify(mock => mock.SendEmailAsync(
-                        It.IsAny<NotificationEvent>(),
-                        It.IsAny<NotifyData>()),
-                    Times.Exactly(sendEmailInvokeCount));
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()),
+                Times.Exactly(sendEmailInvokeCount));
             
             this._mockedNotifyService
                 .Verify(mock => mock.SendSmsAsync(
-                        It.IsAny<NotificationEvent>(),
-                        It.IsAny<NotifyData>()),
-                    Times.Exactly(sendSmsInvokeCount));
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()),
+                Times.Exactly(sendSmsInvokeCount));
         }
         #endregion
     }
