@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -158,7 +159,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
-            if (notifyData.Count == 0)
+            if (notifyData.IsEmpty())
             {
                 return ProcessingDataResponse.Failure_Empty();
             }
