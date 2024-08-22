@@ -171,34 +171,33 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             if (notifyData.IsEmpty())
             {
-                NotifyTemplateResponse templateResponse =
-                    // NOTE: Most likely there will be only a single package of data received
-                    await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
-
-                if (templateResponse.IsFailure)
-                {
-                    return ProcessingDataResponse.Failure(templateResponse.Error);
-                }
-
-                // Adjusting the body for Logius system
-                string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
-
-                // Prepare HTTP Request Body
-                string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
-
-                string objectDataJson = PrepareObjectData(
-                    templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
-                    this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
-
-                RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
-
-                if (requestResponse.IsFailure)
-                {
-                    ProcessingDataResponse.Failure(requestResponse.JsonResponse);
-                }
+                return ProcessingDataResponse.Failure_Empty();
             }
 
-            return ProcessingDataResponse.Success();
+            NotifyTemplateResponse templateResponse =
+                // NOTE: Most likely there will be only a single package of data received
+                await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
+
+            if (templateResponse.IsFailure)
+            {
+                return ProcessingDataResponse.Failure(templateResponse.Error);
+            }
+
+            // Adjusting the body for Logius system
+            string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
+
+            // Prepare HTTP Request Body
+            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
+
+            string objectDataJson = PrepareObjectData(
+                templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
+                this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
+
+            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+
+            return requestResponse.IsFailure
+                ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
+                : ProcessingDataResponse.Success();
         }
 
         /// <summary>
