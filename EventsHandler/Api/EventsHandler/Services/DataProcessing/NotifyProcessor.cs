@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing
         }
 
         /// <inheritdoc cref="IProcessingService{TModel}.ProcessAsync(TModel)"/>
-        async Task<(ProcessingResult, string)> IProcessingService<NotificationEvent>.ProcessAsync(NotificationEvent notification)
+        async Task<(ProcessingResult, string)> IProcessingService<NotificationEvent>.ProcessAsync(NotificationEvent notification)  // TODO: Introduce model in place of tuple
         {
             try
             {
@@ -60,6 +60,7 @@ namespace EventsHandler.Services.DataProcessing
                     // NOTE: The notification was sent and the completion status was reported to the telemetry API
                     : (ProcessingResult.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent);
             }
+            // TODO: Include ProcessingResult enum in GettingDataResponse, ProcessingDataResponse, and other... responses
             catch (NotImplementedException)
             {
                 // NOTE: The notification COULD not be sent, but it's not a failure, and it shouldn't be retried
