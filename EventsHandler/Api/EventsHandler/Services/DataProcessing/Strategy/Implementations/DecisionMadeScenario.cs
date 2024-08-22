@@ -169,7 +169,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
-            if (notifyData.Count > 0)
+            if (notifyData.IsEmpty())
             {
                 NotifyTemplateResponse templateResponse =
                     // NOTE: Most likely there will be only a single package of data received
