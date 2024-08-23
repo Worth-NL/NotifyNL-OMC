@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Collections.Immutable;
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
@@ -293,6 +294,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingData));
             });
         }
+
+        [Test]
+        public async Task ProcessDataAsync_ValidNotifyData_GenerationFailed_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(false, true, true);
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsFailure, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(TestGenerationError));
+            });
+        }
         #endregion
 
         #region Setup
@@ -434,6 +452,18 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 NotifyMethods.Email => configuration.User.TemplateIds.Email.DecisionMade(),
                 NotifyMethods.Sms => configuration.User.TemplateIds.Sms.DecisionMade(),
                 _ => Guid.Empty
+            };
+        }
+
+        private static IReadOnlyCollection<NotifyData> GetNotifyData(Dictionary<string, object>? personalization = null)
+        {
+            return new[]
+            {
+                new NotifyData(
+                    NotifyMethods.Email,
+                    TestEmailAddress,
+                    Guid.NewGuid(),
+                    personalization ?? new Dictionary<string, object>())
             };
         }
         #endregion
