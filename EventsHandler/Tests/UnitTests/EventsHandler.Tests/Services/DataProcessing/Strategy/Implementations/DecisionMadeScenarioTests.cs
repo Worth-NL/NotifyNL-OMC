@@ -17,6 +17,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
@@ -39,18 +40,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
         }
 
-        [OneTimeTearDown]
-        public void TestsCleanup()
-        {
-            this._testConfiguration.Dispose();
-        }
-
         [TearDown]
-        public void ResetTests()
+        public void TestsReset()
         {
             this._mockedDataQuery.Reset();
             this._mockedQueryContext.Reset();
             this._mockedNotifyService.Reset();
+
+            this._getDataVerified = false;
+            this._processDataVerified = false;
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._testConfiguration.Dispose();
         }
 
         #region Test data
@@ -102,7 +106,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
             });
         }
 
@@ -121,7 +125,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
             });
         }
 
@@ -144,7 +148,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
             });
         }
 
@@ -168,7 +172,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(1, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 0, 0);
             });
         }
 
@@ -187,7 +191,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 0);
             });
         }
 
@@ -211,7 +215,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1);
             });
         }
 
@@ -263,7 +267,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
 
-                VerifyGetDataMethodCalls(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1);
             });
         }
         #endregion
@@ -271,7 +275,24 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         // TODO: Add GetPersonalization tests
 
         #region ProcessDataAsync()
+        [Test]
+        public async Task ProcessDataAsync_EmptyNotifyData_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, true);
 
+            NotifyData[] emptyNotifyData = Array.Empty<NotifyData>();
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, emptyNotifyData);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsFailure, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingData));
+            });
+        }
         #endregion
 
         #region Setup
@@ -337,6 +358,75 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
+        private const string TestSubject = "Test subject";
+        private const string TestBody = "Test body";
+        private const string TestGenerationError = "Test generation error";
+        private const string TestCreationError = "Test creation error";
+        private const string TestJsonResponse = "{ \"IsValid\": \"OK\" }";
+        private static readonly Uri s_firstDocumentObjectUri = new($"https://www.test1.nl/{new Guid()}");
+        private static readonly Uri s_secondDocumentObjectUri = new($"https://www.test2.nl/{new Guid()}");
+        private static readonly Uri s_thirdDocumentObjectUri = new($"https://www.test3.nl/{new Guid()}");
+        private static readonly Uri s_fourthDocumentObjectUri = new($"https://www.test4.nl/{new Guid()}");
+        private static readonly Uri s_fifthDocumentObjectUri = new($"https://www.test5.nl/{new Guid()}");
+
+        private INotifyScenario ArrangeDecisionScenario_ProcessData(bool isGenerateSuccessful, bool hasValidUris, bool isCreationSuccessful)
+        {
+            // INotifyService
+            this._mockedNotifyService
+                .Setup(mock => mock.GenerateTemplatePreviewAsync(
+                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()))
+                .ReturnsAsync(isGenerateSuccessful
+                    ? NotifyTemplateResponse.Success(TestSubject, TestBody)
+                    : NotifyTemplateResponse.Failure(TestGenerationError));
+
+            // IQueryContext
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()))
+                .ReturnsAsync(new Documents());
+
+            (Document Document, InfoObject InfoObject)[] testData =
+            {
+                (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
+            };
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()))
+                .ReturnsAsync(hasValidUris
+                    ? new Documents
+                    {
+                        Results = testData.Select(data => data.Document).ToList()
+                    }
+                    : new Documents());
+
+            if (hasValidUris)
+            {
+                foreach ((Document Document, InfoObject InfoObject) data in testData)
+                {
+                    this._mockedQueryContext
+                        .Setup(mock => mock.GetInfoObjectAsync(data.Document))
+                        .ReturnsAsync(data.InfoObject);
+                }
+            }
+
+            this._mockedQueryContext
+                .Setup(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()))
+                .ReturnsAsync(isCreationSuccessful
+                    ? RequestResponse.Success(TestJsonResponse)
+                    : RequestResponse.Failure(TestCreationError));
+
+            // IDataQueryService
+            this._mockedDataQuery
+                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Returns(this._mockedQueryContext.Object);
+
+            // Decision Scenario
+            return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
+        }
+
         private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
         {
             return notifyMethod switch
@@ -349,23 +439,33 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Verify
-        private void VerifyGetDataMethodCalls(int getDecisionsAndCaseInvokeCount, int getCaseTypeInvokeCount,
-            int getCitizenDetailsInvokeCount)
+        private bool _getDataVerified;
+        private bool _processDataVerified;
+
+        private void VerifyGetDataMethodCalls(
+            int fromInvokeCount, int getDecisionResInvokeCount, int getInfoObjectInvokeCount,
+            int getDecisionsAndCaseInvokeCount, int getCaseTypeInvokeCount, int getCitizenDetailsInvokeCount)
         {
+            if (this._getDataVerified)
+            {
+                return;
+            }
+            
+            // IDataQueryService
             this._mockedDataQuery
                 .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
-                Times.Once);
-
+                Times.Exactly(fromInvokeCount));
+            
+            // IQueryContext
             this._mockedQueryContext
                 .Verify(mock => mock.GetDecisionResourceAsync(It.IsAny<Uri?>()),
-                Times.Once);
+                Times.Exactly(getDecisionResInvokeCount));
 
             this._mockedQueryContext
                 .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
-                Times.Once);
-
-            // Block of 3 methods occurring consecutively after each other
-            this._mockedQueryContext
+                Times.Exactly(getInfoObjectInvokeCount));
+          
+            this._mockedQueryContext  // Block of 3 methods occurring consecutively after each other
                 .Verify(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()),
                 Times.Exactly(getDecisionsAndCaseInvokeCount));
             this._mockedQueryContext
@@ -374,26 +474,55 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
                 Times.Exactly(getDecisionsAndCaseInvokeCount));
-
-            // Dependent queries
-            this._mockedQueryContext
+          
+            this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
-
-            // Dependent + consecutive queries
-            this._mockedQueryContext
+          
+            this._mockedQueryContext  // Dependent + consecutive queries
                 .Verify(mock => mock.GetBsnNumberAsync(It.IsAny<Uri>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string?>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
+
+            this._getDataVerified = true;
+
+            VerifyProcessDataMethodCalls(0, 0, 1, 0);
         }
 
-        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        private void VerifyProcessDataMethodCalls(int generateInvokeCount, int getDocumentsInvokeCount, int getInfoObjectInvokeCount, int createInvokeCount)
         {
+            if (this._processDataVerified)
+            {
+                return;
+            }
+
+            // INotifyService
+            this._mockedNotifyService
+                .Verify(mock => mock.GenerateTemplatePreviewAsync(
+                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()),
+                Times.Exactly(generateInvokeCount));
+
+            // IQueryContext
+            this._mockedQueryContext
+                .Verify(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()),
+                Times.Exactly(getDocumentsInvokeCount));
+            
+            this._mockedQueryContext
+                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
+                Times.Exactly(getInfoObjectInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()),
+                Times.Exactly(createInvokeCount));
+
+            this._processDataVerified = true;
+
+            VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
         }
         #endregion
     }
