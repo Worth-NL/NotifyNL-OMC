@@ -39,18 +39,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
         }
 
-        [OneTimeTearDown]
-        public void TestsCleanup()
-        {
-            this._testConfiguration.Dispose();
-        }
-
         [TearDown]
-        public void ResetTests()
+        public void TestsReset()
         {
             this._mockedDataQuery.Reset();
             this._mockedQueryContext.Reset();
             this._mockedNotifyService.Reset();
+
+            this._getDataVerified = false;
+            this._processDataVerified = false;
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._testConfiguration.Dispose();
         }
 
         #region Test data
@@ -147,7 +150,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 0, 0, 0);
             });
         }
 
@@ -169,7 +172,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 0, 0, 0);
             });
         }
 
@@ -191,7 +194,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(0, 0, 0);
+                VerifyGetDataMethodCalls(1, 0, 0, 0);
             });
         }
 
@@ -218,7 +221,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 0, 0);
             });
         }
 
@@ -240,7 +243,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0);
             });
         }
 
@@ -267,7 +270,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
 
@@ -322,7 +325,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
                 
-                VerifyGetDataMethodCalls(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
         #endregion
@@ -372,14 +375,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
 
-                VerifyGetDataMethodCalls(1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
         #endregion
 
         #region ProcessDataAsync()
         [Test]
-        public async Task ProcessDataAsync_InvalidNotifyData_ReturnsFailure()
+        public async Task ProcessDataAsync_EmptyNotifyData_ReturnsFailure()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(true);
@@ -564,18 +567,28 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Verify
-        private void VerifyGetDataMethodCalls(int getCaseAsyncInvokeCount, int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
+        private bool _getDataVerified;
+        private bool _processDataVerified;
+
+        private void VerifyGetDataMethodCalls(int fromInvokeCount, int getCaseAsyncInvokeCount,
+            int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
         {
+            if (this._getDataVerified)
+            {
+                return;
+            }
+
+            // IDataQueryService
             this._mockedDataQuery
                 .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
-                Times.Once);
+                Times.Exactly(fromInvokeCount));
 
+            // IQueryContext
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
                 Times.Exactly(getCaseAsyncInvokeCount));
             
-            // Dependent queries
-            this._mockedQueryContext
+            this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
             this._mockedQueryContext
@@ -585,10 +598,20 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
                 Times.Exactly(getPartyDataAsyncInvokeCount));
+
+            this._getDataVerified = true;
+
+            VerifyProcessDataMethodCalls(0, 0);
         }
 
         private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
+            if (this._processDataVerified)
+            {
+                return;
+            }
+            
+            // INotifyService
             this._mockedNotifyService
                 .Verify(mock => mock.SendEmailAsync(
                     It.IsAny<NotificationEvent>(),
@@ -600,6 +623,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     It.IsAny<NotificationEvent>(),
                     It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
+
+            this._processDataVerified = true;
+
+            VerifyGetDataMethodCalls(0, 0, 0, 0);
         }
         #endregion
     }
