@@ -37,7 +37,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+            this._testConfiguration = ConfigurationHandler.GetValidBothConfigurations();
         }
 
         [TearDown]
@@ -325,6 +325,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs));
+            });
+        }
+
+        [Test]
+        public async Task ProcessDataAsync_ValidNotifyData_GenerationSucceeded_HasDocuments_CreationFailed_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, false);
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsFailure, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(TestCreationError));
             });
         }
         #endregion

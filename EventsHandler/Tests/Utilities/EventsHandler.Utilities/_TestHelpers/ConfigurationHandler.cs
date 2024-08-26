@@ -144,6 +144,11 @@ namespace EventsHandler.Utilities._TestHelpers
 
         internal static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isValid)
         {
+            return GetWebApiConfiguration(loaderType, isValid, isValid);
+        }
+
+        private static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isAppSettingsValid, bool isEnvironmentValid)
+        {
             // IServiceCollection
             var serviceCollection = new ServiceCollection();
 
@@ -151,12 +156,20 @@ namespace EventsHandler.Utilities._TestHelpers
             switch (loaderType)
             {
                 case LoaderTypes.AppSettings:
-                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid));
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isAppSettingsValid));
                     break;
 
                 case LoaderTypes.Environment:
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isEnvironmentValid));
                     break;
+
+                case LoaderTypes.Both:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isAppSettingsValid));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isEnvironmentValid));
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(loaderType), loaderType, null);
             }
 
             // Remaining components of Web API Configuration
@@ -171,6 +184,11 @@ namespace EventsHandler.Utilities._TestHelpers
         internal static WebApiConfiguration GetValidEnvironmentConfiguration()
         {
             return GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
+        }
+
+        internal static WebApiConfiguration GetValidBothConfigurations()
+        {
+            return GetWebApiConfiguration(LoaderTypes.Both, isValid: true);
         }
         #endregion
     }
