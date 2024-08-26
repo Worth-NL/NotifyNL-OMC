@@ -170,7 +170,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 NotifySendResponse response = data.NotificationMethod switch
                 {
                     NotifyMethods.Email => await this.NotifyService.SendEmailAsync(notification, data),
-                    NotifyMethods.Sms => await this.NotifyService.SendSmsAsync(notification, data),
+                    NotifyMethods.Sms   => await this.NotifyService.SendSmsAsync(notification, data),
                     _ => NotifySendResponse.Failure_Unknown()
                 };
 
