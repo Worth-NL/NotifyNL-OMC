@@ -187,16 +187,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
 
             // Prepare HTTP Request Body
-            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext ??= this.DataQuery.From(notification),
-                                                                          this._decisionResource);
+            this._queryContext ??= this.DataQuery.From(notification);
+
+            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext);
             if (commaSeparatedUris.IsEmpty())
             {
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
-            string objectDataJson = PrepareObjectData(
-                templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
-                this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
+            string objectDataJson = PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
 
             RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
 
@@ -217,10 +216,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private static async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext, DecisionResource decisionResource)
+        private async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext)
         {
             // Retrieve documents
-            List<Document> documents = (await queryContext.GetDocumentsAsync(decisionResource))
+            List<Document> documents = (await queryContext.GetDocumentsAsync(this._decisionResource))
                                        .Results;
             // Prepare URIs
             List<string> validInfoObjectsUris = new(documents.Count);
@@ -244,21 +243,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return string.Join(", ", validInfoObjectsUris);
         }
 
-        private static string PrepareObjectData(
-            string subject, string body, DateOnly publicationDate, Uri decisionUri,
-            string messageObjectTypeName, string bsnNumber, string commaSeparatedUris)
+        /// <summary>
+        ///   Prepares a block of code (responsible for message object creation) to be sent together with final JSON payload.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"/>
+        private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
         {
             return $"{{" +
                    $"  \"onderwerp\": \"{subject}\"," +
                    $"  \"berichttekst\": \"{body}\"," +
-                   $"  \"publicatiedatum\": \"{publicationDate}\"," +
-                   $"  \"referentie\": \"{decisionUri}\"," +
+                   $"  \"publicatiedatum\": \"{this._decision.PublicationDate}\"," +
+                   $"  \"referentie\": \"{this._decisionResource.DecisionUri}\"," +
                    $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
                    $"  \"geopend\": false," +
-                   $"  \"berichttype\": \"{messageObjectTypeName}\"," +
+                   $"  \"berichttype\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
                    $"  \"identificatie\": {{" +
                    $"    \"type\": \"bsn\"," +
-                   $"    \"value\": \"{bsnNumber}\"" +
+                   $"    \"value\": \"{this._bsnNumber}\"" +
                    $"  }}," +
                    $"  \"bijlages\": [" +
                    $"    {commaSeparatedUris}" +
