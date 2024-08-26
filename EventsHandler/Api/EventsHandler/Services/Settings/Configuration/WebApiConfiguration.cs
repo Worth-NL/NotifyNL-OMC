@@ -311,7 +311,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
