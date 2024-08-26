@@ -898,11 +898,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no data to be processed by the selected notification scenario..
+        ///   Looks up a localized string similar to There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
         /// </summary>
-        internal static string Processing_ERROR_Scenario_MissingData {
+        internal static string Processing_ERROR_Scenario_MissingInfoObjectsURIs {
             get {
-                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingData", resourceCulture);
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingInfoObjectsURIs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no Notify Data to be processed by the selected notification scenario..
+        /// </summary>
+        internal static string Processing_ERROR_Scenario_MissingNotifyData {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingNotifyData", resourceCulture);
             }
         }
         

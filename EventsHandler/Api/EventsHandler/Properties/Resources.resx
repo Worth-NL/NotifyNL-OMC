@@ -461,10 +461,13 @@
   <data name="Processing_SUCCESS_Scenario_DataRetrieved" xml:space="preserve">
     <value>The notification data were retrieved successfully by the selected notification scenario.</value>
   </data>
-  <data name="Processing_ERROR_Scenario_MissingData" xml:space="preserve">
-    <value>There are no data to be processed by the selected notification scenario.</value>
+  <data name="Processing_ERROR_Scenario_MissingNotifyData" xml:space="preserve">
+    <value>There are no Notify Data to be processed by the selected notification scenario.</value>
   </data>
   <data name="Processing_SUCCESS_Scenario_DataProcessed" xml:space="preserve">
     <value>The notification data were processed successfully by the selected notification scenario.</value>
+  </data>
+  <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
+    <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
   </data>
 </root>
