@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Collections.Immutable;
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
@@ -291,7 +290,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsFailure, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingData));
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingNotifyData));
             });
         }
 
@@ -309,6 +308,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(TestGenerationError));
+            });
+        }
+
+        [Test]
+        public async Task ProcessDataAsync_ValidNotifyData_GenerationSucceeded_MissingDocuments_ReturnsFailure()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, false, true);
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsFailure, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs));
             });
         }
         #endregion
@@ -398,10 +414,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     : NotifyTemplateResponse.Failure(TestGenerationError));
 
             // IQueryContext
-            this._mockedQueryContext
-                .Setup(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()))
-                .ReturnsAsync(new Documents());
-
             (Document Document, InfoObject InfoObject)[] testData =
             {
                 (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject

@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        private IQueryContext _queryContext = null!;
+        private IQueryContext? _queryContext;
         private DecisionResource _decisionResource;
         private Decision _decision;
         private DecisionType _decisionType;
@@ -187,7 +187,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
 
             // Prepare HTTP Request Body
-            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
+            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext ??= this.DataQuery.From(notification),
+                                                                          this._decisionResource);
+            if (commaSeparatedUris.IsEmpty())
+            {
+                return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
+            }
 
             string objectDataJson = PrepareObjectData(
                 templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
