@@ -1,7 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
@@ -33,6 +35,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
+            // Validation #1: Sending messages should be allowed
+            if (!this.Configuration.User.Whitelist.Message_Allowed())
+            {
+                throw new AbortedNotifyingException(
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessagesForbidden, GetWhitelistName()));
+            }
+
             throw new NotImplementedException();
         }
         #endregion

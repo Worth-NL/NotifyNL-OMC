@@ -826,6 +826,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because processing messages (message objects) is forbidden: {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_MessagesForbidden {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessagesForbidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent for this type of the message (whitelisted UUID)..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_MessageType {
