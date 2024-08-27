@@ -592,6 +592,12 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.1. Cases
 
+**Scenarios using this notification:**
+
+- Case created
+- Case status updated
+- Cace closed
+
 ```json
 {
   "actie": "create",
@@ -610,6 +616,10 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.2. Tasks
 
+**Scenarios using this notification:**
+
+- Task assigned
+
 ```json
 {
   "actie": "create",
@@ -626,6 +636,10 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.3. Decisions
 
+**Scenarios using this notification:**
+
+- Decision made
+
 ```json
 {
   "actie": "create",
@@ -634,6 +648,26 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
   "kenmerken": {
     "besluittype": "https://...",
     "verantwoordelijkeOrganisatie": "000000000"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
+}
+```
+
+#### 5.2.2.4. Messages
+
+**Scenarios using this notification:**
+
+- Message received
+
+```json
+{
+  "actie": "create",
+  "kanaal": "objecten",
+  "resource": "object",
+  "kenmerken": {
+    "objectType": "https://..."
   },
   "hoofdObject": "https://...",
   "resourceUrl": "https://...",
