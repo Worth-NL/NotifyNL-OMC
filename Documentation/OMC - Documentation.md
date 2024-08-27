@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.6
+v.1.8.7
 
 © 2024, Worth Systems.
 
@@ -133,13 +133,13 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
+        "USER_TEMPLATEIDS_EMAIL_MESSAGE": "",
         
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
+        "USER_TEMPLATEIDS_SMS_MESSAGE": "",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "",
         "USER_WHITELIST_ZAAKUPDATE_IDS": "",
@@ -350,12 +350,12 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
 | USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE                    | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_EMAIL_TASKASSIGNED                 | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
-| USER_TEMPLATEIDS_EMAIL_DECISIONMADE                 | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_MESSAGE                      | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKCREATE                     | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKUPDATE                     | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKCLOSE                      | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_TASKASSIGNED                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
-| USER_TEMPLATEIDS_SMS_DECISIONMADE                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_MESSAGE                        | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Business:** Whitelisted IDs used by "OMC" Web API |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | USER_WHITELIST_ZAAKCREATE_IDS                       | string[]  | "1, 2, 3, 4"                           | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
