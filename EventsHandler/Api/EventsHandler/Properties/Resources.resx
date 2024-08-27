@@ -470,4 +470,7 @@
   <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
     <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
   </data>
+  <data name="Processing_ABORT_DoNotSendNotification_MessagesForbidden" xml:space="preserve">
+    <value>The notification can not be sent because processing messages (message objects) is forbidden: {0}.</value>
+  </data>
 </root>
