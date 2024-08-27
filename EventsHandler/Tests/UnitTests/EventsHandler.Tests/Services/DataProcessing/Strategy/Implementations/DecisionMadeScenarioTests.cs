@@ -291,6 +291,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingNotifyData));
+
+                VerifyProcessDataMethodCalls(0, 0, 0, 0, 0);
             });
         }
 
@@ -308,6 +310,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(TestGenerationError));
+
+                VerifyProcessDataMethodCalls(0, 1, 0, 0, 0);
             });
         }
 
@@ -325,6 +329,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs));
+
+                VerifyProcessDataMethodCalls(1, 1, 1, 0, 0);
             });
         }
 
@@ -342,6 +348,27 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(TestCreationError));
+
+                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1);
+            });
+        }
+
+        [Test]
+        public async Task ProcessDataAsync_ValidNotifyData_GenerationSucceeded_HasDocuments_CreationSucceeded_ReturnsSuccess()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, true);
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataProcessed));
+
+                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1);
             });
         }
         #endregion
@@ -550,10 +577,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             this._getDataVerified = true;
 
-            VerifyProcessDataMethodCalls(0, 0, 1, 0);
+            VerifyProcessDataMethodCalls(0, 0, 0, 1, 0);
         }
 
-        private void VerifyProcessDataMethodCalls(int generateInvokeCount, int getDocumentsInvokeCount, int getInfoObjectInvokeCount, int createInvokeCount)
+        private void VerifyProcessDataMethodCalls(int fromInvokeCount, int generateInvokeCount,
+            int getDocumentsInvokeCount, int getInfoObjectInvokeCount, int createInvokeCount)
         {
             if (this._processDataVerified)
             {
@@ -581,7 +609,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             this._processDataVerified = true;
 
-            VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
+            VerifyGetDataMethodCalls(fromInvokeCount, 0, getInfoObjectInvokeCount, 0, 0, 0);
         }
         #endregion
     }
