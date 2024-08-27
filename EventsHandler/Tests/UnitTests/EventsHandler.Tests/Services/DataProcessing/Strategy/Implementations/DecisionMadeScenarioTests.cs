@@ -505,8 +505,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             return notifyMethod switch
             {
-                NotifyMethods.Email => configuration.User.TemplateIds.Email.DecisionMade(),
-                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.DecisionMade(),
+                NotifyMethods.Email => configuration.User.TemplateIds.Email.Message(),
+                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.Message(),
                 _ => Guid.Empty
             };
         }
