@@ -27,6 +27,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
         private Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = null!;
 
+        private WebApiConfiguration _webApiConfiguration = null!;
         private ServiceProvider _serviceProvider = null!;
 
         [OneTimeSetUp]
@@ -44,15 +45,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
 
-            WebApiConfiguration webApiConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
+            this._webApiConfiguration = ConfigurationHandler.GetValidBothConfigurations();
 
-            serviceCollection.AddSingleton(webApiConfiguration);
-            serviceCollection.AddSingleton(new CaseCreatedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new CaseClosedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new TaskAssignedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new DecisionMadeScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new NotImplementedScenario(webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(this._webApiConfiguration);
+            serviceCollection.AddSingleton(new CaseCreatedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseClosedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new TaskAssignedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new DecisionMadeScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new MessageReceivedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new NotImplementedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
             this._serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -67,15 +69,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         [OneTimeTearDown]
         public void CleanupTests()
         {
+            this._webApiConfiguration.Dispose();
             this._serviceProvider.Dispose();
         }
 
         #region DetermineScenarioAsync()
         [Test]
-        public async Task DetermineScenarioAsync_ForInvalidNotification_ReturnsNotImplementedScenario()
+        public async Task DetermineScenarioAsync_InvalidNotification_ReturnsNotImplementedScenario()
         {
             // Arrange
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(default);
@@ -85,15 +88,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
-        public async Task DetermineScenarioAsync_ForCaseCreatedScenario_ReturnsExpectedScenario()
+        public async Task DetermineScenarioAsync_CaseCreatedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent
-            {
-                Action = Actions.Create,
-                Channel = Channels.Cases,
-                Resource = Resources.Status
-            };
+            NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
@@ -103,8 +101,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -114,15 +112,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
-        public async Task DetermineScenarioAsync_ForCaseCaseStatusUpdatedScenario_ReturnsExpectedScenario()
+        public async Task DetermineScenarioAsync_CaseCaseStatusUpdatedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent
-            {
-                Action = Actions.Create,
-                Channel = Channels.Cases,
-                Resource = Resources.Status
-            };
+            NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
@@ -135,8 +128,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -146,15 +139,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
-        public async Task DetermineScenarioAsync_ForCaseCaseFinishedScenario_ReturnsExpectedScenario()
+        public async Task DetermineScenarioAsync_CaseCaseFinishedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent
-            {
-                Action = Actions.Create,
-                Channel = Channels.Cases,
-                Resource = Resources.Status
-            };
+            NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
@@ -167,8 +155,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -178,17 +166,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
-        public async Task DetermineScenarioAsync_ForTaskAssignedScenario_ReturnsExpectedScenario()
+        public async Task DetermineScenarioAsync_TaskAssignedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent
-            {
-                Action = Actions.Create,
-                Channel = Channels.Objects,
-                Resource = Resources.Object
-            };
-
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestTaskObjectTypeUuid);
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -198,23 +180,72 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
-        public async Task DetermineScenarioAsync_ForDecisionMadeScenario_ReturnsExpectedScenario()
+        public async Task DetermineScenarioAsync_MessageReceivedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            var testNotification = new NotificationEvent
-            {
-                Action = Actions.Create,
-                Channel = Channels.Decisions,
-                Resource = Resources.Decision
-            };
+            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid);
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
-            IScenariosResolver scenariosResolver = new ScenariosResolver(this._serviceProvider, this._mockedDataQuery.Object);
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<MessageReceivedScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_DecisionMadeScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetDecisionNotification();
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
 
             // Assert
             Assert.That(actualResult, Is.TypeOf<DecisionMadeScenario>());
+        }
+        #endregion
+
+        #region Helper methods
+        private static NotificationEvent GetCaseNotification()
+        {
+            return new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Cases,
+                Resource = Resources.Status
+            };
+        }
+
+        private static NotificationEvent GetObjectNotification(string testGuid)
+        {
+            return new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Objects,
+                Resource = Resources.Object,
+                Attributes = new EventAttributes
+                {
+                    ObjectTypeUri = new Uri($"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{testGuid}")
+                }
+            };
+        }
+
+        private static NotificationEvent GetDecisionNotification()
+        {
+            return new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Decisions,
+                Resource = Resources.Decision
+            };
+        }
+
+        private ScenariosResolver GetScenariosResolver()
+        {
+            return new ScenariosResolver(this._webApiConfiguration, this._serviceProvider, this._mockedDataQuery.Object);
         }
         #endregion
     }

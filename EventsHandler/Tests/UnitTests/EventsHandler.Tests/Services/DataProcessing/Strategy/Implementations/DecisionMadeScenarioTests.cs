@@ -59,7 +59,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Test data
         private static readonly Uri s_validUri =
-            new($"https://www.domain.com/{ConfigurationHandler.TestTypeObjectUuid}");  // NOTE: Matches to UUID from test Environment Configuration
+            new($"https://www.domain.com/{ConfigurationHandler.TestTaskObjectTypeUuid}");  // NOTE: Matches to UUID from test Environment Configuration
         
         private static readonly InfoObject s_invalidInfoObjectType = new()
         {
@@ -245,13 +245,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 {
                     NotifyData firstResult = actualResult.Content.First();
                     Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
-                    Assert.That(firstResult.TemplateId, Is.EqualTo(
-                        DetermineTemplateId(firstResult.NotificationMethod, this._testConfiguration)));
+                    Assert.That(firstResult.TemplateId, Is.EqualTo(Guid.Empty));
 
                     NotifyData secondResult = actualResult.Content.Last();
                     Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
-                    Assert.That(secondResult.TemplateId, Is.EqualTo(
-                        DetermineTemplateId(firstResult.NotificationMethod, this._testConfiguration)));
+                    Assert.That(secondResult.TemplateId, Is.EqualTo(Guid.Empty));
 
                     contactDetails = firstResult.ContactDetails + secondResult.ContactDetails;
                 }
@@ -259,8 +257,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 {
                     NotifyData onlyResult = actualResult.Content.First();
                     Assert.That(onlyResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod!.Value));
-                    Assert.That(onlyResult.TemplateId, Is.EqualTo(
-                        DetermineTemplateId(onlyResult.NotificationMethod, this._testConfiguration)));
+                    Assert.That(onlyResult.TemplateId, Is.EqualTo(Guid.Empty));
 
                     contactDetails = onlyResult.ContactDetails;
                 }
@@ -499,16 +496,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // Decision Scenario
             return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
-        }
-
-        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
-        {
-            return notifyMethod switch
-            {
-                NotifyMethods.Email => configuration.User.TemplateIds.Email.Message(),
-                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.Message(),
-                _ => Guid.Empty
-            };
         }
 
         private static IReadOnlyCollection<NotifyData> GetNotifyData(Dictionary<string, object>? personalization = null)
