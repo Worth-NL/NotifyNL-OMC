@@ -165,7 +165,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
-                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist
                     .Replace("{0}", "4")
                     .Replace("{1}", "USER_WHITELIST_DECISIONMADE_IDS");
 

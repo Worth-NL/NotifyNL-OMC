@@ -82,11 +82,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
-                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist
                     .Replace("{0}", "4")
                     // Get substring
-                    [..(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted.Length -
-                        Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted.IndexOf("{1}", StringComparison.Ordinal))];
+                    [..(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist.Length -
+                        Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist.IndexOf("{1}", StringComparison.Ordinal))];
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
