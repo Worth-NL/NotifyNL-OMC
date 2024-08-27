@@ -14,6 +14,7 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using JetBrains.Annotations;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
@@ -241,7 +242,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the name of this specific scenario.
         /// </summary>
-        /// <returns></returns>
+        [UsedImplicitly]
         protected abstract string GetWhitelistName();
         #endregion
     }
