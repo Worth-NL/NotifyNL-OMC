@@ -80,13 +80,13 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
                 Assert.That(templateIds.Email.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
                 Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Email.DecisionMade(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Email.Message(), Is.Not.Empty, message: variableTestErrorMessage);
 
                 Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Empty, message: variableTestErrorMessage);
                 Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
                 Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
                 Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Sms.DecisionMade(), Is.Not.Empty, message: variableTestErrorMessage);
+                Assert.That(templateIds.Sms.Message(), Is.Not.Empty, message: variableTestErrorMessage);
 
                 // Whitelist
                 var whitelist = userConfiguration.Whitelist;
@@ -144,7 +144,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Invalid: (9)-4-4-4-12
             yield return ("#9", () => s_testConfiguration.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#10", () => s_testConfiguration.User.TemplateIds.Sms.DecisionMade(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration.User.TemplateIds.Sms.Message(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Default URI
             yield return ("#11", () => s_testConfiguration.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
         }
