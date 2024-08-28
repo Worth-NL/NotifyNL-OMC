@@ -198,27 +198,20 @@ namespace EventsHandler.IntegrationTests.Controllers
         }
 
         private static InfoDetails GetTestInfoDetails_Partial()
-        {
-            return new InfoDetails(Resources.Operation_SUCCESS_Deserialization_Partial, string.Empty, Array.Empty<string>());
-        }
+            => new(Resources.Operation_SUCCESS_Deserialization_Partial, string.Empty, Array.Empty<string>());
 
         private static InfoDetails GetTestInfoDetails_Success()
-        {
-            return new InfoDetails(Resources.Operation_SUCCESS_Deserialization_Success, string.Empty, Array.Empty<string>());
-        }
+            => new(Resources.Operation_SUCCESS_Deserialization_Success, string.Empty, Array.Empty<string>());
 
         private EventsController GetTestEventsController_WithRealResponder()
         {
-            return new EventsController(ConfigurationHandler.GetValidAppSettingsConfiguration(),
+            return new EventsController(ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings),
                                         this._serializerMock.Object, this._validatorMock.Object,
                                         this._processorMock.Object, GetRealResponderService(),
                                         this._registerMock.Object);
         }
 
-        private static IRespondingService<NotificationEvent> GetRealResponderService()
-        {
-            return new OmcResponder(new DetailsBuilder());
-        }
+        private static IRespondingService<NotificationEvent> GetRealResponderService() => new OmcResponder(new DetailsBuilder());
 
         private static void AssertWithConditions
             <TExpectedApiActionResultType, TExpectedApiResponseBodyType>

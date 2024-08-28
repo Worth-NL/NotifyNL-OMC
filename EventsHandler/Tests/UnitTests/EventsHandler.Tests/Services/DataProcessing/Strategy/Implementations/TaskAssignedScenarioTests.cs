@@ -36,7 +36,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetValidEnvironmentConfiguration();
+            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment);
         }
 
         [TearDown]
