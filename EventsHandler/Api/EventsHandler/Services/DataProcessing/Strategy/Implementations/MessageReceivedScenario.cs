@@ -7,6 +7,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
@@ -41,6 +42,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessagesForbidden, GetWhitelistName()));
             }
+
+            // Setup
+            IQueryContext queryContext = this.DataQuery.From(notification);
 
             throw new NotImplementedException();
         }
