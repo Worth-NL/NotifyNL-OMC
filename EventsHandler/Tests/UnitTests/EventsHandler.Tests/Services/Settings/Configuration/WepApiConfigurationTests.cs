@@ -1,8 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
+using System.Reflection;
+
+#pragma warning disable IDE0008  // Declaration of static types would be too long
+// ReSharper disable SuggestVarOrType_SimpleTypes
 
 namespace EventsHandler.UnitTests.Services.Settings.Configuration
 {
@@ -17,86 +22,91 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration.Dispose();
         }
 
-        #region Environment variables
-        #pragma warning disable IDE0008  // Explicit types are too long and not necessary to be used here
-        // ReSharper disable SuggestVarOrType_SimpleTypes
+        #region AppSettings
         [Test]
-        public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
+        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment);
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings);
+
+            int counter = 0;
+            List<string> methodNames = new();
 
             // Act & Assert
             Assert.Multiple(() =>
             {
-                const string variableTestErrorMessage =
-                    $"Most likely the environment variable name was changed in {nameof(WebApiConfiguration)} " +
-                    $"but not adjusted in {nameof(ConfigurationHandler)}.GetEnvironmentLoader(bool).";
+                var appSettings = s_testConfiguration.AppSettings;
 
+                // AppSettings | Network
+                TestEnvironmentVariables(ref counter, methodNames, appSettings.Network);
+
+                // AppSettings | Encryption
+                TestEnvironmentVariables(ref counter, methodNames, appSettings.Encryption);
+
+                // AppSettings | Features
+                TestEnvironmentVariables(ref counter, methodNames, appSettings.Features);
+
+                var variablesSettings = s_testConfiguration.AppSettings.Variables;
+
+                // AppSettings | Variables
+                TestEnvironmentVariables(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);
+
+                // AppSettings | Variables | OpenKlant
+                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.OpenKlant);
+
+                // AppSettings | Variables | Objecten
+                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.Objecten);
+
+                // AppSettings | Variables | UX Messages
+                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.UxMessages);
+
+                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
+            });
+        }
+        #endregion
+
+        #region Environment variables
+        [Test]
+        public void WebApiConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
+        {
+            // Arrange
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment);
+
+            int counter = 0;
+            List<string> methodNames = new();
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
                 var omcConfiguration = s_testConfiguration.OMC;
+
+                // OMC | Authorization | JWT
+                TestEnvironmentVariables(ref counter, methodNames, omcConfiguration.Authorization.JWT);
+
+                // OMC | API | BaseUrl
+                TestEnvironmentVariables(ref counter, methodNames, omcConfiguration.API.BaseUrl);
+                
                 var userConfiguration = s_testConfiguration.User;
 
-                // TODO: Use reflexion to get all properties and test them dynamically
-                // Authorization | JWT | Notify
-                var notifyJwt = omcConfiguration.Authorization.JWT;
-                Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(notifyJwt.Issuer(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(notifyJwt.Audience(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(notifyJwt.ExpiresInMin(), Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(notifyJwt.UserId(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(notifyJwt.UserName(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                // User | Authorization | JWT
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Authorization.JWT);
 
-                // API | BaseUrl
-                Assert.That(omcConfiguration.API.BaseUrl.NotifyNL(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                // User | API | Key
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.API.Key);
 
-                // Authorization | JWT | User
-                var userJwt = userConfiguration.Authorization.JWT;
-                Assert.That(userJwt.Secret(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(userJwt.Issuer(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(userJwt.Audience(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(userJwt.ExpiresInMin(), Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(userJwt.UserId(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(userJwt.UserName(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                // User | Domain
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Domain);
 
-                // Authorization | Key
-                var key = userConfiguration.API.Key;
-                Assert.That(key.OpenKlant_2(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(key.Objecten(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(key.ObjectTypen(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(key.NotifyNL(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                // User | Templates (Email + SMS)
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.TemplateIds.Email);
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.TemplateIds.Sms);
 
-                // API | Domain
-                var apiDomain = userConfiguration.Domain;
-                Assert.That(apiDomain.OpenNotificaties(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(apiDomain.OpenZaak(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(apiDomain.OpenKlant(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(apiDomain.Objecten(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
-                Assert.That(apiDomain.ObjectTypen(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
+                // User | Whitelist
+                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Whitelist);
 
-                // Templates
-                var templateIds = userConfiguration.TemplateIds;
-                Assert.That(templateIds.Email.ZaakCreate(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Email.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Email.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Email.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Email.MessageReceived(), Is.Not.Empty, message: variableTestErrorMessage);
-
-                Assert.That(templateIds.Sms.ZaakCreate(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Sms.ZaakUpdate(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Sms.ZaakClose(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Sms.TaskAssigned(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(templateIds.Sms.MessageReceived(), Is.Not.Empty, message: variableTestErrorMessage);
-
-                // Whitelist
-                var whitelist = userConfiguration.Whitelist;
-                Assert.That(whitelist.ZaakCreate_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(whitelist.ZaakUpdate_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(whitelist.ZaakClose_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(whitelist.TaskAssigned_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(whitelist.DecisionMade_IDs().Count, Is.Not.Zero, message: variableTestErrorMessage);
-                Assert.That(whitelist.Message_Allowed(), Is.Not.False, message: variableTestErrorMessage);
-                Assert.That(whitelist.TaskObjectType_Uuid(), Is.Not.Empty, message: variableTestErrorMessage);
-                Assert.That(whitelist.MessageObjectType_Uuid(), Is.Not.Empty, message: variableTestErrorMessage);
+                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
             });
         }
 
@@ -185,7 +195,48 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 Assert.That(isAllowed, Is.False);
             });
         }
-        #pragma warning restore IDE0008
+        #endregion
+
+        #region Helper methods
+        private static void TestEnvironmentVariables(ref int counter, ICollection<string> methodNames, object instance, bool isRecursionEnabled = true)
+        {
+            const string variableTestErrorMessage =
+                $"Most likely the environment variable name was changed in {nameof(WebApiConfiguration)} " +
+                $"but not adjusted in {nameof(ConfigurationHandler)}.GetEnvironmentLoader(bool).";
+
+            foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
+            {
+                counter++;
+                methodNames.Add($"{method.Name}()");
+
+                Assert.That(method.Invoke(instance, null), Is.Not.Default, $"{method.Name}: {variableTestErrorMessage}");
+            }
+        }
+
+        private static IEnumerable<MethodInfo> GetConfigMethods(IReflect currentType, bool isRecursionEnabled)
+        {
+            IEnumerable<MemberInfo> members = currentType
+                .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(member => member.GetCustomAttribute<ConfigAttribute>() != null);
+
+            foreach (MemberInfo member in members)
+            {
+                // Returning method
+                if (member is MethodInfo method)
+                {
+                    yield return method;
+                }
+
+                if (isRecursionEnabled && member is PropertyInfo property)
+                {
+                    // Traversing recursively to get methods from property
+                    foreach (MethodInfo nestedMethod in GetConfigMethods(property.PropertyType, isRecursionEnabled))
+                    {
+                        yield return nestedMethod;
+                    }
+                }
+            }
+        }
         #endregion
     }
 }

@@ -2,6 +2,7 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Services.Settings.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
@@ -54,12 +55,14 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <summary>
         /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
         /// </summary>
+        [Config]
         internal AppSettingsComponent AppSettings
             => GetComponent(ref this._appSettings, LoaderTypes.AppSettings, nameof(AppSettings));
 
         /// <summary>
         /// Gets the object representing Output Management Component (internal) settings.
         /// </summary>
+        [Config]
         internal OmcComponent OMC
             => GetComponent(ref this._omc, LoaderTypes.Environment, nameof(OMC));
 
@@ -67,6 +70,7 @@ namespace EventsHandler.Services.Settings.Configuration
         /// Gets the object representing (external) settings configured by user for
         /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
         /// </summary>
+        [Config]
         internal UserComponent User
             => GetComponent(ref this._user, LoaderTypes.Environment, nameof(User));
 
@@ -119,15 +123,19 @@ namespace EventsHandler.Services.Settings.Configuration
             // NOTE: Property "Logging" (from "appsettings.json") is skipped because it's not used anywhere in the code
 
             /// <inheritdoc cref="NetworkComponent"/>
+            [Config]
             internal NetworkComponent Network { get; }
 
             /// <inheritdoc cref="EncryptionComponent"/>
+            [Config]
             internal EncryptionComponent Encryption { get; }
 
             /// <inheritdoc cref="FeaturesComponent"/>
+            [Config]
             internal FeaturesComponent Features { get; }
 
             /// <inheritdoc cref="VariablesComponent"/>
+            [Config]
             internal VariablesComponent Variables { get; }
 
             // NOTE: Property "AllowedHosts" (from "appsettings.json") is skipped because it's not used anywhere in the code
@@ -161,14 +169,17 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal ushort ConnectionLifetimeInSeconds()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal ushort HttpRequestTimeoutInSeconds()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal ushort HttpRequestsSimultaneousNumber()
                     => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
             }
@@ -191,6 +202,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal bool IsAsymmetric()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
             }
@@ -213,6 +225,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal byte OmcWorkflowVersion()
                     => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
@@ -226,12 +239,15 @@ namespace EventsHandler.Services.Settings.Configuration
                 private readonly string _currentPath;
 
                 /// <inheritdoc cref="OpenKlantComponent"/>
+                [Config]
                 internal OpenKlantComponent OpenKlant { get; }
 
                 /// <inheritdoc cref="ObjectenComponent"/>
+                [Config]
                 internal ObjectenComponent Objecten { get; }
 
                 /// <inheritdoc cref="UxMessagesComponent"/>
+                [Config]
                 internal UxMessagesComponent UxMessages { get; }
 
                 /// <summary>
@@ -248,22 +264,27 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string SubjectType()
                     => GetCachedValue(this._loadersContext, this._currentPath, "BetrokkeneType");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string InitiatorRole()
                     => GetCachedValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string PartyIdentifier()
                     => GetCachedValue(this._loadersContext, this._currentPath, "PartijIdentificator");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string EmailGenericDescription()
                     => GetCachedValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string PhoneGenericDescription()
                     => GetCachedValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
 
@@ -285,14 +306,17 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string CodeObjectType()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string CodeRegister()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string CodeObjectTypeId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
                 }
@@ -315,10 +339,12 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal ushort MessageObjectType_Version()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string MessageObjectType_Name()  // NOTE: Used by "Logius" system
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Name));
                 }
@@ -342,36 +368,44 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     #region SMS
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string SMS_Success_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string SMS_Success_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string SMS_Failure_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string SMS_Failure_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
                     #endregion
 
                     #region E-mail
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Email_Success_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Email_Success_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Email_Failure_Subject()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Email_Failure_Body()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
                     #endregion
@@ -387,6 +421,7 @@ namespace EventsHandler.Services.Settings.Configuration
         internal abstract record BaseComponent
         {
             /// <inheritdoc cref="AuthorizationComponent"/>
+            [Config]
             internal AuthorizationComponent Authorization { get; }
 
             /// <summary>
@@ -403,6 +438,7 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record AuthorizationComponent
             {
                 /// <inheritdoc cref="JwtComponent"/>
+                [Config]
                 internal JwtComponent JWT { get; }
 
                 /// <summary>
@@ -433,26 +469,32 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Secret()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Issuer()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Audience()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience), disableValidation: true);
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal ushort ExpiresInMin()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string UserId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
@@ -466,6 +508,7 @@ namespace EventsHandler.Services.Settings.Configuration
         internal sealed record OmcComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
+            [Config]
             internal ApiComponent API { get; }
 
             /// <summary>
@@ -483,6 +526,7 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record ApiComponent
             {
                 /// <inheritdoc cref="BaseUrlComponent"/>
+                [Config]
                 internal BaseUrlComponent BaseUrl { get; }
 
                 /// <summary>
@@ -513,6 +557,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Uri NotifyNL()
                         => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
@@ -526,15 +571,19 @@ namespace EventsHandler.Services.Settings.Configuration
         internal sealed record UserComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
+            [Config]
             internal ApiComponent API { get; }
 
             /// <inheritdoc cref="DomainComponent"/>
+            [Config]
             internal DomainComponent Domain { get; }
 
             /// <inheritdoc cref="TemplateIdsComponent"/>
+            [Config]
             internal TemplateIdsComponent TemplateIds { get; }
 
             /// <inheritdoc cref="WhitelistComponent"/>
+            [Config]
             internal WhitelistComponent Whitelist { get; }
 
             /// <summary>
@@ -555,6 +604,7 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record ApiComponent
             {
                 /// <inheritdoc cref="KeyComponent"/>
+                [Config]
                 internal KeyComponent Key { get; }
 
                 /// <summary>
@@ -585,18 +635,22 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string OpenKlant_2()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string Objecten()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal string NotifyNL()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
@@ -620,22 +674,27 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string OpenNotificaties()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string OpenZaak()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string OpenKlant()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string Objecten()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string ObjectTypen()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
             }
@@ -646,9 +705,11 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record TemplateIdsComponent
             {
                 /// <inheritdoc cref="EmailComponent"/>
+                [Config]
                 internal EmailComponent Email { get; }
 
                 /// <inheritdoc cref="SmsComponent"/>
+                [Config]
                 internal SmsComponent Sms { get; }
 
                 /// <summary>
@@ -680,22 +741,27 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakCreate()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakUpdate()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakClose()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid TaskAssigned()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
                 }
@@ -718,22 +784,27 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakCreate()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakUpdate()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid ZaakClose()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid TaskAssigned()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
                 }
