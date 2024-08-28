@@ -38,6 +38,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var omcConfiguration = s_testConfiguration.OMC;
                 var userConfiguration = s_testConfiguration.User;
 
+                // TODO: Use reflexion to get all properties and test them dynamically
                 // Authorization | JWT | Notify
                 var notifyJwt = omcConfiguration.Authorization.JWT;
                 Assert.That(notifyJwt.Secret(), Is.Not.Null.Or.Empty, message: variableTestErrorMessage);
