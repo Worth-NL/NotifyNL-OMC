@@ -59,7 +59,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Test data
         private static readonly Uri s_validUri =
-            new($"https://www.domain.com/{ConfigurationHandler.TestTaskObjectTypeUuid}");  // NOTE: Matches to UUID from test Environment Configuration
+            new($"https://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid}");  // NOTE: Matches to UUID from test Environment Configuration
         
         private static readonly InfoObject s_invalidInfoObjectType = new()
         {
