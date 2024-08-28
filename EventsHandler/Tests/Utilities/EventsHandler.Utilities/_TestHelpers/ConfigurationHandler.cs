@@ -4,7 +4,6 @@ using EventsHandler.Constants;
 using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.DAO.Interfaces;
-using EventsHandler.Services.Settings.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -143,12 +142,30 @@ namespace EventsHandler.Utilities._TestHelpers
             return new WebApiConfiguration(serviceProvider);
         }
 
-        internal static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isValid)
+        internal static WebApiConfiguration GetWebApiConfigurationWith(TestLoaderTypes testLoaderTypes)
+            => s_presetConfigurations[testLoaderTypes];
+
+        internal enum TestLoaderTypes
         {
-            return GetWebApiConfiguration(loaderType, isValid, isValid);
+            ValidAppSettings,
+            InvalidAppSettings,
+            ValidEnvironment,
+            InvalidEnvironment,
+            BothValid,
+            BothInvalid
         }
 
-        private static WebApiConfiguration GetWebApiConfiguration(LoaderTypes loaderType, bool isAppSettingsValid, bool isEnvironmentValid)
+        private static readonly Dictionary<TestLoaderTypes, WebApiConfiguration> s_presetConfigurations = new()
+        {
+            { TestLoaderTypes.ValidAppSettings,   GetWebApiConfiguration(TestLoaderTypes.ValidAppSettings)   },
+            { TestLoaderTypes.InvalidAppSettings, GetWebApiConfiguration(TestLoaderTypes.InvalidAppSettings) },
+            { TestLoaderTypes.ValidEnvironment,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment)   },
+            { TestLoaderTypes.InvalidEnvironment, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment) },
+            { TestLoaderTypes.BothValid,          GetWebApiConfiguration(TestLoaderTypes.BothValid)          },
+            { TestLoaderTypes.BothInvalid,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid)        }
+        };
+
+        private static WebApiConfiguration GetWebApiConfiguration(TestLoaderTypes loaderType)
         {
             // IServiceCollection
             var serviceCollection = new ServiceCollection();
@@ -156,40 +173,36 @@ namespace EventsHandler.Utilities._TestHelpers
             // ILoaderService
             switch (loaderType)
             {
-                case LoaderTypes.AppSettings:
-                    serviceCollection.AddSingleton(GetAppSettingsLoader(isAppSettingsValid));
+                case TestLoaderTypes.ValidAppSettings:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
                     break;
 
-                case LoaderTypes.Environment:
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isEnvironmentValid));
+                case TestLoaderTypes.InvalidAppSettings:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     break;
 
-                case LoaderTypes.Both:
-                    serviceCollection.AddSingleton(GetAppSettingsLoader(isAppSettingsValid));
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isEnvironmentValid));
+                case TestLoaderTypes.ValidEnvironment:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: true));
+                    break;
+
+                case TestLoaderTypes.InvalidEnvironment:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: false));
+                    break;
+
+                case TestLoaderTypes.BothValid:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: true));
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(loaderType), loaderType, null);
+                case TestLoaderTypes.BothInvalid:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: false));
+                    break;
             }
 
             // Remaining components of Web API Configuration
             return GetWebApiConfiguration(serviceCollection);
-        }
-
-        internal static WebApiConfiguration GetValidAppSettingsConfiguration()
-        {
-            return GetWebApiConfiguration(LoaderTypes.AppSettings, isValid: true);
-        }
-
-        internal static WebApiConfiguration GetValidEnvironmentConfiguration()
-        {
-            return GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
-        }
-
-        internal static WebApiConfiguration GetValidBothConfigurations()
-        {
-            return GetWebApiConfiguration(LoaderTypes.Both, isValid: true);
         }
         #endregion
     }

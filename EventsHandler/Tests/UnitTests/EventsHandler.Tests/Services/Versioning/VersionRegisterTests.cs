@@ -42,7 +42,8 @@ namespace EventsHandler.UnitTests.Services.Versioning
             // Arrange
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton(ConfigurationHandler.GetValidAppSettingsConfiguration());
+            serviceCollection.AddSingleton(ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings));
+
             serviceCollection.AddSingleton<IQueryZaak, QueryZaak>();
             serviceCollection.AddSingleton<IQueryKlant, QueryKlant>();
             serviceCollection.AddSingleton<IQueryObjecten, QueryObjecten>();

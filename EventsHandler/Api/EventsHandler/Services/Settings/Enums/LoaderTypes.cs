@@ -15,11 +15,6 @@ namespace EventsHandler.Services.Settings.Enums
         /// <summary>
         /// The environment variables loader.
         /// </summary>
-        Environment,
-
-        /// <summary>
-        /// Both configuration loaders.
-        /// </summary>
-        Both
+        Environment
     }
 }

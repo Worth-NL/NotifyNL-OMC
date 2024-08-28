@@ -31,7 +31,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         private ServiceProvider _serviceProvider = null!;
 
         [OneTimeSetUp]
-        public void InitializeTests()
+        public void TestsInitialize()
         {
             // Mocked services
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
@@ -45,7 +45,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
 
-            this._webApiConfiguration = ConfigurationHandler.GetValidBothConfigurations();
+            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.BothValid);
 
             serviceCollection.AddSingleton(this._webApiConfiguration);
             serviceCollection.AddSingleton(new CaseCreatedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
@@ -60,14 +60,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         }
 
         [SetUp]
-        public void ResetTests()
+        public void TestsReset()
         {
             // NOTE: This mock is object of tests setup (arrange)
             this._mockedDataQuery.Reset();
         }
 
         [OneTimeTearDown]
-        public void CleanupTests()
+        public void TestsCleanup()
         {
             this._webApiConfiguration.Dispose();
             this._serviceProvider.Dispose();

@@ -2,7 +2,6 @@
 
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Services.Settings.Configuration
@@ -25,8 +24,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void WebApiConfiguration_InEnvironmentMode_ForAllValidVariables_ReadsProperties()
         {
             // Arrange
-            s_testConfiguration =
-                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -107,8 +105,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Arrange
-            s_testConfiguration =
-                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.InvalidEnvironment);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -157,8 +154,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            s_testConfiguration =
-                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: true);
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment);
 
             // Act
             var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
@@ -176,8 +172,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            s_testConfiguration =
-                ConfigurationHandler.GetWebApiConfiguration(LoaderTypes.Environment, isValid: false);
+            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.InvalidEnvironment);
 
             // Act
             var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
