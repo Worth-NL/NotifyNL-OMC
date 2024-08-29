@@ -21,6 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]

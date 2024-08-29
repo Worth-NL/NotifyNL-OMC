@@ -14,6 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The name of the <see cref="CaseType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(0)]
@@ -22,6 +23,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The description of the <see cref="CaseType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvinggeneriek")]
         [JsonPropertyOrder(1)]
@@ -30,6 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// Determines whether the <see cref="CaseStatus"/> is final, which means that the <see cref="Case"/> is closed.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("isEindstatus")]
         [JsonPropertyOrder(2)]
@@ -38,6 +41,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// Determines whether the party (e.g., user or organization) wants to be notified about this certain <see cref="CaseStatus"/> update.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("informeren")]
         [JsonPropertyOrder(3)]

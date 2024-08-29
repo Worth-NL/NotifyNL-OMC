@@ -17,6 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <summary>
         /// The general description of the <see cref="CaseRole"/> which includes the "initiator role" of the <see cref="Case"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvingGeneriek")]  // ENG: General description
         [JsonPropertyOrder(0)]
@@ -25,6 +26,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <summary>
         /// The data subject identification which includes details about a single citizen related to this <see cref="Case"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
         [JsonPropertyOrder(1)]
