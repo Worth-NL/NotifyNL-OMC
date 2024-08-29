@@ -17,6 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The UUID / GUID of the digital address.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("uuid")]
         [JsonPropertyOrder(0)]
@@ -25,6 +26,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The value of the digital address.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("adres")]
         [JsonPropertyOrder(1)]
@@ -33,6 +35,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The type of the digital address.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("soortDigitaalAdres")]
         [JsonPropertyOrder(2)]

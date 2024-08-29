@@ -1,14 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using Resources = EventsHandler.Properties.Resources;
-using EventsHandler.Extensions;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces
 {
