@@ -646,6 +646,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The message (object) could not be retrieved from Objecten Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoMessage {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
@@ -655,7 +664,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The task could not be retrieved from Objecten Web API service..
+        ///   Looks up a localized string similar to HTTP Request: The task (object) could not be retrieved from Objecten Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoTask {
             get {
