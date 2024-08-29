@@ -1,12 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Extensions
 {

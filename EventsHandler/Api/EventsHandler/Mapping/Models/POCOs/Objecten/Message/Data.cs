@@ -14,6 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Message
         /// <summary>
         /// The subject of the <see cref="MessageObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("onderwerp")]
         [JsonPropertyOrder(0)]
@@ -22,6 +23,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Message
         /// <summary>
         /// The actions perspective of the <see cref="MessageObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("handelingsperspectief")]
         [JsonPropertyOrder(1)]
@@ -30,6 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Message
         /// <summary>
         /// The identification details of the <see cref="MessageObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(2)]

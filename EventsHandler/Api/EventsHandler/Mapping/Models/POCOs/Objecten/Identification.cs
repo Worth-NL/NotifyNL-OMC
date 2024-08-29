@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         /// <summary>
         /// The type of the <see cref="Identification"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("type")]
         [JsonPropertyOrder(0)]
@@ -26,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         /// <summary>
         /// The value of the <see cref="Identification"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("value")]
         [JsonPropertyOrder(1)]

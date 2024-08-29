@@ -14,6 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// <summary>
         /// The data related to the <see cref="Record"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("data")]
         [JsonPropertyOrder(0)]

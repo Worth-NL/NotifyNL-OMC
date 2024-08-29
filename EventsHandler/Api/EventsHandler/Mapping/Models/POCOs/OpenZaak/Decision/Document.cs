@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("informatieobject")]
         [JsonPropertyOrder(0)]

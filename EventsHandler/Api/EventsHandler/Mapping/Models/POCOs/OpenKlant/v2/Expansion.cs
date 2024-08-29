@@ -15,6 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     public struct Expansion : IJsonSerializable
     {
         /// <inheritdoc cref="DigitalAddressLong"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("digitaleAdressen")]
         [JsonPropertyOrder(0)]

@@ -15,18 +15,21 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     public struct PartyDetails : IJsonSerializable
     {
         /// <inheritdoc cref="CommonPartyData.Name"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
         public string SurnamePrefix { get; internal set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.Surname"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("achternaam")]
         [JsonPropertyOrder(2)]

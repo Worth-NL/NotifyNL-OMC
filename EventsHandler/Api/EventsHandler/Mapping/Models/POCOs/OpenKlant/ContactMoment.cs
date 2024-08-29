@@ -15,6 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         /// <summary>
         /// The ID of the <see cref="ContactMoment"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("uuid")]
         [JsonPropertyOrder(0)]
@@ -26,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(1)]

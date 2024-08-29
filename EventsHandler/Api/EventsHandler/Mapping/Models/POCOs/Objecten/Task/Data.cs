@@ -20,6 +20,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
@@ -28,6 +29,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// <summary>
         /// The title of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("title")]
         [JsonPropertyOrder(1)]
@@ -36,6 +38,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// <summary>
         /// The status of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(2)]
@@ -44,6 +47,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// <summary>
         /// The deadline by which the <see cref="TaskObject"/> should be completed.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
         [JsonPropertyOrder(3)]
@@ -52,6 +56,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// <summary>
         /// The identification details of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(4)]

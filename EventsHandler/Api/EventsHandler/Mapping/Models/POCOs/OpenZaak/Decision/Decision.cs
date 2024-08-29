@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// BESLUIT-2019-0000000002
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(0)]
@@ -29,6 +30,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(1)]
@@ -40,6 +42,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(2)]
@@ -48,6 +51,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date when the <see cref="Decision"/> was issued.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("datum")]
         [JsonPropertyOrder(3)]
@@ -56,6 +60,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The explanation of the <see cref="Decision"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("toelichting")]
         [JsonPropertyOrder(4)]
@@ -64,6 +69,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The name of the institution issuing this <see cref="Decision"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("bestuursorgaan")]
         [JsonPropertyOrder(5)]
@@ -72,6 +78,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date from which the <see cref="Decision"/> starts to operate (begins).
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("ingangsdatum")]
         [JsonPropertyOrder(6)]
@@ -80,6 +87,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date after which the <see cref="Decision"/> will expire (ends).
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("vervaldatum")]
         [JsonPropertyOrder(7)]
@@ -88,6 +96,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The reason explaining the <see cref="Decision"/> expiration.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("vervalreden")]
         [JsonPropertyOrder(8)]
@@ -96,6 +105,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date when the <see cref="Decision"/> is meant to be published.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatiedatum")]
         [JsonPropertyOrder(9)]
@@ -104,6 +114,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date when the <see cref="Decision"/> is meant to be shipped.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("verzenddatum")]
         [JsonPropertyOrder(10)]
@@ -112,6 +123,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The date up to which party (e.g., citizen, or organization) can appeal the <see cref="Decision"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("uiterlijkeReactiedatum")]
         [JsonPropertyOrder(11)]

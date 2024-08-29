@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("statustype")]
         [JsonPropertyOrder(0)]
@@ -26,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The date and time when the <see cref="CaseStatus"/> was created.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("datumStatusGezet")]
         [JsonPropertyOrder(1)]

@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// ZAAK-2023-0000000010
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(0)]
@@ -26,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The name of the <see cref="Case"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(1)]
@@ -37,6 +39,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(2)]
@@ -45,6 +48,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The date when the <see cref="Case"/> was registered.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("registratiedatum")]
         [JsonPropertyOrder(3)]

@@ -22,12 +22,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The number of received results.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
         /// <inheritdoc cref="PartyResult"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
