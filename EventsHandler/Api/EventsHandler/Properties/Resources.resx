@@ -400,7 +400,7 @@
     <value>The version of ObjectTypen service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
-    <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
+    <value>HTTP Request: The task (object) could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
     <value>The notification can not be sent if the task is already closed.</value>
@@ -472,5 +472,8 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages (message objects) is forbidden: {0}.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
+    <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
   </data>
 </root>
