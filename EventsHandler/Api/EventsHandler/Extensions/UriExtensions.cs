@@ -5,6 +5,8 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Extensions
 {
@@ -84,6 +86,18 @@ namespace EventsHandler.Extensions
         internal static bool IsNotCaseType(this Uri? uri)
         {
             return uri.DoesNotContain("/zaaktypen/");
+        }
+
+        /// <summary>
+        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="TaskObject"/> or <see cref="MessageObject"/>) <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsNotObject(this Uri? uri)
+        {
+            return uri.DoesNotContain("/objects/");
         }
 
         /// <summary>
