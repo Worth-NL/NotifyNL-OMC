@@ -122,7 +122,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
         /// </summary>
         [JsonInclude]
-        [JsonExtensionData]     // Aggregate all JSON properties that couldn't be matched with this model
+        [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(7)]
         public Dictionary<string, object> Orphans { get; internal set; } = new();
 

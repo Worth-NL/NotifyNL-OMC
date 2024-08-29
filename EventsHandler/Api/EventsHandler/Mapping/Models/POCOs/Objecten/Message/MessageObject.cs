@@ -3,16 +3,16 @@
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Message
 {
     /// <summary>
     /// The task retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct TaskObject : IJsonSerializable
+    public struct MessageObject : IJsonSerializable
     {
         /// <summary>
-        /// The record related to the <see cref="TaskObject"/>.
+        /// The record related to the <see cref="MessageObject"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("record")]

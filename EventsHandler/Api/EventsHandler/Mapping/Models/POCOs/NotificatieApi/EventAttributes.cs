@@ -3,11 +3,12 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Helpers;
 using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Tasks;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 
 namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 {
@@ -88,7 +89,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Object properties
         /// <summary>
-        /// The <see cref="TaskObject"/> type in <see cref="Uri"/> format:
+        /// The <see cref="TaskObject"/> or <see cref="MessageObject"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -124,7 +125,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
         /// </summary>
         [JsonInclude]
-        [JsonExtensionData]      // Aggregate all JSON properties that couldn't be matched with this model
+        [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(99)]
         public Dictionary<string, object> Orphans { get; internal set; } = new();
 

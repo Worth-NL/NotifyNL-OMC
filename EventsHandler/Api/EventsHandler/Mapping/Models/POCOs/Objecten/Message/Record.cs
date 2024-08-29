@@ -3,10 +3,10 @@
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Message
 {
     /// <summary>
-    /// The record related to the <see cref="TaskObject"/> retrieved from "Objecten" Web API service.
+    /// The record related to the <see cref="MessageObject"/> retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct Record : IJsonSerializable
