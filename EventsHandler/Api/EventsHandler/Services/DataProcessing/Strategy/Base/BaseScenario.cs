@@ -13,8 +13,8 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
-using System.Text.Json;
 using JetBrains.Annotations;
+using System.Text.Json;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
