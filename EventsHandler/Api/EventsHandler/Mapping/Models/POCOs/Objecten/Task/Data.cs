@@ -6,7 +6,7 @@ using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
 {
     /// <summary>
     /// The data related to the <see cref="Record"/> retrieved from "Objecten" Web API service.
@@ -26,7 +26,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
         public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The title of the task.
+        /// The title of the <see cref="TaskObject"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("title")]
@@ -34,7 +34,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
         public string Title { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The status of the task.
+        /// The status of the <see cref="TaskObject"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("status")]
@@ -42,7 +42,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
         public TaskStatuses Status { get; internal set; }
 
         /// <summary>
-        /// The deadline by which the task should be completed.
+        /// The deadline by which the <see cref="TaskObject"/> should be completed.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
@@ -50,7 +50,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
         public DateTime ExpirationDate { get; internal set; }
 
         /// <summary>
-        /// The identification details of the task.
+        /// The identification details of the <see cref="TaskObject"/>.
         /// </summary>
         [JsonInclude]
         [JsonPropertyName("identificatie")]
