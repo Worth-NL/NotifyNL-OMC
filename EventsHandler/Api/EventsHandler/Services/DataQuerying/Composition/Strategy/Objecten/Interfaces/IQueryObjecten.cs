@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Tasks;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;

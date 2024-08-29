@@ -3,7 +3,7 @@
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Tasks
 {
     /// <summary>
     /// The record related to the <see cref="TaskObject"/> retrieved from "Objecten" Web API service.

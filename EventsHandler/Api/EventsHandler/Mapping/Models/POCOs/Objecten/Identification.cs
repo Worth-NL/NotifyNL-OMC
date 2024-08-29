@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Tasks;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
