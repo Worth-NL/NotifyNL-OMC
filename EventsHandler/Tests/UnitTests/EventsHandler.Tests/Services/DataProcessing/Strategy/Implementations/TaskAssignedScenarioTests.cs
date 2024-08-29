@@ -5,7 +5,6 @@ using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Tasks;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
@@ -22,6 +21,7 @@ using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
 using System.Text.Json;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementations
 {
