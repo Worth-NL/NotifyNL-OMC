@@ -646,6 +646,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The message (object) could not be retrieved from Objecten Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoMessage {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
@@ -655,7 +664,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The task could not be retrieved from Objecten Web API service..
+        ///   Looks up a localized string similar to HTTP Request: The task (object) could not be retrieved from Objecten Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoTask {
             get {
@@ -736,6 +745,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not an object..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotObjectUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotObjectUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: An unknown issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Internal_Unknown {
@@ -792,9 +810,9 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent because the case type with identification {0} is not included in the {1}..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted {
+        internal static string Processing_ABORT_DoNotSendNotification_CaseIdWhitelist {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseIdWhitelist", resourceCulture);
             }
         }
         
@@ -822,6 +840,15 @@ namespace EventsHandler.Properties {
         internal static string Processing_ABORT_DoNotSendNotification_Informeren {
             get {
                 return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Informeren", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because processing messages (message objects) is forbidden: {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_MessagesForbidden {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessagesForbidden", resourceCulture);
             }
         }
         
@@ -898,11 +925,20 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no data to be processed by the selected notification scenario..
+        ///   Looks up a localized string similar to There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
         /// </summary>
-        internal static string Processing_ERROR_Scenario_MissingData {
+        internal static string Processing_ERROR_Scenario_MissingInfoObjectsURIs {
             get {
-                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingData", resourceCulture);
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingInfoObjectsURIs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no Notify Data to be processed by the selected notification scenario..
+        /// </summary>
+        internal static string Processing_ERROR_Scenario_MissingNotifyData {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Scenario_MissingNotifyData", resourceCulture);
             }
         }
         
@@ -943,7 +979,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification data were processed by the selected notification scenario successfully..
+        ///   Looks up a localized string similar to The notification data were processed successfully by the selected notification scenario..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_DataProcessed {
             get {
@@ -952,7 +988,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification data (required by notification scenarios) were retrieved successfully..
+        ///   Looks up a localized string similar to The notification data were retrieved successfully by the selected notification scenario..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_DataRetrieved {
             get {

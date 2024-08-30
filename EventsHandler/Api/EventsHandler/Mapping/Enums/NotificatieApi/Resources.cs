@@ -2,7 +2,8 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.NotificatieApi
@@ -26,7 +27,7 @@ namespace EventsHandler.Mapping.Enums.NotificatieApi
         Status = 1,
 
         /// <summary>
-        /// The <see cref="TaskObject"/> resource.
+        /// The <see cref="TaskObject"/> or <see cref="MessageObject"/> resource.
         /// </summary>
         [JsonPropertyName("object")]
         Object = 2,

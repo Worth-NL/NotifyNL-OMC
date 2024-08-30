@@ -2,12 +2,15 @@
 
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
 {
     /// <summary>
-    /// The identification related to the <see cref="Data"/> retrieved from "Objecten" Web API service.
+    /// The identification related to the different Data (associated with <see cref="TaskObject"/>,
+    /// <see cref="MessageObject"/>, etc.) retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct Identification : IJsonSerializable
@@ -15,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         /// <summary>
         /// The type of the <see cref="Identification"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("type")]
         [JsonPropertyOrder(0)]
@@ -23,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         /// <summary>
         /// The value of the <see cref="Identification"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("value")]
         [JsonPropertyOrder(1)]

@@ -14,6 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The BSN (citizen service number) of the citizen.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("inpBsn")]
         [JsonPropertyOrder(0)]

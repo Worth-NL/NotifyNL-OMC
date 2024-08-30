@@ -22,6 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
@@ -31,18 +32,21 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <remarks>
         /// Preferred by the user.
         /// </remarks>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("voorkeursDigitaalAdres")]
         [JsonPropertyOrder(1)]
         public DigitalAddressShort PreferredDigitalAddress { get; internal set; }
 
         /// <inheritdoc cref="PartyIdentification"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("partijIdentificatie")]
         [JsonPropertyOrder(2)]
         public PartyIdentification Identification { get; internal set; }
 
         /// <inheritdoc cref="v2.Expansion"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("_expand")]
         [JsonPropertyOrder(3)]

@@ -14,6 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The name of the <see cref="DecisionType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(0)]
@@ -22,6 +23,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The description of the <see cref="DecisionType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvinggeneriek")]
         [JsonPropertyOrder(1)]
@@ -30,6 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The category of the <see cref="DecisionType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("besluitcategorie")]
         [JsonPropertyOrder(2)]
@@ -38,6 +41,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The deadline date to respond for this <see cref="DecisionType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("reactietermijn")]
         [JsonPropertyOrder(3)]
@@ -46,6 +50,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The indication of the publication.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatieindicatie")]
         [JsonPropertyOrder(4)]
@@ -54,6 +59,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The text of the publication.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatietekst")]
         [JsonPropertyOrder(5)]
@@ -62,6 +68,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The deadline date of the publication.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatietermijn")]
         [JsonPropertyOrder(6)]
@@ -70,6 +77,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// <summary>
         /// The explanation of the <see cref="DecisionType"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("toelichting")]
         [JsonPropertyOrder(7)]
