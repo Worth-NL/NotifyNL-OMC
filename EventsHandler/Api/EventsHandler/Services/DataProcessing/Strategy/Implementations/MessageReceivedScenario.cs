@@ -2,6 +2,7 @@
 
 using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
@@ -21,6 +22,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class MessageReceivedScenario : BaseScenario
     {
+        private Data _messageData;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReceivedScenario"/> class.
         /// </summary>
@@ -46,7 +49,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             IQueryContext queryContext = this.DataQuery.From(notification);
 
-            throw new NotImplementedException();
+            this._messageData = (await queryContext.GetMessageAsync()).Record.Data;
+            
+            // Preparing citizen details
+            return await queryContext.GetPartyDataAsync(           // 2. Citizen details
+                         this._messageData.Identification.Value);  // 1. BSN number
         }
         #endregion
 

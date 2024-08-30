@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -146,6 +147,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
         Task<TaskObject> IQueryContext.GetTaskAsync()
             => this._queryObjecten.GetTaskAsync(this._queryBase);
+
+        /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
+        Task<MessageObject> IQueryContext.GetMessageAsync()
+            => this._queryObjecten.GetMessageAsync(this._queryBase);
         #endregion
 
         #region IObjectTypen
