@@ -14,6 +14,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
@@ -39,7 +40,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         #region Test data
-        private static readonly NotificationEvent s_invalidNotification = new();
         private static readonly NotificationEvent s_validNotification = new()
         {
             Attributes = new EventAttributes
@@ -153,8 +153,114 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
         #endregion
 
-        #region Setup
+        #region ProcessDataAsync()
+        [Test]
+        public async Task ProcessDataAsync_EmptyNotifyData_ReturnsFailure()
+        {
+            // Arrange
+            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
+                configuration,
+                isSendingSuccessful: true,
+                GetNotifyData(NotifyMethods.Email));
 
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsFailure, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_MissingNotifyData));
+
+                VerifyProcessDataMethodCalls(0, 0);
+            });
+        }
+
+        [TestCase(NotifyMethods.None)]
+        [TestCase((NotifyMethods)(-1))]
+        public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(NotifyMethods invalidNotifyMethod)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(invalidNotifyMethod);
+
+            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
+                configuration,
+                isSendingSuccessful: true,
+                testData);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsFailure, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+
+                VerifyProcessDataMethodCalls(0, 0);
+            });
+        }
+
+        [TestCase(NotifyMethods.Email, 1, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+            
+            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
+                configuration,
+                isSendingSuccessful: false,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsFailure, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
+
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+
+        [TestCase(NotifyMethods.Email, 1, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1)]
+        public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+        {
+            // Arrange
+            NotifyData testData = GetNotifyData(testNotifyMethod);
+            
+            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
+                configuration,
+                isSendingSuccessful: true,
+                emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+
+            // Act
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResponse.IsSuccess, Is.True);
+                Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataProcessed));
+                
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+            });
+        }
+        #endregion
+
+        #region Setup
         private static WebApiConfiguration GetConfiguration(bool isMessageAllowed)
         {
             return isMessageAllowed
@@ -190,6 +296,30 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             return new MessageReceivedScenario(configuration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
+        private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
+
+        private INotifyScenario ArrangeMessageScenario_ProcessData(
+            WebApiConfiguration configuration, bool isSendingSuccessful,
+            NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+        {
+            // IDataQueryService
+            this._mockedDataQuery
+                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Returns(this._mockedQueryContext.Object);
+
+            // INotifyService
+            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
+                    It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
+
+            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
+                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
+
+            // Task Scenario
+            return new TaskAssignedScenario(configuration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
+        }
+
         private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
         {
             return notifyMethod switch
@@ -198,6 +328,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 NotifyMethods.Sms => configuration.User.TemplateIds.Sms.MessageReceived(),
                 _ => Guid.Empty
             };
+        }
+
+        private static NotifyData GetNotifyData(NotifyMethods method)
+        {
+            return new NotifyData(method,
+                string.Empty,
+                Guid.Empty,
+                new Dictionary<string, object>());
         }
         #endregion
 
@@ -239,17 +377,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
             
             // INotifyService
-            //this._mockedNotifyService
-            //    .Verify(mock => mock.SendEmailAsync(
-            //        It.IsAny<NotificationEvent>(),
-            //        It.IsAny<NotifyData>()),
-            //    Times.Exactly(sendEmailInvokeCount));
-            
-            //this._mockedNotifyService
-            //    .Verify(mock => mock.SendSmsAsync(
-            //        It.IsAny<NotificationEvent>(),
-            //        It.IsAny<NotifyData>()),
-            //    Times.Exactly(sendSmsInvokeCount));
+            this._mockedNotifyService
+                .Verify(mock => mock.SendEmailAsync(
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()),
+                Times.Exactly(sendEmailInvokeCount));
+
+            this._mockedNotifyService
+                .Verify(mock => mock.SendSmsAsync(
+                    It.IsAny<NotificationEvent>(),
+                    It.IsAny<NotifyData>()),
+                Times.Exactly(sendSmsInvokeCount));
 
             this._processDataVerified = true;
 
