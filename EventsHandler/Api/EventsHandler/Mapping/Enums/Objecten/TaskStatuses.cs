@@ -2,7 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.Objecten

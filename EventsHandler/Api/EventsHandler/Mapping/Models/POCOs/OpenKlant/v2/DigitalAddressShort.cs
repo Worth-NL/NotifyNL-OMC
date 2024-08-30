@@ -17,6 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// The UUID / GUID of the digital address.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("uuid")]
         [JsonPropertyOrder(0)]

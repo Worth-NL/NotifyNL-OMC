@@ -19,7 +19,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsEmpty(this string text)
         {
-            return text == string.Empty;
+            return text.Length == 0;
         }
 
         /// <summary>

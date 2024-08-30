@@ -18,6 +18,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <summary>
         /// The <see cref="Case"/> identification.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(0)]
@@ -26,6 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <summary>
         /// The <see cref="Case"/> description.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(1)]
@@ -37,6 +39,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(2)]

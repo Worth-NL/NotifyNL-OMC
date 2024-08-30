@@ -390,7 +390,7 @@
   <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
     <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted" xml:space="preserve">
+  <data name="Processing_ABORT_DoNotSendNotification_CaseIdWhitelist" xml:space="preserve">
     <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
@@ -400,7 +400,7 @@
     <value>The version of ObjectTypen service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
   </data>
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
-    <value>HTTP Request: The task could not be retrieved from Objecten Web API service.</value>
+    <value>HTTP Request: The task (object) could not be retrieved from Objecten Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
     <value>The notification can not be sent if the task is already closed.</value>
@@ -459,12 +459,24 @@
     <value>HTTP Request: The decision type could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="Processing_SUCCESS_Scenario_DataRetrieved" xml:space="preserve">
-    <value>The notification data (required by notification scenarios) were retrieved successfully.</value>
+    <value>The notification data were retrieved successfully by the selected notification scenario.</value>
   </data>
-  <data name="Processing_ERROR_Scenario_MissingData" xml:space="preserve">
-    <value>There are no data to be processed by the selected notification scenario.</value>
+  <data name="Processing_ERROR_Scenario_MissingNotifyData" xml:space="preserve">
+    <value>There are no Notify Data to be processed by the selected notification scenario.</value>
   </data>
   <data name="Processing_SUCCESS_Scenario_DataProcessed" xml:space="preserve">
-    <value>The notification data were processed by the selected notification scenario successfully.</value>
+    <value>The notification data were processed successfully by the selected notification scenario.</value>
+  </data>
+  <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
+    <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_MessagesForbidden" xml:space="preserve">
+    <value>The notification can not be sent because processing messages (message objects) is forbidden: {0}.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
+    <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_NotObjectUri" xml:space="preserve">
+    <value>Internal error: The given URI is not an object.</value>
   </data>
 </root>

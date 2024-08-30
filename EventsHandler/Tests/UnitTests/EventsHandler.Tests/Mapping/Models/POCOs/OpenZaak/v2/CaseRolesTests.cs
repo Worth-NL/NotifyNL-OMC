@@ -11,6 +11,20 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
     [TestFixture]
     public sealed class CaseRolesTests
     {
+        private WebApiConfiguration _testConfiguration = null!;
+
+        [OneTimeSetUp]
+        public void TestsInitialize()
+        {
+            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings);
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._testConfiguration.Dispose();
+        }
+
         #region Citizen (method)
         [Test]
         public void Citizen_Method_ForMissingResults_ThrowsHttpRequestException()
@@ -28,46 +42,41 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         public void Citizen_Method_ForExistingResults_WithoutInitiatorRole_ThrowsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-
             CaseRoles caseRoles = GetTestCaseRoles();  // Invalid "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MissingInitiatorRole);
+            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MissingInitiatorRole);
         }
 
         [Test]
         public void Citizen_Method_ForExistingResults_WithMultipleInitiatorRoles_ReturnsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-
-            string existingInitiatorRole = testConfiguration.AppSettings.Variables.InitiatorRole();
+            string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
             CaseRoles caseRoles = GetTestCaseRoles(
                 new CaseRole { InitiatorRole = existingInitiatorRole },
                 new CaseRole { InitiatorRole = existingInitiatorRole });  // Multiple matching results
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
+            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
         }
 
         [Test]
         public void Citizen_Method_ForExistingResults_WithSingleInitiatorRole_ReturnsCitizenData()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-
-            string existingInitiatorRole = testConfiguration.AppSettings.Variables.InitiatorRole();
+            string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
             var expectedCitizen = new CitizenData { BsnNumber = "012456789" };
             CaseRoles caseRoles = GetTestCaseRoles(
                 new CaseRole { InitiatorRole = existingInitiatorRole, Citizen = expectedCitizen });  // Unique matching result
 
             // Act
-            CitizenData actualCitizen = caseRoles.Citizen(testConfiguration);
+            CitizenData actualCitizen = caseRoles.Citizen(this._testConfiguration);
 
             // Assert
             Assert.That(actualCitizen, Is.EqualTo(expectedCitizen));
         }
+        #endregion
 
         #region Helper methods
         private static CaseRoles GetTestCaseRoles(params CaseRole[] roles)
@@ -96,7 +105,6 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });
         }
-        #endregion
         #endregion
     }
 }

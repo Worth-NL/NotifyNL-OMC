@@ -15,12 +15,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
     public struct InfoObject : IJsonSerializable
     {
         /// <inheritdoc cref="PrivacyNotices"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("vertrouwelijkheidaanduiding")]
         [JsonPropertyOrder(0)]
         public PrivacyNotices Confidentiality { get; internal set; }  // TODO: Test options for this enum. Only "openbaar" is expected and this enum is reused from notification
 
         /// <inheritdoc cref="MessageStatus"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(1)]
@@ -32,6 +34,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("informatieobjecttype")]
         [JsonPropertyOrder(2)]

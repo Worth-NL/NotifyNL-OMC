@@ -15,6 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     public struct PartyIdentification : IJsonSerializable
     {
         /// <inheritdoc cref="PartyDetails"/>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("contactnaam")]
         [JsonPropertyOrder(0)]

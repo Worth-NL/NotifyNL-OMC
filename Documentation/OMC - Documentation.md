@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.6
+v.1.8.7
 
 © 2024, Worth Systems.
 
@@ -133,13 +133,15 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
+        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
         
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
+        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "",
         "USER_WHITELIST_ZAAKUPDATE_IDS": "",
@@ -287,7 +289,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
     },
 
     // User communication: Messages to be put into register exposed to citizens
-    "Messages": {
+    "UxMessages": {
       "SMS_Success_Subject": "Notificatie verzonden",
       "SMS_Success_Body": "SMS notificatie succesvol verzonden.",
 
@@ -350,12 +352,12 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
 | USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE                    | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_EMAIL_TASKASSIGNED                 | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
-| USER_TEMPLATEIDS_EMAIL_DECISIONMADE                 | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_EMAIL_MESSAGE                      | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKCREATE                     | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKUPDATE                     | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_ZAAKCLOSE                      | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_TASKASSIGNED                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
-| USER_TEMPLATEIDS_SMS_DECISIONMADE                   | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_SMS_MESSAGE                        | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Business:** Whitelisted IDs used by "OMC" Web API |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | USER_WHITELIST_ZAAKCREATE_IDS                       | string[]  | "1, 2, 3, 4"                           | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
@@ -592,6 +594,12 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.1. Cases
 
+**Scenarios using this notification:**
+
+- Case created
+- Case status updated
+- Cace closed
+
 ```json
 {
   "actie": "create",
@@ -610,6 +618,10 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.2. Tasks
 
+**Scenarios using this notification:**
+
+- Task assigned
+
 ```json
 {
   "actie": "create",
@@ -626,6 +638,10 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 #### 5.2.2.3. Decisions
 
+**Scenarios using this notification:**
+
+- Decision made
+
 ```json
 {
   "actie": "create",
@@ -634,6 +650,26 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
   "kenmerken": {
     "besluittype": "https://...",
     "verantwoordelijkeOrganisatie": "000000000"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
+}
+```
+
+#### 5.2.2.4. Messages
+
+**Scenarios using this notification:**
+
+- Message received
+
+```json
+{
+  "actie": "create",
+  "kanaal": "objecten",
+  "resource": "object",
+  "kenmerken": {
+    "objectType": "https://..."
   },
   "hoofdObject": "https://...",
   "resourceUrl": "https://...",
