@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -10,20 +11,26 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.Settings.Configuration;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
     /// <inheritdoc cref="IScenariosResolver"/>
     public sealed class ScenariosResolver : IScenariosResolver
     {
+        private readonly WebApiConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScenariosResolver"/> nested class.
         /// </summary>
-        public ScenariosResolver(IServiceProvider serviceProvider, IDataQueryService<NotificationEvent> dataQuery)
+        public ScenariosResolver(
+            WebApiConfiguration configuration,
+            IServiceProvider serviceProvider,
+            IDataQueryService<NotificationEvent> dataQuery)
         {
+            this._configuration = configuration;
             this._serviceProvider = serviceProvider;
             this._dataQuery = dataQuery;
         }
@@ -31,7 +38,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// <inheritdoc cref="IScenariosResolver.DetermineScenarioAsync(NotificationEvent)"/>
         async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
         {
-            // Supported scenarios for business cases
+            // Case scenarios
             if (IsCaseScenario(notification))
             {
                 IQueryContext queryContext = this._dataQuery.From(notification);
@@ -57,10 +64,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 return strategy;
             }
 
-            // Scenario #4: "Task assigned"
-            if (IsTaskScenario(notification))
+            // Object scenarios
+            if (IsObjectScenario(notification))
             {
-                return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
+                return notification.Attributes.ObjectTypeUri.GetGuid() !=
+                       this._configuration.User.Whitelist.MessageObjectType_Uuid()
+                    // Scenario #4: "Task assigned"
+                    ? this._serviceProvider.GetRequiredService<TaskAssignedScenario>()
+                    // Scenario #6: "Message received"
+                    : this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
             }
 
             // Scenario #5: "Decision made"
@@ -96,7 +108,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// <remarks>
         ///   This check is verifying whether task scenarios would be processed.
         /// </remarks>
-        private static bool IsTaskScenario(NotificationEvent notification)
+        private static bool IsObjectScenario(NotificationEvent notification)
         {
             return notification is
             {

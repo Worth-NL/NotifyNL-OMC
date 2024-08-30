@@ -68,7 +68,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            // TODO: Names of parameters can be taken from models and properties(?)
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;

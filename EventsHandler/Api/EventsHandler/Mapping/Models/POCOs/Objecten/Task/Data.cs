@@ -6,7 +6,7 @@ using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
 {
     /// <summary>
     /// The data related to the <see cref="Record"/> retrieved from "Objecten" Web API service.
@@ -20,38 +20,43 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
         public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
-        /// The title of the task.
+        /// The title of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("title")]
         [JsonPropertyOrder(1)]
         public string Title { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The status of the task.
+        /// The status of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(2)]
         public TaskStatuses Status { get; internal set; }
 
         /// <summary>
-        /// The deadline by which the task should be completed.
+        /// The deadline by which the <see cref="TaskObject"/> should be completed.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
         [JsonPropertyOrder(3)]
         public DateTime ExpirationDate { get; internal set; }
 
         /// <summary>
-        /// The identification details of the task.
+        /// The identification details of the <see cref="TaskObject"/>.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(4)]

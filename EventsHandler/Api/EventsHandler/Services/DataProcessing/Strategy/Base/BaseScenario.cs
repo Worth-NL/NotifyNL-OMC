@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -12,6 +13,7 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
+using JetBrains.Annotations;
 using System.Text.Json;
 using Resources = EventsHandler.Properties.Resources;
 
@@ -93,7 +95,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 return;
             }
 
-            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelisted, caseId, scenarioName));
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist, caseId, scenarioName));
         }
         
         /// <summary>
@@ -158,7 +160,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
-            if (notifyData.Count == 0)
+            if (notifyData.IsEmpty())
             {
                 return ProcessingDataResponse.Failure_Empty();
             }
@@ -169,7 +171,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 NotifySendResponse response = data.NotificationMethod switch
                 {
                     NotifyMethods.Email => await this.NotifyService.SendEmailAsync(notification, data),
-                    NotifyMethods.Sms => await this.NotifyService.SendSmsAsync(notification, data),
+                    NotifyMethods.Sms   => await this.NotifyService.SendSmsAsync(notification, data),
                     _ => NotifySendResponse.Failure_Unknown()
                 };
 
@@ -240,7 +242,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the name of this specific scenario.
         /// </summary>
-        /// <returns></returns>
+        [UsedImplicitly]
         protected abstract string GetWhitelistName();
         #endregion
     }

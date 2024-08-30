@@ -11,37 +11,48 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
     [TestFixture]
     public sealed class PartyResultsTests
     {
+        private WebApiConfiguration _emptyConfiguration = null!;
+        private WebApiConfiguration _validAppSettingsConfiguration = null!;
+
+        [OneTimeSetUp]
+        public void TestsInitialize()
+        {
+            this._emptyConfiguration = ConfigurationHandler.GetWebApiConfiguration();
+            this._validAppSettingsConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings);
+        }
+
+        [OneTimeTearDown]
+        public void TestsCleanup()
+        {
+            this._emptyConfiguration.Dispose();
+            this._validAppSettingsConfiguration.Dispose();
+        }
+
         #region Party (method)
         [Test]
         public void Party_Method_ForMissingResults_ThrowsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
-
             var partyResults = new PartyResults();  // Empty "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, partyResults, Resources.HttpRequest_ERROR_EmptyPartiesResults);
+            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, Resources.HttpRequest_ERROR_EmptyPartiesResults);
         }
 
         [Test]
         public void Party_Method_ForExistingResults_ButMissingAddresses_ThrowsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
-
             PartyResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]
         public void Party_Method_ForExistingResults_ButEmptyDigitalAddresses_ThrowsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-
             var partyId = Guid.NewGuid();
             Guid firstAddressId = GetUniqueId(partyId);
             Guid secondAddressId = GetUniqueId(firstAddressId);
@@ -69,13 +80,13 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                         {
                             Id = firstAddressId,
                             Value = string.Empty,
-                            Type = testConfiguration.AppSettings.Variables.PhoneGenericDescription()
+                            Type = this._validAppSettingsConfiguration.AppSettings.Variables.PhoneGenericDescription()
                         },
                         new()  // Just empty address
                         {
                             Id = secondAddressId,
                             Value = string.Empty,
-                            Type = testConfiguration.AppSettings.Variables.EmailGenericDescription()
+                            Type = this._validAppSettingsConfiguration.AppSettings.Variables.EmailGenericDescription()
                         }
                     }
                 }
@@ -84,7 +95,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]
@@ -93,14 +104,13 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             // Arrange
             var testId = Guid.NewGuid();
 
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-            PartyResult testPartyEmail = GetTestPartyResult_Email(testConfiguration, testId, testId);
-            PartyResult testPartyPhone = GetTestPartyResult_Phone(testConfiguration, testId, testId);
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
             PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(testConfiguration);
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
             Assert.Multiple(() =>
@@ -116,14 +126,13 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Email_FirstEncountered_PriorityOverPhone()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-            PartyResult testPartyEmail = GetTestPartyResult_Email(testConfiguration, Guid.Empty, Guid.NewGuid());
-            PartyResult testPartyPhone = GetTestPartyResult_Phone(testConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
             PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(testConfiguration);
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
             Assert.Multiple(() =>
@@ -141,13 +150,12 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             // Arrange
             var testId = Guid.NewGuid();
 
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-            PartyResult testParty = GetTestPartyResult_Phone(testConfiguration, testId, testId);
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
             PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(testConfiguration);
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
             Assert.Multiple(() =>
@@ -163,13 +171,12 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetValidAppSettingsConfiguration();
-            PartyResult testParty = GetTestPartyResult_Phone(testConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
             PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(testConfiguration);
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
             Assert.Multiple(() =>
@@ -180,6 +187,8 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));
             });
         }
+
+        #endregion
 
         #region Helper methods
         private const string TestEmail = "john.doe@gmail.com";
@@ -357,7 +366,6 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });
         }
-        #endregion
         #endregion
     }
 }

@@ -41,10 +41,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
             => new(true, Resources.Processing_SUCCESS_Scenario_DataProcessed);
         
         /// <summary>
-        /// Failure result.
+        /// Specific failure result.
         /// </summary>
         internal static ProcessingDataResponse Failure_Empty()
-            => new(false, Resources.Processing_ERROR_Scenario_MissingData);
+            => new(false, Resources.Processing_ERROR_Scenario_MissingNotifyData);
 
         /// <summary>
         /// Failure result.

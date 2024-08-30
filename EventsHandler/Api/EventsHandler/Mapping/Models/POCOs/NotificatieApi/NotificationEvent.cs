@@ -47,24 +47,24 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         /// <inheritdoc cref="Actions"/>
         [Required]                   // API model validation
-        [JsonInclude]                // Allow JsonSerializer to save into properties with non-public setter
         [JsonRequired]               // Property is required and must be mapped
+        [JsonInclude]                // Allow JsonSerializer to save into properties with non-public setter
         [JsonPropertyName("actie")]  // Specific JSON name to be mapped into property. In this case: "Dutch => English"
         [JsonPropertyOrder(0)]       // Specific order of properties - useful when displaying serialized objects
         public Actions Action { get; internal set; }
 
         /// <inheritdoc cref="Channels"/>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("kanaal")]
         [JsonPropertyOrder(1)]
         public Channels Channel { get; internal set; }
 
         /// <inheritdoc cref="Resources"/>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("resource")]
         [JsonPropertyOrder(2)]
         public Resources Resource { get; internal set; }
@@ -76,8 +76,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// The source Web API service specifies attributes.
         /// </remarks>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("kenmerken")]
         [JsonPropertyOrder(3)]
         public EventAttributes Attributes { get; internal set; }
@@ -89,8 +89,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// </code>
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
         public Uri MainObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
@@ -102,8 +102,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// </code>
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
         public Uri ResourceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
@@ -112,8 +112,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// The date and time when the action took place.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("aanmaakdatum")]
         [JsonPropertyOrder(6)]
         public DateTime CreateDate { get; internal set; }
@@ -122,7 +122,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
         /// </summary>
         [JsonInclude]
-        [JsonExtensionData]     // Aggregate all JSON properties that couldn't be matched with this model
+        [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(7)]
         public Dictionary<string, object> Orphans { get; internal set; } = new();
 

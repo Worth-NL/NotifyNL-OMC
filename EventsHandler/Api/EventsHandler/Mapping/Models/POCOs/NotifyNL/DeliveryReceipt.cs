@@ -33,8 +33,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The "Notify" ID for the status receipts.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("id")]
         [JsonPropertyOrder(0)]
         public Guid Id { get; internal set; }
@@ -43,8 +43,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The reference sent by the "Notify" Web API service.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("reference")]
         [JsonPropertyOrder(1)]
         public string? Reference { get; internal set; }
@@ -53,8 +53,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The email address or phone number of the recipient.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("to")]
         [JsonPropertyOrder(2)]
         public string Recipient { get; internal set; } = string.Empty;
@@ -63,8 +63,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The status of the notification.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(3)]
         public DeliveryStatuses Status { get; internal set; }
@@ -73,8 +73,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The time when the "Notify" Web API service sent the request.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("created_at")]
         [JsonPropertyOrder(4)]
         public DateTime CreatedAt { get; internal set; }
@@ -83,8 +83,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The last time when the status of the notification was updated.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("completed_at")]
         [JsonPropertyOrder(5)]
         public DateTime CompletedAt { get; internal set; }
@@ -93,8 +93,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The time when the notification was sent.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("sent_at")]
         [JsonPropertyOrder(6)]
         public DateTime SentAt { get; internal set; }
@@ -103,8 +103,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The notification type.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("notification_type")]
         [JsonPropertyOrder(7)]
         public NotificationTypes Type { get; internal set; }
@@ -113,8 +113,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The ID of the template that was used.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("template_id")]
         [JsonPropertyOrder(8)]
         public Guid TemplateId { get; internal set; }
@@ -123,8 +123,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotifyNL
         /// The version number of the template that was used.
         /// </summary>
         [Required]
-        [JsonInclude]
         [JsonRequired]
+        [JsonInclude]
         [JsonPropertyName("template_version")]
         [JsonPropertyOrder(9)]
         public int TemplateVersion { get; internal set; }

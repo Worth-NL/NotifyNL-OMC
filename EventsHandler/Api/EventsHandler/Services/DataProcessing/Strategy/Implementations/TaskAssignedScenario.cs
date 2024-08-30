@@ -5,7 +5,7 @@ using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
@@ -105,7 +105,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             lock (s_padlock)
             {
-                // TODO: Names of parameters can be taken from models and properties(?)
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;

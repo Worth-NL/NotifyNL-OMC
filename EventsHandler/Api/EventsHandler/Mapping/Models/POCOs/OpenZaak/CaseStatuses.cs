@@ -15,6 +15,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The number of received results.
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
@@ -24,6 +25,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// The collection of:
         /// <inheritdoc cref="CaseStatus"/>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]

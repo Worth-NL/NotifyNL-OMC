@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        private IQueryContext _queryContext = null!;
+        private IQueryContext? _queryContext;
         private DecisionResource _decisionResource;
         private Decision _decision;
         private DecisionType _decisionType;
@@ -106,7 +106,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.Email.DecisionMade();
+            => Guid.Empty;  // NOTE: This scenario is not sending notifications
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -116,7 +116,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             lock (s_padlock)
             {
-                // TODO: Names of parameters can be taken from models and properties(?)
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
@@ -156,7 +155,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-          => this.Configuration.User.TemplateIds.Sms.DecisionMade();
+          => Guid.Empty;  // NOTE: This scenario is not sending notifications
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
@@ -169,36 +168,39 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
-            if (notifyData.Count > 0)
+            if (notifyData.IsEmpty())
             {
-                NotifyTemplateResponse templateResponse =
-                    // NOTE: Most likely there will be only a single package of data received
-                    await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
-
-                if (templateResponse.IsFailure)
-                {
-                    return ProcessingDataResponse.Failure(templateResponse.Error);
-                }
-
-                // Adjusting the body for Logius system
-                string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
-
-                // Prepare HTTP Request Body
-                string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext, this._decisionResource);
-
-                string objectDataJson = PrepareObjectData(
-                    templateResponse.Subject, modifiedResponseBody, this._decision.PublicationDate, this._decisionResource.DecisionUri,
-                    this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name(), this._bsnNumber, commaSeparatedUris);
-
-                RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
-
-                if (requestResponse.IsFailure)
-                {
-                    ProcessingDataResponse.Failure(requestResponse.JsonResponse);
-                }
+                return ProcessingDataResponse.Failure_Empty();
             }
 
-            return ProcessingDataResponse.Success();
+            NotifyTemplateResponse templateResponse =
+                // NOTE: Most likely there will be only a single package of data received
+                await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
+
+            if (templateResponse.IsFailure)
+            {
+                return ProcessingDataResponse.Failure(templateResponse.Error);
+            }
+
+            // Adjusting the body for Logius system
+            string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
+
+            // Prepare HTTP Request Body
+            this._queryContext ??= this.DataQuery.From(notification);
+
+            string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext);
+            if (commaSeparatedUris.IsEmpty())
+            {
+                return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
+            }
+
+            string objectDataJson = PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
+
+            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+
+            return requestResponse.IsFailure
+                ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
+                : ProcessingDataResponse.Success();
         }
 
         /// <summary>
@@ -213,10 +215,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        private static async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext, DecisionResource decisionResource)
+        private async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext)
         {
             // Retrieve documents
-            List<Document> documents = (await queryContext.GetDocumentsAsync(decisionResource))
+            List<Document> documents = (await queryContext.GetDocumentsAsync(this._decisionResource))
                                        .Results;
             // Prepare URIs
             List<string> validInfoObjectsUris = new(documents.Count);
@@ -240,21 +242,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return string.Join(", ", validInfoObjectsUris);
         }
 
-        private static string PrepareObjectData(
-            string subject, string body, DateOnly publicationDate, Uri decisionUri,
-            string messageObjectTypeName, string bsnNumber, string commaSeparatedUris)
+        /// <summary>
+        ///   Prepares a block of code (responsible for message object creation) to be sent together with final JSON payload.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"/>
+        private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
         {
             return $"{{" +
                    $"  \"onderwerp\": \"{subject}\"," +
                    $"  \"berichttekst\": \"{body}\"," +
-                   $"  \"publicatiedatum\": \"{publicationDate}\"," +
-                   $"  \"referentie\": \"{decisionUri}\"," +
+                   $"  \"publicatiedatum\": \"{this._decision.PublicationDate}\"," +
+                   $"  \"referentie\": \"{this._decisionResource.DecisionUri}\"," +
                    $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
                    $"  \"geopend\": false," +
-                   $"  \"berichttype\": \"{messageObjectTypeName}\"," +
+                   $"  \"berichttype\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
                    $"  \"identificatie\": {{" +
                    $"    \"type\": \"bsn\"," +
-                   $"    \"value\": \"{bsnNumber}\"" +
+                   $"    \"value\": \"{this._bsnNumber}\"" +
                    $"  }}," +
                    $"  \"bijlages\": [" +
                    $"    {commaSeparatedUris}" +
