@@ -251,7 +251,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [TestCase(DistributionChannels.None)]
         [TestCase(DistributionChannels.Unknown)]
         [TestCase((DistributionChannels)(-1))]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithInvalidNotifyMethod_ReturnsFailure(
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithInvalidDistChannel_ReturnsFailure(
             DistributionChannels invalidDistributionChannel)
         {
             // Arrange
@@ -267,7 +267,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
@@ -571,8 +571,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         private bool _getDataVerified;
         private bool _processDataVerified;
 
-        private void VerifyGetDataMethodCalls(int fromInvokeCount, int getCaseAsyncInvokeCount,
-            int getCaseTypeInvokeCount, int getPartyDataAsyncInvokeCount)
+        private void VerifyGetDataMethodCalls(int fromInvokeCount, int getCaseInvokeCount,
+            int getCaseTypeInvokeCount, int getPartyDataInvokeCount)
         {
             if (this._getDataVerified)
             {
@@ -587,7 +587,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             // IQueryContext
             this._mockedQueryContext
                 .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
-                Times.Exactly(getCaseAsyncInvokeCount));
+                Times.Exactly(getCaseInvokeCount));
             
             this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
@@ -598,7 +598,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
-                Times.Exactly(getPartyDataAsyncInvokeCount));
+                Times.Exactly(getPartyDataInvokeCount));
 
             this._getDataVerified = true;
 
