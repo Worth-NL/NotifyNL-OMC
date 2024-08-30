@@ -105,7 +105,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             lock (s_padlock)
             {
-                // TODO: Names of parameters can be taken from models and properties(?)
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
