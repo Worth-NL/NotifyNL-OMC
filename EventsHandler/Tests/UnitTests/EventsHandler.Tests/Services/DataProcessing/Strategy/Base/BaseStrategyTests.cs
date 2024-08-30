@@ -282,7 +282,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(Resources.Processing_ERROR_Notification_DeliveryMethodUnknown));
 
                 VerifyProcessDataMethodCalls(0, 0);
@@ -314,7 +314,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResponse.IsSuccess, Is.False);
+                Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
 
                 VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
