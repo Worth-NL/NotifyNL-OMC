@@ -598,7 +598,7 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 
 - Case created
 - Case status updated
-- Cace closed
+- Case closed
 
 ```json
 {
