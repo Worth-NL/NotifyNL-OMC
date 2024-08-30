@@ -2,7 +2,7 @@
 
 v.1.8.6
 
-© 2024, Worth Systems.
+Â© 2024, Worth Systems.
 
 ---
 # 1. Introduction
@@ -487,7 +487,7 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 | `iss`                 | `OMC_AUTHORIZATION_JWT_ISSUER`           |
 | `aud`                 | `OMC_AUTHORIZATION_JWT_AUDIENCE`         |
 | `iat`                 | To be filled manually using current time |
-| `exp`                 | `OMC_AUTHORIZATION_JWT_EXPIRESINMIN`     |
+| `exp`                 | `iat + OMC_AUTHORIZATION_JWT_EXPIRESINMIN`     |
 | `secret`              | `OMC_AUTHORIZATION_JWT_SECRET`           |
 
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
@@ -776,7 +776,7 @@ Endpoints:
 
 ![Not found template ID - Error](images/test_notify_templateIdNotFoundError.png)
 
-- Missing required personalization (or the default “example” was used):
+- Missing required personalization (or the default Â“exampleÂ” was used):
 
 ![Missing required personalization - Input](images/test_notify_personalizationMissingInput.png)
 
