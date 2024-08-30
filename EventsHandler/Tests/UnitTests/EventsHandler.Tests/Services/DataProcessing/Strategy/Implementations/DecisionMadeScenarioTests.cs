@@ -211,7 +211,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult.IsSuccess, Is.False);
+                Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
