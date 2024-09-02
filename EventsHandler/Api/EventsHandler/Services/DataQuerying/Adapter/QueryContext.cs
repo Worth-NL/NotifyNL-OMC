@@ -105,12 +105,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             => await OpenZaak.v1.QueryZaak.SendFeedbackAsync(this._networkService, this._queryZaak.GetDomain(), jsonBody);
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
-        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
+        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {
             // 1. Fetch the case roles from "OpenZaak"
             // 2. Determine the citizen data from the case roles
             // 3. Return BSN from the citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseTypeUri);
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
