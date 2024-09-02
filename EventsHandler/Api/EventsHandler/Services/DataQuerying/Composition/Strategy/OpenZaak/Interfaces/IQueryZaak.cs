@@ -43,38 +43,20 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         internal sealed async Task<Case> TryGetCaseAsync(IQueryBase queryBase, object? parameter = null)
         {
             // Request URL
-            Uri caseTypeUri;
+            Uri caseUri;
+
+            // Take CaseUri from notification
+            caseUri = queryBase.Notification.MainObjectUri;
 
             // Case #1: The Case Type URI isn't provided so, it needs to be re-queried
-            if (parameter == null)
+            if (caseUri == null)
             {
-                caseTypeUri = await TryGetCaseTypeUriAsync(queryBase, queryBase.Notification.MainObjectUri);
-            }
-            // Case #2: The URI was provided
-            else if (parameter is Uri uri)
-            {
-                // But it's invalid
-                if (uri.IsNotCaseType())
-                {
-                    throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
-                }
-
-                caseTypeUri = uri;
-            }
-            // Case #3: The Case Type URI can be retrieved directly from Data
-            else if (parameter is Data taskData)
-            {
-                caseTypeUri = await PolymorphicGetCaseTypeUriAsync(queryBase, taskData.CaseUri);
-            }
-            // Case #4: Unhandled situation occurred
-            else
-            {
-                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseTypeUri);
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseTypeUri,
+                uri: caseUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
 
