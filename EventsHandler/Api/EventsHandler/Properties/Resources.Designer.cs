@@ -223,6 +223,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Required properties.
+        /// </summary>
+        internal static string Deserialization_ERROR_CannotDeserialize_Required {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Target.
         /// </summary>
         internal static string Deserialization_ERROR_CannotDeserialize_Target {
