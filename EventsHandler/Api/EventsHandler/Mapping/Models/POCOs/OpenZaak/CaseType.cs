@@ -25,7 +25,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("omschrijvinggeneriek")]
+        [JsonPropertyName("omschrijvingGeneriek")]
         [JsonPropertyOrder(1)]
         public string Description { get; internal set; } = string.Empty;
 
