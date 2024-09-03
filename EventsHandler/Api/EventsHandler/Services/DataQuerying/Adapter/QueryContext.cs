@@ -58,9 +58,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync(object?)"/>
-        async Task<Case> IQueryContext.GetCaseAsync(object? parameter)
-            => await this._queryZaak.TryGetCaseAsync(this._queryBase, parameter);
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(Uri? caseUri)
+            => await this._queryZaak.TryGetCaseAsync(this._queryBase, caseUri);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync(Uri?)"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
@@ -105,12 +105,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             => await OpenZaak.v1.QueryZaak.SendFeedbackAsync(this._networkService, this._queryZaak.GetDomain(), jsonBody);
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
-        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseTypeUri)
+        async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {
             // 1. Fetch the case roles from "OpenZaak"
             // 2. Determine the citizen data from the case roles
             // 3. Return BSN from the citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseTypeUri);
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
@@ -128,7 +128,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         {
             // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
             bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(
-                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case type URI is located here
+                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, this._queryKlant.GetDomain(), bsnNumber);

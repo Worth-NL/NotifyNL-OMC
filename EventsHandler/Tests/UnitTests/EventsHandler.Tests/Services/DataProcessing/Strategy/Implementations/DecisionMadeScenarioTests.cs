@@ -392,7 +392,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .ReturnsAsync(new DecisionType());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<object?>()))
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new Case
                 {
                     Identification = isCaseIdWhitelisted ? "1" : "4"
@@ -545,7 +545,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Verify(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()),
                 Times.Exactly(getDecisionsAndCaseInvokeCount));
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
                 Times.Exactly(getDecisionsAndCaseInvokeCount));
           
             this._mockedQueryContext  // Dependent queries
