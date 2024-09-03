@@ -12,12 +12,24 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct CaseType : IJsonSerializable
     {
         /// <summary>
+        /// The identification of the <see cref="Case"/> in the following format:
+        /// <code>
+        /// ZAAK-2023-0000000010
+        /// </code>
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("identificatie")]
+        [JsonPropertyOrder(0)]
+        public string Identification { get; internal set; } = string.Empty;
+
+        /// <summary>
         /// The name of the <see cref="CaseType"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -26,7 +38,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvingGeneriek")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public string Description { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -35,7 +47,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("isEindstatus")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(3)]
         public bool IsFinalStatus { get; internal set; }
 
         /// <summary>
@@ -44,7 +56,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("informeren")]
-        [JsonPropertyOrder(3)]
+        [JsonPropertyOrder(4)]
         public bool IsNotificationExpected { get; internal set; }
 
         /// <summary>
