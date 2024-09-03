@@ -39,12 +39,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryZaak.TryGetCaseAsync(IQueryBase, object?)"/>
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseAsync(IQueryBase, Uri?)"/>
         /// <remarks>
         ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
         ///   be extracted internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
-        internal Task<Case> GetCaseAsync(object? parameter = null);
+        internal Task<Case> GetCaseAsync(Uri? caseUri = null);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusesAsync(IQueryBase, Uri?)"/>
         /// <remarks>

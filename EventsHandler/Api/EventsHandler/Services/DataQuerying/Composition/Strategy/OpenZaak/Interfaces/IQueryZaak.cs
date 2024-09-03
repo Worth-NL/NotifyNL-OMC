@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -26,37 +25,34 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         string IVersionDetails.Name => "OpenZaak";
 
         #region Parent (Case)
+        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
         /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="parameter">
+        /// <param name="caseUri">
         ///   <list type="number">
         ///     <item>Nothing => 2. Case <see cref="Uri"/> will be queried from the Main Object URI</item>
         ///     <item>Case <see cref="Uri"/> => to be used directly</item>
-        ///     <item>Task <see cref="Data"/> => containing 2. Case <see cref="Uri"/></item>
         ///   </list>
         /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal sealed async Task<Case> TryGetCaseAsync(IQueryBase queryBase, object? parameter = null)
+        internal sealed async Task<Case> TryGetCaseAsync(IQueryBase queryBase, Uri? caseUri = null)
         {
-            // Request URL
-            Uri caseUri;
+            // Case #1: Tha Case URI was provided
+            // Case #2: The Case URI isn't provided so, it needs to taken from a different place
+            caseUri ??= queryBase.Notification.MainObjectUri;
 
-            // Take CaseUri from notification
-            caseUri = queryBase.Notification.MainObjectUri;
-
-            // Case #1: The Case Type URI isn't provided so, it needs to be re-queried
-            if (caseUri == null)
+            if (caseUri.IsNotCase())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseUri,
+                uri: caseUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCase);
         }
 
@@ -89,7 +85,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseStatuses);
         }
 
-        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
         /// Gets the most recent <see cref="CaseType"/> from <see cref="CaseStatuses"/> from "OpenZaak" Web API service.
         /// </summary>

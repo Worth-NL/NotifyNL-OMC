@@ -58,9 +58,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryZaak
-        /// <inheritdoc cref="IQueryContext.GetCaseAsync(object?)"/>
-        async Task<Case> IQueryContext.GetCaseAsync(object? parameter)
-            => await this._queryZaak.TryGetCaseAsync(this._queryBase, parameter);
+        /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
+        async Task<Case> IQueryContext.GetCaseAsync(Uri? caseUri)
+            => await this._queryZaak.TryGetCaseAsync(this._queryBase, caseUri);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync(Uri?)"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
