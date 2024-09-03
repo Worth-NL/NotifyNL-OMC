@@ -9,6 +9,7 @@ using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
 using JetBrains.Annotations;
 using System.Collections.Concurrent;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.Settings.Configuration
 {
@@ -816,7 +817,7 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record WhitelistComponent : IDisposable
             {
                 private static readonly object s_whitelistLock = new();
-                private static readonly HashSet<string> s_allWhitelistedCaseIds = new();  // All whitelisted Case IDs from different scenarios
+                private static readonly HashSet<string> s_allWhitelistedCaseTypeIds = new();  // All whitelisted Case type IDs from different scenarios
                 private static readonly ConcurrentDictionary<string /* Node name */, IDs> s_cachedIDs = new();  // Cached IDs nested models
 
                 private readonly ILoadersContext _loadersContext;
@@ -908,10 +909,10 @@ namespace EventsHandler.Services.Settings.Configuration
                     {
                         // Get values
                         this._finalPath = loadersContext.GetPathWithNode(currentPath, nodeName);
-                        string[] caseIds = GetCachedValues(loadersContext, this._finalPath, disableValidation: true);
+                        string[] caseTypeIds = GetCachedValues(loadersContext, this._finalPath, disableValidation: true);
 
                         // Construct the IDs object
-                        this.Count = caseIds.Length;
+                        this.Count = caseTypeIds.Length;
 
                         if (this.Count == 0)
                         {
@@ -921,29 +922,29 @@ namespace EventsHandler.Services.Settings.Configuration
                         // Cache the current IDs among all scenario-specific IDs
                         lock (s_whitelistLock)
                         {
-                            foreach (string value in caseIds)
+                            foreach (string id in caseTypeIds)
                             {
-                                s_allWhitelistedCaseIds.Add(ComposeID(this._finalPath, value));
+                                s_allWhitelistedCaseTypeIds.Add(ComposeID(this._finalPath, id));
                             }
                         }
                     }
 
                     /// <summary>
-                    /// Determines whether the specified case identifier is whitelisted.
+                    /// Determines whether the specified <see cref="CaseType"/> identifier is whitelisted.
                     /// </summary>
-                    internal bool IsAllowed(string caseId)
+                    internal bool IsAllowed(string caseTypeId)
                     {
                         lock (s_whitelistLock)
                         {
-                            return !string.IsNullOrWhiteSpace(caseId) &&
-                                   s_allWhitelistedCaseIds.Count != 0 &&
-                                   s_allWhitelistedCaseIds.Contains(ComposeID(this._finalPath, caseId));
+                            return !string.IsNullOrWhiteSpace(caseTypeId) &&
+                                   s_allWhitelistedCaseTypeIds.Count != 0 &&
+                                   s_allWhitelistedCaseTypeIds.Contains(ComposeID(this._finalPath, caseTypeId));
                         }
                     }
 
-                    private static string ComposeID(string finalPath, string caseId)
+                    private static string ComposeID(string finalPath, string caseTypeId)
                     {
-                        return $"{finalPath}:{caseId}";
+                        return $"{finalPath}:{caseTypeId}";
                     }
 
                     public override string ToString() => this._finalPath;
@@ -954,7 +955,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     lock (s_whitelistLock)
                     {
-                        s_allWhitelistedCaseIds.Clear();
+                        s_allWhitelistedCaseTypeIds.Clear();
                     }
 
                     s_cachedIDs.Clear();
