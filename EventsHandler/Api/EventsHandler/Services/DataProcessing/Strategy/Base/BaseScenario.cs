@@ -61,17 +61,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return commonPartyData.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success(new[] { GetEmailNotifyData(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { await GetEmailNotifyDataAsync(commonPartyData) }),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success(new[] { GetSmsNotifyData(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { await GetSmsNotifyDataAsync(commonPartyData) }),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
                     => GettingDataResponse.Success(new[]
                         {
-                            GetEmailNotifyData(commonPartyData),
-                            GetSmsNotifyData(commonPartyData)
+                            await GetEmailNotifyDataAsync(commonPartyData),
+                            await GetSmsNotifyDataAsync(commonPartyData)
                         }),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
@@ -120,14 +120,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual NotifyData GetEmailNotifyData(CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
                 contactDetails: partyData.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: GetEmailPersonalization(partyData)
+                personalization: await GetEmailPersonalizationAsync(partyData)
             );
         }
         #endregion
@@ -140,14 +140,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual NotifyData GetSmsNotifyData(CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
                 contactDetails: partyData.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: GetSmsPersonalization(partyData)
+                personalization: await GetSmsPersonalizationAsync(partyData)
             );
         }
         #endregion
@@ -216,7 +216,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData);
         #endregion
 
         #region Abstract (SMS logic: template + personalization)
@@ -235,7 +235,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData);
+        protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
         #endregion
 
         #region Abstract (GetWhitelistName)        
