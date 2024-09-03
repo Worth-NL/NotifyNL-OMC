@@ -32,8 +32,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private IQueryContext? _queryContext;
         private DecisionResource _decisionResource;
         private Decision _decision;
-        private DecisionType _decisionType;
-        private Case _case;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
 
@@ -80,17 +78,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
-            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
-            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
+            this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
+                             await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
+                                   this._decision.CaseUri));                 // 1. Case URI
 
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this._case.Identification, GetWhitelistName());
-            
-            this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
-                             await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                   this._decision.CaseUri));                 // 1. Case URI
+                this._caseType.Identification, GetWhitelistName());
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
@@ -111,9 +106,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
-        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
+            DecisionType decisionType = await this._queryContext!.GetDecisionTypeAsync(this._decision);
+            Case @case = await this._queryContext!.GetCaseAsync(this._decision.CaseUri);
+
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
@@ -131,18 +129,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate}";
                 s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
 
-                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvinggeneriek"] = this._decisionType.Description;
-                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
-                s_emailPersonalization["besluittype.reactietermijn"] = $"{this._decisionType.ResponseDeadline}";
-                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
-                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
-                s_emailPersonalization["besluittype.publicatietermijn"] = $"{this._decisionType.PublicationDeadline}";
-                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+                s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
+                s_emailPersonalization["besluittype.omschrijvinggeneriek"] = decisionType.Description;
+                s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
+                s_emailPersonalization["besluittype.reactietermijn"] = $"{decisionType.ResponseDeadline}";
+                s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
+                s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
+                s_emailPersonalization["besluittype.publicatietermijn"] = $"{decisionType.PublicationDeadline}";
+                s_emailPersonalization["besluittype.toelichting"] = decisionType.Explanation;
 
-                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate}";
+                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
+                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvinggeneriek"] = this._caseType.Description;
@@ -157,10 +155,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
           => Guid.Empty;  // NOTE: This scenario is not sending notifications
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
-        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
@@ -268,7 +266,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #endregion
 
         #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
         #endregion
     }
