@@ -379,7 +379,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             };
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<object?>()))
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(testCase);
             
             this._mockedQueryContext
@@ -489,7 +489,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
             // IQueryContext
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
                 Times.Exactly(getCaseInvokeCount));
 
             this._mockedQueryContext  // Dependent queries
