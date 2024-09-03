@@ -1,9 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Collections.Concurrent;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Interfaces;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,15 +14,19 @@ namespace EventsHandler.Services.Serialization
     internal sealed class SpecificSerializer : ISerializationService
     {
         private static readonly ConcurrentDictionary<Type, string> s_cachedRequiredProperties = new();
+        private static readonly JsonSerializerOptions s_serializerOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
         TModel ISerializationService.Deserialize<TModel>(object json)
         {
             try
             {
-                return JsonSerializer.Deserialize<TModel>($"{json}");
+                return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
-            catch
+            catch (JsonException)
             {
                 throw new JsonException(message:
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
