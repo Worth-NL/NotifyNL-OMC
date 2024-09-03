@@ -43,9 +43,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         {
             // Case #1: Tha Case URI was provided
             // Case #2: The Case URI isn't provided so, it needs to taken from a different place
-            caseUri ??= queryBase.Notification.MainObjectUri;
-
-            if (caseUri.IsNotCase())
+            if ((caseUri ??= queryBase.Notification.MainObjectUri).IsNotCase())
             {
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
