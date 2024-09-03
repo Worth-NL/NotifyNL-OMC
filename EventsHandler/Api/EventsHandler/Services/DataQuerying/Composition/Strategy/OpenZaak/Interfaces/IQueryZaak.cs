@@ -300,7 +300,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
 
         /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, string, Uri)"/>
-        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri);
+        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseUri);
         #endregion
 
         #region Abstract (Case type URI)

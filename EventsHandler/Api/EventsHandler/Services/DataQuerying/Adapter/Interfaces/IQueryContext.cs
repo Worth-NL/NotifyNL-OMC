@@ -114,7 +114,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         internal Task<string> SendFeedbackToOpenZaakAsync(string jsonBody);
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, string, Uri)"/>
-        internal Task<string> GetBsnNumberAsync(Uri caseTypeUri);
+        internal Task<string> GetBsnNumberAsync(Uri caseUri);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
         /// <remarks>
