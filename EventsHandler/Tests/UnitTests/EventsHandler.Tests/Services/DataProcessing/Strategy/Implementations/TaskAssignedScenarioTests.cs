@@ -488,7 +488,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .ReturnsAsync(testTask);
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<object?>()))
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new Case
                 {
                     Identification = isCaseIdWhitelisted ? "1" : "4"
@@ -586,7 +586,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // IQueryContext
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<object?>()),
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
                 Times.Exactly(getCaseInvokeCount));
             
             this._mockedQueryContext  // Dependent queries
