@@ -69,7 +69,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
             
-            this._case = await queryContext.GetCaseAsync(this._taskData);
+            this._case = await queryContext.GetCaseAsync(this._taskData.CaseUri);
             
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
