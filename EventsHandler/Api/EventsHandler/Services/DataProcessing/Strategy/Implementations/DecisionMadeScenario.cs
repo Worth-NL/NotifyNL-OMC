@@ -97,7 +97,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Preparing citizen details
             this._bsnNumber = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
-                                    this._case.CaseTypeUri);               // 1. Case Type URI
+                                    this._decision.CaseUri);               // 1. Case URI
 
             return await this._queryContext.GetPartyDataAsync(this._bsnNumber);  // 3. Citizen details
         }

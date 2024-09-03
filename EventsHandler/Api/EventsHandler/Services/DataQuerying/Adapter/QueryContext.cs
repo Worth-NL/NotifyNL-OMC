@@ -128,7 +128,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         {
             // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
             bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(
-                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case type URI is located here
+                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, this._queryKlant.GetDomain(), bsnNumber);

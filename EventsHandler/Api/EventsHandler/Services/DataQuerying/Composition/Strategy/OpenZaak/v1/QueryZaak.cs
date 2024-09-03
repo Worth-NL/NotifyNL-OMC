@@ -36,22 +36,22 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 
         #region Polymorphic (BSN Number)
         /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, string, Uri)"/>
-        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri)
+        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseUri)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            return (await GetCaseRolesV1Async(queryBase, openZaakDomain, caseTypeUri, subjectType))
+            return (await GetCaseRolesV1Async(queryBase, openZaakDomain, caseUri, subjectType))
                 .Citizen
                 .BsnNumber;
         }
 
-        private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, Uri caseTypeUri, string subjectType)
+        private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, Uri caseUri, string subjectType)
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
 
             // Request URL
-            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseTypeUri}" +
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}" +
                                           $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v1
