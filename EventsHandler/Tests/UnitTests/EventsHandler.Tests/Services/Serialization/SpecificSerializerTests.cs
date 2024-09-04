@@ -20,7 +20,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string IsFinalStatus = "false";
         private const string IsNotificationExpected = "true";
 
-        private const string CaseType_Original =
+        // ReSharper disable InconsistentNaming
+        private const string Input_CaseType_Original =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
               $"\"identificatie\":\"{Identification}\"," +
@@ -44,7 +45,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"eindeObject\":null" +
             $"}}";
         
-        private const string CaseType_LowerCase =
+        private const string Input_CaseType_LowerCase =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
               $"\"identificatie\":\"{Identification}\"," +
@@ -68,7 +69,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"eindeObject\":null" +
             $"}}";
 
-        private const string OutputJson =
+        private const string Output_CaseType =
             $"{{" +
               $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
@@ -85,8 +86,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         #region Deserialize
-        [TestCase(CaseType_Original)]
-        [TestCase(CaseType_LowerCase)]
+        [TestCase(Input_CaseType_Original)]
+        [TestCase(Input_CaseType_LowerCase)]
         public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string inputJson)
         {
             // Act
@@ -139,7 +140,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer!.Serialize(testModel);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(OutputJson));
+            Assert.That(actualResult, Is.EqualTo(Output_CaseType));
         }
 
         [Test]
