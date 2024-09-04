@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
+using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -16,7 +17,10 @@ namespace EventsHandler.Services.Serialization
         private static readonly ConcurrentDictionary<Type, string> s_cachedRequiredProperties = new();
         private static readonly JsonSerializerOptions s_serializerOptions = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+
+            // Global converters
+            Converters = { new StringJsonConverter() }
         };
 
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
@@ -56,7 +60,7 @@ namespace EventsHandler.Services.Serialization
         /// <inheritdoc cref="ISerializationService.Serialize{TModel}(TModel)"/>
         string ISerializationService.Serialize<TModel>(TModel model)
         {
-            return JsonSerializer.Serialize(model);
+            return JsonSerializer.Serialize(model, s_serializerOptions);
         }
     }
 }
