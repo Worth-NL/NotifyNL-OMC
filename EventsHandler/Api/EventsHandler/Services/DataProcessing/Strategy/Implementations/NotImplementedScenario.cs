@@ -35,37 +35,37 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
             => await Task.FromResult(NotImplemented<CommonPartyData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
-        protected override NotifyData GetSmsNotifyData(CommonPartyData partyData)
-            => NotImplemented<NotifyData>(); // NOTE: Only for compilation purposes
+        protected override async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
+            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Guid GetSmsTemplateId()
             => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
-        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
-            => NotImplemented<Dictionary<string, object>>(); // NOTE: Only for compilation purposes
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
-        protected override NotifyData GetEmailNotifyData(CommonPartyData partyData)
-            => NotImplemented<NotifyData>(); // NOTE: Only for compilation purposes
+        protected override async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
+            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override Guid GetEmailTemplateId()
             => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
-        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
-            => NotImplemented<Dictionary<string, object>>(); // NOTE: Only for compilation purposes
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
         [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
         protected override string GetWhitelistName()
             => NotImplemented<string>(); // NOTE: Only for compilation purposes

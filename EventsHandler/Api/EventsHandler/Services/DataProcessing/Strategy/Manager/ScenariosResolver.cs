@@ -7,7 +7,6 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
@@ -50,18 +49,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
                 }
 
-                CaseType recentCaseType =
-                    await queryContext.GetLastCaseTypeAsync(caseStatuses);
-
-                BaseCaseScenario strategy = !recentCaseType.IsFinalStatus
+                return !(await queryContext.GetLastCaseTypeAsync(caseStatuses)).IsFinalStatus
                     // Scenario #2: "Case status updated"
                     ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
                     : this._serviceProvider.GetRequiredService<CaseClosedScenario>();
-
-                strategy.Cache(recentCaseType);
-
-                return strategy;
             }
 
             // Object scenarios
