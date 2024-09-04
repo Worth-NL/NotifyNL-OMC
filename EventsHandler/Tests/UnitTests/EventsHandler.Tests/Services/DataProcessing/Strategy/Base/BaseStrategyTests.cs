@@ -58,6 +58,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         #region Test data
         private const string TestEmailAddress = "test@email.com";
         private const string TestPhoneNumber = "911";
+        private const string CaseId = "ZAAK-2024-00000000001";
         #endregion
 
         #region TryGetDataAsync()
@@ -82,11 +83,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
-                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist
                     .Replace("{0}", "4")
                     // Get substring
-                    [..(Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist.Length -
-                        Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist.IndexOf("{1}", StringComparison.Ordinal))];
+                    [..(Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist.Length -
+                        Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist.IndexOf("{1}", StringComparison.Ordinal))];
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
@@ -119,7 +120,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 0, 0);
             });
         }
 
@@ -151,7 +152,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 0);
             });
         }
         
@@ -211,7 +212,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1);
+                int getCaseInvokeCount = testDistributionChannel == DistributionChannels.Both ? 2 : 1;
+
+                VerifyGetDataMethodCalls(1, 1, 1, getCaseInvokeCount);
             });
         }
 
@@ -368,24 +371,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         }
 
         private void GetMockedServices_TryGetData(
-            DistributionChannels testDistributionChannel, bool isCaseIdWhitelisted, bool isNotificationExpected)
+            DistributionChannels testDistributionChannel, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
-            // TryGetCaseAsync()
-            var testCase = new Case
-            {
-                Name = "Test case",
-                Identification = isCaseIdWhitelisted ? "1" : "4"
-            };
-
-            this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
-                .ReturnsAsync(testCase);
-            
             this._mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType
                 {
+                    Identification = isCaseTypeIdWhitelisted ? "1" : "4",
                     IsNotificationExpected = isNotificationExpected
                 });
             
@@ -393,20 +386,24 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses());
 
-            // TryGetPartyDataAsync(string)
-            var testParty = new CommonPartyData
-            {
-                Name = "Alice",
-                SurnamePrefix = "van",
-                Surname = "Wonderland",
-                DistributionChannel = testDistributionChannel,
-                EmailAddress = TestEmailAddress,
-                TelephoneNumber = TestPhoneNumber
-            };
-            
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string>()))
-                .ReturnsAsync(testParty);
+                .ReturnsAsync(new CommonPartyData
+                {
+                    Name = "Alice",
+                    SurnamePrefix = "van",
+                    Surname = "Wonderland",
+                    DistributionChannel = testDistributionChannel,
+                    EmailAddress = TestEmailAddress,
+                    TelephoneNumber = TestPhoneNumber
+                });
+            
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
+                .ReturnsAsync(new Case
+                {
+                    Identification = CaseId
+                });
             
             // IDataQueryService
             this._mockedQueryService
@@ -475,7 +472,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         private bool _getDataVerified;
         private bool _processDataVerified;
 
-        private void VerifyGetDataMethodCalls(int fromInvokeCount, int getCaseInvokeCount, int getCaseTypeInvokeCount, int getPartyInvokeCount)
+        private void VerifyGetDataMethodCalls(int fromInvokeCount, int getCaseTypeInvokeCount, int getPartyInvokeCount, int getCaseInvokeCount)
         {
             if (this._getDataVerified)
             {
@@ -488,10 +485,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Times.Exactly(fromInvokeCount));
 
             // IQueryContext
-            this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
-                Times.Exactly(getCaseInvokeCount));
-
             this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
@@ -502,6 +495,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string>()),
                 Times.Exactly(getPartyInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
+                Times.Exactly(getCaseInvokeCount));
 
             this._getDataVerified = true;
 
