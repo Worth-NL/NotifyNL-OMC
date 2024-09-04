@@ -20,7 +20,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string IsFinalStatus = "false";
         private const string IsNotificationExpected = "true";
 
-        private const string InputJson1 =
+        private const string CaseType_Original =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
               $"\"identificatie\":\"{Identification}\"," +
@@ -44,7 +44,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"eindeObject\":null" +
             $"}}";
         
-        private const string InputJson2 =
+        private const string CaseType_LowerCase =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
               $"\"identificatie\":\"{Identification}\"," +
@@ -85,9 +85,9 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         #region Deserialize
-        [TestCase(InputJson1)]
-        [TestCase(InputJson2)]
-        public void Deserialize_TakesValidJson_AndReturnsDeserializedModel(string inputJson)
+        [TestCase(CaseType_Original)]
+        [TestCase(CaseType_LowerCase)]
+        public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string inputJson)
         {
             // Act
             CaseType actualResult = this._serializer!.Deserialize<CaseType>(inputJson);
@@ -103,7 +103,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_TakesEmptyJson_ThrowsJsonException()
+        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException()
         {
             // Act & Assert
             Assert.Multiple(() =>
@@ -123,7 +123,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         #region Serialize
         [Test]
-        public void Serialize_TakesValidModel_AndReturnsSerializedJson()
+        public void Serialize_CaseType_ValidModel_ReturnsExpectedJson()
         {
             // Arrange
             var testModel = new CaseType
@@ -143,7 +143,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Serialize_TakesUnknownModel_DoesNotThrowException_AndReturnsDefaultJson()
+        public void Serialize_CaseType_Default_ReturnsDefaultJson()
         {
             // Act
             string actualResult = this._serializer!.Serialize(default(CaseType));
