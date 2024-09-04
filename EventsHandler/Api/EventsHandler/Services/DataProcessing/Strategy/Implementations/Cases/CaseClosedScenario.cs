@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
@@ -21,7 +22,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     /// <seealso cref="BaseCaseScenario"/>
     internal sealed class CaseClosedScenario : BaseCaseScenario
     {
-        private IQueryContext? _queryContext;
+        private IQueryContext _queryContext = null!;
+        private CaseType _caseType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseClosedScenario"/> class.
@@ -41,19 +43,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Setup
             this._queryContext = this.DataQuery.From(notification);
             
-            this.CaseType ??= await _queryContext.GetLastCaseTypeAsync(     // 2. Case type
-                              await _queryContext.GetCaseStatusesAsync());  // 1. Case statuses
+            this._caseType = await this._queryContext.GetLastCaseTypeAsync(     // 2. Case type
+                             await this._queryContext.GetCaseStatusesAsync());  // 1. Case statuses
             
             // Validation #1: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakClose_IDs().IsAllowed,
-                this.CaseType.Value.Identification, GetWhitelistName());
+                this._caseType.Identification, GetWhitelistName());
 
             // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this.CaseType.Value.IsNotificationExpected);
+            ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
             // Preparing citizen details
-            return await _queryContext.GetPartyDataAsync();
+            return await this._queryContext.GetPartyDataAsync();
         }
         #endregion
 
@@ -68,7 +70,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            this.Case = await _queryContext!.GetCaseAsync();
+            Case @case = await this._queryContext.GetCaseAsync();
 
             lock (s_padlock)
             {
@@ -76,10 +78,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["zaak.identificatie"] = this.Case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this.Case.Name;
+                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
 
-                s_emailPersonalization["status.omschrijving"] = this.CaseType!.Value.Name;
+                s_emailPersonalization["status.omschrijving"] = this._caseType.Name;
 
                 return s_emailPersonalization;
             }
