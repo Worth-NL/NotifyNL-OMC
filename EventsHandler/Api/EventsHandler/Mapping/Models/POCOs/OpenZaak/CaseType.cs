@@ -14,7 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The identification of the <see cref="Case"/> in the following format:
         /// <code>
-        /// ZAAK-2023-0000000010
+        /// ZAAKTYPE-2023-0000000010
         /// </code>
         /// </summary>
         [JsonRequired]
