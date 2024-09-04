@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class DecisionMadeScenario : BaseScenario
     {
-        private IQueryContext? _queryContext;
+        private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
         private Decision _decision;
         private CaseType _caseType;
@@ -109,8 +109,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            DecisionType decisionType = await this._queryContext!.GetDecisionTypeAsync(this._decision);
-            Case @case = await this._queryContext!.GetCaseAsync(this._decision.CaseUri);
+            DecisionType decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
+            Case @case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
 
             lock (s_padlock)
             {
@@ -184,7 +184,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
 
             // Prepare HTTP Request Body
-            this._queryContext ??= this.DataQuery.From(notification);
+            this._queryContext = this.DataQuery.From(notification);
 
             string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext);
             if (commaSeparatedUris.IsEmpty())

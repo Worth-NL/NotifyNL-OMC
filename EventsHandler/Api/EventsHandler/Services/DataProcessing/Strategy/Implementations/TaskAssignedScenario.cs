@@ -27,7 +27,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// <seealso cref="BaseScenario"/>
     internal sealed class TaskAssignedScenario : BaseScenario
     {
-        private IQueryContext? _queryContext;
+        private IQueryContext _queryContext = null!;
         private Data _taskData;
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
             
-            Case @case = await this._queryContext!.GetCaseAsync(this._taskData.CaseUri);
+            Case @case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             
             lock (s_padlock)
             {
