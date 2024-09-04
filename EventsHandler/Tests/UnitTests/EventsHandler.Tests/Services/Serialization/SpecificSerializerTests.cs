@@ -149,7 +149,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer!.Serialize(default(CaseType));
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"identificatie\":null,\"omschrijving\":null,\"omschrijvingGeneriek\":null,\"isEindstatus\":false,\"informeren\":false}"));
+            Assert.That(actualResult, Is.EqualTo("{\"identificatie\":\"\",\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
         }
         #endregion
     }
