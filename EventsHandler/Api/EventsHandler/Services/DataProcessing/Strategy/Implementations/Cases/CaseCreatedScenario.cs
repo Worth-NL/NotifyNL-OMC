@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
@@ -21,6 +22,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     /// <seealso cref="BaseCaseScenario"/>
     internal sealed class CaseCreatedScenario : BaseCaseScenario
     {
+        private IQueryContext _queryContext = null!;
+        private CaseType _caseType;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseCreatedScenario"/> class.
         /// </summary>
@@ -37,23 +41,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
-            IQueryContext queryContext = this.DataQuery.From(notification);
+            this._queryContext = this.DataQuery.From(notification);
+            
+            this._caseType = await this._queryContext.GetLastCaseTypeAsync(     // 2. Case type (might be already cached)
+                             await this._queryContext.GetCaseStatusesAsync());  // 1. Case statuses
 
-            this.Case = await queryContext.GetCaseAsync();
-
-            // Validation #1: The case identifier must be whitelisted
+            // Validation #1: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.ZaakCreate_IDs().IsAllowed,
-                this.Case.Identification, GetWhitelistName());
-            
-            this.CaseType ??= await queryContext.GetLastCaseTypeAsync(     // 2. Case type (might be already cached)
-                              await queryContext.GetCaseStatusesAsync());  // 1. Case statuses
+                this._caseType.Identification, GetWhitelistName());
 
             // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this.CaseType.Value.IsNotificationExpected);
+            ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
             // Preparing citizen details
-            return await queryContext.GetPartyDataAsync();
+            return await this._queryContext.GetPartyDataAsync();
         }
         #endregion
 
@@ -64,18 +66,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
-
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
-        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
+            Case @case = await this._queryContext.GetCaseAsync();
+
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["zaak.identificatie"] = this.Case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this.Case.Name;
+                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
 
                 return s_emailPersonalization;
             }
@@ -87,15 +90,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
-        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
         {
-            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
         #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName"/>
+        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.ZaakCreate_IDs().ToString();
         #endregion
     }

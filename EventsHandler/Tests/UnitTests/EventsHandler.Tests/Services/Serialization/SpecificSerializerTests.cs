@@ -14,6 +14,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private ISerializationService? _serializer;
 
         #region Test data
+        private const string Identification = "ZAAKTYPE-2023-0000000010";
         private const string Name = "begin";
         private const string Description = "begin";
         private const string IsFinalStatus = "false";
@@ -22,6 +23,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string InputJson1 =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
+              $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
               $"\"omschrijvingGeneriek\":\"{Description}\"," +  // "G" upper case
               $"\"statustekst\":\"begin status\"," +
@@ -44,29 +46,31 @@ namespace EventsHandler.UnitTests.Services.Serialization
         
         private const string InputJson2 =
             $"{{" +
-            $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-            $"\"omschrijving\":\"{Name}\"," +
-            $"\"omschrijvinggeneriek\":\"{Description}\"," +  // "g" lower case
-            $"\"statustekst\":\"begin status\"," +
-            $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-            $"\"zaaktypeIdentificatie\":\"1\"," +
-            $"\"volgnummer\":2," +
-            $"\"iseindstatus\":{IsFinalStatus}," +  // "e" lower case
-            $"\"informeren\":{IsNotificationExpected}," +
-            $"\"doorlooptijd\":null," +
-            $"\"toelichting\":\"begin status\"," +
-            $"\"checklistitemStatustype\":[]," +
-            $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
-            $"\"eigenschappen\":[]," +
-            $"\"zaakobjecttypen\":[]," +
-            $"\"beginGeldigheid\":null," +
-            $"\"eindeGeldigheid\":null," +
-            $"\"beginObject\":null," +
-            $"\"eindeObject\":null" +
+              $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
+              $"\"identificatie\":\"{Identification}\"," +
+              $"\"omschrijving\":\"{Name}\"," +
+              $"\"omschrijvinggeneriek\":\"{Description}\"," +  // "g" lower case
+              $"\"statustekst\":\"begin status\"," +
+              $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
+              $"\"zaaktypeIdentificatie\":\"1\"," +
+              $"\"volgnummer\":2," +
+              $"\"iseindstatus\":{IsFinalStatus}," +  // "e" lower case
+              $"\"informeren\":{IsNotificationExpected}," +
+              $"\"doorlooptijd\":null," +
+              $"\"toelichting\":\"begin status\"," +
+              $"\"checklistitemStatustype\":[]," +
+              $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
+              $"\"eigenschappen\":[]," +
+              $"\"zaakobjecttypen\":[]," +
+              $"\"beginGeldigheid\":null," +
+              $"\"eindeGeldigheid\":null," +
+              $"\"beginObject\":null," +
+              $"\"eindeObject\":null" +
             $"}}";
 
         private const string OutputJson =
             $"{{" +
+              $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
               $"\"omschrijvingGeneriek\":\"{Description}\"," +
               $"\"isEindstatus\":{IsFinalStatus}," +
@@ -110,7 +114,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     "The given value cannot be deserialized into dedicated target object | " +
                     "Target: CaseType | " +
                     "Value: {} | " +
-                    "Required properties: omschrijving, omschrijvingGeneriek, isEindstatus, informeren";
+                    "Required properties: identificatie, omschrijving, omschrijvingGeneriek, isEindstatus, informeren";
 
                 Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             });
@@ -124,6 +128,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new CaseType
             {
+                Identification = Identification,
                 Name = Name,
                 Description = Description,
                 IsFinalStatus = Convert.ToBoolean(IsFinalStatus),
@@ -144,7 +149,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer!.Serialize(default(CaseType));
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"omschrijving\":null,\"omschrijvingGeneriek\":null,\"isEindstatus\":false,\"informeren\":false}"));
+            Assert.That(actualResult, Is.EqualTo("{\"identificatie\":null,\"omschrijving\":null,\"omschrijvingGeneriek\":null,\"isEindstatus\":false,\"informeren\":false}"));
         }
         #endregion
     }

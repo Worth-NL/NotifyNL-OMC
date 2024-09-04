@@ -88,6 +88,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         private const string TestEmailAddress = "test@email.com";
         private const string TestPhoneNumber = "911";
+        private const string CaseId = "ZAAK-2024-00000000001";
         #endregion
 
         #region TryGetDataAsync()
@@ -106,7 +107,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
             });
         }
 
@@ -125,7 +126,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
             });
         }
 
@@ -148,7 +149,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
             });
         }
 
@@ -165,14 +166,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
 
-                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseIdWhitelist
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist
                     .Replace("{0}", "4")
                     .Replace("{1}", "USER_WHITELIST_DECISIONMADE_IDS");
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 0, 0, 0);
             });
         }
 
@@ -191,7 +192,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 0, 0, 0);
             });
         }
 
@@ -215,7 +216,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 0, 0);
             });
         }
 
@@ -263,8 +264,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 }
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
+                
+                int invocationCounts = testDistributionChannel == DistributionChannels.Both ? 2 : 1;
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, invocationCounts, invocationCounts);
             });
         }
         #endregion
@@ -372,7 +375,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Setup
         private INotifyScenario ArrangeDecisionScenario_TryGetData(
-            InfoObject testInfoObject, bool isCaseIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
+            InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
             this._mockedQueryContext
@@ -388,20 +391,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .ReturnsAsync(new Decision());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()))
-                .ReturnsAsync(new DecisionType());
-
-            this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
-                .ReturnsAsync(new Case
-                {
-                    Identification = isCaseIdWhitelisted ? "1" : "4"
-                });
-
-            this._mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType
                 {
+                    Identification = isCaseTypeIdWhitelisted ? "1" : "4",
                     IsNotificationExpected = isNotificationExpected
                 });
 
@@ -422,6 +415,17 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     DistributionChannel = testDistributionChannel,
                     EmailAddress = TestEmailAddress,
                     TelephoneNumber = TestPhoneNumber
+                });
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()))
+                .ReturnsAsync(new DecisionType());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
+                .ReturnsAsync(new Case
+                {
+                    Identification = CaseId
                 });
 
             // IDataQueryService
@@ -516,8 +520,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         private bool _processDataVerified;
 
         private void VerifyGetDataMethodCalls(
-            int fromInvokeCount, int getDecisionResInvokeCount, int getInfoObjectInvokeCount,
-            int getDecisionsAndCaseInvokeCount, int getCaseTypeInvokeCount, int getCitizenDetailsInvokeCount)
+            int fromInvokeCount, int getDecisionResInvokeCount, int getInfoObjectInvokeCount, int getDecisionInvokeCount,
+            int getCaseTypeInvokeCount, int getCitizenDetailsInvokeCount, int getDecisionTypeInvokeCount, int getCaseInvokeCount)
         {
             if (this._getDataVerified)
             {
@@ -538,16 +542,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
                 Times.Exactly(getInfoObjectInvokeCount));
           
-            this._mockedQueryContext  // Block of 3 methods occurring consecutively after each other
+            this._mockedQueryContext
                 .Verify(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()),
-                Times.Exactly(getDecisionsAndCaseInvokeCount));
-            this._mockedQueryContext
-                .Verify(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()),
-                Times.Exactly(getDecisionsAndCaseInvokeCount));
-            this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
-                Times.Exactly(getDecisionsAndCaseInvokeCount));
-          
+                Times.Exactly(getDecisionInvokeCount));
+
             this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
@@ -561,6 +559,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string?>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()),
+                Times.Exactly(getDecisionTypeInvokeCount));
+
+            this._mockedQueryContext
+                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
+                Times.Exactly(getCaseInvokeCount));
 
             this._getDataVerified = true;
 
@@ -596,7 +602,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             this._processDataVerified = true;
 
-            VerifyGetDataMethodCalls(fromInvokeCount, 0, getInfoObjectInvokeCount, 0, 0, 0);
+            VerifyGetDataMethodCalls(fromInvokeCount, 0, getInfoObjectInvokeCount, 0, 0, 0, 0, 0);
         }
         #endregion
     }
