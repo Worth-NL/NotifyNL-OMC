@@ -12,24 +12,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct CaseType : IJsonSerializable
     {
         /// <summary>
-        /// The identification of the <see cref="Case"/> in the following format:
-        /// <code>
-        /// ZAAKTYPE-2023-0000000010
-        /// </code>
-        /// </summary>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("identificatie")]
-        [JsonPropertyOrder(0)]
-        public string Identification { get; internal set; } = string.Empty;
-
-        /// <summary>
         /// The name of the <see cref="CaseType"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(0)]
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -38,8 +26,20 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvingGeneriek")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(1)]
         public string Description { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// The identification of the <see cref="Case"/> in the following format:
+        /// <code>
+        /// ZAAKTYPE-2023-0000000010
+        /// </code>
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("zaaktypeIdentificatie")]
+        [JsonPropertyOrder(2)]
+        public string Identification { get; internal set; } = string.Empty;
 
         /// <summary>
         /// Determines whether the <see cref="CaseStatus"/> is final, which means that the <see cref="Case"/> is closed.
