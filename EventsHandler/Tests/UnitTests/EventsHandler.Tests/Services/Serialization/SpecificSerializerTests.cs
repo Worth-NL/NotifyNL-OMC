@@ -157,7 +157,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                   $"\"zaak\":\"https://www.domain.test/00000000-0000-0000-0000-000000000000\"," +
                   $"\"title\":\"{Title}\"," +
                   $"\"status\":\"open\"," +
-                  $"\"verloopdatum\":\"2024-09-05T15:45:30Z\"," +
+                  $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
                   $"\"identificatie\":{{" +
                     $"\"type\":\"bsn\"," +
                     $"\"value\":\"{BsnNumber}\"" +
