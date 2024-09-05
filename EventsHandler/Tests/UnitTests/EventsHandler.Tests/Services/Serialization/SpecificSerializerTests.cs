@@ -1,7 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.Serialization;
@@ -18,11 +20,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private ISerializationService _serializer = null!;
 
         #region Test data (fields)
+        // Case Type
         private const string CaseTypeIdentification = "ZAAKTYPE-2023-0000000010";
         private const string Name = "begin";
         private const string Description = "begin";
         private const string IsFinalStatus = "false";
         private const string IsNotificationExpected = "true";
+
+        // Task Object
+        private const string Title = "Test title";
+        private const string BsnNumber = "123456789";
         #endregion
 
         #region Test data (JSON input)
@@ -142,6 +149,22 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"isEindstatus\":{IsFinalStatus}," +
               $"\"informeren\":{IsNotificationExpected}" +
             $"}}";
+
+        private const string Output_TaskObject =
+            $"{{" +
+              $"\"record\":{{" +
+                $"\"data\":{{" +
+                  $"\"zaak\":\"https://www.domain.test/00000000-0000-0000-0000-000000000000\"," +
+                  $"\"title\":\"{Title}\"," +
+                  $"\"status\":\"open\"," +
+                  $"\"verloopdatum\":\"2024-09-05T15:45:30Z\"," +
+                  $"\"identificatie\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"{BsnNumber}\"" +
+                  $"}}" +
+                $"}}" +
+              $"}}" +
+            $"}}";
         #endregion
 
         [OneTimeSetUp]
@@ -220,6 +243,36 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             // Assert
             Assert.That(actualResult, Is.EqualTo("{\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"zaaktypeIdentificatie\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
+        }
+
+        [Test]
+        public void Serialize_TaskObject_ValidModel_ReturnsExpectedJson()
+        {
+            // Arrange
+            var testModel = new TaskObject
+            {
+                Record = new Record
+                {
+                    Data = new Data
+                    {
+                        CaseUri = new Uri($"https://www.domain.test/{Guid.Empty}"),
+                        Title = Title,
+                        Status = TaskStatuses.Open,
+                        ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
+                        Identification = new Identification
+                        {
+                            Type = IdTypes.Bsn,
+                            Value = BsnNumber
+                        }
+                    }
+                }
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(testModel);
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(Output_TaskObject));
         }
         #endregion
 
