@@ -31,6 +31,13 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten
         [JsonInclude]
         [JsonPropertyName("value")]
         [JsonPropertyOrder(1)]
-        public string Value { get; internal set; }
+        public string Value { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Identification"/> struct.
+        /// </summary>
+        public Identification()
+        {
+        }
     }
 }

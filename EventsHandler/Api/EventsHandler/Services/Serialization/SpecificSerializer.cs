@@ -2,7 +2,9 @@
 
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
+using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
+using NUnit.Framework;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
@@ -16,7 +18,15 @@ namespace EventsHandler.Services.Serialization
         private static readonly ConcurrentDictionary<Type, string> s_cachedRequiredProperties = new();
         private static readonly JsonSerializerOptions s_serializerOptions = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+
+            // Global converters
+            Converters =
+            {
+                new DateOnlyJsonConverter(),
+                new DateTimeJsonConverter(),
+                new StringJsonConverter()
+            }
         };
 
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
@@ -26,8 +36,12 @@ namespace EventsHandler.Services.Serialization
             {
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
-            catch (JsonException)
+            catch (JsonException exception)
             {
+                #if DEBUG
+                TestContext.WriteLine(exception.Message);
+                #endif
+
                 throw new JsonException(message:
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
@@ -56,7 +70,7 @@ namespace EventsHandler.Services.Serialization
         /// <inheritdoc cref="ISerializationService.Serialize{TModel}(TModel)"/>
         string ISerializationService.Serialize<TModel>(TModel model)
         {
-            return JsonSerializer.Serialize(model);
+            return JsonSerializer.Serialize(model, s_serializerOptions);
         }
     }
 }
