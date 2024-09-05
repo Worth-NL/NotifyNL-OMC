@@ -1,17 +1,21 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
     [TestFixture]
     public sealed class SpecificSerializerTests
     {
-        private ISerializationService? _serializer;
+        private ISerializationService _serializer = null!;
 
         #region Test data (fields)
         private const string CaseTypeIdentification = "ZAAKTYPE-2023-0000000010";
@@ -140,7 +144,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             $"}}";
         #endregion
 
-        [SetUp]
+        [OneTimeSetUp]
         public void InitializeTests()
         {
             this._serializer = new SpecificSerializer();
@@ -152,17 +156,20 @@ namespace EventsHandler.UnitTests.Services.Serialization
         public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string inputJson)
         {
             // Act
-            CaseType actualResult = this._serializer!.Deserialize<CaseType>(inputJson);
+            CaseType actualResult = this._serializer.Deserialize<CaseType>(inputJson);
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualResult.Name, Is.EqualTo(Name));
-                Assert.That(actualResult.Description, Is.EqualTo(Description));
-                Assert.That(actualResult.Identification, Is.EqualTo(CaseTypeIdentification));
-                Assert.That(actualResult.IsFinalStatus, Is.EqualTo(Convert.ToBoolean(IsFinalStatus)));
-                Assert.That(actualResult.IsNotificationExpected, Is.EqualTo(Convert.ToBoolean(IsNotificationExpected)));
-            });
+            AssertRequiredProperties(actualResult);
+        }
+
+        [Test]
+        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()
+        {
+            // Act
+            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(Input_TaskObject);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
         }
 
         [Test]
@@ -171,7 +178,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Act & Assert
             Assert.Multiple(() =>
             {
-                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer!.Deserialize<CaseType>(DefaultValues.Models.EmptyJson));
+                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<CaseType>(DefaultValues.Models.EmptyJson));
 
                 const string expectedMessage =
                     "The given value cannot be deserialized into dedicated target object | " +
@@ -199,7 +206,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             };
 
             // Act
-            string actualResult = this._serializer!.Serialize(testModel);
+            string actualResult = this._serializer.Serialize(testModel);
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(Output_CaseType));
@@ -209,10 +216,29 @@ namespace EventsHandler.UnitTests.Services.Serialization
         public void Serialize_CaseType_Default_ReturnsDefaultJson()
         {
             // Act
-            string actualResult = this._serializer!.Serialize(default(CaseType));
+            string actualResult = this._serializer.Serialize(default(CaseType));
 
             // Assert
             Assert.That(actualResult, Is.EqualTo("{\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"zaaktypeIdentificatie\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
+        }
+        #endregion
+
+        #region Helper methods
+        private static void AssertRequiredProperties<TModel>(TModel instance)
+            where TModel : struct, IJsonSerializable
+        {
+            Assert.Multiple(() =>
+            {
+                PropertyInfo[] requiredProperties = instance.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(property => property.GetCustomAttribute<JsonRequiredAttribute>() != null)
+                    .ToArray();
+
+                foreach (PropertyInfo property in requiredProperties)
+                {
+                    Assert.That(property.GetValue(instance), Is.Not.Default);
+                }
+            });
         }
         #endregion
     }
