@@ -16,9 +16,9 @@ namespace EventsHandler.Services.Serialization.Converters
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>
         public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return reader.TokenType != JsonTokenType.Null 
-                ? DateOnly.FromDateTime(reader.GetDateTime())
-                : DateOnly.MinValue;
+            return reader.TokenType == JsonTokenType.Null 
+                ? DateOnly.MinValue
+                : DateOnly.FromDateTime(reader.GetDateTime());
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
