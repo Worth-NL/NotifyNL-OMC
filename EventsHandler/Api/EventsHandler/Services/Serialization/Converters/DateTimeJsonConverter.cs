@@ -16,15 +16,15 @@ namespace EventsHandler.Services.Serialization.Converters
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return reader.TokenType != JsonTokenType.Null 
-                ? reader.GetDateTime()
-                : DateTime.MinValue;
+            return reader.TokenType == JsonTokenType.Null 
+                ? DateTime.MinValue
+                : reader.GetDateTime();
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value);
+            writer.WriteStringValue(value.ToString("O"));
         }
     }
 }
