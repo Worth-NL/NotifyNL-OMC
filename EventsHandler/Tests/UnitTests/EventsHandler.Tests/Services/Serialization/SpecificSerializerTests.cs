@@ -13,23 +13,24 @@ namespace EventsHandler.UnitTests.Services.Serialization
     {
         private ISerializationService? _serializer;
 
-        #region Test data
-        private const string Identification = "ZAAKTYPE-2023-0000000010";
+        #region Test data (fields)
+        private const string CaseTypeIdentification = "ZAAKTYPE-2023-0000000010";
         private const string Name = "begin";
         private const string Description = "begin";
         private const string IsFinalStatus = "false";
         private const string IsNotificationExpected = "true";
+        #endregion
 
+        #region Test data (JSON input)
         // ReSharper disable InconsistentNaming
         private const string Input_CaseType_Original =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
               $"\"omschrijvingGeneriek\":\"{Description}\"," +  // "G" upper case
               $"\"statustekst\":\"begin status\"," +
               $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"1\"," +
+              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
               $"\"volgnummer\":2," +
               $"\"isEindstatus\":{IsFinalStatus}," +  // "E" upper case
               $"\"informeren\":{IsNotificationExpected}," +
@@ -48,12 +49,11 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string Input_CaseType_LowerCase =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
               $"\"omschrijvinggeneriek\":\"{Description}\"," +  // "g" lower case
               $"\"statustekst\":\"begin status\"," +
               $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"1\"," +
+              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
               $"\"volgnummer\":2," +
               $"\"iseindstatus\":{IsFinalStatus}," +  // "e" lower case
               $"\"informeren\":{IsNotificationExpected}," +
@@ -69,11 +69,72 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"eindeObject\":null" +
             $"}}";
 
+        private const string Input_TaskObject =
+            $"{{" +
+              $"\"url\":\"https://objecten.test.notifynl.nl/api/v1/objects/ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
+              $"\"uuid\":\"ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
+              $"\"type\":\"https://objecttypen.test.notifynl.nl/api/v1/objecttypes/3e852115-277a-4570-873a-9a64be3aeb34\"," +
+              $"\"record\":{{" +
+                $"\"index\":1," +
+                $"\"typeVersion\":1," +
+                $"\"data\":{{" +
+                  $"\"data\":{{" +
+                    $"\"informatieverzoek\":{{" +
+                      $"\"deadline\":\"2024-05-03T21:59:59.999Z\"," +
+                      $"\"toelichting\":\"\"," +
+                      $"\"opleidingVolgendePersonen\":null," +
+                      $"\"opTeVragenBenodigdeInformatie\":{{" +
+                        $"\"partnerID\":false," +
+                        $"\"jaarrekening\":true," +
+                        $"\"balansrekening\":false," +
+                        $"\"specificatiePensioen\":false," +
+                        $"\"bewijsVanInschrijving\":false," +
+                        $"\"laatsteInkomstenSpecificatie\":false," +
+                        $"\"bankafschriftenAfgelopenMaand\":false," +
+                        $"\"belastingaanslagAfgelopenJaar\":false," +
+                        $"\"belastingaangifteAfgelopenJaar\":true," +
+                        $"\"bankafschriftenZakelijkeRekeningen\":false," +
+                        $"\"laatsteInkomstenSpecificatiePartner\":false," +
+                        $"\"specifiekeBankafschriftenPerPeriode\":false," +
+                        $"\"specifiekeBankafschriftenAfgelopenMaand\":false," +
+                        $"\"bankafschriftenZakelijkeRekeningenPartner\":false" +
+                      $"}}," +
+                      $"\"specifiekeBankrekeningNummers\":null," +
+                      $"\"bankrekeningNummersSpecifiekePeriode\":null" +
+                    $"}}" +
+                  $"}}," +
+                  $"\"zaak\":\"http://localhost:8001/zaken/api/v1/zaken/f621749d-d222-49b8-9392-eff8723e0922\"," +
+                  $"\"title\":\"Aanleveren informatie\"," +
+                  $"\"status\":\"open\"," +
+                  $"\"formulier\":{{" +
+                    $"\"type\":\"url\"," +
+                    $"\"value\":\"http://localhost:8010/api/v2/objects/0db2a8a0-1ca8-4395-8a7a-c6293e33b4cd\"" +
+                  $"}}," +
+                  $"\"verloopdatum\":null," +
+                  $"\"identificatie\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"569312863\"" +
+                  $"}}," +
+                  $"\"verzonden_data\":{{" +
+                  $"}}," +
+                  $"\"verwerker_taak_id\":\"1809f547-d0be-48a9-bba4-a6d7d5f36ba5\"" +
+                $"}}," +
+                $"\"geometry\":null," +
+                $"\"startAt\":\"2053-01-01\"," +
+                $"\"endAt\":null," +
+                $"\"registrationAt\":\"2024-09-04\"," +
+                $"\"correctionFor\":null," +
+                $"\"correctedBy\":null" +
+              $"}}" +
+            $"}}";
+        #endregion
+
+        #region Test data (JSON output)
         private const string Output_CaseType =
             $"{{" +
-              $"\"identificatie\":\"{Identification}\"," +
               $"\"omschrijving\":\"{Name}\"," +
               $"\"omschrijvingGeneriek\":\"{Description}\"," +
+              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
               $"\"isEindstatus\":{IsFinalStatus}," +
               $"\"informeren\":{IsNotificationExpected}" +
             $"}}";
@@ -98,6 +159,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             {
                 Assert.That(actualResult.Name, Is.EqualTo(Name));
                 Assert.That(actualResult.Description, Is.EqualTo(Description));
+                Assert.That(actualResult.Identification, Is.EqualTo(CaseTypeIdentification));
                 Assert.That(actualResult.IsFinalStatus, Is.EqualTo(Convert.ToBoolean(IsFinalStatus)));
                 Assert.That(actualResult.IsNotificationExpected, Is.EqualTo(Convert.ToBoolean(IsNotificationExpected)));
             });
@@ -115,7 +177,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     "The given value cannot be deserialized into dedicated target object | " +
                     "Target: CaseType | " +
                     "Value: {} | " +
-                    "Required properties: identificatie, omschrijving, omschrijvingGeneriek, isEindstatus, informeren";
+                    "Required properties: omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren";
 
                 Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             });
@@ -129,7 +191,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new CaseType
             {
-                Identification = Identification,
+                Identification = CaseTypeIdentification,
                 Name = Name,
                 Description = Description,
                 IsFinalStatus = Convert.ToBoolean(IsFinalStatus),
@@ -150,7 +212,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer!.Serialize(default(CaseType));
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"identificatie\":\"\",\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
+            Assert.That(actualResult, Is.EqualTo("{\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"zaaktypeIdentificatie\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
         }
         #endregion
     }
