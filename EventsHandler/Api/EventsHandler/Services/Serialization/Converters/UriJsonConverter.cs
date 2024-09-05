@@ -23,9 +23,9 @@ namespace EventsHandler.Services.Serialization.Converters
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
-        public override void Write(Utf8JsonWriter writer, Uri value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, Uri? value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.AbsoluteUri);
+            writer.WriteStringValue(value?.AbsoluteUri ?? DefaultValues.Models.EmptyUri.AbsoluteUri);
         }
     }
 }
