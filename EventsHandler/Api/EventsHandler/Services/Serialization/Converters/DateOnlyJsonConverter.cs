@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Services.Serialization.Converters
 {
     /// <summary>
-    /// The custom converter specialized in handling <see langword="string"/> types.
+    /// The custom converter specialized in handling <see cref="DateOnly"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class DateOnlyJsonConverter : JsonConverter<DateOnly>
