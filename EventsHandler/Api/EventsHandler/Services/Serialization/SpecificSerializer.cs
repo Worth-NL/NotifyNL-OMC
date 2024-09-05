@@ -20,7 +20,12 @@ namespace EventsHandler.Services.Serialization
             PropertyNameCaseInsensitive = true,
 
             // Global converters
-            Converters = { new StringJsonConverter() }
+            Converters =
+            {
+                new DateOnlyJsonConverter(),
+                new DateTimeJsonConverter(),
+                new StringJsonConverter()
+            }
         };
 
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
