@@ -31,7 +31,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("datumStatusGezet")]
         [JsonPropertyOrder(1)]
-        public DateTime Created { get; internal set; } = new();
+        public DateTime Created { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatus"/> struct.
