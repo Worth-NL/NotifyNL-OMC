@@ -4,6 +4,7 @@ using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
+using NUnit.Framework;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
@@ -35,8 +36,12 @@ namespace EventsHandler.Services.Serialization
             {
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
-            catch (JsonException)
+            catch (JsonException exception)
             {
+                #if DEBUG
+                TestContext.WriteLine(exception.Message);
+                #endif
+
                 throw new JsonException(message:
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
