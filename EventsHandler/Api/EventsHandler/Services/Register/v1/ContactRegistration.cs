@@ -57,7 +57,7 @@ namespace EventsHandler.Services.Register.v1
             string jsonBody =
                 $"{{" +
                 $"  \"bronorganisatie\": {notification.GetOrganizationId()}, " +             // ENG: Source organization
-                $"  \"registratiedatum\": \"{caseStatus.Created:YYYY-MM-DDThh:mm:ss}\", " +  // ENG: Date of registration (of the case)
+                $"  \"registratiedatum\": \"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\", " +  // ENG: Date of registration (of the case)
                 $"  \"kanaal\": \"{notificationMethod}\", " +                                // ENG: Channel (of communication / notification)
                 $"  \"tekst\": \"{logMessage}\", " +                                         // ENG: Text (to be logged)
                 $"  \"initiatief\": \"gemeente\", " +                                        // ENG: Initiator (of the case)
