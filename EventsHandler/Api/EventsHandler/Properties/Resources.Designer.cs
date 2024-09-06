@@ -160,7 +160,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of NotifyResponder service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of NotifyResponder service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionNotifyResponderUnknown {
             get {
@@ -169,7 +169,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of Objecten service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of Objecten service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionObjectenUnknown {
             get {
@@ -178,7 +178,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of ObjectTypen service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of ObjectTypen service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionObjectTypenUnknown {
             get {
@@ -187,7 +187,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of OpenKlant service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionOpenKlantUnknown {
             get {
@@ -196,7 +196,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of OpenZaak service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionOpenZaakUnknown {
             get {
@@ -205,7 +205,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported (&apos;Features:OmcWorkflowVersion&apos;)..
+        ///   Looks up a localized string similar to The version of Telemetry service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionTelemetryUnknown {
             get {

@@ -138,7 +138,7 @@ namespace EventsHandler.Controllers
 
             return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} " +
                       $"({Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment)}) | " +
-                      $"Workflow: v{this._configuration.AppSettings.Features.OmcWorkflowVersion()} " +
+                      $"Workflow: v{this._configuration.OMC.Features.Workflow_Version()} " +
                       $"{this._register.GetVersions()}");
         }
 

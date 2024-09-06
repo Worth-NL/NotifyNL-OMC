@@ -19,16 +19,30 @@ namespace EventsHandler.Extensions
         /// </summary>
         /// <param name="configuration">The application configuration.</param>
         internal static bool IsEncryptionAsymmetric(this IConfiguration configuration)
-            => configuration.GetValue<bool>(key: $"{nameof(WebApiConfiguration.AppSettings.Encryption)}:" +
-                                                 $"{nameof(WebApiConfiguration.AppSettings.Encryption.IsAsymmetric)}");
+        {
+            const string key = $"{nameof(WebApiConfiguration.AppSettings.Encryption)}:" +
+                               $"{nameof(WebApiConfiguration.AppSettings.Encryption.IsAsymmetric)}";
+
+            return configuration.GetValue<bool>(key);
+        }
+
+        private static string? s_omcWorkflowVersionKey;
+        private static byte? s_omcWorkflowVersionValue;
 
         /// <summary>
         /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
         /// </summary>
-        /// <param name="configuration">The application configuration.</param>
-        internal static byte OmcWorkflowVersion(this IConfiguration configuration)
-            => configuration.GetValue<byte>(key: $"{nameof(WebApiConfiguration.AppSettings.Features)}:" +
-                                                 $"{nameof(WebApiConfiguration.AppSettings.Features.OmcWorkflowVersion)}");
+        internal static byte OmcWorkflowVersion()
+        {
+            s_omcWorkflowVersionKey ??= ($"{nameof(WebApiConfiguration.OMC)}_" +
+                                         $"{nameof(WebApiConfiguration.OMC.Features)}_" +
+                                         $"{nameof(WebApiConfiguration.OMC.Features.Workflow_Version)}")
+                                        .ToUpper();
+
+            return s_omcWorkflowVersionValue ??=
+                   byte.Parse(
+                       Environment.GetEnvironmentVariable(s_omcWorkflowVersionKey) ?? "0");
+        }
         #endregion
 
         #region Validation
