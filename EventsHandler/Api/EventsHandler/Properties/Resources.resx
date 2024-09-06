@@ -358,13 +358,13 @@
     <value>This type of HttpClient is not supported yet:</value>
   </data>
   <data name="Configuration_ERROR_VersionOpenKlantUnknown" xml:space="preserve">
-    <value>The version of OpenKlant service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of OpenKlant service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="Configuration_ERROR_VersionOpenZaakUnknown" xml:space="preserve">
-    <value>The version of OpenZaak service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of OpenZaak service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="Configuration_ERROR_VersionTelemetryUnknown" xml:space="preserve">
-    <value>The version of Telemetry service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of Telemetry service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="Events_NotifyClientInitialized" xml:space="preserve">
     <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
@@ -382,7 +382,7 @@
     <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="Configuration_ERROR_VersionNotifyResponderUnknown" xml:space="preserve">
-    <value>The version of NotifyResponder service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of NotifyResponder service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
     <value>SENDER: In the received notification some [Required] properties are either null, empty, or with default values.</value>
@@ -394,10 +394,10 @@
     <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
-    <value>The version of Objecten service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of Objecten service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="Configuration_ERROR_VersionObjectTypenUnknown" xml:space="preserve">
-    <value>The version of ObjectTypen service to be used by OMC is unknown or not supported ('Features:OmcWorkflowVersion').</value>
+    <value>The version of ObjectTypen service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
   </data>
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
     <value>HTTP Request: The task (object) could not be retrieved from Objecten Web API service.</value>

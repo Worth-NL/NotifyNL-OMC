@@ -52,6 +52,7 @@ namespace EventsHandler.Utilities._TestHelpers
             const string testString = "xyz";
             const string testArray = "1, 2, 3";
             const string testUshort = "60";
+            const string testByte = "1";
             const string testGuid = "01234567-89ab-cdef-1234-567890123456";
             const string testBool = "true";
             const string testDomain = "test.domain";
@@ -68,6 +69,8 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_USERNAME",         GetTestValue(isValid, testString) },
 
                 { "OMC_API_BASEURL_NOTIFYNL",               GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
+
+                { "OMC_FEATURES_WORKFLOW_VERSION",          GetTestValue(isValid, testByte) },
 
                 { "USER_AUTHORIZATION_JWT_SECRET",          GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_ISSUER",          GetTestValue(isValid, testString) },

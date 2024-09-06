@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Enums;
@@ -9,7 +10,6 @@ using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
 using JetBrains.Annotations;
 using System.Collections.Concurrent;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.Settings.Configuration
 {
@@ -131,10 +131,6 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal EncryptionComponent Encryption { get; }
 
-            /// <inheritdoc cref="FeaturesComponent"/>
-            [Config]
-            internal FeaturesComponent Features { get; }
-
             /// <inheritdoc cref="VariablesComponent"/>
             [Config]
             internal VariablesComponent Variables { get; }
@@ -148,7 +144,6 @@ namespace EventsHandler.Services.Settings.Configuration
             {
                 this.Network = new NetworkComponent(loadersContext, parentName);
                 this.Encryption = new EncryptionComponent(loadersContext, parentName);
-                this.Features = new FeaturesComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
             }
 
@@ -206,29 +201,6 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal bool IsAsymmetric()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
-            }
-
-            /// <summary>
-            /// The "Features" part of the settings.
-            /// </summary>
-            internal sealed record FeaturesComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
-                /// </summary>
-                internal FeaturesComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                internal byte OmcWorkflowVersion()
-                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(OmcWorkflowVersion));
             }
 
             /// <summary>
@@ -512,6 +484,10 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal ApiComponent API { get; }
 
+            /// <inheritdoc cref="FeaturesComponent"/>
+            [Config]
+            internal FeaturesComponent Features { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -519,6 +495,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName);
+                this.Features = new FeaturesComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -562,6 +539,29 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal Uri NotifyNL()
                         => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
+            }
+
+            /// <summary>
+            /// The "Features" part of the settings.
+            /// </summary>
+            internal sealed record FeaturesComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
+                /// </summary>
+                internal FeaturesComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal byte Workflow_Version()
+                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
             }
         }
 
