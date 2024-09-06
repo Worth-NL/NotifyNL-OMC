@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -57,12 +56,17 @@ namespace EventsHandler.Services.Register.v1
 
             string jsonBody =
                 $"{{" +
-                $"  \"bronorganisatie\": {notification.GetOrganizationId()}, " +  // ENG: Source organization
-                $"  \"registratiedatum\": \"{caseStatus.Created}\", " +           // ENG: Date of registration (of the case)
-                $"  \"kanaal\": \"{notificationMethod}\", " +                     // ENG: Channel (of communication / notification)
-                $"  \"tekst\": \"{logMessage}\", " +                              // ENG: Text (to be logged)
-                $"  \"initiatief\": \"gemeente\", " +                             // ENG: Initiator (of the case)
-                $"  \"medewerker\": \"{DefaultValues.Models.EmptyUri}\"" +        // ENG: Worker / collaborator / contributor
+                $"  \"bronorganisatie\": {notification.GetOrganizationId()}, " +             // ENG: Source organization
+                $"  \"registratiedatum\": \"{caseStatus.Created:YYYY-MM-DDThh:mm:ss}\", " +  // ENG: Date of registration (of the case)
+                $"  \"kanaal\": \"{notificationMethod}\", " +                                // ENG: Channel (of communication / notification)
+                $"  \"tekst\": \"{logMessage}\", " +                                         // ENG: Text (to be logged)
+                $"  \"initiatief\": \"gemeente\", " +                                        // ENG: Initiator (of the case)
+                $"  \"medewerkerIdentificatie\": {{" +                                       // ENG: Worker / collaborator / contributor
+                $"    \"identificatie\": \"omc\"," +
+                $"    \"achternaam\": \"omc\"," +
+                $"    \"voorletters\": \"omc\"," +
+                $"    \"voorvoegselAchternaam\": \"omc\"" +
+                $"  }}" +
                 $"}}";
 
             return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
