@@ -36,6 +36,8 @@
 
         "OMC_API_BASEURL_NOTIFYNL": "https://api.acc.notifynl.nl",
 
+        "OMC_FEATURES_WORKFLOW_VERSION": "1",
+
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
         "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
         "USER_AUTHORIZATION_JWT_ISSUER": "goc",
@@ -97,6 +99,8 @@
         "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development) | Workflow v2",
 
         "OMC_API_BASEURL_NOTIFYNL": "https://api.acc.notifynl.nl",
+
+        "OMC_FEATURES_WORKFLOW_VERSION": "2",
 
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
         "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
