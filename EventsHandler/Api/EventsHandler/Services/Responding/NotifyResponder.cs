@@ -161,7 +161,7 @@ namespace EventsHandler.Services.Responding
             return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext,System.Collections.Generic.IDictionary{string,string[]})"/>
+        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(ResultExecutingContext, IDictionary{string,string[]})"/>
         ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
