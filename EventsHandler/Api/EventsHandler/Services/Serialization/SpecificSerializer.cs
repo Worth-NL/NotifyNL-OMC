@@ -25,6 +25,7 @@ namespace EventsHandler.Services.Serialization
             {
                 new DateOnlyJsonConverter(),
                 new DateTimeJsonConverter(),
+                new GuidJsonConverter(),
                 new StringJsonConverter(),
                 new UriJsonConverter()
             }
