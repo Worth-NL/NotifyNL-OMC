@@ -25,7 +25,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("omschrijvinggeneriek")]
+        [JsonPropertyName("omschrijvingGeneriek")]
         [JsonPropertyOrder(1)]
         public string Description { get; internal set; } = string.Empty;
 
@@ -52,9 +52,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("publicatieindicatie")]
+        [JsonPropertyName("publicatieIndicatie")]
         [JsonPropertyOrder(4)]
-        public string PublicationIndicator { get; internal set; } = string.Empty;
+        public bool PublicationIndicator { get; internal set; }
 
         /// <summary>
         /// The text of the publication.
