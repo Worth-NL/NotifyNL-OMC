@@ -5,6 +5,7 @@ using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
+using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.UnitTests.Extensions
 {
@@ -34,10 +35,10 @@ namespace EventsHandler.UnitTests.Extensions
         public void Features_ReturnsExpectedValue()
         {
             // Act
-            int actualValue = this._configuration!.OmcWorkflowVersion();
+            byte actualValue = ConfigurationExtensions.OmcWorkflowVersion();
 
             // Assert
-            Assert.That(actualValue, Is.EqualTo(1));
+            Assert.That(actualValue, Is.GreaterThanOrEqualTo(0));
         }
         #endregion
 

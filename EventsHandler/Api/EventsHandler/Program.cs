@@ -53,6 +53,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Register = EventsHandler.Services.Register;
@@ -318,22 +319,20 @@ namespace EventsHandler
             // Common query methods
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
-            byte omcWorkflowVersion = builder.Configuration.OmcWorkflowVersion();
-
             // Strategies
-            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
-            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
-            builder.Services.AddSingleton(typeof(IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
-            builder.Services.AddSingleton(typeof(IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion());
+            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion());
+            builder.Services.AddSingleton(typeof(IQueryObjecten), DetermineObjectenVersion());
+            builder.Services.AddSingleton(typeof(IQueryObjectTypen), DetermineObjectTypenVersion());
 
             // Feedback and telemetry
-            builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
+            builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion());
 
             return;
 
-            static Type DetermineOpenZaakVersion(byte omcWorkflowVersion)
+            static Type DetermineOpenZaakVersion()
             {
-                return omcWorkflowVersion switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 => typeof(OpenZaak.v1.QueryZaak),
                     2 => typeof(OpenZaak.v2.QueryZaak),
@@ -341,9 +340,9 @@ namespace EventsHandler
                 };
             }
 
-            static Type DetermineOpenKlantVersion(byte omcWorkflowVersion)
+            static Type DetermineOpenKlantVersion()
             {
-                return omcWorkflowVersion switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
@@ -351,27 +350,27 @@ namespace EventsHandler
                 };
             }
 
-            static Type DetermineObjectenVersion(byte omcWorkflowVersion)
+            static Type DetermineObjectenVersion()
             {
-                return omcWorkflowVersion switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 or 2 => typeof(QueryObjecten),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectenUnknown)
                 };
             }
 
-            static Type DetermineObjectTypenVersion(byte omcWorkflowVersion)
+            static Type DetermineObjectTypenVersion()
             {
-                return omcWorkflowVersion switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 or 2 => typeof(QueryObjectTypen),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectTypenUnknown)
                 };
             }
 
-            static Type DetermineTelemetryVersion(byte omcWorkflowVersion)
+            static Type DetermineTelemetryVersion()
             {
-                return omcWorkflowVersion switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 => typeof(Register.v1.ContactRegistration),
                     2 => typeof(Register.v2.ContactRegistration),
@@ -392,13 +391,13 @@ namespace EventsHandler
             builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion(builder));
+            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion());
 
             return;
 
-            static Type DetermineResponderVersion(WebApplicationBuilder builder)
+            static Type DetermineResponderVersion()
             {
-                return builder.Configuration.OmcWorkflowVersion() switch
+                return ConfigurationExtensions.OmcWorkflowVersion() switch
                 {
                     1 => typeof(Responder.v1.NotifyCallbackResponder),
                     2 => typeof(Responder.v2.NotifyCallbackResponder),

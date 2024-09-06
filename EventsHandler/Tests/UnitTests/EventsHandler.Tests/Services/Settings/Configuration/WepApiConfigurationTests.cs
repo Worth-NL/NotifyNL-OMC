@@ -38,27 +38,24 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var appSettings = s_testConfiguration.AppSettings;
 
                 // AppSettings | Network
-                TestEnvironmentVariables(ref counter, methodNames, appSettings.Network);
+                TestConfigProperties(ref counter, methodNames, appSettings.Network);
 
                 // AppSettings | Encryption
-                TestEnvironmentVariables(ref counter, methodNames, appSettings.Encryption);
-
-                // AppSettings | Features
-                TestEnvironmentVariables(ref counter, methodNames, appSettings.Features);
+                TestConfigProperties(ref counter, methodNames, appSettings.Encryption);
 
                 var variablesSettings = s_testConfiguration.AppSettings.Variables;
 
                 // AppSettings | Variables
-                TestEnvironmentVariables(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);
+                TestConfigProperties(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);
 
                 // AppSettings | Variables | OpenKlant
-                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.OpenKlant);
+                TestConfigProperties(ref counter, methodNames, variablesSettings.OpenKlant);
 
                 // AppSettings | Variables | Objecten
-                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.Objecten);
+                TestConfigProperties(ref counter, methodNames, variablesSettings.Objecten);
 
                 // AppSettings | Variables | UX Messages
-                TestEnvironmentVariables(ref counter, methodNames, variablesSettings.UxMessages);
+                TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
@@ -82,28 +79,31 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var omcConfiguration = s_testConfiguration.OMC;
 
                 // OMC | Authorization | JWT
-                TestEnvironmentVariables(ref counter, methodNames, omcConfiguration.Authorization.JWT);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Authorization.JWT);
 
                 // OMC | API | BaseUrl
-                TestEnvironmentVariables(ref counter, methodNames, omcConfiguration.API.BaseUrl);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.API.BaseUrl);
+
+                // OMC | Features
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Features);
                 
                 var userConfiguration = s_testConfiguration.User;
 
                 // User | Authorization | JWT
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Authorization.JWT);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.Authorization.JWT);
 
                 // User | API | Key
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.API.Key);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.API.Key);
 
                 // User | Domain
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Domain);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.Domain);
 
                 // User | Templates (Email + SMS)
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.TemplateIds.Email);
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.TemplateIds.Sms);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.TemplateIds.Email);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.TemplateIds.Sms);
 
                 // User | Whitelist
-                TestEnvironmentVariables(ref counter, methodNames, userConfiguration.Whitelist);
+                TestConfigProperties(ref counter, methodNames, userConfiguration.Whitelist);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
@@ -198,11 +198,10 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         #endregion
 
         #region Helper methods
-        private static void TestEnvironmentVariables(ref int counter, ICollection<string> methodNames, object instance, bool isRecursionEnabled = true)
+        private static void TestConfigProperties(ref int counter, ICollection<string> methodNames, object instance, bool isRecursionEnabled = true)
         {
             const string variableTestErrorMessage =
-                $"Most likely the environment variable name was changed in {nameof(WebApiConfiguration)} " +
-                $"but not adjusted in {nameof(ConfigurationHandler)}.GetEnvironmentLoader(bool).";
+                $"Most likely the setting or environment variable name was changed in {nameof(WebApiConfiguration)} but not adjusted in {nameof(ConfigurationHandler)}.";
 
             foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
             {
