@@ -261,6 +261,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
   "Encryption": {
     "IsAsymmetric": false
   },
+
   // Predefined variables based on which the application workflow currently relies.
   // NOTE: Their default values should not be changed, unless they are also adopted on
   //       the OpenZaak and OpenKlant API sides (which are more dynamic than OMC API).
