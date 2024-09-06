@@ -62,9 +62,9 @@ namespace EventsHandler.Services.Register.v1
                 $"  \"tekst\": \"{logMessage}\", " +                                         // ENG: Text (to be logged)
                 $"  \"initiatief\": \"gemeente\", " +                                        // ENG: Initiator (of the case)
                 $"  \"medewerkerIdentificatie\": {{" +                                       // ENG: Worker / collaborator / contributor
-                $"    \"identificatie\": \"omc\"," +
-                $"    \"achternaam\": \"omc\"," +
-                $"    \"voorletters\": \"omc\"," +
+                $"    \"identificatie\": \"omc\", " +
+                $"    \"achternaam\": \"omc\", " +
+                $"    \"voorletters\": \"omc\", " +
                 $"    \"voorvoegselAchternaam\": \"omc\"" +
                 $"  }}" +
                 $"}}";
