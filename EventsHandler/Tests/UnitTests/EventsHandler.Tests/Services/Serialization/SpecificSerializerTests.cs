@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -152,6 +153,12 @@ namespace EventsHandler.UnitTests.Services.Serialization
                 $"\"correctedBy\":null" +
               $"}}" +
             $"}}";
+        
+        private const string Input_ContactMoment =
+            $"{{" +
+              $"\"uuid\":null," +  // Should be deserialized as default not null
+              $"\"url\":null" +    // Should be deserialized as default not null
+            $"}}";
         #endregion
 
         #region Test data (JSON output)
@@ -228,6 +235,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
         {
             // Act
             TaskObject actualResult = this._serializer.Deserialize<TaskObject>(Input_TaskObject);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [Test]
+        public void Deserialize_ContactMoment_PartiallyValidJson_ReturnsExpectedModel()  // GUID should be deserialized properly
+        {
+            // Act
+            ContactMoment actualResult = this._serializer.Deserialize<ContactMoment>(Input_ContactMoment);
 
             // Assert
             AssertRequiredProperties(actualResult);
@@ -323,6 +340,17 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             // Assert
             Assert.That(actualResult, Is.EqualTo("{\"record\":{\"data\":{\"zaak\":\"http://0.0.0.0:0/\",\"title\":\"\",\"status\":\"-\",\"verloopdatum\":\"0001-01-01T00:00:00.0000000\",\"identificatie\":{\"type\":\"-\",\"value\":\"\"}}}}"));
+        }
+        
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Serialize_ContactMoment_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Simple model: GUID should be handled properly
+        {
+            // Act
+            string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo("{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"http://0.0.0.0:0/\"}"));
         }
 
         [Test]
