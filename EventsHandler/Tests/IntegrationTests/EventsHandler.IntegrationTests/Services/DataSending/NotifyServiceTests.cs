@@ -39,7 +39,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
 
             this._testNotifyService = new NotifyService(firstMockedClientFactory.Object, mockedSerializer.Object);
 
-            NotificationEvent testNotification = NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague().Deserialized();
+            NotificationEvent testNotification = NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague().Deserialized();
 
             // Act
             await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
@@ -97,7 +97,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             this._testNotifyService = GetTestSendingService(mockedClient);
 
             NotificationEvent testNotification =
-                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
                     .Deserialized();
 
             // Act
@@ -124,7 +124,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             this._testNotifyService = GetTestSendingService(mockedClient);
 
             NotificationEvent testNotification =
-                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
                     .Deserialized();
 
             // Act
@@ -151,7 +151,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             this._testNotifyService = GetTestSendingService(mockedClient);
 
             NotificationEvent testNotification =
-                NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+                NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
                     .Deserialized();
 
             // Act

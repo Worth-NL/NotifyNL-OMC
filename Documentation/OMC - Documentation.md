@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.11
+v.1.8.12
 
 © 2024, Worth Systems.
 
@@ -120,7 +120,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_AUTHORIZATION_JWT_USERID": "",
         "USER_AUTHORIZATION_JWT_USERNAME": "",
         
-        "USER_API_KEY_OPENKLANT_2": "",
+        "USER_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
         "USER_API_KEY_OBJECTEN": "",
         "USER_API_KEY_OBJECTTYPEN": "",
         "USER_API_KEY_NOTIFYNL": "",
@@ -261,6 +261,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
   "Encryption": {
     "IsAsymmetric": false
   },
+
   // Predefined variables based on which the application workflow currently relies.
   // NOTE: Their default values should not be changed, unless they are also adopted on
   //       the OpenZaak and OpenKlant API sides (which are more dynamic than OMC API).
@@ -349,7 +350,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | USER_AUTHORIZATION_JWT_USERNAME                     | string    | "Municipality of Rotterdam"            | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here          |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Authorization:** API Keys                         |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
-| USER_API_KEY_OPENKLANT_2                            | string    | "43dcba52d312d1e00bc..."               | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "OpenKlant" 2.0 Web API service UI                                                                                                                                                      |
+| USER_API_KEY_OPENKLANT                              | string    | "43dcba52d312d1e00bc..."               | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated for OMC Workflow v2 and above from "OpenKlant" 2.0 Web API service UI                                                                                                                        |
 | USER_API_KEY_OBJECTEN                               | string    | "56abcd24e75c02d44ee..."               | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "Objecten" Web API service UI                                                                                                                                                           |
 | USER_API_KEY_OBJECTTYPEN                            | string    | "647c4eg120f98ed5f5a..."               | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "ObjectTypen" Web API service UI                                                                                                                                                        |
 | USER_API_KEY_NOTIFYNL                               | string    | "name-8-4-4-4-12-8-4-4-4-12" (UUID x2) | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                                |
