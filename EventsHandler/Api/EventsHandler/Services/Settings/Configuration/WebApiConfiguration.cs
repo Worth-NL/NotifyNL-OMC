@@ -638,7 +638,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string OpenKlant()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
+                           disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
