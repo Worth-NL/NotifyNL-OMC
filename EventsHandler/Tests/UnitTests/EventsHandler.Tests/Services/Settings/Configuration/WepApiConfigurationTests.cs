@@ -196,6 +196,39 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 Assert.That(isAllowed, Is.False);
             });
         }
+
+        [Test]
+        public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
+        {
+            // Arrange
+            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+
+            // Act
+            string openKlantApiKey = configuration.User.API.Key.OpenKlant();
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(1));
+                Assert.That(openKlantApiKey, Is.Empty);
+            });
+        }
+
+        [Test]
+        public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
+        {
+            // Arrange
+            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(2));
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.User.API.Key.OpenKlant());
+                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
+                    .Replace("{0}", "USER_API_KEY_OPENKLANT")));
+            });
+        }
         #endregion
 
         #region Helper methods
