@@ -25,6 +25,7 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.Confidential, "vertrouwelijk")]
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.NonConfidential, "openbaar")]
         // NotificatieApi: Resources
+        [TestCase(typeof(Resources), Resources.Case, "zaak")]
         [TestCase(typeof(Resources), Resources.Status, "status")]
         [TestCase(typeof(Resources), Resources.Object, "object")]
         [TestCase(typeof(Resources), Resources.Decision, "besluitinformatieobject")]
@@ -82,6 +83,7 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         [TestCase("vertrouwelijk", typeof(PrivacyNotices), PrivacyNotices.Confidential)]
         [TestCase("openbaar", typeof(PrivacyNotices), PrivacyNotices.NonConfidential)]
         // NotificatieApi: Resources
+        [TestCase("zaak", typeof(Resources), Resources.Case)]
         [TestCase("status", typeof(Resources), Resources.Status)]
         [TestCase("object", typeof(Resources), Resources.Object)]
         [TestCase("besluitinformatieobject", typeof(Resources), Resources.Decision)]
