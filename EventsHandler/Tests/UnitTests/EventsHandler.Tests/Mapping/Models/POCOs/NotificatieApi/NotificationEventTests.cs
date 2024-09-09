@@ -104,7 +104,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
         public void Serialization_Object_IntoCaseJson()
         {
             // Arrange
-            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
                 .Deserialized();
 
             // Act
@@ -118,7 +118,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
         public void Serialization_Object_IntoDecisionJson()
         {
             // Arrange
-            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_DecisionsScenario_TheHague()
+            NotificationEvent testObject = NotificationEventHandler.GetNotification_Real_DecisionMadeScenario_TheHague()
                 .Deserialized();
 
             // Act
