@@ -177,7 +177,7 @@ namespace EventsHandler.Services.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant_2()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
                     => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.Objecten()}",
