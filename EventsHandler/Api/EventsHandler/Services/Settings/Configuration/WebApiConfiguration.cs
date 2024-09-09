@@ -637,8 +637,8 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
-                    internal string OpenKlant_2()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
+                    internal string OpenKlant()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
