@@ -45,14 +45,13 @@ namespace EventsHandler.Utilities._TestHelpers
         /// <summary>
         /// Gets the mocked <see cref="EnvironmentLoader"/>.
         /// </summary>
-        private static EnvironmentLoader GetEnvironmentLoader(bool isValid = true)
+        private static EnvironmentLoader GetEnvironmentLoader(byte omcWorkflow, bool isValid = true)
         {
             var mockedEnvironmentReader = new Mock<IEnvironment>();
 
             const string testString = "xyz";
             const string testArray = "1, 2, 3";
             const string testUshort = "60";
-            const string testByte = "1";
             const string testGuid = "01234567-89ab-cdef-1234-567890123456";
             const string testBool = "true";
             const string testDomain = "test.domain";
@@ -70,7 +69,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "OMC_API_BASEURL_NOTIFYNL",               GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
 
-                { "OMC_FEATURES_WORKFLOW_VERSION",          GetTestValue(isValid, testByte) },
+                { "OMC_FEATURES_WORKFLOW_VERSION",          $"{omcWorkflow}" },
 
                 { "USER_AUTHORIZATION_JWT_SECRET",          GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_ISSUER",          GetTestValue(isValid, testString) },
@@ -79,7 +78,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_AUTHORIZATION_JWT_USERID",          GetTestValue(isValid, testString) },
                 { "USER_AUTHORIZATION_JWT_USERNAME",        GetTestValue(isValid, testString) },
 
-                { "USER_API_KEY_OPENKLANT_2",               GetTestValue(isValid, testString) },
+                { "USER_API_KEY_OPENKLANT",                 GetTestValue(isValid, testString) },
                 { "USER_API_KEY_OBJECTEN",                  GetTestValue(isValid, testString) },
                 { "USER_API_KEY_OBJECTTYPEN",               GetTestValue(isValid, testString) },
                 { "USER_API_KEY_NOTIFYNL",                  GetTestValue(isValid, testString) },
@@ -150,22 +149,35 @@ namespace EventsHandler.Utilities._TestHelpers
 
         internal enum TestLoaderTypes
         {
+            // ReSharper disable InconsistentNaming
             ValidAppSettings,
             InvalidAppSettings,
-            ValidEnvironment,
+            ValidEnvironment_v1,
+            ValidEnvironment_v2,
             InvalidEnvironment,
-            BothValid,
-            BothInvalid
+            InvalidEnvironment_v1,
+            InvalidEnvironment_v2,
+            BothValid_v1,
+            BothValid_v2,
+            BothInvalid,
+            BothInvalid_v1,
+            BothInvalid_v2
         }
 
         private static readonly Dictionary<TestLoaderTypes, WebApiConfiguration> s_presetConfigurations = new()
         {
-            { TestLoaderTypes.ValidAppSettings,   GetWebApiConfiguration(TestLoaderTypes.ValidAppSettings)   },
-            { TestLoaderTypes.InvalidAppSettings, GetWebApiConfiguration(TestLoaderTypes.InvalidAppSettings) },
-            { TestLoaderTypes.ValidEnvironment,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment)   },
-            { TestLoaderTypes.InvalidEnvironment, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment) },
-            { TestLoaderTypes.BothValid,          GetWebApiConfiguration(TestLoaderTypes.BothValid)          },
-            { TestLoaderTypes.BothInvalid,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid)        }
+            { TestLoaderTypes.ValidAppSettings,      GetWebApiConfiguration(TestLoaderTypes.ValidAppSettings)      },
+            { TestLoaderTypes.InvalidAppSettings,    GetWebApiConfiguration(TestLoaderTypes.InvalidAppSettings)    },
+            { TestLoaderTypes.ValidEnvironment_v1,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment_v1)   },
+            { TestLoaderTypes.ValidEnvironment_v2,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment_v2)   },
+            { TestLoaderTypes.InvalidEnvironment,    GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment)    },
+            { TestLoaderTypes.InvalidEnvironment_v1, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment_v1) },
+            { TestLoaderTypes.InvalidEnvironment_v2, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment_v2) },
+            { TestLoaderTypes.BothValid_v1,          GetWebApiConfiguration(TestLoaderTypes.BothValid_v1)          },
+            { TestLoaderTypes.BothValid_v2,          GetWebApiConfiguration(TestLoaderTypes.BothValid_v2)          },
+            { TestLoaderTypes.BothInvalid,           GetWebApiConfiguration(TestLoaderTypes.BothInvalid)           },
+            { TestLoaderTypes.BothInvalid_v1,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid_v1)        },
+            { TestLoaderTypes.BothInvalid_v2,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid_v2)        }
         };
 
         private static WebApiConfiguration GetWebApiConfiguration(TestLoaderTypes loaderType)
@@ -184,23 +196,50 @@ namespace EventsHandler.Utilities._TestHelpers
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     break;
 
-                case TestLoaderTypes.ValidEnvironment:
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: true));
+                case TestLoaderTypes.ValidEnvironment_v1:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
+                    break;
+
+                case TestLoaderTypes.ValidEnvironment_v2:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true));
                     break;
 
                 case TestLoaderTypes.InvalidEnvironment:
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: false));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
                     break;
 
-                case TestLoaderTypes.BothValid:
+                case TestLoaderTypes.InvalidEnvironment_v1:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
+                    break;
+
+                case TestLoaderTypes.InvalidEnvironment_v2:
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: false));
+                    break;
+
+                case TestLoaderTypes.BothValid_v1:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: true));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
+                    break;
+
+                case TestLoaderTypes.BothValid_v2:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true));
                     break;
 
                 default:
                 case TestLoaderTypes.BothInvalid:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(isValid: false));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
+                    break;
+
+                case TestLoaderTypes.BothInvalid_v1:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
+                    break;
+
+                case TestLoaderTypes.BothInvalid_v2:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
+                    serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: false));
                     break;
             }
 
