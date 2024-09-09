@@ -21,21 +21,27 @@ namespace EventsHandler.Mapping.Enums.NotificatieApi
         Unknown = 0,
 
         /// <summary>
-        /// The <see cref="Models.POCOs.OpenZaak.CaseStatus"/> resource.
+        /// The "case" resource.
+        /// </summary>
+        [JsonPropertyName("zaak")]
+        Case = 1,
+
+        /// <summary>
+        /// The "status" (e.g., case status) resource.
         /// </summary>
         [JsonPropertyName("status")]
-        Status = 1,
+        Status = 2,
 
         /// <summary>
-        /// The <see cref="TaskObject"/> or <see cref="MessageObject"/> resource.
+        /// The "object" (task, message...) resource.
         /// </summary>
         [JsonPropertyName("object")]
-        Object = 2,
+        Object = 3,
 
         /// <summary>
-        /// The <see cref="Models.POCOs.OpenZaak.Decision.Decision"/> resource.
+        /// The "decision" resource.
         /// </summary>
         [JsonPropertyName("besluitinformatieobject")]
-        Decision = 3
+        Decision = 4
     }
 }

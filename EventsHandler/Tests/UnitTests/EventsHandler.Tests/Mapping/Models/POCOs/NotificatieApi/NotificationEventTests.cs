@@ -58,7 +58,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
             $"{{" +
               $"\"actie\": 0, " +  // Invalid value
               $"\"kanaal\": 1, " +
-              $"\"resource\": 2, " +
+              $"\"resource\": 3, " +
               $"\"kenmerken\": {{" +
                 // Cases
                 $"\"zaaktype\": null, " +
@@ -79,7 +79,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.NotificatieApi
             $"{{" +
               $"\"actie\": 0, " +  // Invalid value
               $"\"kanaal\": 1, " +
-              $"\"resource\": 2, " +
+              $"\"resource\": 3, " +
               $"\"kenmerken\": {{" +
                 // Cases
                 $"\"zaaktype\": null, " +
