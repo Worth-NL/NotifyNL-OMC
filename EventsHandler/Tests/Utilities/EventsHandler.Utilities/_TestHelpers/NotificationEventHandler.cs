@@ -147,7 +147,7 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Real)
-        internal static string GetNotification_Real_CasesScenario_TheHague()
+        internal static string GetNotification_Real_CaseUpdateScenario_TheHague()
         {
             const string jsonPayload =
                 $"{{" +
@@ -167,8 +167,47 @@ namespace EventsHandler.Utilities._TestHelpers
 
             return jsonPayload;
         }
+        internal static string GetNotification_Real_CaseCreateScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"zaken\", " +
+                  $"\"resource\": \"zaak\", " +
+                  $"\"kenmerken\": {{" +
+                    // Cases
+                    $"\"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\", " +
+                    $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", " +
+                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\", " +
+                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\", " +
+                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"" +
+                $"}}";
 
-        internal static string GetNotification_Real_DecisionsScenario_TheHague()
+            return jsonPayload;
+        }
+
+        internal static string GetNotification_Real_TaskAssignedScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"objecten\", " +
+                  $"\"resource\": \"object\", " +
+                  $"\"kenmerken\": {{" +
+                    // Objects
+                    $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestTaskObjectTypeUuid}\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/fa3d63f4-4caf-4a30-97ab-b19cd753ab59\", " +
+                  $"\"resourceUrl\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/fa3d63f4-4caf-4a30-97ab-b19cd753ab59\", " +
+                  $"\"aanmaakdatum\": \"2023-10-04T12:15:04.005Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+
+        internal static string GetNotification_Real_DecisionMadeScenario_TheHague()
         {
             const string jsonPayload =
                 $"{{" +
@@ -183,6 +222,25 @@ namespace EventsHandler.Utilities._TestHelpers
                   $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", " +
                   $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", " +
                   $"\"aanmaakdatum\": \"2023-10-05T08:52:02.273Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+
+        internal static string GetNotification_Real_MessageReceivedScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                $"\"actie\": \"create\", " +
+                $"\"kanaal\": \"objecten\", " +
+                $"\"resource\": \"object\", " +
+                $"\"kenmerken\": {{" +
+                // Objects
+                $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestMessageObjectTypeUuid}\"" +
+                $"}}, " +
+                $"\"hoofdObject\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +
+                $"\"resourceUrl\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +
+                $"\"aanmaakdatum\": \"2023-10-04T12:15:04.005Z\"" +
                 $"}}";
 
             return jsonPayload;

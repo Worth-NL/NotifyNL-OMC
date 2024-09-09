@@ -18,7 +18,7 @@ namespace EventsHandler.UnitTests.Services.Validation
         private IValidationService<NotificationEvent>? _validator;
 
         private static readonly NotificationEvent s_testNotification =
-            NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague()
+            NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
                 .Deserialized();
 
         [SetUp]
