@@ -342,9 +342,6 @@
   <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
     <value>Not standardized (unexpected) API response</value>
   </data>
-  <data name="Configuration_ERROR_CannotInitializeSettings" xml:space="preserve">
-    <value>The specific type of settings cannot be initialized.</value>
-  </data>
   <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
     <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
   </data>
