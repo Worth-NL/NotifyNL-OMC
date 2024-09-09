@@ -207,7 +207,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         #region Deserialize
         [TestCaseSource(nameof(GetTestNotifications))]
-        public void Deserialize_Notifications_EverythingIsMapped(string testNotification)
+        public void Deserialize_NotificationEvent_EverythingIsMapped(string testNotification)
         {
             // Act
             NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(testNotification);
