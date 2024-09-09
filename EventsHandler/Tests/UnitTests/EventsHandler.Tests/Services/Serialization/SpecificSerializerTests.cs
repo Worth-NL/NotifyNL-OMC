@@ -12,6 +12,9 @@ using EventsHandler.Services.Serialization.Interfaces;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
@@ -203,6 +206,34 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         #region Deserialize
+        [TestCaseSource(nameof(GetTestNotifications))]
+        public void Deserialize_Notifications_EverythingIsMapped(string testNotification)
+        {
+            // Act
+            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(testNotification);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(notification.Action, Is.Not.EqualTo(Actions.Unknown));
+                Assert.That(notification.Channel, Is.Not.EqualTo(Channels.Unknown));
+                Assert.That(notification.Resource, Is.Not.EqualTo(Resources.Unknown));
+                Assert.That(notification.Attributes, Is.Not.Default);
+                Assert.That(notification.MainObjectUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(notification.ResourceUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(notification.CreateDate, Is.Not.Default);
+            });
+        }
+
+        private static IEnumerable<string> GetTestNotifications()
+        {
+            yield return NotificationEventHandler.GetNotification_Real_CaseCreateScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_TaskAssignedScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_DecisionMadeScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_MessageReceivedScenario_TheHague();
+        }
+
         [Test]
         public void Deserialize_Case_PartiallyValidJson_Nulls_ReturnsExpectedModel()  // Strings, Uri, and DateOnly should be properly deserialized from nulls
         {

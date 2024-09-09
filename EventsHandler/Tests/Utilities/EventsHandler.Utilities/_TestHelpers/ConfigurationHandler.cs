@@ -30,7 +30,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
         #region ILoadingService mocks
         internal const string TestTaskObjectTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
-        internal const string TestMessageObjectTypeUuid = "38327774-7023-4f25-9386-acb0c6f10636";  // TODO: Use something real
+        internal const string TestMessageObjectTypeUuid = "38327774-7023-4f25-9386-acb0c6f10636";
 
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.

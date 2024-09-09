@@ -37,7 +37,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
         #region Test data
         private static readonly NotificationEvent s_validNotification =
-            NotificationEventHandler.GetNotification_Real_CasesScenario_TheHague().Deserialized();
+            NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague().Deserialized();
         #endregion
 
         #region ProcessAsync()
