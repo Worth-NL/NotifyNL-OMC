@@ -37,27 +37,6 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Test)
-        internal static string GetNotification_Test_CasesScenario()
-        {
-            string jsonPayload =
-                $"{{\r\n" +
-                  $"\"actie\": \"create\", \r\n" +
-                  $"\"kanaal\": \"zaken\", \r\n" +
-                  $"\"resource\": \"status\", \r\n" +
-                  $"\"kenmerken\": {{\r\n" +
-                    // Cases
-                    $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
-                    $"\"bronorganisatie\": \"{DefaultValues.Models.DefaultOrganization}\", \r\n" +
-                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\"\r\n" +
-                  $"}}, \r\n" +
-                  $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
-                  $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
-                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"\r\n" +
-                $"}}";
-
-            return jsonPayload;
-        }
-
         internal static NotificationEvent GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated()
         {
             // CASE #1: Manual creation of NotificationEvent
@@ -85,11 +64,11 @@ namespace EventsHandler.Utilities._TestHelpers
         internal static string GetNotification_Test_AllAttributes_WithOrphans()
         {
             string jsonPayload =
-                $"{{\r\n" +
-                  $"\"actie\": \"create\", \r\n" +
-                  $"\"kanaal\": \"zaken\", \r\n" +
-                  $"\"resource\": \"zaak\", \r\n" +
-                  $"\"kenmerken\": {{\r\n" +
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"zaken\", " +
+                  $"\"resource\": \"zaak\", " +
+                  $"\"kenmerken\": {{" +
                     // Cases
                     $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", " +
                     $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", " +
@@ -100,14 +79,14 @@ namespace EventsHandler.Utilities._TestHelpers
                     $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
                     $"\"verantwoordelijkeOrganisatie\": \"{ResponsibleOrganization_Real_TheHague}\", " +
                     // Orphans (attributes)
-                    $"\"{Orphan_Test_Property_2}\": {GetOrphanSecondValue()}, \r\n" +  // Unexpected JSON property => will be moved to nested Orphans
-                    $"\"{Orphan_Test_Property_3}\": \"{Orphan_Test_Value_3}\"\r\n" +      // Unexpected JSON property => will be moved to nested Orphans
-                  $"}}, \r\n" +
-                  $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
-                  $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", \r\n" +
-                  $"\"aanmaakdatum\": \"2023-09-12T13:58:29.9237316Z\", \r\n" +
+                    $"\"{Orphan_Test_Property_2}\": {GetOrphanSecondValue()}, " +  // Unexpected JSON property => will be moved to nested Orphans
+                    $"\"{Orphan_Test_Property_3}\": \"{Orphan_Test_Value_3}\"" +      // Unexpected JSON property => will be moved to nested Orphans
+                  $"}}, " +
+                  $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
+                  $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+                  $"\"aanmaakdatum\": \"2023-09-12T13:58:29.9237316Z\", " +
                   // Orphans (event)
-                  $"\"{Orphan_Test_Property_1}\": {Orphan_Test_Value_1}\r\n" +  // Unexpected JSON property => will be moved to root Orphans
+                  $"\"{Orphan_Test_Property_1}\": {Orphan_Test_Value_1}" +  // Unexpected JSON property => will be moved to root Orphans
                 $"}}";
 
             return jsonPayload;
@@ -116,24 +95,24 @@ namespace EventsHandler.Utilities._TestHelpers
         internal static string GetNotification_Test_AllAttributes_Null_WithoutOrphans()
         {
             const string jsonPayload =
-                $"{{\r\n" +
-                  $"\"actie\": \"create\", \r\n" +
-                  $"\"kanaal\": \"zaken\", \r\n" +
-                  $"\"resource\": \"status\", \r\n" +
-                  $"\"kenmerken\": {{\r\n" +
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"zaken\", " +
+                  $"\"resource\": \"status\", " +
+                  $"\"kenmerken\": {{" +
                     // Cases
-                    $"\"zaaktype\": null, \r\n" +
-                    $"\"bronorganisatie\": null, \r\n" +
-                    $"\"vertrouwelijkheidaanduiding\": null, \r\n" +
+                    $"\"zaaktype\": null, " +
+                    $"\"bronorganisatie\": null, " +
+                    $"\"vertrouwelijkheidaanduiding\": null, " +
                     // Objects
-                    $"\"objectType\": null, \r\n" +
+                    $"\"objectType\": null, " +
                     // Decisions
-                    $"\"besluittype\": null, \r\n" +
-                    $"\"verantwoordelijkeOrganisatie\": null\r\n" +
-                  $"}}, \r\n" +
-                  $"\"hoofdObject\": \"https://www.test.something.org/\", \r\n" +
-                  $"\"resourceUrl\": \"https://www.test.something.org/\", \r\n" +
-                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"\r\n" +
+                    $"\"besluittype\": null, " +
+                    $"\"verantwoordelijkeOrganisatie\": null" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://www.test.something.org/\", " +
+                  $"\"resourceUrl\": \"https://www.test.something.org/\", " +
+                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"" +
                 $"}}";
 
             return jsonPayload;
@@ -168,42 +147,100 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Real)
-        internal static string GetNotification_Real_CasesScenario_TheHague()
+        internal static string GetNotification_Real_CaseUpdateScenario_TheHague()
         {
             const string jsonPayload =
-                $"{{\r\n" +
-                  $"\"actie\": \"create\", \r\n" +
-                  $"\"kanaal\": \"zaken\", \r\n" +
-                  $"\"resource\": \"status\", \r\n" +
-                  $"\"kenmerken\": {{\r\n" +
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"zaken\", " +
+                  $"\"resource\": \"status\", " +
+                  $"\"kenmerken\": {{" +
                     // Cases
-                    $"\"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\", \r\n" +
-                    $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", \r\n" +
-                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\"\r\n" +
-                  $"}}, \r\n" +
-                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\", \r\n" +
-                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\", \r\n" +
-                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"\r\n" +
+                    $"\"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\", " +
+                    $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", " +
+                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\", " +
+                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\", " +
+                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+        internal static string GetNotification_Real_CaseCreateScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"zaken\", " +
+                  $"\"resource\": \"zaak\", " +
+                  $"\"kenmerken\": {{" +
+                    // Cases
+                    $"\"zaaktype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\", " +
+                    $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", " +
+                    $"\"vertrouwelijkheidaanduiding\": \"openbaar\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\", " +
+                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\", " +
+                  $"\"aanmaakdatum\": \"2023-09-22T11:41:46.052Z\"" +
                 $"}}";
 
             return jsonPayload;
         }
 
-        internal static string GetNotification_Real_DecisionsScenario_TheHague()
+        internal static string GetNotification_Real_TaskAssignedScenario_TheHague()
         {
             const string jsonPayload =
-                $"{{\r\n" +
-                  $"\"actie\": \"create\", \r\n" +
-                  $"\"kanaal\": \"besluiten\", \r\n" +
-                  $"\"resource\": \"besluitinformatieobject\", \r\n" +
-                  $"\"kenmerken\": {{\r\n" +
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"objecten\", " +
+                  $"\"resource\": \"object\", " +
+                  $"\"kenmerken\": {{" +
+                    // Objects
+                    $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestTaskObjectTypeUuid}\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/fa3d63f4-4caf-4a30-97ab-b19cd753ab59\", " +
+                  $"\"resourceUrl\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/fa3d63f4-4caf-4a30-97ab-b19cd753ab59\", " +
+                  $"\"aanmaakdatum\": \"2023-10-04T12:15:04.005Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+
+        internal static string GetNotification_Real_DecisionMadeScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"besluiten\", " +
+                  $"\"resource\": \"besluitinformatieobject\", " +
+                  $"\"kenmerken\": {{" +
                     // Decisions
-                    $"\"besluittype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/besluittypen/7002077e-0358-4301-8aac-5b440093f214\", \r\n" +
-                    $"\"verantwoordelijkeOrganisatie\": \"{ResponsibleOrganization_Real_TheHague}\"\r\n" +
-                  $"}}, \r\n" +
-                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", \r\n" +
-                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", \r\n" +
-                  $"\"aanmaakdatum\": \"2023-10-05T08:52:02.273Z\"\r\n" +
+                    $"\"besluittype\": \"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/besluittypen/7002077e-0358-4301-8aac-5b440093f214\", " +
+                    $"\"verantwoordelijkeOrganisatie\": \"{ResponsibleOrganization_Real_TheHague}\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", " +
+                  $"\"resourceUrl\": \"https://openzaak.test.denhaag.opengem.nl/besluiten/api/v1/besluiten/a5300781-943f-49e4-a6c2-c0ca4516936c\", " +
+                  $"\"aanmaakdatum\": \"2023-10-05T08:52:02.273Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+
+        internal static string GetNotification_Real_MessageReceivedScenario_TheHague()
+        {
+            const string jsonPayload =
+                $"{{" +
+                $"\"actie\": \"create\", " +
+                $"\"kanaal\": \"objecten\", " +
+                $"\"resource\": \"object\", " +
+                $"\"kenmerken\": {{" +
+                // Objects
+                $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestMessageObjectTypeUuid}\"" +
+                $"}}, " +
+                $"\"hoofdObject\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +
+                $"\"resourceUrl\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +
+                $"\"aanmaakdatum\": \"2023-10-04T12:15:04.005Z\"" +
                 $"}}";
 
             return jsonPayload;

@@ -79,15 +79,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specific type of settings cannot be initialized..
-        /// </summary>
-        internal static string Configuration_ERROR_CannotInitializeSettings {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_CannotInitializeSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsEndpoint {

@@ -142,7 +142,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Sending SMS text messages to the "Notify NL" Web API service.
         /// </summary>
-        /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.</param>
+        /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.
+        ///   <para>International country code is expected, e.g.: +1 (USA), +81 (Japan), +351 (Portugal), etc.</para>
+        /// </param>
         /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
         ///     If empty the ID of a very first looked up SMS template will be used.

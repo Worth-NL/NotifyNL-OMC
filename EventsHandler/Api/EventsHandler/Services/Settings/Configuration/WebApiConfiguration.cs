@@ -2,7 +2,6 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Services.Settings.Interfaces;
@@ -58,14 +57,14 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </summary>
         [Config]
         internal AppSettingsComponent AppSettings
-            => GetComponent(ref this._appSettings, LoaderTypes.AppSettings, nameof(AppSettings));
+            => this._appSettings ??= new AppSettingsComponent(GetLoader(LoaderTypes.AppSettings), nameof(AppSettings));
 
         /// <summary>
         /// Gets the object representing Output Management Component (internal) settings.
         /// </summary>
         [Config]
         internal OmcComponent OMC
-            => GetComponent(ref this._omc, LoaderTypes.Environment, nameof(OMC));
+            => this._omc ??= new OmcComponent(GetLoader(LoaderTypes.Environment), nameof(OMC));
 
         /// <summary>
         /// Gets the object representing (external) settings configured by user for
@@ -73,7 +72,7 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </summary>
         [Config]
         internal UserComponent User
-            => GetComponent(ref this._user, LoaderTypes.Environment, nameof(User));
+            => this._user ??= new UserComponent(GetLoader(LoaderTypes.Environment), nameof(User), this);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
@@ -88,30 +87,16 @@ namespace EventsHandler.Services.Settings.Configuration
             this._omc = OMC;
             this._user = User;
         }
-
+        
         /// <summary>
-        /// Initializes a specific type of settings component with its name and <see cref="ILoadingService"/>.
+        /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException"/>
-        private TComponent GetComponent<TComponent>(ref TComponent? component, LoaderTypes loaderType,
-            string name)
-            where TComponent : class
+        private ILoadersContext GetLoader(LoaderTypes loaderType)
         {
-            if (component == null)
-            {
-                // Initialize new loaders context
-                ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+            loaderContext.SetLoader(loaderType);
 
-                // Set what type of loading service is going to be used
-                loaderContext.SetLoader(loaderType);
-
-                // Set value to reference
-                component = (TComponent?)Activator.CreateInstance(typeof(TComponent), loaderContext, name)
-                            ?? throw new InvalidOperationException(Resources.Configuration_ERROR_CannotInitializeSettings);
-            }
-
-            // Return reference
-            return component;
+            return loaderContext;
         }
 
         #region Settings
@@ -590,10 +575,10 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="UserComponent"/> class.
             /// </summary>
-            public UserComponent(ILoadersContext loadersContext, string parentName)
+            public UserComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
                 : base(loadersContext, parentName)
             {
-                this.API = new ApiComponent(loadersContext, parentName);
+                this.API = new ApiComponent(loadersContext, parentName, configuration);
                 this.Domain = new DomainComponent(loadersContext, parentName);
                 this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
@@ -611,11 +596,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="ApiComponent"/> class.
                 /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                internal ApiComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
 
-                    this.Key = new KeyComponent(loadersContext, currentPath);
+                    this.Key = new KeyComponent(loadersContext, currentPath, configuration);
                 }
 
                 /// <summary>
@@ -625,20 +610,23 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
+                    private readonly WebApiConfiguration _configuration;
 
                     /// <summary>
                     /// Initializes a new instance of the <see cref="KeyComponent"/> class.
                     /// </summary>
-                    internal KeyComponent(ILoadersContext loadersContext, string parentPath)
+                    internal KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
+                        this._configuration = configuration;
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
-                    internal string OpenKlant_2()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant_2));
+                    internal string OpenKlant()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
+                           disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
