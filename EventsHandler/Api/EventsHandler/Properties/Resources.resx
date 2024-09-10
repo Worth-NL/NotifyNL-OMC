@@ -278,15 +278,19 @@
   </data>
   <data name="Configuration_ERROR_ContainsEndpoint" xml:space="preserve">
     <value>In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}.</value>
+    <comment>{0} = The domain that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_ContainsHttp" xml:space="preserve">
     <value>In the settings representing domain unnecessary protocol (http or https) was found: {0}.</value>
+    <comment>{0} = The domain that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_InvalidTemplateId" xml:space="preserve">
     <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}.</value>
+    <comment>{0} = The template GUID that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
     <value>The settings does not contain a given value, or the value is empty: {0}.</value>
+    <comment>{0} = Name of the environment variable holding this value</comment>
   </data>
   <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
     <value>Internal error: The key used to retrieve configuration value is null, empty, or whitespace.</value>
@@ -365,6 +369,7 @@
   </data>
   <data name="Events_NotifyClientInitialized" xml:space="preserve">
     <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
+    <comment>{0} = Organization ID / Responsible Organization ID</comment>
   </data>
   <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
     <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
@@ -389,6 +394,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist" xml:space="preserve">
     <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
+    <comment>{0} = Case Type ID, {1} = Name of the environment variable holding this value</comment>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
     <value>The version of Objecten service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
@@ -425,6 +431,7 @@
   </data>
   <data name="Configuration_ERROR_InvalidUri" xml:space="preserve">
     <value>In the settings the given URI is invalid (e.g., default): {0}.</value>
+    <comment>{0} = The absolute URI that triggered the validation error</comment>
   </data>
   <data name="Processing_ABORT" xml:space="preserve">
     <value>Processing aborted.</value>
@@ -432,6 +439,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_DecisionConfidentiality" xml:space="preserve">
     <value>The notification can not be sent because of the confidentiality setting '{0}' in information object related to decision.</value>
+    <comment>{0} = A name of option from Confidentiality enum</comment>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_DecisionStatus" xml:space="preserve">
     <value>The notification can not be sent because the status of the decision is not definitive.</value>
@@ -469,6 +477,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages (message objects) is forbidden: {0}.</value>
+    <comment>{0] = Name of the environment variable holding the whitelist values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
     <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
