@@ -57,8 +57,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The message needs to be of a specific type
-            if (infoObject.TypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.MessageObjectType_Uuid())
+            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
             }
