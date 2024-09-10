@@ -104,7 +104,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "USER_WHITELIST_ZAAKCREATE_IDS",          GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_ZAAKUPDATE_IDS",          GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_ZAAKCLOSE_IDS",           GetTestValue(isValid, testArray) },
+                { "USER_WHITELIST_ZAAKCLOSE_IDS",           GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "USER_WHITELIST_TASKASSIGNED_IDS",        GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_DECISIONMADE_IDS",        GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_MESSAGE_ALLOWED",         GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
