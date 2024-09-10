@@ -241,13 +241,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             Case actualResult = this._serializer.Deserialize<Case>(Input_Case);
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualResult.Identification, Is.EqualTo(CaseIdentification));
-                Assert.That(actualResult.Name, Is.Empty);
-                Assert.That(actualResult.CaseTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualResult.RegistrationDate, Is.EqualTo(DateOnly.MinValue));
-            });
+            AssertRequiredProperties(actualResult);
         }
 
         [TestCase(Input_CaseType_OriginalSpelling)]
