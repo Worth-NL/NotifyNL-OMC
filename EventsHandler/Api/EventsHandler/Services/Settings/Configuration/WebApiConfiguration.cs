@@ -39,6 +39,10 @@ namespace EventsHandler.Services.Settings.Configuration
         
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
+            HashSet<Guid> /* Setting value */> s_cachedArrayGuids = new();
+        
+        private static readonly ConcurrentDictionary<
+            string /* Unique final path */,
             Uri /* Setting value */> s_cachedUris = new();
 
         private static readonly ConcurrentDictionary<
@@ -861,8 +865,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid MessageObjectType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
+                internal HashSet<Guid> MessageObjectType_Uuids()
+                    => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuids));
 
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
@@ -955,6 +959,8 @@ namespace EventsHandler.Services.Settings.Configuration
         #endregion
 
         #region Caching
+        private const char Separator = ',';
+
         /// <summary>
         /// Retrieves cached <see langword="string"/> value (with optional validation).
         /// </summary>
@@ -1004,8 +1010,8 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     // Validation #1: Checking if the string value is not null or empty
                     string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
-                        .Split(",", StringSplitOptions.RemoveEmptyEntries)  // Handles the case: "1,2,3"
-                        .Select(value => value.TrimStart())  // Handles the case: "1, 2, 3"
+                        // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
+                        .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                         .ToArray();
 
                     // Validation #2: Checking if the comma-separated string was properly split into array
@@ -1028,6 +1034,26 @@ namespace EventsHandler.Services.Settings.Configuration
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetValidGuid());
+        }
+
+        /// <summary>
+        /// Retrieves cached GUID value (in correct format).
+        /// </summary>
+        /// <remarks>
+        /// Validation: enabled
+        /// </remarks>
+        private static HashSet<Guid> GetCachedUuidsValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return s_cachedArrayGuids.GetOrAdd(
+                currentPath + nodeName,
+                // Validation happens once during initial loading, before caching the value
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
+                    // Works with "A,B,C" and "A, B, C", or "  A, B, C, " => { "A", "B", "C" }
+                    .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    // Convert each string into GUID
+                    .Select(value => value.GetValidGuid())
+                    // Combine them into a fast look-up oriented data structure
+                    .ToHashSet());
         }
         
         /// <summary>
