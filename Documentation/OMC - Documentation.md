@@ -152,7 +152,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_WHITELIST_DECISIONMADE_IDS": "",
         "USER_WHITELIST_MESSAGE_ALLOWED": "false",
         "USER_WHITELIST_TASKOBJECTTYPE_UUID": "",
-        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID": "",
+        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS": "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
