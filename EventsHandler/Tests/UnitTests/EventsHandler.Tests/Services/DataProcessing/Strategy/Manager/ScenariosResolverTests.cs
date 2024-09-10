@@ -183,7 +183,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         public async Task DetermineScenarioAsync_MessageReceivedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid);
+            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid2);
             IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
