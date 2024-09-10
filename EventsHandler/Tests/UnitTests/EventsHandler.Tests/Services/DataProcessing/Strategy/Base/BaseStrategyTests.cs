@@ -66,10 +66,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
-        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
-        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
-        public void TryGetDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(
-            Type scenarioType, DistributionChannels testNotifyMethod)
+        public void TryGetDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(Type scenarioType, DistributionChannels testNotifyMethod)
         {
             // Arrange
             GetMockedServices_TryGetData(testNotifyMethod, false, true);
@@ -96,14 +93,36 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             });
         }
 
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]  // NOTE: USER_WHITELIST_ZAAKCLOSE_IDS has set wildcard "*" in mocked settings
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]    // NOTE: USER_WHITELIST_ZAAKCLOSE_IDS has set wildcard "*" in mocked settings
+        public async Task TryGetDataAsync_EverythingIsAllowed_ReturnsSuccess(Type scenarioType, DistributionChannels testNotifyMethod)
+        {
+            // Arrange
+            GetMockedServices_TryGetData(testNotifyMethod, false, true);
+
+            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
+            
+            // Act
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(1));
+
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
+            });
+        }
+
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
-        public void TryGetDataAsync_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException(
-            Type scenarioType, DistributionChannels testDistributionChannel)
+        public void TryGetDataAsync_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException(Type scenarioType, DistributionChannels testDistributionChannel)
         {
             // Arrange
             GetMockedServices_TryGetData(
@@ -133,8 +152,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.None)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(CaseClosedScenario), (DistributionChannels)(-1))]
-        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithUnknownNotifyMethod_ReturnsFailure(
-            Type scenarioType, DistributionChannels invalidDistributionChannel)
+        public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithUnknownNotifyMethod_ReturnsFailure(Type scenarioType, DistributionChannels invalidDistributionChannel)
         {
             // Arrange
             GetMockedServices_TryGetData(
