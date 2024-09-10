@@ -59,7 +59,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Test data
         private static readonly Uri s_validUri =
-            new($"https://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid}");  // NOTE: Matches to UUID from test Environment Configuration
+            new($"https://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid2}");  // NOTE: Matches to UUID from test Environment Configuration
         
         private static readonly InfoObject s_invalidInfoObjectType = new()
         {
@@ -104,7 +104,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             {
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
-                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType), Is.True);
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_MessageType
+                                              .Replace("{0}", "USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS")), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);

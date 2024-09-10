@@ -44,7 +44,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             Attributes = new EventAttributes
             {
-                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid}")
+                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid1}")
             }
         };
 

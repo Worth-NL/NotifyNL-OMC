@@ -47,7 +47,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         private string PrepareCreateObjectJson(string objectDataJson)
         {
             return $"{{" +
-                   $"  \"type\": \"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\", " +
+                   $"  \"type\": \"https://{GetDomain()}/api/v2/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuids()}\", " +
                    $"  \"record\": {{" +
                    $"    \"typeVersion\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\", " +
                    $"    \"data\": {objectDataJson}, " +  // { data } => curly brackets are already included
