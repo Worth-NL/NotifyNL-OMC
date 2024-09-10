@@ -1,20 +1,20 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
