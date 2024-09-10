@@ -9,6 +9,7 @@ using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
@@ -162,6 +163,21 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"uuid\":null," +  // Should be deserialized as default not null
               $"\"url\":null" +    // Should be deserialized as default not null
             $"}}";
+
+        private const string Input_DecisionType =
+            $"{{" +
+              $"\"catalogus\": \"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/8399feb6-1349-401c-8c07-f6a49209089a\", " +
+              $"\"publicatieIndicatie\": \"true\", " +
+              $"\"beginGeldigheid\": \"2001-01-04\", " +
+              $"\"omschrijving\": \"Omschrijving besluit a\", " +
+              $"\"omschrijvingGeneriek\": \"Omschrijving besluit generiek\", " +
+              $"\"besluitcategorie\": \"Categorie1\", " +
+              $"\"reactietermijn\": \"P1Y1M1D\", " +
+              $"\"publicatietekst\": \"Publicatie tekst\", " +
+              $"\"publicatietermijn\": \"P1Y1M1D\", " +
+              $"\"toelichting\": \"Toelichting besluit\", " +
+              $"\"informatieobjecttypen\": [\"https://openzaak.test.notifynl.nl/catalogi/api/v1/informatieobjecttypen/5e11506b-d685-4db1-908a-5c2e472c81e6\"]" +
+            $"}}";
         #endregion
 
         #region Test data (JSON output)
@@ -256,26 +272,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
-        {
-            // Act
-            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(Input_TaskObject);
-
-            // Assert
-            AssertRequiredProperties(actualResult);
-        }
-
-        [Test]
-        public void Deserialize_ContactMoment_PartiallyValidJson_ReturnsExpectedModel()  // GUID should be deserialized properly
-        {
-            // Act
-            ContactMoment actualResult = this._serializer.Deserialize<ContactMoment>(Input_ContactMoment);
-
-            // Assert
-            AssertRequiredProperties(actualResult);
-        }
-
-        [Test]
         public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()
         {
             // Act & Assert
@@ -291,6 +287,36 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
                 Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             });
+        }
+
+        [Test]
+        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
+        {
+            // Act
+            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(Input_TaskObject);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+        
+        [Test]
+        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel()
+        {
+            // Act
+            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [Test]
+        public void Deserialize_ContactMoment_PartiallyValidJson_ReturnsExpectedModel()  // GUID should be deserialized properly
+        {
+            // Act
+            ContactMoment actualResult = this._serializer.Deserialize<ContactMoment>(Input_ContactMoment);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
         }
         #endregion
 
