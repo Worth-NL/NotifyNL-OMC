@@ -59,8 +59,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Object scenarios
             if (IsObjectScenario(notification))
             {
-                return notification.Attributes.ObjectTypeUri.GetGuid() !=
-                       this._configuration.User.Whitelist.MessageObjectType_Uuid()
+                return !this._configuration.User.Whitelist.MessageObjectType_Uuids().Contains(notification.Attributes.ObjectTypeUri.GetGuid())
                     // Scenario #4: "Task assigned"
                     ? this._serviceProvider.GetRequiredService<TaskAssignedScenario>()
                     // Scenario #6: "Message received"
