@@ -445,7 +445,8 @@
     <value>The notification can not be sent because the status of the decision is not definitive.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_MessageType" xml:space="preserve">
-    <value>The notification can not be sent for this type of the message (whitelisted UUID).</value>
+    <value>The notification can not be sent for this type of the message: {0}.</value>
+    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
     <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
@@ -477,7 +478,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages (message objects) is forbidden: {0}.</value>
-    <comment>{0] = Name of the environment variable holding the whitelist values</comment>
+    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
     <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>

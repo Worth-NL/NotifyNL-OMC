@@ -853,7 +853,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this type of the message (whitelisted UUID)..
+        ///   Looks up a localized string similar to The notification can not be sent for this type of the message: {0}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_MessageType {
             get {

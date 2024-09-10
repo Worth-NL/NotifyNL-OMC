@@ -59,7 +59,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #1: The message needs to be of a specific type
             if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
             {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_MessageType);
+                throw new AbortedNotifyingException(
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessageType,
+                        GetWhitelistMessageName()));
             }
 
             // Validation #2: Status needs to be definitive
@@ -267,6 +269,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
         protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
+
+        private static string? s_environmentVariableName;
+
+        private string GetWhitelistMessageName()
+        {
+            lock (s_padlock)
+            {
+                s_environmentVariableName ??= $"{nameof(this.Configuration.User).ToUpper()}_" +
+                                              $"{nameof(this.Configuration.User.Whitelist).ToUpper()}_" +
+                                              $"{nameof(this.Configuration.User.Whitelist.MessageObjectType_Uuids).ToUpper()}";
+            }
+
+            return s_environmentVariableName;
+        }
         #endregion
     }
 }
