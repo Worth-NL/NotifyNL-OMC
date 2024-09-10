@@ -884,7 +884,10 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// </summary>
                 internal sealed record IDs
                 {
+                    private const string Wildcard = "*";
+
                     private readonly string _finalPath;
+                    private readonly bool _isEverythingAllowed;
 
                     /// <summary>
                     /// The count of the whitelisted IDs.
@@ -906,14 +909,16 @@ namespace EventsHandler.Services.Settings.Configuration
                         // Construct the IDs object
                         this.Count = caseTypeIds.Length;
 
-                        if (this.Count == 0)
-                        {
-                            return;
-                        }
-
                         // Cache the current IDs among all scenario-specific IDs
                         lock (s_whitelistLock)
                         {
+                            if (caseTypeIds.Contains(Wildcard))
+                            {
+                                this._isEverythingAllowed = true;
+
+                                return;  // NOTE: Initializing collection of Case Type IDs is not necessary, because everything is allowed anyway
+                            }
+
                             foreach (string id in caseTypeIds)
                             {
                                 s_allWhitelistedCaseTypeIds.Add(ComposeID(this._finalPath, id));
@@ -928,6 +933,11 @@ namespace EventsHandler.Services.Settings.Configuration
                     {
                         lock (s_whitelistLock)
                         {
+                            if (this._isEverythingAllowed)
+                            {
+                                return true;  // NOTE: No need to check anything else
+                            }
+
                             return !string.IsNullOrWhiteSpace(caseTypeId) &&
                                    s_allWhitelistedCaseTypeIds.Count != 0 &&
                                    s_allWhitelistedCaseTypeIds.Contains(ComposeID(this._finalPath, caseTypeId));
