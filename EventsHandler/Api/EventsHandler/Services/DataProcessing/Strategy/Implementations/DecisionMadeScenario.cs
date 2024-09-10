@@ -133,10 +133,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
                 s_emailPersonalization["besluittype.omschrijvinggeneriek"] = decisionType.Description;
                 s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
-                s_emailPersonalization["besluittype.reactietermijn"] = $"{decisionType.ResponseDeadline}";
                 s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
                 s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
-                s_emailPersonalization["besluittype.publicatietermijn"] = $"{decisionType.PublicationDeadline}";
                 s_emailPersonalization["besluittype.toelichting"] = decisionType.Explanation;
 
                 s_emailPersonalization["zaak.identificatie"] = @case.Identification;

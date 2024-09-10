@@ -39,21 +39,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         public string Category { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The deadline date to respond for this <see cref="DecisionType"/>.
-        /// </summary>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("reactietermijn")]
-        [JsonPropertyOrder(3)]
-        public DateOnly ResponseDeadline { get; internal set; }
-
-        /// <summary>
         /// The indication of the publication.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatieIndicatie")]
-        [JsonPropertyOrder(4)]
+        [JsonPropertyOrder(3)]
         public bool PublicationIndicator { get; internal set; }
 
         /// <summary>
@@ -62,17 +53,8 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("publicatietekst")]
-        [JsonPropertyOrder(5)]
+        [JsonPropertyOrder(4)]
         public string PublicationText { get; internal set; } = string.Empty;
-
-        /// <summary>
-        /// The deadline date of the publication.
-        /// </summary>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("publicatietermijn")]
-        [JsonPropertyOrder(6)]
-        public DateOnly PublicationDeadline { get; internal set; }
 
         /// <summary>
         /// The explanation of the <see cref="DecisionType"/>.
@@ -80,7 +62,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("toelichting")]
-        [JsonPropertyOrder(7)]
+        [JsonPropertyOrder(5)]
         public string Explanation { get; internal set; } = string.Empty;
 
         /// <summary>
