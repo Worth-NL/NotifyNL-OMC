@@ -303,10 +303,10 @@ namespace EventsHandler.UnitTests.Services.Serialization
         [TestCase("\"publicatieIndicatie\": \"null\"")]
         [TestCase("\"publicatieIndicatie\": \"true\"")]
         [TestCase("\"publicatieIndicatie\": \"false\"")]
-        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(object? publicationIndicationValue)
+        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(string publicationIndicationRecord)
         {
             // Act
-            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", $"{publicationIndicationValue}"));
+            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", publicationIndicationRecord));
 
             // Assert
             AssertRequiredProperties(actualResult);
