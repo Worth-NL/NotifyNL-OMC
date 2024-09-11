@@ -41,39 +41,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"registratiedatum\":null" +           // Should be deserialized as default not null
             $"}}";
 
-        private const string Input_CaseType_OriginalSpelling =
+        private const string Input_CaseType =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
               $"\"omschrijving\":\"{TestString}\"," +
-              $"\"omschrijvingGeneriek\":\"{TestString}\"," +  // "G" upper case
+              $"\"{{0}}\":\"{TestString}\"," +  // Different spelling
               $"\"statustekst\":\"begin status\"," +
               $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
               $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
               $"\"volgnummer\":2," +
-              $"\"isEindstatus\":{TestBoolean}," +  // "E" upper case
-              $"\"informeren\":{TestBoolean}," +
-              $"\"doorlooptijd\":null," +
-              $"\"toelichting\":\"begin status\"," +
-              $"\"checklistitemStatustype\":[]," +
-              $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
-              $"\"eigenschappen\":[]," +
-              $"\"zaakobjecttypen\":[]," +
-              $"\"beginGeldigheid\":null," +
-              $"\"eindeGeldigheid\":null," +
-              $"\"beginObject\":null," +
-              $"\"eindeObject\":null" +
-            $"}}";
-        
-        private const string Input_CaseType_LowerAndCapitalCase =
-            $"{{" +
-              $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"omschrijving\":\"{TestString}\"," +
-              $"\"omschrijvinggeneriek\":\"{TestString}\"," +  // "g" lower case => case-insensitive option should deserialize this property anyway
-              $"\"statustekst\":\"begin status\"," +
-              $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
-              $"\"volgnummer\":2," +
-              $"\"ISEINDSTATUS\":{TestBoolean}," +  // Everything is capital => case-insensitive option should deserialize this property anyway
+              $"\"isEindstatus\":{TestBoolean}," +
               $"\"informeren\":{TestBoolean}," +
               $"\"doorlooptijd\":null," +
               $"\"toelichting\":\"begin status\"," +
@@ -204,12 +181,12 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         private const string Output_DecisionType =
             $"{{" +
-              $"\"omschrijving\":\"text\"," +
-              $"\"omschrijvingGeneriek\":\"text\"," +
-              $"\"besluitcategorie\":\"text\"," +
-              $"\"publicatieIndicatie\":false," +
-              $"\"publicatietekst\":\"text\"," +
-              $"\"toelichting\":\"text\"" +
+              $"\"omschrijving\":\"{TestString}\"," +
+              $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+              $"\"besluitcategorie\":\"{TestString}\"," +
+              $"\"publicatieIndicatie\":{TestBoolean}," +
+              $"\"publicatietekst\":\"{TestString}\"," +
+              $"\"toelichting\":\"{TestString}\"" +
             $"}}";
         #endregion
 
@@ -258,12 +235,13 @@ namespace EventsHandler.UnitTests.Services.Serialization
             AssertRequiredProperties(actualResult);
         }
 
-        [TestCase(Input_CaseType_OriginalSpelling)]
-        [TestCase(Input_CaseType_LowerAndCapitalCase)]
-        public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string inputJson)  // Case-insensitive option should deserialize these properties as well
+        [TestCase("omschrijvingGeneriek")]  // Original spelling
+        [TestCase("omschrijvinggeneriek")]
+        [TestCase("OMSCHRIJVINGGENERIEK")]
+        public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string jsonAttributeName)  // Case-insensitive option should deserialize these properties as well
         {
             // Act
-            CaseType actualResult = this._serializer.Deserialize<CaseType>(inputJson);
+            CaseType actualResult = this._serializer.Deserialize<CaseType>(Input_CaseType.Replace("{0}", jsonAttributeName));
 
             // Assert
             AssertRequiredProperties(actualResult);
