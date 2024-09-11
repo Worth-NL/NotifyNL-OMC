@@ -25,28 +25,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private ISerializationService _serializer = null!;
 
         #region Test data (fields)
-        // Case
-        private const string CaseIdentification = "ZAAK-2023-0000000010";
-        private const string CaseName = "Case type";
+        private const string TestString = "text";
+        private const string TestBoolean = "false";
         private const string TestUrl = "https://www.domain.test/00000000-0000-0000-0000-000000000000";
-        
-        // Case Type
-        private const string CaseTypeIdentification = "ZAAKTYPE-2024-0000000001";
-        private const string CaseTypeName = "Case type";
-        private const string Description = "The description of the case type";
-        private const string IsFinalStatus = "false";
-        private const string IsNotificationExpected = "true";
-
-        // Task Object
-        private const string Title = "Test title";
-        private const string BsnNumber = "123456789";
         #endregion
 
         #region Test data (JSON input)
         // ReSharper disable InconsistentNaming
         private const string Input_Case =
             $"{{" +
-              $"\"identificatie\":\"{CaseIdentification}\"," +
+              $"\"identificatie\":\"{TestString}\"," +
               $"\"omschrijving\":null," +              // Should be deserialized as default not null
               $"\"omschrijvingGeneriek\":\"Test\"," +  // Should be ignored
               $"\"zaaktype\":null," +                  // Should be deserialized as default not null
@@ -56,14 +44,14 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string Input_CaseType_OriginalSpelling =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
-              $"\"omschrijvingGeneriek\":\"{Description}\"," +  // "G" upper case
+              $"\"omschrijving\":\"{TestString}\"," +
+              $"\"omschrijvingGeneriek\":\"{TestString}\"," +  // "G" upper case
               $"\"statustekst\":\"begin status\"," +
               $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
+              $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
               $"\"volgnummer\":2," +
-              $"\"isEindstatus\":{IsFinalStatus}," +  // "E" upper case
-              $"\"informeren\":{IsNotificationExpected}," +
+              $"\"isEindstatus\":{TestBoolean}," +  // "E" upper case
+              $"\"informeren\":{TestBoolean}," +
               $"\"doorlooptijd\":null," +
               $"\"toelichting\":\"begin status\"," +
               $"\"checklistitemStatustype\":[]," +
@@ -79,14 +67,14 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string Input_CaseType_LowerAndCapitalCase =
             $"{{" +
               $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
-              $"\"omschrijvinggeneriek\":\"{Description}\"," +  // "g" lower case => case-insensitive option should deserialize this property anyway
+              $"\"omschrijving\":\"{TestString}\"," +
+              $"\"omschrijvinggeneriek\":\"{TestString}\"," +  // "g" lower case => case-insensitive option should deserialize this property anyway
               $"\"statustekst\":\"begin status\"," +
               $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
+              $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
               $"\"volgnummer\":2," +
-              $"\"ISEINDSTATUS\":{IsFinalStatus}," +  // Everything is capital => case-insensitive option should deserialize this property anyway
-              $"\"informeren\":{IsNotificationExpected}," +
+              $"\"ISEINDSTATUS\":{TestBoolean}," +  // Everything is capital => case-insensitive option should deserialize this property anyway
+              $"\"informeren\":{TestBoolean}," +
               $"\"doorlooptijd\":null," +
               $"\"toelichting\":\"begin status\"," +
               $"\"checklistitemStatustype\":[]," +
@@ -167,7 +155,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string Input_DecisionType =
             $"{{" +
               $"\"catalogus\": \"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/8399feb6-1349-401c-8c07-f6a49209089a\", " +
-              $"\"publicatieIndicatie\": \"true\", " +
+              $"{{0}}, " +
               $"\"beginGeldigheid\": \"2001-01-04\", " +
               $"\"omschrijving\": \"Omschrijving besluit a\", " +
               $"\"omschrijvingGeneriek\": \"Omschrijving besluit generiek\", " +
@@ -183,19 +171,19 @@ namespace EventsHandler.UnitTests.Services.Serialization
         #region Test data (JSON output)
         private const string Output_Case =
             $"{{" +
-              $"\"identificatie\":\"{CaseIdentification}\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
+              $"\"identificatie\":\"{TestString}\"," +
+              $"\"omschrijving\":\"{TestString}\"," +
               $"\"zaaktype\":\"{TestUrl}\"," +
               $"\"registratiedatum\":\"2024-09-05\"" +
             $"}}";
 
         private const string Output_CaseType =
             $"{{" +
-              $"\"omschrijving\":\"{CaseName}\"," +
-              $"\"omschrijvingGeneriek\":\"{Description}\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
-              $"\"isEindstatus\":{IsFinalStatus}," +
-              $"\"informeren\":{IsNotificationExpected}" +
+              $"\"omschrijving\":\"{TestString}\"," +
+              $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+              $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
+              $"\"isEindstatus\":{TestBoolean}," +
+              $"\"informeren\":{TestBoolean}" +
             $"}}";
 
         private const string Output_TaskObject =
@@ -203,15 +191,25 @@ namespace EventsHandler.UnitTests.Services.Serialization
               $"\"record\":{{" +
                 $"\"data\":{{" +
                   $"\"zaak\":\"{TestUrl}\"," +
-                  $"\"title\":\"{Title}\"," +
+                  $"\"title\":\"{TestString}\"," +
                   $"\"status\":\"open\"," +
                   $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
                   $"\"identificatie\":{{" +
                     $"\"type\":\"bsn\"," +
-                    $"\"value\":\"{BsnNumber}\"" +
+                    $"\"value\":\"{TestString}\"" +
                   $"}}" +
                 $"}}" +
               $"}}" +
+            $"}}";
+
+        private const string Output_DecisionType =
+            $"{{" +
+              $"\"omschrijving\":\"text\"," +
+              $"\"omschrijvingGeneriek\":\"text\"," +
+              $"\"besluitcategorie\":\"text\"," +
+              $"\"publicatieIndicatie\":false," +
+              $"\"publicatietekst\":\"text\"," +
+              $"\"toelichting\":\"text\"" +
             $"}}";
         #endregion
 
@@ -299,11 +297,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
             AssertRequiredProperties(actualResult);
         }
         
-        [Test]
-        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel()
+        [TestCase("\"publicatieIndicatie\": null")]
+        [TestCase("\"publicatieIndicatie\": true")]
+        [TestCase("\"publicatieIndicatie\": false")]
+        [TestCase("\"publicatieIndicatie\": \"null\"")]
+        [TestCase("\"publicatieIndicatie\": \"true\"")]
+        [TestCase("\"publicatieIndicatie\": \"false\"")]
+        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(object? publicationIndicationValue)
         {
             // Act
-            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType);
+            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", $"{publicationIndicationValue}"));
 
             // Assert
             AssertRequiredProperties(actualResult);
@@ -338,8 +341,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new Case
             {
-                Identification = CaseIdentification,
-                Name = CaseTypeName,
+                Identification = TestString,
+                Name = TestString,
                 CaseTypeUri = new Uri(TestUrl),
                 RegistrationDate = new DateOnly(2024, 09, 05)
             };
@@ -368,11 +371,11 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new CaseType
             {
-                Identification = CaseTypeIdentification,
-                Name = CaseTypeName,
-                Description = Description,
-                IsFinalStatus = Convert.ToBoolean(IsFinalStatus),
-                IsNotificationExpected = Convert.ToBoolean(IsNotificationExpected)
+                Identification = TestString,
+                Name = TestString,
+                Description = TestString,
+                IsFinalStatus = Convert.ToBoolean(TestBoolean),
+                IsNotificationExpected = Convert.ToBoolean(TestBoolean)
             };
 
             // Act
@@ -392,17 +395,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             Assert.That(actualResult, Is.EqualTo("{\"record\":{\"data\":{\"zaak\":\"http://0.0.0.0:0/\",\"title\":\"\",\"status\":\"-\",\"verloopdatum\":\"0001-01-01T00:00:00.0000000\",\"identificatie\":{\"type\":\"-\",\"value\":\"\"}}}}"));
         }
-        
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Serialize_ContactMoment_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Simple model: GUID should be handled properly
-        {
-            // Act
-            string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
-
-            // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"http://0.0.0.0:0/\"}"));
-        }
 
         [Test]
         public void Serialize_TaskObject_ValidModel_ReturnsExpectedJson()
@@ -415,13 +407,13 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     Data = new Data
                     {
                         CaseUri = new Uri($"https://www.domain.test/{Guid.Empty}"),
-                        Title = Title,
+                        Title = TestString,
                         Status = TaskStatuses.Open,
                         ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
                         Identification = new Identification
                         {
                             Type = IdTypes.Bsn,
-                            Value = BsnNumber
+                            Value = TestString
                         }
                     }
                 }
@@ -432,6 +424,38 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(Output_TaskObject));
+        }
+
+        [Test]
+        public void Serialize_DecisionType_ValidModel_ReturnsExpectedJson()
+        {
+            // Arrange
+            var testModel = new DecisionType
+            {
+                Name = TestString,
+                Description = TestString,
+                Category = TestString,
+                PublicationIndicator = Convert.ToBoolean(TestBoolean),
+                PublicationText = TestString,
+                Explanation = TestString
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(testModel);
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(Output_DecisionType));
+        }
+        
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Serialize_ContactMoment_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Simple model: GUID should be handled properly
+        {
+            // Act
+            string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo("{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"http://0.0.0.0:0/\"}"));
         }
         #endregion
 
