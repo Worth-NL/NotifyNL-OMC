@@ -117,7 +117,7 @@
 
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
         "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl",
-        "USER_DOMAIN_OPENKLANT": "localhost:8000", // NOTE: Requires running OpenKlant 2.0 container in Docker
+        "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
 
