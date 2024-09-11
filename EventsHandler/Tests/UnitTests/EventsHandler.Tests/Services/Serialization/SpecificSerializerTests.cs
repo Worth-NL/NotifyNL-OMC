@@ -132,7 +132,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private const string Input_DecisionType =
             $"{{" +
               $"\"catalogus\": \"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/8399feb6-1349-401c-8c07-f6a49209089a\", " +
-              $"{{0}}, " +
+              $"\"publicatieIndicatie\": {{0}}, " +
               $"\"beginGeldigheid\": \"2001-01-04\", " +
               $"\"omschrijving\": \"Omschrijving besluit a\", " +
               $"\"omschrijvingGeneriek\": \"Omschrijving besluit generiek\", " +
@@ -275,16 +275,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
             AssertRequiredProperties(actualResult);
         }
         
-        [TestCase("\"publicatieIndicatie\": null")]
-        [TestCase("\"publicatieIndicatie\": true")]
-        [TestCase("\"publicatieIndicatie\": false")]
-        [TestCase("\"publicatieIndicatie\": \"null\"")]
-        [TestCase("\"publicatieIndicatie\": \"true\"")]
-        [TestCase("\"publicatieIndicatie\": \"false\"")]
-        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(string publicationIndicationRecord)
+        [TestCase("null")]
+        [TestCase("true")]
+        [TestCase("false")]
+        [TestCase("\"null\"")]
+        [TestCase("\"true\"")]
+        [TestCase("\"false\"")]
+        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(string publicationIndicationValue)
         {
             // Act
-            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", publicationIndicationRecord));
+            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", publicationIndicationValue));
 
             // Assert
             AssertRequiredProperties(actualResult);
