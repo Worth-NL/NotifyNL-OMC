@@ -23,6 +23,7 @@ namespace EventsHandler.Services.Serialization
             // Global converters
             Converters =
             {
+                new BoolJsonConverter(),
                 new DateOnlyJsonConverter(),
                 new DateTimeJsonConverter(),
                 new GuidJsonConverter(),
