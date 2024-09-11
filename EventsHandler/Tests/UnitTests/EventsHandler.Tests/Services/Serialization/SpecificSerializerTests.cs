@@ -281,7 +281,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         [TestCase("\"null\"")]
         [TestCase("\"true\"")]
         [TestCase("\"false\"")]
-        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(string publicationIndicationValue)
+        public void Deserialize_DecisionType_ValidJson_ReturnsExpectedModel(string publicationIndicationValue)  // Different boolean values
         {
             // Act
             DecisionType actualResult = this._serializer.Deserialize<DecisionType>(Input_DecisionType.Replace("{0}", publicationIndicationValue));
