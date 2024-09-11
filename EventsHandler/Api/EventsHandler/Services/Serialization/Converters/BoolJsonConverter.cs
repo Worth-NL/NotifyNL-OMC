@@ -16,19 +16,16 @@ namespace EventsHandler.Services.Serialization.Converters
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>
         public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            switch (reader.TokenType)
+            return reader.TokenType switch
             {
-                case JsonTokenType.True:
-                    return true;
+                JsonTokenType.True => true,    // Value: true
 
-                case JsonTokenType.False:
-                    return false;
+                JsonTokenType.False => false,  // Value: false
 
-                case JsonTokenType.Null:
-                    return false;
-            }
+                JsonTokenType.Null => false,   // Value: null
 
-            return bool.TryParse(reader.GetString(), out bool result) && result;
+                _ => bool.TryParse(reader.GetString(), out bool result) && result  // Values: "true", "false", "null"
+            };
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
