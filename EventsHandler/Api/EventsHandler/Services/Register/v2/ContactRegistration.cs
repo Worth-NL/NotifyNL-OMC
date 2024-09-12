@@ -55,12 +55,12 @@ namespace EventsHandler.Services.Register.v2
 
             string jsonBody =
                 $"{{" +
-                $"  \"kanaal\": \"{notificationMethod}\", " +              // ENG: Channel of communication (notification)
-                $"  \"onderwerp\": \"{userMessageSubject}\", " +           // ENG: Subject (of the message to be sent to the user)
-                $"  \"inhoud\": \"{userMessageBody}\", " +                 // ENG: Content (of the message to be sent to the user)
-                $"  \"indicatieContactGelukt\": {isSuccessfullySent}, " +  // ENG: Indication of successful contact
-                $"  \"taal\": \"nl\", " +                                  // ENG: Language (of the notification)
-                $"  \"vertrouwelijk\": false" +                            // ENG: Confidentiality (of the notification)
+                  $"\"kanaal\":\"{notificationMethod}\"," +              // ENG: Channel of communication (notification)
+                  $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
+                  $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user)
+                  $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
+                  $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
+                  $"\"vertrouwelijk\":false" +                           // ENG: Confidentiality (of the notification)
                 $"}}";
 
             return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
@@ -73,18 +73,18 @@ namespace EventsHandler.Services.Register.v2
 
             string jsonBody =
                 $"{{" +
-                $"  \"klantcontact\": {{" +                  // ENG: Customer contact
-                $"    \"uuid\": \"{contactMoment.Id}\"" +
-                $"  }}, " +
-                $"  \"wasKlantcontact\": {{" +               // ENG: ???
-                $"    \"uuid\": \"{contactMoment.Id}\"" +
-                $"  }}, " +
-                $"  \"onderwerpobjectidentificator\": {{" +  // ENG: Subject Object Identifier
-                $"    \"objectId\": \"{caseId}\", " +
-                $"    \"codeObjecttype\": \"{configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\", " +
-                $"    \"codeRegister\": \"{configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\", " +
-                $"    \"codeSoortObjectId\": \"{configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
-                $"  }}" +
+                  $"\"klantcontact\":{{" +                  // ENG: Customer contact
+                    $"\"uuid\":\"{contactMoment.Id}\"" +
+                  $"}}," +
+                  $"\"wasKlantcontact\":{{" +               // ENG: ???
+                    $"\"uuid\":\"{contactMoment.Id}\"" +
+                  $"}}," +
+                  $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
+                    $"\"objectId\":\"{caseId}\"," +
+                    $"\"codeObjecttype\":\"{configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
+                    $"\"codeRegister\":\"{configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
+                    $"\"codeSoortObjectId\":\"{configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
+                  $"}}" +
                 $"}}";
 
             return await queryContext.LinkToSubjectObjectAsync(jsonBody);
