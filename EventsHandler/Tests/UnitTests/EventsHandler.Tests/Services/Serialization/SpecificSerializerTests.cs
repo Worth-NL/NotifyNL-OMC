@@ -263,8 +263,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         {
             // Arrange
             const string testJson =
-                "{" +
-                  "\"results\":[" +
+                "[" +
                   "{" +
                     "\"url\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluitinformatieobjecten/ced8cd8a-d096-47cf-8352-8381274d852c\"," +
                     "\"informatieobject\":\"https://openzaak.test.notifynl.nl/documenten/api/v1/enkelvoudiginformatieobjecten/8e5cd111-db45-4313-baf2-ea2ad1bcac01\"," +
@@ -274,11 +273,22 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     "\"url\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluitinformatieobjecten/ced8cd8a-d096-47cf-8352-8381274d852c\"," +
                     "\"informatieobject\":\"https://openzaak.test.notifynl.nl/documenten/api/v1/enkelvoudiginformatieobjecten/8e5cd111-db45-4313-baf2-ea2ad1bcac01\"," +
                     "\"besluit\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluiten/61dcb374-6d41-48dd-b9a4-7fe6ab883ba2\"" +
-                  "}]" +
-                "}";
-
+                  "}" +
+                "]";
+            
             // Act
             Documents actualResult = this._serializer.Deserialize<Documents>(testJson);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [TestCase("[]")]
+        [TestCase("[ ]")]
+        public void Deserialize_Documents_EmptyArrayJson_ReturnsExpectedModel(string invalidEmptyJson)
+        {
+            // Act
+            Documents actualResult = this._serializer.Deserialize<Documents>(invalidEmptyJson);
 
             // Assert
             AssertRequiredProperties(actualResult);
@@ -490,6 +500,38 @@ namespace EventsHandler.UnitTests.Services.Serialization
                   $"\"publicatietekst\":\"{TestString}\"," +
                   $"\"toelichting\":\"{TestString}\"" +
                 $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        
+        [Test]
+        public void Serialize_Documents_ReturnsExpectedJson()
+        {
+            // Arrange
+            var documents = new Documents
+            {
+                Results = new List<Document>
+                {
+                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri },
+                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri }
+                }
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(documents);
+
+            // Assert
+            const string expectedResult =
+                "{" +
+                  "\"results\":[" +
+                    "{" +
+                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
+                    "}," +
+                    "{" +
+                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
+                    "}" +
+                  "]" +
+                "}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
