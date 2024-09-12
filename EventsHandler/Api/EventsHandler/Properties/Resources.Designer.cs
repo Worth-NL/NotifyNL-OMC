@@ -808,7 +808,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because the case type with identification {0} is not included in the {1}..
+        ///   Looks up a localized string similar to The notification can not be sent because the case type with identification &apos;{0}&apos; is not included in the {1}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist {
             get {
