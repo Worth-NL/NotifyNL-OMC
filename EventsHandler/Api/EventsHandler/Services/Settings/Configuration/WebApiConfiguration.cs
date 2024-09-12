@@ -755,6 +755,11 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
+                    internal Guid DecisionMade()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
                 }
@@ -795,6 +800,11 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal Guid TaskAssigned()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid DecisionMade()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
