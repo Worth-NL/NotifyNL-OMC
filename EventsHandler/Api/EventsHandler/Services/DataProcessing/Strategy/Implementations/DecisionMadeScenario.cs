@@ -246,20 +246,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
         {
             return $"{{" +
-                   $"  \"onderwerp\": \"{subject}\"," +
-                   $"  \"berichttekst\": \"{body}\"," +
-                   $"  \"publicatiedatum\": \"{this._decision.PublicationDate}\"," +
-                   $"  \"referentie\": \"{this._decisionResource.DecisionUri}\"," +
-                   $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
-                   $"  \"geopend\": false," +
-                   $"  \"berichttype\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
-                   $"  \"identificatie\": {{" +
-                   $"    \"type\": \"bsn\"," +
-                   $"    \"value\": \"{this._bsnNumber}\"" +
-                   $"  }}," +
-                   $"  \"bijlages\": [" +
-                   $"    {commaSeparatedUris}" +
-                   $"  ]" +
+                     $"\"onderwerp\":\"{subject}\"," +
+                     $"\"berichttekst\":\"{body}\"," +
+                     $"\"publicatiedatum\":\"{this._decision.PublicationDate}\"," +
+                     $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
+                     $"\"handelingsperspectief\":\"{string.Empty}\"," +  // TODO: To be filled
+                     $"\"geopend\":false," +
+                     $"\"berichttype\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
+                     $"\"identificatie\":{{" +
+                       $"\"type\":\"bsn\"," +
+                       $"\"value\":\"{this._bsnNumber}\"" +
+                     $"}}," +
+                     $"\"bijlages\":[{commaSeparatedUris}]" +
                    $"}}";
         }
         #endregion
