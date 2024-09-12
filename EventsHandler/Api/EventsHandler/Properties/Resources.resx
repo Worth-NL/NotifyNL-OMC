@@ -393,7 +393,7 @@
     <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist" xml:space="preserve">
-    <value>The notification can not be sent because the case type with identification {0} is not included in the {1}.</value>
+    <value>The notification can not be sent because the case type with identification '{0}' is not included in the {1}.</value>
     <comment>{0} = Case Type ID, {1} = Name of the environment variable holding this value</comment>
   </data>
   <data name="Configuration_ERROR_VersionObjectenUnknown" xml:space="preserve">
