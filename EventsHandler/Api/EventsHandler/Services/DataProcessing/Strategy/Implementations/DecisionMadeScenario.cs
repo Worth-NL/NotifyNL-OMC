@@ -102,7 +102,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => Guid.Empty;  // NOTE: This scenario is not sending notifications
+            => this.Configuration.User.TemplateIds.Email.DecisionMade();
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -131,7 +131,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
 
                 s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvinggeneriek"] = decisionType.Description;
+                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
                 s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
                 s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
                 s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
@@ -142,7 +142,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_emailPersonalization["zaaktype.omschrijvinggeneriek"] = this._caseType.Description;
+                s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
 
                 return s_emailPersonalization;
             }
@@ -152,7 +152,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-          => Guid.Empty;  // NOTE: This scenario is not sending notifications
+            => this.Configuration.User.TemplateIds.Sms.DecisionMade();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
