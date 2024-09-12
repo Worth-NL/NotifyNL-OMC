@@ -64,18 +64,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         GetWhitelistMessageName()));
             }
 
-            // Validation #2: Status needs to be definitive
-            if (infoObject.Status != MessageStatus.Definitive)
-            {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
-            }
-
-            // Validation #3: Confidentiality needs to be acceptable
-            if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+            // Validation #2: Confidentiality needs to be acceptable
+            if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
                         infoObject.Confidentiality));
+            }
+
+            // Validation #3: Status needs to be definitive
+            if (infoObject.Status != MessageStatus.Definitive)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
@@ -226,8 +226,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 InfoObject infoObject = await queryContext.GetInfoObjectAsync(document);
 
                 // Filter out info objects not meeting the specified criteria
-                if (infoObject.Status          != MessageStatus.Definitive &&
-                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+                if (infoObject.Confidentiality != PrivacyNotices.NonConfidential &&
+                    infoObject.Status          != MessageStatus.Definitive)
                 {
                     continue;
                 }
