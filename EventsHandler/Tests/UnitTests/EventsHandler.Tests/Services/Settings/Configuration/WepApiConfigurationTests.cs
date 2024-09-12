@@ -5,6 +5,7 @@ using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
+using EventsHandler.Extensions;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
 #pragma warning disable IDE0008  // Declaration of static types would be too long
@@ -59,7 +60,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
+                TestContext.WriteLine($"Methods: {methodNames.Join()}");
             });
         }
         #endregion
@@ -107,7 +108,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, userConfiguration.Whitelist);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {string.Join(", ", methodNames)}");
+                TestContext.WriteLine($"Methods: {methodNames.Join()}");
             });
         }
 

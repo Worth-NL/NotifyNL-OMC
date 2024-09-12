@@ -85,5 +85,19 @@ namespace EventsHandler.Extensions
             // Retrieve as TData => int, ushort, bool
             return (TData)Convert.ChangeType(originalTextValue, typeof(TData));
         }
+
+        private const string CommaSeparator = ", ";
+
+        /// <summary>
+        /// Joins the specified collection into a comma-separated <see langword="string"/>.
+        /// </summary>
+        /// <param name="collection">The collection to be parsed.</param>
+        /// <returns>
+        ///   A comma-separated string
+        /// </returns>
+        internal static string Join(this IEnumerable<string> collection)
+        {
+            return string.Join(CommaSeparator, collection);
+        }
     }
 }

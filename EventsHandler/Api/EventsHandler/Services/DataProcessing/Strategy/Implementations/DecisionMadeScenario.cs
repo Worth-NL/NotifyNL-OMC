@@ -236,7 +236,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 validInfoObjectsUris.Add($"\"{document.InfoObjectUri}\"");
             }
 
-            return string.Join(", ", validInfoObjectsUris);
+            return validInfoObjectsUris.Join();
         }
 
         /// <summary>
