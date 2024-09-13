@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("results")]
+        [JsonPropertyName("results")]  // This JSON property is not present in the payload and needs to be handled by custom Documents JSON converter
         [JsonPropertyOrder(0)]
         public List<Document> Results { get; internal set; } = new();
 
