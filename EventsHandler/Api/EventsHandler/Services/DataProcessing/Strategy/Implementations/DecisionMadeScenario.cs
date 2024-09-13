@@ -32,6 +32,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     {
         private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
+        private Guid _messageObjectTypeGuid;
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
@@ -58,25 +59,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The message needs to be of a specific type
-            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
+            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids()
+                    .Contains(this._messageObjectTypeGuid = infoObject.TypeUri.GetGuid()))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessageType,
                         GetWhitelistMessageName()));
             }
 
-            // Validation #2: Confidentiality needs to be acceptable
+            // Validation #2: Status needs to be definitive
+            if (infoObject.Status != MessageStatus.Definitive)
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
+            }
+
+            // Validation #3: Confidentiality needs to be acceptable
             if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
                         infoObject.Confidentiality));
-            }
-
-            // Validation #3: Status needs to be definitive
-            if (infoObject.Status != MessageStatus.Definitive)
-            {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
@@ -197,9 +199,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
-            string objectDataJson = PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
-
-            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(
+                this._messageObjectTypeGuid,
+                dataJson: PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris));
 
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)

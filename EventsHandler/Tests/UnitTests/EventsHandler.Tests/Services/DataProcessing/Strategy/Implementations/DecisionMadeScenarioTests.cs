@@ -492,7 +492,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
 
             this._mockedQueryContext
-                .Setup(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()))
+                .Setup(mock => mock.CreateMessageObjectAsync(
+                    It.IsAny<Guid>(), It.IsAny<string>()))
                 .ReturnsAsync(isCreationSuccessful
                     ? RequestResponse.Success(TestJsonResponse)
                     : RequestResponse.Failure(TestCreationError));
@@ -611,7 +612,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Times.Exactly(getInfoObjectInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()),
+                .Verify(mock => mock.CreateMessageObjectAsync(
+                    It.IsAny<Guid>(), It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
 
             this._processDataVerified = true;
