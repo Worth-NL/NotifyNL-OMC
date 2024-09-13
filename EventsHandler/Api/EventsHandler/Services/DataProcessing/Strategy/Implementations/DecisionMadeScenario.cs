@@ -18,6 +18,7 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
@@ -27,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// The strategy for "Decision made" scenario.
     /// </summary>
     /// <seealso cref="BaseScenario"/>
-    internal sealed class DecisionMadeScenario : BaseScenario
+    internal sealed partial class DecisionMadeScenario : BaseScenario  // The keyword "partial" added to allow using [GeneratedRegex] attribute
     {
         private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
@@ -162,6 +163,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #endregion
 
         #region Polymorphic (ProcessDataAsync)
+        [GeneratedRegex("(\\n\\n)|(\\n)", RegexOptions.Compiled)]
+        private static partial Regex NewlinesCharsRegexPattern();
+
+        private const string LogiusNewlines = "\\r\\n";
+
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
@@ -180,7 +186,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
-            string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
+            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines);
 
             // Prepare HTTP Request Body
             this._queryContext = this.DataQuery.From(notification);
