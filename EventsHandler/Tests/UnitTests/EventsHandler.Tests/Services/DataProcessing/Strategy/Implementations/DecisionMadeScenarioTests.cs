@@ -247,11 +247,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 {
                     NotifyData firstResult = actualResult.Content.First();
                     Assert.That(firstResult.NotificationMethod, Is.EqualTo(NotifyMethods.Email));
-                    Assert.That(firstResult.TemplateId, Is.EqualTo(Guid.Empty));
+                    Assert.That(firstResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(firstResult.NotificationMethod, this._testConfiguration)));
 
                     NotifyData secondResult = actualResult.Content.Last();
                     Assert.That(secondResult.NotificationMethod, Is.EqualTo(NotifyMethods.Sms));
-                    Assert.That(secondResult.TemplateId, Is.EqualTo(Guid.Empty));
+                    Assert.That(secondResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(secondResult.NotificationMethod, this._testConfiguration)));
 
                     contactDetails = firstResult.ContactDetails + secondResult.ContactDetails;
                 }
@@ -259,7 +261,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 {
                     NotifyData onlyResult = actualResult.Content.First();
                     Assert.That(onlyResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod!.Value));
-                    Assert.That(onlyResult.TemplateId, Is.EqualTo(Guid.Empty));
+                    Assert.That(onlyResult.TemplateId, Is.EqualTo(
+                        DetermineTemplateId(onlyResult.NotificationMethod, this._testConfiguration)));
 
                     contactDetails = onlyResult.ContactDetails;
                 }
@@ -489,7 +492,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
 
             this._mockedQueryContext
-                .Setup(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()))
+                .Setup(mock => mock.CreateMessageObjectAsync(
+                    It.IsAny<Guid>(), It.IsAny<string>()))
                 .ReturnsAsync(isCreationSuccessful
                     ? RequestResponse.Success(TestJsonResponse)
                     : RequestResponse.Failure(TestCreationError));
@@ -501,6 +505,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // Decision Scenario
             return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
+        }
+
+        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        {
+            return notifyMethod switch
+            {
+                NotifyMethods.Email => configuration.User.TemplateIds.Email.DecisionMade(),
+                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.DecisionMade(),
+                _ => Guid.Empty
+            };
         }
 
         private static IReadOnlyCollection<NotifyData> GetNotifyData(Dictionary<string, object>? personalization = null)
@@ -598,7 +612,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Times.Exactly(getInfoObjectInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.CreateMessageObjectAsync(It.IsAny<string>()),
+                .Verify(mock => mock.CreateMessageObjectAsync(
+                    It.IsAny<Guid>(), It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
 
             this._processDataVerified = true;

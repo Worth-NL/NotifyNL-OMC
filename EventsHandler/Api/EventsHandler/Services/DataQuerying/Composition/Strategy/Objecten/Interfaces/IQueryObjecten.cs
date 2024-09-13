@@ -5,6 +5,8 @@ using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
@@ -75,6 +77,46 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         }
         #endregion
         #pragma warning restore CA1822
+
+        #region Parent (Create message object)        
+        /// <summary>
+        /// Creates the message object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The answer whether the message object was created successfully.
+        /// </returns>
+        internal sealed async Task<RequestResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, Guid messageObjectTypeGuid, string dataJson)
+        {
+            // Predefined URL components
+            string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
+
+            // Request URL
+            Uri createObjectUri = new(createObjectEndpoint);
+
+            // Prepare HTTP Request Body
+            string jsonBody = PrepareCreateObjectJson(messageObjectTypeGuid, dataJson);
+
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Objecten,
+                uri: createObjectUri,
+                jsonBody);
+        }
+
+        private string PrepareCreateObjectJson(Guid messageObjectTypeGuid, string dataJson)
+        {
+            return $"{{" +
+                     $"\"type\":\"https://{GetDomain()}/api/v2/objecttypes/{messageObjectTypeGuid}\"," +
+                     $"\"record\":{{" +
+                       $"\"typeVersion\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\"," +
+                       $"\"data\":{dataJson}," +  // { data } => curly brackets are already included
+                       $"\"geometry\":{{" +
+                       $"}}," +
+                       $"\"startAt\":\"{DateTime.UtcNow}\"," +
+                       $"\"correctionFor\":\"string\"" +
+                     $"}}" +
+                   $"}}";
+        }
+        #endregion
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
