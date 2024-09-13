@@ -15,8 +15,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         /// The collection of:
         /// <inheritdoc cref="Document"/>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
-        // This property is unnamed in the resulting JSON
+        [JsonPropertyName("results")]  // This JSON property is not present in the payload and needs to be handled by custom Documents JSON converter
         [JsonPropertyOrder(0)]
         public List<Document> Results { get; internal set; } = new();
 

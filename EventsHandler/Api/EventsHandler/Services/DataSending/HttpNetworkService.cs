@@ -205,12 +205,6 @@ namespace EventsHandler.Services.DataSending
                     return RequestResponse.Failure(Resources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
-                // TODO: To be removed after tests (when OpenKlant 2.0 will be deployed)
-                if (httpClientType is HttpClientTypes.OpenKlant_v2 or HttpClientTypes.Telemetry_Klantinteracties)
-                {
-                    uri = new Uri(uri.AbsoluteUri.Replace("https", "http"));
-                }
-
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await this._semaphore.WaitAsync();
                 HttpResponseMessage result = body is null

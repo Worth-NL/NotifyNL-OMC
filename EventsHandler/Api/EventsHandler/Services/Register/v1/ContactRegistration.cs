@@ -56,17 +56,17 @@ namespace EventsHandler.Services.Register.v1
 
             string jsonBody =
                 $"{{" +
-                $"  \"bronorganisatie\": {notification.GetOrganizationId()}, " +             // ENG: Source organization
-                $"  \"registratiedatum\": \"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\", " +  // ENG: Date of registration (of the case)
-                $"  \"kanaal\": \"{notificationMethod}\", " +                                // ENG: Channel (of communication / notification)
-                $"  \"tekst\": \"{logMessage}\", " +                                         // ENG: Text (to be logged)
-                $"  \"initiatief\": \"gemeente\", " +                                        // ENG: Initiator (of the case)
-                $"  \"medewerkerIdentificatie\": {{" +                                       // ENG: Worker / collaborator / contributor
-                $"    \"identificatie\": \"omc\", " +
-                $"    \"achternaam\": \"omc\", " +
-                $"    \"voorletters\": \"omc\", " +
-                $"    \"voorvoegselAchternaam\": \"omc\"" +
-                $"  }}" +
+                  $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
+                  $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
+                  $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
+                  $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
+                  $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
+                  $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
+                    $"\"identificatie\":\"omc\"," +
+                    $"\"achternaam\":\"omc\"," +
+                    $"\"voorletters\":\"omc\"," +
+                    $"\"voorvoegselAchternaam\":\"omc\"" +
+                  $"}}" +
                 $"}}";
 
             return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
@@ -78,8 +78,8 @@ namespace EventsHandler.Services.Register.v1
             // Prepare the body
             string jsonBody =
                 $"{{" +
-                $"  \"zaak\": \"{notification.MainObjectUri}\", " +         // ENG: Case
-                $"  \"contactmoment\": \"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
+                  $"\"zaak\":\"{notification.MainObjectUri}\"," +         // ENG: Case
+                  $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
                 $"}}";
 
             return await queryContext.SendFeedbackToOpenZaakAsync(jsonBody);

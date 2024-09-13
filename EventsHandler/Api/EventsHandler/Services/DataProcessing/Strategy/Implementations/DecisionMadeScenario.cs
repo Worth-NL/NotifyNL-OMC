@@ -18,6 +18,7 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
@@ -27,10 +28,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     /// The strategy for "Decision made" scenario.
     /// </summary>
     /// <seealso cref="BaseScenario"/>
-    internal sealed class DecisionMadeScenario : BaseScenario
+    internal sealed partial class DecisionMadeScenario : BaseScenario  // The keyword "partial" added to allow using [GeneratedRegex] attribute
     {
         private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
+        private Guid _messageObjectTypeGuid;
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
@@ -57,7 +59,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The message needs to be of a specific type
-            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
+            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids()
+                    .Contains(this._messageObjectTypeGuid = infoObject.TypeUri.GetGuid()))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessageType,
@@ -71,7 +74,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Validation #3: Confidentiality needs to be acceptable
-            if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+            if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
@@ -102,7 +105,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => Guid.Empty;  // NOTE: This scenario is not sending notifications
+            => this.Configuration.User.TemplateIds.Email.DecisionMade();
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -131,12 +134,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
 
                 s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvinggeneriek"] = decisionType.Description;
+                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
                 s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
-                s_emailPersonalization["besluittype.reactietermijn"] = $"{decisionType.ResponseDeadline}";
                 s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
                 s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
-                s_emailPersonalization["besluittype.publicatietermijn"] = $"{decisionType.PublicationDeadline}";
                 s_emailPersonalization["besluittype.toelichting"] = decisionType.Explanation;
 
                 s_emailPersonalization["zaak.identificatie"] = @case.Identification;
@@ -144,7 +145,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_emailPersonalization["zaaktype.omschrijvinggeneriek"] = this._caseType.Description;
+                s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
 
                 return s_emailPersonalization;
             }
@@ -154,7 +155,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-          => Guid.Empty;  // NOTE: This scenario is not sending notifications
+            => this.Configuration.User.TemplateIds.Sms.DecisionMade();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
@@ -164,6 +165,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #endregion
 
         #region Polymorphic (ProcessDataAsync)
+        [GeneratedRegex("(\\n\\n)|(\\n)", RegexOptions.Compiled)]
+        private static partial Regex NewlinesCharsRegexPattern();
+
+        private const string LogiusNewlines = "\\r\\n";
+
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
@@ -182,7 +188,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
-            string modifiedResponseBody = templateResponse.Body.Replace("\n\n", "\r\n");
+            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines);
 
             // Prepare HTTP Request Body
             this._queryContext = this.DataQuery.From(notification);
@@ -193,9 +199,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
-            string objectDataJson = PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
-
-            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(objectDataJson);
+            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(
+                this._messageObjectTypeGuid,
+                dataJson: PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris));
 
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
@@ -228,8 +234,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 InfoObject infoObject = await queryContext.GetInfoObjectAsync(document);
 
                 // Filter out info objects not meeting the specified criteria
-                if (infoObject.Status          != MessageStatus.Definitive &&
-                    infoObject.Confidentiality != PrivacyNotices.NonConfidential)  // TODO: First version would only check confidential status (why array?)
+                if (infoObject.Confidentiality != PrivacyNotices.NonConfidential &&
+                    infoObject.Status          != MessageStatus.Definitive)
                 {
                     continue;
                 }
@@ -238,7 +244,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 validInfoObjectsUris.Add($"\"{document.InfoObjectUri}\"");
             }
 
-            return string.Join(", ", validInfoObjectsUris);
+            return validInfoObjectsUris.Join();
         }
 
         /// <summary>
@@ -248,20 +254,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
         {
             return $"{{" +
-                   $"  \"onderwerp\": \"{subject}\"," +
-                   $"  \"berichttekst\": \"{body}\"," +
-                   $"  \"publicatiedatum\": \"{this._decision.PublicationDate}\"," +
-                   $"  \"referentie\": \"{this._decisionResource.DecisionUri}\"," +
-                   $"  \"handelingsperspectief\": \"{string.Empty}\"," +  // TODO: To be filled
-                   $"  \"geopend\": false," +
-                   $"  \"berichttype\": \"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
-                   $"  \"identificatie\": {{" +
-                   $"    \"type\": \"bsn\"," +
-                   $"    \"value\": \"{this._bsnNumber}\"" +
-                   $"  }}," +
-                   $"  \"bijlages\": [" +
-                   $"    {commaSeparatedUris}" +
-                   $"  ]" +
+                     $"\"onderwerp\":\"{subject}\"," +
+                     $"\"berichttekst\":\"{body}\"," +
+                     $"\"publicatiedatum\":\"{this._decision.PublicationDate}\"," +
+                     $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
+                     $"\"handelingsperspectief\":\"{string.Empty}\"," +  // TODO: To be filled
+                     $"\"geopend\":false," +
+                     $"\"berichttype\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
+                     $"\"identificatie\":{{" +
+                       $"\"type\":\"bsn\"," +
+                       $"\"value\":\"{this._bsnNumber}\"" +
+                     $"}}," +
+                     $"\"bijlages\":[{commaSeparatedUris}]" +
                    $"}}";
         }
         #endregion

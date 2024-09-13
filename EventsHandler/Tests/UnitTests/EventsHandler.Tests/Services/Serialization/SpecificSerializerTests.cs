@@ -1,20 +1,21 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Utilities._TestHelpers;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
@@ -24,81 +25,125 @@ namespace EventsHandler.UnitTests.Services.Serialization
         private ISerializationService _serializer = null!;
 
         #region Test data (fields)
-        // Case
-        private const string CaseIdentification = "ZAAK-2023-0000000010";
-        private const string CaseName = "Case type";
+        private const string TestString = "text";
+        private const string TestBoolean = "false";
         private const string TestUrl = "https://www.domain.test/00000000-0000-0000-0000-000000000000";
-        
-        // Case Type
-        private const string CaseTypeIdentification = "ZAAKTYPE-2024-0000000001";
-        private const string CaseTypeName = "Case type";
-        private const string Description = "The description of the case type";
-        private const string IsFinalStatus = "false";
-        private const string IsNotificationExpected = "true";
-
-        // Task Object
-        private const string Title = "Test title";
-        private const string BsnNumber = "123456789";
         #endregion
 
-        #region Test data (JSON input)
-        // ReSharper disable InconsistentNaming
-        private const string Input_Case =
-            $"{{" +
-              $"\"identificatie\":\"{CaseIdentification}\"," +
-              $"\"omschrijving\":null," +              // Should be deserialized as default not null
-              $"\"omschrijvingGeneriek\":\"Test\"," +  // Should be ignored
-              $"\"zaaktype\":null," +                  // Should be deserialized as default not null
-              $"\"registratiedatum\":null" +           // Should be deserialized as default not null
-            $"}}";
+        [OneTimeSetUp]
+        public void InitializeTests()
+        {
+            this._serializer = new SpecificSerializer();
+        }
 
-        private const string Input_CaseType_OriginalSpelling =
-            $"{{" +
-              $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
-              $"\"omschrijvingGeneriek\":\"{Description}\"," +  // "G" upper case
-              $"\"statustekst\":\"begin status\"," +
-              $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
-              $"\"volgnummer\":2," +
-              $"\"isEindstatus\":{IsFinalStatus}," +  // "E" upper case
-              $"\"informeren\":{IsNotificationExpected}," +
-              $"\"doorlooptijd\":null," +
-              $"\"toelichting\":\"begin status\"," +
-              $"\"checklistitemStatustype\":[]," +
-              $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
-              $"\"eigenschappen\":[]," +
-              $"\"zaakobjecttypen\":[]," +
-              $"\"beginGeldigheid\":null," +
-              $"\"eindeGeldigheid\":null," +
-              $"\"beginObject\":null," +
-              $"\"eindeObject\":null" +
-            $"}}";
-        
-        private const string Input_CaseType_LowerAndCapitalCase =
-            $"{{" +
-              $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
-              $"\"omschrijvinggeneriek\":\"{Description}\"," +  // "g" lower case => case-insensitive option should deserialize this property anyway
-              $"\"statustekst\":\"begin status\"," +
-              $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
-              $"\"volgnummer\":2," +
-              $"\"ISEINDSTATUS\":{IsFinalStatus}," +  // Everything is capital => case-insensitive option should deserialize this property anyway
-              $"\"informeren\":{IsNotificationExpected}," +
-              $"\"doorlooptijd\":null," +
-              $"\"toelichting\":\"begin status\"," +
-              $"\"checklistitemStatustype\":[]," +
-              $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
-              $"\"eigenschappen\":[]," +
-              $"\"zaakobjecttypen\":[]," +
-              $"\"beginGeldigheid\":null," +
-              $"\"eindeGeldigheid\":null," +
-              $"\"beginObject\":null," +
-              $"\"eindeObject\":null" +
-            $"}}";
+        #region Deserialize
+        [TestCaseSource(nameof(GetTestNotifications))]
+        public void Deserialize_NotificationEvent_EverythingIsMapped(string testNotification)
+        {
+            // Act
+            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(testNotification);
 
-        private const string Input_TaskObject =
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(notification.Action, Is.Not.EqualTo(Actions.Unknown));
+                Assert.That(notification.Channel, Is.Not.EqualTo(Channels.Unknown));
+                Assert.That(notification.Resource, Is.Not.EqualTo(Resources.Unknown));
+                Assert.That(notification.Attributes, Is.Not.Default);
+                Assert.That(notification.MainObjectUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(notification.ResourceUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(notification.CreateDate, Is.Not.Default);
+            });
+        }
+
+        private static IEnumerable<string> GetTestNotifications()
+        {
+            yield return NotificationEventHandler.GetNotification_Real_CaseCreateScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_TaskAssignedScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_DecisionMadeScenario_TheHague();
+            yield return NotificationEventHandler.GetNotification_Real_MessageReceivedScenario_TheHague();
+        }
+
+        [Test]
+        public void Deserialize_Case_PartiallyValidJson_Nulls_ReturnsExpectedModel()  // Strings, Uri, and DateOnly should be properly deserialized from nulls
+        {
+            // Arrange
+            const string testJson =
+                $"{{" +
+                  $"\"identificatie\":\"{TestString}\"," +
+                  $"\"omschrijving\":null," +              // Should be deserialized as default not null
+                  $"\"omschrijvingGeneriek\":\"Test\"," +  // Should be ignored
+                  $"\"zaaktype\":null," +                  // Should be deserialized as default not null
+                  $"\"registratiedatum\":null" +           // Should be deserialized as default not null
+                $"}}";
+
+            // Act
+            Case actualResult = this._serializer.Deserialize<Case>(testJson);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [TestCase("omschrijvingGeneriek")]  // Original spelling
+        [TestCase("omschrijvinggeneriek")]
+        [TestCase("OMSCHRIJVINGGENERIEK")]
+        public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string jsonAttributeName)  // Case-insensitive option should deserialize these properties as well
+        {
+            // Arrange
+            const string testJson =
+                $"{{" +
+                  $"\"url\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/statustypen/e22c1e78-1893-4fd7-a674-3900672859c7\"," +
+                  $"\"omschrijving\":\"{TestString}\"," +
+                  $"\"{{0}}\":\"{TestString}\"," +  // Different spelling
+                  $"\"statustekst\":\"begin status\"," +
+                  $"\"zaaktype\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/zaaktypen/54c6063d-d3ae-47dd-90df-9e00cfa122a2\"," +
+                  $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
+                  $"\"volgnummer\":2," +
+                  $"\"isEindstatus\":{TestBoolean}," +
+                  $"\"informeren\":{TestBoolean}," +
+                  $"\"doorlooptijd\":null," +
+                  $"\"toelichting\":\"begin status\"," +
+                  $"\"checklistitemStatustype\":[]," +
+                  $"\"catalogus\":\"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/34061b3c-cc85-4572-ba27-e286c279fb40\"," +
+                  $"\"eigenschappen\":[]," +
+                  $"\"zaakobjecttypen\":[]," +
+                  $"\"beginGeldigheid\":null," +
+                  $"\"eindeGeldigheid\":null," +
+                  $"\"beginObject\":null," +
+                  $"\"eindeObject\":null" +
+                $"}}";
+
+            // Act
+            CaseType actualResult = this._serializer.Deserialize<CaseType>(testJson.Replace("{0}", jsonAttributeName));
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [Test]
+        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()
+        {
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<CaseType>(DefaultValues.Models.EmptyJson));
+
+                const string expectedMessage =
+                    "The given value cannot be deserialized into dedicated target object | " +
+                    "Target: CaseType | " +
+                    "Value: {} | " +
+                    "Required properties: omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren";
+
+                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            });
+        }
+
+        [Test]
+        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
+        {
+            // Arrange
+            const string testJson =
             $"{{" +
               $"\"url\":\"https://objecten.test.notifynl.nl/api/v1/objects/ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
               $"\"uuid\":\"ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
@@ -156,116 +201,94 @@ namespace EventsHandler.UnitTests.Services.Serialization
                 $"\"correctedBy\":null" +
               $"}}" +
             $"}}";
+
+            // Act
+            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(testJson);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
         
-        private const string Input_ContactMoment =
-            $"{{" +
-              $"\"uuid\":null," +  // Should be deserialized as default not null
-              $"\"url\":null" +    // Should be deserialized as default not null
-            $"}}";
-        #endregion
-
-        #region Test data (JSON output)
-        private const string Output_Case =
-            $"{{" +
-              $"\"identificatie\":\"{CaseIdentification}\"," +
-              $"\"omschrijving\":\"{CaseTypeName}\"," +
-              $"\"zaaktype\":\"{TestUrl}\"," +
-              $"\"registratiedatum\":\"2024-09-05\"" +
-            $"}}";
-
-        private const string Output_CaseType =
-            $"{{" +
-              $"\"omschrijving\":\"{CaseName}\"," +
-              $"\"omschrijvingGeneriek\":\"{Description}\"," +
-              $"\"zaaktypeIdentificatie\":\"{CaseTypeIdentification}\"," +
-              $"\"isEindstatus\":{IsFinalStatus}," +
-              $"\"informeren\":{IsNotificationExpected}" +
-            $"}}";
-
-        private const string Output_TaskObject =
-            $"{{" +
-              $"\"record\":{{" +
-                $"\"data\":{{" +
-                  $"\"zaak\":\"{TestUrl}\"," +
-                  $"\"title\":\"{Title}\"," +
-                  $"\"status\":\"open\"," +
-                  $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
-                  $"\"identificatie\":{{" +
-                    $"\"type\":\"bsn\"," +
-                    $"\"value\":\"{BsnNumber}\"" +
-                  $"}}" +
-                $"}}" +
-              $"}}" +
-            $"}}";
-        #endregion
-
-        [OneTimeSetUp]
-        public void InitializeTests()
+        [TestCase("null")]
+        [TestCase("true")]
+        [TestCase("false")]
+        [TestCase("\"null\"")]
+        [TestCase("\"true\"")]
+        [TestCase("\"false\"")]
+        public void Deserialize_DecisionType_ValidJson_Booleans_ReturnsExpectedModel(string publicationIndicationValue)  // Different boolean values
         {
-            this._serializer = new SpecificSerializer();
-        }
+            // Arrange
+            const string testJson =
+                $"{{" +
+                  $"\"catalogus\": \"https://openzaak.test.notifynl.nl/catalogi/api/v1/catalogussen/8399feb6-1349-401c-8c07-f6a49209089a\", " +
+                  $"\"publicatieIndicatie\": {{0}}, " +
+                  $"\"beginGeldigheid\": \"2001-01-04\", " +
+                  $"\"omschrijving\": \"Omschrijving besluit a\", " +
+                  $"\"omschrijvingGeneriek\": \"Omschrijving besluit generiek\", " +
+                  $"\"besluitcategorie\": \"Categorie1\", " +
+                  $"\"reactietermijn\": \"P1Y1M1D\", " +
+                  $"\"publicatietekst\": \"Publicatie tekst\", " +
+                  $"\"publicatietermijn\": \"P1Y1M1D\", " +
+                  $"\"toelichting\": \"Toelichting besluit\", " +
+                  $"\"informatieobjecttypen\": [\"https://openzaak.test.notifynl.nl/catalogi/api/v1/informatieobjecttypen/5e11506b-d685-4db1-908a-5c2e472c81e6\"]" +
+                $"}}";
 
-        #region Deserialize
-        [TestCaseSource(nameof(GetTestNotifications))]
-        public void Deserialize_NotificationEvent_EverythingIsMapped(string testNotification)
-        {
             // Act
-            NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(testNotification);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(notification.Action, Is.Not.EqualTo(Actions.Unknown));
-                Assert.That(notification.Channel, Is.Not.EqualTo(Channels.Unknown));
-                Assert.That(notification.Resource, Is.Not.EqualTo(Resources.Unknown));
-                Assert.That(notification.Attributes, Is.Not.Default);
-                Assert.That(notification.MainObjectUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(notification.ResourceUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(notification.CreateDate, Is.Not.Default);
-            });
-        }
-
-        private static IEnumerable<string> GetTestNotifications()
-        {
-            yield return NotificationEventHandler.GetNotification_Real_CaseCreateScenario_TheHague();
-            yield return NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague();
-            yield return NotificationEventHandler.GetNotification_Real_TaskAssignedScenario_TheHague();
-            yield return NotificationEventHandler.GetNotification_Real_DecisionMadeScenario_TheHague();
-            yield return NotificationEventHandler.GetNotification_Real_MessageReceivedScenario_TheHague();
-        }
-
-        [Test]
-        public void Deserialize_Case_PartiallyValidJson_Nulls_ReturnsExpectedModel()  // Strings, Uri, and DateOnly should be properly deserialized from nulls
-        {
-            // Act
-            Case actualResult = this._serializer.Deserialize<Case>(Input_Case);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualResult.Identification, Is.EqualTo(CaseIdentification));
-                Assert.That(actualResult.Name, Is.Empty);
-                Assert.That(actualResult.CaseTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualResult.RegistrationDate, Is.EqualTo(DateOnly.MinValue));
-            });
-        }
-
-        [TestCase(Input_CaseType_OriginalSpelling)]
-        [TestCase(Input_CaseType_LowerAndCapitalCase)]
-        public void Deserialize_CaseType_ValidJson_ReturnsExpectedModel(string inputJson)  // Case-insensitive option should deserialize these properties as well
-        {
-            // Act
-            CaseType actualResult = this._serializer.Deserialize<CaseType>(inputJson);
+            DecisionType actualResult = this._serializer.Deserialize<DecisionType>(testJson.Replace("{0}", publicationIndicationValue));
 
             // Assert
             AssertRequiredProperties(actualResult);
         }
 
         [Test]
-        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
+        public void Deserialize_Document_ValidJson_ReturnsExpectedModel()
+        {
+            // Arrange
+            const string testJson =
+                "{" +
+                  "\"url\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluitinformatieobjecten/ced8cd8a-d096-47cf-8352-8381274d852c\"," +
+                  "\"informatieobject\":\"https://openzaak.test.notifynl.nl/documenten/api/v1/enkelvoudiginformatieobjecten/8e5cd111-db45-4313-baf2-ea2ad1bcac01\"," +
+                  "\"besluit\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluiten/61dcb374-6d41-48dd-b9a4-7fe6ab883ba2\"" +
+                "}";
+
+            // Act
+            Document actualResult = this._serializer.Deserialize<Document>(testJson);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [Test]
+        public void Deserialize_Documents_ValidJson_ReturnsExpectedModel()
+        {
+            // Arrange
+            const string testJson =
+                "[" +
+                  "{" +
+                    "\"url\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluitinformatieobjecten/ced8cd8a-d096-47cf-8352-8381274d852c\"," +
+                    "\"informatieobject\":\"https://openzaak.test.notifynl.nl/documenten/api/v1/enkelvoudiginformatieobjecten/8e5cd111-db45-4313-baf2-ea2ad1bcac01\"," +
+                    "\"besluit\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluiten/61dcb374-6d41-48dd-b9a4-7fe6ab883ba2\"" +
+                  "}," +
+                  "{" +
+                    "\"url\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluitinformatieobjecten/ced8cd8a-d096-47cf-8352-8381274d852c\"," +
+                    "\"informatieobject\":\"https://openzaak.test.notifynl.nl/documenten/api/v1/enkelvoudiginformatieobjecten/8e5cd111-db45-4313-baf2-ea2ad1bcac01\"," +
+                    "\"besluit\":\"https://openzaak.test.notifynl.nl/besluiten/api/v1/besluiten/61dcb374-6d41-48dd-b9a4-7fe6ab883ba2\"" +
+                  "}" +
+                "]";
+            
+            // Act
+            Documents actualResult = this._serializer.Deserialize<Documents>(testJson);
+
+            // Assert
+            AssertRequiredProperties(actualResult);
+        }
+
+        [TestCase("[]")]
+        [TestCase("[ ]")]
+        public void Deserialize_Documents_EmptyArrayJson_ReturnsExpectedModel(string invalidEmptyJson)
         {
             // Act
-            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(Input_TaskObject);
+            Documents actualResult = this._serializer.Deserialize<Documents>(invalidEmptyJson);
 
             // Assert
             AssertRequiredProperties(actualResult);
@@ -274,29 +297,18 @@ namespace EventsHandler.UnitTests.Services.Serialization
         [Test]
         public void Deserialize_ContactMoment_PartiallyValidJson_ReturnsExpectedModel()  // GUID should be deserialized properly
         {
+            // Arrange
+            const string testJson =
+                $"{{" +
+                  $"\"uuid\":null," +  // Should be deserialized as default not null
+                  $"\"url\":null" +    // Should be deserialized as default not null
+                $"}}";
+        
             // Act
-            ContactMoment actualResult = this._serializer.Deserialize<ContactMoment>(Input_ContactMoment);
+            ContactMoment actualResult = this._serializer.Deserialize<ContactMoment>(testJson);
 
             // Assert
             AssertRequiredProperties(actualResult);
-        }
-
-        [Test]
-        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()
-        {
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<CaseType>(DefaultValues.Models.EmptyJson));
-
-                const string expectedMessage =
-                    "The given value cannot be deserialized into dedicated target object | " +
-                    "Target: CaseType | " +
-                    "Value: {} | " +
-                    "Required properties: omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren";
-
-                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
-            });
         }
         #endregion
 
@@ -318,8 +330,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new Case
             {
-                Identification = CaseIdentification,
-                Name = CaseTypeName,
+                Identification = TestString,
+                Name = TestString,
                 CaseTypeUri = new Uri(TestUrl),
                 RegistrationDate = new DateOnly(2024, 09, 05)
             };
@@ -328,7 +340,15 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(testModel);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(Output_Case));
+            const string expectedResult =
+                $"{{" +
+                  $"\"identificatie\":\"{TestString}\"," +
+                  $"\"omschrijving\":\"{TestString}\"," +
+                  $"\"zaaktype\":\"{TestUrl}\"," +
+                  $"\"registratiedatum\":\"2024-09-05\"" +
+                $"}}";
+            
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [TestCase(true)]
@@ -339,7 +359,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(isDefault ? default : new CaseType());
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"omschrijving\":\"\",\"omschrijvingGeneriek\":\"\",\"zaaktypeIdentificatie\":\"\",\"isEindstatus\":false,\"informeren\":false}"));
+            const string expectedResult =
+                "{" +
+                  "\"omschrijving\":\"\"," +
+                  "\"omschrijvingGeneriek\":\"\"," +
+                  "\"zaaktypeIdentificatie\":\"\"," +
+                  "\"isEindstatus\":false," +
+                  "\"informeren\":false" +
+                "}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [Test]
@@ -348,18 +377,27 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new CaseType
             {
-                Identification = CaseTypeIdentification,
-                Name = CaseTypeName,
-                Description = Description,
-                IsFinalStatus = Convert.ToBoolean(IsFinalStatus),
-                IsNotificationExpected = Convert.ToBoolean(IsNotificationExpected)
+                Identification = TestString,
+                Name = TestString,
+                Description = TestString,
+                IsFinalStatus = Convert.ToBoolean(TestBoolean),
+                IsNotificationExpected = Convert.ToBoolean(TestBoolean)
             };
 
             // Act
             string actualResult = this._serializer.Serialize(testModel);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(Output_CaseType));
+            const string expectedResult =
+                $"{{" +
+                  $"\"omschrijving\":\"{TestString}\"," +
+                  $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+                  $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
+                  $"\"isEindstatus\":{TestBoolean}," +
+                  $"\"informeren\":{TestBoolean}" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [TestCase(true)]
@@ -370,18 +408,23 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(isDefault ? default : new TaskObject());
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"record\":{\"data\":{\"zaak\":\"http://0.0.0.0:0/\",\"title\":\"\",\"status\":\"-\",\"verloopdatum\":\"0001-01-01T00:00:00.0000000\",\"identificatie\":{\"type\":\"-\",\"value\":\"\"}}}}"));
-        }
-        
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Serialize_ContactMoment_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Simple model: GUID should be handled properly
-        {
-            // Act
-            string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
+            const string expectedResult =
+                "{" +
+                  "\"record\":{" +
+                    "\"data\":{" +
+                      "\"zaak\":\"http://0.0.0.0:0/\"," +
+                      "\"title\":\"\"," +
+                      "\"status\":\"-\"," +
+                      "\"verloopdatum\":\"0001-01-01T00:00:00.0000000\"," +
+                      "\"identificatie\":{" +
+                        "\"type\":\"-\"," +
+                        "\"value\":\"\"" +
+                      "}" +
+                    "}" +
+                  "}" +
+                "}";
 
-            // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"uuid\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"http://0.0.0.0:0/\"}"));
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [Test]
@@ -395,13 +438,13 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     Data = new Data
                     {
                         CaseUri = new Uri($"https://www.domain.test/{Guid.Empty}"),
-                        Title = Title,
+                        Title = TestString,
                         Status = TaskStatuses.Open,
                         ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
                         Identification = new Identification
                         {
                             Type = IdTypes.Bsn,
-                            Value = BsnNumber
+                            Value = TestString
                         }
                     }
                 }
@@ -411,7 +454,103 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(testModel);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(Output_TaskObject));
+            const string expectedResult =
+                $"{{" +
+                  $"\"record\":{{" +
+                    $"\"data\":{{" +
+                      $"\"zaak\":\"{TestUrl}\"," +
+                      $"\"title\":\"{TestString}\"," +
+                      $"\"status\":\"open\"," +
+                      $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                      $"\"identificatie\":{{" +
+                        $"\"type\":\"bsn\"," +
+                        $"\"value\":\"{TestString}\"" +
+                      $"}}" +
+                    $"}}" +
+                  $"}}" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void Serialize_DecisionType_ValidModel_ReturnsExpectedJson()
+        {
+            // Arrange
+            var testModel = new DecisionType
+            {
+                Name = TestString,
+                Description = TestString,
+                Category = TestString,
+                PublicationIndicator = Convert.ToBoolean(TestBoolean),
+                PublicationText = TestString,
+                Explanation = TestString
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(testModel);
+
+            // Assert
+            const string expectedResult =
+                $"{{" +
+                  $"\"omschrijving\":\"{TestString}\"," +
+                  $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+                  $"\"besluitcategorie\":\"{TestString}\"," +
+                  $"\"publicatieIndicatie\":{TestBoolean}," +
+                  $"\"publicatietekst\":\"{TestString}\"," +
+                  $"\"toelichting\":\"{TestString}\"" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        
+        [Test]
+        public void Serialize_Documents_ReturnsExpectedJson()
+        {
+            // Arrange
+            var documents = new Documents
+            {
+                Results = new List<Document>
+                {
+                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri },
+                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri }
+                }
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(documents);
+
+            // Assert
+            const string expectedResult =
+                "{" +
+                  "\"results\":[" +
+                    "{" +
+                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
+                    "}," +
+                    "{" +
+                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
+                    "}" +
+                  "]" +
+                "}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Serialize_ContactMoment_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Simple model: GUID should be handled properly
+        {
+            // Act
+            string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
+
+            // Assert
+            const string expectedResult =
+                "{" +
+                  "\"uuid\":\"00000000-0000-0000-0000-000000000000\"," +
+                  "\"url\":\"http://0.0.0.0:0/\"" +
+                "}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
         #endregion
 

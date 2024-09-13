@@ -151,12 +151,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
         Task<MessageObject> IQueryContext.GetMessageAsync()
             => this._queryObjecten.GetMessageAsync(this._queryBase);
-        #endregion
 
-        #region IObjectTypen
-        /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(string)"/>
-        async Task<RequestResponse> IQueryContext.CreateMessageObjectAsync(string objectDataJson)
-            => await this._queryObjectTypen.CreateMessageObjectAsync(this._networkService, objectDataJson);
+        /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(Guid, string)"/>
+        async Task<RequestResponse> IQueryContext.CreateMessageObjectAsync(Guid messageObjectTypeGuid, string dataJson)
+            => await this._queryObjecten.CreateMessageObjectAsync(this._networkService, messageObjectTypeGuid, dataJson);
         #endregion
     }
 }
