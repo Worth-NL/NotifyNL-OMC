@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Converters;
@@ -23,8 +24,10 @@ namespace EventsHandler.Services.Serialization
             // Global converters
             Converters =
             {
+                new BoolJsonConverter(),
                 new DateOnlyJsonConverter(),
                 new DateTimeJsonConverter(),
+                new DocumentsJsonConverter(),
                 new GuidJsonConverter(),
                 new StringJsonConverter(),
                 new UriJsonConverter()
@@ -62,11 +65,11 @@ namespace EventsHandler.Services.Serialization
                 // Get cached value
                 typeof(TModel),
                 // Generate, cache, and get cached value
-                string.Join(", ", typeof(TModel)
+                typeof(TModel)
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                     .Where(property => property.GetCustomAttribute<JsonRequiredAttribute>() != null)
                     .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name)
-                    .ToArray()));
+                    .Join());
         }
 
         /// <inheritdoc cref="ISerializationService.Serialize{TModel}(TModel)"/>
