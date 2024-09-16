@@ -24,7 +24,6 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
         public string Name { get; internal set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
-        [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
