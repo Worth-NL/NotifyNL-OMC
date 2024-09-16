@@ -16,6 +16,8 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
     /// <seealso cref="IJsonSerializable"/>
     public struct CitizenResult : IJsonSerializable
     {
+        // TODO: New JSON property "url" Uri Id
+
         /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonRequired]
         [JsonInclude]
