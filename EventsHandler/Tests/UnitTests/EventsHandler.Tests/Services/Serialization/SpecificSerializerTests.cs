@@ -185,7 +185,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"type\":\"url\"," +
                     $"\"value\":\"http://localhost:8010/api/v2/objects/0db2a8a0-1ca8-4395-8a7a-c6293e33b4cd\"" +
                   $"}}," +
-                  $"\"verloopdatum\":null," +
+                  $"\"verloopdatum\":\"2024-05-03T21:59:59.999Z\"," +
                   $"\"identificatie\":{{" +
                     $"\"type\":\"bsn\"," +
                     $"\"value\":\"569312863\"" +
@@ -207,7 +207,14 @@ namespace EventsHandler.UnitTests.Services.Serialization
             CommonTaskData actualResult = this._serializer.Deserialize<CommonTaskData>(testJson);
 
             // Assert
-            AssertRequiredProperties(actualResult);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.CaseUri, Is.Not.Default);
+                Assert.That(actualResult.Title, Is.Not.Default);
+                Assert.That(actualResult.Status, Is.Not.Default);
+                Assert.That(actualResult.ExpirationDate, Is.Not.Default);
+                Assert.That(actualResult.Identification, Is.Not.Default);
+            });
         }
         
         [TestCase("null")]
@@ -532,6 +539,42 @@ namespace EventsHandler.UnitTests.Services.Serialization
                       "\"informatieobject\":\"http://0.0.0.0:0/\"" +
                     "}" +
                   "]" +
+                "}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        
+        [Test]
+        public void Serialize_CommonTaskData_ReturnsExpectedJson()
+        {
+            // Arrange
+            var documents = new CommonTaskData
+            {
+                CaseUri = new Uri("https://www.google.com/"),
+                Title = TestString,
+                Status = TaskStatuses.Open,
+                ExpirationDate = DateTime.MaxValue,
+                Identification = new Identification
+                {
+                    Type = IdTypes.Bsn,
+                    Value = "123456789"
+                }
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(documents);
+
+            // Assert
+            const string expectedResult =
+                "{" +
+                  "\"CaseUri\":\"https://www.google.com/\"," +
+                  "\"Title\":\"text\"," +
+                  "\"Status\":\"open\"," +
+                  "\"ExpirationDate\":\"9999-12-31T23:59:59.9999999\"," +
+                  "\"Identification\":{" +
+                    "\"type\":\"bsn\"," +
+                    "\"value\":\"123456789\"" +
+                  "}" +
                 "}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
