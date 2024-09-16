@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         /// <summary>
         /// The last name (surname) of the citizen.
         /// </summary>
-        public string Surname { get; internal init; }
+        internal string Surname { get; init; }
 
         /// <inheritdoc cref="DistributionChannels"/>
         internal DistributionChannels DistributionChannel { get; init; }
