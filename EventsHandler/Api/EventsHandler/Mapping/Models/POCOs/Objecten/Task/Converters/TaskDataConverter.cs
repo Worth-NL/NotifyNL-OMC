@@ -10,7 +10,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
     internal static class TaskDataConverter
     {
         /// <summary>
-        /// Converts <see cref="Data"/> from <see cref="Record"/> from <see cref="TaskObject"/> from "Objecten" Web API service (version used by The Hague).
+        /// Converts <see cref="Data"/> from <see cref="Record"/> from <see cref="TaskObject"/> (version used by The Hague) from "Objecten" Web API service.
         /// </summary>
         /// <returns>
         ///   The unified <see cref="CommonTaskData"/> DTO model.
