@@ -2,8 +2,8 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
-using System.Text.Json.Serialization;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.Objecten
 {

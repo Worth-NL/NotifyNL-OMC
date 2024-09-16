@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
-using EventsHandler.Extensions;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
 #pragma warning disable IDE0008  // Declaration of static types would be too long

@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Text.Json.Serialization;
 using EventsHandler.Mapping.Models.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
 {
