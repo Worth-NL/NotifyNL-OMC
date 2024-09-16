@@ -41,9 +41,19 @@ namespace EventsHandler.Services.Register.v1
         {
             this._queryContext.SetNotification(notification);
 
+            // #1 contact momenten creation
+
+            // ContactMomenten contact = SendFeedbackToOpenKlantAsync();
+
+            // TODO: To be implemented
+            // #2: link to case?.Name => empty
+            // #3: link to customer
+
+            // #4 return something
+
             // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
-            return await SendFeedbackToOpenZaakAsync(this._queryContext, notification,
-                   await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));
+            return await SendFeedbackToOpenZaakAsync(this._queryContext, notification, // TODO: Remove
+                   await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));  // TODO: Assign to a field
         }
 
         #region Helper methods
@@ -72,7 +82,7 @@ namespace EventsHandler.Services.Register.v1
             return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
         }
 
-        private static async Task<string> SendFeedbackToOpenZaakAsync(
+        private static async Task<string> SendFeedbackToOpenZaakAsync(  // TODO: This is not needed anymore
             IQueryContext queryContext, NotificationEvent notification, ContactMoment contactMoment)
         {
             // Prepare the body
@@ -84,6 +94,36 @@ namespace EventsHandler.Services.Register.v1
 
             return await queryContext.SendFeedbackToOpenZaakAsync(jsonBody);
         }
+
+        // TODO: Link to the case
+
+        // POST method
+
+        // URI: {OpenKlant}/objectcontactmomenten
+
+        // Body:
+        // string caseId = (await queryContext.GetMainObjectAsync()).Id
+
+        // {
+        // "contactmoment": "{contactMoment.ReferenceUri}",
+        // "object": "{notification.MainObjectUri}",
+        // "objectType": "zaak"
+        // }
+
+
+        // TODO: Link to the customer
+        
+        // POST method
+
+        // URI: {OpenKlant}/klantcontactmomenten
+
+        // Body:
+        // {
+        // "contactmoment": "{contactMoment.ReferenceUri}",
+        // "klant": "CitizenResult.Id",  => Obtain it somehow
+        // "rol": "belanghebbende",
+        // "gelezen": false
+        // }
         #endregion
     }
 }

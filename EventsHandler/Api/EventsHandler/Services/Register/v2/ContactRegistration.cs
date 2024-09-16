@@ -40,9 +40,16 @@ namespace EventsHandler.Services.Register.v2
         {
             this._queryContext.SetNotification(notification);
 
+            // #1 Get contact moment => SendFeedbackToOpenKlantAsync
+
+            // #2 Create link to case => SendFeedbackToSubjectObjectAsync
+            // #3 Create link to customer => new code
+
+            // #4 Return something
+
             // NOTE: Feedback from "OpenKlant" will be linked to the subject object
             return await SendFeedbackToSubjectObjectAsync(this._configuration, this._queryContext,
-                   await SendFeedbackToOpenKlantAsync(this._queryContext, notificationMethod, messages));
+                   await SendFeedbackToOpenKlantAsync(this._queryContext, notificationMethod, messages)); // TODO: Extracted to a separate method
         }
 
         #region Helper methods
@@ -89,6 +96,18 @@ namespace EventsHandler.Services.Register.v2
 
             return await queryContext.LinkToSubjectObjectAsync(jsonBody);
         }
+
+        // POST method
+
+        // URI: {GetDomain()}/betrokkenen
+
+        // Body:
+
+        // { "wasPartij":
+        //   { "uuid": "PartyResult.Id" },
+        //   "hadKlantcontact": { "uuid": "contactMoment.Id" },
+        //   "rol": "klant",
+        //   "initiator": true }
         #endregion
     }
 }
