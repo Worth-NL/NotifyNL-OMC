@@ -3,8 +3,8 @@
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
 {
