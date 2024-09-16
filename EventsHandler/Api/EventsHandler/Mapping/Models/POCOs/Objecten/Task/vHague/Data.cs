@@ -10,6 +10,9 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
     /// <summary>
     /// The data related to the <see cref="Record"/> retrieved from "Objecten" Web API service.
     /// </summary>
+    /// <remarks>
+    ///   Version used by The Hague.
+    /// </remarks>
     /// <seealso cref="CommonTaskData"/>
     /// <seealso cref="IJsonSerializable"/>
     public struct Data : IJsonSerializable
