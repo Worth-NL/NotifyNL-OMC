@@ -4,7 +4,7 @@ using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Helpers;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Collections.Concurrent;
@@ -89,7 +89,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Object properties
         /// <summary>
-        /// The <see cref="TaskObject"/> or <see cref="MessageObject"/> type in <see cref="Uri"/> format:
+        /// The <see cref="CommonData"/> from Task or <see cref="MessageObject"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>

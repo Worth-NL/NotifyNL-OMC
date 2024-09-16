@@ -2,7 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Diagnostics.CodeAnalysis;
@@ -89,7 +89,7 @@ namespace EventsHandler.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="TaskObject"/> or <see cref="MessageObject"/>) <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="CommonData"/> from Task or <see cref="MessageObject"/>) <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>

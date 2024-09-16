@@ -2,7 +2,7 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
@@ -29,13 +29,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         #pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
         #region Parent (Task)
         /// <summary>
-        /// Gets the <see cref="TaskObject"/> from "Objecten" Web API service.
+        /// Gets the <see cref="CommonData"/> from "Objecten" Web API service.
         /// </summary>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
-        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="TaskObject"/> model.
+        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="CommonData"/> model.
         /// </exception>
-        internal sealed async Task<TaskObject> GetTaskAsync(IQueryBase queryBase)
+        internal sealed async Task<CommonData> GetTaskAsync(IQueryBase queryBase)
         {
             // Request URL
             Uri taskObjectUri = queryBase.Notification.MainObjectUri;
@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotObjectUri);
             }
 
-            return await queryBase.ProcessGetAsync<TaskObject>(
+            return await queryBase.ProcessGetAsync<CommonData>(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: taskObjectUri,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoTask);

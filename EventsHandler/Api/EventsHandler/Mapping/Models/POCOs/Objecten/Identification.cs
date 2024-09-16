@@ -3,13 +3,13 @@
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
 {
     /// <summary>
-    /// The identification related to the different Data (associated with <see cref="TaskObject"/>,
+    /// The identification related to the different Data (associated with <see cref="CommonData"/> from Task,
     /// <see cref="MessageObject"/>, etc.) retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
