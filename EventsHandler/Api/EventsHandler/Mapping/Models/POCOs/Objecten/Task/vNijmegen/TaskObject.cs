@@ -44,6 +44,13 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         [JsonPropertyOrder(3)]
         public Identification Identification { get; internal set; }
 
+        /// <inheritdoc cref="CommonTaskData.Identification"/>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("koppeling")]
+        [JsonPropertyOrder(4)]
+        public Coupling Coupling { get; internal set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskObject"/> struct.
         /// </summary>
