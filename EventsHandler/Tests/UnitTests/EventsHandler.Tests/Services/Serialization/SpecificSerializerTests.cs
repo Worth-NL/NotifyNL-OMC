@@ -6,6 +6,7 @@ using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -203,7 +204,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             $"}}";
 
             // Act
-            TaskObject actualResult = this._serializer.Deserialize<TaskObject>(testJson);
+            CommonData actualResult = this._serializer.Deserialize<CommonData>(testJson);
 
             // Assert
             AssertRequiredProperties(actualResult);

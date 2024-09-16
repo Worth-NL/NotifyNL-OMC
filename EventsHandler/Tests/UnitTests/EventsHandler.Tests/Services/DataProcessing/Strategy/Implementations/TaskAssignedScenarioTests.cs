@@ -5,7 +5,7 @@ using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
@@ -67,64 +67,40 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
         };
 
-        private static readonly TaskObject s_taskClosed = new()
+        private static readonly CommonData s_taskClosed = new()
         {
-            Record = new Record
-            {
-                Data = new Data
-                {
-                    Status = TaskStatuses.Closed
-                }
-            }
+            Status = TaskStatuses.Closed
         };
 
-        private static readonly TaskObject s_taskOpenNotAssignedToPerson = new()
+        private static readonly CommonData s_taskOpenNotAssignedToPerson = new()
         {
-            Record = new Record
+            Status = TaskStatuses.Open,
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Status = TaskStatuses.Open,
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Unknown
-                    }
-                }
+                Type = IdTypes.Unknown
             }
         };
 
         private const string TestTaskTitle = "Test title";
-        private static readonly TaskObject s_taskOpenAssignedToPersonWithoutExpirationDate = new()
+        private static readonly CommonData s_taskOpenAssignedToPersonWithoutExpirationDate = new()
         {
-            Record = new Record
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            // Missing "ExpirationDate" => default
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Title = TestTaskTitle,
-                    Status = TaskStatuses.Open,
-                    // Missing "ExpirationDate" => default
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Bsn
-                    }
-                }
+                Type = IdTypes.Bsn
             }
         };
 
-        private static readonly TaskObject s_taskOpenAssignedToPersonWithExpirationDate = new()
+        private static readonly CommonData s_taskOpenAssignedToPersonWithExpirationDate = new()
         {
-            Record = new Record
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            ExpirationDate = new DateTime(2024, 7, 24, 14, 10, 40, DateTimeKind.Utc),
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Title = TestTaskTitle,
-                    Status = TaskStatuses.Open,
-                    ExpirationDate = new DateTime(2024, 7, 24, 14, 10, 40, DateTimeKind.Utc),
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Bsn
-                    }
-                }
+                Type = IdTypes.Bsn
             }
         };
 
@@ -342,13 +318,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
-            TaskObject testTask = isExpirationDateGiven
+            CommonData testTaskData = isExpirationDateGiven
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
-                testTask,
+                testTaskData,
                 isCaseTypeIdWhitelisted: true,
                 isNotificationExpected: true);
 
@@ -483,7 +459,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Setup
         private INotifyScenario ArrangeTaskScenario_TryGetData(
-            DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
+            DistributionChannels testDistributionChannel, CommonData testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
             this._mockedQueryContext

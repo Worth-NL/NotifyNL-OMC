@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -145,7 +146,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         #region IQueryObjecten
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
-        Task<TaskObject> IQueryContext.GetTaskAsync()
+        Task<CommonData> IQueryContext.GetTaskAsync()
             => this._queryObjecten.GetTaskAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
