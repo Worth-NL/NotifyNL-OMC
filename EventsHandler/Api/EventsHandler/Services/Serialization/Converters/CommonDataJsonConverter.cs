@@ -2,7 +2,6 @@
 
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,9 +14,10 @@ namespace EventsHandler.Services.Serialization.Converters
     internal sealed class CommonDataJsonConverter : JsonConverter<CommonTaskData>
     {
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_serializedCommonTaskData = new()
+        private static readonly Dictionary<string, object?> s_serializedCommonTaskData = new()
         {
-            { nameof(CommonTaskData.CaseUri),        string.Empty },
+            { nameof(CommonTaskData.Uri),            string.Empty },
+            { nameof(CommonTaskData.Id),             string.Empty },
             { nameof(CommonTaskData.Title),          string.Empty },
             { nameof(CommonTaskData.Status),         string.Empty },
             { nameof(CommonTaskData.ExpirationDate), string.Empty },
@@ -31,15 +31,13 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             try
             {
-                return JsonSerializer.Deserialize<TaskObject>(ref reader, options)
-                    .Record
-                    .Data
+                return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject>(ref reader, options)
                     .ConvertToUnified();
             }
             catch (JsonException)
             {
-
-                return default;
+                return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject>(ref reader, options)
+                    .ConvertToUnified();
             }
         }
 
@@ -48,7 +46,8 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             lock (s_padlock)
             {
-                s_serializedCommonTaskData[nameof(CommonTaskData.CaseUri)]        = value.CaseUri;
+                s_serializedCommonTaskData[nameof(CommonTaskData.Uri)]            = value.Uri;
+                s_serializedCommonTaskData[nameof(CommonTaskData.Id)]             = value.Id;
                 s_serializedCommonTaskData[nameof(CommonTaskData.Title)]          = value.Title;
                 s_serializedCommonTaskData[nameof(CommonTaskData.Status)]         = value.Status;
                 s_serializedCommonTaskData[nameof(CommonTaskData.ExpirationDate)] = value.ExpirationDate;

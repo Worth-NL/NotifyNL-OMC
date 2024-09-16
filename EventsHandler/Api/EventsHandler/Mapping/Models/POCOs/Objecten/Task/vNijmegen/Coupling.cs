@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         public Registrations Type { get; internal set; }
 
         /// <summary>
-        /// The identification of the <see cref="Coupling"/>.
+        /// The ID of the <see cref="Coupling"/> object (e.g., case).
         /// </summary>
         [JsonRequired]
         [JsonInclude]
