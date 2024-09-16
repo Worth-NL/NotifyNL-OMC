@@ -2,13 +2,13 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.Objecten
 {
     /// <summary>
-    /// The status of the <see cref="TaskObject"/> from "Objecten" Web API service.
+    /// The status of the <see cref="CommonData.Status"/> from "Objecten" Web API service.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<TaskStatuses>))]
     public enum TaskStatuses
