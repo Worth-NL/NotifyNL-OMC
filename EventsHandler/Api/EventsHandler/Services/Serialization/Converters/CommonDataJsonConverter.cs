@@ -36,7 +36,7 @@ namespace EventsHandler.Services.Serialization.Converters
                     .Data
                     .ConvertToUnified();
             }
-            catch
+            catch (JsonException)
             {
 
                 return default;
