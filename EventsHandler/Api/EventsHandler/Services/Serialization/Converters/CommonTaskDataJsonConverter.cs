@@ -11,7 +11,7 @@ namespace EventsHandler.Services.Serialization.Converters
     /// The custom converter specialized in handling <see cref="CommonTaskData"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
-    internal sealed class CommonDataJsonConverter : JsonConverter<CommonTaskData>
+    internal sealed class CommonTaskDataJsonConverter : JsonConverter<CommonTaskData>
     {
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object?> s_serializedCommonTaskData = new()
