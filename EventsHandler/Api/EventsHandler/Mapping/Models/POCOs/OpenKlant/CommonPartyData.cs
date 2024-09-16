@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
     ///   Common DTO for all versions of "OpenKlant" Web API service.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public readonly struct CommonPartyData : IJsonSerializable
+    internal readonly struct CommonPartyData : IJsonSerializable
     {
         /// <summary>
         /// The first name of the citizen.
