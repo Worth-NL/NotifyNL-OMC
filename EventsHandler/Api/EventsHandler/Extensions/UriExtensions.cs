@@ -89,7 +89,7 @@ namespace EventsHandler.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="CommonData"/> from Task or <see cref="MessageObject"/>) <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="CommonTaskData"/> from Task or <see cref="MessageObject"/>) <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
