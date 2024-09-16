@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Enums.Objecten
 {
     /// <summary>
-    /// The status of the <see cref="CommonData.Status"/> from "Objecten" Web API service.
+    /// The status of the <see cref="CommonTaskData.Status"/> from "Objecten" Web API service.
     /// </summary>
     [JsonConverter(typeof(SafeJsonStringEnumMemberConverter<TaskStatuses>))]
     public enum TaskStatuses

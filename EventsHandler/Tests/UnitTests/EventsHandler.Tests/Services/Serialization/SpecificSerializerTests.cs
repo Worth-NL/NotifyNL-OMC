@@ -141,7 +141,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_TaskObject_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
+        public void Deserialize_CommonTaskData_ValidJson_ReturnsExpectedModel()  // Nested objects and enums should be deserialized properly
         {
             // Arrange
             const string testJson =
@@ -204,7 +204,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             $"}}";
 
             // Act
-            CommonData actualResult = this._serializer.Deserialize<CommonData>(testJson);
+            CommonTaskData actualResult = this._serializer.Deserialize<CommonTaskData>(testJson);
 
             // Assert
             AssertRequiredProperties(actualResult);

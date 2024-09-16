@@ -67,12 +67,12 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
         };
 
-        private static readonly CommonData s_taskClosed = new()
+        private static readonly CommonTaskData s_taskClosed = new()
         {
             Status = TaskStatuses.Closed
         };
 
-        private static readonly CommonData s_taskOpenNotAssignedToPerson = new()
+        private static readonly CommonTaskData s_taskOpenNotAssignedToPerson = new()
         {
             Status = TaskStatuses.Open,
             Identification = new Identification
@@ -82,7 +82,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
 
         private const string TestTaskTitle = "Test title";
-        private static readonly CommonData s_taskOpenAssignedToPersonWithoutExpirationDate = new()
+        private static readonly CommonTaskData s_taskOpenAssignedToPersonWithoutExpirationDate = new()
         {
             Title = TestTaskTitle,
             Status = TaskStatuses.Open,
@@ -93,7 +93,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
         };
 
-        private static readonly CommonData s_taskOpenAssignedToPersonWithExpirationDate = new()
+        private static readonly CommonTaskData s_taskOpenAssignedToPersonWithExpirationDate = new()
         {
             Title = TestTaskTitle,
             Status = TaskStatuses.Open,
@@ -318,7 +318,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
-            CommonData testTaskData = isExpirationDateGiven
+            CommonTaskData testTaskData = isExpirationDateGiven
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
@@ -459,7 +459,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Setup
         private INotifyScenario ArrangeTaskScenario_TryGetData(
-            DistributionChannels testDistributionChannel, CommonData testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
+            DistributionChannels testDistributionChannel, CommonTaskData testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
             this._mockedQueryContext

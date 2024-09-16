@@ -13,7 +13,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
     ///   Common DTO for all versions of "Objecten" Web API service.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    internal readonly struct CommonData : IJsonSerializable
+    internal readonly struct CommonTaskData : IJsonSerializable
     {
         /// <summary>
         /// The reference to <see cref="Case"/> in <see cref="Uri"/> format:
