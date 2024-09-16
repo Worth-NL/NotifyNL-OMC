@@ -8,6 +8,9 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
     /// <summary>
     /// The task retrieved from "Objecten" Web API service.
     /// </summary>
+    /// <remarks>
+    ///   Version used by The Hague.
+    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct TaskObject : IJsonSerializable
     {
