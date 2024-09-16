@@ -12,7 +12,7 @@ namespace EventsHandler.Services.Register.v2
 {
     /// <inheritdoc cref="ITelemetryService"/>
     /// <remarks>
-    ///   Version: "Klantcontacten" Web API service | "OMC workflow" v2.
+    ///   Version: "Klantinteracties" Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
@@ -21,7 +21,7 @@ namespace EventsHandler.Services.Register.v2
         private readonly IQueryContext _queryContext;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
-        string IVersionDetails.Name => "Klantcontacten";
+        string IVersionDetails.Name => "Klantinteracties";
 
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "2.0.0";
