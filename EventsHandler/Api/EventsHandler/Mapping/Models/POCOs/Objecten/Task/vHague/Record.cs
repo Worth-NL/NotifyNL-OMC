@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
+using EventsHandler.Mapping.Models.Interfaces;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
 {
     /// <summary>
     /// The record related to the <see cref="TaskObject"/> retrieved from "Objecten" Web API service.
