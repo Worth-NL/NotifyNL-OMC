@@ -7,7 +7,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
     /// <summary>
     /// Converts task data from different versions of "Objecten" into a unified <see cref="CommonTaskData"/>.
     /// </summary>
-    internal static class TaskDataConverter
+    internal static class CommonTaskDataConverter
     {
         /// <summary>
         /// Converts <see cref="vHague.TaskObject"/> (version used by The Hague) from "Objecten" Web API service.
