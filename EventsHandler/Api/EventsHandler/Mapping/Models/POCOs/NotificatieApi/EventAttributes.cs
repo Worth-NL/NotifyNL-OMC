@@ -4,11 +4,11 @@ using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Helpers;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 
 namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 {
