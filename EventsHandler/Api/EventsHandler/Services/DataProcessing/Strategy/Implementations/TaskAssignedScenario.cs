@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     internal sealed class TaskAssignedScenario : BaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private CommonData _taskData;
+        private CommonTaskData _taskData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.

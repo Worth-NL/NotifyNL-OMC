@@ -89,7 +89,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
         #region Object properties
         /// <summary>
-        /// The <see cref="CommonData"/> from Task or <see cref="MessageObject"/> type in <see cref="Uri"/> format:
+        /// The <see cref="CommonTaskData"/> from Task or <see cref="MessageObject"/> type in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
