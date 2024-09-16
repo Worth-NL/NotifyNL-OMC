@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Text.Json.Serialization;
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
 {

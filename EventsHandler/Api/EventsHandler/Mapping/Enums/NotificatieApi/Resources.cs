@@ -2,7 +2,6 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Converters;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Enums.NotificatieApi

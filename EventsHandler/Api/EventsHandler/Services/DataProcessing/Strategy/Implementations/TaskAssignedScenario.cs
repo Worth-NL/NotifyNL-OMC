@@ -5,6 +5,7 @@ using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
@@ -16,7 +17,6 @@ using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using System.Globalization;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
