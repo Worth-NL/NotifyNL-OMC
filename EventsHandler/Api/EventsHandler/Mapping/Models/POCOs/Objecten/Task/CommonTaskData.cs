@@ -2,7 +2,7 @@
 
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
 {
@@ -16,31 +16,53 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
     internal readonly struct CommonTaskData : IJsonSerializable
     {
         /// <summary>
-        /// The reference to <see cref="Case"/> in <see cref="Uri"/> format:
+        /// The reference to related object in <see cref="System.Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
-        internal Uri CaseUri { get; init; }
+        [JsonInclude]
+        [JsonPropertyOrder(0)]
+        internal Uri? Uri { get; init; }  // NOTE: Some task data might not have it
+
+        /// <summary>
+        /// The ID of the related object.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(1)]
+        internal Guid Id { get; init; }
 
         /// <summary>
         /// The title of the task.
         /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(2)]
         internal string Title { get; init; }
 
         /// <summary>
         /// The status of the task.
         /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(3)]
         internal TaskStatuses Status { get; init; }
 
         /// <summary>
         /// The deadline by which the task should be completed.
         /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(4)]
         internal DateTime ExpirationDate { get; init; }
 
         /// <summary>
         /// The identification details of the task.
         /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(5)]
         internal Identification Identification { get; init; }
     }
 }

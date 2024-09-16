@@ -28,7 +28,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
         #region Test data (fields)
         private const string TestString = "text";
         private const string TestBoolean = "false";
-        private const string TestUrl = "https://www.domain.test/00000000-0000-0000-0000-000000000000";
+        private const string TestGuid = "00000000-0000-0000-0000-000000000000";
+        private const string TestUrl = $"https://www.domain.test/{TestGuid}";
         #endregion
 
         [OneTimeSetUp]
@@ -255,7 +256,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult.CaseUri, Is.Not.Default);
+                Assert.That(actualResult.Id, Is.Not.Default);
                 Assert.That(actualResult.Title, Is.Not.Default);
                 Assert.That(actualResult.Status, Is.Not.Default);
                 Assert.That(actualResult.ExpirationDate, Is.Not.Default);
@@ -375,7 +376,15 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(isDefault ? default : new Case());
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("{\"identificatie\":\"\",\"omschrijving\":\"\",\"zaaktype\":\"http://0.0.0.0:0/\",\"registratiedatum\":\"0001-01-01\"}"));
+            string expectedResult =
+                $"{{" +
+                  $"\"identificatie\":\"\"," +
+                  $"\"omschrijving\":\"\"," +
+                  $"\"zaaktype\":\"{DefaultValues.Models.EmptyUri}\"," +
+                  $"\"registratiedatum\":\"0001-01-01\"" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [Test]
@@ -462,21 +471,21 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(isDefault ? default : new TaskObject());
 
             // Assert
-            const string expectedResult =
-                "{" +
-                  "\"record\":{" +
-                    "\"data\":{" +
-                      "\"zaak\":\"http://0.0.0.0:0/\"," +
-                      "\"title\":\"\"," +
-                      "\"status\":\"-\"," +
-                      "\"verloopdatum\":\"0001-01-01T00:00:00.0000000\"," +
-                      "\"identificatie\":{" +
-                        "\"type\":\"-\"," +
-                        "\"value\":\"\"" +
-                      "}" +
-                    "}" +
-                  "}" +
-                "}";
+            string expectedResult =
+                $"{{" +
+                  $"\"record\":{{" +
+                    $"\"data\":{{" +
+                      $"\"zaak\":\"{DefaultValues.Models.EmptyUri}\"," +
+                      $"\"title\":\"\"," +
+                      $"\"status\":\"-\"," +
+                      $"\"verloopdatum\":\"0001-01-01T00:00:00.0000000\"," +
+                      $"\"identificatie\":{{" +
+                        $"\"type\":\"-\"," +
+                        $"\"value\":\"\"" +
+                      $"}}" +
+                    $"}}" +
+                  $"}}" +
+                $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -575,17 +584,13 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(documents);
 
             // Assert
-            const string expectedResult =
-                "{" +
-                  "\"results\":[" +
-                    "{" +
-                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
-                    "}," +
-                    "{" +
-                      "\"informatieobject\":\"http://0.0.0.0:0/\"" +
-                    "}" +
-                  "]" +
-                "}";
+            string expectedResult =
+                $"{{" +
+                  $"\"results\":[" +
+                    $"{{\"informatieobject\":\"{DefaultValues.Models.EmptyUri}\"}}," +
+                    $"{{\"informatieobject\":\"{DefaultValues.Models.EmptyUri}\"}}" +
+                  $"]" +
+                $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -594,9 +599,13 @@ namespace EventsHandler.UnitTests.Services.Serialization
         public void Serialize_CommonTaskData_ReturnsExpectedJson()
         {
             // Arrange
+            const string testGuid = "12345678-1234-0000-4321-123456789012";
+            const string testUrl = $"https://www.domain.test/{testGuid}";
+
             var documents = new CommonTaskData
             {
-                CaseUri = new Uri("https://www.google.com/"),
+                Uri = new Uri(testUrl),
+                Id = new Guid(testGuid),
                 Title = TestString,
                 Status = TaskStatuses.Open,
                 ExpirationDate = DateTime.MaxValue,
@@ -612,16 +621,17 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             // Assert
             const string expectedResult =
-                "{" +
-                  "\"CaseUri\":\"https://www.google.com/\"," +
-                  "\"Title\":\"text\"," +
-                  "\"Status\":\"open\"," +
-                  "\"ExpirationDate\":\"9999-12-31T23:59:59.9999999\"," +
-                  "\"Identification\":{" +
-                    "\"type\":\"bsn\"," +
-                    "\"value\":\"123456789\"" +
-                  "}" +
-                "}";
+                $"{{" +
+                  $"\"Uri\":\"{testUrl}\"," +
+                  $"\"Id\":\"{testGuid}\"," +
+                  $"\"Title\":\"text\"," +
+                  $"\"Status\":\"open\"," +
+                  $"\"ExpirationDate\":\"9999-12-31T23:59:59.9999999\"," +
+                  $"\"Identification\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"123456789\"" +
+                  $"}}" +
+                $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -634,11 +644,11 @@ namespace EventsHandler.UnitTests.Services.Serialization
             string actualResult = this._serializer.Serialize(isDefault ? default : new ContactMoment());
 
             // Assert
-            const string expectedResult =
-                "{" +
-                  "\"uuid\":\"00000000-0000-0000-0000-000000000000\"," +
-                  "\"url\":\"http://0.0.0.0:0/\"" +
-                "}";
+            string expectedResult =
+                $"{{" +
+                  $"\"uuid\":\"{TestGuid}\"," +
+                  $"\"url\":\"{DefaultValues.Models.EmptyUri}\"" +
+                $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
