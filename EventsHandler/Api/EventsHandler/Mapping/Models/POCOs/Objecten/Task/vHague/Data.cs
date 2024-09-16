@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
     /// <seealso cref="IJsonSerializable"/>
     public struct Data : IJsonSerializable
     {
-        /// <inheritdoc cref="CommonTaskData.CaseUri"/>
+        /// <inheritdoc cref="CommonTaskData.CaseId"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaak")]
