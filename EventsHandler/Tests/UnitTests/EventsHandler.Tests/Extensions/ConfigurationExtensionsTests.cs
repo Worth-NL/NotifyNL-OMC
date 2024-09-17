@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
-using ConfigurationExtensions = EventsHandler.Extensions.ConfigurationExtensions;
+using ConfigurationExtensions = EventsHandler.Services.Settings.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.UnitTests.Extensions
 {
