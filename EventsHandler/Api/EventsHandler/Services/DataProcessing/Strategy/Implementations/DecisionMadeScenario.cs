@@ -3,6 +3,7 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -200,8 +201,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
-                this._messageObjectTypeGuid,
-                dataJson: PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris));
+                                                    this._queryContext.PrepareObjectJsonBody(
+                                                        this._messageObjectTypeGuid,
+                                                        PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris)));
 
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
@@ -251,22 +253,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         ///   Prepares a block of code (responsible for message object creation) to be sent together with final JSON payload.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
+        private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
-            return $"{{" +
-                     $"\"onderwerp\":\"{subject}\"," +
-                     $"\"berichttekst\":\"{body}\"," +
-                     $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
-                     $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
-                     $"\"handelingsperspectief\":\"TODO\"," +  // TODO: To be filled
-                     $"\"geopend\":false," +
-                     $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
-                     $"\"identificatie\":{{" +
-                       $"\"type\":\"bsn\"," +
-                       $"\"value\":\"{this._bsnNumber}\"" +
-                     $"}}," +
-                     $"\"bijlages\":[{commaSeparatedUris}]" +
-                   $"}}";
+            return $"\"onderwerp\":\"{subject}\"," +
+                   $"\"berichttekst\":\"{body}\"," +
+                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
+                   $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
+                   $"\"handelingsperspectief\":\"TODO\"," +  // TODO: To be filled
+                   $"\"geopend\":false," +
+                   $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
+                   $"\"identificatie\":{{" +
+                     $"\"type\":\"{IdTypes.Bsn.GetEnumName()}\"," +
+                     $"\"value\":\"{this._bsnNumber}\"" +
+                   $"}}," +
+                   $"\"bijlages\":[{commaSeparatedUris}]";
         }
         #endregion
 

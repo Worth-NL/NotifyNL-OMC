@@ -492,6 +492,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
 
             this._mockedQueryContext
+                .Setup(mock => mock.PrepareObjectJsonBody(
+                    It.IsAny<Guid>(), It.IsAny<string>()))
+                .Returns(string.Empty);
+
+            this._mockedQueryContext
                 .Setup(mock => mock.CreateObjectAsync(It.IsAny<string>()))
                 .ReturnsAsync(isCreationSuccessful
                     ? RequestResponse.Success(TestJsonResponse)
@@ -610,6 +615,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
                 Times.Exactly(getInfoObjectInvokeCount));
 
+            this._mockedQueryContext  // Dependent queries
+                .Verify(mock => mock.PrepareObjectJsonBody(
+                    It.IsAny<Guid>(), It.IsAny<string>()),
+                Times.Exactly(createInvokeCount));
             this._mockedQueryContext
                 .Verify(mock => mock.CreateObjectAsync(It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
