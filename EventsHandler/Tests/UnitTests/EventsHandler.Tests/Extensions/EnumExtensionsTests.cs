@@ -3,6 +3,7 @@
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotifyNL;
+using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Enums.v2;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,41 @@ namespace EventsHandler.UnitTests.Extensions
     [TestFixture]
     public sealed class EnumExtensionsTests
     {
+        #region GetEnumName
+        [Test]
+        public void GetEnumName_WithJsonPropertyNameAttribute_ReturnsCustomEnumOptionName()
+        {
+            // Act
+            string actualResult = IdTypes.Bsn.GetEnumName();  // NOTE: Contains [JsonPropertyName] attribute
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo("bsn"));
+        }
+
+        [Test]
+        public void GetEnumName_WithoutJsonPropertyNameAttribute_ReturnsDefaultEnumOptionName()
+        {
+            // Act
+            string actualResult = HealthCheck.OK_Valid.GetEnumName();  // NOTE: Doesn't contain [JsonPropertyName] attribute
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo("OK_Valid"));
+        }
+
+        [Test]
+        public void GetEnumName_NotDefined_ReturnsDefaultEnumOptionName()
+        {
+            // Arrange
+            const int testNumber = 999;
+
+            // Act
+            string actualResult = ((IdTypes)testNumber).GetEnumName();  // NOTE: This enum option is not defined in the target enum
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(testNumber.ToString()));
+        }
+        #endregion
+
         #region ConvertToLogLevel
         [TestCase(ProcessingResult.Success, LogLevel.Information)]
         [TestCase(ProcessingResult.Skipped, LogLevel.Warning)]
