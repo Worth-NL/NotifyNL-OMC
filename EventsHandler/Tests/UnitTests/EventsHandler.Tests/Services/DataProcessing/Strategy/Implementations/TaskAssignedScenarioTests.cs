@@ -312,9 +312,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region GetPersonalizationAsync()
         [TestCase(DistributionChannels.Email, false, "-", "no")]
-        [TestCase(DistributionChannels.Email, true, "woensdag 24 juli 2024 16:10", "yes")]
+        [TestCase(DistributionChannels.Email, true, "2024-07-24", "yes")]
         [TestCase(DistributionChannels.Sms, false, "-", "no")]
-        [TestCase(DistributionChannels.Sms, true, "woensdag 24 juli 2024 16:10", "yes")]
+        [TestCase(DistributionChannels.Sms, true, "2024-07-24", "yes")]
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
