@@ -3,59 +3,49 @@
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
+namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
 {
     /// <summary>
     /// The data related to the <see cref="Record"/> retrieved from "Objecten" Web API service.
     /// </summary>
+    /// <remarks>
+    ///   Version used by The Hague.
+    /// </remarks>
+    /// <seealso cref="CommonTaskData"/>
     /// <seealso cref="IJsonSerializable"/>
     public struct Data : IJsonSerializable
     {
-        /// <summary>
-        /// The reference to <see cref="Case"/> in <see cref="Uri"/> format:
-        /// <code>
-        /// http(s)://Domain/ApiEndpoint/[UUID]
-        /// </code>
-        /// </summary>
+        /// <inheritdoc cref="CommonTaskData.CaseId"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
         public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
-        /// <summary>
-        /// The title of the <see cref="TaskObject"/>.
-        /// </summary>
+        /// <inheritdoc cref="CommonTaskData.Title"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("title")]
         [JsonPropertyOrder(1)]
         public string Title { get; internal set; } = string.Empty;
 
-        /// <summary>
-        /// The status of the <see cref="TaskObject"/>.
-        /// </summary>
+        /// <inheritdoc cref="CommonTaskData.Status"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(2)]
         public TaskStatuses Status { get; internal set; }
 
-        /// <summary>
-        /// The deadline by which the <see cref="TaskObject"/> should be completed.
-        /// </summary>
+        /// <inheritdoc cref="CommonTaskData.ExpirationDate"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("verloopdatum")]
         [JsonPropertyOrder(3)]
         public DateTime ExpirationDate { get; internal set; }
 
-        /// <summary>
-        /// The identification details of the <see cref="TaskObject"/>.
-        /// </summary>
+        /// <inheritdoc cref="CommonTaskData.Identification"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]

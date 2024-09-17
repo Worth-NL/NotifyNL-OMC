@@ -9,7 +9,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
     /// <summary>
     /// Converts subject data from different versions of "OpenKlant" into a unified <see cref="CommonPartyData"/>.
     /// </summary>
-    internal static class CitizenDataConverter
+    internal static class CommonPartyDataConverter
     {
         /// <summary>
         /// Converts <see cref="CitizenResult"/> from "OpenKlant" (1.0) Web API service.
