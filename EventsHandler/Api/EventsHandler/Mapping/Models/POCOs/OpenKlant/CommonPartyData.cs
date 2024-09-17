@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
     ///   Common DTO for all versions of "OpenKlant" Web API service.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public readonly struct CommonPartyData : IJsonSerializable
+    internal readonly struct CommonPartyData : IJsonSerializable
     {
         /// <summary>
         /// The first name of the citizen.
@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         /// <summary>
         /// The last name (surname) of the citizen.
         /// </summary>
-        public string Surname { get; internal init; }
+        internal string Surname { get; init; }
 
         /// <inheritdoc cref="DistributionChannels"/>
         internal DistributionChannels DistributionChannel { get; init; }
@@ -46,18 +46,5 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         /// The telephone number of the citizen.
         /// </summary>
         internal string TelephoneNumber { get; init; }
-
-        /// <summary>
-        /// Determines whether this instance is not initialized properly.
-        /// </summary>
-        internal bool IsDefault()
-        {
-            return this.DistributionChannel == DistributionChannels.Unknown &&
-                   this.Name                == null &&
-                   this.SurnamePrefix       == null &&
-                   this.Surname             == null &&
-                   this.EmailAddress        == null &&
-                   this.TelephoneNumber     == null;
-        }
     }
 }
