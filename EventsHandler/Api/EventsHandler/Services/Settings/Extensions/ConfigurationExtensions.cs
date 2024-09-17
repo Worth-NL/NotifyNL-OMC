@@ -26,6 +26,7 @@ namespace EventsHandler.Services.Settings.Extensions
             return configuration.GetValue<bool>(key);
         }
 
+        private static readonly string s_fallbackByteValue = $"{default(byte)}";
         private static string? s_omcWorkflowVersionKey;
         private static byte? s_omcWorkflowVersionValue;
 
@@ -41,7 +42,7 @@ namespace EventsHandler.Services.Settings.Extensions
 
             return s_omcWorkflowVersionValue ??=
                    byte.Parse(
-                       Environment.GetEnvironmentVariable(s_omcWorkflowVersionKey) ?? "0");
+                       Environment.GetEnvironmentVariable(s_omcWorkflowVersionKey) ?? s_fallbackByteValue);
         }
         #endregion
 
