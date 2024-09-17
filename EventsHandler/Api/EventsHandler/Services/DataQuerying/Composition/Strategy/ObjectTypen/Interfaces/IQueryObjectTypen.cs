@@ -20,12 +20,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
 
         #region Parent (Create message object)
         /// <summary>
-        /// Prepares an object JSON body that can be used by "Objecten" Web API service.
+        /// Prepares an object type JSON representation following a schema from "ObjectTypen" Web API service.
         /// </summary>
         /// <param name="objectTypeId">The object type ID.</param>
-        /// <param name="dataJson">The data JSON.</param>
+        /// <param name="dataJson">The data JSON (without outer curly brackets).</param>
         /// <returns>
-        ///   Specific JSON used to define objects from "Objecten" Web API service.
+        ///   The JSON representation of object type.
         /// </returns>
         internal string PrepareObjectJsonBody(Guid objectTypeId, string dataJson)
         {
