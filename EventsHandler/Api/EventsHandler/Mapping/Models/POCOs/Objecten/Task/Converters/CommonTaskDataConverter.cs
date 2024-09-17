@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
+using EventsHandler.Services.Settings.Extensions;
 using ConfigurationExtensions = EventsHandler.Services.Settings.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
@@ -49,10 +50,11 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         }
 
         #region Helper methods
-        private const string CaseUri = "https://{0}/zaken/api/v1/zaken/{1}";
+        private const string CaseUri = "https://wwww.{0}/zaken/api/v1/zaken/{1}";
 
         private static Uri RecreateCaseUri(Guid caseId)
-            => new(string.Format(CaseUri, ConfigurationExtensions.OpenZaakDomain(), caseId));
+            => string.Format(CaseUri, ConfigurationExtensions.OpenZaakDomain(), caseId)
+                     .GetValidUri();
         #endregion
     }
 }
