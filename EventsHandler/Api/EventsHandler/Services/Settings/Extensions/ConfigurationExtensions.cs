@@ -43,7 +43,7 @@ namespace EventsHandler.Services.Settings.Extensions
                                      $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
                                     .ToUpper();
 
-            return s_openZaakDomainValue ??= Environment.GetEnvironmentVariable(s_openZaakDomainKey) ?? string.Empty;
+            return s_openZaakDomainValue ??= Environment.GetEnvironmentVariable(s_openZaakDomainKey) ?? "domain";
         }
         #endregion
 
