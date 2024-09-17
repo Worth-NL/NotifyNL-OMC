@@ -1,15 +1,43 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Enums.v2;
+using Microsoft.Extensions.Logging;
 
 namespace EventsHandler.UnitTests.Extensions
 {
     [TestFixture]
     public sealed class EnumExtensionsTests
     {
+        #region ConvertToLogLevel
+        [TestCase(ProcessingResult.Success, LogLevel.Information)]
+        [TestCase(ProcessingResult.Skipped, LogLevel.Warning)]
+        [TestCase(ProcessingResult.Aborted, LogLevel.Warning)]
+        [TestCase(ProcessingResult.NotPossible, LogLevel.Error)]
+        [TestCase(ProcessingResult.Failure, LogLevel.Error)]
+        public void ConvertToLogLevel_ForValidEnum_ReturnsExpectedConvertedValue(ProcessingResult testStartValue, LogLevel expectedEndValue)
+        {
+            // Act
+            LogLevel actualValue = testStartValue.ConvertToLogLevel();
+
+            // Assert
+            Assert.That(actualValue, Is.EqualTo(expectedEndValue));
+        }
+
+        [TestCase((ProcessingResult)666, LogLevel.None)]
+        public void ConvertToLogLevel_ForInvalidEnum_ReturnsExpectedConvertedValue(ProcessingResult testStartValue, LogLevel expectedEndValue)
+        {
+            // Act
+            LogLevel actualValue = testStartValue.ConvertToLogLevel();
+
+            // Assert
+            Assert.That(actualValue, Is.EqualTo(expectedEndValue));
+        }
+        #endregion
+
         #region ConvertToNotifyMethod
         [TestCase(NotificationTypes.Email, NotifyMethods.Email)]
         [TestCase(NotificationTypes.Sms, NotifyMethods.Sms)]
