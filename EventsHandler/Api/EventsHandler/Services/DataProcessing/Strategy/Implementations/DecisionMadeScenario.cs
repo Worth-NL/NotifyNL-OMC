@@ -199,7 +199,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
-            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(
+            RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
                 this._messageObjectTypeGuid,
                 dataJson: PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris));
 
