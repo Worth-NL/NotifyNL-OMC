@@ -4,7 +4,7 @@ using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Configuration;
 
-namespace EventsHandler.Extensions
+namespace EventsHandler.Services.Settings.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="IConfiguration"/> used in <see cref="Program"/>.cs
