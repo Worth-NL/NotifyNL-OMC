@@ -64,9 +64,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseStatuses> TryGetCaseStatusesAsync(IQueryBase queryBase, Uri? caseUri)
         {
-            // Predefined URL components
-            string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
-            
             // Case #1: The Case URI was provided
             // Case #2: The Case URI needs to obtained from elsewhere
             if ((caseUri ??= queryBase.Notification.MainObjectUri).IsNotCase())
@@ -74,6 +71,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
+            // Predefined URL components
+            string statusesEndpoint = $"https://{GetDomain()}/zaken/api/v1/statussen";
+            
             // Request URL
             Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");
 

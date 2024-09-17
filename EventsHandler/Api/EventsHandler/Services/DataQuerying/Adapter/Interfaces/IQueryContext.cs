@@ -154,7 +154,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         #region IQueryObjecten
         /// <inheritdoc cref="IQueryObjecten.GetTaskAsync(IQueryBase)"/>
-        internal Task<TaskObject> GetTaskAsync();
+        internal Task<CommonTaskData> GetTaskAsync();
 
         /// <inheritdoc cref="IQueryObjecten.GetMessageAsync(IQueryBase)"/>
         internal Task<MessageObject> GetMessageAsync();
