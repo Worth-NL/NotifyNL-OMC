@@ -256,7 +256,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult.Id, Is.Not.Default);
+                Assert.That(actualResult.CaseUri, Is.Not.Default);
+                Assert.That(actualResult.CaseId, Is.Not.Default);
                 Assert.That(actualResult.Title, Is.Not.Default);
                 Assert.That(actualResult.Status, Is.Not.Default);
                 Assert.That(actualResult.ExpirationDate, Is.Not.Default);
@@ -604,8 +605,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             var documents = new CommonTaskData
             {
-                Uri = new Uri(testUrl),
-                Id = new Guid(testGuid),
+                CaseUri = new Uri(testUrl),
+                CaseId = new Guid(testGuid),
                 Title = TestString,
                 Status = TaskStatuses.Open,
                 ExpirationDate = DateTime.MaxValue,
@@ -622,8 +623,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             const string expectedResult =
                 $"{{" +
-                  $"\"Uri\":\"{testUrl}\"," +
-                  $"\"Id\":\"{testGuid}\"," +
+                  $"\"CaseUri\":\"{testUrl}\"," +
+                  $"\"CaseId\":\"{testGuid}\"," +
                   $"\"Title\":\"text\"," +
                   $"\"Status\":\"open\"," +
                   $"\"ExpirationDate\":\"9999-12-31T23:59:59.9999999\"," +
