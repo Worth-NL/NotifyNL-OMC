@@ -202,47 +202,49 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         private const string TaskDataJsonNijmegen =
             $"{{" +
-              $"\"data\":{{" +
-                $"\"titel\":\"Check loan\"," +
-                $"\"status\":\"open\"," +
-                $"\"soort\":\"formtaak\"," +
-                $"\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
-                $"\"identificatie\":{{" +
-                  $"\"type\":\"bsn\"," +
-                  $"\"value\":\"82395551\"" +
-                $"}}," +
-                $"\"koppeling\":{{" +
-                  $"\"registratie\":\"zaak\"," +
-                  $"\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
-                $"}}," +
-                $"\"url\":{{" +
-                  $"\"uri\":\"https://google.com\"" +
-                $"}}," +
-                $"\"portaalformulier\":{{" +
-                  $"\"formulier\":{{" +
-                    $"\"soort\":\"url\"," +
-                    $"\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
+              $"\"record\":{{" +
+                $"\"data\":{{" +
+                  $"\"titel\":\"Check loan\"," +
+                  $"\"status\":\"open\"," +
+                  $"\"soort\":\"formtaak\"," +
+                  $"\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
+                  $"\"identificatie\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"82395551\"" +
                   $"}}," +
-                  $"\"data\":{{" +
-                    $"\"voornaam\":\"Jan\"," +
-                    $"\"achternaam\":\"Smit\"," +
-                    $"\"toestemming\":true," +
-                    $"\"geboortedatum\":\"01-01-1970\"" +
+                  $"\"koppeling\":{{" +
+                    $"\"registratie\":\"zaak\"," +
+                    $"\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
                   $"}}," +
-                  $"\"verzonden_data\":{{" +
-                    $"\"voornaam\":\"Jan\"," +
-                    $"\"achternaam\":\"Smit\"," +
-                    $"\"toestemming\":false," +
-                    $"\"geboortedatum\":\"01-01-1971\"" +
-                  $"}}" +
-                $"}}," +
-                $"\"ogonebetaling\":{{" +
-                  $"\"bedrag\":147.43," +
-                  $"\"betaalkenmerk\":\"abcdef1234\"," +
-                  $"\"pspid\":\"MyID\"" +
-                $"}}," +
-                $"\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
-                $"\"eigenaar\":\"gzac-sd\"" +
+                  $"\"url\":{{" +
+                    $"\"uri\":\"https://google.com\"" +
+                  $"}}," +
+                  $"\"portaalformulier\":{{" +
+                    $"\"formulier\":{{" +
+                      $"\"soort\":\"url\"," +
+                      $"\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
+                    $"}}," +
+                    $"\"data\":{{" +
+                      $"\"voornaam\":\"Jan\"," +
+                      $"\"achternaam\":\"Smit\"," +
+                      $"\"toestemming\":true," +
+                      $"\"geboortedatum\":\"01-01-1970\"" +
+                    $"}}," +
+                    $"\"verzonden_data\":{{" +
+                      $"\"voornaam\":\"Jan\"," +
+                      $"\"achternaam\":\"Smit\"," +
+                      $"\"toestemming\":false," +
+                      $"\"geboortedatum\":\"01-01-1971\"" +
+                    $"}}" +
+                  $"}}," +
+                  $"\"ogonebetaling\":{{" +
+                    $"\"bedrag\":147.43," +
+                    $"\"betaalkenmerk\":\"abcdef1234\"," +
+                    $"\"pspid\":\"MyID\"" +
+                  $"}}," +
+                  $"\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
+                  $"\"eigenaar\":\"gzac-sd\"" +
+                $"}}" +
               $"}}" +
             $"}}";
 
