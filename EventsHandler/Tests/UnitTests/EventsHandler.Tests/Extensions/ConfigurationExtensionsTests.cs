@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.Extensions;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,20 @@ namespace EventsHandler.UnitTests.Extensions
     [TestFixture]
     internal sealed class ConfigurationExtensionsTests
     {
-        private IConfiguration? _configuration;
+        private IConfiguration _appSettingsConfiguration = null!;
+        private WebApiConfiguration _webApiConfiguration = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            this._configuration = ConfigurationHandler.GetConfiguration();
+            this._appSettingsConfiguration = ConfigurationHandler.GetConfiguration();
+            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment_v1);
+        }
+
+        [OneTimeTearDown]
+        public void CleanupTests()
+        {
+            this._webApiConfiguration.Dispose();
         }
 
         #region Specific GetValue methods
@@ -25,25 +34,26 @@ namespace EventsHandler.UnitTests.Extensions
         public void Encryption_ReturnsExpectedValue()
         {
             // Act
-            bool actualValue = this._configuration!.IsEncryptionAsymmetric();
+            bool actualValue = this._appSettingsConfiguration.IsEncryptionAsymmetric();
 
             // Assert
             Assert.That(actualValue, Is.False);
         }
 
         [Test]
-        public void Features_ReturnsExpectedValue()
+        public void OpenZaakDomain_ReturnsExpectedValue()
         {
             // Act
-            byte actualValue = ConfigurationExtensions.OmcWorkflowVersion();
+            string actualValue = ConfigurationExtensions.OpenZaakDomain(this._webApiConfiguration);
 
             // Assert
-            Assert.That(actualValue, Is.GreaterThanOrEqualTo(0));
+            Assert.That(actualValue, Is.Not.Empty);
         }
         #endregion
 
         #region GetNotEmpty<T>
         [TestCase("")]
+        [TestCase(" ")]
         public void ValidateNotEmpty_ForInvalidValue_ThrowsArgumentException(string testValue)
         {
             // Act & Assert

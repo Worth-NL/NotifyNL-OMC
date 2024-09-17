@@ -23,7 +23,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// </summary>
         [JsonInclude]
         [JsonPropertyOrder(0)]
-        internal Uri? Uri { get; init; }  // NOTE: Some task data might not have it
+        internal Uri CaseUri { get; init; }  // NOTE: Some task data might not have it (recreating of URI is necessary)
 
         /// <summary>
         /// The ID of the related object.
@@ -31,7 +31,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(1)]
-        internal Guid Id { get; init; }
+        internal Guid CaseId { get; init; }
 
         /// <summary>
         /// The title of the task.

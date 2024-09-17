@@ -71,7 +71,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
-                                      this._taskData.Uri));                 // 1. Case URI
+                                      this._taskData.CaseUri));                 // 1. Case URI
             
             // Validation #4: The case type identifier must be whitelisted
             ValidateCaseId(
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
             
-            Case @case = await this._queryContext.GetCaseAsync(this._taskData.Uri);
+            Case @case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             
             lock (s_padlock)
             {
