@@ -4,7 +4,7 @@ using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Configuration;
 
-namespace EventsHandler.Extensions
+namespace EventsHandler.Services.Settings.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="IConfiguration"/> used in <see cref="Program"/>.cs
@@ -26,22 +26,24 @@ namespace EventsHandler.Extensions
             return configuration.GetValue<bool>(key);
         }
 
-        private static string? s_omcWorkflowVersionKey;
-        private static byte? s_omcWorkflowVersionValue;
+        private static string? s_openZaakDomainKey;
+        private static string? s_openZaakDomainValue;
 
-        /// <summary>
-        /// Gets the version of Open services ("OpenNotificaties", "OpenZaak", "OpenKlant") which should be used in business logic.
-        /// </summary>
-        internal static byte OmcWorkflowVersion()
+        internal static string OpenZaakDomain(WebApiConfiguration? configuration = null)
         {
-            s_omcWorkflowVersionKey ??= ($"{nameof(WebApiConfiguration.OMC)}_" +
-                                         $"{nameof(WebApiConfiguration.OMC.Features)}_" +
-                                         $"{nameof(WebApiConfiguration.OMC.Features.Workflow_Version)}")
-                                        .ToUpper();
+            // Case #1: Instance usage
+            if (configuration != null)
+            {
+                return configuration.User.Domain.OpenZaak();
+            }
 
-            return s_omcWorkflowVersionValue ??=
-                   byte.Parse(
-                       Environment.GetEnvironmentVariable(s_omcWorkflowVersionKey) ?? "0");
+            // Case #2: Static usage
+            s_openZaakDomainKey ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                     $"{nameof(WebApiConfiguration.User.Domain)}_" +
+                                     $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
+                                    .ToUpper();
+
+            return s_openZaakDomainValue ??= Environment.GetEnvironmentVariable(s_openZaakDomainKey) ?? "domain";
         }
         #endregion
 
@@ -55,15 +57,11 @@ namespace EventsHandler.Extensions
             return value switch
             {
                 string stringValue => string.IsNullOrWhiteSpace(stringValue)
-                    ? throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
-                    : value,
-
-                object objectValue => objectValue == null
-                    ? throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
+                    ? ThrowArgumentException<T>(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
                     : value,
 
                 _ => value ??  // Valid value
-                     throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key))
+                     ThrowArgumentException<T>(Resources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
             };
         }
 
@@ -75,7 +73,7 @@ namespace EventsHandler.Extensions
         {
             return !value.StartsWith(DefaultValues.Request.HttpProtocol)  // HTTPS will be also handled this way
                 ? value
-                : throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ContainsHttp, value));
+                : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsHttp, value);
         }
 
         /// <summary>
@@ -86,7 +84,7 @@ namespace EventsHandler.Extensions
         {
             return !value.Contains('/')
                 ? value
-                : throw new ArgumentException(string.Format(Resources.Configuration_ERROR_ContainsEndpoint, value));
+                : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsEndpoint, value);
         }
         #endregion
 
@@ -99,7 +97,7 @@ namespace EventsHandler.Extensions
         {
             return Guid.TryParse(value, out Guid createdGuid)
                 ? createdGuid
-                : throw new ArgumentException(string.Format(Resources.Configuration_ERROR_InvalidTemplateId, value));
+                : ThrowArgumentException<Guid>(Resources.Configuration_ERROR_InvalidTemplateId, value);
         }
         
         /// <summary>
@@ -111,7 +109,14 @@ namespace EventsHandler.Extensions
             return Uri.TryCreate(value, UriKind.Absolute, out Uri? createdUri) &&
                    createdUri != DefaultValues.Models.EmptyUri
                 ? createdUri
-                : throw new ArgumentException(string.Format(Resources.Configuration_ERROR_InvalidUri, value));
+                : ThrowArgumentException<Uri>(Resources.Configuration_ERROR_InvalidUri, value);
+        }
+        #endregion
+
+        #region Helper methods
+        private static T ThrowArgumentException<T>(string errorMessage, string key)
+        {
+            throw new ArgumentException(string.Format(errorMessage, key));
         }
         #endregion
     }
