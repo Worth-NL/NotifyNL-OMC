@@ -85,7 +85,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <returns>
         ///   The answer whether the object was created successfully.
         /// </returns>
-        internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string jsonBody)
+        internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
             string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
@@ -96,7 +96,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
             return await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: createObjectUri,
-                jsonBody);
+                objectJsonBody);
         }
         #endregion
 
