@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     internal sealed class TaskAssignedScenario : BaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private Data _taskData;
+        private CommonTaskData _taskData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
@@ -55,7 +55,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
             }
 
-            this._taskData = (await this._queryContext.GetTaskAsync()).Record.Data;
+            this._taskData = await this._queryContext.GetTaskAsync();
 
             // Validation #2: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
