@@ -256,11 +256,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return $"{{" +
                      $"\"onderwerp\":\"{subject}\"," +
                      $"\"berichttekst\":\"{body}\"," +
-                     $"\"publicatiedatum\":\"{this._decision.PublicationDate}\"," +
+                     $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
                      $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
-                     $"\"handelingsperspectief\":\"{string.Empty}\"," +  // TODO: To be filled
+                     $"\"handelingsperspectief\":\"TODO\"," +  // TODO: To be filled
                      $"\"geopend\":false," +
-                     $"\"berichttype\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
+                     $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
                      $"\"identificatie\":{{" +
                        $"\"type\":\"bsn\"," +
                        $"\"value\":\"{this._bsnNumber}\"" +
