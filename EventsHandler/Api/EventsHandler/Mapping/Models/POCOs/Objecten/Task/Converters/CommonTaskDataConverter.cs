@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
+using ConfigurationExtensions = EventsHandler.Services.Settings.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
 {
@@ -19,8 +20,8 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         {
             return new CommonTaskData
             {
-                Uri            = taskDataHague.Record.Data.CaseUri,
-                Id             = taskDataHague.Record.Data.CaseUri.GetGuid(),
+                CaseUri        = taskDataHague.Record.Data.CaseUri,
+                CaseId         = taskDataHague.Record.Data.CaseUri.GetGuid(),  // NOTE: URI is given, GUID needs to be extracted
                 Title          = taskDataHague.Record.Data.Title,
                 Status         = taskDataHague.Record.Data.Status,
                 ExpirationDate = taskDataHague.Record.Data.ExpirationDate,
@@ -38,13 +39,20 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         {
             return new CommonTaskData
             {
-                Uri            = null,
-                Id             = taskNijmegen.Coupling.Id,
+                CaseUri        = RecreateCaseUri(taskNijmegen.Coupling.Id),  // NOTE: GUID is given, URI needs to be recreated
+                CaseId         = taskNijmegen.Coupling.Id,
                 Title          = taskNijmegen.Title,
                 Status         = taskNijmegen.Status,
                 ExpirationDate = taskNijmegen.ExpirationDate,
                 Identification = taskNijmegen.Identification
             };
         }
+
+        #region Helper methods
+        private const string CaseUri = "https://{0}/zaken/api/v1/zaken/{1}";
+
+        private static Uri RecreateCaseUri(Guid caseId)
+            => new(string.Format(CaseUri, ConfigurationExtensions.OpenZaakDomain(), caseId));
+        #endregion
     }
 }
