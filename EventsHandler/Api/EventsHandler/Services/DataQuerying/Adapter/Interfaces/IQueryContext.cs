@@ -162,5 +162,10 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
         internal Task<RequestResponse> CreateObjectAsync(string objectJsonBody);
         #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(Guid, string)"/>
+        internal string PrepareObjectJsonBody(Guid objectTypeId, string dataJson);
+        #endregion
     }
 }
