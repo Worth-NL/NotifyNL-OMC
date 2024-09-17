@@ -4,6 +4,7 @@ using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Extensions;
 using EventsHandler.Services.Settings.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
