@@ -40,12 +40,12 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         {
             return new CommonTaskData
             {
-                CaseUri        = RecreateCaseUri(taskNijmegen.Coupling.Id),  // NOTE: GUID is given, URI needs to be recreated
-                CaseId         = taskNijmegen.Coupling.Id,
-                Title          = taskNijmegen.Title,
-                Status         = taskNijmegen.Status,
-                ExpirationDate = taskNijmegen.ExpirationDate,
-                Identification = taskNijmegen.Identification
+                CaseUri        = RecreateCaseUri(taskNijmegen.Data.Coupling.Id),  // NOTE: GUID is given, URI needs to be recreated
+                CaseId         = taskNijmegen.Data.Coupling.Id,
+                Title          = taskNijmegen.Data.Title,
+                Status         = taskNijmegen.Data.Status,
+                ExpirationDate = taskNijmegen.Data.ExpirationDate,
+                Identification = taskNijmegen.Data.Identification
             };
         }
 
