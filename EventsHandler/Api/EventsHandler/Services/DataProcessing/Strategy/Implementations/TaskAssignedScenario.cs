@@ -16,7 +16,6 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
-using System.Globalization;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -98,8 +97,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
-            string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
+            bool isValid = IsValid(this._taskData.ExpirationDate);
+            string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(isValid);
             
             Case @case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             
@@ -120,29 +120,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
         }
 
-        private static readonly TimeZoneInfo s_cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-        private static readonly CultureInfo s_dutchCulture = new("nl-NL");
-
-        private static string GetFormattedExpirationDate(DateTime expirationDate)
+        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
         {
-            if (!IsValid(expirationDate))
-            {
-                return DefaultValues.Models.DefaultEnumValueName;
-            }
-
-            // Convert time zone from UTC to CET (if necessary)
-            if (expirationDate.Kind == DateTimeKind.Utc)
-            {
-                expirationDate = TimeZoneInfo.ConvertTimeFromUtc(expirationDate, s_cetTimeZone);
-            }
-
-            // Formatting the date and time
-            return expirationDate.ToString("f", s_dutchCulture);
+            return !isValid
+                ? DefaultValues.Models.DefaultEnumValueName
+                : expirationDate.ConvertToDutchDateString();
         }
 
-        private static string GetExpirationDateProvided(DateTime expirationDate)
+        private static string GetExpirationDateProvided(bool isValid)
         {
-            return IsValid(expirationDate) ? "yes" : "no";
+            return isValid ? "yes" : "no";
         }
 
         private static bool IsValid(DateTime expirationDate)
