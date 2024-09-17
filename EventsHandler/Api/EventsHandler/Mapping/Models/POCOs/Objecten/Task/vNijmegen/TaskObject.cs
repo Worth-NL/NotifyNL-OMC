@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
@@ -12,45 +11,18 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
     /// <remarks>
     ///   Version used by Nijmegen.
     /// </remarks>
-    /// <seealso cref="CommonTaskData"/>
     /// <seealso cref="IJsonSerializable"/>
     public struct TaskObject : IJsonSerializable
     {
-        /// <inheritdoc cref="CommonTaskData.Title"/>
+        /// <summary>
+        /// The data related to the <see cref="TaskObject"/>.
+        /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("titel")]
+        [JsonPropertyName("data")]
         [JsonPropertyOrder(0)]
-        public string Title { get; internal set; } = string.Empty;
-
-        /// <inheritdoc cref="CommonTaskData.Status"/>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("status")]
-        [JsonPropertyOrder(1)]
-        public TaskStatuses Status { get; internal set; }
-
-        /// <inheritdoc cref="CommonTaskData.ExpirationDate"/>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("verloopdatum")]
-        [JsonPropertyOrder(2)]
-        public DateTime ExpirationDate { get; internal set; }
-
-        /// <inheritdoc cref="CommonTaskData.Identification"/>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("identificatie")]
-        [JsonPropertyOrder(3)]
-        public Identification Identification { get; internal set; }
-
-        /// <inheritdoc cref="CommonTaskData.Identification"/>
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("koppeling")]
-        [JsonPropertyOrder(4)]
-        public Coupling Coupling { get; internal set; }
-
+        public Data Data { get; internal set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskObject"/> struct.
         /// </summary>

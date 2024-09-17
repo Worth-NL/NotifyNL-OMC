@@ -142,107 +142,109 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         private const string TaskDataJsonTheHague =
-        $"{{" +
-          $"\"url\":\"https://objecten.test.notifynl.nl/api/v1/objects/ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
-          $"\"uuid\":\"ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
-          $"\"type\":\"https://objecttypen.test.notifynl.nl/api/v1/objecttypes/3e852115-277a-4570-873a-9a64be3aeb34\"," +
-          $"\"record\":{{" +   // Multiple nested models should be deserialized properly
-            $"\"index\":1," +
-            $"\"typeVersion\":1," +
-            $"\"data\":{{" +
-              $"\"data\":{{" +
-                $"\"informatieverzoek\":{{" +
-                  $"\"deadline\":\"2024-05-03T21:59:59.999Z\"," +
-                  $"\"toelichting\":\"\"," +
-                  $"\"opleidingVolgendePersonen\":null," +
-                  $"\"opTeVragenBenodigdeInformatie\":{{" +
-                    $"\"partnerID\":false," +
-                    $"\"jaarrekening\":true," +
-                    $"\"balansrekening\":false," +
-                    $"\"specificatiePensioen\":false," +
-                    $"\"bewijsVanInschrijving\":false," +
-                    $"\"laatsteInkomstenSpecificatie\":false," +
-                    $"\"bankafschriftenAfgelopenMaand\":false," +
-                    $"\"belastingaanslagAfgelopenJaar\":false," +
-                    $"\"belastingaangifteAfgelopenJaar\":true," +
-                    $"\"bankafschriftenZakelijkeRekeningen\":false," +
-                    $"\"laatsteInkomstenSpecificatiePartner\":false," +
-                    $"\"specifiekeBankafschriftenPerPeriode\":false," +
-                    $"\"specifiekeBankafschriftenAfgelopenMaand\":false," +
-                    $"\"bankafschriftenZakelijkeRekeningenPartner\":false" +
+            $"{{" +
+              $"\"url\":\"https://objecten.test.notifynl.nl/api/v1/objects/ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
+              $"\"uuid\":\"ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
+              $"\"type\":\"https://objecttypen.test.notifynl.nl/api/v1/objecttypes/3e852115-277a-4570-873a-9a64be3aeb34\"," +
+              $"\"record\":{{" +   // Multiple nested models should be deserialized properly
+                $"\"index\":1," +
+                $"\"typeVersion\":1," +
+                $"\"data\":{{" +
+                  $"\"data\":{{" +
+                    $"\"informatieverzoek\":{{" +
+                      $"\"deadline\":\"2024-05-03T21:59:59.999Z\"," +
+                      $"\"toelichting\":\"\"," +
+                      $"\"opleidingVolgendePersonen\":null," +
+                      $"\"opTeVragenBenodigdeInformatie\":{{" +
+                        $"\"partnerID\":false," +
+                        $"\"jaarrekening\":true," +
+                        $"\"balansrekening\":false," +
+                        $"\"specificatiePensioen\":false," +
+                        $"\"bewijsVanInschrijving\":false," +
+                        $"\"laatsteInkomstenSpecificatie\":false," +
+                        $"\"bankafschriftenAfgelopenMaand\":false," +
+                        $"\"belastingaanslagAfgelopenJaar\":false," +
+                        $"\"belastingaangifteAfgelopenJaar\":true," +
+                        $"\"bankafschriftenZakelijkeRekeningen\":false," +
+                        $"\"laatsteInkomstenSpecificatiePartner\":false," +
+                        $"\"specifiekeBankafschriftenPerPeriode\":false," +
+                        $"\"specifiekeBankafschriftenAfgelopenMaand\":false," +
+                        $"\"bankafschriftenZakelijkeRekeningenPartner\":false" +
+                      $"}}," +
+                      $"\"specifiekeBankrekeningNummers\":null," +
+                      $"\"bankrekeningNummersSpecifiekePeriode\":null" +
+                    $"}}" +
                   $"}}," +
-                  $"\"specifiekeBankrekeningNummers\":null," +
-                  $"\"bankrekeningNummersSpecifiekePeriode\":null" +
-                $"}}" +
-              $"}}," +
-              $"\"zaak\":\"http://localhost:8001/zaken/api/v1/zaken/f621749d-d222-49b8-9392-eff8723e0922\"," +
-              $"\"title\":\"Aanleveren informatie\"," +
-              $"\"status\":\"open\"," +  // Enum should be deserialized properly
-              $"\"formulier\":{{" +
-                $"\"type\":\"url\"," +
-                $"\"value\":\"http://localhost:8010/api/v2/objects/0db2a8a0-1ca8-4395-8a7a-c6293e33b4cd\"" +
-              $"}}," +
-              $"\"verloopdatum\":\"2024-05-03T21:59:59.999Z\"," +
-              $"\"identificatie\":{{" +
-                $"\"type\":\"bsn\"," +
-                $"\"value\":\"569312863\"" +
-              $"}}," +
-              $"\"verzonden_data\":{{" +
-              $"}}," +
-              $"\"verwerker_taak_id\":\"1809f547-d0be-48a9-bba4-a6d7d5f36ba5\"" +
-            $"}}," +
-            $"\"geometry\":null," +
-            $"\"startAt\":\"2053-01-01\"," +
-            $"\"endAt\":null," +
-            $"\"registrationAt\":\"2024-09-04\"," +
-            $"\"correctionFor\":null," +
-            $"\"correctedBy\":null" +
-          $"}}" +
-        $"}}";
+                  $"\"zaak\":\"http://localhost:8001/zaken/api/v1/zaken/f621749d-d222-49b8-9392-eff8723e0922\"," +
+                  $"\"title\":\"Aanleveren informatie\"," +
+                  $"\"status\":\"open\"," +  // Enum should be deserialized properly
+                  $"\"formulier\":{{" +
+                    $"\"type\":\"url\"," +
+                    $"\"value\":\"http://localhost:8010/api/v2/objects/0db2a8a0-1ca8-4395-8a7a-c6293e33b4cd\"" +
+                  $"}}," +
+                  $"\"verloopdatum\":\"2024-05-03T21:59:59.999Z\"," +
+                  $"\"identificatie\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"569312863\"" +
+                  $"}}," +
+                  $"\"verzonden_data\":{{" +
+                  $"}}," +
+                  $"\"verwerker_taak_id\":\"1809f547-d0be-48a9-bba4-a6d7d5f36ba5\"" +
+                $"}}," +
+                $"\"geometry\":null," +
+                $"\"startAt\":\"2053-01-01\"," +
+                $"\"endAt\":null," +
+                $"\"registrationAt\":\"2024-09-04\"," +
+                $"\"correctionFor\":null," +
+                $"\"correctedBy\":null" +
+              $"}}" +
+            $"}}";
 
         private const string TaskDataJsonNijmegen =
-            "{" +
-              "\"titel\":\"Check loan\"," +
-              "\"status\":\"open\"," +
-              "\"soort\":\"formtaak\"," +
-              "\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
-              "\"identificatie\":{" +
-                "\"type\":\"bsn\"," +
-                "\"value\":\"82395551\"" +
-              "}," +
-              "\"koppeling\":{" +
-                "\"registratie\":\"zaak\"," +
-                "\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
-              "}," +
-              "\"url\":{" +
-                "\"uri\":\"https://google.com\"" +
-              "}," +
-              "\"portaalformulier\":{" +
-                "\"formulier\":{" +
-                  "\"soort\":\"url\"," +
-                  "\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
-                "}," +
-                "\"data\":{" +
-                  "\"voornaam\":\"Jan\"," +
-                  "\"achternaam\":\"Smit\"," +
-                  "\"toestemming\":true," +
-                  "\"geboortedatum\":\"01-01-1970\"" +
-                "}," +
-                "\"verzonden_data\":{" +
-                  "\"voornaam\":\"Jan\"," +
-                  "\"achternaam\":\"Smit\"," +
-                  "\"toestemming\":false," +
-                  "\"geboortedatum\":\"01-01-1971\"" +
-                "}" +
-              "}," +
-              "\"ogonebetaling\":{" +
-                "\"bedrag\":147.43," +
-                "\"betaalkenmerk\":\"abcdef1234\"," +
-                "\"pspid\":\"MyID\"" +
-              "}," +
-              "\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
-              "\"eigenaar\":\"gzac-sd\"" +
-            "}";
+            $"{{" +
+              $"\"data\":{{" +
+                $"\"titel\":\"Check loan\"," +
+                $"\"status\":\"open\"," +
+                $"\"soort\":\"formtaak\"," +
+                $"\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
+                $"\"identificatie\":{{" +
+                  $"\"type\":\"bsn\"," +
+                  $"\"value\":\"82395551\"" +
+                $"}}," +
+                $"\"koppeling\":{{" +
+                  $"\"registratie\":\"zaak\"," +
+                  $"\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
+                $"}}," +
+                $"\"url\":{{" +
+                  $"\"uri\":\"https://google.com\"" +
+                $"}}," +
+                $"\"portaalformulier\":{{" +
+                  $"\"formulier\":{{" +
+                    $"\"soort\":\"url\"," +
+                    $"\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
+                  $"}}," +
+                  $"\"data\":{{" +
+                    $"\"voornaam\":\"Jan\"," +
+                    $"\"achternaam\":\"Smit\"," +
+                    $"\"toestemming\":true," +
+                    $"\"geboortedatum\":\"01-01-1970\"" +
+                  $"}}," +
+                  $"\"verzonden_data\":{{" +
+                    $"\"voornaam\":\"Jan\"," +
+                    $"\"achternaam\":\"Smit\"," +
+                    $"\"toestemming\":false," +
+                    $"\"geboortedatum\":\"01-01-1971\"" +
+                  $"}}" +
+                $"}}," +
+                $"\"ogonebetaling\":{{" +
+                  $"\"bedrag\":147.43," +
+                  $"\"betaalkenmerk\":\"abcdef1234\"," +
+                  $"\"pspid\":\"MyID\"" +
+                $"}}," +
+                $"\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
+                $"\"eigenaar\":\"gzac-sd\"" +
+              $"}}" +
+            $"}}";
 
         [TestCase(TaskDataJsonTheHague)]
         [TestCase(TaskDataJsonNijmegen)]
