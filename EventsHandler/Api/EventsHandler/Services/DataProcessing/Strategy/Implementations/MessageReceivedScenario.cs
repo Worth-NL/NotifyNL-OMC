@@ -99,9 +99,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        private static string? s_environmentVariableName;
-
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName()
         /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
         protected override string GetWhitelistName()
         {
