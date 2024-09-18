@@ -284,7 +284,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
     },
 
     "Objecten": {
-      "MessageObjectType_Version": 13,
+      "MessageObjectType_Version": 1,
       "MessageObjectType_Name": "Logius"
     },
 
