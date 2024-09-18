@@ -105,7 +105,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType
-                                              .Replace("{0}", "USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS")), Is.True);
+                                              .Replace("{0}", "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS")), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
