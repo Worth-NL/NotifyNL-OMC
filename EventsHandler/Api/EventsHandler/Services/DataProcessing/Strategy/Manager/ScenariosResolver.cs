@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
@@ -11,6 +12,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
+using TextResources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
@@ -59,11 +61,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Object scenarios
             if (IsObjectScenario(notification))
             {
-                return !this._configuration.User.Whitelist.MessageObjectType_Uuids().Contains(notification.Attributes.ObjectTypeUri.GetGuid())
+                Guid objectTypeUri = notification.Attributes.ObjectTypeUri.GetGuid();
+
+                if (objectTypeUri.Equals(this._configuration.User.Whitelist.TaskObjectType_Uuid()))
+                {
                     // Scenario #4: "Task assigned"
-                    ? this._serviceProvider.GetRequiredService<TaskAssignedScenario>()
+                    return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
+                }
+
+                if (objectTypeUri.Equals(this._configuration.User.Whitelist.MessageObjectType_Uuid()))
+                {
                     // Scenario #6: "Message received"
-                    : this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
+                    return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
+                }
+
+                throw new AbortedNotifyingException(
+                    string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_ObjectTypeGuid,
+                        Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
             }
 
             // Scenario #5: "Decision made"
