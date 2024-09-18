@@ -95,7 +95,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 return;
             }
 
-            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist, caseId, scenarioName));
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId, caseId, scenarioName));
         }
         
         /// <summary>

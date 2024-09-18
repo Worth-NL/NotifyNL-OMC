@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             if (!this.Configuration.User.Whitelist.Message_Allowed())
             {
                 throw new AbortedNotifyingException(
-                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessagesForbidden, GetWhitelistName()));
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden, GetWhitelistEnvVarName()));
             }
 
             // Setup
