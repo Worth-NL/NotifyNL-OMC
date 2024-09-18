@@ -880,8 +880,8 @@ namespace EventsHandler.Services.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal HashSet<Guid> MessageObjectType_Uuids()
-                    => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuids));
+                internal HashSet<Guid> DecisionInfoObjectType_Uuids()
+                    => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
 
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
