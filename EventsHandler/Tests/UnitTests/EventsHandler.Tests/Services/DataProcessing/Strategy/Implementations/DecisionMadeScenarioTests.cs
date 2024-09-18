@@ -492,8 +492,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
 
             this._mockedQueryContext
-                .Setup(mock => mock.PrepareObjectJsonBody(
-                    It.IsAny<Guid>(), It.IsAny<string>()))
+                .Setup(mock => mock.PrepareObjectJsonBody(It.IsAny<string>()))
                 .Returns(string.Empty);
 
             this._mockedQueryContext
@@ -616,8 +615,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Times.Exactly(getInfoObjectInvokeCount));
 
             this._mockedQueryContext  // Dependent queries
-                .Verify(mock => mock.PrepareObjectJsonBody(
-                    It.IsAny<Guid>(), It.IsAny<string>()),
+                .Verify(mock => mock.PrepareObjectJsonBody(It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
             this._mockedQueryContext
                 .Verify(mock => mock.CreateObjectAsync(It.IsAny<string>()),
