@@ -22,15 +22,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <summary>
         /// Prepares an object type JSON representation following a schema from "ObjectTypen" Web API service.
         /// </summary>
-        /// <param name="objectTypeId">The object type ID.</param>
         /// <param name="dataJson">The data JSON (without outer curly brackets).</param>
         /// <returns>
         ///   The JSON representation of object type.
         /// </returns>
-        internal string PrepareObjectJsonBody(Guid objectTypeId, string dataJson)
+        internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/api/v1/objecttypes/{objectTypeId}\"," +
+                     $"\"type\":\"https://{GetDomain()}/api/v1/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
