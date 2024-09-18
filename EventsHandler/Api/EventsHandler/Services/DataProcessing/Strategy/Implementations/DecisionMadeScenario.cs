@@ -33,7 +33,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     {
         private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
-        private Guid _messageObjectTypeGuid;
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
@@ -200,10 +199,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
+            string dataJson = PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
+
             RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
-                                                    this._queryContext.PrepareObjectJsonBody(
-                                                        this._messageObjectTypeGuid,
-                                                        PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris)));
+                                                    this._queryContext.PrepareObjectJsonBody(dataJson));
+
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();
