@@ -58,7 +58,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         #region Test data
-        private static readonly NotificationEvent s_invalidNotification = new();
         private static readonly NotificationEvent s_validNotification = new()
         {
             Attributes = new EventAttributes
@@ -110,28 +109,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region TryGetDataAsync()
-        [Test]
-        public void TryGetDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
-        {
-            // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
-                DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithExpirationDate,
-                true,
-                true);
-
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_invalidNotification));  // Notification doesn't have matching GUID in task type
-                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
-                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyGetDataMethodCalls(1, 0, 0, 0, 0);
-            });
-        }
-
         [Test]
         public void TryGetDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
         {

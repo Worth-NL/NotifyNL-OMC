@@ -47,22 +47,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
-            // Validation #1: The task needs to be of a specific type
-            if (notification.Attributes.ObjectTypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.TaskObjectType_Uuid())
-            {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
-            }
-
             this._taskData = await this._queryContext.GetTaskAsync();
 
-            // Validation #2: The task needs to have an open status
+            // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
-            // Validation #3: The task needs to be assigned to a person
+            // Validation #2: The task needs to be assigned to a person
             if (this._taskData.Identification.Type != IdTypes.Bsn)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
@@ -72,12 +65,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
             
-            // Validation #4: The case type identifier must be whitelisted
+            // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                caseType.Identification, GetWhitelistName());
+                caseType.Identification, GetWhitelistEnvVarName());
 
-            // Validation #5: The notifications must be enabled
+            // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
 
             // Preparing citizen details
