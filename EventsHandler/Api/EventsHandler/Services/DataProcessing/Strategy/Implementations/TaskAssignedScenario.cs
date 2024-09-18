@@ -123,7 +123,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
         {
             return isValid
-                ? expirationDate.ConvertToDutchDateString()
+                ? expirationDate.ConvertToDutchDateString()  // 2001-01-01
                 : DefaultValues.Models.DefaultEnumValueName;
         }
 
