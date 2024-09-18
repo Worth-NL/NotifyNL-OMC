@@ -862,6 +862,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent for this information object type GUID, because it is not included in the: {0}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType {
@@ -876,15 +885,6 @@ namespace EventsHandler.Properties {
         internal static string Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden {
             get {
                 return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}..
-        /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_ObjectTypeGuid {
-            get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_ObjectTypeGuid", resourceCulture);
             }
         }
         
