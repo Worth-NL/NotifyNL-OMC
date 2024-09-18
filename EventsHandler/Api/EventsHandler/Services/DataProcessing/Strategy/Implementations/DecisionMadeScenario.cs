@@ -204,7 +204,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                                                     this._queryContext.PrepareObjectJsonBody(
                                                         this._messageObjectTypeGuid,
                                                         PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris)));
-
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();
