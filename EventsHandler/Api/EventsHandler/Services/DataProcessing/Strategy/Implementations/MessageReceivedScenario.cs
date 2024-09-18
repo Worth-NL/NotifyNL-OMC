@@ -102,16 +102,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         protected override string GetWhitelistEnvVarName()
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName()
-        {
-            lock (s_padlock)
-            {
-                return s_environmentVariableName ??= $"{nameof(this.Configuration.User).ToUpper()}_" +
-                                                     $"{nameof(this.Configuration.User.Whitelist).ToUpper()}_" +
-                                                     $"{nameof(this.Configuration.User.Whitelist.Message_Allowed).ToUpper()}";
-            }
-        }
+            => Settings.Extensions.ConfigurationExtensions.GetWhitelistMessageAllowedEnvVarName();
         #endregion
     }
 }
