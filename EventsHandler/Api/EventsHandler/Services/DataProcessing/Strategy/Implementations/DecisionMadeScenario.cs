@@ -88,7 +88,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this._caseType.Identification, GetWhitelistName());
+                this._caseType.Identification, GetWhitelistEnvVarName());
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
@@ -267,9 +267,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
 
         private static string? s_environmentVariableName;
 
