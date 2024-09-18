@@ -486,7 +486,7 @@
   <data name="Deserialization_ERROR_CannotDeserialize_Required" xml:space="preserve">
     <value>Required properties</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_ObjectTypeGuid" xml:space="preserve">
+  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid" xml:space="preserve">
     <value>The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}.</value>
     <comment>{0} = Generic name of environment variables holding the whitelisted values</comment>
   </data>

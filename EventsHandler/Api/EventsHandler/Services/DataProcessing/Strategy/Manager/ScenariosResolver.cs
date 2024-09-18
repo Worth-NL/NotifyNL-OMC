@@ -76,7 +76,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 }
 
                 throw new AbortedNotifyingException(
-                    string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_ObjectTypeGuid,
+                    string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid,
                         Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
             }
 
