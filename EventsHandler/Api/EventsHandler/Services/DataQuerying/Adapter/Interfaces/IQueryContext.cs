@@ -164,8 +164,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryObjectTypen
-        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(Guid, string)"/>
-        internal string PrepareObjectJsonBody(Guid objectTypeId, string dataJson);
+        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string)"/>
+        internal string PrepareObjectJsonBody(string dataJson);
         #endregion
     }
 }
