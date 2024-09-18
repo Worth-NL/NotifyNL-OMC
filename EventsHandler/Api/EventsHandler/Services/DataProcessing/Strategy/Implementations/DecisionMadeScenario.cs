@@ -63,7 +63,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
-                        GetWhitelistMessageName()));
+                        Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
             }
 
             // Validation #2: Status needs to be definitive
@@ -270,20 +270,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
-
-        private static string? s_environmentVariableName;
-
-        private string GetWhitelistMessageName()
-        {
-            lock (s_padlock)
-            {
-                s_environmentVariableName ??= $"{nameof(this.Configuration.User).ToUpper()}_" +
-                                              $"{nameof(this.Configuration.User.Whitelist).ToUpper()}_" +
-                                              $"{nameof(this.Configuration.User.Whitelist.MessageObjectType_Uuids).ToUpper()}";
-            }
-
-            return s_environmentVariableName;
-        }
         #endregion
     }
 }
