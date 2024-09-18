@@ -203,7 +203,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
                                                     this._queryContext.PrepareObjectJsonBody(dataJson));
-
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();
