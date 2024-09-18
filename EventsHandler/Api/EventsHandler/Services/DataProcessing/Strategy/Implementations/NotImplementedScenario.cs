@@ -31,43 +31,45 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
 
         #region Polymorphic
+        private const string ExclusionJustificationMessage = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.";
+
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
             => await Task.FromResult(NotImplemented<CommonPartyData>());
 
         /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
             => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetSmsTemplateId()
             => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
             => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
             => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetEmailTemplateId()
             => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
             => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        [ExcludeFromCodeCoverage(Justification = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.")]
-        protected override string GetWhitelistName()
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
+        protected override string GetWhitelistEnvVarName()
             => NotImplemented<string>(); // NOTE: Only for compilation purposes
         #endregion
 
