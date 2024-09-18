@@ -62,7 +62,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
             {
                 throw new AbortedNotifyingException(
-                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessageType,
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
                         GetWhitelistMessageName()));
             }
 
