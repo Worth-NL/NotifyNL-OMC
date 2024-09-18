@@ -30,6 +30,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
         #region ILoadingService mocks
         internal const string TestTaskObjectTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
+        internal const string TestMessageObjectTypeUuid = "9aae4a81-36c5-4fc9-958c-71ecdcdf48a7";
         internal const string TestMessageObjectTypeUuid1 = "38327774-7023-4f25-9386-acb0c6f10636";
         internal const string TestMessageObjectTypeUuid2 = "6468cfd4-d827-473a-8f24-114af046ce7f";
 
@@ -111,6 +112,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_WHITELIST_DECISIONMADE_IDS",        GetTestValue(isValid, testArray) },
                 { "USER_WHITELIST_MESSAGE_ALLOWED",         GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
                 { "USER_WHITELIST_TASKOBJECTTYPE_UUID",     GetTestValue(isValid, TestTaskObjectTypeUuid) },
+                { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID",  GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestMessageObjectTypeUuid1}, {TestMessageObjectTypeUuid2}") }
             };
 
