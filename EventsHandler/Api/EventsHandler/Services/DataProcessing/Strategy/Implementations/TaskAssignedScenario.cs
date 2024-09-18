@@ -150,9 +150,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
         #endregion
     }
 }
