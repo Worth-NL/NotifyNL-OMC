@@ -135,14 +135,14 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
         "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
         
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
         "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "",
