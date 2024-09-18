@@ -876,6 +876,10 @@ namespace EventsHandler.Services.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                internal Guid MessageObjectType_Uuid()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal HashSet<Guid> MessageObjectType_Uuids()
                     => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuids));
 
