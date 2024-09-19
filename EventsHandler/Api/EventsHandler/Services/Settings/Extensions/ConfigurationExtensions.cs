@@ -13,6 +13,62 @@ namespace EventsHandler.Services.Settings.Extensions
     /// </summary>
     internal static class ConfigurationExtensions
     {
+        #region Environment variable names
+        private static readonly object s_padlock = new();
+
+        private static string? s_openZaakDomainEnvVarName;
+
+        private static string GetOpenZaakDomainEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                       $"{nameof(WebApiConfiguration.User.Domain)}_" +
+                                                       $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
+                                                      .ToUpper();
+            }
+        }
+
+        private static string? s_messageAllowedEnvVarName;
+
+        internal static string GetWhitelistMessageAllowedEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                       $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
+                                                       $"{nameof(WebApiConfiguration.User.Whitelist.Message_Allowed)}")
+                                                      .ToUpper();
+            }
+        }
+
+        private static string? s_infoObjectTypesEnvVarName;
+
+        internal static string GetWhitelistInfoObjectsEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Whitelist.DecisionInfoObjectType_Uuids)}")
+                                                       .ToUpper();
+            }
+        }
+
+        private static string? s_genObjectTypeEnvVarName;
+
+        internal static string GetWhitelistGenericObjectTypeEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                      $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
+                                                      $"...OBJECTTYPE_UUID")
+                                                     .ToUpper();
+            }
+        }
+        #endregion
+
         #region GetValue<T>
         /// <summary>
         /// Gets type of encryption used in the application for JWT tokens.
@@ -26,7 +82,6 @@ namespace EventsHandler.Services.Settings.Extensions
             return configuration.GetValue<bool>(key);
         }
 
-        private static string? s_openZaakDomainKey;
         private static string? s_openZaakDomainValue;
 
         internal static string OpenZaakDomain(WebApiConfiguration? configuration = null)
@@ -38,12 +93,8 @@ namespace EventsHandler.Services.Settings.Extensions
             }
 
             // Case #2: Static usage
-            s_openZaakDomainKey ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                     $"{nameof(WebApiConfiguration.User.Domain)}_" +
-                                     $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
-                                    .ToUpper();
-
-            return s_openZaakDomainValue ??= Environment.GetEnvironmentVariable(s_openZaakDomainKey) ?? "domain";
+            return s_openZaakDomainValue ??=
+                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "missingDomain";
         }
         #endregion
 

@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             if (!this.Configuration.User.Whitelist.Message_Allowed())
             {
                 throw new AbortedNotifyingException(
-                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessagesForbidden, GetWhitelistName()));
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden, GetWhitelistEnvVarName()));
             }
 
             // Setup
@@ -99,19 +99,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        private static string? s_environmentVariableName;
-
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName()
-        {
-            lock (s_padlock)
-            {
-                return s_environmentVariableName ??= $"{nameof(this.Configuration.User).ToUpper()}_" +
-                                                     $"{nameof(this.Configuration.User.Whitelist).ToUpper()}_" +
-                                                     $"{nameof(this.Configuration.User.Whitelist.Message_Allowed).ToUpper()}";
-            }
-        }
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName()
+            => Settings.Extensions.ConfigurationExtensions.GetWhitelistMessageAllowedEnvVarName();
         #endregion
     }
 }

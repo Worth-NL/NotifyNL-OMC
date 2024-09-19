@@ -159,8 +159,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryObjecten.GetMessageAsync(IQueryBase)"/>
         internal Task<MessageObject> GetMessageAsync();
 
-        /// <inheritdoc cref="IQueryObjecten.CreateMessageObjectAsync(IHttpNetworkService, Guid, string)"/>
-        internal Task<RequestResponse> CreateMessageObjectAsync(Guid messageObjectTypeGuid, string dataJson);
+        /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
+        internal Task<RequestResponse> CreateObjectAsync(string objectJsonBody);
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string)"/>
+        internal string PrepareObjectJsonBody(string dataJson);
         #endregion
     }
 }
