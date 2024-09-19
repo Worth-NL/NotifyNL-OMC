@@ -3,12 +3,11 @@
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.Objecten;
+using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
@@ -18,7 +17,6 @@ using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
 
 namespace EventsHandler.UnitTests.Services.Serialization
 {
@@ -245,24 +243,19 @@ namespace EventsHandler.UnitTests.Services.Serialization
         [TestCase(TaskDataJsonNijmegen)]
         public void Deserialize_CommonTaskData_ValidJson_ReturnsExpectedModel(string testJson)  // Nested objects and enums should be deserialized properly
         {
-            var actualResult = this._serializer.Deserialize<Coupling>($"\"koppeling\":{{" +
-                                                                      $"\"uuid\":\"4f30cc08-48b5-490d-9742-fe3e94e17334\"," +
-                                                                      $"\"registratie\":\"zaak\"" +
-                                                                      $"}}");
-
             // Act
-            //CommonTaskData actualResult = this._serializer.Deserialize<CommonTaskData>(testJson);
+            CommonTaskData actualResult = this._serializer.Deserialize<CommonTaskData>(testJson);
 
             // Assert
-            //Assert.Multiple(() =>
-            //{
-            //    Assert.That(actualResult.CaseUri, Is.Not.Default);
-            //    Assert.That(actualResult.CaseId, Is.Not.Default);
-            //    Assert.That(actualResult.Title, Is.Not.Default);
-            //    Assert.That(actualResult.Status, Is.Not.Default);
-            //    Assert.That(actualResult.ExpirationDate, Is.Not.Default);
-            //    Assert.That(actualResult.Identification, Is.Not.Default);
-            //});
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.CaseUri, Is.Not.Default);
+                Assert.That(actualResult.CaseId, Is.Not.Default);
+                Assert.That(actualResult.Title, Is.Not.Default);
+                Assert.That(actualResult.Status, Is.Not.Default);
+                Assert.That(actualResult.ExpirationDate, Is.Not.Default);
+                Assert.That(actualResult.Identification, Is.Not.Default);
+            });
         }
         
         [TestCase("null")]
@@ -505,14 +498,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"data\":{{" +
                       $"\"titel\":\"\"," +
                       $"\"status\":\"-\"," +
-                      $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
-                      $"\"identificatie\":{{" +
-                        $"\"type\":\"-\"," +
-                        $"\"value\":\"\"" +
-                      $"}}," +
-                      $"\"koppeling\":{{" +
-                        $"\"registratie\":\"-\"," +
-                        $"\"uuid\":\"{Guid.Empty}\"" +
+                      $"\"formtaak\":{{" +
+                        $"\"koppeling\":{{" +
+                          $"\"uuid\":\"{Guid.Empty}\"," +
+                          $"\"registratie\":\"-\"" +
+                        $"}}," +
+                        $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
+                        $"\"identificatie\":{{" +
+                          $"\"type\":\"-\"," +
+                          $"\"value\":\"\"" +
+                        $"}}" +
                       $"}}" +
                     $"}}" +
                   $"}}" +
@@ -579,16 +574,19 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     {
                         Title = TestString,
                         Status = TaskStatuses.Open,
-                        ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
-                        Identification = new Identification
+                        TaskForm = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskForm
                         {
-                            Type = IdTypes.Bsn,
-                            Value = TestString
-                        },
-                        Coupling = new Coupling
-                        {
-                            Type = Registrations.Case,
-                            Id = Guid.Empty
+                            Coupling = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Coupling
+                            {
+                                Id = Guid.Empty,
+                                Type = Registrations.Case
+                            },
+                            ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
+                            Identification = new Identification
+                            {
+                                Type = IdTypes.Bsn,
+                                Value = TestString
+                            }
                         }
                     }
                 }
@@ -604,14 +602,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"data\":{{" +
                       $"\"titel\":\"{TestString}\"," +
                       $"\"status\":\"open\"," +
-                      $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
-                      $"\"identificatie\":{{" +
-                        $"\"type\":\"bsn\"," +
-                        $"\"value\":\"{TestString}\"" +
-                      $"}}," +
-                      $"\"koppeling\":{{" +
-                        $"\"registratie\":\"zaak\"," +
-                        $"\"uuid\":\"{Guid.Empty}\"" +
+                      $"\"formtaak\":{{" +
+                        $"\"koppeling\":{{" +
+                          $"\"uuid\":\"{Guid.Empty}\"," +
+                          $"\"registratie\":\"zaak\"" +
+                        $"}}," +
+                        $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                        $"\"identificatie\":{{" +
+                          $"\"type\":\"bsn\"," +
+                          $"\"value\":\"{TestString}\"" +
+                        $"}}" +
                       $"}}" +
                     $"}}" +
                   $"}}" +
