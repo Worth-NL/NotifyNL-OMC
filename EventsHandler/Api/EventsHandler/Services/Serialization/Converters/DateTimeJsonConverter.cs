@@ -18,7 +18,9 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             return reader.TokenType == JsonTokenType.Null 
                 ? DateTime.MinValue
-                : reader.GetDateTime();
+                : DateTime.TryParse(reader.GetString(), out DateTime dateTime)
+                    ? dateTime
+                    : DateTime.MinValue;
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
