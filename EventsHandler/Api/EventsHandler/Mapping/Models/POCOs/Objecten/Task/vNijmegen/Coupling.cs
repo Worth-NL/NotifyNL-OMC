@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
 {
     /// <summary>
-    /// The coupling related to the <see cref="TaskForm"/> retrieved from "Objecten" Web API service.
+    /// The coupling related to the <see cref="Data"/> retrieved from "Objecten" Web API service.
     /// </summary>
     /// <remarks>
     ///   Version used by Nijmegen.
