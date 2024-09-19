@@ -236,7 +236,8 @@ namespace EventsHandler.UnitTests.Services.Serialization
                   $"\"correctionFor\":null," +
                   $"\"correctedBy\":null" +
                 $"}}" +
-              $"}}";
+              $"}}" +
+            $"}}";
 
         [TestCase(TaskDataJsonTheHague)]
         [TestCase(TaskDataJsonNijmegen)]
