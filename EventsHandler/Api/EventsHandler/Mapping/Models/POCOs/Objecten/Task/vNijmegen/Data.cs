@@ -44,7 +44,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         [JsonPropertyOrder(3)]
         public Identification Identification { get; internal set; }
 
-        /// <inheritdoc cref="CommonTaskData.Identification"/>
+        /// <inheritdoc cref="vNijmegen.Coupling"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("koppeling")]
