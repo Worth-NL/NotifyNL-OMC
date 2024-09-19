@@ -3,11 +3,11 @@
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.Objecten;
+using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
@@ -202,48 +202,39 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         private const string TaskDataJsonNijmegen =
             $"{{" +
+              $"\"url\":\"https://objects-api.woweb.app/api/v2/objects/63627e94-4652-403f-8ed5-0cb9addfe9dd\"," +
+              $"\"uuid\":\"63627e94-4652-403f-8ed5-0cb9addfe9dd\"," +
+              $"\"type\":\"https://objecttypes-api.woweb.app/api/v2/objecttypes/d5c77844-7e00-4908-9839-f18a8ac6a045\"," +
               $"\"record\":{{" +
+                $"\"index\":1," +
+                $"\"typeVersion\":1," +
                 $"\"data\":{{" +
-                  $"\"titel\":\"Check loan\"," +
-                  $"\"status\":\"open\"," +
                   $"\"soort\":\"formtaak\"," +
-                  $"\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
-                  $"\"identificatie\":{{" +
-                    $"\"type\":\"bsn\"," +
-                    $"\"value\":\"82395551\"" +
-                  $"}}," +
-                  $"\"koppeling\":{{" +
-                    $"\"registratie\":\"zaak\"," +
-                    $"\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
-                  $"}}," +
-                  $"\"url\":{{" +
-                    $"\"uri\":\"https://google.com\"" +
-                  $"}}," +
-                  $"\"portaalformulier\":{{" +
+                  $"\"titel\":\"test taak 18-9\"," +
+                  $"\"status\":\"open\"," +
+                  $"\"eigenaar\":\"vip\"," +
+                  $"\"formtaak\":{{" +
                     $"\"formulier\":{{" +
                       $"\"soort\":\"url\"," +
-                      $"\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
+                      $"\"value\":\"https://app6-accp.nijmegen.nl/#/form/ontwikkel/uploadBijlage\"" +
                     $"}}," +
-                    $"\"data\":{{" +
-                      $"\"voornaam\":\"Jan\"," +
-                      $"\"achternaam\":\"Smit\"," +
-                      $"\"toestemming\":true," +
-                      $"\"geboortedatum\":\"01-01-1970\"" +
+                    $"\"koppeling\":{{" +
+                      $"\"uuid\":\"4f30cc08-48b5-490d-9742-fe3e94e17334\"," +
+                      $"\"registratie\":\"zaak\"" +
                     $"}}," +
-                    $"\"verzonden_data\":{{" +
-                      $"\"voornaam\":\"Jan\"," +
-                      $"\"achternaam\":\"Smit\"," +
-                      $"\"toestemming\":false," +
-                      $"\"geboortedatum\":\"01-01-1971\"" +
-                    $"}}" +
+                    $"\"verloopdatum\":\"2024-09-25 00:00:00\"," +
+                    $"\"identificatie\":{{" +
+                      $"\"type\":\"bsn\"," +
+                      $"\"value\":\"232426727\"" +
+                    $"}}," +
+                    $"\"verwerker_taak_id\":\"bestand\"" +
                   $"}}," +
-                  $"\"ogonebetaling\":{{" +
-                    $"\"bedrag\":147.43," +
-                    $"\"betaalkenmerk\":\"abcdef1234\"," +
-                    $"\"pspid\":\"MyID\"" +
-                  $"}}," +
-                  $"\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
-                  $"\"eigenaar\":\"gzac-sd\"" +
+                  $"\"geometry\":null," +
+                  $"\"startAt\":\"2024-09-18\"," +
+                  $"\"endAt\":null," +
+                  $"\"registrationAt\":\"2024-09-18\"," +
+                  $"\"correctionFor\":null," +
+                  $"\"correctedBy\":null" +
                 $"}}" +
               $"}}" +
             $"}}";
@@ -252,8 +243,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
         [TestCase(TaskDataJsonNijmegen)]
         public void Deserialize_CommonTaskData_ValidJson_ReturnsExpectedModel(string testJson)  // Nested objects and enums should be deserialized properly
         {
-            // Arrange
-
             // Act
             CommonTaskData actualResult = this._serializer.Deserialize<CommonTaskData>(testJson);
 
@@ -470,10 +459,10 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         [TestCase(true)]
         [TestCase(false)]
-        public void Serialize_TaskObject_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Very complex model: nested objects (with objects and enums) should be initialized as well
+        public void Serialize_TaskObject_Hague_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Very complex model: nested objects (with objects and enums) should be initialized as well
         {
             // Act
-            string actualResult = this._serializer.Serialize(isDefault ? default : new TaskObject());
+            string actualResult = this._serializer.Serialize(isDefault ? default : new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject());
 
             // Assert
             string expectedResult =
@@ -483,7 +472,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                       $"\"zaak\":\"{DefaultValues.Models.EmptyUri}\"," +
                       $"\"title\":\"\"," +
                       $"\"status\":\"-\"," +
-                      $"\"verloopdatum\":\"0001-01-01T00:00:00.0000000\"," +
+                      $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
                       $"\"identificatie\":{{" +
                         $"\"type\":\"-\"," +
                         $"\"value\":\"\"" +
@@ -495,15 +484,47 @@ namespace EventsHandler.UnitTests.Services.Serialization
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Serialize_TaskObject_Nijmegen_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: 2nd variant of TaskObject JSON schema
+        {
+            // Act
+            string actualResult = this._serializer.Serialize(isDefault ? default : new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject());
+
+            // Assert
+            string expectedResult =
+                $"{{" +
+                  $"\"record\":{{" +
+                    $"\"data\":{{" +
+                      $"\"titel\":\"\"," +
+                      $"\"status\":\"-\"," +
+                      $"\"formtaak\":{{" +
+                        $"\"koppeling\":{{" +
+                          $"\"uuid\":\"{Guid.Empty}\"," +
+                          $"\"registratie\":\"-\"" +
+                        $"}}," +
+                        $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
+                        $"\"identificatie\":{{" +
+                          $"\"type\":\"-\"," +
+                          $"\"value\":\"\"" +
+                        $"}}" +
+                      $"}}" +
+                    $"}}" +
+                  $"}}" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
         [Test]
-        public void Serialize_TaskObject_ValidModel_ReturnsExpectedJson()
+        public void Serialize_TaskObject_Hague_ValidModel_ReturnsExpectedJson()
         {
             // Arrange
-            var testModel = new TaskObject
+            var testModel = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject
             {
-                Record = new Record
+                Record = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.Record
                 {
-                    Data = new Data
+                    Data = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.Data
                     {
                         CaseUri = new Uri($"https://www.domain.test/{Guid.Empty}"),
                         Title = TestString,
@@ -533,6 +554,64 @@ namespace EventsHandler.UnitTests.Services.Serialization
                       $"\"identificatie\":{{" +
                         $"\"type\":\"bsn\"," +
                         $"\"value\":\"{TestString}\"" +
+                      $"}}" +
+                    $"}}" +
+                  $"}}" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void Serialize_TaskObject_Nijmegen_ValidModel_ReturnsExpectedJson()
+        {
+            // Arrange
+            var testModel = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject
+            {
+                Record = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Record
+                {
+                    Data = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Data
+                    {
+                        Title = TestString,
+                        Status = TaskStatuses.Open,
+                        TaskForm = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskForm
+                        {
+                            Coupling = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Coupling
+                            {
+                                Id = Guid.Empty,
+                                Type = Registrations.Case
+                            },
+                            ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
+                            Identification = new Identification
+                            {
+                                Type = IdTypes.Bsn,
+                                Value = TestString
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(testModel);
+
+            // Assert
+            string expectedResult =
+                $"{{" +
+                  $"\"record\":{{" +
+                    $"\"data\":{{" +
+                      $"\"titel\":\"{TestString}\"," +
+                      $"\"status\":\"open\"," +
+                      $"\"formtaak\":{{" +
+                        $"\"koppeling\":{{" +
+                          $"\"uuid\":\"{Guid.Empty}\"," +
+                          $"\"registratie\":\"zaak\"" +
+                        $"}}," +
+                        $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                        $"\"identificatie\":{{" +
+                          $"\"type\":\"bsn\"," +
+                          $"\"value\":\"{TestString}\"" +
+                        $"}}" +
                       $"}}" +
                     $"}}" +
                   $"}}" +
