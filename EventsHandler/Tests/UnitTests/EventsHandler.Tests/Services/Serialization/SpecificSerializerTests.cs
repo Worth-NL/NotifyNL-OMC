@@ -217,18 +217,18 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"formulier\":{{" +
                       $"\"soort\":\"url\"," +
                       $"\"value\":\"https://app6-accp.nijmegen.nl/#/form/ontwikkel/uploadBijlage\"" +
-                    $"}}," +
-                    $"\"koppeling\":{{" +
-                      $"\"uuid\":\"4f30cc08-48b5-490d-9742-fe3e94e17334\"," +
-                      $"\"registratie\":\"zaak\"" +
-                    $"}}," +
-                    $"\"verloopdatum\":\"2024-09-25 00:00:00\"," +
-                    $"\"identificatie\":{{" +
-                      $"\"type\":\"bsn\"," +
-                      $"\"value\":\"232426727\"" +
-                    $"}}," +
-                    $"\"verwerker_taak_id\":\"bestand\"" +
+                    $"}}" +
                   $"}}," +
+                  $"\"koppeling\":{{" +
+                    $"\"uuid\":\"4f30cc08-48b5-490d-9742-fe3e94e17334\"," +
+                    $"\"registratie\":\"zaak\"" +
+                  $"}}," +
+                  $"\"verloopdatum\":\"2024-09-25 00:00:00\"," +
+                  $"\"identificatie\":{{" +
+                    $"\"type\":\"bsn\"," +
+                    $"\"value\":\"232426727\"" +
+                  $"}}," +
+                  $"\"verwerker_taak_id\":\"bestand\"," +
                   $"\"geometry\":null," +
                   $"\"startAt\":\"2024-09-18\"," +
                   $"\"endAt\":null," +
@@ -498,16 +498,14 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"data\":{{" +
                       $"\"titel\":\"\"," +
                       $"\"status\":\"-\"," +
-                      $"\"formtaak\":{{" +
-                        $"\"koppeling\":{{" +
-                          $"\"uuid\":\"{Guid.Empty}\"," +
-                          $"\"registratie\":\"-\"" +
-                        $"}}," +
-                        $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
-                        $"\"identificatie\":{{" +
-                          $"\"type\":\"-\"," +
-                          $"\"value\":\"\"" +
-                        $"}}" +
+                      $"\"koppeling\":{{" +
+                        $"\"uuid\":\"{Guid.Empty}\"," +
+                        $"\"registratie\":\"-\"" +
+                      $"}}," +
+                      $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
+                      $"\"identificatie\":{{" +
+                        $"\"type\":\"-\"," +
+                        $"\"value\":\"\"" +
                       $"}}" +
                     $"}}" +
                   $"}}" +
@@ -574,19 +572,16 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     {
                         Title = TestString,
                         Status = TaskStatuses.Open,
-                        TaskForm = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskForm
+                        Coupling = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Coupling
                         {
-                            Coupling = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Coupling
-                            {
-                                Id = Guid.Empty,
-                                Type = Registrations.Case
-                            },
-                            ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
-                            Identification = new Identification
-                            {
-                                Type = IdTypes.Bsn,
-                                Value = TestString
-                            }
+                            Id = Guid.Empty,
+                            Type = Registrations.Case
+                        },
+                        ExpirationDate = new DateTime(2024, 09, 05, 15, 45, 30, DateTimeKind.Utc),
+                        Identification = new Identification
+                        {
+                            Type = IdTypes.Bsn,
+                            Value = TestString
                         }
                     }
                 }
@@ -602,16 +597,14 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     $"\"data\":{{" +
                       $"\"titel\":\"{TestString}\"," +
                       $"\"status\":\"open\"," +
-                      $"\"formtaak\":{{" +
-                        $"\"koppeling\":{{" +
-                          $"\"uuid\":\"{Guid.Empty}\"," +
-                          $"\"registratie\":\"zaak\"" +
-                        $"}}," +
-                        $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
-                        $"\"identificatie\":{{" +
-                          $"\"type\":\"bsn\"," +
-                          $"\"value\":\"{TestString}\"" +
-                        $"}}" +
+                      $"\"koppeling\":{{" +
+                        $"\"uuid\":\"{Guid.Empty}\"," +
+                        $"\"registratie\":\"zaak\"" +
+                      $"}}," +
+                      $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                      $"\"identificatie\":{{" +
+                        $"\"type\":\"bsn\"," +
+                        $"\"value\":\"{TestString}\"" +
                       $"}}" +
                     $"}}" +
                   $"}}" +
