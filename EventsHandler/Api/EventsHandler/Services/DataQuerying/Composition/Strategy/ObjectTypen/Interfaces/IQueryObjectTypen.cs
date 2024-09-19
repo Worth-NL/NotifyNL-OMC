@@ -31,7 +31,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
             return $"{{" +
                      $"\"type\":\"https://{GetDomain()}/api/v1/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
-                       $"\"typeVersion\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\"," +
+                       $"\"typeVersion\":\"{this.Configuration.User.Variables.Objecten.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
                          $"{dataJson}" +
                        $"}}," +
