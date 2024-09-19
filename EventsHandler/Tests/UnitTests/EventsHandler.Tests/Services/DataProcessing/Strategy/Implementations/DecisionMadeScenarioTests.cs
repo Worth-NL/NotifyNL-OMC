@@ -305,15 +305,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"klant.voorvoegselAchternaam\":null," +
                       $"\"klant.achternaam\":\"Chan\"," +
                       $"\"besluit.identificatie\":\"\"," +
-                      $"\"besluit.datum\":\"01-Jan-01\"," +
+                      $"\"besluit.datum\":\"0001-01-01\"," +
                       $"\"besluit.toelichting\":\"\"," +
                       $"\"besluit.bestuursorgaan\":\"\"," +
-                      $"\"besluit.ingangsdatum\":\"01-Jan-01\"," +
-                      $"\"besluit.vervaldatum\":\"01-Jan-01\"," +
+                      $"\"besluit.ingangsdatum\":\"0001-01-01\"," +
+                      $"\"besluit.vervaldatum\":\"0001-01-01\"," +
                       $"\"besluit.vervalreden\":\"\"," +
-                      $"\"besluit.publicatiedatum\":\"01-Jan-01\"," +
-                      $"\"besluit.verzenddatum\":\"01-Jan-01\"," +
-                      $"\"besluit.uiterlijkereactiedatum\":\"01-Jan-01\"," +
+                      $"\"besluit.publicatiedatum\":\"0001-01-01\"," +
+                      $"\"besluit.verzenddatum\":\"0001-01-01\"," +
+                      $"\"besluit.uiterlijkereactiedatum\":\"0001-01-01\"," +
                       $"\"besluittype.omschrijving\":\"\"," +
                       $"\"besluittype.omschrijvingGeneriek\":\"\"," +
                       $"\"besluittype.besluitcategorie\":\"\"," +
@@ -322,7 +322,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"besluittype.toelichting\":\"\"," +
                       $"\"zaak.identificatie\":\"ZAAK-2024-00000000001\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"zaak.registratiedatum\":\"01-Jan-01\"," +
+                      $"\"zaak.registratiedatum\":\"0001-01-01\"," +
                       $"\"zaaktype.omschrijving\":\"\"," +
                       $"\"zaaktype.omschrijvingGeneriek\":\"\"" +
                     $"}}";

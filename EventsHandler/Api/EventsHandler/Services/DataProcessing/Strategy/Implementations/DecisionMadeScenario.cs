@@ -122,15 +122,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
                 s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date}";
+                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date:O}";
                 s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
                 s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate}";
-                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate}";
+                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate:O}";
+                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate:O}";
                 s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate}";
-                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate}";
-                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
+                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate:O}";
+                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate:O}";
+                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate:O}";
 
                 s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
                 s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
@@ -141,7 +141,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 s_emailPersonalization["zaak.identificatie"] = @case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = @case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate}";
+                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate:O}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
