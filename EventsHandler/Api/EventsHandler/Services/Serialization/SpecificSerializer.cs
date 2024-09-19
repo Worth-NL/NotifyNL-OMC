@@ -44,9 +44,11 @@ namespace EventsHandler.Services.Serialization
             }
             catch (JsonException exception)
             {
+                #pragma warning disable CS0168  // The variable is used but only in DEBUG mode
                 #if DEBUG
                 TestContext.WriteLine(exception.Message);
                 #endif
+                #pragma warning restore CS0168
 
                 string requiredProperties = GetRequiredMembers<TModel>();
 
