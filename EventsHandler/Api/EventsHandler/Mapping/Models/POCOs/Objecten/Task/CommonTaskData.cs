@@ -16,11 +16,12 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
     internal readonly struct CommonTaskData : IJsonSerializable
     {
         /// <summary>
-        /// The reference to related object in <see cref="System.Uri"/> format:
+        /// The reference to related object in <see cref="Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(0)]
         internal Uri CaseUri { get; init; }  // NOTE: Some task data might not have it (recreating of URI is necessary)
