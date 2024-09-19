@@ -44,7 +44,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             Attributes = new EventAttributes
             {
-                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestMessageObjectTypeUuid1}")
+                ObjectTypeUri = new Uri($"http://www.domain.com/{ConfigurationHandler.TestInfoObjectTypeUuid1}")
             }
         };
 
@@ -66,7 +66,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
 
-                string expectedMessage = Resources.Processing_ABORT_DoNotSendNotification_MessagesForbidden
+                string expectedMessage = Resources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden
                     .Replace("{0}", "USER_WHITELIST_MESSAGE_ALLOWED");
 
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
