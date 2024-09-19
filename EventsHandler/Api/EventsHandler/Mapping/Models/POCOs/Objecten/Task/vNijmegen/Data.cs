@@ -30,12 +30,26 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         [JsonPropertyOrder(1)]
         public TaskStatuses Status { get; internal set; }
 
-        /// <inheritdoc cref="vNijmegen.TaskForm"/>
+        /// <inheritdoc cref="vNijmegen.Coupling"/>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("formtaak")]
+        [JsonPropertyName("koppeling")]
         [JsonPropertyOrder(2)]
-        public TaskForm TaskForm { get; internal set; }
+        public Coupling Coupling { get; internal set; }
+
+        /// <inheritdoc cref="CommonTaskData.ExpirationDate"/>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("verloopdatum")]
+        [JsonPropertyOrder(3)]
+        public DateTime ExpirationDate { get; internal set; }
+
+        /// <inheritdoc cref="CommonTaskData.Identification"/>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("identificatie")]
+        [JsonPropertyOrder(4)]
+        public Identification Identification { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Data"/> struct.
