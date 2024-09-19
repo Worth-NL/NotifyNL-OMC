@@ -3,6 +3,7 @@
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Enums.Objecten;
+using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using System.Text.Json;
@@ -41,6 +42,8 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         // Objecten: TaskStatuses
         [TestCase(typeof(TaskStatuses), TaskStatuses.Open, "open")]
         [TestCase(typeof(TaskStatuses), TaskStatuses.Closed, "gesloten")]
+        // Objecten/Nijmegen : Registrations
+        [TestCase(typeof(Registrations), Registrations.Case, "zaak")]
         // NotifyNL: Notification types
         [TestCase(typeof(NotificationTypes), NotificationTypes.Email, "email")]
         [TestCase(typeof(NotificationTypes), NotificationTypes.Sms, "sms")]
@@ -99,6 +102,8 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         // Objecten: TaskStatuses
         [TestCase("open", typeof(TaskStatuses), TaskStatuses.Open)]
         [TestCase("gesloten", typeof(TaskStatuses), TaskStatuses.Closed)]
+        // Objecten/Nijmegen : Registrations
+        [TestCase("zaak", typeof(Registrations), Registrations.Case)]
         // NotifyNL: Notification types
         [TestCase("email", typeof(NotificationTypes), NotificationTypes.Email)]
         [TestCase("sms", typeof(NotificationTypes), NotificationTypes.Sms)]
@@ -135,6 +140,7 @@ namespace EventsHandler.UnitTests.Mapping.Enums
         // Objecten
         [TestCase(":", typeof(IdTypes), IdTypes.Unknown)]
         [TestCase(";", typeof(TaskStatuses), TaskStatuses.Unknown)]
+        [TestCase(".", typeof(Registrations), Registrations.Unknown)]
         // NotifyNL
         [TestCase("-", typeof(NotificationTypes), NotificationTypes.Unknown)]
         [TestCase(" ", typeof(DeliveryStatuses), DeliveryStatuses.Unknown)]

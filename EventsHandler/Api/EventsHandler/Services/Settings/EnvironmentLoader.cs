@@ -4,6 +4,7 @@ using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.DAO;
 using EventsHandler.Services.Settings.DAO.Interfaces;
+using EventsHandler.Services.Settings.Extensions;
 using EventsHandler.Services.Settings.Interfaces;
 
 namespace EventsHandler.Services.Settings

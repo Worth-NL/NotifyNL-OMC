@@ -236,7 +236,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 $"\"resource\": \"object\", " +
                 $"\"kenmerken\": {{" +
                 // Objects
-                $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestMessageObjectTypeUuid1}\"" +
+                $"\"objectType\": \"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{ConfigurationHandler.TestInfoObjectTypeUuid1}\"" +
                 $"}}, " +
                 $"\"hoofdObject\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +
                 $"\"resourceUrl\": \"https://objecten.test.denhaag.opengem.nl/api/v2/objects/bb2b870c-41f5-4c98-88f5-772aca9ed326\", " +

@@ -16,7 +16,6 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
-using System.Globalization;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -28,7 +27,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     internal sealed class TaskAssignedScenario : BaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private Data _taskData;
+        private CommonTaskData _taskData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
@@ -48,22 +47,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
-            // Validation #1: The task needs to be of a specific type
-            if (notification.Attributes.ObjectTypeUri.GetGuid() !=
-                this.Configuration.User.Whitelist.TaskObjectType_Uuid())
-            {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskType);
-            }
+            this._taskData = await this._queryContext.GetTaskAsync();
 
-            this._taskData = (await this._queryContext.GetTaskAsync()).Record.Data;
-
-            // Validation #2: The task needs to have an open status
+            // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
-            // Validation #3: The task needs to be assigned to a person
+            // Validation #2: The task needs to be assigned to a person
             if (this._taskData.Identification.Type != IdTypes.Bsn)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
@@ -73,12 +65,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
             
-            // Validation #4: The case type identifier must be whitelisted
+            // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
-                caseType.Identification, GetWhitelistName());
+                caseType.Identification, GetWhitelistEnvVarName());
 
-            // Validation #5: The notifications must be enabled
+            // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
 
             // Preparing citizen details
@@ -98,8 +90,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            string formattedExpirationDate = GetFormattedExpirationDate(this._taskData.ExpirationDate);
-            string expirationDateProvided = GetExpirationDateProvided(this._taskData.ExpirationDate);
+            bool isValid = IsValid(this._taskData.ExpirationDate);
+            string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(isValid);
             
             Case @case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             
@@ -120,29 +113,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
         }
 
-        private static readonly TimeZoneInfo s_cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-        private static readonly CultureInfo s_dutchCulture = new("nl-NL");
-
-        private static string GetFormattedExpirationDate(DateTime expirationDate)
+        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
         {
-            if (!IsValid(expirationDate))
-            {
-                return DefaultValues.Models.DefaultEnumValueName;
-            }
-
-            // Convert time zone from UTC to CET (if necessary)
-            if (expirationDate.Kind == DateTimeKind.Utc)
-            {
-                expirationDate = TimeZoneInfo.ConvertTimeFromUtc(expirationDate, s_cetTimeZone);
-            }
-
-            // Formatting the date and time
-            return expirationDate.ToString("f", s_dutchCulture);
+            return isValid
+                ? expirationDate.ConvertToDutchDateString()  // 2001-01-01
+                : DefaultValues.Models.DefaultEnumValueName;
         }
 
-        private static string GetExpirationDateProvided(DateTime expirationDate)
+        private static string GetExpirationDateProvided(bool isValid)
         {
-            return IsValid(expirationDate) ? "yes" : "no";
+            return isValid ? "yes" : "no";
         }
 
         private static bool IsValid(DateTime expirationDate)
@@ -163,9 +143,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
         #endregion
     }
 }

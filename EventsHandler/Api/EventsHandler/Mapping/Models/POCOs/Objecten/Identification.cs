@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.Objecten
 {
     /// <summary>
-    /// The identification related to the different Data (associated with <see cref="TaskObject"/>,
+    /// The identification related to the different Data (associated with <see cref="CommonTaskData"/> from Task,
     /// <see cref="MessageObject"/>, etc.) retrieved from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>

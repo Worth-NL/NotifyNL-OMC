@@ -145,16 +145,22 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
         #region IQueryObjecten
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
-        Task<TaskObject> IQueryContext.GetTaskAsync()
+        Task<CommonTaskData> IQueryContext.GetTaskAsync()
             => this._queryObjecten.GetTaskAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
         Task<MessageObject> IQueryContext.GetMessageAsync()
             => this._queryObjecten.GetMessageAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.CreateMessageObjectAsync(Guid, string)"/>
-        async Task<RequestResponse> IQueryContext.CreateMessageObjectAsync(Guid messageObjectTypeGuid, string dataJson)
-            => await this._queryObjecten.CreateMessageObjectAsync(this._networkService, messageObjectTypeGuid, dataJson);
+        /// <inheritdoc cref="IQueryContext.CreateObjectAsync(string)"/>
+        async Task<RequestResponse> IQueryContext.CreateObjectAsync(string objectJsonBody)
+            => await this._queryObjecten.CreateObjectAsync(this._networkService, objectJsonBody);
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string)"/>
+        string IQueryContext.PrepareObjectJsonBody(string dataJson)
+            => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
         #endregion
     }
 }

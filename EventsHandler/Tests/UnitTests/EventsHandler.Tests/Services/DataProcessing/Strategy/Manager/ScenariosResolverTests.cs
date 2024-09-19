@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -17,6 +18,7 @@ using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using TextResources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 {
@@ -183,7 +185,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         public async Task DetermineScenarioAsync_MessageReceivedScenario_ReturnsExpectedScenario()
         {
             // Arrange
-            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid2);
+            NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid);
             IScenariosResolver scenariosResolver = GetScenariosResolver();
 
             // Act
@@ -191,6 +193,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 
             // Assert
             Assert.That(actualResult, Is.TypeOf<MessageReceivedScenario>());
+        }
+
+        [Test]
+        public void DetermineScenarioAsync_MessageReceivedScenario_ThrowsAbortedNotifyingException()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetObjectNotification(Guid.Empty.ToString());
+            IScenariosResolver scenariosResolver = GetScenariosResolver();
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception = Assert.ThrowsAsync<AbortedNotifyingException>(() => scenariosResolver.DetermineScenarioAsync(testNotification));
+                Assert.That(exception?.Message.StartsWith(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid
+                                              .Replace("{0}", "USER_WHITELIST_...OBJECTTYPE_UUID")), Is.True);
+                Assert.That(exception?.Message.EndsWith(TextResources.Processing_ABORT), Is.True);
+            });
         }
 
         [Test]
