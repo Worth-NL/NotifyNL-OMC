@@ -69,7 +69,7 @@ namespace EventsHandler.Services.Serialization
                 typeof(TModel),
                 // Generate, cache, and get cached value
                 typeof(TModel)
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(property => property.GetCustomAttribute<JsonRequiredAttribute>() != null)
                     .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name)
                     .Join());
