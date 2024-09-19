@@ -42,17 +42,21 @@ namespace EventsHandler.Services.Serialization
             {
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
+            #pragma warning disable CS0168  // The variable is used but only in DEBUG mode
             catch (JsonException exception)
+            #pragma warning restore CS0168
             {
                 #if DEBUG
                 TestContext.WriteLine(exception.Message);
                 #endif
 
+                string requiredProperties = GetRequiredMembers<TModel>();
+
                 throw new JsonException(message:
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Value}: {json} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {GetRequiredMembers<TModel>()}");
+                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {(requiredProperties.IsEmpty() ? "_" : requiredProperties)}");
             }
         }
 
@@ -67,7 +71,7 @@ namespace EventsHandler.Services.Serialization
                 typeof(TModel),
                 // Generate, cache, and get cached value
                 typeof(TModel)
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(property => property.GetCustomAttribute<JsonRequiredAttribute>() != null)
                     .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name)
                     .Join());
