@@ -21,6 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
+        [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(0)]
         internal Uri CaseUri { get; init; }  // NOTE: Some task data might not have it (recreating of URI is necessary)
