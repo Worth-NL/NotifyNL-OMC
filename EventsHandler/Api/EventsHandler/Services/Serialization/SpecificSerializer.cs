@@ -48,11 +48,13 @@ namespace EventsHandler.Services.Serialization
                 TestContext.WriteLine(exception.Message);
                 #endif
 
+                string requiredProperties = GetRequiredMembers<TModel>();
+
                 throw new JsonException(message:
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Value}: {json} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {GetRequiredMembers<TModel>()}");
+                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {(requiredProperties.IsEmpty() ? "_" : requiredProperties)}");
             }
         }
 
