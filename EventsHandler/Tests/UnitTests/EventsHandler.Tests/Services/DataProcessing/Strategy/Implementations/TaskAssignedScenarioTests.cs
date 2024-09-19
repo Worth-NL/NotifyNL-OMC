@@ -58,7 +58,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         #region Test data
-        private static readonly NotificationEvent s_invalidNotification = new();
         private static readonly NotificationEvent s_validNotification = new()
         {
             Attributes = new EventAttributes
@@ -67,64 +66,40 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             }
         };
 
-        private static readonly TaskObject s_taskClosed = new()
+        private static readonly CommonTaskData s_taskClosed = new()
         {
-            Record = new Record
-            {
-                Data = new Data
-                {
-                    Status = TaskStatuses.Closed
-                }
-            }
+            Status = TaskStatuses.Closed
         };
 
-        private static readonly TaskObject s_taskOpenNotAssignedToPerson = new()
+        private static readonly CommonTaskData s_taskOpenNotAssignedToPerson = new()
         {
-            Record = new Record
+            Status = TaskStatuses.Open,
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Status = TaskStatuses.Open,
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Unknown
-                    }
-                }
+                Type = IdTypes.Unknown
             }
         };
 
         private const string TestTaskTitle = "Test title";
-        private static readonly TaskObject s_taskOpenAssignedToPersonWithoutExpirationDate = new()
+        private static readonly CommonTaskData s_taskOpenAssignedToPersonWithoutExpirationDate = new()
         {
-            Record = new Record
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            // Missing "ExpirationDate" => default
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Title = TestTaskTitle,
-                    Status = TaskStatuses.Open,
-                    // Missing "ExpirationDate" => default
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Bsn
-                    }
-                }
+                Type = IdTypes.Bsn
             }
         };
 
-        private static readonly TaskObject s_taskOpenAssignedToPersonWithExpirationDate = new()
+        private static readonly CommonTaskData s_taskOpenAssignedToPersonWithExpirationDate = new()
         {
-            Record = new Record
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            ExpirationDate = new DateTime(2024, 7, 24, 14, 10, 40, DateTimeKind.Utc),
+            Identification = new Identification
             {
-                Data = new Data
-                {
-                    Title = TestTaskTitle,
-                    Status = TaskStatuses.Open,
-                    ExpirationDate = new DateTime(2024, 7, 24, 14, 10, 40, DateTimeKind.Utc),
-                    Identification = new Identification
-                    {
-                        Type = IdTypes.Bsn
-                    }
-                }
+                Type = IdTypes.Bsn
             }
         };
 
@@ -134,28 +109,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region TryGetDataAsync()
-        [Test]
-        public void TryGetDataAsync_InvalidTaskType_ThrowsAbortedNotifyingException()
-        {
-            // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
-                DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithExpirationDate,
-                true,
-                true);
-
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_invalidNotification));  // Notification doesn't have matching GUID in task type
-                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskType), Is.True);
-                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-
-                VerifyGetDataMethodCalls(1, 0, 0, 0, 0);
-            });
-        }
-
         [Test]
         public void TryGetDataAsync_ValidTaskType_Closed_ThrowsAbortedNotifyingException()
         {
@@ -216,7 +169,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
 
-                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist
+                string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId
                     .Replace("{0}", "4")
                     .Replace("{1}", "USER_WHITELIST_TASKASSIGNED_IDS");
 
@@ -336,19 +289,19 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region GetPersonalizationAsync()
         [TestCase(DistributionChannels.Email, false, "-", "no")]
-        [TestCase(DistributionChannels.Email, true, "woensdag 24 juli 2024 16:10", "yes")]
+        [TestCase(DistributionChannels.Email, true, "2024-07-24", "yes")]
         [TestCase(DistributionChannels.Sms, false, "-", "no")]
-        [TestCase(DistributionChannels.Sms, true, "woensdag 24 juli 2024 16:10", "yes")]
+        [TestCase(DistributionChannels.Sms, true, "2024-07-24", "yes")]
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
-            TaskObject testTask = isExpirationDateGiven
+            CommonTaskData testTaskData = isExpirationDateGiven
                 ? s_taskOpenAssignedToPersonWithExpirationDate
                 : s_taskOpenAssignedToPersonWithoutExpirationDate;
 
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
-                testTask,
+                testTaskData,
                 isCaseTypeIdWhitelisted: true,
                 isNotificationExpected: true);
 
@@ -483,7 +436,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         #region Setup
         private INotifyScenario ArrangeTaskScenario_TryGetData(
-            DistributionChannels testDistributionChannel, TaskObject testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
+            DistributionChannels testDistributionChannel, CommonTaskData testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
             this._mockedQueryContext

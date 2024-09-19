@@ -808,15 +808,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because the case type with identification &apos;{0}&apos; is not included in the {1}..
-        /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist {
-            get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent because of the confidentiality setting &apos;{0}&apos; in information object related to decision..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_DecisionConfidentiality {
@@ -844,24 +835,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because processing messages (message objects) is forbidden: {0}..
-        /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_MessagesForbidden {
-            get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessagesForbidden", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this type of the message: {0}..
-        /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_MessageType {
-            get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_MessageType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification can not be sent if the task is already closed..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_TaskClosed {
@@ -880,11 +853,38 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this type of the task (whitelisted UUID)..
+        ///   Looks up a localized string similar to The notification can not be sent because the case type with identification &apos;{0}&apos; is not included in the {1}..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_TaskType {
+        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskType", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent for this information object type GUID, because it is not included in the: {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification can not be sent because processing messages is forbidden in the: {0}..
+        /// </summary>
+        internal static string Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden {
+            get {
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden", resourceCulture);
             }
         }
         

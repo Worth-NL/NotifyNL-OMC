@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.8.14
+v.1.8.18
 
 © 2024, Worth Systems.
 
@@ -135,14 +135,14 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
         "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
         
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        // NOTE: "DecisionMade" scenario is not sending notifications; it doesn't have a dedicatged template IDs
+        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
         "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "",
@@ -152,7 +152,10 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_WHITELIST_DECISIONMADE_IDS": "",
         "USER_WHITELIST_MESSAGE_ALLOWED": "false",
         "USER_WHITELIST_TASKOBJECTTYPE_UUID": "",
-        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS": "",
+        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID": "",
+        "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "",
+
+        "USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION" : "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
@@ -284,7 +287,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
     },
 
     "Objecten": {
-      "MessageObjectType_Version": 13,
+      "MessageObjectType_Version": 1,
       "MessageObjectType_Name": "Logius"
     },
 
@@ -382,7 +385,11 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | USER_WHITELIST_DECISIONMADE_IDS                     | string[]  | "1, 2, 3, 4" or "*" (allow everything) | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
 | USER_WHITELIST_MESSAGE_ALLOWED                      | bool      | "true" or "false"                      | false        | Cannot be missing and have null or empty value                                                                                             | Is provided by the user                                                                                                                                                                                               |
 | USER_WHITELIST_TASKOBJECTTYPE_UUID                  | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                             |
-| USER_WHITELIST_MESSAGEOBJECTTYPE_UUIDS              | GUID[]    | "00000000-0000-..., 00000000-0000-..." | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                                   |
+| USER_WHITELIST_MESSAGEOBJECTTYPE_UUID               | GUID      | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                             |
+| USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS         | GUID[]    | "00000000-0000-..., 00000000-0000-..." | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                                   |
+| ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
+| **Variables:** Used by "OMC" Web API                |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
+| USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION   | ushort    | "1"                                    | false        | Cannot be missing and have null or empty value                                                                                             | It can be taken from "version" value set in "ObjectTypen" Web API service                                                                                                                                             |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Monitoring:** Configurations used by "Sentry"     |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | SENTRY_DSN                                          | URI       | "https://1abxxx@o1xxx.sentry.io/xxx"   | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                           |

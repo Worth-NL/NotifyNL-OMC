@@ -3,6 +3,7 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
+using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -32,7 +33,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     {
         private IQueryContext _queryContext = null!;
         private DecisionResource _decisionResource;
-        private Guid _messageObjectTypeGuid;
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
@@ -58,13 +58,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._decisionResource = await this._queryContext.GetDecisionResourceAsync();
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
-            // Validation #1: The message needs to be of a specific type
-            if (!this.Configuration.User.Whitelist.MessageObjectType_Uuids()
-                    .Contains(this._messageObjectTypeGuid = infoObject.TypeUri.GetGuid()))
+            // Validation #1: The info object needs to be of a specific type
+            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
             {
                 throw new AbortedNotifyingException(
-                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_MessageType,
-                        GetWhitelistMessageName()));
+                    string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
+                        Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
             }
 
             // Validation #2: Status needs to be definitive
@@ -89,7 +88,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #4: The case identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
-                this._caseType.Identification, GetWhitelistName());
+                this._caseType.Identification, GetWhitelistEnvVarName());
 
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
@@ -123,15 +122,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
                 s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date}";
+                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date:O}";
                 s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
                 s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate}";
-                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate}";
+                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate:O}";
+                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate:O}";
                 s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate}";
-                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate}";
-                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate}";
+                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate:O}";
+                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate:O}";
+                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate:O}";
 
                 s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
                 s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
@@ -142,7 +141,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 s_emailPersonalization["zaak.identificatie"] = @case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = @case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate}";
+                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate:O}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
@@ -199,10 +198,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
 
-            RequestResponse requestResponse = await this._queryContext.CreateMessageObjectAsync(
-                this._messageObjectTypeGuid,
-                dataJson: PrepareObjectData(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris));
+            string dataJson = PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
 
+            RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
+                                                    this._queryContext.PrepareObjectJsonBody(dataJson));
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();
@@ -251,42 +250,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         ///   Prepares a block of code (responsible for message object creation) to be sent together with final JSON payload.
         /// </summary>
         /// <exception cref="KeyNotFoundException"/>
-        private string PrepareObjectData(string subject, string body, string commaSeparatedUris)
+        private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
-            return $"{{" +
-                     $"\"onderwerp\":\"{subject}\"," +
-                     $"\"berichttekst\":\"{body}\"," +
-                     $"\"publicatiedatum\":\"{this._decision.PublicationDate}\"," +
-                     $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
-                     $"\"handelingsperspectief\":\"{string.Empty}\"," +  // TODO: To be filled
-                     $"\"geopend\":false," +
-                     $"\"berichttype\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Name()}\"," +
-                     $"\"identificatie\":{{" +
-                       $"\"type\":\"bsn\"," +
-                       $"\"value\":\"{this._bsnNumber}\"" +
-                     $"}}," +
-                     $"\"bijlages\":[{commaSeparatedUris}]" +
-                   $"}}";
+            return $"\"onderwerp\":\"{subject}\"," +
+                   $"\"berichttekst\":\"{body}\"," +
+                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
+                   $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
+                   $"\"handelingsperspectief\":\"TODO\"," +  // TODO: To be filled
+                   $"\"geopend\":false," +
+                   $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
+                   $"\"identificatie\":{{" +
+                     $"\"type\":\"{IdTypes.Bsn.GetEnumName()}\"," +
+                     $"\"value\":\"{this._bsnNumber}\"" +
+                   $"}}," +
+                   $"\"bijlages\":[{commaSeparatedUris}]";
         }
         #endregion
 
-        #region Polymorphic (GetWhitelistName)
-        /// <inheritdoc cref="BaseScenario.GetWhitelistName()"/>
-        protected override string GetWhitelistName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
-
-        private static string? s_environmentVariableName;
-
-        private string GetWhitelistMessageName()
-        {
-            lock (s_padlock)
-            {
-                s_environmentVariableName ??= $"{nameof(this.Configuration.User).ToUpper()}_" +
-                                              $"{nameof(this.Configuration.User.Whitelist).ToUpper()}_" +
-                                              $"{nameof(this.Configuration.User.Whitelist.MessageObjectType_Uuids).ToUpper()}";
-            }
-
-            return s_environmentVariableName;
-        }
+        #region Polymorphic (GetWhitelistEnvVarName)
+        /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
+        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
         #endregion
     }
 }

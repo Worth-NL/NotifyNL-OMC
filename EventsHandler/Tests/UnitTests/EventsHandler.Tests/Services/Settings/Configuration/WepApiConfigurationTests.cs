@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
-using EventsHandler.Extensions;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
 #pragma warning disable IDE0008  // Declaration of static types would be too long
@@ -52,9 +52,6 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
                 // AppSettings | Variables | OpenKlant
                 TestConfigProperties(ref counter, methodNames, variablesSettings.OpenKlant);
-
-                // AppSettings | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, variablesSettings.Objecten);
 
                 // AppSettings | Variables | UX Messages
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
@@ -107,6 +104,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // User | Whitelist
                 TestConfigProperties(ref counter, methodNames, userConfiguration.Whitelist);
 
+                // User | Variables | Objecten
+                TestConfigProperties(ref counter, methodNames, userConfiguration.Variables.Objecten);
+
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {methodNames.Join()}");
             });
@@ -137,26 +137,28 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         {
             // Invalid: Not existing
             yield return ("#1", () => s_testConfiguration!.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: ""
+            yield return ("#2", () => s_testConfiguration!.User.Domain.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: " "
+            yield return ("#3", () => s_testConfiguration!.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#2", () => s_testConfiguration!.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: http://domain
-            yield return ("#3", () => s_testConfiguration!.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => s_testConfiguration!.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#4", () => s_testConfiguration!.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#5", () => s_testConfiguration!.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: domain/api/v1/typen
-            yield return ("#5", () => s_testConfiguration!.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
+            yield return ("#6", () => s_testConfiguration!.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
             // Invalid: Empty
-            yield return ("#6", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#8", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#8", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#9", () => s_testConfiguration!.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration!.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#10", () => s_testConfiguration!.User.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#11", () => s_testConfiguration!.User.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Default URI
-            yield return ("#11", () => s_testConfiguration!.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
+            yield return ("#12", () => s_testConfiguration!.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
         }
 
         [TestCase("1", true)]
