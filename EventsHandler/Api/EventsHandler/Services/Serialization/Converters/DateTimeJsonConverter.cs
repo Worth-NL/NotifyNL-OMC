@@ -26,7 +26,7 @@ namespace EventsHandler.Services.Serialization.Converters
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString("O"));
+            writer.WriteStringValue($"{value:O}");
         }
     }
 }
