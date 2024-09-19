@@ -21,6 +21,7 @@ using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
+using System.Text.Json;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementations
@@ -276,7 +277,62 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
         #endregion
 
-        // TODO: Add GetPersonalization tests
+        #region GetPersonalizationAsync()
+        [TestCase(DistributionChannels.Email)]
+        [TestCase(DistributionChannels.Sms)]
+        public async Task GetPersonalizationAsync_ReturnsExpectedPersonalization(DistributionChannels testDistributionChannel)
+        {
+            INotifyScenario scenario = ArrangeDecisionScenario_TryGetData(
+                s_validInfoObject,
+                isCaseTypeIdWhitelisted: true,
+                isNotificationExpected: true,
+                testDistributionChannel: testDistributionChannel);
+
+            // Act
+            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Content, Has.Count.EqualTo(1));
+
+                string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
+                const string expectedSerializedPersonalization =
+                    $"{{" +
+                      $"\"klant.voornaam\":\"Jackie\"," +
+                      $"\"klant.voorvoegselAchternaam\":null," +
+                      $"\"klant.achternaam\":\"Chan\"," +
+                      $"\"besluit.identificatie\":\"\"," +
+                      $"\"besluit.datum\":\"0001-01-01\"," +
+                      $"\"besluit.toelichting\":\"\"," +
+                      $"\"besluit.bestuursorgaan\":\"\"," +
+                      $"\"besluit.ingangsdatum\":\"0001-01-01\"," +
+                      $"\"besluit.vervaldatum\":\"0001-01-01\"," +
+                      $"\"besluit.vervalreden\":\"\"," +
+                      $"\"besluit.publicatiedatum\":\"0001-01-01\"," +
+                      $"\"besluit.verzenddatum\":\"0001-01-01\"," +
+                      $"\"besluit.uiterlijkereactiedatum\":\"0001-01-01\"," +
+                      $"\"besluittype.omschrijving\":\"\"," +
+                      $"\"besluittype.omschrijvingGeneriek\":\"\"," +
+                      $"\"besluittype.besluitcategorie\":\"\"," +
+                      $"\"besluittype.publicatieindicatie\":false," +
+                      $"\"besluittype.publicatietekst\":\"\"," +
+                      $"\"besluittype.toelichting\":\"\"," +
+                      $"\"zaak.identificatie\":\"ZAAK-2024-00000000001\"," +
+                      $"\"zaak.omschrijving\":\"\"," +
+                      $"\"zaak.registratiedatum\":\"0001-01-01\"," +
+                      $"\"zaaktype.omschrijving\":\"\"," +
+                      $"\"zaaktype.omschrijvingGeneriek\":\"\"" +
+                    $"}}";
+
+                Assert.That(actualSerializedPersonalization, Is.EqualTo(expectedSerializedPersonalization));
+
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 1, 1);
+            });
+        }
+        #endregion
 
         #region ProcessDataAsync()
         [Test]

@@ -53,9 +53,6 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // AppSettings | Variables | OpenKlant
                 TestConfigProperties(ref counter, methodNames, variablesSettings.OpenKlant);
 
-                // AppSettings | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, variablesSettings.Objecten);
-
                 // AppSettings | Variables | UX Messages
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
@@ -106,6 +103,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
                 // User | Whitelist
                 TestConfigProperties(ref counter, methodNames, userConfiguration.Whitelist);
+
+                // User | Variables | Objecten
+                TestConfigProperties(ref counter, methodNames, userConfiguration.Variables.Objecten);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {methodNames.Join()}");
