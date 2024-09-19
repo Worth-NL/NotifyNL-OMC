@@ -202,51 +202,41 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
         private const string TaskDataJsonNijmegen =
             $"{{" +
+              $"\"url\":\"https://objects-api.woweb.app/api/v2/objects/63627e94-4652-403f-8ed5-0cb9addfe9dd\"," +
+              $"\"uuid\":\"63627e94-4652-403f-8ed5-0cb9addfe9dd\"," +
+              $"\"type\":\"https://objecttypes-api.woweb.app/api/v2/objecttypes/d5c77844-7e00-4908-9839-f18a8ac6a045\"," +
               $"\"record\":{{" +
+                $"\"index\":1," +
+                $"\"typeVersion\":1," +
                 $"\"data\":{{" +
-                  $"\"titel\":\"Check loan\"," +
-                  $"\"status\":\"open\"," +
                   $"\"soort\":\"formtaak\"," +
-                  $"\"verloopdatum\":\"2023-09-20T18:25:43.524Z\"," +
-                  $"\"identificatie\":{{" +
-                    $"\"type\":\"bsn\"," +
-                    $"\"value\":\"82395551\"" +
-                  $"}}," +
-                  $"\"koppeling\":{{" +
-                    $"\"registratie\":\"zaak\"," +
-                    $"\"uuid\":\"5551a7c5-4e92-43e6-8d23-80359b7e22b7\"" +
-                  $"}}," +
-                  $"\"url\":{{" +
-                    $"\"uri\":\"https://google.com\"" +
-                  $"}}," +
-                  $"\"portaalformulier\":{{" +
+                  $"\"titel\":\"test taak 18-9\"," +
+                  $"\"status\":\"open\"," +
+                  $"\"eigenaar\":\"vip\"," +
+                  $"\"formtaak\":{{" +
                     $"\"formulier\":{{" +
                       $"\"soort\":\"url\"," +
-                      $"\"value\":\"http://localhost:8010/api/v2/objects/4e40fb4c-a29a-4e48-944b-c34a1ff6c8f4\"" +
+                      $"\"value\":\"https://app6-accp.nijmegen.nl/#/form/ontwikkel/uploadBijlage\"" +
                     $"}}," +
-                    $"\"data\":{{" +
-                      $"\"voornaam\":\"Jan\"," +
-                      $"\"achternaam\":\"Smit\"," +
-                      $"\"toestemming\":true," +
-                      $"\"geboortedatum\":\"01-01-1970\"" +
+                    $"\"koppeling\":{{" +
+                      $"\"uuid\":\"4f30cc08-48b5-490d-9742-fe3e94e17334\"," +
+                      $"\"registratie\":\"zaak\"" +
                     $"}}," +
-                    $"\"verzonden_data\":{{" +
-                      $"\"voornaam\":\"Jan\"," +
-                      $"\"achternaam\":\"Smit\"," +
-                      $"\"toestemming\":false," +
-                      $"\"geboortedatum\":\"01-01-1971\"" +
-                    $"}}" +
+                    $"\"verloopdatum\":\"2024-09-25 00:00:00\"," +
+                    $"\"identificatie\":{{" +
+                      $"\"type\":\"bsn\"," +
+                      $"\"value\":\"232426727\"" +
+                    $"}}," +
+                    $"\"verwerker_taak_id\":\"bestand\"" +
                   $"}}," +
-                  $"\"ogonebetaling\":{{" +
-                    $"\"bedrag\":147.43," +
-                    $"\"betaalkenmerk\":\"abcdef1234\"," +
-                    $"\"pspid\":\"MyID\"" +
-                  $"}}," +
-                  $"\"verwerker_taak_id\":\"18af0b6a-967b-4f81-bb8e-a44988e0c2f0\"," +
-                  $"\"eigenaar\":\"gzac-sd\"" +
+                  $"\"geometry\":null," +
+                  $"\"startAt\":\"2024-09-18\"," +
+                  $"\"endAt\":null," +
+                  $"\"registrationAt\":\"2024-09-18\"," +
+                  $"\"correctionFor\":null," +
+                  $"\"correctedBy\":null" +
                 $"}}" +
-              $"}}" +
-            $"}}";
+              $"}}";
 
         [TestCase(TaskDataJsonTheHague)]
         [TestCase(TaskDataJsonNijmegen)]
