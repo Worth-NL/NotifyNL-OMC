@@ -113,7 +113,9 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_WHITELIST_MESSAGE_ALLOWED",              GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
                 { "USER_WHITELIST_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
                 { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
-                { "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") }
+                { "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
+
+                { "USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION", GetTestValue(isValid, "1") }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)
