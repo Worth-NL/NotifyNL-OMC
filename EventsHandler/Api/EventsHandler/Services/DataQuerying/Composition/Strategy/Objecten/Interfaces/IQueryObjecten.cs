@@ -78,14 +78,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         #endregion
         #pragma warning restore CA1822
 
-        #region Parent (Create message object)        
+        #region Parent (Create object)        
         /// <summary>
-        /// Creates the message object in "Objecten" Web API service.
+        /// Creates an object in "Objecten" Web API service.
         /// </summary>
         /// <returns>
-        ///   The answer whether the message object was created successfully.
+        ///   The answer whether the object was created successfully.
         /// </returns>
-        internal sealed async Task<RequestResponse> CreateMessageObjectAsync(IHttpNetworkService networkService, Guid messageObjectTypeGuid, string dataJson)
+        internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
             string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
@@ -93,28 +93,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
             // Request URL
             Uri createObjectUri = new(createObjectEndpoint);
 
-            // Prepare HTTP Request Body
-            string jsonBody = PrepareCreateObjectJson(messageObjectTypeGuid, dataJson);
-
             return await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: createObjectUri,
-                jsonBody);
-        }
-
-        private string PrepareCreateObjectJson(Guid messageObjectTypeGuid, string dataJson)
-        {
-            return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/api/v2/objecttypes/{messageObjectTypeGuid}\"," +
-                     $"\"record\":{{" +
-                       $"\"typeVersion\":\"{this.Configuration.AppSettings.Variables.Objecten.MessageObjectType_Version()}\"," +
-                       $"\"data\":{dataJson}," +  // { data } => curly brackets are already included
-                       $"\"geometry\":{{" +
-                       $"}}," +
-                       $"\"startAt\":\"{DateTime.UtcNow}\"," +
-                       $"\"correctionFor\":\"string\"" +
-                     $"}}" +
-                   $"}}";
+                objectJsonBody);
         }
         #endregion
 

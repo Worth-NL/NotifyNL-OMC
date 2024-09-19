@@ -95,7 +95,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 return;
             }
 
-            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_CaseTypeIdWhitelist, caseId, scenarioName));
+            throw new AbortedNotifyingException(string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId, caseId, scenarioName));
         }
         
         /// <summary>
@@ -238,12 +238,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
         #endregion
 
-        #region Abstract (GetWhitelistName)        
+        #region Abstract (GetWhitelistEnvVarName)        
         /// <summary>
         /// Gets the name of this specific scenario.
         /// </summary>
         [UsedImplicitly]
-        protected abstract string GetWhitelistName();
+        protected abstract string GetWhitelistEnvVarName();
         #endregion
     }
 }

@@ -31,11 +31,13 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             try
             {
+                // Case #1: JSON schema used by The Hague
                 return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject>(ref reader, options)
                     .ConvertToUnified();
             }
             catch (JsonException)
             {
+                // Case #2: JSON schema used by Nijmegen
                 return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject>(ref reader, options)
                     .ConvertToUnified();
             }

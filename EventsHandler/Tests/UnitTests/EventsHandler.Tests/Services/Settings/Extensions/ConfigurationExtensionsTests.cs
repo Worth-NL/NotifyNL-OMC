@@ -8,7 +8,7 @@ using EventsHandler.Utilities._TestHelpers;
 using Microsoft.Extensions.Configuration;
 using ConfigurationExtensions = EventsHandler.Services.Settings.Extensions.ConfigurationExtensions;
 
-namespace EventsHandler.UnitTests.Extensions
+namespace EventsHandler.UnitTests.Services.Settings.Extensions
 {
     [TestFixture]
     internal sealed class ConfigurationExtensionsTests

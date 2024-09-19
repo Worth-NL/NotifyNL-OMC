@@ -71,34 +71,41 @@ namespace EventsHandler.Services.DataSending
         #endregion
 
         #region HTTP Clients
-        private const string AcceptCrsHeader = "Accept-Crs";
-        private const string ContentCrsHeader = "Content-Crs";
-        private const string CrsValue = "EPSG:4326";
-        private const string AuthorizeHeader = "Authorization";
-
         private void InitializeAvailableHttpClients()
         {
+            // Headers
+            const string acceptCrsHeader = "Accept-Crs";
+            const string contentCrsHeader = "Content-Crs";
+            const string authorizeHeader = "Authorization";
+            
+            // Values
+            const string crsValue = "EPSG:4326";
+
+            // Key-value pairs
+            (string, string) acceptCrs  = (acceptCrsHeader,  crsValue);
+            (string, string) contentCrs = (contentCrsHeader, crsValue);
+            
             // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
-                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
+                .GetHttpClient(new[] { acceptCrs, contentCrs }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
-                .GetHttpClient(new[] { (AcceptCrsHeader, CrsValue), (ContentCrsHeader, CrsValue) }));
+                .GetHttpClient(new[] { acceptCrs, contentCrs }));
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
+                .GetHttpClient(new[] { (authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2)) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)) }));
+                .GetHttpClient(new[] { (authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)), contentCrs }));
 
             this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), (ContentCrsHeader, CrsValue) }));
+                .GetHttpClient(new[] { (authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), contentCrs }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient(new[] { ("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty) }));
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
-                .GetHttpClient(new[] { (AuthorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
+                .GetHttpClient(new[] { (authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties)) }));
         }
 
         /// <summary>

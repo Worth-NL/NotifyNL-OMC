@@ -28,11 +28,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
         /// <exception cref="JsonException">
         ///   The JSON payload could not be deserialized into specified POCO model.
         /// </exception>
-        /// <exception cref="AbortedNotifyingException">
-        ///   The processing and sending of this notification should not be continued.
-        /// </exception>
         /// <exception cref="InvalidOperationException">
         ///   The following service (scenario strategy) could not be resolved from <see cref="IServiceProvider"/>.
+        /// </exception>
+        /// <exception cref="AbortedNotifyingException">
+        ///   The processing and sending of this notification should not be continued.
         /// </exception>
         /// <exception cref="NotImplementedException">
         ///   The processing strategy could not be determined.
