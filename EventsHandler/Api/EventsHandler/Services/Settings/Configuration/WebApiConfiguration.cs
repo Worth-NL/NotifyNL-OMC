@@ -205,10 +205,6 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal OpenKlantComponent OpenKlant { get; }
 
-                /// <inheritdoc cref="ObjectenComponent"/>
-                [Config]
-                internal ObjectenComponent Objecten { get; }
-
                 /// <inheritdoc cref="UxMessagesComponent"/>
                 [Config]
                 internal UxMessagesComponent UxMessages { get; }
@@ -222,7 +218,6 @@ namespace EventsHandler.Services.Settings.Configuration
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
-                    this.Objecten = new ObjectenComponent(loadersContext, this._currentPath);
                     this.UxMessages = new UxMessagesComponent(loadersContext, this._currentPath);
                 }
 
@@ -282,34 +277,6 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal string CodeObjectTypeId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
-                }
-
-                /// <summary>
-                /// The "Objecten" part of the settings.
-                /// </summary>
-                internal sealed class ObjectenComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
-                    /// </summary>
-                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal ushort MessageObjectType_Version()
-                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string MessageObjectType_Name()  // NOTE: Used by "Logius" system
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Name));
                 }
 
                 /// <summary>
@@ -577,6 +544,10 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal WhitelistComponent Whitelist { get; }
 
+            /// <inheritdoc cref="VariablesComponent"/>
+            [Config]
+            internal VariablesComponent Variables { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="UserComponent"/> class.
             /// </summary>
@@ -587,6 +558,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 this.Domain = new DomainComponent(loadersContext, parentName);
                 this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
+                this.Variables = new VariablesComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -976,6 +948,49 @@ namespace EventsHandler.Services.Settings.Configuration
                     }
 
                     s_cachedIDs.Clear();
+                }
+            }
+
+            /// <summary>
+            /// The "Variables" part of the settings.
+            /// </summary>
+            internal sealed record VariablesComponent
+            {
+                /// <inheritdoc cref="ObjectenComponent"/>
+                [Config]
+                internal ObjectenComponent Objecten { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
+                /// </summary>
+                internal VariablesComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+
+                    this.Objecten = new ObjectenComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "Objecten" part of the settings.
+                /// </summary>
+                internal sealed class ObjectenComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
+                    /// </summary>
+                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal ushort MessageObjectType_Version()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
                 }
             }
         }
