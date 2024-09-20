@@ -187,8 +187,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
-            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines);
-
+            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines)
+                                                                     .Replace("\r", "\\r");
             // Prepare HTTP Request Body
             this._queryContext = this.DataQuery.From(notification);
 
