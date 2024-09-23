@@ -1006,7 +1006,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was passed to NotifyNL API..
+        ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
         /// </summary>
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
