@@ -36,29 +36,9 @@ namespace EventsHandler.Services.Register.v1
             this._queryContext = queryContext;
         }
 
-        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
-        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
-        {
-            this._queryContext.SetNotification(notification);
-
-            // #1 contact momenten creation
-
-            // ContactMomenten contact = SendFeedbackToOpenKlantAsync();
-
-            // TODO: To be implemented
-            // #2: link to case?.Name => empty
-            // #3: link to customer
-
-            // #4 return something
-
-            // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
-            return await SendFeedbackToOpenZaakAsync(this._queryContext, notification, // TODO: Remove
-                   await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));  // TODO: Assign to a field
-        }
-
-        #region Helper methods
-        private static async Task<ContactMoment> SendFeedbackToOpenKlantAsync(
-            IQueryContext queryContext, NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+        /// <inheritdoc cref="ITelemetryService.CreateContactMomentAsync(NotificationEvent, NotifyMethods, IReadOnlyList{string}"/>
+        async Task<ContactMoment> ITelemetryService.CreateContactMomentAsync(
+            NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             // Prepare the body
             CaseStatus caseStatus = (await queryContext.GetCaseStatusesAsync()).LastStatus();
