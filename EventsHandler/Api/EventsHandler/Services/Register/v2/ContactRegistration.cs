@@ -35,26 +35,9 @@ namespace EventsHandler.Services.Register.v2
             this._queryContext = queryContext;
         }
 
-        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
-        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
-        {
-            this._queryContext.SetNotification(notification);
-
-            // #1 Get contact moment => SendFeedbackToOpenKlantAsync
-
-            // #2 Create link to case => SendFeedbackToSubjectObjectAsync
-            // #3 Create link to customer => new code
-
-            // #4 Return something
-
-            // NOTE: Feedback from "OpenKlant" will be linked to the subject object
-            return await SendFeedbackToSubjectObjectAsync(this._configuration, this._queryContext,
-                   await SendFeedbackToOpenKlantAsync(this._queryContext, notificationMethod, messages)); // TODO: Extracted to a separate method
-        }
-
-        #region Helper methods
-        private static async Task<ContactMoment> SendFeedbackToOpenKlantAsync(
-            IQueryContext queryContext, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+        /// <inheritdoc cref="ITelemetryService.CreateContactMomentAsync(NotificationEvent, NotifyMethods, IReadOnlyList{string}"/>
+        async Task<ContactMoment> ITelemetryService.CreateContactMomentAsync(
+            NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
