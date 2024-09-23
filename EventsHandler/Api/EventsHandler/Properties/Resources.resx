@@ -313,7 +313,7 @@
     <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>The notification was passed to NotifyNL API.</value>
+    <value>The registration of details about successfully processed notification was completed.</value>
     <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
