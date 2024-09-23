@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
 {
     /// <summary>
-    /// The response from "OpenKlant" feedback API endpoint.
+    /// The registration feedback retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct ContactMoment : IJsonSerializable
