@@ -6,6 +6,7 @@ using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -78,9 +79,9 @@ namespace EventsHandler.Services.Responding.v1
             try
             {
                 (NotificationEvent notification, NotifyMethods notificationMethod) = ExtractNotificationData(callback);
+                RequestResponse response = await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails);
 
-                OmcController.LogApiResponse(LogLevel.Information,
-                    await this._telemetry.ReportCompletionAsync(notification, notificationMethod, callbackDetails));
+                OmcController.LogApiResponse(LogLevel.Information, response.JsonResponse);
             }
             catch (Exception exception)
             {
