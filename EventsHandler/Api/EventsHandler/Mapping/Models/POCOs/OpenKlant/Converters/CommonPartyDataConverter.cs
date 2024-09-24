@@ -21,6 +21,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
         {
             return new CommonPartyData
             {
+                Uri                 = citizen.Uri,
                 Name                = citizen.Name,
                 SurnamePrefix       = citizen.SurnamePrefix,
                 Surname             = citizen.Surname,
@@ -41,6 +42,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
         {
             return new CommonPartyData
             {
+                Uri                 = data.Party.Uri,
                 Name                = data.Party.Identification.Details.Name,
                 SurnamePrefix       = data.Party.Identification.Details.SurnamePrefix,
                 Surname             = data.Party.Identification.Details.Surname,
