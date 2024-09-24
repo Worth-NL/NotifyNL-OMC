@@ -8,6 +8,7 @@ using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
+using Microsoft.VisualStudio.Threading;
 
 namespace EventsHandler.Services.Register.v1
 {
@@ -20,7 +21,10 @@ namespace EventsHandler.Services.Register.v1
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
-        private readonly IQueryContext _queryContext;
+        /// <inheritdoc cref="ITelemetryService.QueryContext"/>
+        public IQueryContext QueryContext { get; }
+
+        private readonly JoinableTaskFactory _taskFactory;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Contactmomenten";
@@ -33,77 +37,57 @@ namespace EventsHandler.Services.Register.v1
         /// </summary>
         public ContactRegistration(IQueryContext queryContext)
         {
-            this._queryContext = queryContext;
+            this.QueryContext = queryContext;
+            this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
-        /// <inheritdoc cref="ITelemetryService.CreateContactMomentAsync(NotificationEvent, NotifyMethods, IReadOnlyList{string}"/>
-        async Task<ContactMoment> ITelemetryService.CreateContactMomentAsync(
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyMethods, IReadOnlyList{string}"/>
+        string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
-            // Prepare the body
-            CaseStatus caseStatus = (await queryContext.GetCaseStatusesAsync()).LastStatus();
+            #pragma warning disable VSTHRD104  // The method cannot be declared as async
+            CaseStatus caseStatus = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseStatusesAsync()).LastStatus());
+            #pragma warning restore VSTHRD104
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
-            string jsonBody =
-                $"{{" +
-                  $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
-                  $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
-                  $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
-                  $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
-                  $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
-                  $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
-                    $"\"identificatie\":\"omc\"," +
-                    $"\"achternaam\":\"omc\"," +
-                    $"\"voorletters\":\"omc\"," +
-                    $"\"voorvoegselAchternaam\":\"omc\"" +
-                  $"}}" +
-                $"}}";
-
-            return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
+            return $"{{" +
+                     $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
+                     $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
+                     $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
+                     $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
+                     $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
+                     $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
+                       $"\"identificatie\":\"omc\"," +
+                       $"\"achternaam\":\"omc\"," +
+                       $"\"voorletters\":\"omc\"," +
+                       $"\"voorvoegselAchternaam\":\"omc\"" +
+                     $"}}" +
+                   $"}}";
         }
 
-        private static async Task<string> SendFeedbackToOpenZaakAsync(  // TODO: This is not needed anymore
-            IQueryContext queryContext, NotificationEvent notification, ContactMoment contactMoment)
+        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment)"/>
+        string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment)
         {
-            // Prepare the body
-            string jsonBody =
-                $"{{" +
-                  $"\"zaak\":\"{notification.MainObjectUri}\"," +         // ENG: Case
-                  $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
-                $"}}";
+            #pragma warning disable VSTHRD104  // The method cannot be declared as async
+            Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
+            #pragma warning restore VSTHRD104
 
-            return await queryContext.SendFeedbackToOpenZaakAsync(jsonBody);
+            return $"{{" +
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +
+                     $"\"object\":\"{caseUri}\"," +
+                     $"\"objectType\":\"zaak\"" +
+                   $"}}";
         }
 
-        // TODO: Link to the case
-
-        // POST method
-
-        // URI: {OpenKlant}/objectcontactmomenten
-
-        // Body:
-        // string caseId = (await queryContext.GetMainObjectAsync()).Id
-
-        // {
-        // "contactmoment": "{contactMoment.ReferenceUri}",
-        // "object": "{notification.MainObjectUri}",
-        // "objectType": "zaak"
-        // }
-
-
-        // TODO: Link to the customer
-        
-        // POST method
-
-        // URI: {OpenKlant}/klantcontactmomenten
-
-        // Body:
-        // {
-        // "contactmoment": "{contactMoment.ReferenceUri}",
-        // "klant": "CitizenResult.Id",  => Obtain it somehow
-        // "rol": "belanghebbende",
-        // "gelezen": false
-        // }
-        #endregion
+        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment)"/>
+        string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment)
+        {
+            return $"{{" +
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +
+                     $"\"klant\":\"\"," +  // TODO: CitizenResult.Id
+                     $"\"rol\":\"belanghebbende\"," +
+                     $"\"gelezen\":false" +
+                   $"}}";
+        }
     }
 }
