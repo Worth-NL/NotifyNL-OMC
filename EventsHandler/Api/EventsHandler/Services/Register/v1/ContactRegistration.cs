@@ -41,7 +41,7 @@ namespace EventsHandler.Services.Register.v1
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyMethods, IReadOnlyList{string}"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
