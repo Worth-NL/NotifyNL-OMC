@@ -16,19 +16,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     /// <seealso cref="IJsonSerializable"/>
     public struct PartyResult : IJsonSerializable
     {
-        // TODO: another JSON property "uuid" => GUID Id
-
-        /// <summary>
-        /// The ID of party (e.g., citizen, organization) in <see cref="Uri"/> format:
-        /// <code>
-        /// http(s)://Domain/ApiEndpoint/[UUID]
-        /// </code>
-        /// </summary>
+        /// <inheritdoc cref="CommonPartyData.Uri"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri IdUri { get; internal set; } = DefaultValues.Models.EmptyUri;  // TODO: Remove this one
+        public Uri Uri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <inheritdoc cref="DigitalAddressShort"/>
         /// <remarks>
