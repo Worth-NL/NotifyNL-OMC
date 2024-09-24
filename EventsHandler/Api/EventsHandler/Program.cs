@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
@@ -396,7 +397,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IRespondingService<ProcessingResult, string>), DetermineResponderVersion(omvWorkflowVersion));
 
             return;
 
