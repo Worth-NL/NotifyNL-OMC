@@ -61,9 +61,7 @@ namespace EventsHandler.Services.Register.v2
         /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment)"/>
         string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment)
         {
-            #pragma warning disable VSTHRD104  // The method cannot be declared as async
             Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
-            #pragma warning restore VSTHRD104
 
             return $"{{" +
                      $"\"klantcontact\":{{" +                  // ENG: Customer contact

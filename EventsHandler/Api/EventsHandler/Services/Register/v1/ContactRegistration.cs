@@ -45,9 +45,7 @@ namespace EventsHandler.Services.Register.v1
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
-            #pragma warning disable VSTHRD104  // The method cannot be declared as async
             CaseStatus caseStatus = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseStatusesAsync()).LastStatus());
-            #pragma warning restore VSTHRD104
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
             return $"{{" +
@@ -68,9 +66,7 @@ namespace EventsHandler.Services.Register.v1
         /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment)"/>
         string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment)
         {
-            #pragma warning disable VSTHRD104  // The method cannot be declared as async
             Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
-            #pragma warning restore VSTHRD104
 
             return $"{{" +
                      $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +
