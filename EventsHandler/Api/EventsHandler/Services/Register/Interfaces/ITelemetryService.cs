@@ -32,6 +32,8 @@ namespace EventsHandler.Services.Register.Interfaces
         {
             try
             {
+                this.QueryContext.SetNotification(notification);
+
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
                     GetCreateContactMomentJsonBody(notification, notificationMethod, messages));
