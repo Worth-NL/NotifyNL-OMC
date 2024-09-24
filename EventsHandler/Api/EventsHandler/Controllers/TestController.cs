@@ -7,6 +7,7 @@ using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
@@ -198,12 +199,11 @@ namespace EventsHandler.Controllers
             try
             {
                 NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
-
-                string result = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
+                RequestResponse response = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result));
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, response.JsonResponse));
             }
             catch (Exception exception)
             {
