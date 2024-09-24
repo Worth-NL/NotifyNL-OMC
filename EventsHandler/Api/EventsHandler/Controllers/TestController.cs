@@ -3,6 +3,7 @@
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
@@ -184,6 +185,24 @@ namespace EventsHandler.Controllers
         /// Checks whether feedback can be received by contact register Web API service.
         /// </summary>
         /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
+        /// <param name="notifyMethod">The notification method to be used during this test.</param>
+        /// <param name="messages">
+        ///   The messages required by specific contact registration implementation.
+        ///   <para>
+        ///     For "OMC Workflow v1" use:
+        ///     <list type="bullet">
+        ///       <item>index 0 = "Log message"</item>
+        ///     </list>
+        ///   </para>
+        ///   <para>
+        ///     For "OMC Workflow v2" use:
+        ///     <list type="bullet">
+        ///       <item>index 0 = "Message subject" (example); </item>
+        ///       <item>index 1 = "Message body" (example); </item>
+        ///       <item>index 2 = "true" / "false"</item>
+        ///     </list>
+        ///   </para>
+        /// </param>
         [HttpPost]
         [Route("Open/ContactRegistration")]
         // Security
@@ -194,12 +213,15 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API Web API service
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
-        public async Task<IActionResult> RegisterAsync([Required, FromBody] object json)
+        public async Task<IActionResult> RegisterAsync(
+            [Required, FromBody] object json,
+            [Required, FromQuery] NotifyMethods notifyMethod,
+            [Required, FromQuery] string[] messages)
         {
             try
             {
                 NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
-                RequestResponse response = await this._telemetry.ReportCompletionAsync(notification, NotifyMethods.Email, "test"); // TODO: Use notification method and message as parameters
+                RequestResponse response = await this._telemetry.ReportCompletionAsync(notification, notifyMethod, messages);
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
@@ -214,12 +236,6 @@ namespace EventsHandler.Controllers
         }
 
         #region Helper methods
-        private static readonly Dictionary<NotifyMethods, string> s_templateTypes = new()
-        {
-            { NotifyMethods.Sms,   "sms"   },
-            { NotifyMethods.Email, "email" }
-        };
-
         /// <summary>
         /// Generic method sending notification through <see cref="NotificationClient"/> and handling its responses in a standardized way.
         /// </summary>
@@ -239,11 +255,8 @@ namespace EventsHandler.Controllers
                     this._configuration.OMC.API.BaseUrl.NotifyNL().ToString(),
                     this._configuration.User.API.Key.NotifyNL());
 
-                // Determine template type
-                string templateType = s_templateTypes[notifyMethod];
-
                 // Determine first possible Email template ID if nothing was provided
-                List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(templateType)).templates; // NOTE: Assign to variables for debug purposes
+                List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates; // NOTE: Assign to variables for debug purposes
                 templateId ??= allTemplates.First().id;
 
                 // TODO: To be extracted into a dedicated service
@@ -288,7 +301,7 @@ namespace EventsHandler.Controllers
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(templateType)));
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(notifyMethod.GetEnumName())));
             }
             catch (Exception exception)
             {
