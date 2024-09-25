@@ -36,6 +36,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
+        private DecisionType _decisionType;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
@@ -50,7 +52,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
@@ -97,7 +99,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._bsnNumber = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
                                     this._decision.CaseUri);               // 1. Case URI
 
-            return await this._queryContext.GetPartyDataAsync(this._bsnNumber);  // 3. Citizen details
+            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
+            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
+
+            return new PreparedData(
+                party: await this._queryContext.GetPartyDataAsync(this._bsnNumber),
+                caseUri: this._case.Uri);
         }
         #endregion
 
@@ -112,9 +119,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            DecisionType decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
-            Case @case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
-
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
@@ -132,16 +136,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate:O}";
                 s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate:O}";
 
-                s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
-                s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
-                s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
-                s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
-                s_emailPersonalization["besluittype.toelichting"] = decisionType.Explanation;
+                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
+                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate:O}";
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate:O}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;

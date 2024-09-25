@@ -55,23 +55,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="INotifyScenario.TryGetDataAsync(NotificationEvent)"/>
         async Task<GettingDataResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
         {
-            CommonPartyData commonPartyData = await PrepareDataAsync(notification);
+            PreparedData preparedData = await PrepareDataAsync(notification);
 
             // Determine which types of notifications should be published
-            return commonPartyData.DistributionChannel switch
+            return preparedData.Party.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success(new[] { await GetEmailNotifyDataAsync(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { await GetEmailNotifyDataAsync(notification, preparedData) }),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success(new[] { await GetSmsNotifyDataAsync(commonPartyData) }),
+                    => GettingDataResponse.Success(new[] { await GetSmsNotifyDataAsync(notification, preparedData) }),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
                     => GettingDataResponse.Success(new[]
                         {
-                            await GetEmailNotifyDataAsync(commonPartyData),
-                            await GetSmsNotifyDataAsync(commonPartyData)
+                            await GetEmailNotifyDataAsync(notification, preparedData),
+                            await GetSmsNotifyDataAsync(notification, preparedData)
                         }),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
@@ -116,18 +116,25 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="preparedData"><inheritdoc cref="PreparedData" path="/summary"/></param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
-                contactDetails: partyData.EmailAddress,
+                contactDetails: preparedData.Party.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: await GetEmailPersonalizationAsync(partyData)
+                personalization: await GetEmailPersonalizationAsync(preparedData.Party),
+                reference: new NotifyReference
+                (
+                    notification,
+                    caseUri: preparedData.CaseUri,
+                    partyUri: preparedData.Party.Uri
+                )
             );
         }
         #endregion
@@ -137,17 +144,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
         /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="preparedData"><inheritdoc cref="PreparedData" path="/summary"/></param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
+        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
-                contactDetails: partyData.TelephoneNumber,
+                contactDetails: preparedData.Party.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: await GetSmsPersonalizationAsync(partyData)
+                personalization: await GetSmsPersonalizationAsync(preparedData.Party),
+                reference: new NotifyReference
+                (
+                    notification,
+                    caseUri: preparedData.CaseUri,
+                    partyUri: preparedData.Party.Uri
+                )
             );
         }
         #endregion
@@ -197,7 +211,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         /// <exception cref="AbortedNotifyingException"/>
-        protected abstract Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification);
+        protected abstract Task<PreparedData> PrepareDataAsync(NotificationEvent notification);
         #endregion
 
         #region Abstract (Email logic: template + personalization)
