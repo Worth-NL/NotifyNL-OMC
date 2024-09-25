@@ -17,12 +17,12 @@ namespace EventsHandler.Services.DataProcessing
     /// <inheritdoc cref="IProcessingService{TModel}"/>
     internal sealed class NotifyProcessor : IProcessingService<NotificationEvent>
     {
-        private readonly IScenariosResolver _resolver;
+        private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
         /// </summary>
-        public NotifyProcessor(IScenariosResolver resolver)
+        public NotifyProcessor(IScenariosResolver<INotifyScenario, NotificationEvent> resolver)
         {
             this._resolver = resolver;
         }

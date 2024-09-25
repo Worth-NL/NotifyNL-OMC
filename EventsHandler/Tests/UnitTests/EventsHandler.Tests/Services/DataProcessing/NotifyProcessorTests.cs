@@ -19,13 +19,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
     [TestFixture]
     public sealed class NotifyProcessorTests
     {
-        private Mock<IScenariosResolver> _mockedScenariosResolver = null!;
+        private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedScenariosResolver = null!;
         private IProcessingService<NotificationEvent> _processor = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            this._mockedScenariosResolver = new Mock<IScenariosResolver>(MockBehavior.Strict);
+            this._mockedScenariosResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
             this._processor = new NotifyProcessor(this._mockedScenariosResolver.Object);
         }
 

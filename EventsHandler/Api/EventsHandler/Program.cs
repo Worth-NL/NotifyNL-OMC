@@ -7,6 +7,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
@@ -303,7 +304,7 @@ namespace EventsHandler
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
             // Strategy Resolver (returning dedicated scenarios' strategy)
-            services.AddSingleton<IScenariosResolver, ScenariosResolver>();
+            services.AddSingleton<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
             // Strategies
             services.AddSingleton<CaseCreatedScenario>();
