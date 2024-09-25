@@ -3,9 +3,9 @@
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Enums.v2;
 using EventsHandler.Services.Responding.Interfaces;
@@ -69,10 +69,10 @@ namespace EventsHandler.Services.Responding.v2
         #region Helper methods
         private async Task InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
-            (NotificationEvent notification, NotifyMethods notificationMethod) = ExtractNotificationData(callback);
+            (NotifyReference reference, NotifyMethods notificationMethod) = ExtractCallbackData(callback);
 
             // Registering new status of the notification (for user)
-            await this._telemetry.ReportCompletionAsync(notification, notificationMethod, messages:
+            await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
                 new[]
                 {
                     // User message subject
