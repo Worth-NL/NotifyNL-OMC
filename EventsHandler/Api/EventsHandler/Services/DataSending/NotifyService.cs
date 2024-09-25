@@ -61,7 +61,7 @@ namespace EventsHandler.Services.DataSending
             NotificationEvent notification, NotifyData package)
         {
             return await ResolveNotifyClient(notification)
-                .GenerateTemplatePreviewAsync(templateId: package.TemplateId.ToString(),
+                .GenerateTemplatePreviewAsync(templateId:      package.TemplateId.ToString(),
                                               personalization: package.Personalization);
         }
 
