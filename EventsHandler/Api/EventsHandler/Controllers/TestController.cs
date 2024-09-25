@@ -5,9 +5,9 @@ using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
@@ -209,7 +209,7 @@ namespace EventsHandler.Controllers
         [ApiAuthorization]
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
-        [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API Web API service
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
@@ -220,8 +220,8 @@ namespace EventsHandler.Controllers
         {
             try
             {
-                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
-                RequestResponse response = await this._telemetry.ReportCompletionAsync(notification, notifyMethod, messages);
+                NotifyReference reference = this._serializer.Deserialize<NotifyReference>(json);
+                RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
