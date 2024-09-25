@@ -16,7 +16,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
     /// The main notification retrieved as a callback event from "OpenNotificaties" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct NotificationEvent : IJsonSerializable
+    public struct NotificationEvent : IJsonSerializable  // NOTE: This model is used in endpoints + Swagger UI examples and it must be public
     {
         #region Metadata
         private static readonly object s_lock = new();
