@@ -7,6 +7,8 @@ namespace EventsHandler.Services.DataSending.Interfaces
     /// <summary>
     /// The service responsible for transmission of data to the other external service.
     /// </summary>
+    /// <typeparam name="TPackage">The type of the package.</typeparam>
+    /// <seealso cref="IDisposable" />
     public interface INotifyService<in TPackage> : IDisposable
         where TPackage : struct
     {

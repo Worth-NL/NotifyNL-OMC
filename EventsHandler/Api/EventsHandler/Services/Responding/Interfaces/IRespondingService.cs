@@ -74,6 +74,7 @@ namespace EventsHandler.Services.Responding.Interfaces
     ///   Dedicated to be used with <typeparamref name="TModel"/> objects.
     /// </para>
     /// </summary>
+    /// <typeparam name="TModel">The type of the model.</typeparam>
     /// <seealso cref="IRespondingService{TResult, TDetails}"/>
     public interface IRespondingService<TModel> : IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>  // NOTE: This interface is implicitly following Adapter Design Pattern
         where TModel : IJsonSerializable
