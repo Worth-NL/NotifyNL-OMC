@@ -71,8 +71,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             lock (s_padlock)
             {
@@ -93,10 +94,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakCreate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

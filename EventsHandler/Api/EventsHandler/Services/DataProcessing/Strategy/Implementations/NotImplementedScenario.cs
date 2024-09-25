@@ -37,40 +37,40 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
             => await Task.FromResult(NotImplemented<PreparedData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
-            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
+        protected override NotifyData GetSmsNotifyData(NotificationEvent notification, PreparedData preparedData)
+            => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetSmsTemplateId()
-            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
+            => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
+            => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
-            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
+        protected override NotifyData GetEmailNotifyData(NotificationEvent notification, PreparedData preparedData)
+            => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetEmailTemplateId()
-            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
+            => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+            => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override string GetWhitelistEnvVarName()
-            => NotImplemented<string>(); // NOTE: Only for compilation purposes
+            => NotImplemented<string>();  // NOTE: Only for compilation purposes
         #endregion
 
         /// <summary>
