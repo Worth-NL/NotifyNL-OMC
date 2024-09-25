@@ -67,24 +67,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            return await Task.FromResult(GetPersonalization());
-
-            Dictionary<string, object> GetPersonalization()
+            lock (s_padlock)
             {
-                lock (s_padlock)
-                {
-                    s_emailPersonalization["klant.voornaam"] = partyData.Name;
-                    s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                    s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+                s_emailPersonalization["klant.voornaam"] = partyData.Name;
+                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                    s_emailPersonalization["message.onderwerp"] = this._messageData.Subject;
-                    s_emailPersonalization["message.handelingsperspectief"] = this._messageData.ActionsPerspective;
+                s_emailPersonalization["message.onderwerp"] = this._messageData.Subject;
+                s_emailPersonalization["message.handelingsperspectief"] = this._messageData.ActionsPerspective;
 
-                    return s_emailPersonalization;
-                }
+                return s_emailPersonalization;
             }
         }
         #endregion
@@ -94,10 +89,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.MessageReceived();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

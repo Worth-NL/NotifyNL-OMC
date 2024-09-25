@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         internal NotificationEvent Notification { get; }
 
         /// <inheritdoc cref="Case.Uri"/>
-        internal Uri? CaseUri { get; } = DefaultValues.Models.EmptyUri;
+        internal Uri? CaseUri { get; } = DefaultValues.Models.EmptyUri;  // NOTE: Sometimes, case URI might be missing
 
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         internal Uri PartyUri { get; } = DefaultValues.Models.EmptyUri;
