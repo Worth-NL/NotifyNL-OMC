@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         internal NotificationEvent Notification { get; }
 
         /// <inheritdoc cref="Case.Uri"/>
-        internal Uri CaseUri { get; } = DefaultValues.Models.EmptyUri;
+        internal Uri? CaseUri { get; } = DefaultValues.Models.EmptyUri;
 
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         internal Uri PartyUri { get; } = DefaultValues.Models.EmptyUri;
@@ -26,7 +26,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.
         /// </summary>
-        internal NotifyReference(NotificationEvent notification, Uri caseUri, Uri partyUri)
+        internal NotifyReference(NotificationEvent notification, Uri? caseUri, Uri partyUri)
         {
             this.Notification = notification;
             this.CaseUri = caseUri;

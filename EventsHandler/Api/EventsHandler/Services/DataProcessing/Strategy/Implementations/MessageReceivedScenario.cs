@@ -37,7 +37,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Validation #1: Sending messages should be allowed
             if (!this.Configuration.User.Whitelist.Message_Allowed())
@@ -52,8 +52,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._messageData = (await queryContext.GetMessageAsync()).Record.Data;
             
             // Preparing citizen details
-            return await queryContext.GetPartyDataAsync(           // 2. Citizen details
-                         this._messageData.Identification.Value);  // 1. BSN number
+            return new PreparedData(
+                party: await queryContext.GetPartyDataAsync(  // 2. Citizen details
+                    this._messageData.Identification.Value),  // 1. BSN number
+                caseUri: null);  // NOTE: There is no case linked so, there is no case URI either
         }
         #endregion
 
