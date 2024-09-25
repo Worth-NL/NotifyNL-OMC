@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
@@ -64,11 +65,11 @@ namespace EventsHandler.Services.Register.v2
             Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
 
             return $"{{" +
-                     $"\"klantcontact\":{{" +                  // ENG: Customer contact
-                       $"\"uuid\":\"{contactMoment.Id}\"" +
+                     $"\"klantcontact\":{{" +  // ENG: Customer contact
+                       $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
-                     $"\"wasKlantcontact\":{{" +               // ENG: ???
-                       $"\"uuid\":\"{contactMoment.Id}\"" +
+                     $"\"wasKlantcontact\":{{" +
+                       $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
                        $"\"objectId\":\"{caseUri}\"," +
@@ -84,10 +85,10 @@ namespace EventsHandler.Services.Register.v2
         {
             return $"{{" +
                      $"\"wasPartij\":{{" +
-                       $"\"uuid\":\"\"" +  // TODO: PartyResult.Id.GetGuid()
+                       $"\"uuid\":\"\"" +  // TODO: PartyResult.Uri.GetGuid()  // GUID
                      $"}}," +
                      $"\"hadKlantcontact\":{{" +
-                       $"\"uuid\":\"{contactMoment.Id}\"" +
+                       $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"rol\":\"klant\"," +
                      $"\"initiator\":true" +

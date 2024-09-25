@@ -69,8 +69,8 @@ namespace EventsHandler.Services.Register.v1
             Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
 
             return $"{{" +
-                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +
-                     $"\"object\":\"{caseUri}\"," +
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
+                     $"\"object\":\"{caseUri}\"," +                            // URI
                      $"\"objectType\":\"zaak\"" +
                    $"}}";
         }
@@ -79,8 +79,8 @@ namespace EventsHandler.Services.Register.v1
         string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment)
         {
             return $"{{" +
-                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +
-                     $"\"klant\":\"\"," +  // TODO: CitizenResult.Id
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
+                     $"\"klant\":\"\"," +  // TODO: CitizenResult.Uri          // URI
                      $"\"rol\":\"belanghebbende\"," +
                      $"\"gelezen\":false" +
                    $"}}";
