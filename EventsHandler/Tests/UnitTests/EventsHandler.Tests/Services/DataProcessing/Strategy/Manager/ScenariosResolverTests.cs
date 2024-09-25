@@ -27,7 +27,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
     {
         private Mock<INotifyScenario> _mockedNotifyScenario = null!;
         private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
-        private Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = null!;
+        private Mock<INotifyService<NotifyData>> _mockedNotifyService = null!;
 
         private WebApiConfiguration _webApiConfiguration = null!;
         private ServiceProvider _serviceProvider = null!;
@@ -42,7 +42,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .ReturnsAsync(GettingDataResponse.Failure());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
-            this._mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
+            this._mockedNotifyService = new Mock<INotifyService<NotifyData>>(MockBehavior.Strict);
 
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();

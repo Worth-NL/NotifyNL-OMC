@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         public MessageReceivedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }

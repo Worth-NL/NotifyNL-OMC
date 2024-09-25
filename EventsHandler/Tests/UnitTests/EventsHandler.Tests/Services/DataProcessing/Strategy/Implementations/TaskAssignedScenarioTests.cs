@@ -30,7 +30,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
     {
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = new(MockBehavior.Strict);
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
-        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
 
@@ -491,12 +491,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 .Returns(this._mockedQueryContext.Object);
 
             // INotifyService
-            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
-                    It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
+            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(emailNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
-            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
+            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(smsNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             // Task Scenario
@@ -565,15 +563,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             
             // INotifyService
             this._mockedNotifyService
-                .Verify(mock => mock.SendEmailAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()),
+                .Verify(mock => mock.SendEmailAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(sendEmailInvokeCount));
             
             this._mockedNotifyService
-                .Verify(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()),
+                .Verify(mock => mock.SendSmsAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
 
             this._processDataVerified = true;
