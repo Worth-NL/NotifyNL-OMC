@@ -8,6 +8,7 @@ namespace EventsHandler.Services.DataQuerying.Interfaces
     /// <summary>
     /// The service obtaining data from external services.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model.</typeparam>
     public interface IDataQueryService<in TModel>
         where TModel : struct, IJsonSerializable
     {
