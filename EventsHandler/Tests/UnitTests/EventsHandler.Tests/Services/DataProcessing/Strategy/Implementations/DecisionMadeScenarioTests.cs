@@ -584,7 +584,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     NotifyMethods.Email,
                     TestEmailAddress,
                     Guid.NewGuid(),
-                    personalization ?? new Dictionary<string, object>())
+                    personalization ?? new Dictionary<string, object>(),
+                    default)
             };
         }
         #endregion

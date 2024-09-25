@@ -362,7 +362,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(NotifyMethods invalidNotifyMethod)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(invalidNotifyMethod);
+            NotifyData testData = new(invalidNotifyMethod);
 
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
                 isSendingSuccessful: false,
@@ -387,7 +387,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
 
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
                 isSendingSuccessful: false,
@@ -413,7 +413,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
 
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
                 isSendingSuccessful: true,
@@ -513,14 +513,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 NotifyMethods.Sms => configuration.User.TemplateIds.Sms.TaskAssigned(),
                 _ => Guid.Empty
             };
-        }
-
-        private static NotifyData GetNotifyData(NotifyMethods method)
-        {
-            return new NotifyData(method,
-                string.Empty,
-                Guid.Empty,
-                new Dictionary<string, object>());
         }
         #endregion
 
