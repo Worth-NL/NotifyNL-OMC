@@ -24,6 +24,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     {
         private IQueryContext _queryContext = null!;
         private CaseType _caseType;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseCreatedScenario"/> class.
@@ -38,7 +39,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
@@ -53,9 +54,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
+            
+            this._case = await this._queryContext.GetCaseAsync();
 
             // Preparing citizen details
-            return await this._queryContext.GetPartyDataAsync();
+            return new PreparedData(
+                party: await this._queryContext.GetPartyDataAsync(),
+                caseUri: this._case.Uri);
         }
         #endregion
 
@@ -69,16 +74,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
         protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
         {
-            Case @case = await this._queryContext.GetCaseAsync();
-
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
                 return s_emailPersonalization;
             }

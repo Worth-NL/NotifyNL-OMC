@@ -15,12 +15,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         internal CommonPartyData Party { get; }
 
         /// <inheritdoc cref="Case.Uri"/>
-        internal Uri CaseUri { get; }
+        internal Uri? CaseUri { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PreparedData"/> struct.
         /// </summary>
-        public PreparedData(CommonPartyData party, Uri caseUri)
+        public PreparedData(CommonPartyData party, Uri? caseUri)
         {
             this.Party = party;
             this.CaseUri = caseUri;

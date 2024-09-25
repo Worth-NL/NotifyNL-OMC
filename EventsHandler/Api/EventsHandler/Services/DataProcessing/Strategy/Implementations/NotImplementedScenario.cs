@@ -34,12 +34,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private const string ExclusionJustificationMessage = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.";
 
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
-            => await Task.FromResult(NotImplemented<CommonPartyData>());
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
+            => await Task.FromResult(NotImplemented<PreparedData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
+        protected override async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
             => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
@@ -52,9 +52,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
             => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
+        protected override async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
             => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
