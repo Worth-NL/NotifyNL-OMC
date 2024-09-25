@@ -4,6 +4,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Versioning.Interfaces;
@@ -22,21 +23,21 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Reports to external API service that notification of type <see cref="NotifyMethods"/> was sent to "Notify NL" service.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
-        internal async Task<RequestResponse> ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, params string[] messages)
+        internal async Task<RequestResponse> ReportCompletionAsync(NotifyReference reference, NotifyMethods notificationMethod, params string[] messages)
         {
             try
             {
-                this.QueryContext.SetNotification(notification);
+                this.QueryContext.SetNotification(reference.Notification);
 
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(notification, notificationMethod, messages));
+                    GetCreateContactMomentJsonBody(reference.Notification, notificationMethod, messages));
 
                 RequestResponse requestResponse;
 
