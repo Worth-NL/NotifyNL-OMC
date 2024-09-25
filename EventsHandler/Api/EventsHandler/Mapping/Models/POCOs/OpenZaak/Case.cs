@@ -13,7 +13,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct Case : IJsonSerializable
     {
         /// <summary>
-        /// The <see cref="Case"/> <see cref="System.Uri"/>.
+        /// The reference to the <see cref="Case"/> in <see cref="System.Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
         /// </summary>
         [JsonRequired]
         [JsonInclude]
