@@ -61,17 +61,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return preparedData.Party.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success(new[] { await GetEmailNotifyDataAsync(notification, preparedData) }),
+                    => GettingDataResponse.Success(new[] { GetEmailNotifyData(notification, preparedData) }),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success(new[] { await GetSmsNotifyDataAsync(notification, preparedData) }),
+                    => GettingDataResponse.Success(new[] { GetSmsNotifyData(notification, preparedData) }),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
                     => GettingDataResponse.Success(new[]
                         {
-                            await GetEmailNotifyDataAsync(notification, preparedData),
-                            await GetSmsNotifyDataAsync(notification, preparedData)
+                            GetEmailNotifyData(notification, preparedData),
+                            GetSmsNotifyData(notification, preparedData)
                         }),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
@@ -121,14 +121,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetEmailNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
+        protected virtual NotifyData GetEmailNotifyData(NotificationEvent notification, PreparedData preparedData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Email,
                 contactDetails: preparedData.Party.EmailAddress,
                 templateId: GetEmailTemplateId(),
-                personalization: await GetEmailPersonalizationAsync(preparedData.Party),
+                personalization: GetEmailPersonalization(preparedData.Party),
                 reference: new NotifyReference
                 (
                     notification,
@@ -148,14 +148,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
-        protected virtual async Task<NotifyData> GetSmsNotifyDataAsync(NotificationEvent notification, PreparedData preparedData)
+        protected virtual NotifyData GetSmsNotifyData(NotificationEvent notification, PreparedData preparedData)
         {
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Sms,
                 contactDetails: preparedData.Party.TelephoneNumber,
                 templateId: GetSmsTemplateId(),
-                personalization: await GetSmsPersonalizationAsync(preparedData.Party),
+                personalization: GetSmsPersonalization(preparedData.Party),
                 reference: new NotifyReference
                 (
                     notification,
@@ -230,7 +230,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData);
+        protected abstract Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData);
         #endregion
 
         #region Abstract (SMS logic: template + personalization)
@@ -249,7 +249,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <returns>
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
-        protected abstract Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData);
+        protected abstract Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData);
         #endregion
 
         #region Abstract (GetWhitelistEnvVarName)        
