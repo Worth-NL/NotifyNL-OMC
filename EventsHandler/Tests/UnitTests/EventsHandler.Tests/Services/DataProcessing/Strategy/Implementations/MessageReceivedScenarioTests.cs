@@ -162,7 +162,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
                 configuration,
                 isSendingSuccessful: true,
-                GetNotifyData(NotifyMethods.Email));
+                new NotifyData(NotifyMethods.Email));
 
             // Act
             ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
@@ -182,7 +182,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         public async Task ProcessDataAsync_ValidNotifyData_InvalidNotifyMethod_ReturnsFailure(NotifyMethods invalidNotifyMethod)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(invalidNotifyMethod);
+            NotifyData testData = new(invalidNotifyMethod);
 
             using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
@@ -209,7 +209,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
             
             using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
@@ -237,7 +237,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
             
             using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
@@ -328,14 +328,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 NotifyMethods.Sms => configuration.User.TemplateIds.Sms.MessageReceived(),
                 _ => Guid.Empty
             };
-        }
-
-        private static NotifyData GetNotifyData(NotifyMethods method)
-        {
-            return new NotifyData(method,
-                string.Empty,
-                Guid.Empty,
-                new Dictionary<string, object>());
         }
         #endregion
 

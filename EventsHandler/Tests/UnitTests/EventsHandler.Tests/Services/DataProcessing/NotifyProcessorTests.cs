@@ -153,7 +153,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(GettingDataResponse.Success(new[]
                 {
-                    GetNotifyData(NotifyMethods.Email)
+                    new NotifyData(NotifyMethods.Email)
                 }));
 
             const string processingErrorText = "HTTP Bad Request";
@@ -195,7 +195,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(GettingDataResponse.Success(new[]
                 {
-                    GetNotifyData(NotifyMethods.Email)
+                    new NotifyData(NotifyMethods.Email)
                 }));
 
             mockedNotifyScenario
@@ -220,16 +220,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 Assert.That(status, Is.EqualTo(ProcessingResult.Success));
                 Assert.That(message, Is.EqualTo(ResourcesText.Processing_SUCCESS_Scenario_NotificationSent));
             });
-        }
-        #endregion
-
-        #region Setup
-        private static NotifyData GetNotifyData(NotifyMethods method)
-        {
-            return new NotifyData(method,
-                string.Empty,
-                Guid.Empty,
-                new Dictionary<string, object>());
         }
         #endregion
 
