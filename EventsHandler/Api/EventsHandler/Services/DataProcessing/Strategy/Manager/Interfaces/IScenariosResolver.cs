@@ -10,14 +10,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
     /// <summary>
     /// The strategy manager to control <see cref="INotifyScenario"/>s strategies - determining a specific business workflow.
     /// </summary>
-    internal interface IScenariosResolver
+    /// <typeparam name="TService">The type of the service.</typeparam>
+    /// <typeparam name="TDeterminant">The type of the determinant.</typeparam>
+    internal interface IScenariosResolver<TService, in TDeterminant>
+        where TService : class
     {
         /// <summary>
-        /// Determines which workflow scenario should be used based on the delivered <see cref="NotificationEvent"/>.
+        /// Determines which scenario should be used based on the given <typeparamref name="TDeterminant"/>.
         /// </summary>
         /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
-        ///   The appropriate <see cref="INotifyScenario"/> strategy.
+        ///   The resolved <typeparamref name="TService"/> strategy.
         /// </returns>
         /// <exception cref="KeyNotFoundException">
         ///   The key used to retrieve a specific "environment variable" value was invalid.
@@ -37,6 +40,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
         /// <exception cref="NotImplementedException">
         ///   The processing strategy could not be determined.
         /// </exception>
-        internal Task<INotifyScenario> DetermineScenarioAsync(NotificationEvent notification);
+        internal Task<TService> DetermineScenarioAsync(TDeterminant notification);
     }
 }
