@@ -170,7 +170,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
         
@@ -230,9 +230,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
 
-                int getCaseInvokeCount = testDistributionChannel == DistributionChannels.Both ? 2 : 1;
-
-                VerifyGetDataMethodCalls(1, 1, 1, getCaseInvokeCount);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
 
