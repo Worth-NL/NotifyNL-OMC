@@ -22,7 +22,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Reports to external API service that notification of type <see cref="NotifyMethods"/> was sent to "Notify NL" service.
         /// </summary>
-        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>
         /// <returns>
@@ -58,7 +58,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>
         /// <returns>
