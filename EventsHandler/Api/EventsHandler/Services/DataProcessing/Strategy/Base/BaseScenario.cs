@@ -136,7 +136,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
         /// </returns>
@@ -189,7 +189,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Prepares all the data required by this specific scenario.
         /// </summary>
-        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The data containing basic information required to send the notification.
         /// </returns>
