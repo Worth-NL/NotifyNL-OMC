@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
+using System.Text.Json.Serialization;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
 {
@@ -12,25 +13,31 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
     /// The set of data used to pass as a "reference" to "Notify NL" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable" />
-    internal readonly struct NotifyReference : IJsonSerializable
+    public struct NotifyReference : IJsonSerializable  // NOTE: This model is used in endpoints + Swagger UI examples and it must be public
     {
         /// <inheritdoc cref="NotificationEvent"/>
-        internal NotificationEvent Notification { get; }
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(0)]
+        public NotificationEvent Notification { get; internal set; } = default;
 
         /// <inheritdoc cref="Case.Uri"/>
-        internal Uri? CaseUri { get; } = DefaultValues.Models.EmptyUri;  // NOTE: Sometimes, case URI might be missing
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(1)]
+        public Uri? CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;  // NOTE: Sometimes, case URI might be missing
 
         /// <inheritdoc cref="CommonPartyData.Uri"/>
-        internal Uri PartyUri { get; } = DefaultValues.Models.EmptyUri;
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(2)]
+        public Uri PartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.
         /// </summary>
-        internal NotifyReference(NotificationEvent notification, Uri? caseUri, Uri partyUri)
+        public NotifyReference()
         {
-            this.Notification = notification;
-            this.CaseUri = caseUri;
-            this.PartyUri = partyUri;
         }
     }
 }
