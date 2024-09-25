@@ -32,7 +32,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(1)]
-        internal Guid CaseId { get; init; }
+        internal Guid CaseId { get; init; }  // NOTE: Some task data might have only URI (extracting GUID is necessary)
 
         /// <summary>
         /// The title of the task.
