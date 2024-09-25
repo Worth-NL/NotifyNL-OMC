@@ -350,7 +350,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             const string testJson =
                 $"{{" +
-                  $"\"uuid\":null," +  // Should be deserialized as default not null
                   $"\"url\":null" +    // Should be deserialized as default not null
                 $"}}";
         
@@ -727,7 +726,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             string expectedResult =
                 $"{{" +
-                  $"\"uuid\":\"{TestGuid}\"," +
                   $"\"url\":\"{DefaultValues.Models.EmptyUri}\"" +
                 $"}}";
 
