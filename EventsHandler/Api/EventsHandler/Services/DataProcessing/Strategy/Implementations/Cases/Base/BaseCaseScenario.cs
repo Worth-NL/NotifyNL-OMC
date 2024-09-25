@@ -21,7 +21,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         protected BaseCaseScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }

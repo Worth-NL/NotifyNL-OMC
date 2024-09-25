@@ -31,7 +31,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
     {
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = new(MockBehavior.Strict);
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
-        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
 
@@ -510,8 +510,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // INotifyService
             this._mockedNotifyService
-                .Setup(mock => mock.GenerateTemplatePreviewAsync(
-                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()))
+                .Setup(mock => mock.GenerateTemplatePreviewAsync(It.IsAny<NotifyData>()))
                 .ReturnsAsync(isGenerateSuccessful
                     ? NotifyTemplateResponse.Success(TestSubject, TestBody)
                     : NotifyTemplateResponse.Failure(TestGenerationError));
@@ -656,8 +655,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // INotifyService
             this._mockedNotifyService
-                .Verify(mock => mock.GenerateTemplatePreviewAsync(
-                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()),
+                .Verify(mock => mock.GenerateTemplatePreviewAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(generateInvokeCount));
 
             // IQueryContext
