@@ -35,8 +35,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
 
-        /// <inheritdoc cref="INotifyService{TModel,TPackage}"/>
-        protected INotifyService<NotificationEvent, NotifyData> NotifyService { get; }
+        /// <inheritdoc cref="INotifyService{TPackage}"/>
+        protected INotifyService<NotifyData> NotifyService { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
@@ -44,7 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         protected BaseScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
         {
             this.Configuration = configuration;
             this.DataQuery = dataQuery;
@@ -184,8 +184,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             {
                 NotifySendResponse response = data.NotificationMethod switch
                 {
-                    NotifyMethods.Email => await this.NotifyService.SendEmailAsync(notification, data),
-                    NotifyMethods.Sms   => await this.NotifyService.SendSmsAsync(notification, data),
+                    NotifyMethods.Email => await this.NotifyService.SendEmailAsync(data),
+                    NotifyMethods.Sms   => await this.NotifyService.SendSmsAsync(data),
                     _ => NotifySendResponse.Failure_Unknown()
                 };
 

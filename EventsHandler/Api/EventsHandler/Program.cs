@@ -255,7 +255,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
-            builder.Services.AddSingleton<INotifyService<NotificationEvent, NotifyData>, NotifyService>();
+            builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources

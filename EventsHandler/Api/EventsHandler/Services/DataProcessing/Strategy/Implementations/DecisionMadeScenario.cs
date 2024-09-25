@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         public DecisionMadeScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }
@@ -183,7 +183,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             NotifyTemplateResponse templateResponse =
                 // NOTE: Most likely there will be only a single package of data received
-                await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
+                await this.NotifyService.GenerateTemplatePreviewAsync(notifyData.First());
 
             if (templateResponse.IsFailure)
             {
