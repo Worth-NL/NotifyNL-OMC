@@ -130,11 +130,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 templateId: GetEmailTemplateId(),
                 personalization: GetEmailPersonalization(preparedData.Party),
                 reference: new NotifyReference
-                (
-                    notification,
-                    caseUri: preparedData.CaseUri,
-                    partyUri: preparedData.Party.Uri
-                )
+                {
+                    Notification = notification,
+                    CaseUri = preparedData.CaseUri,
+                    PartyUri = preparedData.Party.Uri
+                }
             );
         }
         #endregion
@@ -157,11 +157,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 templateId: GetSmsTemplateId(),
                 personalization: GetSmsPersonalization(preparedData.Party),
                 reference: new NotifyReference
-                (
-                    notification,
-                    caseUri: preparedData.CaseUri,
-                    partyUri: preparedData.Party.Uri
-                )
+                {
+                    Notification = notification,
+                    CaseUri = preparedData.CaseUri,
+                    PartyUri = preparedData.Party.Uri
+                }
             );
         }
         #endregion
