@@ -235,7 +235,12 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 contactDetails: string.Empty,
                 templateId: default,
                 personalization: null!,
-                reference: new NotifyReference(notification, default, null!)
+                reference: new NotifyReference
+                {
+                    Notification = notification,
+                    CaseUri = default,
+                    PartyUri = null!
+                }
             );
         }
         #endregion
