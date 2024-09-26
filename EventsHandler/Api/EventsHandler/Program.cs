@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Controllers;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
@@ -45,7 +46,6 @@ using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning;
 using EventsHandler.Services.Versioning.Interfaces;
-using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -185,7 +185,7 @@ namespace EventsHandler
             });
 
             // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
-            builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();  // NOTE: Any class which belongs to the solution
 
             // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
