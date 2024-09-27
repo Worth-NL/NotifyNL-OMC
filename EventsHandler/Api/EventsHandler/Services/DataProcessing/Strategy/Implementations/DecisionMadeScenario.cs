@@ -61,11 +61,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The info object needs to be of a specific type
-            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
+            Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
+            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
-                        Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
+                        /* {0} */ $"{infoObjectTypeId}",
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
             }
 
             // Validation #2: Status needs to be definitive
@@ -191,6 +193,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
+            // TODO: Use better escaping pattern
             string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines)
                                                                      .Replace("\r", "\\r");
             // Prepare HTTP Request Body

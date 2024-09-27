@@ -61,15 +61,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Object scenarios
             if (IsObjectScenario(notification))
             {
-                Guid objectTypeUri = notification.Attributes.ObjectTypeUri.GetGuid();
+                Guid objectTypeId = notification.Attributes.ObjectTypeUri.GetGuid();
 
-                if (objectTypeUri.Equals(this._configuration.User.Whitelist.TaskObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.User.Whitelist.TaskObjectType_Uuid()))
                 {
                     // Scenario #4: "Task assigned"
                     return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
                 }
 
-                if (objectTypeUri.Equals(this._configuration.User.Whitelist.MessageObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.User.Whitelist.MessageObjectType_Uuid()))
                 {
                     // Scenario #6: "Message received"
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
@@ -77,7 +77,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
                 throw new AbortedNotifyingException(
                     string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid,
-                        Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
+                        /* {0} */ $"{objectTypeId}",
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
             }
 
             // Scenario #5: "Decision made"
