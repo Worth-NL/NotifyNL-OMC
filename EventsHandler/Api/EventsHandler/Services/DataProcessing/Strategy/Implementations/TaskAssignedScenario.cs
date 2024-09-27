@@ -28,6 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
     {
         private IQueryContext _queryContext = null!;
         private CommonTaskData _taskData;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
@@ -35,14 +36,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         public TaskAssignedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
@@ -72,10 +73,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
+            
+            this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
 
             // Preparing citizen details
-            return await this._queryContext.GetPartyDataAsync(
-                this._taskData.Identification.Value);  // BSN number
+            return new PreparedData(
+                party: await this._queryContext.GetPartyDataAsync(  // 2. Citizen details
+                    this._taskData.Identification.Value),           // 1. BSN number
+                caseUri: this._case.Uri);
         }
         #endregion
 
@@ -87,14 +92,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             bool isValid = IsValid(this._taskData.ExpirationDate);
             string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(isValid);
-            
-            Case @case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             
             lock (s_padlock)
             {
@@ -106,8 +109,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
                 s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
 
-                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
                 return s_emailPersonalization;
             }
@@ -136,10 +139,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

@@ -2,10 +2,10 @@
 
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Extensions;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -230,10 +230,10 @@ namespace EventsHandler.Services.Responding
         /// <returns>
         ///   The notification data required for further processing.
         /// </returns>
-        internal (NotificationEvent, NotifyMethods) ExtractNotificationData(DeliveryReceipt callback)
+        internal (NotifyReference, NotifyMethods) ExtractCallbackData(DeliveryReceipt callback)
         {
-            string decodedNotification = callback.Reference!.Base64Decode();
-            NotificationEvent notification = this.Serializer.Deserialize<NotificationEvent>(decodedNotification);
+            string decodedReference = callback.Reference?.Base64Decode() ?? string.Empty;
+            NotifyReference notification = this.Serializer.Deserialize<NotifyReference>(decodedReference);
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
             return (notification, notificationMethod);

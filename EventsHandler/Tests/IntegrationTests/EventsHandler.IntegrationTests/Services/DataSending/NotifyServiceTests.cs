@@ -15,7 +15,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
     [TestFixture]
     public sealed class NotifyServiceTests
     {
-        private INotifyService<NotificationEvent, NotifyData>? _testNotifyService;
+        private INotifyService<NotifyData>? _testNotifyService;
 
         [TearDown]
         public void CleanupTests()
@@ -42,7 +42,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             NotificationEvent testNotification = NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague().Deserialized();
 
             // Act
-            await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
+            await this._testNotifyService.SendEmailAsync(GetNotifyData(testNotification));
 
             // Assert
             firstMockedNotifyClient
@@ -65,7 +65,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             this._testNotifyService = new NotifyService(secondMockedClientFactory.Object, mockedSerializer.Object);
 
             // Act
-            await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
+            await this._testNotifyService.SendEmailAsync(new NotifyData());
 
             // Assert
             firstMockedNotifyClient
@@ -101,7 +101,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     .Deserialized();
 
             // Act
-            await this._testNotifyService.SendEmailAsync(testNotification, new NotifyData());
+            await this._testNotifyService.SendEmailAsync(GetNotifyData(testNotification));
 
             // Assert
             mockedClient
@@ -128,7 +128,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     .Deserialized();
 
             // Act
-            await this._testNotifyService.SendSmsAsync(testNotification, new NotifyData());
+            await this._testNotifyService.SendSmsAsync(GetNotifyData(testNotification));
 
             // Assert
             mockedClient
@@ -155,7 +155,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                     .Deserialized();
 
             // Act
-            await this._testNotifyService.GenerateTemplatePreviewAsync(testNotification, new NotifyData());
+            await this._testNotifyService.GenerateTemplatePreviewAsync(GetNotifyData(testNotification));
 
             // Assert
             mockedClient
@@ -167,7 +167,7 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
         #endregion
 
         #region Setup
-        private static INotifyService<NotificationEvent, NotifyData> GetTestSendingService(
+        private static INotifyService<NotifyData> GetTestSendingService(
             Mock<INotifyClient>? mockedClient = null)
         {
             var mockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
@@ -214,15 +214,34 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             Mock<ISerializationService> serializerMock = new(MockBehavior.Strict);
             serializerMock
                 .Setup(mock => mock.Serialize(
-                    It.IsAny<NotificationEvent>()))
+                    It.IsAny<NotifyReference>()))
                 .Returns(string.Empty);
 
             serializerMock
-                .Setup(mock => mock.Deserialize<NotificationEvent>(
+                .Setup(mock => mock.Deserialize<NotifyReference>(
                     It.IsAny<string>()))
-                .Returns(new NotificationEvent());
+                .Returns(new NotifyReference());
 
             return serializerMock;
+        }
+        #endregion
+
+        #region Helper methods
+        private static NotifyData GetNotifyData(NotificationEvent notification)
+        {
+            return new NotifyData
+            (
+                notificationMethod: default,
+                contactDetails: string.Empty,
+                templateId: default,
+                personalization: null!,
+                reference: new NotifyReference
+                {
+                    Notification = notification,
+                    CaseUri = default,
+                    PartyUri = null!
+                }
+            );
         }
         #endregion
     }

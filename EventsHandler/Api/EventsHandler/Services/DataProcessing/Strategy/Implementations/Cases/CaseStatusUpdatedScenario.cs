@@ -24,6 +24,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     {
         private IQueryContext _queryContext = null!;
         private CaseType _caseType;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusUpdatedScenario"/> class.
@@ -31,14 +32,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         public CaseStatusUpdatedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
@@ -54,8 +55,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
+            this._case = await this._queryContext.GetCaseAsync();
+
             // Preparing citizen details
-            return await this._queryContext.GetPartyDataAsync();
+            return new PreparedData(
+                party: await this._queryContext.GetPartyDataAsync(),
+                caseUri: this._case.Uri);
         }
         #endregion
 
@@ -67,19 +72,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            Case @case = await this._queryContext.GetCaseAsync();
-
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
                 s_emailPersonalization["status.omschrijving"] = this._caseType.Name;
 
@@ -93,10 +96,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetSmsTemplateId()
           => this.Configuration.User.TemplateIds.Sms.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 

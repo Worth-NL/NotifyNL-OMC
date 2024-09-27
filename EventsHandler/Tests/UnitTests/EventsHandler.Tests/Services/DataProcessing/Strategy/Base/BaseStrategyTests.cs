@@ -28,7 +28,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
     {
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedQueryService = new(MockBehavior.Strict);
-        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
 
@@ -170,7 +170,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
         
@@ -230,9 +230,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
 
-                int getCaseInvokeCount = testDistributionChannel == DistributionChannels.Both ? 2 : 1;
-
-                VerifyGetDataMethodCalls(1, 1, 1, getCaseInvokeCount);
+                VerifyGetDataMethodCalls(1, 1, 1, 1);
             });
         }
 
@@ -289,7 +287,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, NotifyMethods invalidNotifyMethod)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(invalidNotifyMethod);
+            NotifyData testData = new(invalidNotifyMethod);
 
             GetMockedServices_ProcessData(
                 isSendingSuccessful: true,
@@ -320,7 +318,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
 
             GetMockedServices_ProcessData(
                 isSendingSuccessful: false,
@@ -352,7 +350,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
         {
             // Arrange
-            NotifyData testData = GetNotifyData(testNotifyMethod);
+            NotifyData testData = new(testNotifyMethod);
 
             GetMockedServices_ProcessData(
                 isSendingSuccessful: true,
@@ -435,12 +433,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {
             // INotifyService
-            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(
-                    It.IsAny<NotificationEvent>(), emailNotifyData ?? It.IsAny<NotifyData>()))
+            this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(emailNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
-            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(), smsNotifyData ?? It.IsAny<NotifyData>()))
+            this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(smsNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
         }
 
@@ -475,14 +471,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
 
                 _ => Guid.Empty
             };
-        }
-
-        private static NotifyData GetNotifyData(NotifyMethods method)
-        {
-            return new NotifyData(method,
-                string.Empty,
-                Guid.Empty,
-                new Dictionary<string, object>());
         }
         #endregion
 
@@ -532,15 +520,11 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             
             // INotifyService
             this._mockedNotifyService
-                .Verify(mock => mock.SendEmailAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()),
+                .Verify(mock => mock.SendEmailAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(sendEmailInvokeCount));
             
             this._mockedNotifyService
-                .Verify(mock => mock.SendSmsAsync(
-                    It.IsAny<NotificationEvent>(),
-                    It.IsAny<NotifyData>()),
+                .Verify(mock => mock.SendSmsAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
 
             this._processDataVerified = true;

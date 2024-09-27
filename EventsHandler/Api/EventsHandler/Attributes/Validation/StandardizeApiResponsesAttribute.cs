@@ -2,14 +2,13 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
+using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Base;
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Notify.Models.Responses;
 using System.Collections.Concurrent;
 
 namespace EventsHandler.Attributes.Validation
@@ -32,7 +31,7 @@ namespace EventsHandler.Attributes.Validation
         static StandardizeApiResponsesAttribute()
         {
             s_controllerToResponderBinding.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
-            s_controllerToResponderBinding.TryAdd(typeof(TestController), typeof(IRespondingService<NotificationResponse, BaseSimpleDetails>));
+            s_controllerToResponderBinding.TryAdd(typeof(TestController), typeof(IRespondingService<ProcessingResult, string>));
         }
 
         /// <summary>

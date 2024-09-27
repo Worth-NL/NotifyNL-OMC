@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -23,11 +24,11 @@ using TextResources = EventsHandler.Properties.Resources;
 namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
 {
     [TestFixture]
-    public sealed class ScenariosResolverTests
+    public sealed class NotifyScenariosResolverTests
     {
         private Mock<INotifyScenario> _mockedNotifyScenario = null!;
         private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
-        private Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = null!;
+        private Mock<INotifyService<NotifyData>> _mockedNotifyService = null!;
 
         private WebApiConfiguration _webApiConfiguration = null!;
         private ServiceProvider _serviceProvider = null!;
@@ -42,7 +43,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .ReturnsAsync(GettingDataResponse.Failure());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
-            this._mockedNotifyService = new Mock<INotifyService<NotificationEvent, NotifyData>>(MockBehavior.Strict);
+            this._mockedNotifyService = new Mock<INotifyService<NotifyData>>(MockBehavior.Strict);
 
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
@@ -80,7 +81,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         public async Task DetermineScenarioAsync_InvalidNotification_ReturnsNotImplementedScenario()
         {
             // Arrange
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(default);
@@ -104,7 +105,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
             
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -131,7 +132,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
             
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -158,7 +159,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
             
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -172,7 +173,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         {
             // Arrange
             NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestTaskObjectTypeUuid);
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -186,7 +187,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         {
             // Arrange
             NotificationEvent testNotification = GetObjectNotification(ConfigurationHandler.TestMessageObjectTypeUuid);
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -200,14 +201,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         {
             // Arrange
             NotificationEvent testNotification = GetObjectNotification(Guid.Empty.ToString());
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act & Assert
             Assert.Multiple(() =>
             {
                 AbortedNotifyingException? exception = Assert.ThrowsAsync<AbortedNotifyingException>(() => scenariosResolver.DetermineScenarioAsync(testNotification));
                 Assert.That(exception?.Message.StartsWith(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid
-                                              .Replace("{0}", "USER_WHITELIST_...OBJECTTYPE_UUID")), Is.True);
+                                              .Replace("{0}", $"{testNotification.Attributes.ObjectTypeUri.GetGuid()}")
+                                              .Replace("{1}", "USER_WHITELIST_...OBJECTTYPE_UUID")), Is.True);
                 Assert.That(exception?.Message.EndsWith(TextResources.Processing_ABORT), Is.True);
             });
         }
@@ -217,7 +219,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
         {
             // Arrange
             NotificationEvent testNotification = GetDecisionNotification();
-            IScenariosResolver scenariosResolver = GetScenariosResolver();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
             INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
@@ -262,9 +264,9 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             };
         }
 
-        private ScenariosResolver GetScenariosResolver()
+        private NotifyScenariosResolver GetScenariosResolver()
         {
-            return new ScenariosResolver(this._webApiConfiguration, this._serviceProvider, this._mockedDataQuery.Object);
+            return new NotifyScenariosResolver(this._webApiConfiguration, this._serviceProvider, this._mockedDataQuery.Object);
         }
         #endregion
     }
