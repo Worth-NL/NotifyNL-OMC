@@ -38,7 +38,7 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController"/> class.
         /// </summary>
-        /// <param name="configuration">The service handling Data Provider (DAO) loading strategies.</param>
+        /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
@@ -101,7 +101,7 @@ namespace EventsHandler.Controllers
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
         /// <param name="emailTemplateId">The email template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
-        ///     If empty the ID of a very first looked up email template will be used.
+        ///     NOTE: If empty the ID of a very first looked up email template will be used.
         ///   </para>
         /// </param>
         /// <param name="personalization">The map (optional) of keys and values to be used as message personalization.
@@ -145,11 +145,13 @@ namespace EventsHandler.Controllers
         /// Sending SMS text messages to the "Notify NL" Web API service.
         /// </summary>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.
-        ///   <para>International country code is expected, e.g.: +1 (USA), +81 (Japan), +351 (Portugal), etc.</para>
+        ///   <para>
+        ///     NOTE: International country code is expected, e.g.: +1 (USA), +81 (Japan), +351 (Portugal), etc.
+        ///   </para>
         /// </param>
         /// <param name="smsTemplateId">The SMS template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
-        ///     If empty the ID of a very first looked up SMS template will be used.
+        ///     NOTE: If empty the ID of a very first looked up SMS template will be used.
         ///   </para>
         /// </param>
         /// <param name="personalization">
@@ -189,17 +191,20 @@ namespace EventsHandler.Controllers
         /// <param name="messages">
         ///   The messages required by specific contact registration implementation.
         ///   <para>
+        ///     NOTE: The provided values are already strings, you don't have to surround them with quotation marks.
+        ///   </para>
+        ///   <para>
         ///     For "OMC Workflow v1" use:
         ///     <list type="bullet">
-        ///       <item>index 0 = "Log message"</item>
+        ///       <item>index 0 = Log message</item>
         ///     </list>
         ///   </para>
         ///   <para>
         ///     For "OMC Workflow v2" use:
         ///     <list type="bullet">
-        ///       <item>index 0 = "Message subject" (example); </item>
-        ///       <item>index 1 = "Message body" (example); </item>
-        ///       <item>index 2 = "true" / "false"</item>
+        ///       <item>index 0 = Message subject; </item>
+        ///       <item>index 1 = Message body; </item>
+        ///       <item>index 2 = Status of completion (true / false)</item>
         ///     </list>
         ///   </para>
         /// </param>
@@ -211,6 +216,7 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted)]                                                         // REASON: The registration was successfully sent to "Contactmomenten" API Web API service
+        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: One of the HTTP Request calls wasn't successful
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> RegisterAsync(
@@ -220,12 +226,17 @@ namespace EventsHandler.Controllers
         {
             try
             {
+                // Deserialize received JSON payload
                 NotifyReference reference = this._serializer.Deserialize<NotifyReference>(json);
+             
+                // Processing reporting operation
                 RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
 
-                // HttpStatus Code: 202 Accepted
-                return LogApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, response.JsonResponse));
+                return response.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, response.JsonResponse))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, response.JsonResponse));
             }
             catch (Exception exception)
             {
@@ -277,7 +288,7 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
+                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
                 // NOTE: Personalization was provided by the user
@@ -295,13 +306,14 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, GetFailureMessage()));
+                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, GetSuccessMessage(notifyMethod.GetEnumName())));
+                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success,
+                        string.Format(Resources.Test_NotifyNL_SUCCESS_NotificationSent, notifyMethod.GetEnumName())));
             }
             catch (Exception exception)
             {
@@ -310,12 +322,6 @@ namespace EventsHandler.Controllers
                     this._responder.Get_Exception_ActionResult(exception));
             }
         }
-
-        private static string GetFailureMessage()
-            => Resources.Test_NotifyNL_ERROR_NotSupportedMethod;
-
-        private static string GetSuccessMessage(string templateType)
-            => $"The {templateType} {Resources.Test_NotifyNL_SUCCESS_NotificationSent}";
         #endregion
     }
 }

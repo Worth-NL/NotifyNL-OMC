@@ -1060,7 +1060,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to was successfully send to Notify NL..
+        ///   Looks up a localized string similar to The {0} notification was successfully sent to Notify NL..
         /// </summary>
         internal static string Test_NotifyNL_SUCCESS_NotificationSent {
             get {

@@ -309,8 +309,8 @@
     <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>was successfully send to Notify NL.</value>
-    <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
+    <value>The {0} notification was successfully sent to Notify NL.</value>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms; {0} = The type of notification: Email / SMS</comment>
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
     <value>The registration of details about successfully processed notification was completed.</value>
@@ -443,7 +443,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType" xml:space="preserve">
     <value>The notification can not be sent for this information object type GUID, because it is not included in the: {0}.</value>
-    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
+    <comment>{0} = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
     <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
@@ -475,7 +475,7 @@
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages is forbidden in the: {0}.</value>
-    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
+    <comment>{0} = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
     <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
