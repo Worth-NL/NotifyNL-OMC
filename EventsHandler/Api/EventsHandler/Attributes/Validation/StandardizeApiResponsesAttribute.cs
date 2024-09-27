@@ -23,15 +23,16 @@ namespace EventsHandler.Attributes.Validation
         /// <summary>
         /// Binding map of API Controllers to IRespondingService{T,...}.
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, Type> s_controllerToResponderBinding = new();
+        private static readonly ConcurrentDictionary<Type, Type> s_mappedControllersToResponders = new();
 
         /// <summary>
         /// Initializes the <see cref="StandardizeApiResponsesAttribute"/> class.
         /// </summary>
         static StandardizeApiResponsesAttribute()
         {
-            s_controllerToResponderBinding.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
-            s_controllerToResponderBinding.TryAdd(typeof(TestController), typeof(IRespondingService<ProcessingResult, string>));
+            // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
+            s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
+            s_mappedControllersToResponders.TryAdd(typeof(TestController), typeof(IRespondingService<ProcessingResult, string>));
         }
 
         /// <summary>
@@ -43,16 +44,21 @@ namespace EventsHandler.Attributes.Validation
             // Check if validation problems occurred
             if (ContainsValidationProblems(context, out ValidationProblemDetails? details))
             {
-                // Check if responder service is registered
-                if (s_controllerToResponderBinding.TryGetValue(context.Controller.GetType(), out Type? serviceType))
+                try
                 {
+                    // Check if responder service is registered
+                    Type serviceType = s_mappedControllersToResponders[context.Controller.GetType()];
+
                     // Resolving which responder service should be used (depends on API Controller)
-                    var responder = context.HttpContext.RequestServices.GetRequiredService(serviceType) as IRespondingService;
+                    var responder = (IRespondingService)context.HttpContext.RequestServices.GetRequiredService(serviceType);
 
                     // Intercepting and replacing native error messages by user-friendly API responses
-                    context = responder?.Get_Exception_ActionResult(context, details!.Errors) ?? context;
+                    context = responder.GetException(context, details!.Errors);
                 }
-                else
+                catch (Exception exception) when (exception
+                    is KeyNotFoundException       // API Controller is not mapped to IRespondingService (in constructor of this class)
+                    or InvalidOperationException  // The looked-up responding service is not registered, or it's registered differently
+                    or InvalidCastException)      // The looked-up service was resolved, but it's not deriving from IRespondingService
                 {
                     throw new ArgumentException(Resources.Processing_ERROR_ExecutingContext_UnregisteredApiController);
                 }
