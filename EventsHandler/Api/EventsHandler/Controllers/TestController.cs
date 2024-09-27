@@ -80,12 +80,9 @@ namespace EventsHandler.Controllers
                 // Response
                 return result.IsSuccessStatusCode
                     // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information,
-                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
-
+                    ? LogApiResponse(LogLevel.Information, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
                     // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error,
-                        this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
+                    : LogApiResponse(LogLevel.Error, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
             }
             catch (Exception exception)
             {
