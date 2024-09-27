@@ -39,8 +39,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
-            // TODO: BSN number validation
-
             // Predefined URL components
             string partiesEndpoint = $"https://{openKlantDomain}/klantinteracties/api/v1/partijen";
 
