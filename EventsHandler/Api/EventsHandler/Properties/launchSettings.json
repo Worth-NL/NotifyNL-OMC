@@ -113,7 +113,7 @@
         "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
         "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
 
-        "USER_API_KEY_OPENKLANT": "45c877a4fec6b1e45b00df442112ec83bedc2828", // NOTE: Not required if OMC Workflow v1 is used
+        "USER_API_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Not required if OMC Workflow v1 is used
         "USER_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
         "USER_API_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
         "USER_API_KEY_NOTIFYNL": "omc_test_v2-f872ff87-26c9-46ad-9b99-b54cc5f85f75-2501a1db-8fa1-4854-85be-d28cd318a374",
