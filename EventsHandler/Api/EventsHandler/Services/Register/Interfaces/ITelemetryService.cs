@@ -25,7 +25,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// </summary>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
-        /// <param name="messages">The messages.</param>
+        /// <param name="messages">The messages to be used during registration of this event.</param>
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
@@ -37,13 +37,13 @@ namespace EventsHandler.Services.Register.Interfaces
 
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(reference.Notification, notificationMethod, messages));
+                    GetCreateContactMomentJsonBody(reference.Notification, reference, notificationMethod, messages));
 
                 RequestResponse requestResponse;
 
                 // Linking to the case and the customer
-                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment))).IsFailure || 
-                    (requestResponse = await this.QueryContext.LinkCustomerToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment))).IsFailure)
+                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure || 
+                    (requestResponse = await this.QueryContext.LinkCustomerToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
                 {
                     return RequestResponse.Failure(requestResponse.JsonResponse);
                 }
@@ -60,29 +60,32 @@ namespace EventsHandler.Services.Register.Interfaces
         /// Prepares a dedicated JSON body.
         /// </summary>
         /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
         /// </returns>
-        protected string GetCreateContactMomentJsonBody(NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages);
+        protected string GetCreateContactMomentJsonBody(NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages);
 
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
         /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
+        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
         /// </returns>
-        protected string GetLinkCaseJsonBody(ContactMoment contactMoment);
+        protected string GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference);
 
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
         /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
+        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
         /// </returns>
-        protected string GetLinkCustomerJsonBody(ContactMoment contactMoment);
+        protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
     }
 }
