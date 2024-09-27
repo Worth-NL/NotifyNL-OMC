@@ -17,7 +17,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
     {
         private const string SerializedNotification =
             $"{{" +
-              $"{{" +
+              $"\"notification\":{{" +
               $"  \"actie\":\"create\"," +
               $"  \"kanaal\":\"zaken\"," +
               $"  \"resource\":\"status\"," +
