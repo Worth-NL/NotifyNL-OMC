@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
@@ -207,7 +208,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Manager
             {
                 AbortedNotifyingException? exception = Assert.ThrowsAsync<AbortedNotifyingException>(() => scenariosResolver.DetermineScenarioAsync(testNotification));
                 Assert.That(exception?.Message.StartsWith(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid
-                                              .Replace("{0}", "USER_WHITELIST_...OBJECTTYPE_UUID")), Is.True);
+                                              .Replace("{0}", $"{testNotification.Attributes.ObjectTypeUri.GetGuid()}")
+                                              .Replace("{1}", "USER_WHITELIST_...OBJECTTYPE_UUID")), Is.True);
                 Assert.That(exception?.Message.EndsWith(TextResources.Processing_ABORT), Is.True);
             });
         }
