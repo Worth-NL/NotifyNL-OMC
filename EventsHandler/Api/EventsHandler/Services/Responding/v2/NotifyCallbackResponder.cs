@@ -49,7 +49,7 @@ namespace EventsHandler.Services.Responding.v2
                 FeedbackTypes status = callback.Status.ConvertToFeedbackStatus();
 
                 if (status is FeedbackTypes.Success
-                           or FeedbackTypes.Failure)  // NOTE: Do not spam user with "intermediate" state messages
+                           or FeedbackTypes.Failure)  // NOTE: Do not spam user with "intermediate" state messages => FeedbackTypes.Info
                 {
                     // Inform users about the progress of their notification
                     await InformUserAboutStatusAsync(callback, status);
