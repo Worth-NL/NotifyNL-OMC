@@ -98,7 +98,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         async Task<RequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            Uri customerContactMomentUri = new($"https://{openKlantDomain}/betrokkenen");
+            Uri customerContactMomentUri = new($"https://{openKlantDomain}/klantinteracties/api/v1/betrokkenen");
 
             // Sending the request
             return await networkService.PostAsync(
