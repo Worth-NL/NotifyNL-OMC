@@ -13,8 +13,6 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
-using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
-using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {
@@ -110,9 +108,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
 
-        /// <inheritdoc cref="OpenZaak.v1.QueryZaak.SendFeedbackAsync(IHttpNetworkService, string, string)"/>
-        internal Task<string> SendFeedbackToOpenZaakAsync(string jsonBody);
-
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, string, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseUri);
 
@@ -142,14 +137,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
-        internal Task<ContactMoment> SendFeedbackToOpenKlantAsync(string jsonBody);
+        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string, string)"/>
+        internal Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
 
-        // NOTE: This method is different between IQueryZaak from "OMC workflow v1" and "OMC workflow v2",
-        //       because it's not sending any requests to "OpenZaak" Web API service anymore. Due to that,
-        //       the IQueryZaak interface cannot be used directly (from logical or business point of view)
-        /// <inheritdoc cref="OpenKlant.v2.QueryKlant.LinkToSubjectObjectAsync(IHttpNetworkService, string, string)"/>
-        internal Task<string> LinkToSubjectObjectAsync(string jsonBody);
+        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        internal Task<RequestResponse> LinkCaseToContactMomentAsync(string jsonBody);
+
+        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        internal Task<RequestResponse> LinkCustomerToContactMomentAsync(string jsonBody);
         #endregion
 
         #region IQueryObjecten

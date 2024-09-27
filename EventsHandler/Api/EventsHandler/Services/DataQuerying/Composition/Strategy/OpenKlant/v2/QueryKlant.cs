@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
@@ -40,8 +39,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
-            // TODO: BSN number validation
-
             // Predefined URL components
             string partiesEndpoint = $"https://{openKlantDomain}/klantinteracties/api/v1/partijen";
 
@@ -51,30 +48,30 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            var partiesByTypeIdAndExpand = new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            Uri partiesByTypeIdAndExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetCitizenDetailsV2Async(queryBase, partiesByTypeIdAndExpand))
                 .Party(((IQueryKlant)this).Configuration)
                 .ConvertToUnified();
         }
 
-        private static async Task<PartyResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri citizenByBsnUri)
+        private static async Task<PartyResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri partyUri)
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
-                uri: citizenByBsnUri,  // Request URL
+                uri: partyUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/klantcontacten");
+            Uri klantContactMomentUri = new($"https://{openKlantDomain}/klantinteracties/api/v1/klantcontacten");
 
-            // Sending the request and getting the response (combined internal logic)
+            // Sending the request
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: klantContactMomentUri,  // Request URL
@@ -82,27 +79,30 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
-        /// <summary>
-        /// Creates a link between the contact moment of the case and subject object in "OpenKlant" Web API service.
-        /// </summary>
-        /// <returns>
-        ///   The JSON response from an external Telemetry Web API service.
-        /// </returns>
-        /// <exception cref="TelemetryException"/>
-        internal static async Task<string> LinkToSubjectObjectAsync(
-            IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        async Task<RequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var subjectObjectUri = new Uri($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
+            Uri objectContactMomentUri = new($"https://{openKlantDomain}/klantinteracties/api/v1/onderwerpobjecten");
+            
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: objectContactMomentUri,  // Request URL
+                jsonBody);
+        }
+
+        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        async Task<RequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
+        {
+            // Predefined URL components
+            Uri customerContactMomentUri = new($"https://{openKlantDomain}/klantinteracties/api/v1/betrokkenen");
 
             // Sending the request
-            RequestResponse response = await networkService.PostAsync(
+            return await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
-                uri: subjectObjectUri,  // Request URL
+                uri: customerContactMomentUri,  // Request URL
                 jsonBody);
-
-            // Getting the response
-            return response.IsSuccess ? response.JsonResponse : throw new TelemetryException(response.JsonResponse);
         }
         #endregion
     }

@@ -6,7 +6,7 @@ namespace EventsHandler.Services.DataSending.Responses
     /// Contains details of HTTP Response from a Web / Web API service after sending to it
     /// <see cref="HttpMethod.Get"/>, <see cref="HttpMethod.Post"/> or similar HTTP Request.
     /// </summary>
-    internal readonly struct RequestResponse
+    public readonly struct RequestResponse
     {
         /// <summary>
         /// The affirmative status of the HTTP Request.

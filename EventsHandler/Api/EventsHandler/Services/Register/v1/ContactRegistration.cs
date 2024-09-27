@@ -5,9 +5,11 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
+using Microsoft.VisualStudio.Threading;
 
 namespace EventsHandler.Services.Register.v1
 {
@@ -20,7 +22,10 @@ namespace EventsHandler.Services.Register.v1
     /// <seealso cref="IVersionDetails"/>
     internal sealed class ContactRegistration : ITelemetryService
     {
-        private readonly IQueryContext _queryContext;
+        /// <inheritdoc cref="ITelemetryService.QueryContext"/>
+        public IQueryContext QueryContext { get; }
+
+        private readonly JoinableTaskFactory _taskFactory;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Contactmomenten";
@@ -33,57 +38,57 @@ namespace EventsHandler.Services.Register.v1
         /// </summary>
         public ContactRegistration(IQueryContext queryContext)
         {
-            this._queryContext = queryContext;
+            this.QueryContext = queryContext;
+            this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
-        /// <inheritdoc cref="ITelemetryService.ReportCompletionAsync(NotificationEvent, NotifyMethods, string[])"/>
-        async Task<string> ITelemetryService.ReportCompletionAsync(NotificationEvent notification, NotifyMethods notificationMethod, string[] messages)
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        string ITelemetryService.GetCreateContactMomentJsonBody(
+            NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
-            this._queryContext.SetNotification(notification);
+            #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
+            CaseStatus caseStatus = this._taskFactory
+                .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseUri))
+                .Join()
+                .LastStatus();
+            #pragma warning restore VSTHRD104
 
-            // NOTE: Feedback from "OpenKlant" will be passed to "OpenZaak"
-            return await SendFeedbackToOpenZaakAsync(this._queryContext, notification,
-                   await SendFeedbackToOpenKlantAsync(this._queryContext, notification, notificationMethod, messages));
-        }
-
-        #region Helper methods
-        private static async Task<ContactMoment> SendFeedbackToOpenKlantAsync(
-            IQueryContext queryContext, NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
-        {
-            // Prepare the body
-            CaseStatus caseStatus = (await queryContext.GetCaseStatusesAsync()).LastStatus();
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
-            string jsonBody =
-                $"{{" +
-                  $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
-                  $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
-                  $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
-                  $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
-                  $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
-                  $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
-                    $"\"identificatie\":\"omc\"," +
-                    $"\"achternaam\":\"omc\"," +
-                    $"\"voorletters\":\"omc\"," +
-                    $"\"voorvoegselAchternaam\":\"omc\"" +
-                  $"}}" +
-                $"}}";
-
-            return await queryContext.SendFeedbackToOpenKlantAsync(jsonBody);
+            return $"{{" +
+                     $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
+                     $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
+                     $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
+                     $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
+                     $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
+                     $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
+                       $"\"identificatie\":\"omc\"," +
+                       $"\"achternaam\":\"omc\"," +
+                       $"\"voorletters\":\"omc\"," +
+                       $"\"voorvoegselAchternaam\":\"omc\"" +
+                     $"}}" +
+                   $"}}";
         }
 
-        private static async Task<string> SendFeedbackToOpenZaakAsync(
-            IQueryContext queryContext, NotificationEvent notification, ContactMoment contactMoment)
+        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment, NotifyReference)"/>
+        string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
-            // Prepare the body
-            string jsonBody =
-                $"{{" +
-                  $"\"zaak\":\"{notification.MainObjectUri}\"," +         // ENG: Case
-                  $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"" +  // ENG: Moment of contact
-                $"}}";
-
-            return await queryContext.SendFeedbackToOpenZaakAsync(jsonBody);
+            return $"{{" +
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
+                     $"\"object\":\"{reference.CaseUri}\"," +                  // URI
+                     $"\"objectType\":\"zaak\"" +
+                   $"}}";
         }
-        #endregion
+
+        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment, NotifyReference)"/>
+        string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference)
+        {
+            return $"{{" +
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
+                     $"\"klant\":\"{reference.PartyUri}\"," +                  // URI
+                     $"\"rol\":\"belanghebbende\"," +
+                     $"\"gelezen\":false" +
+                   $"}}";
+        }
     }
 }

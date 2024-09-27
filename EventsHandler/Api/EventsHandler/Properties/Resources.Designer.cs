@@ -862,7 +862,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}..
+        ///   Looks up a localized string similar to The notification can not be sent for this object type GUID: {0}. Check respective whitelist (depends on type of your object): {1}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid {
             get {
@@ -871,7 +871,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent for this information object type GUID, because it is not included in the: {0}..
+        ///   Looks up a localized string similar to The notification can not be sent for this information object type GUID: {0}, because it is not included in the: {1}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType {
             get {
@@ -880,7 +880,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent because processing messages is forbidden in the: {0}..
+        ///   Looks up a localized string similar to The notification can not be sent because processing messages is forbidden (set to &apos;false&apos;) in the: {0}..
         /// </summary>
         internal static string Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden {
             get {
@@ -1006,7 +1006,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was passed to NotifyNL API..
+        ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
         /// </summary>
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
@@ -1060,7 +1060,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to was successfully send to Notify NL..
+        ///   Looks up a localized string similar to The {0} notification was successfully sent to Notify NL..
         /// </summary>
         internal static string Test_NotifyNL_SUCCESS_NotificationSent {
             get {

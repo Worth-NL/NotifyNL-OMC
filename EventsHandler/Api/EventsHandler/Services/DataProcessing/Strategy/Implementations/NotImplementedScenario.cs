@@ -25,7 +25,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         public NotImplementedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }
@@ -34,43 +34,43 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private const string ExclusionJustificationMessage = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.";
 
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
-            => await Task.FromResult(NotImplemented<CommonPartyData>());
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
+            => await Task.FromResult(NotImplemented<PreparedData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyDataAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetSmsNotifyDataAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
+        protected override NotifyData GetSmsNotifyData(NotificationEvent notification, PreparedData preparedData)
+            => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetSmsTemplateId()
-            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
+            => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
+            => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyDataAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<NotifyData> GetEmailNotifyDataAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<NotifyData>()); // NOTE: Only for compilation purposes
+        protected override NotifyData GetEmailNotifyData(NotificationEvent notification, PreparedData preparedData)
+            => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Guid GetEmailTemplateId()
-            => NotImplemented<Guid>(); // NOTE: Only for compilation purposes
+            => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
-            => await Task.FromResult(NotImplemented<Dictionary<string, object>>()); // NOTE: Only for compilation purposes
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+            => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override string GetWhitelistEnvVarName()
-            => NotImplemented<string>(); // NOTE: Only for compilation purposes
+            => NotImplemented<string>();  // NOTE: Only for compilation purposes
         #endregion
 
         /// <summary>

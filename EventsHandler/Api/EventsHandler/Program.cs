@@ -1,11 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Controllers;
 using EventsHandler.Extensions;
+using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
@@ -43,7 +46,6 @@ using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning;
 using EventsHandler.Services.Versioning.Interfaces;
-using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -183,7 +185,7 @@ namespace EventsHandler
             });
 
             // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
-            builder.Services.AddSwaggerExamplesFromAssemblyOf<NotificationEventExample>();
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();  // NOTE: Any class which belongs to the solution
 
             // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
@@ -254,7 +256,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
-            builder.Services.AddSingleton<INotifyService<NotificationEvent, NotifyData>, NotifyService>();
+            builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -302,7 +304,7 @@ namespace EventsHandler
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
             // Strategy Resolver (returning dedicated scenarios' strategy)
-            services.AddSingleton<IScenariosResolver, ScenariosResolver>();
+            services.AddSingleton<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
             // Strategies
             services.AddSingleton<CaseCreatedScenario>();
@@ -396,7 +398,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(Responder.NotifyResponder), DetermineResponderVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IRespondingService<ProcessingResult, string>), DetermineResponderVersion(omvWorkflowVersion));
 
             return;
 

@@ -36,6 +36,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private Decision _decision;
         private CaseType _caseType;
         private string _bsnNumber = string.Empty;
+        private DecisionType _decisionType;
+        private Case _case;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
@@ -43,14 +45,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         public DecisionMadeScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotificationEvent, NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
         }
 
         #region Polymorphic (PrepareDataAsync)
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
-        protected override async Task<CommonPartyData> PrepareDataAsync(NotificationEvent notification)
+        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
@@ -59,11 +61,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
 
             // Validation #1: The info object needs to be of a specific type
-            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObject.TypeUri.GetGuid()))
+            Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
+            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
-                        Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
+                        /* {0} */ $"{infoObjectTypeId}",
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
             }
 
             // Validation #2: Status needs to be definitive
@@ -97,7 +101,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._bsnNumber = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
                                     this._decision.CaseUri);               // 1. Case URI
 
-            return await this._queryContext.GetPartyDataAsync(this._bsnNumber);  // 3. Citizen details
+            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
+            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
+
+            return new PreparedData(
+                party: await this._queryContext.GetPartyDataAsync(this._bsnNumber),
+                caseUri: this._case.Uri);
         }
         #endregion
 
@@ -109,12 +118,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetEmailPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            DecisionType decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
-            Case @case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
-
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
@@ -132,16 +138,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate:O}";
                 s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate:O}";
 
-                s_emailPersonalization["besluittype.omschrijving"] = decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = decisionType.Description;
-                s_emailPersonalization["besluittype.besluitcategorie"] = decisionType.Category;
-                s_emailPersonalization["besluittype.publicatieindicatie"] = decisionType.PublicationIndicator;
-                s_emailPersonalization["besluittype.publicatietekst"] = decisionType.PublicationText;
-                s_emailPersonalization["besluittype.toelichting"] = decisionType.Explanation;
+                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
+                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_emailPersonalization["zaak.identificatie"] = @case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = @case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{@case.RegistrationDate:O}";
+                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate:O}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
@@ -156,10 +162,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => this.Configuration.User.TemplateIds.Sms.DecisionMade();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalizationAsync(CommonPartyData)"/>
-        protected override async Task<Dictionary<string, object>> GetSmsPersonalizationAsync(CommonPartyData partyData)
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
-            return await GetEmailPersonalizationAsync(partyData);  // NOTE: Both implementations are identical
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
         }
         #endregion
 
@@ -179,7 +185,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             NotifyTemplateResponse templateResponse =
                 // NOTE: Most likely there will be only a single package of data received
-                await this.NotifyService.GenerateTemplatePreviewAsync(notification, notifyData.First());
+                await this.NotifyService.GenerateTemplatePreviewAsync(notifyData.First());
 
             if (templateResponse.IsFailure)
             {
@@ -187,8 +193,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
-            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines);
-
+            // TODO: Use better escaping pattern
+            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines)
+                                                                     .Replace("\r", "\\r");
             // Prepare HTTP Request Body
             this._queryContext = this.DataQuery.From(notification);
 

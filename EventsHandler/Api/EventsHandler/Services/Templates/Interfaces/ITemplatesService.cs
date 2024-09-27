@@ -7,7 +7,9 @@ namespace EventsHandler.Services.Templates.Interfaces
     /// <summary>
     /// The service performing operations on a given templates of data.
     /// </summary>
-    public interface ITemplatesService<TTemplate, TModel>
+    /// <typeparam name="TTemplate">The type of the template.</typeparam>
+    /// <typeparam name="TModel">The type of the model.</typeparam>
+    public interface ITemplatesService<in TTemplate, in TModel>
         where TTemplate : class
         where TModel : IJsonSerializable
     {
@@ -16,7 +18,7 @@ namespace EventsHandler.Services.Templates.Interfaces
         /// </summary>
         /// <param name="template">The template to be analyzed.</param>
         /// <returns>
-        ///   The array of found template placeholders if any are existing; othwerise, empty array.
+        ///   The array of found template placeholders if any are existing; otherwise, empty array.
         /// </returns>
         internal string[] GetPlaceholders(TTemplate template);
 

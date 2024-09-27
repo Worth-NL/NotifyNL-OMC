@@ -309,11 +309,11 @@
     <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
   </data>
   <data name="Test_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>was successfully send to Notify NL.</value>
-    <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
+    <value>The {0} notification was successfully sent to Notify NL.</value>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms; {0} = The type of notification: Email / SMS</comment>
   </data>
   <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
-    <value>The notification was passed to NotifyNL API.</value>
+    <value>The registration of details about successfully processed notification was completed.</value>
     <comment>HTTP Status Code = 202 or 206</comment>
   </data>
   <data name="Feedback_NotifyNL_ERROR_UnexpectedFailure" xml:space="preserve">
@@ -442,8 +442,8 @@
     <value>The notification can not be sent because the status of the decision is not definitive.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType" xml:space="preserve">
-    <value>The notification can not be sent for this information object type GUID, because it is not included in the: {0}.</value>
-    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
+    <value>The notification can not be sent for this information object type GUID: {0}, because it is not included in the: {1}.</value>
+    <comment>{0} = Object Type ID, {1} = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
     <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
@@ -474,8 +474,8 @@
     <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden" xml:space="preserve">
-    <value>The notification can not be sent because processing messages is forbidden in the: {0}.</value>
-    <comment>{0] = Name of the environment variable holding the whitelisted values</comment>
+    <value>The notification can not be sent because processing messages is forbidden (set to 'false') in the: {0}.</value>
+    <comment>{0} = Name of the environment variable holding the whitelisted values</comment>
   </data>
   <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
     <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
@@ -487,7 +487,7 @@
     <value>Required properties</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid" xml:space="preserve">
-    <value>The notification can not be sent for this object type GUID. Check respective whitelist (depends on type of your object): {0}.</value>
-    <comment>{0} = Generic name of environment variables holding the whitelisted values</comment>
+    <value>The notification can not be sent for this object type GUID: {0}. Check respective whitelist (depends on type of your object): {1}.</value>
+    <comment>{0} = Object Type ID, {1} = Generic name of environment variables holding the whitelisted values</comment>
   </data>
 </root>

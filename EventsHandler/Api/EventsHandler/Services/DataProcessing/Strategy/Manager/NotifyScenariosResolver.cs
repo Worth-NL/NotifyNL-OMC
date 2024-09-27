@@ -16,17 +16,17 @@ using TextResources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
-    /// <inheritdoc cref="IScenariosResolver"/>
-    public sealed class ScenariosResolver : IScenariosResolver
+    /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}"/>
+    public sealed class NotifyScenariosResolver : IScenariosResolver<INotifyScenario, NotificationEvent>
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScenariosResolver"/> nested class.
+        /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
         /// </summary>
-        public ScenariosResolver(
+        public NotifyScenariosResolver(
             WebApiConfiguration configuration,
             IServiceProvider serviceProvider,
             IDataQueryService<NotificationEvent> dataQuery)
@@ -36,8 +36,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             this._dataQuery = dataQuery;
         }
 
-        /// <inheritdoc cref="IScenariosResolver.DetermineScenarioAsync(NotificationEvent)"/>
-        async Task<INotifyScenario> IScenariosResolver.DetermineScenarioAsync(NotificationEvent notification)
+        /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}.DetermineScenarioAsync(NotificationEvent)"/>
+        async Task<INotifyScenario> IScenariosResolver<INotifyScenario, NotificationEvent>.DetermineScenarioAsync(NotificationEvent notification)
         {
             // Case scenarios
             if (IsCaseScenario(notification))
@@ -61,15 +61,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Object scenarios
             if (IsObjectScenario(notification))
             {
-                Guid objectTypeUri = notification.Attributes.ObjectTypeUri.GetGuid();
+                Guid objectTypeId = notification.Attributes.ObjectTypeUri.GetGuid();
 
-                if (objectTypeUri.Equals(this._configuration.User.Whitelist.TaskObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.User.Whitelist.TaskObjectType_Uuid()))
                 {
                     // Scenario #4: "Task assigned"
                     return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
                 }
 
-                if (objectTypeUri.Equals(this._configuration.User.Whitelist.MessageObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.User.Whitelist.MessageObjectType_Uuid()))
                 {
                     // Scenario #6: "Message received"
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
@@ -77,7 +77,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
                 throw new AbortedNotifyingException(
                     string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid,
-                        Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
+                        /* {0} */ $"{objectTypeId}",
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
             }
 
             // Scenario #5: "Decision made"

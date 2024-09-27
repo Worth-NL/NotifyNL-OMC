@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Exceptions;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Mapping.Enums.OpenZaak;
@@ -31,7 +32,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
     {
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = new(MockBehavior.Strict);
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
-        private readonly Mock<INotifyService<NotificationEvent, NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
+        private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
         private WebApiConfiguration _testConfiguration = null!;
 
@@ -106,7 +107,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 AbortedNotifyingException? exception =
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType
-                                              .Replace("{0}", "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS")), Is.True);
+                                              .Replace("{0}", $"{s_invalidInfoObjectType.TypeUri.GetGuid()}")
+                                              .Replace("{1}", "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS")), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
@@ -218,7 +220,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_ERROR_Scenario_NotificationMethod));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 0, 0);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 1, 1);
             });
         }
 
@@ -269,10 +271,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 }
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
-                
-                int invocationCounts = testDistributionChannel == DistributionChannels.Both ? 2 : 1;
 
-                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, invocationCounts, invocationCounts);
+                VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 1, 1);
             });
         }
         #endregion
@@ -512,8 +512,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // INotifyService
             this._mockedNotifyService
-                .Setup(mock => mock.GenerateTemplatePreviewAsync(
-                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()))
+                .Setup(mock => mock.GenerateTemplatePreviewAsync(It.IsAny<NotifyData>()))
                 .ReturnsAsync(isGenerateSuccessful
                     ? NotifyTemplateResponse.Success(TestSubject, TestBody)
                     : NotifyTemplateResponse.Failure(TestGenerationError));
@@ -584,7 +583,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     NotifyMethods.Email,
                     TestEmailAddress,
                     Guid.NewGuid(),
-                    personalization ?? new Dictionary<string, object>())
+                    personalization ?? new Dictionary<string, object>(),
+                    default)
             };
         }
         #endregion
@@ -657,8 +657,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // INotifyService
             this._mockedNotifyService
-                .Verify(mock => mock.GenerateTemplatePreviewAsync(
-                    It.IsAny<NotificationEvent>(), It.IsAny<NotifyData>()),
+                .Verify(mock => mock.GenerateTemplatePreviewAsync(It.IsAny<NotifyData>()),
                 Times.Exactly(generateInvokeCount));
 
             // IQueryContext
