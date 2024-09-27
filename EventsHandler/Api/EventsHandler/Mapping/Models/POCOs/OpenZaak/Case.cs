@@ -13,6 +13,18 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
     public struct Case : IJsonSerializable
     {
         /// <summary>
+        /// The reference to the <see cref="Case"/> in <see cref="System.Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyName("url")]
+        [JsonPropertyOrder(0)]
+        public Uri Uri { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <summary>
         /// The identification of the <see cref="Case"/> in the following format:
         /// <code>
         /// ZAAK-2023-0000000010
@@ -21,7 +33,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("identificatie")]
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public string Identification { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -30,11 +42,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijving")]
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public string Name { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The type of the <see cref="Case"/> in <see cref="Uri"/> format:
+        /// The type of the <see cref="Case"/> in <see cref="System.Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
@@ -42,7 +54,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
-        [JsonPropertyOrder(2)]
+        [JsonPropertyOrder(3)]
         public Uri CaseTypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
@@ -51,7 +63,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("registratiedatum")]
-        [JsonPropertyOrder(3)]
+        [JsonPropertyOrder(4)]
         public DateOnly RegistrationDate { get; internal set; }
 
         /// <summary>

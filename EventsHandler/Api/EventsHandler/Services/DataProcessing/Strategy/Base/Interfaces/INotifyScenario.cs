@@ -16,7 +16,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <summary>
         /// Prepares all data consumed by "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <summary>
         /// Processes the prepared data in a specific way (determined by the scenario itself).
         /// </summary>
-        /// <param name="notification">The notification from "OpenNotificaties" Web API service.</param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="notifyData"><inheritdoc cref="NotifyData" path="/summary"/></param>
         /// <returns>
         ///   The status of the processing operation.

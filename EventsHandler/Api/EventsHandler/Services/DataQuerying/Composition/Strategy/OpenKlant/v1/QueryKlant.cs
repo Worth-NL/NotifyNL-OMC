@@ -6,6 +6,8 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
+using EventsHandler.Services.DataSending.Interfaces;
+using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
@@ -37,41 +39,65 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string openKlantDomain, string bsnNumber)
         {
-            // TODO: BSN number validation
-
             // Predefined URL components
             string citizensEndpoint = $"https://{openKlantDomain}/klanten/api/v1/klanten";
 
             // Request URL
-            var citizenByBsnUri = new Uri($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
+            Uri citizenByBsnUri = new($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
 
             return (await GetCitizenResultsV1Async(queryBase, citizenByBsnUri))
                 .Citizen
                 .ConvertToUnified();
         }
 
-        private static async Task<CitizenResults> GetCitizenResultsV1Async(IQueryBase queryBase, Uri citizenByBsnUri)
+        private static async Task<CitizenResults> GetCitizenResultsV1Async(IQueryBase queryBase, Uri citizenUri)
         {
             return await queryBase.ProcessGetAsync<CitizenResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
-                uri: citizenByBsnUri,  // Request URL
+                uri: citizenUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
         }
         #endregion
 
         #region Polymorphic (Telemetry)
-        /// <inheritdoc cref="IQueryKlant.SendFeedbackAsync(IQueryBase, string, string)"/>
-        async Task<ContactMoment> IQueryKlant.SendFeedbackAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string, string)"/>
+        async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{openKlantDomain}/contactmomenten/api/v1/contactmomenten");
+            Uri klantContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/contactmomenten");
 
-            // Sending the request and getting the response (combined internal logic)
+            // Sending the request
             return await queryBase.ProcessPostAsync<ContactMoment>(
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoFeedbackKlant);
+        }
+
+        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        async Task<RequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
+        {
+            // Predefined URL components
+            Uri objectContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/objectcontactmomenten");
+            
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
+                uri: objectContactMomentUri,  // Request URL
+                jsonBody);
+        }
+
+        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        async Task<RequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
+        {
+            // Predefined URL components
+            Uri customerContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/klantcontactmomenten");
+
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
+                uri: customerContactMomentUri,  // Request URL
+                jsonBody);
         }
         #endregion
     }

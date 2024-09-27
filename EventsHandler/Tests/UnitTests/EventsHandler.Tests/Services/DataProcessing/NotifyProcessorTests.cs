@@ -19,13 +19,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
     [TestFixture]
     public sealed class NotifyProcessorTests
     {
-        private Mock<IScenariosResolver> _mockedScenariosResolver = null!;
+        private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedScenariosResolver = null!;
         private IProcessingService<NotificationEvent> _processor = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            this._mockedScenariosResolver = new Mock<IScenariosResolver>(MockBehavior.Strict);
+            this._mockedScenariosResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
             this._processor = new NotifyProcessor(this._mockedScenariosResolver.Object);
         }
 
@@ -153,7 +153,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(GettingDataResponse.Success(new[]
                 {
-                    GetNotifyData(NotifyMethods.Email)
+                    new NotifyData(NotifyMethods.Email)
                 }));
 
             const string processingErrorText = "HTTP Bad Request";
@@ -195,7 +195,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(GettingDataResponse.Success(new[]
                 {
-                    GetNotifyData(NotifyMethods.Email)
+                    new NotifyData(NotifyMethods.Email)
                 }));
 
             mockedNotifyScenario
@@ -220,16 +220,6 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                 Assert.That(status, Is.EqualTo(ProcessingResult.Success));
                 Assert.That(message, Is.EqualTo(ResourcesText.Processing_SUCCESS_Scenario_NotificationSent));
             });
-        }
-        #endregion
-
-        #region Setup
-        private static NotifyData GetNotifyData(NotifyMethods method)
-        {
-            return new NotifyData(method,
-                string.Empty,
-                Guid.Empty,
-                new Dictionary<string, object>());
         }
         #endregion
 

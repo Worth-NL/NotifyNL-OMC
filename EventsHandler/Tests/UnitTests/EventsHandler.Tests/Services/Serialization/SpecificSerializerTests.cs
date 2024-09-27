@@ -73,6 +73,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             const string testJson =
                 $"{{" +
+                  $"\"url\":\"{TestUrl}\"," +
                   $"\"identificatie\":\"{TestString}\"," +
                   $"\"omschrijving\":null," +              // Should be deserialized as default not null
                   $"\"omschrijvingGeneriek\":\"Test\"," +  // Should be ignored
@@ -349,7 +350,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             const string testJson =
                 $"{{" +
-                  $"\"uuid\":null," +  // Should be deserialized as default not null
                   $"\"url\":null" +    // Should be deserialized as default not null
                 $"}}";
         
@@ -372,6 +372,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             string expectedResult =
                 $"{{" +
+                  $"\"url\":\"{DefaultValues.Models.EmptyUri}\"," +
                   $"\"identificatie\":\"\"," +
                   $"\"omschrijving\":\"\"," +
                   $"\"zaaktype\":\"{DefaultValues.Models.EmptyUri}\"," +
@@ -387,6 +388,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var testModel = new Case
             {
+                Uri = new Uri(TestUrl),
                 Identification = TestString,
                 Name = TestString,
                 CaseTypeUri = new Uri(TestUrl),
@@ -399,6 +401,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             const string expectedResult =
                 $"{{" +
+                  $"\"url\":\"{TestUrl}\"," +
                   $"\"identificatie\":\"{TestString}\"," +
                   $"\"omschrijving\":\"{TestString}\"," +
                   $"\"zaaktype\":\"{TestUrl}\"," +
@@ -723,7 +726,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Assert
             string expectedResult =
                 $"{{" +
-                  $"\"uuid\":\"{TestGuid}\"," +
                   $"\"url\":\"{DefaultValues.Models.EmptyUri}\"" +
                 $"}}";
 

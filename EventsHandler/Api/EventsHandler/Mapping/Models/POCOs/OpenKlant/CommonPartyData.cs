@@ -15,6 +15,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
     internal readonly struct CommonPartyData : IJsonSerializable
     {
         /// <summary>
+        /// The reference to the party (e.g., citizen or organization) in <see cref="System.Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
+        /// </summary>
+        internal Uri Uri { get; init; }
+
+        /// <summary>
         /// The first name of the citizen.
         /// </summary>
         internal string Name { get; init; }
