@@ -4,11 +4,11 @@ using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Enums;
+using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
-using Microsoft.VisualStudio.Threading;
 
 namespace EventsHandler.Services.Register.v2
 {
@@ -23,7 +23,6 @@ namespace EventsHandler.Services.Register.v2
         public IQueryContext QueryContext { get; }
 
         private readonly WebApiConfiguration _configuration;
-        private readonly JoinableTaskFactory _taskFactory;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Klantcontacten";
@@ -38,12 +37,11 @@ namespace EventsHandler.Services.Register.v2
         {
             this._configuration = configuration;
             this.QueryContext = queryContext;
-            this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
         
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotificationEvent notification, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
@@ -59,11 +57,9 @@ namespace EventsHandler.Services.Register.v2
                    $"}}";
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment)"/>
-        string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment)
+        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment, NotifyReference)"/>
+        string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
-            Uri caseUri = this._taskFactory.Run(async () => (await this.QueryContext.GetCaseAsync()).Uri);
-
             return $"{{" +
                      $"\"klantcontact\":{{" +  // ENG: Customer contact
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
@@ -72,7 +68,7 @@ namespace EventsHandler.Services.Register.v2
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
-                       $"\"objectId\":\"{caseUri}\"," +
+                       $"\"objectId\":\"{reference.CaseUri}\"," +
                        $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
                        $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
                        $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
@@ -80,12 +76,12 @@ namespace EventsHandler.Services.Register.v2
                    $"}}";
         }
         
-        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment)"/>
-        string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment)
+        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment, NotifyReference)"/>
+        string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
             return $"{{" +
                      $"\"wasPartij\":{{" +
-                       $"\"uuid\":\"\"" +  // TODO: PartyResult.Uri.GetGuid()  // GUID
+                       $"\"uuid\":\"{reference.PartyUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"hadKlantcontact\":{{" +
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
