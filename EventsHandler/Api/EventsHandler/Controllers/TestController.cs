@@ -184,7 +184,7 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Checks whether feedback can be received by contact register Web API service.
         /// </summary>
-        /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
+        /// <param name="json">The content of 'reference' sent back from NotifyNL Web API service.</param>
         /// <param name="notifyMethod">The notification method to be used during this test.</param>
         /// <param name="messages">
         ///   The messages required by specific contact registration implementation.
