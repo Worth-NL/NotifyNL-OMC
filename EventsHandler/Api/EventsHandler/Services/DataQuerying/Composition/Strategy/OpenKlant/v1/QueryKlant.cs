@@ -80,7 +80,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         async Task<RequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            Uri objectContactMomentUri = new($"https://{openKlantDomain}/objectcontactmomenten");
+            Uri objectContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/objectcontactmomenten");
             
             // Sending the request
             return await networkService.PostAsync(
@@ -93,7 +93,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         async Task<RequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            Uri customerContactMomentUri = new($"https://{openKlantDomain}/klantcontactmomenten");
+            Uri customerContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/klantcontactmomenten");
 
             // Sending the request
             return await networkService.PostAsync(
