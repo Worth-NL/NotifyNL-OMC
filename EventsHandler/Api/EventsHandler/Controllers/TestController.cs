@@ -80,15 +80,15 @@ namespace EventsHandler.Controllers
                 // Response
                 return result.IsSuccessStatusCode
                     // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, result.ToString()))
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success, result.ToString()))
                     // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, result.ToString()));
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure, result.ToString()));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
@@ -231,15 +231,15 @@ namespace EventsHandler.Controllers
 
                 return response.IsSuccess
                     // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success, response.JsonResponse))
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success, response.JsonResponse))
                     // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, response.JsonResponse));
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure, response.JsonResponse));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
@@ -285,7 +285,7 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
+                                this._responder.GetResponse(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
                 // NOTE: Personalization was provided by the user
@@ -303,20 +303,20 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
+                                this._responder.GetResponse(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
-                    this._responder.Get_Processing_Status_ActionResult(ProcessingResult.Success,
+                    this._responder.GetResponse(ProcessingResult.Success,
                         string.Format(Resources.Test_NotifyNL_SUCCESS_NotificationSent, notifyMethod.GetEnumName())));
             }
             catch (Exception exception)
             {
                 // HttpStatus Code: 500 Internal Server Error
                 return LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
         #endregion

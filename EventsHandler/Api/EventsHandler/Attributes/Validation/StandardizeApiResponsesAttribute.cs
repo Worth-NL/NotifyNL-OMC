@@ -53,7 +53,7 @@ namespace EventsHandler.Attributes.Validation
                     var responder = (IRespondingService)context.HttpContext.RequestServices.GetRequiredService(serviceType);
 
                     // Intercepting and replacing native error messages by user-friendly API responses
-                    context = responder.GetException(context, details!.Errors);
+                    context = responder.GetExceptionResponse(context, details!.Errors);
                 }
                 catch (Exception exception) when (exception
                     is KeyNotFoundException       // API Controller is not mapped to IRespondingService (in constructor of this class)

@@ -62,7 +62,7 @@ namespace EventsHandler.Services.Responding.v2
             {
                 // NOTE: If callback.IdUri == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
                 return OmcController.LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
@@ -94,17 +94,18 @@ namespace EventsHandler.Services.Responding.v2
                     // Log level
                     feedbackType == FeedbackTypes.Failure ? LogLevel.Error : LogLevel.Information,
                     // IActionResult
-                    this._responder.Get_Processing_Status_ActionResult(feedbackType is FeedbackTypes.Success
-                                                                                    or FeedbackTypes.Info
-                                                                            ? ProcessingResult.Success   // NOTE: Everything good (either final or intermediate state)
-                                                                            : ProcessingResult.Failure,  // NOTE: The notification couldn't be delivered as planned
+                    this._responder.GetResponse(feedbackType
+                            is FeedbackTypes.Success
+                            or FeedbackTypes.Info
+                                ? ProcessingResult.Success   // NOTE: Everything good (either final or intermediate state)
+                                : ProcessingResult.Failure,  // NOTE: The notification couldn't be delivered as planned
                         GetDeliveryStatusLogMessage(callback)));
             }
             catch (Exception exception)
             {
                 // It wasn't possible to report completion because of issue with Telemetry Service
                 return OmcController.LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
