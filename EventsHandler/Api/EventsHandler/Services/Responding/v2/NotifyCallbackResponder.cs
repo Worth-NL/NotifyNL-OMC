@@ -67,6 +67,9 @@ namespace EventsHandler.Services.Responding.v2
         }
 
         #region Helper methods
+        private const string True = "true";
+        private const string False = "false";
+
         private async Task InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
             (NotifyReference reference, NotifyMethods notificationMethod) = ExtractCallbackData(callback);
@@ -82,7 +85,7 @@ namespace EventsHandler.Services.Responding.v2
                     DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod),
 
                     // Is successfully sent
-                    feedbackType == FeedbackTypes.Success ? "true" : "false"
+                    feedbackType == FeedbackTypes.Success ? True : False
                 });
         }
 
