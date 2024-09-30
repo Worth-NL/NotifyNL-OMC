@@ -430,6 +430,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}: v{1} ({2}) | Workflow: v{3} ({4})..
+        /// </summary>
+        internal static string Events_OmcVersionSummary {
+            get {
+                return ResourceManager.GetString("Events_OmcVersionSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred during processing the notification with ID: {0} | {1}..
         /// </summary>
         internal static string Feedback_NotifyNL_ERROR_UnexpectedFailure {
