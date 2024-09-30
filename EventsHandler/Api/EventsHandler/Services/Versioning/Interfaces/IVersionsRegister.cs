@@ -8,8 +8,13 @@ namespace EventsHandler.Services.Versioning.Interfaces
     public interface IVersionsRegister
     {
         /// <summary>
-        /// Gets the versions of registered services (implementing <see cref="IVersionDetails"/>).
+        /// Gets the versions of registered APIs services (implementing <see cref="IVersionDetails"/>).
         /// </summary>
-        internal string GetVersions();
+        internal string GetApisVersions();
+
+        /// <summary>
+        /// Gets the version of "OMC" Web API service
+        /// </summary>
+        internal string GetOmcVersion(string componentsVersions);
     }
 }

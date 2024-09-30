@@ -205,8 +205,7 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private EventsController GetTestEventsController_WithRealResponder()
         {
-            return new EventsController(ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings),
-                                        this._serializerMock.Object, this._validatorMock.Object,
+            return new EventsController(this._serializerMock.Object, this._validatorMock.Object,
                                         this._processorMock.Object, GetRealResponderService(),
                                         this._registerMock.Object);
         }
