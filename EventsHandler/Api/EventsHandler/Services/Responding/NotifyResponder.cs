@@ -82,8 +82,8 @@ namespace EventsHandler.Services.Responding
         #endregion
 
         #region IRespondingService
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Exception)"/>
-        ObjectResult IRespondingService.Get_Exception_ActionResult(Exception exception)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(Exception)"/>
+        ObjectResult IRespondingService.GetExceptionResponse(Exception exception)
         {
             switch (exception)
             {
@@ -129,7 +129,7 @@ namespace EventsHandler.Services.Responding
                         message = exception.Message;
                     }
 
-                    return ((IRespondingService)this).Get_Exception_ActionResult(message);
+                    return ((IRespondingService)this).GetExceptionResponse(message);
                 }
 
                 // NOTE: Authorization issues wrapped around 403 Forbidden status code
@@ -142,8 +142,8 @@ namespace EventsHandler.Services.Responding
             }
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(string)"/>
-        ObjectResult IRespondingService.Get_Exception_ActionResult(string errorMessage)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(string)"/>
+        ObjectResult IRespondingService.GetExceptionResponse(string errorMessage)
         {
             string? message = null;
             Match match;
@@ -161,13 +161,13 @@ namespace EventsHandler.Services.Responding
             return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(ResultExecutingContext, IDictionary{string,string[]})"/>
-        ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(ResultExecutingContext, IDictionary{string, string[]})"/>
+        ResultExecutingContext IRespondingService.GetExceptionResponse(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
             {
                 // HttpStatus Code: 400 BadRequest
-                context.Result = ((IRespondingService)this).Get_Exception_ActionResult(errorMessage);
+                context.Result = ((IRespondingService)this).GetExceptionResponse(errorMessage);
             }
 
             return context;
@@ -198,8 +198,8 @@ namespace EventsHandler.Services.Responding
         #endregion
 
         #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.Get_Processing_Status_ActionResult(TResult, TDetails)"/>
-        ObjectResult IRespondingService<ProcessingResult, string>.Get_Processing_Status_ActionResult(ProcessingResult result, string details)
+        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
+        ObjectResult IRespondingService<ProcessingResult, string>.GetResponse(ProcessingResult result, string details)
         {
             return result switch
             {
@@ -207,7 +207,7 @@ namespace EventsHandler.Services.Responding
                 ProcessingResult.Success => ObjectResultExtensions.AsResult_202(details),
 
                 // HttpStatus Code: 400 BadRequest
-                ProcessingResult.Failure => ((IRespondingService)this).Get_Exception_ActionResult(details),
+                ProcessingResult.Failure => ((IRespondingService)this).GetExceptionResponse(details),
 
                 // HttpStatus Code: 501 Not Implemented
                 _ => ObjectResultExtensions.AsResult_501()
