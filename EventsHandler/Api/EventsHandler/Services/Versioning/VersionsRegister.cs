@@ -29,7 +29,7 @@ namespace EventsHandler.Services.Versioning
             this._configuration = configuration;
         }
 
-        /// <inheritdoc cref="IVersionsRegister.GetApisVersions"/>
+        /// <inheritdoc cref="IVersionsRegister.GetApisVersions()"/>
         string IVersionsRegister.GetApisVersions()
         {
             IVersionDetails[] services;

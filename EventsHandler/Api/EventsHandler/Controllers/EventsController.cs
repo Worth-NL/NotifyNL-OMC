@@ -92,26 +92,18 @@ namespace EventsHandler.Controllers
                     {
                         (ProcessingResult Status, string _) result = await this._processor.ProcessAsync(notification);
 
-                        return LogApiResponse(
-                            logLevel: result.Status.ConvertToLogLevel(),
-                            objectResult: this._responder.GetStatus(
-                                  result: GetResult(result, json),
-                                 details: notification.Details));
+                        return LogApiResponse(result.Status.ConvertToLogLevel(),  // LogLevel
+                            this._responder.GetResponse(GetResult(result, json), notification.Details));
                     })
 
                     // The notification cannot be processed
-                    : LogApiResponse(
-                        logLevel: LogLevel.Error,
-                        objectResult: this._responder.GetStatus(
-                              result: GetAbortedResult(notification.Details.Message, json),
-                             details: notification.Details));
+                    : LogApiResponse(LogLevel.Error,
+                        this._responder.GetResponse(GetAbortedResult(notification.Details.Message, json), notification.Details));
             }
             catch (Exception exception)
             {
                 // Serious problems occurred during the attempt to process the notification
-                return LogApiResponse(
-                    exception,
-                    objectResult: this._responder.GetException(exception));
+                return LogApiResponse(exception, this._responder.GetExceptionResponse(exception));
             }
         }
 
