@@ -49,7 +49,7 @@ namespace EventsHandler.Services.Responding.v2
                 FeedbackTypes status = callback.Status.ConvertToFeedbackStatus();
 
                 if (status is FeedbackTypes.Success
-                           or FeedbackTypes.Failure)  // NOTE: Do not spam user with "intermediate" state messages
+                           or FeedbackTypes.Failure)  // NOTE: Do not spam user with "intermediate" state messages => FeedbackTypes.Info
                 {
                     // Inform users about the progress of their notification
                     await InformUserAboutStatusAsync(callback, status);
@@ -62,11 +62,14 @@ namespace EventsHandler.Services.Responding.v2
             {
                 // NOTE: If callback.IdUri == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
                 return OmcController.LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
         #region Helper methods
+        private const string True = "true";
+        private const string False = "false";
+
         private async Task InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
             (NotifyReference reference, NotifyMethods notificationMethod) = ExtractCallbackData(callback);
@@ -82,7 +85,7 @@ namespace EventsHandler.Services.Responding.v2
                     DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod),
 
                     // Is successfully sent
-                    feedbackType == FeedbackTypes.Success ? "true" : "false"
+                    feedbackType == FeedbackTypes.Success ? True : False
                 });
         }
 
@@ -94,17 +97,18 @@ namespace EventsHandler.Services.Responding.v2
                     // Log level
                     feedbackType == FeedbackTypes.Failure ? LogLevel.Error : LogLevel.Information,
                     // IActionResult
-                    this._responder.Get_Processing_Status_ActionResult(feedbackType is FeedbackTypes.Success
-                                                                                    or FeedbackTypes.Info
-                                                                            ? ProcessingResult.Success   // NOTE: Everything good (either final or intermediate state)
-                                                                            : ProcessingResult.Failure,  // NOTE: The notification couldn't be delivered as planned
+                    this._responder.GetResponse(feedbackType
+                            is FeedbackTypes.Success
+                            or FeedbackTypes.Info
+                                ? ProcessingResult.Success   // NOTE: Everything good (either final or intermediate state)
+                                : ProcessingResult.Failure,  // NOTE: The notification couldn't be delivered as planned
                         GetDeliveryStatusLogMessage(callback)));
             }
             catch (Exception exception)
             {
                 // It wasn't possible to report completion because of issue with Telemetry Service
                 return OmcController.LogApiResponse(exception,
-                    this._responder.Get_Exception_ActionResult(exception));
+                    this._responder.GetExceptionResponse(exception));
             }
         }
 
