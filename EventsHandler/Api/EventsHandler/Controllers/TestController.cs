@@ -188,12 +188,12 @@ namespace EventsHandler.Controllers
         /// <param name="messages">
         ///   The messages required by specific contact registration implementation.
         ///   <para>
-        ///     NOTE: The provided values are already strings, you don't have to surround them with quotation marks.
+        ///     NOTE: The provided values are already strings, you don't have to surround them with quotation marks!
         ///   </para>
         ///   <para>
         ///     For "OMC Workflow v1" use:
         ///     <list type="bullet">
-        ///       <item>index 0 = Log message</item>
+        ///       <item>index 0 = Message body</item>
         ///     </list>
         ///   </para>
         ///   <para>
