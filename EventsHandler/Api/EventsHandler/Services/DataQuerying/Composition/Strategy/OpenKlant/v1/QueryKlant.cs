@@ -78,7 +78,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
         async Task<RequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string openKlantDomain, string jsonBody)
         {
             // Predefined URL components
-            Uri objectContactMomentUri = new($"https://{openKlantDomain}/contactmomenten/api/v1/objectcontactmomenten");
+            string openZaakDomain = ((IQueryKlant)this).Configuration.User.Domain.OpenZaak();  // TODO: We have to use OpenZaak for this approach
+
+            Uri objectContactMomentUri = new($"https://{openZaakDomain}/zaken/api/v1/zaakcontactmomenten");
             
             // Sending the request
             return await networkService.PostAsync(
