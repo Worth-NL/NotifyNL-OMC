@@ -433,6 +433,42 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
         #endregion
 
+        #region ReplaceWhitespaces()
+        [TestCase(1, "Hello\\n\\n")]
+        [TestCase(2, "Hello\\n\n")]
+        [TestCase(3, "Hello\n\\n")]
+        [TestCase(4, "Hello\n\n")]
+        [TestCase(5, "Hello\\n")]
+        [TestCase(6, "Hello\n")]
+        [TestCase(7, "Hello\\r\\n")]
+        [TestCase(8, "Hello\r\n")]
+        [TestCase(9, "Hello\\r")]
+        [TestCase(10, "Hello\r")]
+        public void ReplaceWhitespaces_Newlines_ReturnsExpectedString(int testNumber, string testExample)
+        {
+            // Act
+            string actualResult = DecisionMadeScenario.ReplaceWhitespaces(testExample);
+
+            // Assert
+            const string expectedResult = "Hello\\r\\n";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult), $"{testNumber}");
+        }
+
+        [TestCase(1, "Hello\\t")]
+        [TestCase(2, "Hello\t")]
+        public void ReplaceWhitespaces_Tabs_ReturnsExpectedString(int testNumber, string testExample)
+        {
+            // Act
+            string actualResult = DecisionMadeScenario.ReplaceWhitespaces(testExample);
+
+            // Assert
+            const string expectedResult = "Hello\\t";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult), $"{testNumber}");
+        }
+        #endregion
+
         #region Setup
         private INotifyScenario ArrangeDecisionScenario_TryGetData(
             InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)

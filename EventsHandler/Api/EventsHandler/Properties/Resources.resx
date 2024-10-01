@@ -490,4 +490,8 @@
     <value>The notification can not be sent for this object type GUID: {0}. Check respective whitelist (depends on type of your object): {1}.</value>
     <comment>{0} = Object Type ID, {1} = Generic name of environment variables holding the whitelisted values</comment>
   </data>
+  <data name="Events_OmcVersionSummary" xml:space="preserve">
+    <value>{0}: v{1} ({2}) | Workflow: v{3} ({4}).</value>
+    <comment>API Endpoint: Events/Version; {0} = Application name, {1} = OMC version, {2} = Application mode (Dev, Prod...), {3} = OMC Workflow version, {4} = API components versions</comment>
+  </data>
 </root>
