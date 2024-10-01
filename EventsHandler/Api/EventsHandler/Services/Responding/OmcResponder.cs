@@ -34,19 +34,19 @@ namespace EventsHandler.Services.Responding
         }
 
         #region IRespondingService
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(Exception)"/>
-        ObjectResult IRespondingService.Get_Exception_ActionResult(Exception exception)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(Exception)"/>
+        ObjectResult IRespondingService.GetExceptionResponse(Exception exception)
         {
             if (exception is HttpRequestException)
             {
                 return this._detailsBuilder.Get<ErrorDetails>(Reasons.HttpRequestError, exception.Message).AsResult_400();
             }
 
-            return ((IRespondingService<NotificationEvent>)this).Get_Exception_ActionResult(exception.Message);
+            return ((IRespondingService<NotificationEvent>)this).GetExceptionResponse(exception.Message);
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(string)"/>
-        ObjectResult IRespondingService.Get_Exception_ActionResult(string errorMessage)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(string)"/>
+        ObjectResult IRespondingService.GetExceptionResponse(string errorMessage)
         {
             try
             {
@@ -68,12 +68,12 @@ namespace EventsHandler.Services.Responding
             }
         }
 
-        /// <inheritdoc cref="IRespondingService.Get_Exception_ActionResult(ResultExecutingContext, IDictionary{string,string[]})"/>
-        ResultExecutingContext IRespondingService.Get_Exception_ActionResult(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
+        /// <inheritdoc cref="IRespondingService.GetExceptionResponse(ResultExecutingContext, IDictionary{string, string[]})"/>
+        ResultExecutingContext IRespondingService.GetExceptionResponse(ResultExecutingContext context, IDictionary<string, string[]> errorDetails)
         {
             if (((IRespondingService)this).ContainsErrorMessage(errorDetails, out string errorMessage))
             {
-                context.Result = ((IRespondingService)this).Get_Exception_ActionResult(errorMessage);
+                context.Result = ((IRespondingService)this).GetExceptionResponse(errorMessage);
             }
 
             return context;
@@ -115,16 +115,16 @@ namespace EventsHandler.Services.Responding
         #endregion
 
         #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.Get_Processing_Status_ActionResult(TResult, TDetails)"/>
-        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.Get_Processing_Status_ActionResult((ProcessingResult, string) result, BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
+        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.GetResponse((ProcessingResult, string) result, BaseEnhancedDetails details)
         {
-            return ((IRespondingService<NotificationEvent>)this).Get_Processing_Status_ActionResult(result, details);
+            return ((IRespondingService<NotificationEvent>)this).GetResponse(result, details);
         }
         #endregion
 
         #region Implementation
-        /// <inheritdoc cref="IRespondingService{TModel}.Get_Processing_Status_ActionResult(ValueTuple{ProcessingResult, string}, BaseEnhancedDetails)"/>
-        ObjectResult IRespondingService<NotificationEvent>.Get_Processing_Status_ActionResult((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
+        /// <inheritdoc cref="IRespondingService{TModel}.GetResponse(ValueTuple{ProcessingResult, string}, BaseEnhancedDetails)"/>
+        ObjectResult IRespondingService<NotificationEvent>.GetResponse((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
         {
             return result.Status switch
             {

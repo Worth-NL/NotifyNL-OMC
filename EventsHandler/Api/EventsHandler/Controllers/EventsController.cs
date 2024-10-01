@@ -2,7 +2,6 @@
 
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
-using EventsHandler.Constants;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
@@ -11,7 +10,6 @@ using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
@@ -29,7 +27,6 @@ namespace EventsHandler.Controllers
     /// <seealso cref="OmcController"/>
     public sealed class EventsController : OmcController
     {
-        private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IProcessingService<NotificationEvent> _processor;
@@ -39,21 +36,18 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="register">The register of versioned services.</param>
         public EventsController(
-            WebApiConfiguration configuration,
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
             IProcessingService<NotificationEvent> processor,
             IRespondingService<NotificationEvent> responder,
             IVersionsRegister register)
         {
-            this._configuration = configuration;
             this._serializer = serializer;
             this._validator = validator;
             this._processor = processor;
@@ -90,7 +84,7 @@ namespace EventsHandler.Controllers
                 // Deserialize received JSON payload
                 NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
 
-                // Validation #2: Structural and data inconsistencies of optional properties
+                // Validation #2: Structural and data inconsistencies analysis of optional properties
                 return this._validator.Validate(ref notification) is HealthCheck.OK_Valid
                                                                   or HealthCheck.OK_Inconsistent
                     // Try to process the received notification
@@ -98,26 +92,18 @@ namespace EventsHandler.Controllers
                     {
                         (ProcessingResult Status, string _) result = await this._processor.ProcessAsync(notification);
 
-                        return LogApiResponse(
-                            logLevel: result.Status.ConvertToLogLevel(),
-                            objectResult: this._responder.Get_Processing_Status_ActionResult(
-                                  result: GetResult(result, json),
-                                 details: notification.Details));
+                        return LogApiResponse(result.Status.ConvertToLogLevel(),  // LogLevel
+                            this._responder.GetResponse(GetResult(result, json), notification.Details));
                     })
 
                     // The notification cannot be processed
-                    : LogApiResponse(
-                        logLevel: LogLevel.Error,
-                        objectResult: this._responder.Get_Processing_Status_ActionResult(
-                              result: GetAbortedResult(notification.Details.Message, json),
-                             details: notification.Details));
+                    : LogApiResponse(LogLevel.Error,
+                        this._responder.GetResponse(GetAbortedResult(notification.Details.Message, json), notification.Details));
             }
             catch (Exception exception)
             {
                 // Serious problems occurred during the attempt to process the notification
-                return LogApiResponse(
-                    exception,
-                    objectResult: this._responder.Get_Exception_ActionResult(exception));
+                return LogApiResponse(exception, this._responder.GetExceptionResponse(exception));
             }
         }
 
@@ -136,10 +122,8 @@ namespace EventsHandler.Controllers
         {
             LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
 
-            return Ok($"{Resources.Application_Name}: v{DefaultValues.ApiController.Version} " +
-                      $"({Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment)}) | " +
-                      $"Workflow: v{this._configuration.OMC.Features.Workflow_Version()} " +
-                      $"{this._register.GetVersions()}");
+            return Ok(this._register.GetOmcVersion(
+                      this._register.GetApisVersions()));
         }
 
         #region Helper methods

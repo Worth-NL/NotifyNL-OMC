@@ -75,8 +75,7 @@ namespace EventsHandler.Services.Register.v1
         {
             return $"{{" +
                      $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
-                     $"\"object\":\"{reference.CaseUri}\"," +                  // URI
-                     $"\"objectType\":\"zaak\"" +
+                     $"\"zaak\":\"{reference.CaseUri}\"" +                     // URI
                    $"}}";
         }
 

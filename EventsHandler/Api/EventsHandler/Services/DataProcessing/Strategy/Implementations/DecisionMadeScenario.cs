@@ -170,10 +170,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #endregion
 
         #region Polymorphic (ProcessDataAsync)
-        [GeneratedRegex("(\\n\\n)|(\\n)", RegexOptions.Compiled)]
+        [GeneratedRegex("\\\\r\\\\n|\\r\\n|\r\n|\\\\n\\n|\\n\\\\n|\\\\n\\\\n|\\n\\n|\n\n|\\\\n|\\n|\n|\\\\r|\r", RegexOptions.Compiled)]
         private static partial Regex NewlinesCharsRegexPattern();
 
         private const string LogiusNewlines = "\\r\\n";
+
+        internal static string ReplaceWhitespaces(string originalText)
+        {
+            return NewlinesCharsRegexPattern().Replace(originalText, LogiusNewlines)
+                                              .Replace("\t", "\\t");
+        }
 
         /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
@@ -193,9 +199,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Adjusting the body for Logius system
-            // TODO: Use better escaping pattern
-            string modifiedResponseBody = NewlinesCharsRegexPattern().Replace(templateResponse.Body, LogiusNewlines)
-                                                                     .Replace("\r", "\\r");
+            string modifiedResponseBody = ReplaceWhitespaces(templateResponse.Body);
+
             // Prepare HTTP Request Body
             this._queryContext = this.DataQuery.From(notification);
 
