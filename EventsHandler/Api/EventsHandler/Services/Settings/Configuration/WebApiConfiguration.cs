@@ -1020,7 +1020,7 @@ namespace EventsHandler.Services.Settings.Configuration
         }
 
         /// <summary>
-        /// Retrieves cached domain value (without http/s and API endpoint).
+        /// Retrieves cached domain value.
         /// </summary>
         /// <remarks>
         /// Validation: enabled
@@ -1031,8 +1031,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .GetWithoutProtocol()
-                    .GetWithoutEndpoint());
+                    .GetWithoutProtocol());
         }
         
         /// <summary>
