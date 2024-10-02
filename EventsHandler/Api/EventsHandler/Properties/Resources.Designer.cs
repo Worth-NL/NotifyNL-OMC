@@ -79,15 +79,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}..
-        /// </summary>
-        internal static string Configuration_ERROR_ContainsEndpoint {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_ContainsEndpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {

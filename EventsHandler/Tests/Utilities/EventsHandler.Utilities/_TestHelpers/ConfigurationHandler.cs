@@ -89,7 +89,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OPENZAAK",                        GetTestValue(isValid, testDomain, " ") },
                 { "USER_DOMAIN_OPENKLANT",                       GetTestValue(isValid, testDomain, "http://domain") },
                 { "USER_DOMAIN_OBJECTEN",                        GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
+                { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
 
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },

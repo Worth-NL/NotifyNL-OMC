@@ -276,10 +276,6 @@
     <value>1.0</value>
     <comment>Swagger UI</comment>
   </data>
-  <data name="Configuration_ERROR_ContainsEndpoint" xml:space="preserve">
-    <value>In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}.</value>
-    <comment>{0} = The domain that triggered the validation error</comment>
-  </data>
   <data name="Configuration_ERROR_ContainsHttp" xml:space="preserve">
     <value>In the settings representing domain unnecessary protocol (http or https) was found: {0}.</value>
     <comment>{0} = The domain that triggered the validation error</comment>
