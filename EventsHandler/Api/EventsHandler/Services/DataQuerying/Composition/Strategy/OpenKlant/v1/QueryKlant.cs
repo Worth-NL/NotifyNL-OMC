@@ -80,7 +80,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Predefined URL components
             string openZaakDomain = ((IQueryKlant)this).Configuration.User.Domain.OpenZaak();  // TODO: We have to use OpenZaak for this approach
 
-            Uri objectContactMomentUri = new($"https://{openZaakDomain}/zaken/api/v1/zaakcontactmomenten");
+            Uri objectContactMomentUri = new($"https://{openZaakDomain}/api/v1/zaakcontactmomenten");
             
             // Sending the request
             return await networkService.PostAsync(

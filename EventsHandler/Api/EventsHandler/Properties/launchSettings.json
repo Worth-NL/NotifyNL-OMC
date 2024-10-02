@@ -52,7 +52,7 @@
         "USER_API_KEY_NOTIFYNL": "omc_testdev__real_personalizations-f872ff87-26c9-46ad-9b99-b54cc5f85f75-86ff6134-d32a-4c2b-916a-99b9aa09553f",
 
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
-        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl",
+        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
         "USER_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
@@ -119,7 +119,7 @@
         "USER_API_KEY_NOTIFYNL": "omc_test_v2-f872ff87-26c9-46ad-9b99-b54cc5f85f75-2501a1db-8fa1-4854-85be-d28cd318a374",
 
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
-        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl",
+        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
         "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
