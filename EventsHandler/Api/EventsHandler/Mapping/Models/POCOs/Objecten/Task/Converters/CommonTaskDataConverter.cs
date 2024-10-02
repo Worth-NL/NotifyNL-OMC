@@ -50,7 +50,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         }
 
         #region Helper methods
-        private const string CaseUri = "https://{0}/zaken/api/v1/zaken/{1}";
+        private const string CaseUri = "https://{0}/api/v1/zaken/{1}";
 
         private static Uri RecreateCaseUri(Guid caseId)
             => string.Format(CaseUri, ConfigurationExtensions.OpenZaakDomain(), caseId)
