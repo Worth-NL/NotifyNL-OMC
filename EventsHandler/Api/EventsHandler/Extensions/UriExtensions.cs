@@ -73,7 +73,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsNotCase(this Uri? uri)
         {
-            return uri.DoesNotContain("/zaken/");
+            return uri.DoesNotContain("/zaken");
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsNotCaseType(this Uri? uri)
         {
-            return uri.DoesNotContain("/zaaktypen/");
+            return uri.DoesNotContain("/zaaktypen");
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsNotObject(this Uri? uri)
         {
-            return uri.DoesNotContain("/objects/");
+            return uri.DoesNotContain("/objects");
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsNotDecisionResource(this Uri? uri)
         {
-            return uri.DoesNotContain("/besluitinformatieobjecten/");
+            return uri.DoesNotContain("/besluitinformatieobjecten");
         }
 
         private static bool DoesNotContain(this Uri? uri, string phrase)

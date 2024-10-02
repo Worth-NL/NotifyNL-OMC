@@ -48,7 +48,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         private static async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, string openZaakDomain, Uri caseUri, string subjectType)
         {
             // Predefined URL components
-            string rolesEndpoint = $"https://{openZaakDomain}/zaken/api/v1/rollen";
+            string rolesEndpoint = $"https://{openZaakDomain}/api/v1/rollen";
 
             // Request URL
             var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}" +
@@ -93,7 +93,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         internal static async Task<string> SendFeedbackAsync(IHttpNetworkService networkService, string openZaakDomain, string jsonBody)
         {
             // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{openZaakDomain}/zaken/api/v1/zaakcontactmomenten");
+            var klantContactMomentUri = new Uri($"https://{openZaakDomain}/api/v1/zaakcontactmomenten");
 
             // Sending the request
             RequestResponse response = await networkService.PostAsync(
