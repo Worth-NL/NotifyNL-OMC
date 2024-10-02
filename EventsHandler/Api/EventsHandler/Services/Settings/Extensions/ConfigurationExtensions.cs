@@ -126,17 +126,6 @@ namespace EventsHandler.Services.Settings.Extensions
                 ? value
                 : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsHttp, value);
         }
-
-        /// <summary>
-        /// Ensures that the value from the configuration file does not contain API endpoint.
-        /// </summary>
-        /// <exception cref="ArgumentException"/>
-        internal static string GetWithoutEndpoint(this string value)
-        {
-            return !value.Contains('/')
-                ? value
-                : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsEndpoint, value);
-        }
         #endregion
 
         #region Conversion attempt

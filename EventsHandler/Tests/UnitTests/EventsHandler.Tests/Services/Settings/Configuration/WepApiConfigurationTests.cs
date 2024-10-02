@@ -145,20 +145,18 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             yield return ("#4", () => s_testConfiguration!.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
             yield return ("#5", () => s_testConfiguration!.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
-            // Invalid: domain/api/v1/typen
-            yield return ("#6", () => s_testConfiguration!.User.Domain.ObjectTypen(), Resources.Configuration_ERROR_ContainsEndpoint);
             // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#6", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#8", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#9", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#8", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#10", () => s_testConfiguration!.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => s_testConfiguration!.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#11", () => s_testConfiguration!.User.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration!.User.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Default URI
-            yield return ("#12", () => s_testConfiguration!.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
+            yield return ("#11", () => s_testConfiguration!.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
         }
 
         [TestCase("1", true)]
