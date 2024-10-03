@@ -78,10 +78,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, caseStatuses.Value);
         }
 
-        /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
-        async Task<MainObject> IQueryContext.GetMainObjectAsync()
-            => await this._queryZaak.GetMainObjectAsync(this._queryBase);
-
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {

@@ -104,23 +104,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         #pragma warning restore CA1822
         #endregion
 
-        #region Parent (Main Object)
-        #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
-        /// <summary>
-        /// Gets the <see cref="MainObject"/> from "OpenZaak" Web API service.
-        /// </summary>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="JsonException"/>
-        internal sealed async Task<MainObject> GetMainObjectAsync(IQueryBase queryBase)
-        {
-            return await queryBase.ProcessGetAsync<MainObject>(
-                httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: queryBase.Notification.MainObjectUri,  // Request URL
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoMainObject);
-        }
-        #pragma warning restore CA1822
-        #endregion
-
         #region Abstract (BSN Number)
         /// <summary>
         /// Gets BSN number of a specific citizen linked to the <see cref="Case"/> from "OpenZaak" Web API service.
