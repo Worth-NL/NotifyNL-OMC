@@ -656,6 +656,11 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                internal string Besluiten()
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Besluiten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string Objecten()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
