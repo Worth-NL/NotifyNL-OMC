@@ -1,12 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
-using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using Resources = EventsHandler.Properties.Resources;
@@ -75,34 +72,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCaseDetails);
-        }
-        #endregion
-
-        #region Polymorphic (Telemetry)
-        /// <summary>
-        /// Sends the completion feedback to "OpenZaak" Web API service.
-        /// </summary>
-        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
-        /// <param name="openZaakDomain">The domain of <see cref="IQueryZaak"/> Web API service.</param>
-        /// <param name="jsonBody">The content in JSON format to be passed with POST request as HTTP Request Body.</param>
-        /// <returns>
-        ///   The JSON response from an external Telemetry Web API service.
-        /// </returns>
-        /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="TelemetryException"/>
-        internal static async Task<string> SendFeedbackAsync(IHttpNetworkService networkService, string openZaakDomain, string jsonBody)
-        {
-            // Predefined URL components
-            var klantContactMomentUri = new Uri($"https://{openZaakDomain}/api/v1/zaakcontactmomenten");
-
-            // Sending the request
-            RequestResponse response = await networkService.PostAsync(
-                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
-                uri: klantContactMomentUri,  // Request URL
-                jsonBody);
-
-            // Getting the response
-            return response.IsSuccess ? response.JsonResponse : throw new TelemetryException(response.JsonResponse);
         }
         #endregion
     }
