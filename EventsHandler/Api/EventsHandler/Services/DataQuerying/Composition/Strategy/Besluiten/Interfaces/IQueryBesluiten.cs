@@ -129,13 +129,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="decisionResource"><inheritdoc cref="DecisionResource" path="/summary"/></param>
+        /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal async Task<Documents> TryGetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Predefined request URL components
-            string documentsEndpoint = $"https://{GetDomain()}/besluiten/api/v1/besluitinformatieobjecten";
+            string documentsEndpoint = $"https://{GetDomain()}/api/v1/besluitinformatieobjecten";
 
             Uri decisionUri =
                 // Case #1: The Decision URI can be extracted directly from DecisionResource

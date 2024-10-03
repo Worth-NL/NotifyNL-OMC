@@ -27,6 +27,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <returns>
         ///   The JSON representation of object type.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +

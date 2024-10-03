@@ -32,6 +32,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <summary>
         /// Gets the <see cref="CommonTaskData"/> from "Objecten" Web API service.
         /// </summary>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
         ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="CommonTaskData"/> model.
@@ -57,6 +58,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <summary>
         /// Gets the <see cref="MessageObject"/> from "Objecten" Web API service.
         /// </summary>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
         ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="MessageObject"/> model.
@@ -86,6 +88,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <returns>
         ///   The answer whether the object was created successfully.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
