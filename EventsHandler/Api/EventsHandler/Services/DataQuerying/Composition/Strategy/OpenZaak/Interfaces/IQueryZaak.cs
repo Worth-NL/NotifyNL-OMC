@@ -73,7 +73,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             // Predefined URL components
-            string statusesEndpoint = $"https://{GetDomain()}/api/v1/statussen";
+            string statusesEndpoint = $"https://{GetDomain()}/statussen";
             
             // Request URL
             Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");

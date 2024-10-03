@@ -136,7 +136,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
         internal async Task<Documents> TryGetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Predefined request URL components
-            string documentsEndpoint = $"https://{GetDomain()}/api/v1/besluitinformatieobjecten";
+            string documentsEndpoint = $"https://{GetDomain()}/besluitinformatieobjecten";
 
             Uri decisionUri =
                 // Case #1: The Decision URI can be extracted directly from DecisionResource
