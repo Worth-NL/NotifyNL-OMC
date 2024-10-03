@@ -8,6 +8,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -22,10 +23,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter
     {
         private readonly IHttpNetworkService _networkService;
         private readonly IQueryBase _queryBase;
-        private readonly IQueryKlant _queryKlant;
-        private readonly IQueryZaak _queryZaak;
-        private readonly IQueryObjecten _queryObjecten;
-        private readonly IQueryObjectTypen _queryObjectTypen;
+        private readonly IQueryZaak _queryZaak;                // Case API microservice
+        private readonly IQueryKlant _queryKlant;              // Customer API microservice
+        private readonly IQueryBesluiten _queryBesluiten;      // Decision API microservice
+        private readonly IQueryObjecten _queryObjecten;        // Object API microservice
+        private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -33,16 +35,18 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         public QueryContext(
             IHttpNetworkService networkService,
             IQueryBase queryBase,
-            IQueryKlant queryKlant,
             IQueryZaak queryZaak,
+            IQueryKlant queryKlant,
+            IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
             IQueryObjectTypen queryObjectTypen)
         {
             // Composition
             this._networkService = networkService;
             this._queryBase = queryBase;
-            this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
+            this._queryKlant = queryKlant;
+            this._queryBesluiten = queryBesluiten;
             this._queryObjecten = queryObjecten;
             this._queryObjectTypen = queryObjectTypen;
         }
@@ -139,6 +143,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.LinkCustomerToContactMomentAsync(string)"/>
         async Task<RequestResponse> IQueryContext.LinkCustomerToContactMomentAsync(string jsonBody)
             => await this._queryKlant.LinkCustomerToContactMomentAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
+        #endregion
+
+        #region IQueryBesluiten
         #endregion
 
         #region IQueryObjecten
