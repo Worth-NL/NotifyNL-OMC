@@ -31,7 +31,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/api/v1/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
+                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{this.Configuration.User.Variables.Objecten.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +

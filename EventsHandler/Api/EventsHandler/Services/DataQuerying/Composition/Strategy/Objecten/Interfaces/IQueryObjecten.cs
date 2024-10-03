@@ -92,7 +92,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
-            string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
+            string createObjectEndpoint = $"https://{GetDomain()}/objects";
 
             // Request URL
             Uri createObjectUri = new(createObjectEndpoint);
