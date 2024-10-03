@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
-using EventsHandler.Services.Settings.Extensions;
-using ConfigurationExtensions = EventsHandler.Services.Settings.Extensions.ConfigurationExtensions;
 
 namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
 {
@@ -40,7 +38,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
         {
             return new CommonTaskData
             {
-                CaseUri        = RecreateCaseUri(taskNijmegen.Record.Data.Coupling.Id),  // NOTE: GUID is given, URI needs to be recreated
+                CaseUri        = taskNijmegen.Record.Data.Coupling.Id.RecreateCaseUri(),  // NOTE: GUID is given, URI needs to be recreated
                 CaseId         = taskNijmegen.Record.Data.Coupling.Id,
                 Title          = taskNijmegen.Record.Data.Title,
                 Status         = taskNijmegen.Record.Data.Status,
@@ -48,13 +46,5 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters
                 Identification = taskNijmegen.Record.Data.Identification
             };
         }
-
-        #region Helper methods
-        private const string CaseUri = "https://{0}/zaken/{1}";
-
-        private static Uri RecreateCaseUri(Guid caseId)
-            => string.Format(CaseUri, ConfigurationExtensions.OpenZaakDomain(), caseId)
-                     .GetValidUri();
-        #endregion
     }
 }

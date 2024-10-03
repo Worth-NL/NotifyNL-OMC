@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -21,17 +20,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         [JsonPropertyOrder(0)]
         public NotificationEvent Notification { get; internal set; } = default;
 
-        /// <inheritdoc cref="Case.Uri"/>
+        /// <summary>
+        /// The extracted GUID component from <see cref="Case.Uri"/>.
+        /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(1)]
-        public Uri? CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;  // NOTE: Sometimes, case URI might be missing
+        public Guid? CaseId { get; internal set; } = Guid.Empty;  // NOTE: Sometimes, case URI might be missing
 
-        /// <inheritdoc cref="CommonPartyData.Uri"/>
+        /// <summary>
+        /// The extracted GUID component from <see cref="CommonPartyData.Uri"/>.
+        /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(2)]
-        public Uri PartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Guid PartyId { get; internal set; } = Guid.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.

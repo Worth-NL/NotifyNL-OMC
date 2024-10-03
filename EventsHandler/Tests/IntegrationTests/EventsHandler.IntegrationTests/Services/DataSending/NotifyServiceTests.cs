@@ -238,8 +238,8 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
                 reference: new NotifyReference
                 {
                     Notification = notification,
-                    CaseUri = default,
-                    PartyUri = null!
+                    CaseId = Guid.Empty,
+                    PartyId = Guid.Empty
                 }
             );
         }

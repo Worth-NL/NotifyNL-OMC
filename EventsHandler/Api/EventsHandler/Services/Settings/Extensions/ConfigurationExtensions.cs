@@ -29,6 +29,19 @@ namespace EventsHandler.Services.Settings.Extensions
             }
         }
 
+        private static string? s_openKlantDomainEnvVarName;
+
+        private static string GetOpenKlantDomainEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Domain)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}")
+                                                       .ToUpper();
+            }
+        }
+
         private static string? s_messageAllowedEnvVarName;
 
         internal static string GetWhitelistMessageAllowedEnvVarName()
@@ -94,7 +107,22 @@ namespace EventsHandler.Services.Settings.Extensions
 
             // Case #2: Static usage
             return s_openZaakDomainValue ??=
-                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "missingDomain";
+                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "x";
+        }
+
+        private static string? s_openKlantDomainValue;
+
+        internal static string OpenKlantDomain(WebApiConfiguration? configuration = null)
+        {
+            // Case #1: Instance usage
+            if (configuration != null)
+            {
+                return configuration.User.Domain.OpenKlant();
+            }
+
+            // Case #2: Static usage
+            return s_openKlantDomainValue ??=
+                Environment.GetEnvironmentVariable(GetOpenKlantDomainEnvVarName()) ?? "x";
         }
         #endregion
 
