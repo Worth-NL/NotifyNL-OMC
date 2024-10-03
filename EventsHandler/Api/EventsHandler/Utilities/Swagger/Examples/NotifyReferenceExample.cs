@@ -42,8 +42,8 @@ namespace EventsHandler.Utilities.Swagger.Examples
                     ResourceUri = DefaultValues.Models.EmptyUri,
                     CreateDate = DateTime.UtcNow
                 },
-                CaseUri = DefaultValues.Models.EmptyUri,
-                PartyUri = DefaultValues.Models.EmptyUri
+                CaseId = Guid.Empty,
+                PartyId = Guid.Empty
             };
         }
     }
