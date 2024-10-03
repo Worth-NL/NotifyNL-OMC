@@ -105,20 +105,20 @@ namespace EventsHandler.Services.DataQuerying.Adapter
                 this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, this._queryKlant.GetDomain(), bsnNumber);
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)
-            => await this._queryKlant.CreateContactMomentAsync(this._queryBase, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.CreateContactMomentAsync(this._queryBase, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkCaseToContactMomentAsync(string)"/>
         async Task<RequestResponse> IQueryContext.LinkCaseToContactMomentAsync(string jsonBody)
-            => await this._queryKlant.LinkCaseToContactMomentAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.LinkCaseToContactMomentAsync(this._networkService, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkCustomerToContactMomentAsync(string)"/>
         async Task<RequestResponse> IQueryContext.LinkCustomerToContactMomentAsync(string jsonBody)
-            => await this._queryKlant.LinkCustomerToContactMomentAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.LinkCustomerToContactMomentAsync(this._networkService, jsonBody);
         #endregion
 
         #region IQueryBesluiten

@@ -668,6 +668,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal string ObjectTypen()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal string ContactMomenten()
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
             }
 
             /// <summary>

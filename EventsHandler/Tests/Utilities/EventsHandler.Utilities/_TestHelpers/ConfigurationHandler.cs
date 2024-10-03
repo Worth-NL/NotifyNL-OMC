@@ -91,6 +91,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_BESLUITEN",                       GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OBJECTEN",                        GetTestValue(isValid, testDomain, "https://domain") },
                 { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_CONTACTMOMENTEN",                 GetTestValue(isValid, testDomain) },
 
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },

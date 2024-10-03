@@ -130,6 +130,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_DOMAIN_OPENKLANT": "",
         "USER_DOMAIN_OBJECTEN": "",
         "USER_DOMAIN_OBJECTTYPEN": "",
+        "USER_DOMAIN_CONTACTMOMENTEN": "",
         
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
@@ -361,10 +362,11 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | **Connection:** Domains of external API services    |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | USER_DOMAIN_OPENNOTIFICATIES                        | string    | "opennotificaties.mycity.nl"           | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_OPENZAAK                                | string    | "openzaak.mycity.nl/zaken"             | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
-| USER_DOMAIN_OPENKLANT                               | string    | "openklant.mycity.nl"                  | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_OPENKLANT                               | string    | "openklant.mycity.nl/klanten"          | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_BESLUITEN                               | string    | "besluiten.mycity.nl/besluiten"        | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_OBJECTEN                                | string    | "objecten.mycity.nl"                   | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | USER_DOMAIN_OBJECTTYPEN                             | string    | "objecttypen.mycity.nl"                | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
+| USER_DOMAIN_CONTACTMOMENTEN                         | string    | "openklant.mycity.nl/contactmomenten"  | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                      |
 | ---                                                 | ---       | ---                                    | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Business:** Templates IDs used by "Notify" API    |           |                                        |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | USER_TEMPLATEIDS_EMAIL_ZAAKCREATE                   | GUID**    | "00000000-0000-0000-0000-000000000000" | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
@@ -556,6 +558,7 @@ Here are the details which _workflows_ are using which versions of the external 
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - "OpenKlant" v1.0.0
+- "Besluiten" v1.1.0
 - "Objecten" v2.3.1
 - "ObjectTypen" v2.2.0
 - "Contactmomenten" v1.0.0
@@ -564,6 +567,7 @@ Here are the details which _workflows_ are using which versions of the external 
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - <code>new</code> "OpenKlant" v2.0.0
+- "Besluiten" v1.1.0
 - "Objecten" v2.3.1
 - "ObjectTypen" v2.2.0
 - <code>new</code> "Klantcontacten" v2.0.0

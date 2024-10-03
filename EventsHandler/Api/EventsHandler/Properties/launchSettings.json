@@ -53,10 +53,11 @@
 
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
         "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
-        "USER_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl",
+        "USER_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl/klanten", // NOTE: In OMC Workflow v1 this path is for clients
         "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
+        "USER_DOMAIN_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten", // NOTE: In OMC Workflow v1 this path is for register
 
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
@@ -121,10 +122,11 @@
 
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
         "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
-        "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl",
+        "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl/klantinteracties", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
         "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
+        "USER_DOMAIN_CONTACTMOMENTEN": "openklantv2.test.notifynl.nl/klantinteracties", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
 
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
