@@ -82,26 +82,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<MainObject> IQueryContext.GetMainObjectAsync()
             => await this._queryZaak.GetMainObjectAsync(this._queryBase);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
-        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
-            => await this._queryZaak.TryGetDecisionResourceAsync(this._queryBase, resourceUri);
-
-        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
-        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
-            => await this._queryZaak.TryGetInfoObjectAsync(this._queryBase, parameter);
-
-        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
-        async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.TryGetDecisionAsync(this._queryBase, decisionResource);
-
-        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
-        async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.TryGetDocumentsAsync(this._queryBase, decisionResource);
-
-        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
-        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
-            => await this._queryZaak.TryGetDecisionTypeAsync(this._queryBase, decision);
-
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {
@@ -146,6 +126,25 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryBesluiten
+        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
+        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
+            => await this._queryBesluiten.TryGetDecisionResourceAsync(this._queryBase, resourceUri);
+
+        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
+        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
+            => await this._queryBesluiten.TryGetInfoObjectAsync(this._queryBase, parameter);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
+        async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
+            => await this._queryBesluiten.TryGetDecisionAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
+        async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
+            => await this._queryBesluiten.TryGetDocumentsAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
+        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
+            => await this._queryBesluiten.TryGetDecisionTypeAsync(this._queryBase, decision);
         #endregion
 
         #region IQueryObjecten
