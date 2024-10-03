@@ -109,13 +109,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         /// Gets BSN number of a specific citizen linked to the <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="openZaakDomain">The domain of <see cref="IQueryZaak"/> Web API service.</param>
         /// <param name="caseUri">The <see cref="Case"/> in <see cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal async Task<string> GetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseUri)
+        internal async Task<string> GetBsnNumberAsync(IQueryBase queryBase, Uri caseUri)
         {
             // The provided URI is invalid
             if (caseUri.IsNotCase())
@@ -123,11 +122,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
-            return await PolymorphicGetBsnNumberAsync(queryBase, openZaakDomain, caseUri);
+            return await PolymorphicGetBsnNumberAsync(queryBase, caseUri);
         }
 
-        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, string, Uri)"/>
-        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, string openZaakDomain, Uri caseUri);
+        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, Uri)"/>
+        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Case type URI)
