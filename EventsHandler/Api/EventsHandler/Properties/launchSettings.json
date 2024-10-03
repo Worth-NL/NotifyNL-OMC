@@ -54,6 +54,7 @@
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
         "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
         "USER_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl",
+        "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
 
@@ -121,6 +122,7 @@
         "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl",
         "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken",
         "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl",
+        "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl",
 

@@ -88,6 +88,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OPENNOTIFICATIES",                GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENZAAK",                        GetTestValue(isValid, testDomain, " ") },
                 { "USER_DOMAIN_OPENKLANT",                       GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_BESLUITEN",                       GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OBJECTEN",                        GetTestValue(isValid, testDomain, "https://domain") },
                 { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
 

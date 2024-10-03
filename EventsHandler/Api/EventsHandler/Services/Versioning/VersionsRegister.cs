@@ -2,6 +2,7 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -40,6 +41,7 @@ namespace EventsHandler.Services.Versioning
                 {
                     this._serviceProvider.GetRequiredService<IQueryZaak>(),
                     this._serviceProvider.GetRequiredService<IQueryKlant>(),
+                    this._serviceProvider.GetRequiredService<IQueryBesluiten>(),
                     this._serviceProvider.GetRequiredService<IQueryObjecten>(),
                     this._serviceProvider.GetRequiredService<IQueryObjectTypen>(),
                     this._serviceProvider.GetRequiredService<ITelemetryService>()

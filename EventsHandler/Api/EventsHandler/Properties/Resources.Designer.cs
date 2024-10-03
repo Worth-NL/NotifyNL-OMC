@@ -142,6 +142,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The version of Besluiten service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionBesluitenUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionBesluitenUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The version of NotifyResponder service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
         /// </summary>
         internal static string Configuration_ERROR_VersionNotifyResponderUnknown {
@@ -1011,6 +1020,15 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

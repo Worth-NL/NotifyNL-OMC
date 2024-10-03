@@ -1,6 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
@@ -51,6 +53,7 @@ namespace EventsHandler.UnitTests.Services.Versioning
 
             serviceCollection.AddSingleton<IQueryZaak, QueryZaak>();
             serviceCollection.AddSingleton<IQueryKlant, QueryKlant>();
+            serviceCollection.AddSingleton<IQueryBesluiten, QueryBesluiten>();
             serviceCollection.AddSingleton<IQueryObjecten, QueryObjecten>();
             serviceCollection.AddSingleton<IQueryObjectTypen, QueryObjectTypen>();
             serviceCollection.AddSingleton<ITelemetryService, ContactRegistration>();
@@ -62,7 +65,7 @@ namespace EventsHandler.UnitTests.Services.Versioning
             string actualResult = register.GetApisVersions();
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("OpenZaak v1.12.1, OpenKlant v2.0.0, Objecten v2.3.1, ObjectTypen v2.2.0, Klantcontacten v2.0.0"));
+            Assert.That(actualResult, Is.EqualTo("OpenZaak v1.12.1, OpenKlant v2.0.0, Besluiten v1.1.0, Objecten v2.3.1, ObjectTypen v2.2.0, Klantcontacten v2.0.0"));
         }
 
         [Test]
@@ -77,6 +80,7 @@ namespace EventsHandler.UnitTests.Services.Versioning
 
             serviceCollection.AddSingleton<IQueryZaak, QueryZaak>();
             serviceCollection.AddSingleton<IQueryKlant, QueryKlant>();
+            serviceCollection.AddSingleton<IQueryBesluiten, QueryBesluiten>();
             serviceCollection.AddSingleton<IQueryObjecten, QueryObjecten>();
             serviceCollection.AddSingleton<IQueryObjectTypen, QueryObjectTypen>();
             serviceCollection.AddSingleton<ITelemetryService, ContactRegistration>();

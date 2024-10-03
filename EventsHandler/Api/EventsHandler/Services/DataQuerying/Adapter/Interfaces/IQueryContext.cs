@@ -7,6 +7,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -27,8 +28,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
     /// <seealso cref="IQueryBase"/>
     /// <seealso cref="IQueryKlant"/>
     /// <seealso cref="IQueryZaak"/>
-    /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryBesluiten"/>
     /// <seealso cref="IQueryObjecten"/>
+    /// <seealso cref="IQueryObjectTypen"/>
     internal interface IQueryContext
     {
         #region IQueryBase
@@ -145,6 +147,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
         internal Task<RequestResponse> LinkCustomerToContactMomentAsync(string jsonBody);
+        #endregion
+
+        #region IQueryBesluiten
         #endregion
 
         #region IQueryObjecten
