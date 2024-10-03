@@ -81,7 +81,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
@@ -93,13 +93,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
-        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         internal Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
 
-        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>
         internal Task<RequestResponse> LinkCaseToContactMomentAsync(string jsonBody);
 
-        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string)"/>
         internal Task<RequestResponse> LinkCustomerToContactMomentAsync(string jsonBody);
         #endregion
 
