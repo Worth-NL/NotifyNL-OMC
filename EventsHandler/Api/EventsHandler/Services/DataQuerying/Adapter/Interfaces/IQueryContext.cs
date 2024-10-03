@@ -64,7 +64,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? caseStatuses = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, string, Uri)"/>
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseUri);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>

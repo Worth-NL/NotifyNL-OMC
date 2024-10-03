@@ -60,6 +60,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal Task<RequestResponse> LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal Task<RequestResponse> LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
