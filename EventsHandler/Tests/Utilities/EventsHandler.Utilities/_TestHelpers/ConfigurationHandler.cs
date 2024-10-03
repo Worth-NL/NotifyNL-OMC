@@ -56,7 +56,7 @@ namespace EventsHandler.Utilities._TestHelpers
             const string testUshort = "60";
             const string testGuid = "01234567-89ab-cdef-1234-567890123456";
             const string testBool = "true";
-            const string testDomain = "test.domain";
+            const string testDomain = "test.domain/api/v1";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetEnvironmentVariable<T>() mocking
