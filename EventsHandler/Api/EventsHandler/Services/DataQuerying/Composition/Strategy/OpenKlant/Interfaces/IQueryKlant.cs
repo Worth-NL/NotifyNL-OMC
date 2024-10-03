@@ -16,6 +16,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
     /// The methods querying specific data from "OpenKlant" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
+    /// <seealso cref="IDomain"/>
     internal interface IQueryKlant : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>

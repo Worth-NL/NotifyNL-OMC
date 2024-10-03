@@ -15,6 +15,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
     /// The methods querying specific data from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
+    /// <seealso cref="IDomain"/>
     internal interface IQueryBesluiten : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
