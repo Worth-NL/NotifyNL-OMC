@@ -57,21 +57,21 @@
         "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
         "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v2",
-        "USER_DOMAIN_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register
+        "USER_DOMAIN_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register v1
 
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
-        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
         "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
 
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "f00700c2-8c7a-4deb-b716-bb035ad2e3d0",
         "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
+
+        "USER_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "*",
         "USER_WHITELIST_ZAAKUPDATE_IDS": "*",
@@ -128,18 +128,18 @@
         "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v2",
         "USER_DOMAIN_CONTACTMOMENTEN": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
 
+        "USER_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
+
         "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
-        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
         "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
 
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "f00700c2-8c7a-4deb-b716-bb035ad2e3d0",
         "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "*",

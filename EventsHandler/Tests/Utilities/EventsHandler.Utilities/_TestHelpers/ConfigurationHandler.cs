@@ -93,18 +93,18 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_CONTACTMOMENTEN",                 GetTestValue(isValid, testDomain) },
 
+                { "USER_TEMPLATEIDS_DECISIONMADE",               GetTestValue(isValid, testGuid) },
+
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",            GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED",         GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE",         GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",      GetTestValue(isValid, testGuid) },
 
                 { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",             GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",             GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",              GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
                 { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",           GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED",        GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
 
                 { "USER_WHITELIST_ZAAKCREATE_IDS",               GetTestValue(isValid, testArray) },

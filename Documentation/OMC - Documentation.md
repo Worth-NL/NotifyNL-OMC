@@ -9,11 +9,12 @@ v.1.10.0
 
 **OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
-<h4 id="openServices-list"> Open services:</h4>
+<h4 id="openServices-list"> Open services (repositories):</h4>
 
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
 - [**Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
+- [**Besluiten**](https://github.com/open-zaak/open-zaak) (Web API service)  `NOTE: It's part of Open Zaak repository`
 - [**Objecten**](https://github.com/maykinmedia/objects-api) (Web API service)
 - [**ObjectTypen**](https://github.com/maykinmedia/objecttypes-api) (Web API service)
 - [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
@@ -136,15 +137,15 @@ And all of them have **Swagger UI** specified as the default start option.
         "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_EMAIL_DECISIONMADE": "",
         "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
         
         "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
         "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        "USER_TEMPLATEIDS_SMS_DECISIONMADE": "",
         "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "",
+
+        "USER_TEMPLATEIDS_DECISIONMADE": "",
 
         "USER_WHITELIST_ZAAKCREATE_IDS": "",
         "USER_WHITELIST_ZAAKUPDATE_IDS": "",
@@ -379,6 +380,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | USER_TEMPLATEIDS_SMS_ZAAKCLOSE                      | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_TASKASSIGNED                   | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | USER_TEMPLATEIDS_SMS_MESSAGE                        | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
+| USER_TEMPLATEIDS_DECISIONMADE                       | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                                      |
 | ---                                                 | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                                   |
 | **Business:** Whitelisted IDs used by "OMC" Web API |           |                                               |              |                                                                                                                                            |                                                                                                                                                                                                                       |
 | USER_WHITELIST_ZAAKCREATE_IDS                       | string[]  | "1, 2, 3, 4" or "*" (allow everything)        | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                               |
