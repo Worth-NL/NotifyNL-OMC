@@ -10,6 +10,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
     /// The methods querying specific data from "ObjectTypen" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
+    /// <seealso cref="IDomain"/>
     internal interface IQueryObjectTypen : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
