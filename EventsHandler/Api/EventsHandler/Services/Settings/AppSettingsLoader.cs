@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Extensions;
 using EventsHandler.Services.Settings.Interfaces;

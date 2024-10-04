@@ -18,6 +18,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
     /// The methods querying specific data from "Objecten" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
+    /// <seealso cref="IDomain"/>
     internal interface IQueryObjecten : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
@@ -31,6 +32,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <summary>
         /// Gets the <see cref="CommonTaskData"/> from "Objecten" Web API service.
         /// </summary>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
         ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="CommonTaskData"/> model.
@@ -56,6 +58,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <summary>
         /// Gets the <see cref="MessageObject"/> from "Objecten" Web API service.
         /// </summary>
+        /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
         ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="MessageObject"/> model.
@@ -85,10 +88,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         /// <returns>
         ///   The answer whether the object was created successfully.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal sealed async Task<RequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
-            string createObjectEndpoint = $"https://{GetDomain()}/api/v2/objects";
+            string createObjectEndpoint = $"https://{GetDomain()}/objects";
 
             // Request URL
             Uri createObjectUri = new(createObjectEndpoint);

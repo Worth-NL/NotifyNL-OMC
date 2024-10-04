@@ -656,6 +656,11 @@ namespace EventsHandler.Services.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                internal string Besluiten()
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Besluiten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal string Objecten()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
@@ -663,6 +668,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal string ObjectTypen()
                     => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal string ContactMomenten()
+                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
             }
 
             /// <summary>
@@ -670,6 +680,9 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             internal sealed record TemplateIdsComponent
             {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
                 /// <inheritdoc cref="EmailComponent"/>
                 [Config]
                 internal EmailComponent Email { get; }
@@ -683,11 +696,17 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// </summary>
                 internal TemplateIdsComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
 
-                    this.Email = new EmailComponent(loadersContext, currentPath);
-                    this.Sms = new SmsComponent(loadersContext, currentPath);
+                    this.Email = new EmailComponent(this._loadersContext, this._currentPath);
+                    this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
                 }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal Guid DecisionMade()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                 /// <summary>
                 /// The "Email" part of the settings.
@@ -725,11 +744,6 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal Guid TaskAssigned()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid DecisionMade()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -773,11 +787,6 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal Guid TaskAssigned()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid DecisionMade()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -1020,7 +1029,7 @@ namespace EventsHandler.Services.Settings.Configuration
         }
 
         /// <summary>
-        /// Retrieves cached domain value (without http/s and API endpoint).
+        /// Retrieves cached domain value.
         /// </summary>
         /// <remarks>
         /// Validation: enabled
@@ -1031,8 +1040,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .GetWithoutProtocol()
-                    .GetWithoutEndpoint());
+                    .GetWithoutProtocol());
         }
         
         /// <summary>
