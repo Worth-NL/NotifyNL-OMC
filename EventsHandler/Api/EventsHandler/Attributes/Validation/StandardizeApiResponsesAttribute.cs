@@ -32,6 +32,7 @@ namespace EventsHandler.Attributes.Validation
         {
             // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
             s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
+            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(IRespondingService<ProcessingResult, string>));
             s_mappedControllersToResponders.TryAdd(typeof(TestController), typeof(IRespondingService<ProcessingResult, string>));
         }
 
