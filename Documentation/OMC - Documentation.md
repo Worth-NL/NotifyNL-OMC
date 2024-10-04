@@ -552,7 +552,7 @@ And then click "Authorize".
 
 The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
 
-<code>**Last update:** 24 Jun 2024</code>
+<code>**Last update:** 03 Oct 2024</code>
 
 <h3 id="workflow_dependencies">5.1.1. Dependencies</h3>
 
