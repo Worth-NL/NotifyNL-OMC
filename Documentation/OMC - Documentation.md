@@ -761,6 +761,7 @@ Endpoints:
 > HTTP Status Code: 400 Bad Request
 
 - HTTP Request error
+
 ![HTTP Request - Error](images/events_listen_httpRequestError.png)
 
 Something went wrong when calling external API services: OpenZaak, OpenKlant, contactmomenten...
