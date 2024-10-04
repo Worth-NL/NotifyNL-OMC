@@ -48,7 +48,7 @@ namespace EventsHandler.Services.Register.v1
         {
             #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
             CaseStatus caseStatus = this._taskFactory
-                .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseUri))
+                .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
                 .Join()
                 .LastStatus();
             #pragma warning restore VSTHRD104
@@ -75,7 +75,7 @@ namespace EventsHandler.Services.Register.v1
         {
             return $"{{" +
                      $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
-                     $"\"zaak\":\"{reference.CaseUri}\"" +                     // URI
+                     $"\"zaak\":\"{reference.CaseId}\"" +                     // URI
                    $"}}";
         }
 
@@ -83,8 +83,8 @@ namespace EventsHandler.Services.Register.v1
         string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
             return $"{{" +
-                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
-                     $"\"klant\":\"{reference.PartyUri}\"," +                  // URI
+                     $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +    // URI
+                     $"\"klant\":\"{reference.PartyId.RecreatePartyUri()}\"," +  // URI
                      $"\"rol\":\"belanghebbende\"," +
                      $"\"gelezen\":false" +
                    $"}}";

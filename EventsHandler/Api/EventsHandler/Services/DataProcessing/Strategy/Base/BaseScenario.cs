@@ -132,8 +132,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 reference: new NotifyReference
                 {
                     Notification = notification,
-                    CaseUri = preparedData.CaseUri,
-                    PartyUri = preparedData.Party.Uri
+                    CaseId = preparedData.CaseUri.GetGuid(),
+                    PartyId = preparedData.Party.Uri.GetGuid()
                 }
             );
         }
@@ -159,8 +159,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 reference: new NotifyReference
                 {
                     Notification = notification,
-                    CaseUri = preparedData.CaseUri,
-                    PartyUri = preparedData.Party.Uri
+                    CaseId = preparedData.CaseUri.GetGuid(),
+                    PartyId = preparedData.Party.Uri.GetGuid()
                 }
             );
         }

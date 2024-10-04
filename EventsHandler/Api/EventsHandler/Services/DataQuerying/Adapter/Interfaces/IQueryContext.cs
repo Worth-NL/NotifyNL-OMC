@@ -7,6 +7,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -27,8 +28,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
     /// <seealso cref="IQueryBase"/>
     /// <seealso cref="IQueryKlant"/>
     /// <seealso cref="IQueryZaak"/>
-    /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryBesluiten"/>
     /// <seealso cref="IQueryObjecten"/>
+    /// <seealso cref="IQueryObjectTypen"/>
     internal interface IQueryContext
     {
         #region IQueryBase
@@ -62,53 +64,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? caseStatuses = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetMainObjectAsync(IQueryBase)"/>
-        internal Task<MainObject> GetMainObjectAsync();
-
-        /// <inheritdoc cref="IQueryZaak.TryGetDecisionResourceAsync(IQueryBase, Uri?)"/>
-        /// <remarks>
-        ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
-        ///   <para>
-        ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
-        ///     directly from the initial notification <see cref="NotificationEvent.ResourceUri"/> (which will
-        ///     work only if the notification was meant to be used with Decision scenarios).
-        ///   </para>
-        /// </remarks>
-        internal Task<DecisionResource> GetDecisionResourceAsync(Uri? resourceUri = null);
-
-        /// <inheritdoc cref="IQueryZaak.TryGetInfoObjectAsync(IQueryBase, object?)"/>
-        /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
-        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
-        /// </remarks>
-        internal Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
-
-        /// <inheritdoc cref="IQueryZaak.TryGetDecisionAsync(IQueryBase, DecisionResource?)"/>
-        /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
-        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
-        /// </remarks>
-        internal Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
-
-        /// <inheritdoc cref="IQueryZaak.TryGetDocumentsAsync(IQueryBase, DecisionResource?)"/>
-        /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
-        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
-        /// </remarks>
-        internal Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
-
-        /// <inheritdoc cref="IQueryZaak.TryGetDecisionTypeAsync(IQueryBase, Decision?)"/>
-        /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="Decision"/>, but it produces an additional
-        ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
-        ///   service. One of alternatives is that just before querying <see cref="Decision"/> to get desired
-        ///   <seealso cref="DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
-        ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
-        ///   only if the notification was meant to be used with Decision scenarios).
-        /// </remarks>
-        internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
-
-        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, string, Uri)"/>
+        /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseUri);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
@@ -125,7 +81,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
@@ -137,14 +93,59 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
 
-        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         internal Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
 
-        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>
         internal Task<RequestResponse> LinkCaseToContactMomentAsync(string jsonBody);
 
-        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string, string)"/>
+        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string)"/>
         internal Task<RequestResponse> LinkCustomerToContactMomentAsync(string jsonBody);
+        #endregion
+
+        #region IQueryBesluiten
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionResourceAsync(IQueryBase, Uri?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
+        ///   <para>
+        ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
+        ///     directly from the initial notification <see cref="NotificationEvent.ResourceUri"/> (which will
+        ///     work only if the notification was meant to be used with Decision scenarios).
+        ///   </para>
+        /// </remarks>
+        internal Task<DecisionResource> GetDecisionResourceAsync(Uri? resourceUri = null);
+
+        /// <inheritdoc cref="IQueryBesluiten.TryGetInfoObjectAsync(IQueryBase, object?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
+
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionAsync(IQueryBase, DecisionResource?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
+
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDocumentsAsync(IQueryBase, DecisionResource?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
+        /// </remarks>
+        internal Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
+
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionTypeAsync(IQueryBase, Decision?)"/>
+        /// <remarks>
+        ///   Simpler usage doesn't require providing <see cref="Decision"/>, but it produces an additional
+        ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
+        ///   service. One of alternatives is that just before querying <see cref="Decision"/> to get desired
+        ///   <seealso cref="DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
+        ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
+        ///   only if the notification was meant to be used with Decision scenarios).
+        /// </remarks>
+        internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);
         #endregion
 
         #region IQueryObjecten

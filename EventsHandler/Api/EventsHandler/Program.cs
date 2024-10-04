@@ -19,10 +19,6 @@ using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Base;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v1;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Factories;
@@ -30,6 +26,7 @@ using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
+using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
@@ -56,6 +53,9 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Besluiten = EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten;
+using Objecten = EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten;
+using ObjectTypen = EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen;
 using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
 using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
 using Register = EventsHandler.Services.Register;
@@ -326,8 +326,9 @@ namespace EventsHandler
             // Strategies
             builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omvWorkflowVersion));
             builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(IQueryObjecten), DetermineObjectenVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(IQueryObjectTypen), DetermineObjectTypenVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omvWorkflowVersion));
 
             // Feedback and telemetry
             builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omvWorkflowVersion));
@@ -354,11 +355,20 @@ namespace EventsHandler
                 };
             }
 
+            static Type DetermineBesluitenVersion(byte omvWorkflowVersion)
+            {
+                return omvWorkflowVersion switch
+                {
+                    1 or 2 => typeof(Besluiten.v1.QueryBesluiten),
+                    _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionBesluitenUnknown)
+                };
+            }
+
             static Type DetermineObjectenVersion(byte omvWorkflowVersion)
             {
                 return omvWorkflowVersion switch
                 {
-                    1 or 2 => typeof(QueryObjecten),
+                    1 or 2 => typeof(Objecten.v1.QueryObjecten),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectenUnknown)
                 };
             }
@@ -367,7 +377,7 @@ namespace EventsHandler
             {
                 return omvWorkflowVersion switch
                 {
-                    1 or 2 => typeof(QueryObjectTypen),
+                    1 or 2 => typeof(ObjectTypen.v1.QueryObjectTypen),
                     _ => throw new NotImplementedException(Resources.Configuration_ERROR_VersionObjectTypenUnknown)
                 };
             }
@@ -395,7 +405,7 @@ namespace EventsHandler
                                                       .OMC.Features.Workflow_Version();
 
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, Responder.OmcResponder>();
+            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
             builder.Services.AddSingleton(typeof(IRespondingService<ProcessingResult, string>), DetermineResponderVersion(omvWorkflowVersion));

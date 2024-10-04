@@ -3,8 +3,10 @@
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
+using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.Responding;
+using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +27,9 @@ namespace EventsHandler.Controllers
         /// Initializes a new instance of the <see cref="NotifyController"/> class.
         /// </summary>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public NotifyController(NotifyResponder responder)
+        public NotifyController(IRespondingService<ProcessingResult, string> responder)
         {
-            this._responder = responder;
+            this._responder = (NotifyResponder)responder;
         }
 
         /// <summary>

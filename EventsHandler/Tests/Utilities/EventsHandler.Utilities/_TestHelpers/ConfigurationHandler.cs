@@ -56,7 +56,7 @@ namespace EventsHandler.Utilities._TestHelpers
             const string testUshort = "60";
             const string testGuid = "01234567-89ab-cdef-1234-567890123456";
             const string testBool = "true";
-            const string testDomain = "test.domain";
+            const string testDomain = "test.domain/api/v1";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
             #region GetEnvironmentVariable<T>() mocking
@@ -88,21 +88,23 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "USER_DOMAIN_OPENNOTIFICATIES",                GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OPENZAAK",                        GetTestValue(isValid, testDomain, " ") },
                 { "USER_DOMAIN_OPENKLANT",                       GetTestValue(isValid, testDomain, "http://domain") },
+                { "USER_DOMAIN_BESLUITEN",                       GetTestValue(isValid, testDomain) },
                 { "USER_DOMAIN_OBJECTEN",                        GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain, "domain/api/v1/typen") },
+                { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
+                { "USER_DOMAIN_CONTACTMOMENTEN",                 GetTestValue(isValid, testDomain) },
+
+                { "USER_TEMPLATEIDS_DECISIONMADE",               GetTestValue(isValid, testGuid) },
 
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",            GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED",         GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_DECISIONMADE",         GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",      GetTestValue(isValid, testGuid) },
 
                 { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",             GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",             GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",              GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
                 { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",           GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_DECISIONMADE",           GetTestValue(isValid, testGuid) },
                 { "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED",        GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
 
                 { "USER_WHITELIST_ZAAKCREATE_IDS",               GetTestValue(isValid, testArray) },

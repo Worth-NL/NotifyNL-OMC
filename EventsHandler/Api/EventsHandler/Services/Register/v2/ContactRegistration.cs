@@ -68,7 +68,7 @@ namespace EventsHandler.Services.Register.v2
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
-                       $"\"objectId\":\"{reference.CaseUri}\"," +
+                       $"\"objectId\":\"{reference.CaseId}\"," +
                        $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
                        $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
                        $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
@@ -81,7 +81,7 @@ namespace EventsHandler.Services.Register.v2
         {
             return $"{{" +
                      $"\"wasPartij\":{{" +
-                       $"\"uuid\":\"{reference.PartyUri.GetGuid()}\"" +  // GUID
+                       $"\"uuid\":\"{reference.PartyId}\"" +  // GUID
                      $"}}," +
                      $"\"hadKlantcontact\":{{" +
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID

@@ -29,6 +29,19 @@ namespace EventsHandler.Services.Settings.Extensions
             }
         }
 
+        private static string? s_openKlantDomainEnvVarName;
+
+        private static string GetOpenKlantDomainEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Domain)}_" +
+                                                        $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}")
+                                                       .ToUpper();
+            }
+        }
+
         private static string? s_messageAllowedEnvVarName;
 
         internal static string GetWhitelistMessageAllowedEnvVarName()
@@ -94,7 +107,22 @@ namespace EventsHandler.Services.Settings.Extensions
 
             // Case #2: Static usage
             return s_openZaakDomainValue ??=
-                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "missingDomain";
+                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "x";
+        }
+
+        private static string? s_openKlantDomainValue;
+
+        internal static string OpenKlantDomain(WebApiConfiguration? configuration = null)
+        {
+            // Case #1: Instance usage
+            if (configuration != null)
+            {
+                return configuration.User.Domain.OpenKlant();
+            }
+
+            // Case #2: Static usage
+            return s_openKlantDomainValue ??=
+                Environment.GetEnvironmentVariable(GetOpenKlantDomainEnvVarName()) ?? "x";
         }
         #endregion
 
@@ -125,17 +153,6 @@ namespace EventsHandler.Services.Settings.Extensions
             return !value.StartsWith(DefaultValues.Request.HttpProtocol)  // HTTPS will be also handled this way
                 ? value
                 : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsHttp, value);
-        }
-
-        /// <summary>
-        /// Ensures that the value from the configuration file does not contain API endpoint.
-        /// </summary>
-        /// <exception cref="ArgumentException"/>
-        internal static string GetWithoutEndpoint(this string value)
-        {
-            return !value.Contains('/')
-                ? value
-                : ThrowArgumentException<string>(Resources.Configuration_ERROR_ContainsEndpoint, value);
         }
         #endregion
 

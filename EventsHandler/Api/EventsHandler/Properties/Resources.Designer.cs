@@ -79,15 +79,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In the settings representing domain unnecessary endpoint (.../get/something) was found: {0}..
-        /// </summary>
-        internal static string Configuration_ERROR_ContainsEndpoint {
-            get {
-                return ResourceManager.GetString("Configuration_ERROR_ContainsEndpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ContainsHttp {
@@ -147,6 +138,15 @@ namespace EventsHandler.Properties {
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The version of Besluiten service to be used by OMC is unknown or not supported. Check used version of OMC workflow..
+        /// </summary>
+        internal static string Configuration_ERROR_VersionBesluitenUnknown {
+            get {
+                return ResourceManager.GetString("Configuration_ERROR_VersionBesluitenUnknown", resourceCulture);
             }
         }
         
@@ -1020,6 +1020,15 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

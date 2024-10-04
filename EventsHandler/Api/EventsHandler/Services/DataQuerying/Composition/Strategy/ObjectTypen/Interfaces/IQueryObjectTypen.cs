@@ -10,6 +10,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
     /// The methods querying specific data from "ObjectTypen" Web API service.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
+    /// <seealso cref="IDomain"/>
     internal interface IQueryObjectTypen : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
@@ -26,10 +27,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         /// <returns>
         ///   The JSON representation of object type.
         /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/api/v1/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
+                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{this.Configuration.User.Variables.Objecten.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
