@@ -107,36 +107,6 @@ namespace EventsHandler.UnitTests.Services.Settings.Extensions
         }
         #endregion
 
-        #region GetWithoutEndpoint
-        [Test]
-        public void ValidateNoEndpoint_ForInvalidValue_ThrowsArgumentException()
-        {
-            // Arrange
-            const string testUrl = "testUrl/api/endpoint";
-
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => testUrl.GetWithoutEndpoint());
-                Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ContainsEndpoint
-                                                  .Replace("{0}", testUrl)));
-            });
-        }
-
-        [Test]
-        public void ValidateNoEndpoint_ForValidValue_ReturnsOriginalValue()
-        {
-            // Arrange
-            const string testUrl = "testUrl";
-
-            // Act
-            string actualResult = testUrl.GetWithoutEndpoint();
-
-            // Assert
-            Assert.That(actualResult, Is.EqualTo(testUrl));
-        }
-        #endregion
-
         #region GetValidGuid
         // ReSharper disable StringLiteralTypo
         [TestCase("")]

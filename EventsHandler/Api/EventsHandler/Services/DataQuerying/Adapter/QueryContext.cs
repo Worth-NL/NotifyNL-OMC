@@ -8,6 +8,7 @@ using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
+using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
@@ -22,10 +23,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter
     {
         private readonly IHttpNetworkService _networkService;
         private readonly IQueryBase _queryBase;
-        private readonly IQueryKlant _queryKlant;
-        private readonly IQueryZaak _queryZaak;
-        private readonly IQueryObjecten _queryObjecten;
-        private readonly IQueryObjectTypen _queryObjectTypen;
+        private readonly IQueryZaak _queryZaak;                // Case API microservice
+        private readonly IQueryKlant _queryKlant;              // Customer API microservice
+        private readonly IQueryBesluiten _queryBesluiten;      // Decision API microservice
+        private readonly IQueryObjecten _queryObjecten;        // Object API microservice
+        private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -33,16 +35,18 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         public QueryContext(
             IHttpNetworkService networkService,
             IQueryBase queryBase,
-            IQueryKlant queryKlant,
             IQueryZaak queryZaak,
+            IQueryKlant queryKlant,
+            IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
             IQueryObjectTypen queryObjectTypen)
         {
             // Composition
             this._networkService = networkService;
             this._queryBase = queryBase;
-            this._queryKlant = queryKlant;
             this._queryZaak = queryZaak;
+            this._queryKlant = queryKlant;
+            this._queryBesluiten = queryBesluiten;
             this._queryObjecten = queryObjecten;
             this._queryObjectTypen = queryObjectTypen;
         }
@@ -74,37 +78,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, caseStatuses.Value);
         }
 
-        /// <inheritdoc cref="IQueryContext.GetMainObjectAsync()"/>
-        async Task<MainObject> IQueryContext.GetMainObjectAsync()
-            => await this._queryZaak.GetMainObjectAsync(this._queryBase);
-
-        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
-        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
-            => await this._queryZaak.TryGetDecisionResourceAsync(this._queryBase, resourceUri);
-
-        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
-        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
-            => await this._queryZaak.TryGetInfoObjectAsync(this._queryBase, parameter);
-
-        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
-        async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.TryGetDecisionAsync(this._queryBase, decisionResource);
-
-        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
-        async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
-            => await this._queryZaak.TryGetDocumentsAsync(this._queryBase, decisionResource);
-
-        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
-        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
-            => await this._queryZaak.TryGetDecisionTypeAsync(this._queryBase, decision);
-
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {
             // 1. Fetch the case roles from "OpenZaak"
             // 2. Determine the citizen data from the case roles
             // 3. Return BSN from the citizen data
-            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, this._queryZaak.GetDomain(), caseUri);
+            return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
@@ -125,20 +105,42 @@ namespace EventsHandler.Services.DataQuerying.Adapter
                 this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
 
             // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, this._queryKlant.GetDomain(), bsnNumber);
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)
-            => await this._queryKlant.CreateContactMomentAsync(this._queryBase, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.CreateContactMomentAsync(this._queryBase, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkCaseToContactMomentAsync(string)"/>
         async Task<RequestResponse> IQueryContext.LinkCaseToContactMomentAsync(string jsonBody)
-            => await this._queryKlant.LinkCaseToContactMomentAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.LinkCaseToContactMomentAsync(this._networkService, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkCustomerToContactMomentAsync(string)"/>
         async Task<RequestResponse> IQueryContext.LinkCustomerToContactMomentAsync(string jsonBody)
-            => await this._queryKlant.LinkCustomerToContactMomentAsync(this._networkService, this._queryKlant.GetDomain(), jsonBody);
+            => await this._queryKlant.LinkCustomerToContactMomentAsync(this._networkService, jsonBody);
+        #endregion
+
+        #region IQueryBesluiten
+        /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
+        async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
+            => await this._queryBesluiten.TryGetDecisionResourceAsync(this._queryBase, resourceUri);
+
+        /// <inheritdoc cref="IQueryContext.GetInfoObjectAsync(object?)"/>
+        async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
+            => await this._queryBesluiten.TryGetInfoObjectAsync(this._queryBase, parameter);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
+        async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
+            => await this._queryBesluiten.TryGetDecisionAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
+        async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
+            => await this._queryBesluiten.TryGetDocumentsAsync(this._queryBase, decisionResource);
+
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
+        async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
+            => await this._queryBesluiten.TryGetDecisionTypeAsync(this._queryBase, decision);
         #endregion
 
         #region IQueryObjecten
