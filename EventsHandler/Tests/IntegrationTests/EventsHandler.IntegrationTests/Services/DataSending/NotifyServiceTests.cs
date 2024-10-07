@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
@@ -134,6 +135,45 @@ namespace EventsHandler.IntegrationTests.Services.DataSending
             mockedClient
                 .Verify(mock => mock.SendSmsAsync(
                     It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>(),
+                    It.IsAny<string>()),
+                Times.Once);
+        }
+
+        [TestCase("+31618758539", "+31618758539")]    // Nothing to be changed
+        [TestCase("+442071234567", "+442071234567")]  // Nothing to be changed
+        [TestCase("0618758539", "+31618758539")]      // The Dutch country code needs to be added
+        public async Task GetDutchFallbackNumber_ForGivenMobileNumber_ConvertsMobileNumberToValid(string testMobileNumber, string expectedMobileNumber)
+        {
+            // Arrange
+            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
+
+            this._testNotifyService = GetTestSendingService(mockedClient);
+
+            NotificationEvent testNotification =
+                NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague()
+                    .Deserialized();
+
+            NotifyData testNotifyData = new
+            (
+                notificationMethod: NotifyMethods.Sms,
+                contactDetails: testMobileNumber,
+                templateId: default,
+                personalization: default!,
+                reference: new NotifyReference
+                {
+                    Notification = testNotification
+                }
+            );
+
+            // Act
+            await this._testNotifyService.SendSmsAsync(testNotifyData);
+
+            // Assert
+            mockedClient
+                .Verify(mock => mock.SendSmsAsync(
+                    expectedMobileNumber,  // NOTE: The mock method will not be called if the phone number wouldn't be matching
                     It.IsAny<string>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()),
