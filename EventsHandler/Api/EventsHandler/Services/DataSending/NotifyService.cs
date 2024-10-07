@@ -98,7 +98,8 @@ namespace EventsHandler.Services.DataSending
 
             return initialMobileNumber.Length > 0 &&
                    initialMobileNumber[0] == missingCountryCode
-                ? $"{dutchCountryCode}{initialMobileNumber[1..].AsSpan()}"  // If the country code is missing adds the Dutch one as a default option
+                // If the country code is missing adds the Dutch one as a default option
+                ? string.Concat(dutchCountryCode, initialMobileNumber[1..].AsSpan())
                 : initialMobileNumber;
         }
 
