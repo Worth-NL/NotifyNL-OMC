@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataSending
         async Task<NotifySendResponse> INotifyService<NotifyData>.SendSmsAsync(NotifyData package)
         {
             return await ResolveNotifyClient(package.Reference.Notification)
-                .SendSmsAsync(mobileNumber:    package.ContactDetails,
+                .SendSmsAsync(mobileNumber:    GetDutchFallbackNumber(package.ContactDetails),
                               templateId:      package.TemplateId.ToString(),
                               personalization: package.Personalization,
                               reference:       GetEncoded(package.Reference));
@@ -89,6 +89,17 @@ namespace EventsHandler.Services.DataSending
             }
 
             return s_httpClient;
+        }
+
+        private static string GetDutchFallbackNumber(string initialMobileNumber)
+        {
+            const string dutchCountryCode = "+31";
+            const char missingCountryCode = '0';
+
+            return initialMobileNumber.Length > 0 &&
+                   initialMobileNumber[0] == missingCountryCode
+                ? $"{dutchCountryCode}{initialMobileNumber[1..].AsSpan()}"  // If the country code is missing adds the Dutch one as a default option
+                : initialMobileNumber;
         }
 
         /// <summary>
