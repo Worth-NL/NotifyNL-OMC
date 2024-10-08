@@ -10,8 +10,9 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
+using Moq;
 
-namespace EventsHandler.IntegrationTests.Services.DataSending
+namespace EventsHandler.UnitTests.Services.DataSending
 {
     [TestFixture]
     public sealed class NotifyServiceTests
