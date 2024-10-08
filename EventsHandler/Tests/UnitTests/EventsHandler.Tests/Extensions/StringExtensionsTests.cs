@@ -108,13 +108,13 @@ namespace EventsHandler.UnitTests.Extensions
               "\"PartyId\":\"dfbf6cf9-1feb-4f11-98a1-09d80e122bf2\"" +
             "}";
 
-        private const string CompressedEncodedString = "H4sIAAAAAAAACqxSsXLcIBD9F9VGAqSThMqkcmOncLo0K1juuJNAg5DPPo//PYsyGSdFZjKTQAPL231v3/JWPITkrNOQX" +
+        private const string CompressedEncodedString = "H4sIAAAAAAAACq1SsXLcIBD9F9VGAqSThMqkcmOncLo0K1juuJNAg5DPPo//PYsyGSdFZjKTQAPL231v3/JWPITkrNOQX" +
                                                        "PDF8FaATg6LodARIWFxV1zAA0wUucEFPQUirmGLOoPWBGlbMwj9jDG/U4kbwCW9LhlwSmlZh6qaxvJ2vJYreDOGFzZD9O" +
                                                        "6l1OvCvDvPeERf+qkKC3qWsyvSA1M4ugoWVz2L6mdJX0luxWhAMyk6zRreatZD0zPetgJ7OBijJQkaY/AhHsG7lVrLUjg" +
                                                        "XTadEp+j1GWOKYbvi5M6XEzoDJGxzxvkjIRkhwnhGnZ4+uqAmeLnvgVeZANdpcyn9GUEk4NM1hGh2Hnz8TU/xflecQrDm" +
                                                        "caf6B7P2wXw4lS9tLxXnoMigWrCm55aprm4YtsZahdZI1L+M8muc/hf/jy+x5gBvDkqOlrVtbVk+s35EyUABCkPzqmVDG" +
                                                        "sj6maoYSptJhOSyYVwxoZ6EHA5yqFXZNTyvbxvn8hMne3k27zOseG8o5S+b/QIxve4Jxo621ZZILI6ssUIw1YMgWtNzFJ" +
-                                                       "JEy+L9OwAAAP//AwBYMUi9HAMAAA==";
+                                                       "JEy+L9O1gxSL0cAwAA";
         // ReSharper restore StringLiteralTypo
 
         [Test]
