@@ -58,7 +58,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   Encoded original string.
         /// </returns>
-        private static string Base64Encode(this MemoryStream originalMemoryStream)
+        internal static string Base64Encode(this MemoryStream originalMemoryStream)
         {
             return Base64UrlEncoder.Encode(originalMemoryStream.ToArray());
         }
