@@ -232,8 +232,13 @@ namespace EventsHandler.Services.Responding
         /// </returns>
         internal async Task<(NotifyReference, NotifyMethods)> ExtractCallbackDataAsync(DeliveryReceipt callback)
         {
+            // Decompress and decode the string
             string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            // Deserialize into object
             NotifyReference notification = this.Serializer.Deserialize<NotifyReference>(decodedReference);
+
+            // Convert enums
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
             return (notification, notificationMethod);
