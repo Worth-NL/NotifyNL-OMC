@@ -87,7 +87,6 @@ namespace EventsHandler.Extensions
             await using (var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal, leaveOpen: true))  // NOTE: Leaves MemoryStream open, so it's data can be read in the final statement
             {
                 await gzipStream.WriteAsync(buffer, cancellationToken);
-                await gzipStream.FlushAsync(cancellationToken);  // Ensure all data is flushed
             }
 
             return memoryStream.ToArray().Base64Encode();
