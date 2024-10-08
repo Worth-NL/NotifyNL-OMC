@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Microsoft.IdentityModel.Tokens;
 using System.Buffers.Text;
 using System.IO.Compression;
 using System.Text;
@@ -45,22 +44,11 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   Encoded original string.
         /// </returns>
-        internal static string Base64Encode(this string originalTextValue)
+        internal static string Base64Encode(this byte[] originalStream)
         {
-            return string.IsNullOrWhiteSpace(originalTextValue)
+            return originalStream.Length == 0
                 ? string.Empty
-                : Base64UrlEncoder.Encode(originalTextValue);
-        }
-
-        /// <summary>
-        /// Encodes a raw plain <see cref="MemoryStream"/> into <see cref="Base64"/> value.
-        /// </summary>
-        /// <returns>
-        ///   Encoded original string.
-        /// </returns>
-        internal static string Base64Encode(this MemoryStream originalMemoryStream)
-        {
-            return Base64UrlEncoder.Encode(originalMemoryStream.ToArray());
+                : Convert.ToBase64String(originalStream);
         }
 
         /// <summary>
@@ -69,11 +57,11 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   Decoded original string.
         /// </returns>
-        internal static string Base64Decode(this string encodedTextValue)
+        internal static byte[] Base64Decode(this string encodedTextValue)
         {
             return string.IsNullOrWhiteSpace(encodedTextValue)
-                ? string.Empty
-                : Base64UrlEncoder.Decode(encodedTextValue);
+                ? Array.Empty<byte>()
+                : Convert.FromBase64String(encodedTextValue);
         }
         #endregion
 
@@ -88,15 +76,21 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static async Task<string> CompressGZipAsync(this string originalTextValue, CancellationToken cancellationToken)
         {
+            if (originalTextValue.IsEmpty())
+            {
+                return string.Empty;
+            }
+
             byte[] buffer = Encoding.UTF8.GetBytes(originalTextValue);
 
             using var memoryStream = new MemoryStream();
             await using (var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal, leaveOpen: true))  // NOTE: Leaves MemoryStream open, so it's data can be read in the final statement
             {
                 await gzipStream.WriteAsync(buffer, cancellationToken);
+                await gzipStream.FlushAsync(cancellationToken);  // Ensure all data is flushed
             }
 
-            return memoryStream.Base64Encode();
+            return memoryStream.ToArray().Base64Encode();
         }
 
         /// <summary>
@@ -107,7 +101,12 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static async Task<string> DecompressGZipAsync(this string compressedTextValue, CancellationToken cancellationToken)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(compressedTextValue.Base64Decode());
+            if (compressedTextValue.IsEmpty())
+            {
+                return string.Empty;
+            }
+
+            byte[] buffer = compressedTextValue.Base64Decode();
 
             using var memoryStream = new MemoryStream(buffer);
             await using var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress);

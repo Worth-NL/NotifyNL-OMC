@@ -26,7 +26,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
             return new DeliveryReceipt
             {
                 Id = Guid.NewGuid(),
-                Reference = s_serializedNotification.Base64Encode(),
+                Reference = Task.Run(async () => await s_serializedNotification.CompressGZipAsync(CancellationToken.None)).Result,
                 Recipient = "hello@gov.nl",
                 Status = DeliveryStatuses.Delivered,
                 CreatedAt = currentTime,
