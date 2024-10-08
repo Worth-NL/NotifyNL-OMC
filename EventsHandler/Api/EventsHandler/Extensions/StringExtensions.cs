@@ -10,6 +10,7 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static class StringExtensions
     {
+        #region Validation
         /// <summary>
         /// Determines whether the given <see langword="string"/> <c>is</c> empty.
         /// </summary>
@@ -33,7 +34,9 @@ namespace EventsHandler.Extensions
         {
             return !text.IsEmpty();
         }
+        #endregion
 
+        #region Encoding / Decoding (Base64)
         /// <summary>
         /// Encodes a raw plain <see langword="string"/> into <see cref="Base64"/> value.
         /// </summary>
@@ -59,7 +62,9 @@ namespace EventsHandler.Extensions
                 ? string.Empty
                 : Base64UrlEncoder.Decode(encodedTextValue);
         }
+        #endregion
 
+        #region Conversion
         /// <summary>
         /// Converts a given <see langword="string"/> into a target generic <typeparamref name="TData"/> type.
         /// </summary>
@@ -85,7 +90,9 @@ namespace EventsHandler.Extensions
             // Retrieve as TData => int, ushort, bool
             return (TData)Convert.ChangeType(originalTextValue, typeof(TData));
         }
+        #endregion
 
+        #region Modification
         private const string CommaSeparator = ", ";
 
         /// <summary>
@@ -99,5 +106,6 @@ namespace EventsHandler.Extensions
         {
             return string.Join(CommaSeparator, collection);
         }
+        #endregion
     }
 }
