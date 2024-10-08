@@ -2,6 +2,8 @@
 
 using Microsoft.IdentityModel.Tokens;
 using System.Buffers.Text;
+using System.IO.Compression;
+using System.Text;
 
 namespace EventsHandler.Extensions
 {
@@ -51,6 +53,17 @@ namespace EventsHandler.Extensions
         }
 
         /// <summary>
+        /// Encodes a raw plain <see cref="MemoryStream"/> into <see cref="Base64"/> value.
+        /// </summary>
+        /// <returns>
+        ///   Encoded original string.
+        /// </returns>
+        private static string Base64Encode(this MemoryStream originalMemoryStream)
+        {
+            return Base64UrlEncoder.Encode(originalMemoryStream.ToArray());
+        }
+
+        /// <summary>
         /// Encodes the <see cref="Base64"/> value back to a raw plain <see langword="string"/>.
         /// </summary>
         /// <returns>
@@ -61,6 +74,48 @@ namespace EventsHandler.Extensions
             return string.IsNullOrWhiteSpace(encodedTextValue)
                 ? string.Empty
                 : Base64UrlEncoder.Decode(encodedTextValue);
+        }
+        #endregion
+
+        // NOTE: GZipStream algorithm is slightly faster and for general purpose or large files
+        //       ZLibStream algorithm is slightly slower but offers better compression level
+        #region Compressing / Decompressing
+        /// <summary>
+        /// Performs <see langword="string"/> compression using GZip algorithm.
+        /// </summary>
+        /// <returns>
+        ///   The compressed and encoded <see langword="string"/>.
+        /// </returns>
+        internal static async Task<string> CompressGZipAsync(this string originalTextValue, CancellationToken cancellationToken)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(originalTextValue);
+
+            using var memoryStream = new MemoryStream();
+            await using (var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal, leaveOpen: true))  // NOTE: Leaves MemoryStream open, so it's data can be read in the final statement
+            {
+                await gzipStream.WriteAsync(buffer, cancellationToken);
+            }
+
+            return memoryStream.Base64Encode();
+        }
+
+        /// <summary>
+        /// Performs <see langword="string"/> decompression using GZip algorithm.
+        /// </summary>
+        /// <returns>
+        ///   The decoded and decompressed <see langword="string"/>.
+        /// </returns>
+        internal static async Task<string> DecompressGZipAsync(this string compressedTextValue, CancellationToken cancellationToken)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(compressedTextValue.Base64Decode());
+
+            using var memoryStream = new MemoryStream(buffer);
+            await using var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress);
+            using var resultStream = new MemoryStream();
+
+            await gzipStream.CopyToAsync(resultStream, cancellationToken);
+
+            return Encoding.UTF8.GetString(resultStream.ToArray());
         }
         #endregion
 
