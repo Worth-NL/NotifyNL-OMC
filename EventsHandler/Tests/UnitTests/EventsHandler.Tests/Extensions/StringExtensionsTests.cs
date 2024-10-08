@@ -8,6 +8,34 @@ namespace EventsHandler.UnitTests.Extensions
     [TestFixture]
     public sealed class StringExtensionsTests
     {
+        #region Validation
+        [TestCase("", true)]
+        [TestCase(" ", false)]
+        [TestCase("1", false)]
+        [TestCase("abc", false)]
+        public void IsEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        {
+            // Act
+            bool actualResult = testString.IsEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [TestCase("", false)]
+        [TestCase(" ", true)]
+        [TestCase("1", true)]
+        [TestCase("abc", true)]
+        public void IsNotEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        {
+            // Act
+            bool actualResult = testString.IsNotEmpty();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        #endregion
+
         #region Encoding / Decoding (Base64)
         // ReSharper disable StringLiteralTypo
         private const string TestRawString = "This is test example";
