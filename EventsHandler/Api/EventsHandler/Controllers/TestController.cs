@@ -268,10 +268,8 @@ namespace EventsHandler.Controllers
                 templateId ??= allTemplates.First().id;
 
                 // TODO: To be extracted into a dedicated service
-                // NOTE: Empty personalization
-                if (personalization.Count <= 1 &&
-                    personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&
-                    Equals(value, PersonalizationExample.Value))
+                // Case #1: Empty personalization
+                if (IsEmptyOrDefault(personalization))
                 {
                     switch (notifyMethod)
                     {
@@ -288,9 +286,17 @@ namespace EventsHandler.Controllers
                                 this._responder.GetResponse(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
-                // NOTE: Personalization was provided by the user
+                // Case #2: Personalization was provided by the user
                 else
                 {
+                    // Casting object values improperly converted by API endpoint to string and then convert:
+                    // - ["Key", ValueKind = Number : "1234"] into just ["Key", 1234] or
+                    // - ["Key", ValueKind = String : "Test"] into just ["Key", "Test"], etc.
+                    foreach (KeyValuePair<string, object> keyValuePair in personalization)
+                    {
+                        personalization[keyValuePair.Key] = $"{keyValuePair.Value}";
+                    }
+
                     switch (notifyMethod)
                     {
                         case NotifyMethods.Email:
@@ -319,6 +325,14 @@ namespace EventsHandler.Controllers
                     this._responder.GetExceptionResponse(exception));
             }
         }
+
+        private static bool IsEmptyOrDefault(IReadOnlyDictionary<string, object> personalization)
+        {
+            return personalization.Count <= 1 &&
+                   personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&
+                   Equals(value, PersonalizationExample.Value);
+        }
+
         #endregion
     }
 }
