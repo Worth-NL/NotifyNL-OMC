@@ -35,6 +35,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Callback URL listening to delivery receipt (callback) sent by "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will create Contact Moment after receiving notification confirmation from "Notify NL" Web API service.
+        /// </remarks>
         /// <param name="json">The delivery receipt from "Notify NL" Web API service (as a plain JSON object).</param>
         [HttpPost]
         [Route("Confirm")]

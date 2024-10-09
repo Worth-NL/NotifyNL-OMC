@@ -95,6 +95,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Sending Email messages to the "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will send real email to the given email address.
+        /// </remarks>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
         /// <param name="emailTemplateId">The email template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
@@ -141,6 +144,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Sending SMS text messages to the "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will send real SMS to the given mobile number.
+        /// </remarks>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.
         ///   <para>
         ///     NOTE: International country code is expected, e.g.: +1 (USA), +81 (Japan), +351 (Portugal), etc.
@@ -183,6 +189,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Checks whether feedback can be received by contact register Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will attempt to create real Contact Moment object.
+        /// </remarks>
         /// <param name="json">The content of 'reference' sent back from NotifyNL Web API service.</param>
         /// <param name="notifyMethod">The notification method to be used during this test.</param>
         /// <param name="messages">
