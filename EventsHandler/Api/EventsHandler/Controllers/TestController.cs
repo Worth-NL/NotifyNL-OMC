@@ -187,7 +187,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks whether feedback can be received by contact register Web API service.
+        /// Simulates behavior of Notify/Confirm endpoint, mocking (with better control) the response from "Notify NL" Web API service.
         /// </summary>
         /// <remarks>
         ///   NOTE: This endpoint will attempt to create real Contact Moment object.
