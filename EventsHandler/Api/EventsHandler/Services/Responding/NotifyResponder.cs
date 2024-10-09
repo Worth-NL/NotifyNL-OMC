@@ -230,10 +230,15 @@ namespace EventsHandler.Services.Responding
         /// <returns>
         ///   The notification data required for further processing.
         /// </returns>
-        internal (NotifyReference, NotifyMethods) ExtractCallbackData(DeliveryReceipt callback)
+        internal async Task<(NotifyReference, NotifyMethods)> ExtractCallbackDataAsync(DeliveryReceipt callback)
         {
-            string decodedReference = callback.Reference?.Base64Decode() ?? string.Empty;
+            // Decompress and decode the string
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            // Deserialize into object
             NotifyReference notification = this.Serializer.Deserialize<NotifyReference>(decodedReference);
+
+            // Convert enums
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
             return (notification, notificationMethod);

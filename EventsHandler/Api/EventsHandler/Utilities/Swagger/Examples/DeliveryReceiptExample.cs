@@ -26,7 +26,9 @@ namespace EventsHandler.Utilities.Swagger.Examples
             return new DeliveryReceipt
             {
                 Id = Guid.NewGuid(),
-                Reference = s_serializedNotification.Base64Encode(),
+                #pragma warning disable VSTHRD002  // Synchronously waiting on tasks or awaiters may cause deadlocks: This is class used only for Swagger UI example
+                Reference = Task.Run(async () => await s_serializedNotification.CompressGZipAsync(CancellationToken.None)).Result,
+                #pragma warning restore VSTHRD002
                 Recipient = "hello@gov.nl",
                 Status = DeliveryStatuses.Delivered,
                 CreatedAt = currentTime,
