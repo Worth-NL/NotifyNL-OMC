@@ -341,7 +341,6 @@ namespace EventsHandler.Controllers
                    personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&
                    Equals(value, PersonalizationExample.Value);
         }
-
         #endregion
     }
 }
