@@ -9,6 +9,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.Serialization;
@@ -125,7 +126,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()
+        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
         {
             // Act & Assert
             Assert.Multiple(() =>
@@ -137,6 +138,44 @@ namespace EventsHandler.UnitTests.Services.Serialization
                     "Target: CaseType | " +
                     "Value: {} | " +
                     "Required properties: omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren";
+
+                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            });
+        }
+
+        [Test]
+        public void Deserialize_PartyResult_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Complex model with nested objects
+        {
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<PartyResult>(DefaultValues.Models.EmptyJson));
+
+                const string expectedMessage =
+                    "The given value cannot be deserialized into dedicated target object | " +
+                    "Target: PartyResult | " +
+                    "Value: {} | " +
+                    "Required properties: url, voorkeursDigitaalAdres.uuid, partijIdentificatie.contactnaam.voornaam, partijIdentificatie.contactnaam.achternaam, " +
+                    "_expand.digitaleAdressen.uuid, _expand.digitaleAdressen.adres, _expand.digitaleAdressen.soortDigitaalAdres";
+                // NOTE: "partijIdentificatie.contactnaam.voorvoegselAchternaam" is not required
+
+                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            });
+        }
+
+        [Test]
+        public void Deserialize_CommonTaskData_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model but without [JsonPropertyName] attributes
+        {
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<CommonTaskData>(DefaultValues.Models.EmptyJson));
+
+                const string expectedMessage =
+                    "The given value cannot be deserialized into dedicated target object | " +
+                    "Target: CommonTaskData | " +
+                    "Value: {} | " +
+                    "Required properties: CaseUri, CaseId, Title, Status, ExpirationDate, Identification.type, Identification.value";
 
                 Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             });
