@@ -56,8 +56,11 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Callback URL listening to notification events from subscribed channels.
+        /// Callback URL listening to notifications from subscribed channels sent by "Open Notificaties" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will start processing business logic after receiving initial notification from "Open Notificaties" Web API service.
+        /// </remarks>
         /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
         [HttpPost]
         [Route("Listen")]
