@@ -72,7 +72,7 @@ namespace EventsHandler.Services.Responding.v2
 
         private async Task InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
-            (NotifyReference reference, NotifyMethods notificationMethod) = ExtractCallbackData(callback);
+            (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
             // Registering new status of the notification (for user)
             await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
@@ -108,7 +108,8 @@ namespace EventsHandler.Services.Responding.v2
             {
                 // It wasn't possible to report completion because of issue with Telemetry Service
                 return OmcController.LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
+                    this._responder.GetExceptionResponse(
+                        GetDeliveryErrorLogMessage(callback, exception)));
             }
         }
 
