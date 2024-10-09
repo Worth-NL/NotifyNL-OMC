@@ -67,11 +67,18 @@ namespace EventsHandler.Services.Serialization
         private static string GetRequiredMembers<TModel>()
             where TModel : struct, IJsonSerializable
         {
-            return s_cachedRequiredProperties.GetOrAdd(
-                // Get cached required properties
-                typeof(TModel),
-                // Generate required properties, cache them and return
-                GetRequiredPropertiesNames(typeof(TModel)).Join());
+            try
+            {
+                return s_cachedRequiredProperties.GetOrAdd(
+                    // Get cached required properties
+                    typeof(TModel),
+                    // Generate required properties, cache them and return
+                    GetRequiredPropertiesNames(typeof(TModel)).Join());
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
         }
 
         private static IEnumerable<string> GetRequiredPropertiesNames(IReflect type, string parentName = "")
