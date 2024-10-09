@@ -56,7 +56,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Callback URL listening to notification events from subscribed channels.
+        /// Callback URL listening to notifications from subscribed channels sent by "Open Notificaties" Web API service.
         /// </summary>
         /// <param name="json">The notification from "OpenNotificaties" Web API service (as a plain JSON object).</param>
         [HttpPost]
