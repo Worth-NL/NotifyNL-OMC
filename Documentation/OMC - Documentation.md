@@ -290,11 +290,6 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
       "CodeObjectTypeId": "identificatie"
     },
 
-    "Objecten": {
-      "MessageObjectType_Version": 1,
-      "MessageObjectType_Name": "Logius"
-    },
-
     // User communication: Messages to be put into register exposed to citizens
     "UxMessages": {
       "SMS_Success_Subject": "Notificatie verzonden",
