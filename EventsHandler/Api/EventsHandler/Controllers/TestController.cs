@@ -58,7 +58,7 @@ namespace EventsHandler.Controllers
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route("Notify/HealthCheck")]
+        [Route("NotifyNL/HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -116,7 +116,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("Notify/SendEmail")]
+        [Route("NotifyNL/SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -161,7 +161,7 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route("Notify/SendSms")]
+        [Route("NotifyNL/SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -215,7 +215,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("Open/ContactRegistration")]
+        [Route("OMC/Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -225,7 +225,7 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: One of the HTTP Request calls wasn't successful
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
-        public async Task<IActionResult> RegisterAsync(
+        public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,
             [Required, FromQuery] NotifyMethods notifyMethod,
             [Required, FromQuery] string[] messages)
