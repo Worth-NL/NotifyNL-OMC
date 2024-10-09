@@ -67,6 +67,7 @@ namespace EventsHandler.Services.Serialization
             return JsonSerializer.Serialize(model, s_serializerOptions);
         }
 
+        #region Helper methods
         /// <summary>
         /// Gets text representation of this specific <see cref="IJsonSerializable"/> object.
         /// </summary>
@@ -120,5 +121,6 @@ namespace EventsHandler.Services.Serialization
 
         private static string GetPropertyName(MemberInfo property)
             => property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name;
+        #endregion
     }
 }
