@@ -573,11 +573,9 @@ Here are the details which _workflows_ are using which versions of the external 
 
 > **NOTE:** The OMC workflow can be changed using a respective _environment variable_ in the section of features.
 
-## 5.2. Initial notifications
+## 5.2. Scenarios
 
-Any **OMC** workflow relies on receiving the (initial) notification from **Notificaties** API service to trigger the processing business logic. This notification is in _JSON_ format and can be also passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to simulate the desired **OMC** behavior.
-
-### 5.2.1. Scenarios
+List of scenarios and the details how to use them with **OMC** (configurations, template personalizations, environment variables, business logic conditions, etc.).
 
 Currently, the following business **scenarios** are implemented:
 
@@ -588,17 +586,15 @@ Currently, the following business **scenarios** are implemented:
 - Receiving a _decision_
 - Receiving a _message_
 
-### 5.2.2. Examples of notifications
+### 5.2.1. Case Created
 
-These are the examples of the structure of _JSON payloads_ to be used as initial notifications for testing or development purposes:
+Notifies the respective party (e.g., a citizen or an organization) about the case being open for them. For the residents of The Netherlands the case is related to their unique personal identification number **BSN** (_Burgerservicenummer_), thanks to which their contact details and contact preferrences can be retrieved (whether they want to be notified and which notification method they prefer, e.g. by Email, SMS, etc.).
 
-#### 5.2.2.1. Cases
+#### 5.2.1.1. Notification
 
-**Scenarios using this notification:**
+Any **OMC** workflow relies on receiving the (initial) notification event from **Open Notificaties** Web API service to trigger the processing business logic. This notification is in _JSON_ format and can be also passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to test or simulate the desired **OMC** behavior. This way the initial event from **Open Notificaties** Web API service can be stubbed.
 
-- Case created
-- Case status updated
-- Case closed
+This is the example of a structure of _JSON payload_ to be used as initial notification for testing or development purposes:
 
 ```json
 {
@@ -615,6 +611,70 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
   "aanmaakdatum": "2000-01-01T10:00:00.000Z"
 }
 ```
+
+#### 5.2.1.2. Environment variables
+
+To work properly **OMC** always requires these mandatory _environment variables_ to be set:
+
+> **NOTE:** If some environment variable is missing but required by one of the countless scenarios, conditions, or workflows, the **OMC** application will return a readable and user-friendly API response with the name of the missing environment variable. This is the easiest way to figure out what else is required.
+
+`ASPNETCORE_ENVIRONMENT`
+
+// Required to get access to **OMC** and be able to use it. Moreover, **Open Notificaties** Web API service will use this method to make an authorized requests while sending notification events to **OMC**.
+
+`OMC_AUTHORIZATION_JWT_SECRET`
+`OMC_AUTHORIZATION_JWT_ISSUER`
+`OMC_AUTHORIZATION_JWT_AUDIENCE`
+`OMC_AUTHORIZATION_JWT_EXPIRESINMIN`
+`OMC_AUTHORIZATION_JWT_USERID`
+`OMC_AUTHORIZATION_JWT_USERNAME`
+
+`OMC_API_BASEURL_NOTIFYNL`
+
+`OMC_FEATURES_WORKFLOW_VERSION`
+
+// **JWT authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
+
+`USER_AUTHORIZATION_JWT_SECRET`
+`USER_AUTHORIZATION_JWT_ISSUER`
+`USER_AUTHORIZATION_JWT_AUDIENCE`
+`USER_AUTHORIZATION_JWT_EXPIRESINMIN`
+`USER_AUTHORIZATION_JWT_USERID`
+`USER_AUTHORIZATION_JWT_USERNAME`
+
+// **API key authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
+
+`USER_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
+`USER_API_KEY_OBJECTEN`
+`USER_API_KEY_OBJECTTYPEN`
+`USER_API_KEY_NOTIFYNL`
+
+// **Domains** might have different _paths_ (e.g., `domain/something/v1/`) depends on version of external API service used in certain [OMC Workflow](#workflow_versions). For example domains for OpenKlant and ContactMomenten depends on version of **Open Klant** Web API service. Moreover, domains and paths depends on the place where your version of Web API service was deployed (domain) and the way how it is internally structured (paths).
+
+`USER_DOMAIN_OPENZAAK`
+`USER_DOMAIN_OPENKLANT`
+`USER_DOMAIN_BESLUITEN`
+`USER_DOMAIN_OBJECTEN`
+`USER_DOMAIN_OBJECTTYPEN`
+`USER_DOMAIN_CONTACTMOMENTEN`
+
+Optional _environment variables_ which can be additionally set:
+
+`SENTRY_DSN`
+`SENTRY_ENVIRONMENT`
+
+Besides of that, to process this type of the notification the **OMC** application requires the following _environment variables_ to be set.
+
+
+
+---
+#### 5.2.2.1. Cases
+
+**Scenarios using this notification:**
+
+- Case created
+- Case status updated
+- Case closed
 
 #### 5.2.2.2. Tasks
 
