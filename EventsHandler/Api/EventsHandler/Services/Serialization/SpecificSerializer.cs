@@ -5,7 +5,6 @@ using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -43,14 +42,8 @@ namespace EventsHandler.Services.Serialization
             {
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
-            #pragma warning disable CS0168  // The variable is used but only in DEBUG mode
-            catch (JsonException exception)
-            #pragma warning restore CS0168
+            catch (JsonException)
             {
-                #if DEBUG
-                TestContext.WriteLine(exception.Message);
-                #endif
-
                 string requiredProperties = GetRequiredMembers<TModel>();
 
                 throw new JsonException(message:
