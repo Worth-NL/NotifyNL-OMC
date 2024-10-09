@@ -1,7 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using Microsoft.IdentityModel.Tokens;
 using System.Buffers.Text;
+using System.IO.Compression;
+using System.Text;
 
 namespace EventsHandler.Extensions
 {
@@ -10,6 +11,7 @@ namespace EventsHandler.Extensions
     /// </summary>
     internal static class StringExtensions
     {
+        #region Validation
         /// <summary>
         /// Determines whether the given <see langword="string"/> <c>is</c> empty.
         /// </summary>
@@ -33,18 +35,20 @@ namespace EventsHandler.Extensions
         {
             return !text.IsEmpty();
         }
+        #endregion
 
+        #region Encoding / Decoding (Base64)
         /// <summary>
         /// Encodes a raw plain <see langword="string"/> into <see cref="Base64"/> value.
         /// </summary>
         /// <returns>
         ///   Encoded original string.
         /// </returns>
-        internal static string Base64Encode(this string originalTextValue)
+        internal static string Base64Encode(this byte[] originalStream)
         {
-            return string.IsNullOrWhiteSpace(originalTextValue)
+            return originalStream.Length == 0
                 ? string.Empty
-                : Base64UrlEncoder.Encode(originalTextValue);
+                : Convert.ToBase64String(originalStream);
         }
 
         /// <summary>
@@ -53,13 +57,67 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   Decoded original string.
         /// </returns>
-        internal static string Base64Decode(this string encodedTextValue)
+        internal static byte[] Base64Decode(this string encodedTextValue)
         {
             return string.IsNullOrWhiteSpace(encodedTextValue)
-                ? string.Empty
-                : Base64UrlEncoder.Decode(encodedTextValue);
+                ? Array.Empty<byte>()
+                : Convert.FromBase64String(encodedTextValue);
+        }
+        #endregion
+
+        // NOTE: GZipStream algorithm is slightly faster and for general purpose or large files
+        //       ZLibStream algorithm is slightly slower but offers better compression level
+        #region Compressing / Decompressing
+        /// <summary>
+        /// Performs <see langword="string"/> compression using GZip algorithm.
+        /// </summary>
+        /// <returns>
+        ///   The compressed and encoded <see langword="string"/>.
+        /// </returns>
+        internal static async Task<string> CompressGZipAsync(this string originalTextValue, CancellationToken cancellationToken)
+        {
+            if (originalTextValue.IsEmpty())
+            {
+                return string.Empty;
+            }
+
+            byte[] buffer = Encoding.UTF8.GetBytes(originalTextValue);
+
+            using var memoryStream = new MemoryStream();
+            await using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, leaveOpen: true))  // NOTE: Leaves MemoryStream open, so it's data can be read in the final statement
+            {
+                await gzipStream.WriteAsync(buffer, cancellationToken);
+            }
+
+            return memoryStream.ToArray().Base64Encode();
         }
 
+        /// <summary>
+        /// Performs <see langword="string"/> decompression using GZip algorithm.
+        /// </summary>
+        /// <returns>
+        ///   The decoded and decompressed <see langword="string"/>.
+        /// </returns>
+        internal static async Task<string> DecompressGZipAsync(this string compressedTextValue, CancellationToken cancellationToken)
+        {
+            if (compressedTextValue.IsEmpty())
+            {
+                return string.Empty;
+            }
+
+            byte[] buffer = compressedTextValue.Base64Decode();
+
+            using var memoryStream = new MemoryStream(buffer);
+            await using var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress);
+            using var resultStream = new MemoryStream();
+
+            await gzipStream.CopyToAsync(resultStream, cancellationToken);
+
+            return Encoding.UTF8.GetString(resultStream.ToArray());
+        }
+        #endregion
+
+        #region Conversion
         /// <summary>
         /// Converts a given <see langword="string"/> into a target generic <typeparamref name="TData"/> type.
         /// </summary>
@@ -85,7 +143,9 @@ namespace EventsHandler.Extensions
             // Retrieve as TData => int, ushort, bool
             return (TData)Convert.ChangeType(originalTextValue, typeof(TData));
         }
+        #endregion
 
+        #region Modification
         private const string CommaSeparator = ", ";
 
         /// <summary>
@@ -99,5 +159,6 @@ namespace EventsHandler.Extensions
         {
             return string.Join(CommaSeparator, collection);
         }
+        #endregion
     }
 }

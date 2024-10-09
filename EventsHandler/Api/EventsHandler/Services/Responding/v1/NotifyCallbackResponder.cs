@@ -82,7 +82,7 @@ namespace EventsHandler.Services.Responding.v1
         {
             try
             {
-                (NotifyReference reference, NotifyMethods notificationMethod) = ExtractCallbackData(callback);
+                (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
                 RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
                     new []
                     {
@@ -97,7 +97,8 @@ namespace EventsHandler.Services.Responding.v1
             {
                 // It wasn't possible to report completion because of issue with Telemetry Service
                 OmcController.LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
+                    this._responder.GetExceptionResponse(
+                        GetDeliveryErrorLogMessage(callback, exception)));
             }
         }
 
