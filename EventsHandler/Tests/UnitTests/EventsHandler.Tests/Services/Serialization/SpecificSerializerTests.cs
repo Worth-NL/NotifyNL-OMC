@@ -9,6 +9,7 @@ using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
+using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Services.Serialization;
@@ -125,21 +126,33 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_CaseType_EmptyJson_ThrowsJsonException_ListsRequiredProperties()
+        public void Deserialize_IJsonSerializable_From_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
         {
             // Act & Assert
-            Assert.Multiple(() =>
+            foreach ((int id, Action deserialization, string? targetName, string? expectedResult) in GetSerializationTests(DefaultValues.Models.EmptyJson))
             {
-                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<CaseType>(DefaultValues.Models.EmptyJson));
+                Assert.Multiple(() =>
+                {
+                    JsonException? exception = Assert.Throws<JsonException>(() => deserialization.Invoke());
 
-                const string expectedMessage =
-                    "The given value cannot be deserialized into dedicated target object | " +
-                    "Target: CaseType | " +
-                    "Value: {} | " +
-                    "Required properties: omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren";
+                    string expectedMessage =
+                       $"The given value cannot be deserialized into dedicated target object | " +
+                       $"Target: {targetName} | " +
+                       $"Value: {{}} | " +
+                       $"Required properties: {expectedResult}";
 
-                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
-            });
+                    Assert.That(exception?.Message, Is.EqualTo(expectedMessage), message: $"Test #{id}");
+                });
+            }
+
+            return;
+
+            IEnumerable<(int Id, Action Deserialization, string TargetName, string ExpectedResult)> GetSerializationTests(string testJson)
+            {
+                yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren");
+                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres.uuid, partijIdentificatie.contactnaam.voornaam, partijIdentificatie.contactnaam.achternaam, _expand.digitaleAdressen.uuid, _expand.digitaleAdressen.adres, _expand.digitaleAdressen.soortDigitaalAdres");
+                yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "CaseUri, CaseId, Title, Status, ExpirationDate, Identification.type, Identification.value");
+            }
         }
 
         private const string TaskDataJsonTheHague =
