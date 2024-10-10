@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
@@ -37,9 +38,20 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
         {
             string subjectType = ((IQueryZaak)this).Configuration.AppSettings.Variables.SubjectType();  // NOTE: Multiple parameter values can be supported
 
-            return (await GetCaseRolesV2Async(queryBase, caseUri, subjectType))
-                .Citizen(((IQueryZaak)this).Configuration)
-                .BsnNumber;
+            CaseRole caseRole = (await GetCaseRolesV2Async(queryBase, caseUri, subjectType))
+                .CaseRole(((IQueryZaak)this).Configuration);
+
+            if (IsInvolvedPartyExisting(caseRole))
+            {
+                // TODO: Call this URI
+            }
+
+            return caseRole.Citizen.BsnNumber;
+        }
+
+        private static bool IsInvolvedPartyExisting(CaseRole caseRole)
+        {
+            return !caseRole.InvolvedPartyUri?.Equals(DefaultValues.Models.EmptyUri) ?? false;
         }
 
         private async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, Uri caseUri, string subjectType)
