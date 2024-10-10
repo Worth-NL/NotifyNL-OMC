@@ -94,7 +94,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///     otherwise, the missing BSN will be obtained using <see cref="CaseType"/> <see cref="Uri"/>).
         ///   </para>
         /// </remarks>
-        internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
+        internal Task<CommonPartyData> GetPartyDataAsync(Uri caseUri, string? bsnNumber = null);
 
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         internal Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
