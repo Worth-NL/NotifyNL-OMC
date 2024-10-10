@@ -266,11 +266,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return $"\"onderwerp\":\"{subject}\"," +
                    $"\"berichtTekst\":\"{body}\"," +
-                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
+                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +
                    $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
-                   $"\"handelingsperspectief\":\"informatie verstrekken\"," +  // TODO: To be filled
+                   $"\"handelingsperspectief\":\"informatie verstrekken\"," + 
                    $"\"geopend\":false," +
-                   $"\"berichtType\":\"notificatie\"," +  // TODO: To be filled
+                   $"\"berichtType\":\"notificatie\"," + 
                    $"\"identificatie\":{{" +
                      $"\"type\":\"{IdTypes.Bsn.GetEnumName()}\"," +
                      $"\"value\":\"{this._bsnNumber}\"" +
