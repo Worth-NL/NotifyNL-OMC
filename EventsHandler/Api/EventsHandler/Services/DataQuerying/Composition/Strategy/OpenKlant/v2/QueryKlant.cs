@@ -55,9 +55,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
                 .ConvertToUnified();
         }
 
-        private static async Task<PartyResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri partyUri)
+        private static async Task<CitizenResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri partyUri)
         {
-            return await queryBase.ProcessGetAsync<PartyResults>(
+            return await queryBase.ProcessGetAsync<CitizenResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
                 uri: partyUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
