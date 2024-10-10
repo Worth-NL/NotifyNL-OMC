@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
@@ -101,15 +102,26 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri caseUri, string? bsnNumber)
         {
-            // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
-            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(
-                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
+            CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
 
-            // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            // Case #1: Otherwise, we are getting citizen party by BSN number
+            if (caseRole.InvolvedPartyUri.Equals(DefaultValues.Models.EmptyUri))
+            {
+                // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
+                bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(caseUri);
+
+                // 2. Fetch citizen details using "OpenKlant" Web API service
+                return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            }
+
+            // Case #2: The involved party is present and needs to be used to get organization party
+            PartyDetails partyDetails = await this._queryKlant.GetPartyDetailsAsync(this._queryBase, caseRole.InvolvedPartyUri);
+
+            // TODO: Map PartyDetails into CommonParty => converter and return it
+            throw null;
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
