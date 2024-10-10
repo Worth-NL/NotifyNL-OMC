@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
@@ -19,6 +20,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonPropertyName("inpBsn")]
         [JsonPropertyOrder(0)]
         public string BsnNumber { get; internal set; } = string.Empty;
+
+        /// <summary>
+        /// The involved party associated with the <see cref="Case"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("betrokkene")]
+        [JsonPropertyOrder(1)]
+        public Uri? InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CitizenData"/> struct.
