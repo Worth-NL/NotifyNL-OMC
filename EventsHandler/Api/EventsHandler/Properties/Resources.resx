@@ -493,4 +493,7 @@
   <data name="String1" xml:space="preserve">
     <value />
   </data>
+  <data name="HttpRequest_ERROR_NoPartyDetails" xml:space="preserve">
+    <value>HTTP Request: Party Details could not be retrieved from OpenKlant Web API service.</value>
+  </data>
 </root>
