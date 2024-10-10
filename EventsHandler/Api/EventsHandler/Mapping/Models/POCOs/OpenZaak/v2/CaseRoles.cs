@@ -28,7 +28,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         
         /// <summary>
         /// The collection of:
-        /// <inheritdoc cref="v2.CaseRole"/>
+        /// <inheritdoc cref="OpenZaak.CaseRole"/>
         /// </summary>
         [JsonRequired]
         [JsonInclude]
@@ -44,7 +44,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         /// <summary>
-        /// Gets the <see cref="v2.CaseRole"/> with matching "initiator role" set.
+        /// Gets the <see cref="OpenZaak.CaseRole"/> with matching "initiator role" set.
         /// </summary>
         /// <returns>
         ///   The data of a single citizen.
