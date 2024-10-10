@@ -33,20 +33,13 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         }
 
         #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, Uri)"/>
-        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseUri)
+        /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
+        async Task<CaseRole> IQueryZaak.GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
-            CaseRole caseRole = (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
+            return (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
                 .CaseRole;
-            
-            if (IsInvolvedPartyExisting(caseRole))
-            {
-                // TODO: Call this URI
-            }
-
-            return caseRole.Citizen.BsnNumber;
         }
 
         private static bool IsInvolvedPartyExisting(CaseRole caseRole)

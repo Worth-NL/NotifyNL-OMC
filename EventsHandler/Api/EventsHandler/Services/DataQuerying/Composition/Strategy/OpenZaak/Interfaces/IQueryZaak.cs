@@ -7,6 +7,7 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
@@ -122,11 +123,11 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
-            return await PolymorphicGetBsnNumberAsync(queryBase, caseUri);
+            return (await GetCaseRoleAsync(queryBase, caseUri)).Citizen.BsnNumber;
         }
 
         /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, Uri)"/>
-        protected Task<string> PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseUri);
+        protected Task<CaseRole> GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Case type URI)
