@@ -2,9 +2,10 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
+using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using System.Text.Json.Serialization;
 
-namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
+namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
     /// A single role from <see cref="CaseRoles"/> results retrieved from "OpenZaak" Web API service.
