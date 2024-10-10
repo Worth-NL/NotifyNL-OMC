@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable" />
-    public struct PartyIdentification : IJsonSerializable
+    public struct CitizenIdentification : IJsonSerializable
     {
         /// <inheritdoc cref="PartyDetails"/>
         [JsonRequired]

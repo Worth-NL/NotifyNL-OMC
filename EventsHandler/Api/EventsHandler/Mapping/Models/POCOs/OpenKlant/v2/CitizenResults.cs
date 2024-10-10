@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public struct PartyResults : IJsonSerializable
+    public struct CitizenResults : IJsonSerializable
     {
         /// <summary>
         /// The number of received results.
@@ -28,28 +28,28 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
-        /// <inheritdoc cref="PartyResult"/>
+        /// <inheritdoc cref="CitizenResult"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<PartyResult> Results { get; internal set; } = new();
+        public List<CitizenResult> Results { get; internal set; } = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyResults"/> struct.
+        /// Initializes a new instance of the <see cref="CitizenResults"/> struct.
         /// </summary>
-        public PartyResults()
+        public CitizenResults()
         {
         }
 
         /// <summary>
-        /// Gets the <see cref="PartyResult"/>.
+        /// Gets the <see cref="CitizenResult"/>.
         /// </summary>
         /// <returns>
         ///   The data of a single party (with determined contact details).
         /// </returns>
         /// <exception cref="HttpRequestException"/>
-        internal readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+        internal readonly (CitizenResult, DistributionChannels, string EmailAddress, string PhoneNumber)
             Party(WebApiConfiguration configuration)
         {
             if (this.Results.IsNullOrEmpty())
@@ -59,11 +59,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
 
             string fallbackEmailAddress = string.Empty;
             string fallbackPhoneNumber = string.Empty;
-            PartyResult fallbackEmailOwningParty = default;
-            PartyResult fallbackPhoneOwningParty = default;
+            CitizenResult fallbackEmailOwningParty = default;
+            CitizenResult fallbackPhoneOwningParty = default;
 
             // Determine which party result should be returned and match the data
-            foreach (PartyResult party in this.Results)
+            foreach (CitizenResult party in this.Results)
             {
                 // VALIDATION: Addresses
                 if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
