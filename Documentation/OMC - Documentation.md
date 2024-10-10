@@ -621,10 +621,15 @@ To work properly **OMC** always requires these mandatory _environment variables_
 > Used by `[OMC]/events/version` endpoint and to determine which `appsettings[.xxx].json` will be used.
 
 `OMC_AUTHORIZATION_JWT_SECRET`
+
 `OMC_AUTHORIZATION_JWT_ISSUER`
+
 `OMC_AUTHORIZATION_JWT_AUDIENCE`
+
 `OMC_AUTHORIZATION_JWT_EXPIRESINMIN`
+
 `OMC_AUTHORIZATION_JWT_USERID`
+
 `OMC_AUTHORIZATION_JWT_USERNAME`
 
 > Required to get access to **OMC** and be able to use it. Moreover, **Open Notificaties** Web API service will use this method to make an authorized requests while sending notification events to **OMC**.
@@ -638,26 +643,39 @@ To work properly **OMC** always requires these mandatory _environment variables_
 > Without this setting (the version needs to be supported) the **OMC** Web API will not even run and specific implementations of underlying services will not be resolved by _Dependency Injection_ mechanism. By default you can always use `"1"` if you don't know yet which other [OMC Workflow](#workflow_versions) version you should use.
 
 `USER_AUTHORIZATION_JWT_SECRET`
+
 `USER_AUTHORIZATION_JWT_ISSUER`
+
 `USER_AUTHORIZATION_JWT_AUDIENCE`
+
 `USER_AUTHORIZATION_JWT_EXPIRESINMIN`
+
 `USER_AUTHORIZATION_JWT_USERID`
+
 `USER_AUTHORIZATION_JWT_USERNAME`
 
 > **JWT authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
 
 `USER_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
+
 `USER_API_KEY_OBJECTEN`
+
 `USER_API_KEY_OBJECTTYPEN`
+
 `USER_API_KEY_NOTIFYNL`
 
 > **API key authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
 
 `USER_DOMAIN_OPENZAAK`
+
 `USER_DOMAIN_OPENKLANT`
+
 `USER_DOMAIN_BESLUITEN`
+
 `USER_DOMAIN_OBJECTEN`
+
 `USER_DOMAIN_OBJECTTYPEN`
+
 `USER_DOMAIN_CONTACTMOMENTEN`
 
 > **Domains** might have different _paths_ (e.g., `domain/something/v1/`) depends on version of external API service used in certain [OMC Workflow](#workflow_versions). For example domains for OpenKlant and ContactMomenten depends on version of **Open Klant** Web API service. Moreover, domains and paths depends on the place where your version of Web API service was deployed (domain) and the way how it is internally structured (paths).
@@ -665,6 +683,7 @@ To work properly **OMC** always requires these mandatory _environment variables_
 These _environment variables_ are optional:
 
 `SENTRY_DSN`
+
 `SENTRY_ENVIRONMENT`
 
 > Logging and analytics in third-party service ([Sentry.io](https://sentry.io)).
@@ -708,7 +727,10 @@ Example of JSON schema:
 Required to be set:
 
 `USER_TEMPLATEIDS_EMAIL_ZAAKCREATE`
+
 `USER_TEMPLATEIDS_SMS_ZAAKCREATE`
+
+</br>
 
 `USER_WHITELIST_ZAAKCREATE_IDS`
 
@@ -721,10 +743,15 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((zaak.identificatie))`
+
 `((zaak.omschrijving))`
 
 ---
@@ -758,7 +785,10 @@ Example of JSON schema:
 Required to be set:
 
 `USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE`
+
 `USER_TEMPLATEIDS_SMS_ZAAKUPDATE`
+
+</br>
 
 `USER_WHITELIST_ZAAKUPDATE_IDS`
 
@@ -771,11 +801,18 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((zaak.identificatie))`
+
 `((zaak.omschrijving))`
+
+</br>
 
 `((status.omschrijving))`
 
@@ -810,7 +847,10 @@ Example of JSON schema:
 Required to be set:
 
 `USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE`
+
 `USER_TEMPLATEIDS_SMS_ZAAKCLOSE`
+
+</br>
 
 `USER_WHITELIST_ZAAKCLOSE_IDS`
 
@@ -823,11 +863,18 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((zaak.identificatie))`
+
 `((zaak.omschrijving))`
+
+</br>
 
 `((status.omschrijving))`
 
@@ -860,9 +907,13 @@ Example of JSON schema:
 Required to be set:
 
 `USER_TEMPLATEIDS_EMAIL_TASKASSIGNED`
+
 `USER_TEMPLATEIDS_SMS_TASKASSIGNED`
 
+</br>
+
 `USER_WHITELIST_TASKASSIGNED_IDS`
+
 `USER_WHITELIST_TASKOBJECTTYPE_UUID`
 
 #### 5.2.5.3. Conditioning
@@ -874,14 +925,23 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((taak.verloopdatum))`
+
 `((taak.heeft_verloopdatum))`
+
 `((taak.record.data.title))`
 
+</br>
+
 `((zaak.identificatie))`
+
 `((zaak.omschrijving))`
 
 ---
@@ -915,9 +975,15 @@ Required to be set:
 
 `USER_TEMPLATEIDS_DECISIONMADE`
 
+</br>
+
 `USER_WHITELIST_DECISIONMADE_IDS`
+
 `USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS`
+
 `USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
+
+</br>
 
 `USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION`
 
@@ -930,32 +996,59 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((besluit.identificatie))`
+
 `((besluit.datum))`
+
 `((besluit.toelichting))`
+
 `((besluit.bestuursorgaan))`
+
 `((besluit.ingangsdatum))`
+
 `((besluit.vervaldatum))`
+
 `((besluit.vervalreden))`
+
 `((besluit.publicatiedatum))`
+
 `((besluit.verzenddatum))`
+
 `((besluit.uiterlijkereactiedatum))`
 
+</br>
+
 `((besluittype.omschrijving))`
+
 `((besluittype.omschrijvingGeneriek))`
+
 `((besluittype.besluitcategorie))`
+
 `((besluittype.publicatieindicatie))`
+
 `((besluittype.publicatietekst))`
+
 `((besluittype.toelichting))`
 
+</br>
+
 `((zaak.identificatie))`
+
 `((zaak.omschrijving))`
+
 `((zaak.registratiedatum))`
 
+</br>
+
 `((zaaktype.omschrijving))`
+
 `((zaaktype.omschrijvingGeneriek))`
 
 ---
@@ -987,9 +1080,13 @@ Example of JSON schema:
 Required to be set:
 
 `USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED`
+
 `USER_TEMPLATEIDS_SMS_MESSAGERECEIVED`
 
+</br>
+
 `USER_WHITELIST_MESSAGE_ALLOWED`
+
 `USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
 
 #### 5.2.7.3. Conditioning
@@ -1001,17 +1098,22 @@ Required to be set:
 Required placeholders names in the template:
 
 `((klant.voornaam))`
+
 `((klant.voorvoegselAchternaam))`
+
 `((klant.achternaam))`
 
+</br>
+
 `((message.onderwerp))`
+
 `((message.handelingsperspectief))`
 
 ---
 
 ### 5.2.99. Not Implemented
 
-A special fallback scenario which only role is to report that the provided "initial notification" or conditions are not sufficient to determine a proper **OMC** scenario to be resolved and used for processing the business logic.
+A special fallback scenario which only role is to report that the provided "initial notification" or conditions are not sufficient to determine a proper **OMC** scenario - to be resolved and used for processing the business logic.
 
 User can expect meaningful API response from **OMC**. This response will have _HTTP Status Code_ (206) that will not trigger **Open Notificaties** Web API service to retry sending the same type of "initial notification" again (which would be pointless and fail again since the **OMC** scenario or new condition are not yet implemented).
 
