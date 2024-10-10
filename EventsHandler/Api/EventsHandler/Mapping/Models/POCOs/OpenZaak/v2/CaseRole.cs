@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
@@ -15,12 +16,20 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
     public struct CaseRole : IJsonSerializable
     {
         /// <summary>
+        /// The involved party associated with the <see cref="Case"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("betrokkene")]
+        [JsonPropertyOrder(0)]
+        public Uri? InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <summary>
         /// The general description of the <see cref="CaseRole"/> which includes the "initiator role" of the <see cref="Case"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("omschrijvingGeneriek")]  // ENG: General description
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public string InitiatorRole { get; internal set; } = string.Empty;
 
         /// <summary>
@@ -29,7 +38,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
-        [JsonPropertyOrder(1)]
+        [JsonPropertyOrder(2)]
         public CitizenData Citizen { get; internal set; }
 
         /// <summary>

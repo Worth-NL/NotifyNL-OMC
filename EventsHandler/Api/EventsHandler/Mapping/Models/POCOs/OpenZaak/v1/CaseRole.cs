@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
@@ -15,12 +16,20 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
     public struct CaseRole : IJsonSerializable
     {
         /// <summary>
+        /// The involved party associated with the <see cref="Case"/>.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("betrokkene")]
+        [JsonPropertyOrder(0)]
+        public Uri? InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+
+        /// <summary>
         /// The data about a single citizen.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
-        [JsonPropertyOrder(0)]
+        [JsonPropertyOrder(1)]
         public CitizenData Citizen { get; internal set; }
 
         /// <summary>
