@@ -12,7 +12,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable" />
-    public struct PartyDetails : IJsonSerializable
+    public struct CitizenDetails : IJsonSerializable
     {
         /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonRequired]
@@ -35,9 +35,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         public string Surname { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartyDetails"/> struct.
+        /// Initializes a new instance of the <see cref="CitizenDetails"/> struct.
         /// </summary>
-        public PartyDetails()
+        public CitizenDetails()
         {
         }
     }

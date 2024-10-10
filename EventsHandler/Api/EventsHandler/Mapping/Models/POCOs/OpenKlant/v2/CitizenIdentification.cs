@@ -14,11 +14,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     /// <seealso cref="IJsonSerializable" />
     public struct CitizenIdentification : IJsonSerializable
     {
-        /// <inheritdoc cref="PartyDetails"/>
+        /// <inheritdoc cref="CitizenDetails"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("contactnaam")]
         [JsonPropertyOrder(0)]
-        public PartyDetails Details { get; internal set; }
+        public CitizenDetails Details { get; internal set; }
     }
 }
