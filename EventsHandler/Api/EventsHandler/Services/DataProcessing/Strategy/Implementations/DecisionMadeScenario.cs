@@ -265,12 +265,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
             return $"\"onderwerp\":\"{subject}\"," +
-                   $"\"berichttekst\":\"{body}\"," +
-                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
+                   $"\"berichtTekst\":\"{body}\"," +
+                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +
                    $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
-                   $"\"handelingsperspectief\":\"TODO\"," +  // TODO: To be filled
+                   $"\"handelingsperspectief\":\"informatie verstrekken\"," + 
                    $"\"geopend\":false," +
-                   $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
+                   $"\"berichtType\":\"notificatie\"," + 
                    $"\"identificatie\":{{" +
                      $"\"type\":\"{IdTypes.Bsn.GetEnumName()}\"," +
                      $"\"value\":\"{this._bsnNumber}\"" +
