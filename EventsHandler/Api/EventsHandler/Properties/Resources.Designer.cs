@@ -655,6 +655,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Party Details could not be retrieved from OpenKlant Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoPartyDetails {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
