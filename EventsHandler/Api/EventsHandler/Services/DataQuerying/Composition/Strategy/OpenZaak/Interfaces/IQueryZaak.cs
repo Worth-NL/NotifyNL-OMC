@@ -7,7 +7,6 @@ using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
@@ -126,8 +125,15 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             return (await GetCaseRoleAsync(queryBase, caseUri)).Citizen.BsnNumber;
         }
 
-        /// <inheritdoc cref="GetBsnNumberAsync(IQueryBase, Uri)"/>
-        protected Task<CaseRole> GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri);
+        /// <summary>
+        /// Gets the <see cref="CaseRole"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseUri">The <see cref="Case"/> in <see cref="Uri"/> format.</param>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CaseRole> GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Case type URI)
