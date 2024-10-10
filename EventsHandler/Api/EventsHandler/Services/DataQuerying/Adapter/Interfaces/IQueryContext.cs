@@ -67,6 +67,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseUri);
 
+        /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
+        internal Task<CaseRole> GetCaseRoleAsync(Uri caseUri);
+        
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/> as query parameter.
