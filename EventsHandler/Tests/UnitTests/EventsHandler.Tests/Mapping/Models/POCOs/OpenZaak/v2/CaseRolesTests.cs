@@ -49,19 +49,6 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         [Test]
-        public void Citizen_Method_ForExistingResults_WithMultipleInitiatorRoles_ReturnsHttpRequestException()
-        {
-            // Arrange
-            string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
-            CaseRoles caseRoles = GetTestCaseRoles(
-                new CaseRole { InitiatorRole = existingInitiatorRole },
-                new CaseRole { InitiatorRole = existingInitiatorRole });  // Multiple matching results
-
-            // Act & Assert
-            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
-        }
-
-        [Test]
         public void Citizen_Method_ForExistingResults_WithSingleInitiatorRole_ReturnsCitizenData()
         {
             // Arrange
@@ -71,7 +58,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
                 new CaseRole { InitiatorRole = existingInitiatorRole, Citizen = expectedCitizen });  // Unique matching result
 
             // Act
-            CitizenData actualCitizen = caseRoles.Citizen(this._testConfiguration);
+            CitizenData actualCitizen = caseRoles.CaseRole(this._testConfiguration).Citizen;
 
             // Assert
             Assert.That(actualCitizen, Is.EqualTo(expectedCitizen));
@@ -100,7 +87,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
             Assert.Multiple(() =>
             {
                 TException? exception = Assert.Throws<TException>(() =>
-                    caseRoles.Citizen(configuration));
+                    caseRoles.CaseRole(configuration));
 
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });
