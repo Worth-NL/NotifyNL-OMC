@@ -89,9 +89,9 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
         ///   <para>
-        ///     NOTE: While querying BSN the missing <see cref="CaseType"/> <see cref="Uri"/> will be attempted to
-        ///     retrieve directly from the initial notification from <seealso cref="NotificationEvent.MainObjectUri"/>
-        ///     (which is <see cref="CaseType"/> <see cref="Uri"/> for Case scenarios).
+        ///     NOTE: While querying party details <see cref="Case"/> <see cref="Uri"/> can be used to determine
+        ///     whether party organization will be retrieved, or party citizen (if the BSN number is provided;
+        ///     otherwise, the missing BSN will be obtained using <see cref="CaseType"/> <see cref="Uri"/>).
         ///   </para>
         /// </remarks>
         internal Task<CommonPartyData> GetPartyDataAsync(string? bsnNumber = null);
