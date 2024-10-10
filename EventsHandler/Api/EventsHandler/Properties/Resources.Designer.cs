@@ -511,15 +511,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). It cannot be determined which of them is the initiator..
-        /// </summary>
-        internal static string HttpRequest_ERROR_MultipleInitiatorRoles {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_MultipleInitiatorRoles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Case could not be retrieved from OpenZaak Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoCase {
