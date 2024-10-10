@@ -33,7 +33,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             ((IQueryZaak)this).Configuration = configuration;
         }
 
-        #region Polymorphic (BSN Number)
+        #region Polymorphic (CaseRole)
         /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
         async Task<CaseRole> IQueryZaak.GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri)
         {
@@ -41,11 +41,6 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 
             return (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
                 .CaseRole;
-        }
-
-        private static bool IsInvolvedPartyExisting(CaseRole caseRole)
-        {
-            return caseRole.InvolvedPartyUri?.Equals(DefaultValues.Models.EmptyUri) ?? true;
         }
 
         private async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, Uri caseUri, string subjectType)
