@@ -47,7 +47,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
         /// </returns>
-        private static bool IsNullOrDefault([NotNullWhen(false)]this Uri? uri)
+        internal static bool IsNullOrDefault([NotNullWhen(false)]this Uri? uri)
         {
             return DefaultValues.Models.EmptyUri.Equals(uri);
         }
