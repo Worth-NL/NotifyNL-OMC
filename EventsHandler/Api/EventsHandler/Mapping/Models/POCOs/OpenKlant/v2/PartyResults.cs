@@ -144,6 +144,88 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
             throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
+        // TODO: Probably most of this code if not all can be reused by both methods
+        /// <inheritdoc cref="Party(WebApiConfiguration)"/>
+        internal static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+            Party(PartyResult partyResult, WebApiConfiguration configuration)
+        {
+            string fallbackEmailAddress = string.Empty;
+            string fallbackPhoneNumber = string.Empty;
+            PartyResult fallbackEmailOwningParty = default;
+            PartyResult fallbackPhoneOwningParty = default;
+
+            Guid prefDigitalAddressId = partyResult.PreferredDigitalAddress.Id;
+
+            // Looking which digital address should be used
+            foreach (DigitalAddressLong digitalAddress in partyResult.Expansion.DigitalAddresses)
+            {
+                // Recognize what type of digital address it is
+                DistributionChannels distributionChannel =
+                    DetermineDistributionChannel(digitalAddress, configuration);
+
+                // VALIDATION: Distribution channel
+                if (distributionChannel is DistributionChannels.Unknown)
+                {
+                    continue;  // Any digital address couldn't be found
+                }
+
+                (string emailAddress, string phoneNumber) =
+                    DetermineDigitalAddresses(digitalAddress, distributionChannel);
+
+                // VALIDATION: e-mail and phone number
+                if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
+                {
+                    continue;  // Empty results cannot be used anyway
+                }
+
+                // 1. This address is the preferred one and should be prioritized
+                if (prefDigitalAddressId != Guid.Empty &&
+                    prefDigitalAddressId == digitalAddress.Id)
+                {
+                    return (partyResult, distributionChannel, emailAddress, phoneNumber);
+                }
+
+                // 2a. This is one of many other addresses to be checked
+                if (fallbackEmailAddress.IsNullOrEmpty() &&  // Only the first encountered one matters
+                    emailAddress.IsNotNullOrEmpty())
+                {
+                    fallbackEmailAddress = emailAddress;
+                    fallbackEmailOwningParty = partyResult;
+
+                    continue;  // The e-mail address always has priority over the phone number.
+                               // If any e-mail address was found during this run then the phone
+                               // number doesn't matter anymore since it will not be returned anyway
+                }
+
+                if (fallbackPhoneNumber.IsNullOrEmpty() &&  // Only the first encountered one matters
+                    phoneNumber.IsNotNullOrEmpty())
+                {
+                    fallbackPhoneNumber = phoneNumber;
+                    fallbackPhoneOwningParty = partyResult;
+                }
+            }
+
+            // 2b. FALLBACK APPROACH: If the party's preferred address couldn't be determined
+            //     the email address has priority and the first encountered one should be returned
+            if (fallbackEmailAddress.IsNotNullOrEmpty())
+            {
+                return (fallbackEmailOwningParty, DistributionChannels.Email,
+                        EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
+            }
+
+            // 2c. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
+            //     the first encountered telephone number (for SMS) should be returned instead
+            if (fallbackPhoneNumber.IsNotNullOrEmpty())
+            {
+                return (fallbackPhoneOwningParty, DistributionChannels.Sms,
+                        EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
+            }
+
+            // 2d. In the case of worst possible scenario, that preferred address couldn't be determined
+            //     neither any existing email address nor telephone number, then process can't be finished
+            throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+
         #region Helper methods
         /// <summary>
         /// Checks if the value from generic JSON property "Type" is
