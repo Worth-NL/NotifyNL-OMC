@@ -14,7 +14,7 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase("1", false)]
         [TestCase("abc", false)]
         [TestCase(null, true)]
-        public void IsEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
+        public void IsNullOrEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
             bool actualResult = testString.IsNullOrEmpty();
@@ -28,7 +28,7 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase("1", true)]
         [TestCase("abc", true)]
         [TestCase(null, false)]
-        public void IsNotEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
+        public void IsNotNullOrEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
             bool actualResult = testString.IsNotNullOrEmpty();
