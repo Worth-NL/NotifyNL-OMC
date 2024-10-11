@@ -60,14 +60,23 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
             }
 
-            return (await GetPartyResultsV1Async(queryBase, involvedPartyUri))  // Request URL
-                .Party
+            return (await GetPartyResultV1Async(queryBase, involvedPartyUri))  // Request URL
                 .ConvertToUnified();
         }
 
+        // NOTE: Multiple results
         private static async Task<PartyResults> GetPartyResultsV1Async(IQueryBase queryBase, Uri citizenUri)
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
+                httpClientType: HttpClientTypes.OpenKlant_v1,
+                uri: citizenUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
+        }
+
+        // NOTE: Single result
+        private static async Task<PartyResult> GetPartyResultV1Async(IQueryBase queryBase, Uri citizenUri)
+        {
+            return await queryBase.ProcessGetAsync<PartyResult>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
                 uri: citizenUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
