@@ -65,16 +65,27 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
             }
 
-            return (await GetPartyResultsV2Async(queryBase, involvedPartyUri))  // Request URL
-                .Party(((IQueryKlant)this).Configuration)
+            return PartyResults.Party(
+                    partyResult: await GetPartyResultV2Async(queryBase, involvedPartyUri),
+                    configuration: ((IQueryKlant)this).Configuration)  // Request URL
                 .ConvertToUnified();
         }
 
-        private static async Task<PartyResults> GetPartyResultsV2Async(IQueryBase queryBase, Uri partyUri)
+        // NOTE: Multiple results
+        private static async Task<PartyResults> GetPartyResultsV2Async(IQueryBase queryBase, Uri citizenUri)
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
-                uri: partyUri,  // Request URL
+                uri: citizenUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
+        }
+
+        // NOTE: Single result
+        private static async Task<PartyResult> GetPartyResultV2Async(IQueryBase queryBase, Uri citizenUri)
+        {
+            return await queryBase.ProcessGetAsync<PartyResult>(
+                httpClientType: HttpClientTypes.OpenKlant_v2,
+                uri: citizenUri,  // Request URL
                 fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
         }
         #endregion
