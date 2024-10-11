@@ -367,9 +367,6 @@
     <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
     <comment>{0} = Organization ID / Responsible Organization ID</comment>
   </data>
-  <data name="HttpRequest_ERROR_EmptyPartyResults" xml:space="preserve">
-    <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
-  </data>
   <data name="HttpRequest_ERROR_EmptyPartiesResults" xml:space="preserve">
     <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty.</value>
   </data>

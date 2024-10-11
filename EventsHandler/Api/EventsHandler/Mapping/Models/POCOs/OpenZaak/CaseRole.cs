@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// The involved party associated with the <see cref="Case"/>.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyName("betrokkene")]
+        [JsonPropertyName("betrokkene")]  // ENG: Involved party
         [JsonPropertyOrder(0)]
         public Uri InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
 
@@ -35,7 +35,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonRequired]
         [JsonInclude]
-        [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
+        [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject (party) identification
         [JsonPropertyOrder(2)]
         public PartyData Party { get; internal set; }
 
