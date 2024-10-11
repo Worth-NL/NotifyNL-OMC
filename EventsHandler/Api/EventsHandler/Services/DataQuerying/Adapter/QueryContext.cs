@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
@@ -108,7 +108,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
 
             // Case #1: Otherwise, we are getting citizen party by BSN number
-            if (caseRole.InvolvedPartyUri.Equals(DefaultValues.Models.EmptyUri))
+            if (caseRole.InvolvedPartyUri.IsNullOrDefault())
             {
                 // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
                 bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(caseUri);
