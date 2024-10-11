@@ -66,9 +66,6 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryZaak.GetBsnNumberAsync(IQueryBase, Uri)"/>
         internal Task<string> GetBsnNumberAsync(Uri caseUri);
-
-        /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
-        internal Task<CaseRole> GetCaseRoleAsync(Uri caseUri);
         
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
         /// <remarks>
@@ -84,17 +81,25 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
+        /// <summary>
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// </summary>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
         ///   <para>
-        ///     NOTE: While querying party details <see cref="Case"/> <see cref="Uri"/> can be used to determine
-        ///     whether party organization will be retrieved, or party citizen (if the BSN number is provided;
-        ///     otherwise, the missing BSN will be obtained using <see cref="CaseType"/> <see cref="Uri"/>).
+        ///     NOTE: While querying party details (e.g., citizen or organization) the <see cref="Case"/> <see cref="Uri"/> can be
+        ///     used to get <see cref="CaseRole"/> and based on that determine whether the organization data will be retrieved, or
+        ///     rather the citizen data.
+        ///     <para>
+        ///       In case of getting citizen data the BSN number should be provided; otherwise, the missing BSN will be obtained using
+        ///       the provided <see cref="Case"/> <see cref="Uri"/> which, if missing, will be attempted to be obtained from the initial
+        ///       notification <see cref="NotificationEvent.MainObjectUri"/> (which will work only if the notification was meant to be
+        ///       used with Case scenarios).
+        ///     </para>
         ///   </para>
         /// </remarks>
-        internal Task<CommonPartyData> GetPartyDataAsync(Uri caseUri, string? bsnNumber = null);
+        internal Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null);
 
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         internal Task<ContactMoment> CreateContactMomentAsync(string jsonBody);

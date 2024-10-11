@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using System.Buffers.Text;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
 
@@ -19,9 +20,9 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if the specified text <c>is</c> empty; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsEmpty(this string text)
+        internal static bool IsNullOrEmpty([NotNullWhen(false)] this string? text)
         {
-            return text.Length == 0;
+            return string.IsNullOrEmpty(text);
         }
 
         /// <summary>
@@ -31,9 +32,9 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if the specified text is <c>not</c> empty; otherwise, <see langword="false"/>.
         /// </returns>
-        internal static bool IsNotEmpty(this string text)
+        internal static bool IsNotNullOrEmpty([NotNullWhen(true)] this string? text)
         {
-            return !text.IsEmpty();
+            return !string.IsNullOrEmpty(text);
         }
         #endregion
 
@@ -76,7 +77,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static async Task<string> CompressGZipAsync(this string originalTextValue, CancellationToken cancellationToken)
         {
-            if (originalTextValue.IsEmpty())
+            if (originalTextValue.IsNullOrEmpty())
             {
                 return string.Empty;
             }
@@ -100,7 +101,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static async Task<string> DecompressGZipAsync(this string compressedTextValue, CancellationToken cancellationToken)
         {
-            if (compressedTextValue.IsEmpty())
+            if (compressedTextValue.IsNullOrEmpty())
             {
                 return string.Empty;
             }

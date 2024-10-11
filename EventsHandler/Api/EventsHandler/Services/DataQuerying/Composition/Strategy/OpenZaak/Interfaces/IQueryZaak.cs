@@ -124,7 +124,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
             return (await GetCaseRoleAsync(queryBase, caseUri)).Citizen.BsnNumber;
         }
+        #endregion
 
+        #region Abstract (Case Role)
         /// <summary>
         /// Gets the <see cref="CaseRole"/> from "OpenZaak" Web API service.
         /// </summary>
@@ -167,11 +169,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             // Case #3: The Case type URI needs to be queried from Case URI
-            return await PolymorphicGetCaseTypeUriAsync(queryBase, caseUri);
+            return await GetCaseTypeUriAsync(queryBase, caseUri);
         }
 
-        /// <inheritdoc cref="TryGetCaseTypeUriAsync(IQueryBase, Uri)"/>
-        protected Task<Uri> PolymorphicGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
+        protected Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Polymorphic (Domain)

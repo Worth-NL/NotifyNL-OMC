@@ -35,7 +35,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private DecisionResource _decisionResource;
         private Decision _decision;
         private CaseType _caseType;
-        private string _bsnNumber = string.Empty;
+        private string? _bsnNumber;
         private DecisionType _decisionType;
         private Case _case;
 
@@ -97,16 +97,29 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #5: The notifications must be enabled
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
-            // Preparing citizen details
-            this._bsnNumber = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
-                                    this._decision.CaseUri);               // 1. Case URI
-
+            // Preparing party details
+            this._bsnNumber = await GetBsnNumberAsync();
             this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
             this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
 
             return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(this._bsnNumber),
+                party: await this._queryContext.GetPartyDataAsync(
+                    this._case.Uri,
+                    this._bsnNumber),
                 caseUri: this._case.Uri);
+        }
+
+        private async Task<string?> GetBsnNumberAsync()
+        {
+            try
+            {
+                return await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
+                             this._decision.CaseUri);               // 1. Case URI
+            }
+            catch (Exception)
+            {
+                return null;  // NOTE: Organization will not have BSN number
+            }
         }
         #endregion
 
@@ -205,7 +218,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._queryContext = this.DataQuery.From(notification);
 
             string commaSeparatedUris = await GetValidInfoObjectUrisAsync(this._queryContext);
-            if (commaSeparatedUris.IsEmpty())
+            if (commaSeparatedUris.IsNullOrEmpty())
             {
                 return ProcessingDataResponse.Failure(Resources.Processing_ERROR_Scenario_MissingInfoObjectsURIs);
             }
@@ -264,6 +277,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="KeyNotFoundException"/>
         private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
+            string identificationType = (this._bsnNumber == null ? IdTypes.Unknown : IdTypes.Bsn).GetEnumName();
+            string identificationValue = this._bsnNumber ?? string.Empty;
+
             return $"\"onderwerp\":\"{subject}\"," +
                    $"\"berichttekst\":\"{body}\"," +
                    $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +  // 2001-01-01
@@ -272,8 +288,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                    $"\"geopend\":false," +
                    $"\"berichttype\":\"TODO\"," +  // TODO: To be filled
                    $"\"identificatie\":{{" +
-                     $"\"type\":\"{IdTypes.Bsn.GetEnumName()}\"," +
-                     $"\"value\":\"{this._bsnNumber}\"" +
+                     $"\"type\":\"{identificationType}\"," +
+                     $"\"value\":\"{identificationValue}\"" +
                    $"}}," +
                    $"\"bijlages\":[{commaSeparatedUris}]";
         }
