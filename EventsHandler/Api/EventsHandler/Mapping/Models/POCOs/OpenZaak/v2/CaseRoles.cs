@@ -47,9 +47,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// Gets the <see cref="OpenZaak.CaseRole"/> with matching "initiator role" set.
         /// </summary>
         /// <returns>
-        ///   The data of a single citizen.
+        ///   The single role.
         /// </returns>
         /// <exception cref="HttpRequestException"/>
+        /// <exception cref="KeyNotFoundException"/>
         internal readonly CaseRole CaseRole(WebApiConfiguration configuration)
         {
             // Response does not contain any results (check notification or project configuration)
@@ -58,25 +59,16 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
             }
 
-            CaseRole? firstCaseRole = null;
-
             foreach (CaseRole caseRole in this.Results)
             {
                 if (caseRole.InitiatorRole == configuration.AppSettings.Variables.InitiatorRole())
                 {
-                    firstCaseRole = caseRole;
-
-                    break;
+                    return caseRole;
                 }
             }
 
             // Zero initiator results were found (there is no initiator)
-            if (firstCaseRole == null)
-            {
-                throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
-            }
-
-            return firstCaseRole.Value;
+            throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
         }
     }
 }

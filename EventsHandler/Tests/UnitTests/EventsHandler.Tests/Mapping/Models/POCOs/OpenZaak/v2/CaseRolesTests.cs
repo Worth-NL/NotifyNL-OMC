@@ -53,15 +53,15 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         {
             // Arrange
             string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
-            var expectedCitizen = new CitizenData { BsnNumber = "012456789" };
+            var expectedCitizen = new PartyData { BsnNumber = "012456789" };
             CaseRoles caseRoles = GetTestCaseRoles(
-                new CaseRole { InitiatorRole = existingInitiatorRole, Citizen = expectedCitizen });  // Unique matching result
+                new CaseRole { InitiatorRole = existingInitiatorRole, Party = expectedCitizen });  // Unique matching result
 
             // Act
-            CitizenData actualCitizen = caseRoles.CaseRole(this._testConfiguration).Citizen;
+            PartyData actualParty = caseRoles.CaseRole(this._testConfiguration).Party;
 
             // Assert
-            Assert.That(actualCitizen, Is.EqualTo(expectedCitizen));
+            Assert.That(actualParty, Is.EqualTo(expectedCitizen));
         }
         #endregion
 

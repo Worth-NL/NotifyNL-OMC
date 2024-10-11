@@ -1,16 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Constants;
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger") retrieved from "OpenZaak" Web API service.
+    /// The sensitive data about a single party (e.g., citizen or organization) retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenData : IJsonSerializable
+    public struct PartyData : IJsonSerializable
     {
         /// <summary>
         /// The BSN (citizen service number) of the citizen.
@@ -22,17 +21,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public string BsnNumber { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// The involved party associated with the <see cref="Case"/>.
+        /// Initializes a new instance of the <see cref="PartyData"/> struct.
         /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("betrokkene")]
-        [JsonPropertyOrder(1)]
-        public Uri? InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenData"/> struct.
-        /// </summary>
-        public CitizenData()
+        public PartyData()
         {
         }
     }

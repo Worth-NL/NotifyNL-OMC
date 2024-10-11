@@ -55,7 +55,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
                     throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartyResults);
                 }
 
-                return this.Results[^1];  // TODO: Get party by initiator role
+                return this.Results[^1];
             }
         }
     }

@@ -46,9 +46,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         /// Gets the most recent (last) <see cref="OpenZaak.CaseRole"/>.
         /// </summary>
         /// <value>
-        ///   The data of a single citizen.
+        ///   The single role.
         /// </value>
-        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="HttpRequestException"/>  // TODO: KeyNotFoundException
         internal readonly CaseRole CaseRole
         {
             get
@@ -58,7 +58,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
                     throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
                 }
 
-                return this.Results[^1];  // NOTE: The requirement is to get only the last result from many possible
+                return this.Results[^1];  // TODO: Get party by initiator role
             }
         }
     }
