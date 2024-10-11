@@ -13,10 +13,11 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase(" ", false)]
         [TestCase("1", false)]
         [TestCase("abc", false)]
-        public void IsEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        [TestCase(null, true)]
+        public void IsEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
-            bool actualResult = testString.IsEmpty();
+            bool actualResult = testString.IsNullOrEmpty();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -26,10 +27,11 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase(" ", true)]
         [TestCase("1", true)]
         [TestCase("abc", true)]
-        public void IsNotEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        [TestCase(null, false)]
+        public void IsNotEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
-            bool actualResult = testString.IsNotEmpty();
+            bool actualResult = testString.IsNotNullOrEmpty();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));

@@ -17,7 +17,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenResults : IJsonSerializable
+    public struct PartyResults : IJsonSerializable
     {
         /// <summary>
         /// The number of received results.
@@ -28,28 +28,28 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
-        /// <inheritdoc cref="CitizenResult"/>
+        /// <inheritdoc cref="PartyResult"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CitizenResult> Results { get; internal set; } = new();
+        public List<PartyResult> Results { get; internal set; } = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenResults"/> struct.
+        /// Initializes a new instance of the <see cref="PartyResults"/> struct.
         /// </summary>
-        public CitizenResults()
+        public PartyResults()
         {
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenResult"/>.
+        /// Gets the <see cref="PartyResult"/>.
         /// </summary>
         /// <returns>
-        ///   The data of a single party (with determined contact details).
+        ///   The data of a single party (e.g., citizen or organization).
         /// </returns>
         /// <exception cref="HttpRequestException"/>
-        internal readonly (CitizenResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+        internal readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
             Party(WebApiConfiguration configuration)
         {
             if (this.Results.IsNullOrEmpty())
@@ -59,11 +59,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
 
             string fallbackEmailAddress = string.Empty;
             string fallbackPhoneNumber = string.Empty;
-            CitizenResult fallbackEmailOwningParty = default;
-            CitizenResult fallbackPhoneOwningParty = default;
+            PartyResult fallbackEmailOwningParty = default;
+            PartyResult fallbackPhoneOwningParty = default;
 
             // Determine which party result should be returned and match the data
-            foreach (CitizenResult party in this.Results)
+            foreach (PartyResult party in this.Results)
             {
                 // VALIDATION: Addresses
                 if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
@@ -90,7 +90,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                         DetermineDigitalAddresses(digitalAddress, distributionChannel);
 
                     // VALIDATION: e-mail and phone number
-                    if (emailAddress.IsEmpty() && phoneNumber.IsEmpty())
+                    if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
                     {
                         continue;  // Empty results cannot be used anyway
                     }
@@ -103,8 +103,8 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                     }
 
                     // 2a. This is one of many other addresses to be checked
-                    if (fallbackEmailAddress.IsEmpty() &&  // Only the first encountered one matters
-                        emailAddress.IsNotEmpty())
+                    if (fallbackEmailAddress.IsNullOrEmpty() &&  // Only the first encountered one matters
+                        emailAddress.IsNotNullOrEmpty())
                     {
                         fallbackEmailAddress = emailAddress;
                         fallbackEmailOwningParty = party;
@@ -114,8 +114,8 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                                    // number doesn't matter anymore since it will not be returned anyway
                     }
 
-                    if (fallbackPhoneNumber.IsEmpty() &&  // Only the first encountered one matters
-                        phoneNumber.IsNotEmpty())
+                    if (fallbackPhoneNumber.IsNullOrEmpty() &&  // Only the first encountered one matters
+                        phoneNumber.IsNotNullOrEmpty())
                     {
                         fallbackPhoneNumber = phoneNumber;
                         fallbackPhoneOwningParty = party;
@@ -125,7 +125,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
 
             // 2b. FALLBACK APPROACH: If the party's preferred address couldn't be determined
             //     the email address has priority and the first encountered one should be returned
-            if (fallbackEmailAddress.IsNotEmpty())
+            if (fallbackEmailAddress.IsNotNullOrEmpty())
             {
                 return (fallbackEmailOwningParty, DistributionChannels.Email,
                         EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
@@ -133,7 +133,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
 
             // 2c. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
             //     the first encountered telephone number (for SMS) should be returned instead
-            if (fallbackPhoneNumber.IsNotEmpty())
+            if (fallbackPhoneNumber.IsNotNullOrEmpty())
             {
                 return (fallbackPhoneOwningParty, DistributionChannels.Sms,
                         EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);

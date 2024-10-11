@@ -33,7 +33,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForMissingResults_ThrowsHttpRequestException()
         {
             // Arrange
-            var partyResults = new CitizenResults();  // Empty "Results" inside
+            var partyResults = new PartyResults();  // Empty "Results" inside
 
             // Act & Assert
             AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, Resources.HttpRequest_ERROR_EmptyPartiesResults);
@@ -43,7 +43,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForExistingResults_ButMissingAddresses_ThrowsHttpRequestException()
         {
             // Arrange
-            CitizenResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
+            PartyResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
 
             // Act & Assert
             AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
@@ -57,15 +57,15 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             Guid firstAddressId = GetUniqueId(partyId);
             Guid secondAddressId = GetUniqueId(firstAddressId);
 
-            var partyResult = new CitizenResult
+            var partyResult = new PartyResult
             {
                 PreferredDigitalAddress = new DigitalAddressShort
                 {
                     Id = partyId
                 },
-                Identification = new CitizenIdentification
+                Identification = new PartyIdentification
                 {
-                    Details = new CitizenDetails
+                    Details = new PartyDetails
                     {
                         Name = "Samantha",
                         SurnamePrefix = string.Empty,
@@ -92,7 +92,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 }
             };
 
-            CitizenResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
+            PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
 
             // Act & Assert
             AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
@@ -104,12 +104,12 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             // Arrange
             var testId = Guid.NewGuid();
 
-            CitizenResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);
-            CitizenResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
-            CitizenResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
 
             // Act
-            (CitizenResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -126,12 +126,12 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Email_FirstEncountered_PriorityOverPhone()
         {
             // Arrange
-            CitizenResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            CitizenResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            CitizenResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
 
             // Act
-            (CitizenResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -150,11 +150,11 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             // Arrange
             var testId = Guid.NewGuid();
 
-            CitizenResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
-            CitizenResults testPartyResults = GetTestPartyResults(testParty);
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
-            (CitizenResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -171,11 +171,11 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
         {
             // Arrange
-            CitizenResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            CitizenResults testPartyResults = GetTestPartyResults(testParty);
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
-            (CitizenResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -197,17 +197,17 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there are phone numbers and e-mails combined, so e-mail should be always prioritized.
         /// </summary>
-        private static CitizenResult GetTestPartyResult_Email(WebApiConfiguration configuration, Guid partyId, Guid addressId)
+        private static PartyResult GetTestPartyResult_Email(WebApiConfiguration configuration, Guid partyId, Guid addressId)
         {
-            return new CitizenResult
+            return new PartyResult
             {
                 PreferredDigitalAddress = new DigitalAddressShort
                 {
                     Id = partyId
                 },
-                Identification = new CitizenIdentification
+                Identification = new PartyIdentification
                 {
-                    Details = new CitizenDetails
+                    Details = new PartyDetails
                     {
                         Name = "John",
                         SurnamePrefix = string.Empty,
@@ -269,17 +269,17 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there is no emails, so phone numbers will always be used.
         /// </summary>
-        private static CitizenResult GetTestPartyResult_Phone(WebApiConfiguration configuration, Guid partyId, Guid addressId)
+        private static PartyResult GetTestPartyResult_Phone(WebApiConfiguration configuration, Guid partyId, Guid addressId)
         {
-            return new CitizenResult
+            return new PartyResult
             {
                 PreferredDigitalAddress = new DigitalAddressShort
                 {
                     Id = partyId
                 },
-                Identification = new CitizenIdentification
+                Identification = new PartyIdentification
                 {
-                    Details = new CitizenDetails
+                    Details = new PartyDetails
                     {
                         Name = "Jane",
                         SurnamePrefix = string.Empty,
@@ -340,11 +340,11 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 : GetUniqueId(addressId);  // Retry
         }
 
-        private static CitizenResults GetTestPartyResults(params CitizenResult[] parties)
+        private static PartyResults GetTestPartyResults(params PartyResult[] parties)
         {
-            var partyResults = new CitizenResults
+            var partyResults = new PartyResults
             {
-                Results = new List<CitizenResult>
+                Results = new List<PartyResult>
                 {
                     new()  // Just empty result to always have at least a few of them + to handle uninitialized ones
                 }
@@ -355,7 +355,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             return partyResults;
         }
 
-        private static void AssertThrows<TException>(WebApiConfiguration configuration, CitizenResults partyResults, string exceptionMessage)
+        private static void AssertThrows<TException>(WebApiConfiguration configuration, PartyResults partyResults, string exceptionMessage)
             where TException : Exception
         {
             Assert.Multiple(() =>

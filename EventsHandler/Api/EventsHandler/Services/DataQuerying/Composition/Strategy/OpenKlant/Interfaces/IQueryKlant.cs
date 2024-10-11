@@ -4,15 +4,11 @@ using EventsHandler.Exceptions;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using EventsHandler.Mapping.Models.Interfaces;
-using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {
@@ -29,17 +25,34 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenKlant";
 
-        #region Abstract (Citizen details)
+        #region Abstract (Party data)
         /// <summary>
-        /// Gets the details of a specific citizen from "OpenKlant" Web API service.
+        /// Gets the details of a specific party (e.g., citizen or organization) from "OpenKlant" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   The method used to obtain citizen data.
+        /// </remarks>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="bsnNumber">The BSN (Citizen Service Number).</param>
+        /// <param name="bsnNumber">The BSN (Citizen Service Number) to get citizen party.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
+
+        /// <summary>
+        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// </summary>
+        /// <remarks>
+        ///   The method used to obtain company data.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="involvedPartyUri">The <see cref="Uri"/> to get the involved organization party.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri);
         #endregion
 
         #region Abstract (Telemetry)
@@ -79,49 +92,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         internal Task<RequestResponse> LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
-        #region Parent (Party)
-        // TODO: Add summary
-        internal async Task<PartyDetails> GetPartyDetailsAsync(IQueryBase queryBase, Uri involvedPartyUri)
-        {
-            return await queryBase.ProcessGetAsync<PartyDetails>(
-                httpClientType: HttpClientTypes.OpenKlant_v2,
-                uri: involvedPartyUri,  // Request URL
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyDetails);
-        }
-        #endregion
-
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => this.Configuration.User.Domain.OpenKlant();
         #endregion
-    }
-
-    // TODO: Extract to POCO models
-    internal struct PartyDetails : IJsonSerializable
-    {
-        // TODO: Finish summary later
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("partijIdentificatie")]
-        [JsonPropertyOrder(0)]
-        public PartyIdentification Name { get; internal set; }
-    }
-    
-    // TODO: Extract to POCO models
-    internal struct PartyIdentification : IJsonSerializable
-    {
-        // TODO: Finish summary later
-        [JsonRequired]
-        [JsonInclude]
-        [JsonPropertyName("naam")]
-        [JsonPropertyOrder(0)]
-        public string Name { get; internal set; } = string.Empty;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartyIdentification"/> struct.
-        /// </summary>
-        public PartyIdentification()
-        {
-        }
     }
 }

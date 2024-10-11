@@ -57,9 +57,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             
             this._case = await this._queryContext.GetCaseAsync();
 
-            // Preparing citizen details
+            // Preparing party details
             return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(),
+                party: await this._queryContext.GetPartyDataAsync(this._case.Uri),
                 caseUri: this._case.Uri);
         }
         #endregion
