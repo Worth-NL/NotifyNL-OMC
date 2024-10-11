@@ -46,8 +46,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Request URL
             Uri citizenByBsnUri = new($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
 
-            return (await GetPartyResultsV1Async(queryBase, citizenByBsnUri))
-                .Party
+            return (await GetPartyResultsV1Async(queryBase, citizenByBsnUri))  // Many party results
+                .Party  // Single determined party result
                 .ConvertToUnified();
         }
 
@@ -60,6 +60,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
             }
 
+            // Single determined party result
             return (await GetPartyResultV1Async(queryBase, involvedPartyUri))  // Request URL
                 .ConvertToUnified();
         }
