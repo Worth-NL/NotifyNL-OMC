@@ -4,6 +4,7 @@ using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
+using EventsHandler.Constants;
 
 namespace EventsHandler.Extensions
 {
@@ -129,16 +130,27 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static TData ChangeType<TData>(this string originalTextValue)
         {
+            if (originalTextValue.IsNullOrEmpty() &&
+                typeof(TData) != typeof(string) &&
+                typeof(TData) != typeof(Uri))
+            {
+                return default!;
+            }
+
             // Retrieve as TData => Guid
             if (typeof(TData) == typeof(Guid))
             {
-                return (TData)Convert.ChangeType(new Guid(originalTextValue), typeof(TData));
+                _ = Guid.TryParse(originalTextValue, out Guid validGuid);
+
+                return (TData)Convert.ChangeType(validGuid, typeof(TData));
             }
             
             // Retrieve as TData => Guid
             if (typeof(TData) == typeof(Uri))
             {
-                return (TData)Convert.ChangeType(new Uri(originalTextValue), typeof(TData));
+                _ = Uri.TryCreate(originalTextValue, UriKind.Absolute, out Uri? validUri);
+
+                return (TData)Convert.ChangeType(validUri ?? DefaultValues.Models.EmptyUri, typeof(TData));
             }
 
             // Retrieve as TData => int, ushort, bool
