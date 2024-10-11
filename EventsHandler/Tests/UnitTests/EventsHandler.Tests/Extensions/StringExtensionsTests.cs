@@ -1,7 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Reflection;
 using EventsHandler.Extensions;
 using System.Text;
+using EventsHandler.Constants;
+using Guid = System.Guid;
 
 namespace EventsHandler.UnitTests.Extensions
 {
@@ -13,10 +16,11 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase(" ", false)]
         [TestCase("1", false)]
         [TestCase("abc", false)]
-        public void IsEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        [TestCase(null, true)]
+        public void IsNullOrEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
-            bool actualResult = testString.IsEmpty();
+            bool actualResult = testString.IsNullOrEmpty();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -26,10 +30,11 @@ namespace EventsHandler.UnitTests.Extensions
         [TestCase(" ", true)]
         [TestCase("1", true)]
         [TestCase("abc", true)]
-        public void IsNotEmpty_ReturnsExpectedResult(string testString, bool expectedResult)
+        [TestCase(null, false)]
+        public void IsNotNullOrEmpty_ReturnsExpectedResult(string? testString, bool expectedResult)
         {
             // Act
-            bool actualResult = testString.IsNotEmpty();
+            bool actualResult = testString.IsNotNullOrEmpty();
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -156,6 +161,118 @@ namespace EventsHandler.UnitTests.Extensions
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(TestReferenceString));
+        }
+        #endregion
+
+        #region Conversion
+        [Test]
+        public void ChangeType_ValidGuidString_ReturnsExpectedGuid()
+        {
+            // Arrange
+            const string validGuidString = "12345678-1234-1234-1234-123456789012";
+            Guid expectedResult = new(validGuidString);
+
+            // Act
+            Guid actualResult = validGuidString.ChangeType<Guid>();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("12345678-123-1234-123456789012")]
+        [TestCase("12345678-1234-1234-12345678901")]
+        // ReSharper disable once StringLiteralTypo
+        [TestCase("12345678-1234-1234-abcdefghijkl")]
+        public void ChangeType_InvalidGuidString_ReturnsDefaultGuid(string invalidGuidString)
+        {
+            // Act
+            Guid actualResult = invalidGuidString.ChangeType<Guid>();
+
+            // Assert
+            Assert.That(actualResult, Is.Default);
+        }
+
+        [TestCase("https://www.google.com/")]
+        [TestCase("ftp://www.aol.com/")]
+        public void ChangeType_ValidUriString_ReturnsExpectedUri(string validUriString)
+        {
+            // Arrange
+            Uri expectedResult = new(validUriString);
+
+            // Act
+            Uri actualResult = validUriString.ChangeType<Uri>();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("www.something.com")]
+        [TestCase("something.gov.com")]
+        [TestCase("something")]
+        public void ChangeType_InvalidUriString_ReturnsDefaultUri(string invalidUriString)
+        {
+            // Act
+            Uri actualResult = invalidUriString.ChangeType<Uri>();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(DefaultValues.Models.EmptyUri));
+        }
+
+        [TestCase("1", 1, typeof(int))]
+        [TestCase("", 0, typeof(int))]
+        [TestCase("1.5", 1.5f, typeof(float))]
+        [TestCase("", 0f, typeof(float))]
+        [TestCase("true", true, typeof(bool))]
+        [TestCase("", false, typeof(bool))]
+        [TestCase("xyz", "xyz", typeof(string))]
+        [TestCase("", "", typeof(string))]
+        public void ChangeType_ValidString_ReturnsValidType(string testString, dynamic expectedResultValue, Type expectedResultType)
+        {
+            // Arrange
+            MethodInfo? method = typeof(StringExtensions)
+                .GetMethod(nameof(StringExtensions.ChangeType), BindingFlags.Static | BindingFlags.NonPublic);
+
+            MethodInfo? genericMethod = method?.MakeGenericMethod(expectedResultType);
+
+            // Act
+            object? actualResult = genericMethod?.Invoke(null, new object[] { testString });
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResultValue));
+        }
+        #endregion
+
+        #region Modification
+        [Test]
+        public void Join_EmptyCollection_ReturnsEmptyString()
+        {
+            // Arrange
+            string[] emptyArray = Array.Empty<string>();
+
+            // Act
+            string actualResult = emptyArray.Join();
+
+            // Assert
+            Assert.That(actualResult, Is.Empty);
+        }
+
+        [Test]
+        public void Join_FullCollection_ReturnsEmptyString()
+        {
+            // Arrange
+            List<string> testList = new() { "test1", "test2", "test3" };
+
+            // Act
+            string actualResult = testList.Join();
+
+            // Assert
+            const string expectedResult = "test1, test2, test3";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
         #endregion
     }

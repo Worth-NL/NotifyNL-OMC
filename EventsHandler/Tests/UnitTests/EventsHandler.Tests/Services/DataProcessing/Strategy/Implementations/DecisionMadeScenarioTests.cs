@@ -473,19 +473,23 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             // IQueryContext
             this._mockedQueryContext
-                .Setup(mock => mock.GetDecisionResourceAsync(It.IsAny<Uri?>()))
+                .Setup(mock => mock.GetDecisionResourceAsync(
+                    It.IsAny<Uri?>()))
                 .ReturnsAsync(new DecisionResource());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()))
+                .Setup(mock => mock.GetInfoObjectAsync(
+                    It.IsAny<object?>()))
                 .ReturnsAsync(testInfoObject);
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()))
+                .Setup(mock => mock.GetDecisionAsync(
+                    It.IsAny<DecisionResource?>()))
                 .ReturnsAsync(new Decision());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()))
+                .Setup(mock => mock.GetLastCaseTypeAsync(
+                    It.IsAny<CaseStatuses?>()))
                 .ReturnsAsync(new CaseType
                 {
                     Identification = isCaseTypeIdWhitelisted ? "1" : "4",
@@ -493,15 +497,19 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 });
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
+                .Setup(mock => mock.GetCaseStatusesAsync(
+                    It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetBsnNumberAsync(It.IsAny<Uri>()))
+                .Setup(mock => mock.GetBsnNumberAsync(
+                    It.IsAny<Uri>()))
                 .ReturnsAsync(string.Empty);
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(It.IsAny<string?>()))
+                .Setup(mock => mock.GetPartyDataAsync(
+                    It.IsAny<Uri?>(),
+                    It.IsAny<string?>()))
                 .ReturnsAsync(new CommonPartyData
                 {
                     Name = "Jackie",
@@ -512,11 +520,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 });
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()))
+                .Setup(mock => mock.GetDecisionTypeAsync(
+                    It.IsAny<Decision?>()))
                 .ReturnsAsync(new DecisionType());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
+                .Setup(mock => mock.GetCaseAsync(
+                    It.IsAny<Uri?>()))
                 .ReturnsAsync(new Case
                 {
                     Identification = CaseId
@@ -524,7 +534,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // IDataQueryService
             this._mockedDataQuery
-                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Setup(mock => mock.From(
+                    It.IsAny<NotificationEvent>()))
                 .Returns(this._mockedQueryContext.Object);
 
             // Decision Scenario
@@ -628,42 +639,53 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             
             // IDataQueryService
             this._mockedDataQuery
-                .Verify(mock => mock.From(It.IsAny<NotificationEvent>()),
+                .Verify(mock => mock.From(
+                    It.IsAny<NotificationEvent>()),
                 Times.Exactly(fromInvokeCount));
             
             // IQueryContext
             this._mockedQueryContext
-                .Verify(mock => mock.GetDecisionResourceAsync(It.IsAny<Uri?>()),
+                .Verify(mock => mock.GetDecisionResourceAsync(
+                    It.IsAny<Uri?>()),
                 Times.Exactly(getDecisionResInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
+                .Verify(mock => mock.GetInfoObjectAsync(
+                    It.IsAny<object?>()),
                 Times.Exactly(getInfoObjectInvokeCount));
           
             this._mockedQueryContext
-                .Verify(mock => mock.GetDecisionAsync(It.IsAny<DecisionResource?>()),
+                .Verify(mock => mock.GetDecisionAsync(
+                    It.IsAny<DecisionResource?>()),
                 Times.Exactly(getDecisionInvokeCount));
 
             this._mockedQueryContext  // Dependent queries
-                .Verify(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses?>()),
+                .Verify(mock => mock.GetLastCaseTypeAsync(
+                    It.IsAny<CaseStatuses?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()),
+                .Verify(mock => mock.GetCaseStatusesAsync(
+                    It.IsAny<Uri?>()),
                 Times.Exactly(getCaseTypeInvokeCount));
           
             this._mockedQueryContext  // Dependent + consecutive queries
-                .Verify(mock => mock.GetBsnNumberAsync(It.IsAny<Uri>()),
+                .Verify(mock => mock.GetBsnNumberAsync(
+                    It.IsAny<Uri>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
             this._mockedQueryContext
-                .Verify(mock => mock.GetPartyDataAsync(It.IsAny<string?>()),
+                .Verify(mock => mock.GetPartyDataAsync(
+                    It.IsAny<Uri?>(),
+                    It.IsAny<string?>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetDecisionTypeAsync(It.IsAny<Decision?>()),
+                .Verify(mock => mock.GetDecisionTypeAsync(
+                    It.IsAny<Decision?>()),
                 Times.Exactly(getDecisionTypeInvokeCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseAsync(It.IsAny<Uri?>()),
+                .Verify(mock => mock.GetCaseAsync(
+                    It.IsAny<Uri?>()),
                 Times.Exactly(getCaseInvokeCount));
 
             this._getDataVerified = true;
@@ -681,23 +703,28 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // INotifyService
             this._mockedNotifyService
-                .Verify(mock => mock.GenerateTemplatePreviewAsync(It.IsAny<NotifyData>()),
+                .Verify(mock => mock.GenerateTemplatePreviewAsync(
+                    It.IsAny<NotifyData>()),
                 Times.Exactly(generateInvokeCount));
 
             // IQueryContext
             this._mockedQueryContext
-                .Verify(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()),
+                .Verify(mock => mock.GetDocumentsAsync(
+                    It.IsAny<DecisionResource?>()),
                 Times.Exactly(getDocumentsInvokeCount));
             
             this._mockedQueryContext
-                .Verify(mock => mock.GetInfoObjectAsync(It.IsAny<object?>()),
+                .Verify(mock => mock.GetInfoObjectAsync(
+                    It.IsAny<object?>()),
                 Times.Exactly(getInfoObjectInvokeCount));
 
             this._mockedQueryContext  // Dependent queries
-                .Verify(mock => mock.PrepareObjectJsonBody(It.IsAny<string>()),
+                .Verify(mock => mock.PrepareObjectJsonBody(
+                    It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
             this._mockedQueryContext
-                .Verify(mock => mock.CreateObjectAsync(It.IsAny<string>()),
+                .Verify(mock => mock.CreateObjectAsync(
+                    It.IsAny<string>()),
                 Times.Exactly(createInvokeCount));
 
             this._processDataVerified = true;

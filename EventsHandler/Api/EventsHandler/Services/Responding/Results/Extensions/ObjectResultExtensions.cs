@@ -61,7 +61,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         /// <param name="errorDetails">The error details to be passed into <see cref="IActionResult"/>.</param>
         internal static ObjectResult AsResult_400(this BaseEnhancedDetails errorDetails)
         {
-            return errorDetails.Cases.IsNotEmpty() &&  // NOTE: Not enough details
+            return errorDetails.Cases.IsNotNullOrEmpty() &&  // NOTE: Not enough details
                    errorDetails.Reasons.Any()
                 ? new HttpRequestFailed.Detailed(errorDetails).AsResult_400()
                 : new HttpRequestFailed.Simplified(errorDetails.Trim()).AsResult_400();

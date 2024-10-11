@@ -28,7 +28,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         
         /// <summary>
         /// The collection of:
-        /// <inheritdoc cref="CaseRole"/>
+        /// <inheritdoc cref="OpenZaak.CaseRole"/>
         /// </summary>
         [JsonRequired]
         [JsonInclude]
@@ -44,13 +44,14 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenData"/> with matching "initiator role" set.
+        /// Gets the <see cref="OpenZaak.CaseRole"/> with matching "initiator role" set.
         /// </summary>
         /// <returns>
-        ///   The data of a single citizen.
+        ///   The single role.
         /// </returns>
         /// <exception cref="HttpRequestException"/>
-        internal readonly CitizenData Citizen(WebApiConfiguration configuration)
+        /// <exception cref="KeyNotFoundException"/>
+        internal readonly CaseRole CaseRole(WebApiConfiguration configuration)
         {
             // Response does not contain any results (check notification or project configuration)
             if (this.Results.IsNullOrEmpty())
@@ -58,34 +59,16 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
             }
 
-            CitizenData? citizen = null;
-
             foreach (CaseRole caseRole in this.Results)
             {
-                if (caseRole.InitiatorRole != configuration.AppSettings.Variables.InitiatorRole())
+                if (caseRole.InitiatorRole == configuration.AppSettings.Variables.InitiatorRole())
                 {
-                    continue;
-                }
-
-                // First initiator result was found
-                if (citizen == null)
-                {
-                    citizen = caseRole.Citizen;
-                }
-                // Multiple initiator results were found (no way to determine who is the initiator)
-                else
-                {
-                    throw new HttpRequestException(Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
+                    return caseRole;
                 }
             }
 
             // Zero initiator results were found (there is no initiator)
-            if (citizen == null)
-            {
-                throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
-            }
-
-            return citizen.Value;
+            throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
         }
     }
 }

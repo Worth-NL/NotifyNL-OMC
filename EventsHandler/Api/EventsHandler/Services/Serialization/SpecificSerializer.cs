@@ -50,7 +50,7 @@ namespace EventsHandler.Services.Serialization
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
                     $"{Resources.Deserialization_ERROR_CannotDeserialize_Value}: {json} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {(requiredProperties.IsEmpty() ? "_" : requiredProperties)}");
+                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {(requiredProperties.IsNullOrEmpty() ? "_" : requiredProperties)}");
             }
         }
 

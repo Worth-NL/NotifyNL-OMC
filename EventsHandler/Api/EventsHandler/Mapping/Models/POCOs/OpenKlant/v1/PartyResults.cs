@@ -8,13 +8,13 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The results about the citizens retrieved from "OpenKlant" Web API service.
+    /// The results about the parties (e.g., citizen or organization) retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenResults : IJsonSerializable
+    public struct PartyResults : IJsonSerializable
     {
         /// <summary>
         /// The number of received results.
@@ -25,34 +25,34 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
         [JsonPropertyOrder(0)]
         public int Count { get; internal set; }
 
-        /// <inheritdoc cref="CitizenResult"/>
+        /// <inheritdoc cref="PartyResult"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CitizenResult> Results { get; internal set; } = new();
+        public List<PartyResult> Results { get; internal set; } = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenResults"/> struct.
+        /// Initializes a new instance of the <see cref="PartyResults"/> struct.
         /// </summary>
-        public CitizenResults()
+        public PartyResults()
         {
         }
 
         /// <summary>
-        /// Gets the <see cref="CitizenResult"/>.
+        /// Gets the <see cref="PartyResult"/>.
         /// </summary>
         /// <value>
-        ///   The data of a single citizen.
+        ///   The data of a single party (e.g., citizen or organization).
         /// </value>
         /// <exception cref="HttpRequestException"/>
-        internal readonly CitizenResult Citizen
+        internal readonly PartyResult Party
         {
             get
             {
                 if (this.Results.IsNullOrEmpty())
                 {
-                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCitizensResults);
+                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
                 }
 
                 return this.Results[^1];

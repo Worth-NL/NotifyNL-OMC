@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.v1;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
@@ -31,15 +32,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             ((IQueryZaak)this).Configuration = configuration;
         }
 
-        #region Polymorphic (BSN Number)
-        /// <inheritdoc cref="IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase, Uri)"/>
-        async Task<string> IQueryZaak.PolymorphicGetBsnNumberAsync(IQueryBase queryBase, Uri caseUri)
+        #region Polymorphic (Case Role)
+        /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
+        async Task<CaseRole> IQueryZaak.GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri)
         {
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
             return (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
-                .Citizen
-                .BsnNumber;
+                .CaseRole;
         }
 
         private async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, Uri caseUri, string subjectType)
@@ -59,8 +59,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
         #endregion
 
         #region Polymorphic (Case type URI)
-        /// <inheritdoc cref="IQueryZaak.PolymorphicGetCaseTypeUriAsync(IQueryBase, Uri)"/>
-        async Task<Uri> IQueryZaak.PolymorphicGetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
+        /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriAsync(IQueryBase, Uri)"/>
+        async Task<Uri> IQueryZaak.GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
             return (await GetCaseDetailsV1Async(queryBase, caseUri))
                 .CaseTypeUrl;
