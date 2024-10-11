@@ -76,10 +76,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
 
-            // Preparing citizen details
+            // Preparing party details
             return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(  // 2. Citizen details
-                    this._taskData.Identification.Value),           // 1. BSN number
+                party: await this._queryContext.GetPartyDataAsync(
+                    caseUri: this._case.Uri,
+                    bsnNumber: this._taskData.Identification.Value),  // BSN number
                 caseUri: this._case.Uri);
         }
         #endregion

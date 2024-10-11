@@ -14,7 +14,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
     /// </remarks>
     /// <seealso cref="CommonPartyData"/>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenResult : IJsonSerializable
+    public struct PartyResult : IJsonSerializable
     {
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         [JsonRequired]
@@ -33,12 +33,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         [JsonPropertyOrder(1)]
         public DigitalAddressShort PreferredDigitalAddress { get; internal set; }
 
-        /// <inheritdoc cref="CitizenIdentification"/>
+        /// <inheritdoc cref="PartyIdentification"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyName("partijIdentificatie")]
         [JsonPropertyOrder(2)]
-        public CitizenIdentification Identification { get; internal set; }
+        public PartyIdentification Identification { get; internal set; }
 
         /// <inheritdoc cref="v2.Expansion"/>
         [JsonRequired]
@@ -48,9 +48,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         public Expansion Expansion { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenResult"/> struct.
+        /// Initializes a new instance of the <see cref="PartyResult"/> struct.
         /// </summary>
-        public CitizenResult()
+        public PartyResult()
         {
         }
     }
