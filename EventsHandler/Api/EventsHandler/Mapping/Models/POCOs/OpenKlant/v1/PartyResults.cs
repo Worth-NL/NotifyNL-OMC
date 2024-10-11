@@ -52,7 +52,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
             {
                 if (this.Results.IsNullOrEmpty())
                 {
-                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartyResults);
+                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
                 }
 
                 return this.Results[^1];

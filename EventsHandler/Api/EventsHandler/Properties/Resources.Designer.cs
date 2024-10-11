@@ -475,15 +475,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty..
-        /// </summary>
-        internal static string HttpRequest_ERROR_EmptyPartyResults {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_EmptyPartyResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The HTTPS protocol is expected..
         /// </summary>
         internal static string HttpRequest_ERROR_HttpsProtocolExpected {

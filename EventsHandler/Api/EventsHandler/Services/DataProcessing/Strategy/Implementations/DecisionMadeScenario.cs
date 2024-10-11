@@ -35,7 +35,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private DecisionResource _decisionResource;
         private Decision _decision;
         private CaseType _caseType;
-        private string? _bsnNumber;
+        private string _bsnNumber = string.Empty;
         private DecisionType _decisionType;
         private Case _case;
 
@@ -109,7 +109,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 caseUri: this._case.Uri);
         }
 
-        private async Task<string?> GetBsnNumberAsync()
+        private async Task<string> GetBsnNumberAsync()
         {
             try
             {
@@ -118,7 +118,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
             catch (Exception)
             {
-                return null;  // NOTE: Organization will not have BSN number
+                return string.Empty;  // NOTE: Organization will not have BSN number
             }
         }
         #endregion
@@ -277,8 +277,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="KeyNotFoundException"/>
         private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
-            string identificationType = (this._bsnNumber == null ? IdTypes.Unknown : IdTypes.Bsn).GetEnumName();
-            string identificationValue = this._bsnNumber ?? string.Empty;
+            string identificationType = (this._bsnNumber.IsNullOrEmpty() ? IdTypes.Unknown : IdTypes.Bsn).GetEnumName();  // TODO: Which type should be used for organization?
+            string identificationValue = this._bsnNumber.IsNullOrEmpty() ? "-" : this._bsnNumber;                         // TODO: Which value should be used for organization?
 
             return $"\"onderwerp\":\"{subject}\"," +
                    $"\"berichttekst\":\"{body}\"," +
