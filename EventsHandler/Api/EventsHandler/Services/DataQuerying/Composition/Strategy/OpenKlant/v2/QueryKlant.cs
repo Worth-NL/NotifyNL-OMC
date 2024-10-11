@@ -49,10 +49,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            Uri partiesByTypeIdAndExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
-            return (await GetPartyResultsV2Async(queryBase, partiesByTypeIdAndExpand))
-                .Party(((IQueryKlant)this).Configuration)
+            return (await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand))  // Many party results
+                .Party(((IQueryKlant)this).Configuration)  // Single determined party result
                 .ConvertToUnified();
         }
 
@@ -65,9 +65,15 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
             }
 
-            return PartyResults.Party(
-                    partyResult: await GetPartyResultV2Async(queryBase, involvedPartyUri),
-                    configuration: ((IQueryKlant)this).Configuration)  // Request URL
+            // Predefined URL components
+            const string expandParameter = "&expand=digitaleAdressen";
+
+            // Request URL
+            Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
+
+            return PartyResults.Party(  // Single determined party result
+                    partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
+                    configuration: ((IQueryKlant)this).Configuration)
                 .ConvertToUnified();
         }
 
