@@ -66,7 +66,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             }
 
             // Predefined URL components
-            const string expandParameter = "&expand=digitaleAdressen";
+            const string expandParameter = "?expand=digitaleAdressen";
 
             // Request URL
             Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
