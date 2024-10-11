@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Mapping.Enums.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant.v1;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
 {
@@ -11,7 +10,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
     internal static class CommonPartyDataConverter
     {
         /// <summary>
-        /// Converts <see cref="PartyResult"/> from "OpenKlant" (1.0) Web API service.
+        /// Converts <see cref="v1.PartyResult"/> from "OpenKlant" (1.0) Web API service.
         /// </summary>
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
@@ -36,8 +35,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters
         /// <returns>
         ///   The unified <see cref="CommonPartyData"/> DTO model.
         /// </returns>
-        internal static CommonPartyData ConvertToUnified(this
-            (v2.PartyResult Party, DistributionChannels DistributionChannel, string EmailAddress, string PhoneNumber) data)
+        internal static CommonPartyData ConvertToUnified(this (v2.PartyResult Party, DistributionChannels DistributionChannel, string EmailAddress, string PhoneNumber) data)
         {
             return new CommonPartyData
             {
