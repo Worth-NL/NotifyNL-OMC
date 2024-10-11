@@ -8,14 +8,14 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
 {
     /// <summary>
-    /// The sensitive data about the citizen ("burger") retrieved from "OpenKlant" Web API service.
+    /// The sensitive data about the party (e.g., citizen or organization) retrieved from "OpenKlant" Web API service.
     /// </summary>
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="CommonPartyData"/>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenResult : IJsonSerializable
+    public struct PartyResult : IJsonSerializable
     {
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         [JsonRequired]
@@ -66,9 +66,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
         public string EmailAddress { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenResult"/> struct.
+        /// Initializes a new instance of the <see cref="PartyResult"/> struct.
         /// </summary>
-        public CitizenResult()
+        public PartyResult()
         {
         }
     }

@@ -25,17 +25,34 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenKlant";
 
-        #region Abstract (Citizen details)
+        #region Abstract (Party data)
         /// <summary>
-        /// Gets the details of a specific citizen from "OpenKlant" Web API service.
+        /// Gets the details of a specific party (e.g., citizen or organization) from "OpenKlant" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   The method used to obtain citizen data.
+        /// </remarks>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="bsnNumber">The BSN (Citizen Service Number).</param>
+        /// <param name="bsnNumber">The BSN (Citizen Service Number) to get citizen party.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
+
+        /// <summary>
+        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// </summary>
+        /// <remarks>
+        ///   The method used to obtain company data.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="involvedPartyUri">The <see cref="Uri"/> to get the involved organization party.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri);
         #endregion
 
         #region Abstract (Telemetry)

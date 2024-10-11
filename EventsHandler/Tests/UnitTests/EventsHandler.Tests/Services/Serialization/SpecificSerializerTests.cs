@@ -150,7 +150,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
             IEnumerable<(int Id, Action Deserialization, string TargetName, string ExpectedResult)> GetSerializationTests(string testJson)
             {
                 yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren");
-                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres.uuid, partijIdentificatie.contactnaam.voornaam, partijIdentificatie.contactnaam.achternaam, _expand.digitaleAdressen.uuid, _expand.digitaleAdressen.adres, _expand.digitaleAdressen.soortDigitaalAdres");
+                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres.uuid, partijIdentificatie.contactnaam.voornaam, _expand.digitaleAdressen.uuid, _expand.digitaleAdressen.adres, _expand.digitaleAdressen.soortDigitaalAdres");
                 yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "CaseUri, CaseId, Title, Status, ExpirationDate, Identification.type, Identification.value");
             }
         }
