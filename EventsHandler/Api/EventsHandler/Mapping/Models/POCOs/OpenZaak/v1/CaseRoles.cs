@@ -27,7 +27,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         
         /// <summary>
         /// The collection of:
-        /// <inheritdoc cref="v1.CaseRole"/>
+        /// <inheritdoc cref="OpenZaak.CaseRole"/>
         /// </summary>
         [JsonRequired]
         [JsonInclude]
@@ -43,7 +43,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         }
 
         /// <summary>
-        /// Gets the most recent (last) <see cref="v1.CaseRole"/>.
+        /// Gets the most recent (last) <see cref="OpenZaak.CaseRole"/>.
         /// </summary>
         /// <value>
         ///   The data of a single citizen.
