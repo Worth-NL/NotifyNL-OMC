@@ -160,5 +160,35 @@ namespace EventsHandler.UnitTests.Extensions
             Assert.That(actualResult, Is.EqualTo(TestReferenceString));
         }
         #endregion
+
+        #region Modification
+        [Test]
+        public void Join_EmptyCollection_ReturnsEmptyString()
+        {
+            // Arrange
+            string[] emptyArray = Array.Empty<string>();
+
+            // Act
+            string actualResult = emptyArray.Join();
+
+            // Assert
+            Assert.That(actualResult, Is.Empty);
+        }
+
+        [Test]
+        public void Join_FullCollection_ReturnsEmptyString()
+        {
+            // Arrange
+            List<string> testList = new() { "test1", "test2", "test3" };
+
+            // Act
+            string actualResult = testList.Join();
+
+            // Assert
+            const string expectedResult = "test1, test2, test3";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+        #endregion
     }
 }
