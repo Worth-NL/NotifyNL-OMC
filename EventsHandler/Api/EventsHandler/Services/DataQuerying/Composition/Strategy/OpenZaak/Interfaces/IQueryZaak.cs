@@ -122,7 +122,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
                 throw new ArgumentException(Resources.Operation_ERROR_Internal_NotCaseUri);
             }
 
-            return (await GetCaseRoleAsync(queryBase, caseUri)).Party.BsnNumber;
+            return (await GetCaseRoleAsync(queryBase, caseUri))
+                .Party
+                .BsnNumber;
         }
         #endregion
 
