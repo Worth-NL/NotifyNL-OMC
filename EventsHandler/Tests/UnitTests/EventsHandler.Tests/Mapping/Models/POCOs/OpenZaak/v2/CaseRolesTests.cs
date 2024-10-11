@@ -49,32 +49,19 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         [Test]
-        public void Citizen_Method_ForExistingResults_WithMultipleInitiatorRoles_ReturnsHttpRequestException()
-        {
-            // Arrange
-            string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
-            CaseRoles caseRoles = GetTestCaseRoles(
-                new CaseRole { InitiatorRole = existingInitiatorRole },
-                new CaseRole { InitiatorRole = existingInitiatorRole });  // Multiple matching results
-
-            // Act & Assert
-            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, Resources.HttpRequest_ERROR_MultipleInitiatorRoles);
-        }
-
-        [Test]
         public void Citizen_Method_ForExistingResults_WithSingleInitiatorRole_ReturnsCitizenData()
         {
             // Arrange
             string existingInitiatorRole = this._testConfiguration.AppSettings.Variables.InitiatorRole();
-            var expectedCitizen = new CitizenData { BsnNumber = "012456789" };
+            var expectedCitizen = new PartyData { BsnNumber = "012456789" };
             CaseRoles caseRoles = GetTestCaseRoles(
-                new CaseRole { InitiatorRole = existingInitiatorRole, Citizen = expectedCitizen });  // Unique matching result
+                new CaseRole { InitiatorRole = existingInitiatorRole, Party = expectedCitizen });  // Unique matching result
 
             // Act
-            CitizenData actualCitizen = caseRoles.Citizen(this._testConfiguration);
+            PartyData actualParty = caseRoles.CaseRole(this._testConfiguration).Party;
 
             // Assert
-            Assert.That(actualCitizen, Is.EqualTo(expectedCitizen));
+            Assert.That(actualParty, Is.EqualTo(expectedCitizen));
         }
         #endregion
 
@@ -100,7 +87,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
             Assert.Multiple(() =>
             {
                 TException? exception = Assert.Throws<TException>(() =>
-                    caseRoles.Citizen(configuration));
+                    caseRoles.CaseRole(configuration));
 
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });

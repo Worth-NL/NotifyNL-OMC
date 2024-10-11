@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
@@ -35,7 +36,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             ((IQueryKlant)this).Configuration = configuration;
         }
 
-        #region Polymorphic (Citizen details)
+        #region Polymorphic (Party data)
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
@@ -48,19 +49,50 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
             const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            Uri partiesByTypeIdAndExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
-            return (await GetCitizenDetailsV2Async(queryBase, partiesByTypeIdAndExpand))
-                .Party(((IQueryKlant)this).Configuration)
+            return (await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand))  // Many party results
+                .Party(((IQueryKlant)this).Configuration)  // Single determined party result
                 .ConvertToUnified();
         }
 
-        private static async Task<PartyResults> GetCitizenDetailsV2Async(IQueryBase queryBase, Uri partyUri)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri)  // NOTE: This URI is the same as partijen from above
+        {
+            // The provided URI is invalid
+            if (involvedPartyUri.IsNotParty())
+            {
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
+            }
+
+            // Predefined URL components
+            const string expandParameter = "?expand=digitaleAdressen";
+
+            // Request URL
+            Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
+
+            return PartyResults.Party(  // Single determined party result
+                    partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
+                    configuration: ((IQueryKlant)this).Configuration)
+                .ConvertToUnified();
+        }
+
+        // NOTE: Multiple results
+        private static async Task<PartyResults> GetPartyResultsV2Async(IQueryBase queryBase, Uri citizenUri)
         {
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
-                uri: partyUri,  // Request URL
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
+                uri: citizenUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
+        }
+
+        // NOTE: Single result
+        private static async Task<PartyResult> GetPartyResultV2Async(IQueryBase queryBase, Uri citizenUri)
+        {
+            return await queryBase.ProcessGetAsync<PartyResult>(
+                httpClientType: HttpClientTypes.OpenKlant_v2,
+                uri: citizenUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
         }
         #endregion
 
