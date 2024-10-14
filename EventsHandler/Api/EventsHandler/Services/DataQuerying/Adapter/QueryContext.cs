@@ -110,7 +110,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
                     : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
             }
 
-            CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
+            CaseRole caseRole = await GetCaseRoleAsync(caseUri).ConfigureAwait(false);
 
             // Case #2: Involved Party URI is missing => getting citizen data by its BSN number will be attempted
             if (caseRole.InvolvedPartyUri.IsNullOrDefault())
@@ -124,6 +124,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter
 
             // Case #3: Since Involved Party URI is present => getting organization data will be attempted
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri);
+        }
+
+        public async Task<CaseRole> GetCaseRoleAsync(Uri uri)
+        {
+            return await this._queryZaak.GetCaseRoleAsync(this._queryBase, uri);
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>

@@ -50,18 +50,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             this._taskData = await this._queryContext.GetTaskAsync();
 
+            CommonPartyData party = await this._queryContext.GetPartyDataAsync(
+                caseUri: this._case.Uri,
+                bsnNumber: this._taskData.Identification.Value);
+
+            CaseRole caseRole = await _queryContext.GetCaseRoleAsync(this._case.Uri);
+
             // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
-
-            // Validation #2: The task needs to be assigned to a person
-            if (this._taskData.Identification.Type != IdTypes.Bsn)
+            
+            // Validation #2: The task needs to be assigned to a person or have an involvedPartyUri
+            if (this._taskData.Identification.Type != IdTypes.Bsn && caseRole.InvolvedPartyUri.IsNullOrDefault())
             {
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             }
-            
+
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
@@ -77,11 +83,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
 
             // Preparing party details
-            return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(
-                    caseUri: this._case.Uri,
-                    bsnNumber: this._taskData.Identification.Value),  // BSN number
-                caseUri: this._case.Uri);
+            return new PreparedData(party: party, caseUri: this._case.Uri);
         }
         #endregion
 

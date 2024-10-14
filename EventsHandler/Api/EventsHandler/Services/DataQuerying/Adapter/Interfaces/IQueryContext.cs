@@ -78,6 +78,8 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   </para>
         /// </remarks>
         internal Task<Uri> GetCaseTypeUriAsync(Uri? caseUri = null);
+
+        internal Task<CaseRole> GetCaseRoleAsync(Uri? uri = null);
         #endregion
 
         #region IQueryKlant

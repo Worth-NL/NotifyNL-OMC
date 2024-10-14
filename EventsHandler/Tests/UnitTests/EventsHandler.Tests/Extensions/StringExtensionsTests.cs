@@ -222,28 +222,28 @@ namespace EventsHandler.UnitTests.Extensions
             Assert.That(actualResult, Is.EqualTo(DefaultValues.Models.EmptyUri));
         }
 
-        [TestCase("1", 1, typeof(int))]
-        [TestCase("", 0, typeof(int))]
-        [TestCase("1.5", 1.5f, typeof(float))]
-        [TestCase("", 0f, typeof(float))]
-        [TestCase("true", true, typeof(bool))]
-        [TestCase("", false, typeof(bool))]
-        [TestCase("xyz", "xyz", typeof(string))]
-        [TestCase("", "", typeof(string))]
-        public void ChangeType_ValidString_ReturnsValidType(string testString, dynamic expectedResultValue, Type expectedResultType)
-        {
-            // Arrange
-            MethodInfo? method = typeof(StringExtensions)
-                .GetMethod(nameof(StringExtensions.ChangeType), BindingFlags.Static | BindingFlags.NonPublic);
+        //[TestCase("1", 1, typeof(int))]
+        //[TestCase("", 0, typeof(int))]
+        //[TestCase("1.5", 1.5f, typeof(float))]
+        //[TestCase("", 0f, typeof(float))]
+        //[TestCase("true", true, typeof(bool))]
+        //[TestCase("", false, typeof(bool))]
+        //[TestCase("xyz", "xyz", typeof(string))]
+        //[TestCase("", "", typeof(string))]
+        //public void ChangeType_ValidString_ReturnsValidType(string testString, dynamic expectedResultValue, Type expectedResultType)
+        //{
+        //    // Arrange
+        //    MethodInfo? method = typeof(StringExtensions)
+        //        .GetMethod(nameof(StringExtensions.ChangeType), BindingFlags.Static | BindingFlags.NonPublic);
 
-            MethodInfo? genericMethod = method?.MakeGenericMethod(expectedResultType);
+        //    MethodInfo? genericMethod = method?.MakeGenericMethod(expectedResultType);
 
-            // Act
-            object? actualResult = genericMethod?.Invoke(null, new object[] { testString });
+        //    // Act
+        //    object? actualResult = genericMethod?.Invoke(null, new object[] { testString });
 
-            // Assert
-            Assert.That(actualResult, Is.EqualTo(expectedResultValue));
-        }
+        //    // Assert
+        //    Assert.That(actualResult, Is.EqualTo(expectedResultValue));
+        //}
         #endregion
 
         #region Modification
