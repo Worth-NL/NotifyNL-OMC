@@ -43,7 +43,7 @@ namespace EventsHandler.Services.DataSending
                 .SendEmailAsync(emailAddress:    package.ContactDetails,
                                 templateId:      package.TemplateId.ToString(),
                                 personalization: package.Personalization,
-                                reference:       await GetEncodedAsync(package.Reference));
+                                reference:       await PrepareReferenceAsync(package.Reference));
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.SendSmsAsync(TPackage)"/>
@@ -53,7 +53,7 @@ namespace EventsHandler.Services.DataSending
                 .SendSmsAsync(mobileNumber:    GetDutchFallbackNumber(package.ContactDetails),
                               templateId:      package.TemplateId.ToString(),
                               personalization: package.Personalization,
-                              reference:       await GetEncodedAsync(package.Reference));
+                              reference:       await PrepareReferenceAsync(package.Reference));
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.GenerateTemplatePreviewAsync(TPackage)"/>
@@ -106,7 +106,7 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Gets encoded version of the serialized notification to make it more compact and harder to read.
         /// </summary>
-        private async Task<string> GetEncodedAsync(NotifyReference reference)
+        private async Task<string> PrepareReferenceAsync(NotifyReference reference)
         {
             // Serialize object to string
             string serializedNotification = this._serializer.Serialize(reference);
