@@ -2,7 +2,6 @@
 
 using EventsHandler.Mapping.Models.Interfaces;
 using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
 {
@@ -27,8 +26,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <summary>
         /// The data subject identification which includes details about a single citizen related to this <see cref="Case"/>.
         /// </summary>
-        [JsonRequired]
-        [JsonInclude]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject identification
         [JsonPropertyOrder(1)]
         public CitizenData Citizen { get; internal set; }
