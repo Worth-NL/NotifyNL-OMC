@@ -51,10 +51,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             this._messageData = (await queryContext.GetMessageAsync()).Record.Data;
             
-            // Preparing citizen details
+            // Preparing party details
             return new PreparedData(
-                party: await queryContext.GetPartyDataAsync(  // 2. Citizen details
-                    this._messageData.Identification.Value),  // 1. BSN number
+                party: await queryContext.GetPartyDataAsync(
+                    caseUri: null,
+                    bsnNumber: this._messageData.Identification.Value),  // BSN number
                 caseUri: null);  // NOTE: There is no case linked so, there is no case URI either
         }
         #endregion

@@ -23,12 +23,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         internal Uri Uri { get; init; }
 
         /// <summary>
-        /// The first name of the citizen.
+        /// The first name of the party (e.g., citizen or organization - company name).
         /// </summary>
         internal string Name { get; init; }
 
         /// <summary>
-        /// The prefix added before the Dutch / Belgian surname.
+        /// The prefix added before the Dutch / Belgian surname (in case of citizen party data).
         /// <para>
         ///   <example>
         ///     Prefixes: "de", "van", "van de", "van der", "van den", "te", "ter", "ten".
@@ -38,7 +38,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         internal string SurnamePrefix { get; init; }
 
         /// <summary>
-        /// The last name (surname) of the citizen.
+        /// The last name (surname) of the party (in case of citizen party data).
         /// </summary>
         internal string Surname { get; init; }
 
@@ -46,12 +46,12 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         internal DistributionChannels DistributionChannel { get; init; }
 
         /// <summary>
-        /// The e-mail address of the citizen.
+        /// The e-mail address of the party (e.g., citizen or organization).
         /// </summary>
         internal string EmailAddress { get; init; }
 
         /// <summary>
-        /// The telephone number of the citizen.
+        /// The telephone number of the party (e.g., citizen or organization).
         /// </summary>
         internal string TelephoneNumber { get; init; }
     }

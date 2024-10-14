@@ -138,7 +138,7 @@ namespace EventsHandler.Services.Responding
                 ProcessingResult.Failure
                     => details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
                         ? new HttpRequestFailed.Simplified(details).AsResult_400()
-                        : details.Cases.IsNotEmpty() && details.Reasons.Any()
+                        : details.Cases.IsNotNullOrEmpty() && details.Reasons.Any()
                             ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_400()
                             : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
 

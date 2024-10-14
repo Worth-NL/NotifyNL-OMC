@@ -58,7 +58,7 @@ namespace EventsHandler.Controllers
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route("Notify/HealthCheck")]
+        [Route("NotifyNL/HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -95,6 +95,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Sending Email messages to the "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will send real email to the given email address.
+        /// </remarks>
         /// <param name="emailAddress">The email address (required) where the notification should be sent.</param>
         /// <param name="emailTemplateId">The email template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
@@ -113,7 +116,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("Notify/SendEmail")]
+        [Route("NotifyNL/SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -141,6 +144,9 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Sending SMS text messages to the "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will send real SMS to the given mobile number.
+        /// </remarks>
         /// <param name="mobileNumber">The mobile phone number (required) where the notification should be sent.
         ///   <para>
         ///     NOTE: International country code is expected, e.g.: +1 (USA), +81 (Japan), +351 (Portugal), etc.
@@ -155,7 +161,7 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route("Notify/SendSms")]
+        [Route("NotifyNL/SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -181,8 +187,11 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Checks whether feedback can be received by contact register Web API service.
+        /// Simulates behavior of Notify/Confirm endpoint, mocking (with better control) the response from "Notify NL" Web API service.
         /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will attempt to create real Contact Moment object.
+        /// </remarks>
         /// <param name="json">The content of 'reference' sent back from NotifyNL Web API service.</param>
         /// <param name="notifyMethod">The notification method to be used during this test.</param>
         /// <param name="messages">
@@ -206,7 +215,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("Open/ContactRegistration")]
+        [Route("OMC/Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -216,7 +225,7 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Simplified))]  // REASON: One of the HTTP Request calls wasn't successful
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The JSON structure is invalid
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Simplified))]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
-        public async Task<IActionResult> RegisterAsync(
+        public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,
             [Required, FromQuery] NotifyMethods notifyMethod,
             [Required, FromQuery] string[] messages)
@@ -332,7 +341,6 @@ namespace EventsHandler.Controllers
                    personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&
                    Equals(value, PersonalizationExample.Value);
         }
-
         #endregion
     }
 }

@@ -141,7 +141,7 @@ namespace EventsHandler.UnitTests.Services.DataSending
         [TestCase("+31618758539", "+31618758539")]    // Nothing to be changed
         [TestCase("+442071234567", "+442071234567")]  // Nothing to be changed
         [TestCase("0618758539", "+31618758539")]      // The Dutch country code needs to be added
-        public async Task GetDutchFallbackNumber_ForGivenMobileNumber_ConvertsMobileNumberToValid(string testMobileNumber, string expectedMobileNumber)
+        public async Task SendSmsAsync_Using_GetDutchFallbackNumber_ForGivenMobileNumber_ConvertsMobileNumberToValid(string testMobileNumber, string expectedMobileNumber)
         {
             // Arrange
             Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
@@ -171,73 +171,6 @@ namespace EventsHandler.UnitTests.Services.DataSending
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<string>()),
                 Times.Once);
-        }
-
-        [Test, Ignore("Suspicious behavior on remote server")]
-        public async Task GetEncoded_EncodesReferenceToBase64()
-        {
-            // Arrange
-            Mock<INotifyClient> mockedClient = GetMockedNotifyClient();
-
-            var mockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>();
-            mockedClientFactory
-                .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
-                .Returns(mockedClient.Object);
-
-            var notifyReference = new NotifyReference
-            {
-                Notification = NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague().Deserialized(),
-                CaseId = new Guid("12345678-1234-1234-1234-123456789012"),
-                PartyId = new Guid("87654321-4321-4321-4321-210987654321")
-            };
-
-            const string serializedNotifyReference =
-                "{\"Notification\":{\"actie\":\"create\",\"kanaal\":\"zaken\",\"resource\":\"status\",\"kenmerken\":" +
-                "{\"zaaktype\":\"https://openzaak.test.denhaag.opengem.nl/catalogi/api/v1/zaaktypen/cf57c196-982d-4e2b-a567-d47794642bd7\"," +
-                "\"bronorganisatie\":\"286130270\",\"vertrouwelijkheidaanduiding\":\"openbaar\",\"objectType\":\"http://0.0.0.0:0/\"," +
-                "\"besluittype\":\"http://0.0.0.0:0/\",\"verantwoordelijkeOrganisatie\":\"\"},\"hoofdObject\":" +
-                "\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/zaken/4205aec5-9f5b-4abf-b177-c5a9946a77af\"," +
-                "\"resourceUrl\":\"https://openzaak.test.denhaag.opengem.nl/zaken/api/v1/statussen/11cbdb9f-1445-4424-bf34-0bf066033e03\"," +
-                "\"aanmaakdatum\":\"2023-09-22T11:41:46.0520000Z\"},\"CaseId\":\"12345678-1234-1234-1234-123456789012\"," +
-                "\"PartyId\":\"87654321-4321-4321-4321-210987654321\"}";
-
-            var mockedSerializer = new Mock<ISerializationService>();
-            mockedSerializer
-                .Setup(mock => mock.Serialize(notifyReference))
-                .Returns(serializedNotifyReference);
-
-            this._testNotifyService = new NotifyService(mockedClientFactory.Object, mockedSerializer.Object);
-
-            NotifyData testNotifyData = new
-            (
-                notificationMethod: NotifyMethods.Sms,
-                contactDetails: "112",
-                templateId: default,
-                personalization: default!,
-                reference: notifyReference
-            );
-
-            // Act
-            await this._testNotifyService.SendSmsAsync(testNotifyData);
-
-            // Assert
-            const string encodedReference =
-                // ReSharper disable StringLiteralTypo
-                "H4sIAAAAAAAACp1RwW7cIBD9F87BBozN2teceml6SC+9DTDeJeuFFcaJkij/3sFVlDZSD62xEH7zmPc875V9TSXMwUEJKbLplYErAd" +
-                "nEXEYoyG7YGSLAQsgLnDESkHFNW3aVtBYo21pJGC+Ya51avACcy/O1Ek6lXNepbdMVY4WbgmtpPMYTwLGp6BEvTVxaMgBLOoYWrqF9" +
-                "lO17j9i6uTdOjgMfD8pzjcpy6AfDvTZm1INW1htyYHOKKR8hhpX+pWqrwyA7oYyg6iPmktP2hEt4OJ8weIDot+BDPBKz+rAAmYjJPq" +
-                "Ar9x/uybxo9jWJturgumyhlL8zSAtieUop+10O7/6wxd5u2Cml2d/tUv8ypD2BjwnVD61ED+h6Ps695RrszK00hrseRpoOGAPzb5l9" +
-                "zzXJ/xP8FfZKgJTOejvOXGrdc62V5nbuNBd2FsMgug5FR6I04wt193TtUvMQquNi5ErdSzlpeodG9ErQ86MO5RZW/OKJKFWnKeEDr4" +
-                "dPW8VHIRW1/wa5PO8XDmbodack/7QpKcb3Gnv7CVO18pvsAgAA";
-                // ReSharper restore StringLiteralTypo
-
-            mockedClient
-                .Verify(mock => mock.SendSmsAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Dictionary<string, object>>(),
-                        encodedReference),
-                    Times.Once);
         }
         #endregion
 

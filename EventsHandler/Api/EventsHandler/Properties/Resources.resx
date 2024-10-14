@@ -192,8 +192,8 @@
   <data name="HttpRequest_ERROR_NoCaseStatusType" xml:space="preserve">
     <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web API service.</value>
   </data>
-  <data name="HttpRequest_ERROR_NoCitizenDetails" xml:space="preserve">
-    <value>HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service.</value>
+  <data name="HttpRequest_ERROR_NoPartyResults" xml:space="preserve">
+    <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoDecision" xml:space="preserve">
     <value>HTTP Request: The decision could not be retrieved from OpenZaak Web API service.</value>
@@ -367,14 +367,8 @@
     <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
     <comment>{0} = Organization ID / Responsible Organization ID</comment>
   </data>
-  <data name="HttpRequest_ERROR_EmptyCitizensResults" xml:space="preserve">
-    <value>HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty.</value>
-  </data>
   <data name="HttpRequest_ERROR_EmptyPartiesResults" xml:space="preserve">
     <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty.</value>
-  </data>
-  <data name="HttpRequest_ERROR_MultipleInitiatorRoles" xml:space="preserve">
-    <value>HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). It cannot be determined which of them is the initiator.</value>
   </data>
   <data name="HttpRequest_ERROR_NoDigitalAddresses" xml:space="preserve">
     <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
@@ -478,6 +472,7 @@
   </data>
   <data name="Operation_ERROR_Internal_NotObjectUri" xml:space="preserve">
     <value>Internal error: The given URI is not an object.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_Required" xml:space="preserve">
     <value>Required properties</value>
@@ -495,5 +490,16 @@
   </data>
   <data name="String1" xml:space="preserve">
     <value />
+  </data>
+  <data name="HttpRequest_ERROR_NoPartyDetails" xml:space="preserve">
+    <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_MissingBsnNumber" xml:space="preserve">
+    <value>Internal error: The BSN number is expected.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_NotPartyUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a party.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
 </root>

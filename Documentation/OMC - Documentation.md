@@ -1,6 +1,6 @@
 # **OMC** Documentation
 
-v.1.10.2
+v.1.11.0
 
 © 2024, Worth Systems.
 
@@ -222,6 +222,8 @@ in order to run an already created **docker container**.
 ---
 # 2. Architecture
 
+[Scenarios](#scenarios) implemented in **OMC** are following _Strategy Design Pattern_, and they are using JSON data deserialized into _POCO (Plain Old CLR Object)_ models, and passed as _DTO (Data Transfer Object)_ models to query services (reflecting the external micro-services architecture of third-party "Open Services"). Query services are aggregated under _IQueryContext_ and its implementation _QueryContext_ - following _Adapter Design Pattern_ thanks to which queries can be agnostic (dependencies resolved internally) and organized within a single testable abstraction, giving the developers access to all available API query methods.
+
 ---
 # 3. Required environment variables
 
@@ -288,11 +290,6 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
       "CodeObjectType": "Zaak",
       "CodeRegister": "ZRC",
       "CodeObjectTypeId": "identificatie"
-    },
-
-    "Objecten": {
-      "MessageObjectType_Version": 1,
-      "MessageObjectType_Name": "Logius"
     },
 
     // User communication: Messages to be put into register exposed to citizens
@@ -533,7 +530,7 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI</h3>
+<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI</h4>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
@@ -548,7 +545,7 @@ And then click "Authorize".
 
 > Version of **OMC** <= 1.7.4 (using "[OMC workflow v1](#workflow_dependencies)").
 
-<h2 id="workflow_versions">5.1. Versions of OMC workflows</h3>
+<h2 id="workflow_versions">5.1. Versions of OMC workflows</h2>
 
 The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
 
@@ -578,11 +575,21 @@ Here are the details which _workflows_ are using which versions of the external 
 
 > **NOTE:** The OMC workflow can be changed using a respective _environment variable_ in the section of features.
 
-## 5.2. Initial notifications
+<h2 id="scenarios">5.2. Scenarios</h2>
 
-Any **OMC** workflow relies on receiving the (initial) notification from **Notificaties** API service to trigger the processing business logic. This notification is in _JSON_ format and can be also passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to simulate the desired **OMC** behavior.
+List of scenarios and the details how to use them with **OMC** (configurations, template personalizations, environment variables, business logic conditions, etc.).
 
-### 5.2.1. Scenarios
+### 5.2.1. General introduction
+
+**OMC** "Scenarios" are specific processing workflows, set up in the code to handle certain business requirements: _what_, _when_, _how_, and _which_ to process the "initial notification" received from a subscribed channel from a _message queue_ implemented by **Open Notificaties** Web API service.
+
+Using _environment variables_ such as "Domains", "Whitelists", "TemplateIds", and most importantly "OMC Workflow version", the user of **OMC** can have some control:
+- _what_ external third-party Web API services will be used (domains)
+- _when_ the specific notification will be processed (whitelists)
+- _how_ the recipient will see the notification (template IDs), and
+- _which_ internal implementation will be used ([OMC Workflow](#workflow_versions) version)
+
+Implementation of new business cases, obviously(!), requires ingeretion in the code (C#) and preparing new **OMC** scenarios and the processing logic (validation, conditioning, settings...).
 
 Currently, the following business **scenarios** are implemented:
 
@@ -592,18 +599,112 @@ Currently, the following business **scenarios** are implemented:
 - Assignment of a _task_
 - Receiving a _decision_
 - Receiving a _message_
+ 
+#### 5.2.1.1. Notification
 
-### 5.2.2. Examples of notifications
+Any **OMC** workflow relies on receiving the (initial) notification event from **Open Notificaties** Web API service to trigger the processing business logic.
 
-These are the examples of the structure of _JSON payloads_ to be used as initial notifications for testing or development purposes:
+This notification is in _JSON_ format.
 
-#### 5.2.2.1. Cases
+Except of being awaited by **OMC** callback (`[OMC]/events/listen` endpoint) it can also be passed from outside to HTTP Requests while using **Swagger UI** or **Postman** - to test or simulate the desired **OMC** behavior. This way the initial event from **Open Notificaties** Web API service can be stubbed.
 
-**Scenarios using this notification:**
+Using **Swagger UI** is recommended solution, because of its user-friendly User Interface, documentation of endpoints, parameters, remarks, JSON examples, model schemas, and validation; formatting of API responses is also better than in **Postman**.
 
-- Case created
-- Case status updated
-- Case closed
+#### 5.2.1.2. Environment variables
+
+To work properly **OMC** always requires these mandatory _environment variables_ to be set:
+
+> **NOTE:** If some environment variable is missing but required by one of the countless scenarios, conditions, or workflows, the **OMC** application will return a readable and user-friendly API response with the name of the missing environment variable. This is the easiest way to figure out what else is required.
+
+`ASPNETCORE_ENVIRONMENT`
+
+> Used by `[OMC]/events/version` endpoint and to determine which `appsettings[.xxx].json` will be used.
+
+`OMC_AUTHORIZATION_JWT_SECRET`
+
+`OMC_AUTHORIZATION_JWT_ISSUER`
+
+`OMC_AUTHORIZATION_JWT_AUDIENCE`
+
+`OMC_AUTHORIZATION_JWT_EXPIRESINMIN`
+
+`OMC_AUTHORIZATION_JWT_USERID`
+
+`OMC_AUTHORIZATION_JWT_USERNAME`
+
+> Required to get access to **OMC** and be able to use it. Moreover, **Open Notificaties** Web API service will use this method to make an authorized requests while sending notification events to **OMC**.
+
+`OMC_API_BASEURL_NOTIFYNL`
+
+> Without this URL notifications would not work.
+
+`OMC_FEATURES_WORKFLOW_VERSION`
+
+> Without this setting (the version needs to be supported) the **OMC** Web API will not even run and specific implementations of underlying services will not be resolved by _Dependency Injection_ mechanism. By default you can always use `"1"` if you don't know yet which other [OMC Workflow](#workflow_versions) version you should use.
+
+`USER_AUTHORIZATION_JWT_SECRET`
+
+`USER_AUTHORIZATION_JWT_ISSUER`
+
+`USER_AUTHORIZATION_JWT_AUDIENCE`
+
+`USER_AUTHORIZATION_JWT_EXPIRESINMIN`
+
+`USER_AUTHORIZATION_JWT_USERID`
+
+`USER_AUTHORIZATION_JWT_USERNAME`
+
+> **JWT authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
+
+`USER_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
+
+`USER_API_KEY_OBJECTEN`
+
+`USER_API_KEY_OBJECTTYPEN`
+
+`USER_API_KEY_NOTIFYNL`
+
+> **API key authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
+
+`USER_DOMAIN_OPENZAAK`
+
+`USER_DOMAIN_OPENKLANT`
+
+`USER_DOMAIN_BESLUITEN`
+
+`USER_DOMAIN_OBJECTEN`
+
+`USER_DOMAIN_OBJECTTYPEN`
+
+`USER_DOMAIN_CONTACTMOMENTEN`
+
+> **Domains** might have different _paths_ (e.g., `domain/something/v1/`) depends on version of external API service used in certain [OMC Workflow](#workflow_versions). For example domains for OpenKlant and ContactMomenten depends on version of **Open Klant** Web API service. Moreover, domains and paths depends on the place where your version of Web API service was deployed (domain) and the way how it is internally structured (paths).
+
+These _environment variables_ are optional:
+
+`SENTRY_DSN`
+
+`SENTRY_ENVIRONMENT`
+
+> Logging and analytics in third-party service ([Sentry.io](https://sentry.io)).
+
+#### 5.2.1.3. Conditioning
+
+To process certain notification the specific internal criteria must be met. Usually, they are some pre-validation (analyzing the "initial notification" received from **Open Notificaties** Web API service), post-validation (to determine the scenario suited for this type of the notification), and whitelisting steps (to ensure that **OMC** should continue processing this type of notification). Sometimes, additional checks have to be performed - which depends on the specific **OMC** scenario.
+
+#### 5.2.1.4. Template placeholders
+
+When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
+
+---
+
+### 5.2.2. Case Created
+
+Notifies the respective party (e.g., a citizen or an organization) about the case being open for them. For the residents of The Netherlands the case is related to their unique personal identification number **BSN** (_Burgerservicenummer_), thanks to which their contact details and contact preferrences can be retrieved (whether they want to be notified and which notification method they prefer, e.g. by Email, SMS, etc.).
+
+#### 5.2.2.1. Notification
+
+Example of JSON schema:
 
 ```json
 {
@@ -621,11 +722,171 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 }
 ```
 
-#### 5.2.2.2. Tasks
+#### 5.2.2.2. Environment variables
 
-**Scenarios using this notification:**
+Required to be set:
 
-- Task assigned
+`USER_TEMPLATEIDS_EMAIL_ZAAKCREATE`
+
+`USER_TEMPLATEIDS_SMS_ZAAKCREATE`
+
+</br>
+
+`USER_WHITELIST_ZAAKCREATE_IDS`
+
+#### 5.2.2.3. Conditioning
+
+... To be done
+
+#### 5.2.2.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((zaak.identificatie))`
+
+`((zaak.omschrijving))`
+
+---
+
+### 5.2.3. Case Status Updated
+
+Notifies the respective party (e.g., a citizen or an organization) that the status of their case was updated.
+
+#### 5.2.3.1. Notification
+
+Example of JSON schema:
+
+```json
+{
+  "actie": "create",
+  "kanaal": "zaken",
+  "resource": "status",
+  "kenmerken": {
+    "zaaktype": "https://...",
+    "bronorganisatie": "000000000",
+    "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
+}
+```
+
+#### 5.2.3.2. Environment variables
+
+Required to be set:
+
+`USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE`
+
+`USER_TEMPLATEIDS_SMS_ZAAKUPDATE`
+
+</br>
+
+`USER_WHITELIST_ZAAKUPDATE_IDS`
+
+#### 5.2.3.3. Conditioning
+
+... To be done
+
+#### 5.2.3.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((zaak.identificatie))`
+
+`((zaak.omschrijving))`
+
+</br>
+
+`((status.omschrijving))`
+
+---
+
+### 5.2.4. Case Closed
+
+Notifies the respective party (e.g., a citizen or an organization) that their case was closed (e.g., resolved).
+
+#### 5.2.4.1. Notification
+
+Example of JSON schema:
+
+```json
+{
+  "actie": "create",
+  "kanaal": "zaken",
+  "resource": "status",
+  "kenmerken": {
+    "zaaktype": "https://...",
+    "bronorganisatie": "000000000",
+    "vertrouwelijkheidaanduiding": "openbaar" // Or "vertrouwelijk"
+  },
+  "hoofdObject": "https://...",
+  "resourceUrl": "https://...",
+  "aanmaakdatum": "2000-01-01T10:00:00.000Z"
+}
+```
+
+#### 5.2.4.2. Environment variables
+
+Required to be set:
+
+`USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE`
+
+`USER_TEMPLATEIDS_SMS_ZAAKCLOSE`
+
+</br>
+
+`USER_WHITELIST_ZAAKCLOSE_IDS`
+
+#### 5.2.4.3. Conditioning
+
+... To be done
+
+#### 5.2.4.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((zaak.identificatie))`
+
+`((zaak.omschrijving))`
+
+</br>
+
+`((status.omschrijving))`
+
+---
+
+### 5.2.5. Task Assigned
+
+Notifies the respective party (e.g., a citizen or an organization) that the new task was assigned to them.
+
+#### 5.2.5.1. Notification
+
+Example of JSON schema:
 
 ```json
 {
@@ -641,11 +902,57 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 }
 ```
 
-#### 5.2.2.3. Decisions
+#### 5.2.5.2. Environment variables
 
-**Scenarios using this notification:**
+Required to be set:
 
-- Decision made
+`USER_TEMPLATEIDS_EMAIL_TASKASSIGNED`
+
+`USER_TEMPLATEIDS_SMS_TASKASSIGNED`
+
+</br>
+
+`USER_WHITELIST_TASKASSIGNED_IDS`
+
+`USER_WHITELIST_TASKOBJECTTYPE_UUID`
+
+#### 5.2.5.3. Conditioning
+
+... To be done
+
+#### 5.2.5.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((taak.verloopdatum))`
+
+`((taak.heeft_verloopdatum))`
+
+`((taak.record.data.title))`
+
+</br>
+
+`((zaak.identificatie))`
+
+`((zaak.omschrijving))`
+
+---
+
+### 5.2.6. Decision Made
+
+Notifies the respective party (e.g., a citizen or an organization) that the decision was made in their case.
+
+#### 5.2.6.1. Notification
+
+Example of JSON schema:
 
 ```json
 {
@@ -662,11 +969,97 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
 }
 ```
 
-#### 5.2.2.4. Messages
+#### 5.2.6.2. Environment variables
 
-**Scenarios using this notification:**
+Required to be set:
 
-- Message received
+`USER_TEMPLATEIDS_DECISIONMADE`
+
+</br>
+
+`USER_WHITELIST_DECISIONMADE_IDS`
+
+`USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS`
+
+`USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
+
+</br>
+
+`USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION`
+
+#### 5.2.6.3. Conditioning
+
+... To be done
+
+#### 5.2.6.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((besluit.identificatie))`
+
+`((besluit.datum))`
+
+`((besluit.toelichting))`
+
+`((besluit.bestuursorgaan))`
+
+`((besluit.ingangsdatum))`
+
+`((besluit.vervaldatum))`
+
+`((besluit.vervalreden))`
+
+`((besluit.publicatiedatum))`
+
+`((besluit.verzenddatum))`
+
+`((besluit.uiterlijkereactiedatum))`
+
+</br>
+
+`((besluittype.omschrijving))`
+
+`((besluittype.omschrijvingGeneriek))`
+
+`((besluittype.besluitcategorie))`
+
+`((besluittype.publicatieindicatie))`
+
+`((besluittype.publicatietekst))`
+
+`((besluittype.toelichting))`
+
+</br>
+
+`((zaak.identificatie))`
+
+`((zaak.omschrijving))`
+
+`((zaak.registratiedatum))`
+
+</br>
+
+`((zaaktype.omschrijving))`
+
+`((zaaktype.omschrijvingGeneriek))`
+
+---
+
+### 5.2.7. Message Received
+
+Notifies the respective party (e.g., a citizen or an organization) that the message with decision is available on their mailbox.
+
+#### 5.2.7.1. Notification
+
+Example of JSON schema:
 
 ```json
 {
@@ -681,6 +1074,48 @@ These are the examples of the structure of _JSON payloads_ to be used as initial
   "aanmaakdatum": "2000-01-01T10:00:00.000Z"
 }
 ```
+
+#### 5.2.7.2. Environment variables
+
+Required to be set:
+
+`USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED`
+
+`USER_TEMPLATEIDS_SMS_MESSAGERECEIVED`
+
+</br>
+
+`USER_WHITELIST_MESSAGE_ALLOWED`
+
+`USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
+
+#### 5.2.7.3. Conditioning
+
+... To be done
+
+#### 5.2.7.4. Template placeholders
+
+Required placeholders names in the template:
+
+`((klant.voornaam))`
+
+`((klant.voorvoegselAchternaam))`
+
+`((klant.achternaam))`
+
+</br>
+
+`((message.onderwerp))`
+
+`((message.handelingsperspectief))`
+
+---
+
+### 5.2.99. Not Implemented
+
+A special fallback scenario which only role is to report that the provided "initial notification" or conditions are not sufficient to determine a proper **OMC** scenario - to be resolved and used for processing the business logic.
+
+User can expect meaningful API response from **OMC**. This response will have _HTTP Status Code_ (206) that will not trigger **Open Notificaties** Web API service to retry sending the same type of "initial notification" again (which would be pointless and fail again since the **OMC** scenario or new condition are not yet implemented).
 
 ---
 # 6. Errors

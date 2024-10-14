@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant.v1;
@@ -35,7 +36,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             ((IQueryKlant)this).Configuration = configuration;
         }
 
-        #region Polymorphic (Citizen details)
+        #region Polymorphic (Party data)
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
@@ -45,17 +46,41 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v1
             // Request URL
             Uri citizenByBsnUri = new($"{citizensEndpoint}?subjectNatuurlijkPersoon__inpBsn={bsnNumber}");
 
-            return (await GetCitizenResultsV1Async(queryBase, citizenByBsnUri))
-                .Citizen
+            return (await GetPartyResultsV1Async(queryBase, citizenByBsnUri))  // Many party results
+                .Party  // Single determined party result
                 .ConvertToUnified();
         }
 
-        private static async Task<CitizenResults> GetCitizenResultsV1Async(IQueryBase queryBase, Uri citizenUri)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri)
         {
-            return await queryBase.ProcessGetAsync<CitizenResults>(
+            // The provided URI is invalid
+            if (involvedPartyUri.IsNotParty())
+            {
+                throw new ArgumentException(Resources.Operation_ERROR_Internal_NotPartyUri);
+            }
+
+            // Single determined party result
+            return (await GetPartyResultV1Async(queryBase, involvedPartyUri))  // Request URL
+                .ConvertToUnified();
+        }
+
+        // NOTE: Multiple results
+        private static async Task<PartyResults> GetPartyResultsV1Async(IQueryBase queryBase, Uri citizenUri)
+        {
+            return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
                 uri: citizenUri,  // Request URL
-                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoCitizenDetails);
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
+        }
+
+        // NOTE: Single result
+        private static async Task<PartyResult> GetPartyResultV1Async(IQueryBase queryBase, Uri citizenUri)
+        {
+            return await queryBase.ProcessGetAsync<PartyResult>(
+                httpClientType: HttpClientTypes.OpenKlant_v1,
+                uri: citizenUri,  // Request URL
+                fallbackErrorMessage: Resources.HttpRequest_ERROR_NoPartyResults);
         }
         #endregion
 
