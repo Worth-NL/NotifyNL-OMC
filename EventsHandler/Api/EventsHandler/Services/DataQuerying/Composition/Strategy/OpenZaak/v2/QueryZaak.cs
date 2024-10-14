@@ -48,8 +48,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
             string rolesEndpoint = $"https://{((IQueryZaak)this).GetDomain()}/rollen";
 
             // Request URL
-            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}" +
-                                          $"&betrokkeneType={subjectType}");
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}");
+                //+                        $"&betrokkeneType={subjectType}");
 
             return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v2
                 httpClientType: HttpClientTypes.OpenZaak_v1,
