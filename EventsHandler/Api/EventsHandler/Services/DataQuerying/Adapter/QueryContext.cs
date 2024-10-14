@@ -1,11 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
 using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
+using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
@@ -97,15 +99,31 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         #endregion
 
         #region IQueryKlant
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(string?)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(string? bsnNumber)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber)
         {
-            // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
-            bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(
-                this._queryBase.Notification.MainObjectUri);  // In Cases scenarios the desired case URI is located here
+            // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
+            if (caseUri.IsNullOrDefault())
+            {
+                return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
+                    ? throw new ArgumentException(Resources.Operation_ERROR_Internal_MissingBsnNumber)
+                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            }
 
-            // 2. Fetch citizen details using "OpenKlant" Web API service
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
+
+            // Case #2: Involved Party URI is missing => getting citizen data by its BSN number will be attempted
+            if (caseRole.InvolvedPartyUri.IsNullOrDefault())
+            {
+                // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
+                bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(caseUri);
+
+                // 2. Fetch citizen data using "OpenKlant" Web API service
+                return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+            }
+
+            // Case #3: Since Involved Party URI is present => getting organization data will be attempted
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri);
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>

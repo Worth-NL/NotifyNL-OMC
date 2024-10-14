@@ -47,7 +47,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
         /// </returns>
-        private static bool IsNullOrDefault([NotNullWhen(false)]this Uri? uri)
+        internal static bool IsNullOrDefault([NotNullWhen(false)] this Uri? uri)
         {
             return DefaultValues.Models.EmptyUri.Equals(uri);
         }
@@ -86,6 +86,18 @@ namespace EventsHandler.Extensions
         internal static bool IsNotCaseType(this Uri? uri)
         {
             return uri.DoesNotContain("/zaaktypen");
+        }
+
+        /// <summary>
+        /// Determines whether the given <see cref="Uri"/> doesn't contain party result <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        internal static bool IsNotParty(this Uri? uri)
+        {
+            return uri.DoesNotContain("/partijen");
         }
 
         /// <summary>

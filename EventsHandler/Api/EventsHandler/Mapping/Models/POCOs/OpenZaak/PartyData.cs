@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
-    /// The sensitive data about a single citizen ("burger") retrieved from "OpenZaak" Web API service.
+    /// The sensitive data about a single party (e.g., citizen or organization) retrieved from "OpenZaak" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CitizenData : IJsonSerializable
+    public struct PartyData : IJsonSerializable
     {
         /// <summary>
         /// The BSN (citizen service number) of the citizen.
@@ -21,9 +21,9 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         public string BsnNumber { get; internal set; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenData"/> struct.
+        /// Initializes a new instance of the <see cref="PartyData"/> struct.
         /// </summary>
-        public CitizenData()
+        public PartyData()
         {
         }
     }

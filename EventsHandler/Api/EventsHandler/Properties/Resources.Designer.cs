@@ -466,15 +466,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Results representing results about citizens (retrieved from OpenKlant Web API service) are empty..
-        /// </summary>
-        internal static string HttpRequest_ERROR_EmptyCitizensResults {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_EmptyCitizensResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty..
         /// </summary>
         internal static string HttpRequest_ERROR_EmptyPartiesResults {
@@ -507,15 +498,6 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_MissingInitiatorRole {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_MissingInitiatorRole", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Multiple roles (retrieved from OpenZaak Web API service) have the same initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). It cannot be determined which of them is the initiator..
-        /// </summary>
-        internal static string HttpRequest_ERROR_MultipleInitiatorRoles {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_MultipleInitiatorRoles", resourceCulture);
             }
         }
         
@@ -561,15 +543,6 @@ namespace EventsHandler.Properties {
         internal static string HttpRequest_ERROR_NoCaseStatusType {
             get {
                 return ResourceManager.GetString("HttpRequest_ERROR_NoCaseStatusType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Citizen details could not be retrieved from OpenKlant Web API service..
-        /// </summary>
-        internal static string HttpRequest_ERROR_NoCitizenDetails {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_NoCitizenDetails", resourceCulture);
             }
         }
         
@@ -664,6 +637,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Party results could not be retrieved from OpenKlant Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoPartyDetails {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Party results could not be retrieved from OpenKlant Web API service..
+        /// </summary>
+        internal static string HttpRequest_ERROR_NoPartyResults {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
         /// </summary>
         internal static string HttpRequest_ERROR_NoSourceOrganization {
@@ -718,6 +709,15 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The BSN number is expected..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_MissingBsnNumber {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_MissingBsnNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: The given URI is not a case type..
         /// </summary>
         internal static string Operation_ERROR_Internal_NotCaseTypeUri {
@@ -759,6 +759,15 @@ namespace EventsHandler.Properties {
         internal static string Operation_ERROR_Internal_NotObjectUri {
             get {
                 return ResourceManager.GetString("Operation_ERROR_Internal_NotObjectUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not a party..
+        /// </summary>
+        internal static string Operation_ERROR_Internal_NotPartyUri {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal_NotPartyUri", resourceCulture);
             }
         }
         
