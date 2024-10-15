@@ -56,22 +56,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
-            // Validation #2: The task needs to be assigned to a person
-            if (this._taskData.Identification.Type != IdTypes.Bsn)
-            {
-                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
-            }
+          
             
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
             
-            // Validation #3: The case type identifier must be whitelisted
+            // Validation #2: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
                 caseType.Identification, GetWhitelistEnvVarName());
 
-            // Validation #4: The notifications must be enabled
+            // Validation #3: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
             
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
