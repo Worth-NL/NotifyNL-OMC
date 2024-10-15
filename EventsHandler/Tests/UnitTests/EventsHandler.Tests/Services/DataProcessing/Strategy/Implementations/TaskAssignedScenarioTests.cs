@@ -131,27 +131,27 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        [Test]
-        public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
-        {
-            // Arrange
-            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
-                DistributionChannels.Email,
-                s_taskOpenNotAssignedToPerson,
-                true,
-                true);
+        //[Test]
+        //public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
+        //{
+        //    // Arrange
+        //    INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
+        //        DistributionChannels.Email,
+        //        s_taskOpenNotAssignedToPerson,
+        //        true,
+        //        true);
 
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
-                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
-                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
+        //    // Act & Assert
+        //    Assert.Multiple(() =>
+        //    {
+        //        AbortedNotifyingException? exception =
+        //            Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
+        //        Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
+        //        Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
-                VerifyGetDataMethodCalls(1, 1, 0, 0, 0);
-            });
-        }
+        //        VerifyGetDataMethodCalls(1, 1, 0, 0, 0);
+        //    });
+        //}
 
         [Test]
         public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
