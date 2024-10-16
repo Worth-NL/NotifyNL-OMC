@@ -71,7 +71,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Status = TaskStatuses.Closed
         };
 
-        private static readonly CommonTaskData s_taskOpenNotAssignedToPerson = new()
+        private static readonly CommonTaskData s_taskOpenNotAssignedToAnyone = new()
         {
             Status = TaskStatuses.Open,
             Identification = new Identification
@@ -81,6 +81,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         };
 
         private const string TestTaskTitle = "Test title";
+
+        // Tasks assigned to someone with expiration date
         private static readonly CommonTaskData s_taskOpenAssignedToPersonWithoutExpirationDate = new()
         {
             Title = TestTaskTitle,
@@ -91,7 +93,18 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Type = IdTypes.Bsn
             }
         };
+        private static readonly CommonTaskData s_taskOpenAssignedToOrganizationWithoutExpirationDate = new()
+        {
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            // Missing "ExpirationDate" => default
+            Identification = new Identification
+            {
+                Type = IdTypes.Kvk
+            }
+        };
 
+        // Tasks assigned to someone without expiration date
         private static readonly CommonTaskData s_taskOpenAssignedToPersonWithExpirationDate = new()
         {
             Title = TestTaskTitle,
@@ -100,6 +113,16 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             Identification = new Identification
             {
                 Type = IdTypes.Bsn
+            }
+        };
+        private static readonly CommonTaskData s_taskOpenAssignedToOrganizationWithExpirationDate = new()
+        {
+            Title = TestTaskTitle,
+            Status = TaskStatuses.Open,
+            ExpirationDate = new DateTime(2024, 7, 24, 14, 10, 40, DateTimeKind.Utc),
+            Identification = new Identification
+            {
+                Type = IdTypes.Kvk
             }
         };
 
@@ -131,35 +154,36 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        //[Test]
-        //public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
-        //{
-        //    // Arrange
-        //    INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
-        //        DistributionChannels.Email,
-        //        s_taskOpenNotAssignedToPerson,
-        //        true,
-        //        true);
-
-        //    // Act & Assert
-        //    Assert.Multiple(() =>
-        //    {
-        //        AbortedNotifyingException? exception =
-        //            Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
-        //        Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson), Is.True);
-        //        Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
-                
-        //        VerifyGetDataMethodCalls(1, 1, 0, 0, 0);
-        //    });
-        //}
-
         [Test]
-        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_NotWhitelisted_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithExpirationDate,
+                s_taskOpenNotAssignedToAnyone,
+                true,
+                true);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception =
+                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
+                Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported), Is.True);
+                Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
+
+                VerifyGetDataMethodCalls(1, 1, 0, 0, 0);
+            });
+        }
+
+        [TestCase(IdTypes.Bsn)]  // Person
+        [TestCase(IdTypes.Kvk)]  // Organization
+        public void TryGetDataAsync_ValidTaskType_Open_AssignedToEntity_NotWhitelisted_ThrowsAbortedNotifyingException(IdTypes idType)
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
+                DistributionChannels.Email,
+                testTask: GetOpenAssignedTaskWithExpirationDate(idType),
                 isCaseTypeIdWhitelisted: false,
                 isNotificationExpected: true);
 
@@ -179,14 +203,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 VerifyGetDataMethodCalls(1, 1, 1, 0, 0);
             });
         }
-
-        [Test]
-        public void TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToFalse_ThrowsAbortedNotifyingException()
+        
+        [TestCase(IdTypes.Bsn)]  // Person
+        [TestCase(IdTypes.Kvk)]  // Organization
+        public void TryGetDataAsync_ValidTaskType_Open_AssignedToEntity_Whitelisted_InformSetToFalse_ThrowsAbortedNotifyingException(IdTypes idType)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 DistributionChannels.Email,
-                s_taskOpenAssignedToPersonWithExpirationDate,
+                testTask: GetOpenAssignedTaskWithExpirationDate(idType),
                 isCaseTypeIdWhitelisted: true,
                 isNotificationExpected: false);
 
@@ -202,16 +227,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        [TestCase(DistributionChannels.None)]
-        [TestCase(DistributionChannels.Unknown)]
-        [TestCase((DistributionChannels)(-1))]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithInvalidDistChannel_ReturnsFailure(
-            DistributionChannels invalidDistributionChannel)
+        // Person
+        [TestCase(DistributionChannels.None, IdTypes.Bsn)]
+        [TestCase(DistributionChannels.Unknown, IdTypes.Bsn)]
+        [TestCase((DistributionChannels)(-1), IdTypes.Bsn)]
+        // Organization
+        [TestCase(DistributionChannels.None, IdTypes.Kvk)]
+        [TestCase(DistributionChannels.Unknown, IdTypes.Kvk)]
+        [TestCase((DistributionChannels)(-1), IdTypes.Kvk)]
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToEntity_Whitelisted_InformSetToTrue_WithInvalidDistChannel_ReturnsFailure(
+            DistributionChannels invalidDistributionChannel, IdTypes idType)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 invalidDistributionChannel,
-                s_taskOpenAssignedToPersonWithExpirationDate,
+                testTask: GetOpenAssignedTaskWithExpirationDate(idType),
                 true,
                 true);
 
@@ -229,16 +259,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             });
         }
 
-        [TestCase(DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
-        [TestCase(DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
-        [TestCase(DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
-        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToPerson_Whitelisted_InformSetToTrue_WithValidDistChannels_ReturnsSuccess(
-            DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
+        // Person
+        [TestCase(DistributionChannels.Email, IdTypes.Bsn, NotifyMethods.Email, 1, TestEmailAddress)]
+        [TestCase(DistributionChannels.Sms, IdTypes.Bsn, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Both, IdTypes.Bsn, null, 2, TestEmailAddress + TestPhoneNumber)]
+        // Organization
+        [TestCase(DistributionChannels.Email, IdTypes.Kvk, NotifyMethods.Email, 1, TestEmailAddress)]
+        [TestCase(DistributionChannels.Sms, IdTypes.Kvk, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Both, IdTypes.Kvk, null, 2, TestEmailAddress + TestPhoneNumber)]
+        public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToEntity_Whitelisted_InformSetToTrue_WithValidDistChannels_ReturnsSuccess(
+            DistributionChannels testDistributionChannel, IdTypes idType, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
-                s_taskOpenAssignedToPersonWithExpirationDate,
+                testTask: GetOpenAssignedTaskWithExpirationDate(idType),
                 isCaseTypeIdWhitelisted: true,
                 isNotificationExpected: true);
 
@@ -286,16 +321,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region GetPersonalizationAsync()
-        [TestCase(DistributionChannels.Email, false, "-", "no")]
-        [TestCase(DistributionChannels.Email, true, "2024-07-24", "yes")]
-        [TestCase(DistributionChannels.Sms, false, "-", "no")]
-        [TestCase(DistributionChannels.Sms, true, "2024-07-24", "yes")]
+        // Person
+        [TestCase(DistributionChannels.Email, IdTypes.Bsn, false, "-", "no")]
+        [TestCase(DistributionChannels.Email, IdTypes.Bsn, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Bsn, false, "-", "no")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Bsn, true, "2024-07-24", "yes")]
+        // Organization
+        [TestCase(DistributionChannels.Email, IdTypes.Kvk, false, "-", "no")]
+        [TestCase(DistributionChannels.Email, IdTypes.Kvk, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Kvk, false, "-", "no")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Kvk, true, "2024-07-24", "yes")]
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
-            DistributionChannels testDistributionChannel, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
+            DistributionChannels testDistributionChannel, IdTypes idType, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
             CommonTaskData testTaskData = isExpirationDateGiven
-                ? s_taskOpenAssignedToPersonWithExpirationDate
-                : s_taskOpenAssignedToPersonWithoutExpirationDate;
+                ? GetOpenAssignedTaskWithExpirationDate(idType)
+                : GetOpenAssignedTaskWithoutExpirationDate(idType);
 
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
                 testDistributionChannel,
@@ -588,6 +629,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             this._processDataVerified = true;
 
             VerifyGetDataMethodCalls(0, 0, 0, 0, 0);
+        }
+        #endregion
+
+        #region Helper methods
+        private static CommonTaskData GetOpenAssignedTaskWithExpirationDate(IdTypes idType)
+        {
+            return idType == IdTypes.Bsn ? s_taskOpenAssignedToPersonWithExpirationDate :
+                   idType == IdTypes.Kvk ? s_taskOpenAssignedToOrganizationWithExpirationDate
+                                         : default;
+        }
+
+        private static CommonTaskData GetOpenAssignedTaskWithoutExpirationDate(IdTypes idType)
+        {
+            return idType == IdTypes.Bsn ? s_taskOpenAssignedToPersonWithoutExpirationDate :
+                   idType == IdTypes.Kvk ? s_taskOpenAssignedToOrganizationWithoutExpirationDate
+                                         : default;
         }
         #endregion
     }

@@ -395,8 +395,8 @@
   <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
     <value>The notification can not be sent if the task is already closed.</value>
   </data>
-  <data name="Processing_ABORT_DoNotSendNotification_TaskNotPerson" xml:space="preserve">
-    <value>The notification can not be sent if the task is not assigned to a person (missing BSN number).</value>
+  <data name="Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported" xml:space="preserve">
+    <value>The notification can not be sent if the task is not assigned to a person (missing BSN number) or to an organization (missing KVK number).</value>
   </data>
   <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
     <value>Internal error: The given URI is not a case type.</value>

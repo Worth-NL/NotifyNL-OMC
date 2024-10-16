@@ -853,11 +853,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number)..
+        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number) or to an organization (missing KVK number)..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
+        internal static string Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskNotPerson", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported", resourceCulture);
             }
         }
         
