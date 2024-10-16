@@ -187,6 +187,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                 if (prefDigitalAddressId != Guid.Empty &&
                     prefDigitalAddressId == digitalAddress.Id)
                 {
+                    // NOTE: If somehow many addresses are preferred (e-mail and SMS), the first encountered preferred one will be returned
                     return (partyResult, distributionChannel, emailAddress, phoneNumber);
                 }
 
