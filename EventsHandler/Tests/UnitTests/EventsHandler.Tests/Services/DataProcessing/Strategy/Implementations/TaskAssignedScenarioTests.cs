@@ -155,7 +155,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         }
 
         [Test]
-        public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToPerson_ThrowsAbortedNotifyingException()
+        public void TryGetDataAsync_ValidTaskType_Open_NotAssignedToAnyone_ThrowsAbortedNotifyingException()
         {
             // Arrange
             INotifyScenario scenario = ArrangeTaskScenario_TryGetData(
