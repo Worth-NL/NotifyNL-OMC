@@ -26,7 +26,7 @@ namespace EventsHandler.Mapping.Enums.Objecten
         Bsn = 1,
 
         /// <summary>
-        /// The KVK (citizen service number) type of the <see cref="Identification"/>.
+        /// The KVK (Chamber of Commerce number) type of the <see cref="Identification"/>.
         /// </summary>
         [JsonPropertyName("kvk")]
         Kvk = 2
