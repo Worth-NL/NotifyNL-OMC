@@ -183,7 +183,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = PartyResults.Party(testPartyEmail, this._validAppSettingsConfiguration);
+                = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail);
 
             // Assert
             Assert.Multiple(() =>
@@ -203,7 +203,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = PartyResults.Party(testPartyEmail, this._validAppSettingsConfiguration);
+                = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail);
 
             // Assert
             Assert.Multiple(() =>
@@ -225,7 +225,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = PartyResults.Party(testParty, this._validAppSettingsConfiguration);
+                = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
             Assert.Multiple(() =>
@@ -245,7 +245,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = PartyResults.Party(testParty, this._validAppSettingsConfiguration);
+                = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
             Assert.Multiple(() =>
@@ -487,7 +487,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             Assert.Multiple(() =>
             {
                 TException? exception = Assert.Throws<TException>(() =>
-                    PartyResults.Party(partyResult, configuration));
+                    PartyResults.Party(configuration, partyResult));
 
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });
