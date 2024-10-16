@@ -126,6 +126,29 @@ namespace EventsHandler.UnitTests.Services.Serialization
         }
 
         [Test]
+        public void Deserialize_CaseRole_ValidJson_Null_ReturnsExpectedModel()  // NOTE: Handles nullable property
+        {
+            // Arrange
+            const string testJson =
+                $"{{" +
+                  $"\"betrokkene\":null," +  // Should be deserialized as default not null
+                  $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+                  $"\"betrokkeneIdentificatie\":null" +  // Can be null
+                $"}}";
+
+            // Act
+            CaseRole actualResult = this._serializer.Deserialize<CaseRole>(testJson);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.InvolvedPartyUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualResult.InitiatorRole, Is.EqualTo(TestString));
+                Assert.That(actualResult.Party, Is.Null);
+            });
+        }
+
+        [Test]
         public void Deserialize_IJsonSerializable_From_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
         {
             // Act & Assert
@@ -468,6 +491,31 @@ namespace EventsHandler.UnitTests.Services.Serialization
                   $"\"zaaktypeIdentificatie\":\"{TestString}\"," +
                   $"\"isEindstatus\":{TestBoolean}," +
                   $"\"informeren\":{TestBoolean}" +
+                $"}}";
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void Serialize_CaseRole_ValidModel_ReturnsExpectedJson()  // Nullable property is accepted
+        {
+            // Arrange
+            var testModel = new CaseRole
+            {
+                InvolvedPartyUri = new Uri(TestUrl),
+                InitiatorRole = TestString,
+                Party = null
+            };
+
+            // Act
+            string actualResult = this._serializer.Serialize(testModel);
+
+            // Assert
+            const string expectedResult =
+                $"{{" +
+                  $"\"betrokkene\":\"{TestUrl}\"," +
+                  $"\"omschrijvingGeneriek\":\"{TestString}\"," +
+                  $"\"betrokkeneIdentificatie\":null" +
                 $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
