@@ -619,15 +619,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The main object could not be retrieved from OpenZaak Web API service..
-        /// </summary>
-        internal static string HttpRequest_ERROR_NoMainObject {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_NoMainObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The message (object) could not be retrieved from Objecten Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMessage {
@@ -1029,15 +1020,6 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

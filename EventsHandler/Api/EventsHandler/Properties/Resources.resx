@@ -379,9 +379,6 @@
   <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
     <value>SENDER: In the received notification some [Required] properties are either null, empty, or with default values.</value>
   </data>
-  <data name="HttpRequest_ERROR_NoMainObject" xml:space="preserve">
-    <value>HTTP Request: The main object could not be retrieved from OpenZaak Web API service.</value>
-  </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId" xml:space="preserve">
     <value>The notification can not be sent because the case type with identification '{0}' is not included in the {1}.</value>
     <comment>{0} = Case Type ID, {1} = Name of the environment variable holding this value</comment>
@@ -487,9 +484,6 @@
   </data>
   <data name="Configuration_ERROR_VersionBesluitenUnknown" xml:space="preserve">
     <value>The version of Besluiten service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
-  </data>
-  <data name="String1" xml:space="preserve">
-    <value />
   </data>
   <data name="HttpRequest_ERROR_NoPartyDetails" xml:space="preserve">
     <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
