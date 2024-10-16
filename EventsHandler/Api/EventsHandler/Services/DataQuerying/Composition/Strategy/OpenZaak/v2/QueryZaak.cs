@@ -42,7 +42,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
                 .CaseRole(((IQueryZaak)this).Configuration);
         }
 
-        private async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, Uri caseUri, string subjectType)
+        private async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, Uri caseUri, string subjectType)  // TODO: Not used yet (at the moment, consulting)
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{((IQueryZaak)this).GetDomain()}/rollen";

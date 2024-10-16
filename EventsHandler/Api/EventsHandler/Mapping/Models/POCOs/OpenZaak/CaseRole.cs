@@ -33,7 +33,8 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The data subject identification which includes details about a single citizen related to this <see cref="Case"/>.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]  // TODO: Contact Ernout what was the intention
+        [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject (party) identification
         [JsonPropertyOrder(2)]
         public PartyData Party { get; internal set; }
