@@ -123,8 +123,8 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
             }
 
             return (await GetCaseRoleAsync(queryBase, caseUri))
-                .Party
-                .BsnNumber;
+                .Party?
+                .BsnNumber ?? string.Empty;
         }
         #endregion
 
