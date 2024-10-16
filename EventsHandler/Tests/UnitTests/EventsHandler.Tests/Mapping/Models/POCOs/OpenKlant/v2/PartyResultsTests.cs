@@ -28,9 +28,9 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             this._validAppSettingsConfiguration.Dispose();
         }
 
-        #region Party (method)
+        #region Party (processing multiple roles)
         [Test]
-        public void Party_Method_ForMissingResults_ThrowsHttpRequestException()
+        public void Party_ForMany_MissingResults_ThrowsHttpRequestException()
         {
             // Arrange
             var partyResults = new PartyResults();  // Empty "Results" inside
@@ -40,7 +40,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         [Test]
-        public void Party_Method_ForExistingResults_ButMissingAddresses_ThrowsHttpRequestException()
+        public void Party_ForMany_ExistingResults_ButMissingAddresses_ThrowsHttpRequestException()
         {
             // Arrange
             PartyResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
@@ -50,14 +50,226 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         [Test]
-        public void Party_Method_ForExistingResults_ButEmptyDigitalAddresses_ThrowsHttpRequestException()
+        public void Party_ForMany_ExistingResults_ButEmptyDigitalAddresses_ThrowsHttpRequestException()
         {
             // Arrange
+            PartyResult partyResult = GetTestPartyResult_None(this._validAppSettingsConfiguration);
+            PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
+
+            // Act & Assert
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+
+        [Test]
+        public void Party_ForMany_ExistingResults_With_MatchingPreferredAddress_ReturnsExpectedResult_Email()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);  // Email should have priority over phone
+            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);  // If both phone and email are preferred, email would have priority
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));  // The preferred address was found
+                Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+            });
+        }
+
+        [Test]
+        public void Party_ForMany_ExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Email_FirstEncountered_PriorityOverPhone()
+        {
+            // Arrange
+            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());  // Email should have priority over phone
+            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);  // If both phone and email are preferred, email would have priority
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // First encountered email is returned because the preferred address couldn't be determined
+                Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+            });
+        }
+
+        [Test]
+        public void Party_ForMany_ExistingResults_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
+                Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+            });
+        }
+
+        [Test]
+        public void Party_ForMany_ExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
+        {
+            // Arrange
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
+                Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));  // First encountered phone is returned because the preferred address couldn't be determined
+            });
+        }
+
+        #endregion
+
+        #region Party (processing single role)
+        [Test]
+        public void Party_ForSingle_ExistingResult_ButMissingAddress_ThrowsHttpRequestException()
+        {
+            // Arrange
+            PartyResult partyResult = new();  // Empty digital addresses
+
+            // Act & Assert
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_ButEmptyDigitalAddresses_ThrowsHttpRequestException()
+        {
+            // Arrange
+            PartyResult partyResult = GetTestPartyResult_None(this._validAppSettingsConfiguration);  // Missing e-mails and phone numbers
+
+            // Act & Assert
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, Resources.HttpRequest_ERROR_NoDigitalAddresses);
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Email()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);  // Email should have priority over phone
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(testPartyEmail, this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));  // The preferred address was found
+                Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+            });
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_Without_MatchingPreferredAddress_ReturnsExpectedResult_Email_FirstEncountered_PriorityOverPhone()
+        {
+            // Arrange
+            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());  // Email should have priority over phone
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(testPartyEmail, this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // First encountered email is returned because the preferred address couldn't be determined
+                Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+            });
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(testParty, this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
+                Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+            });
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
+        {
+            // Arrange
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(testParty, this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
+                Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));  // First encountered phone is returned because the preferred address couldn't be determined
+            });
+        }
+        #endregion
+
+        #region Helper methods
+        /// <summary>
+        /// In this set of test data there are no phone numbers or e-mails.
+        /// </summary>
+        private static PartyResult GetTestPartyResult_None(WebApiConfiguration testConfiguration)
+        {
+            
             var partyId = Guid.NewGuid();
             Guid firstAddressId = GetUniqueId(partyId);
             Guid secondAddressId = GetUniqueId(firstAddressId);
 
-            var partyResult = new PartyResult
+            return new PartyResult
             {
                 PreferredDigitalAddress = new DigitalAddressShort
                 {
@@ -76,121 +288,23 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     DigitalAddresses = new List<DigitalAddressLong>
                     {
-                        new()  // Just empty address
+                        new()
                         {
                             Id = firstAddressId,
-                            Value = string.Empty,
-                            Type = this._validAppSettingsConfiguration.AppSettings.Variables.PhoneGenericDescription()
+                            Value = string.Empty,  // Just empty address
+                            Type = testConfiguration.AppSettings.Variables.PhoneGenericDescription()
                         },
-                        new()  // Just empty address
+                        new()
                         {
                             Id = secondAddressId,
-                            Value = string.Empty,
-                            Type = this._validAppSettingsConfiguration.AppSettings.Variables.EmailGenericDescription()
+                            Value = string.Empty,  // Just empty address
+                            Type = testConfiguration.AppSettings.Variables.EmailGenericDescription()
                         }
                     }
                 }
             };
-
-            PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
-
-            // Act & Assert
-            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
-        [Test]
-        public void Party_Method_ForExistingResults_With_MatchingPreferredAddress_ReturnsExpectedResult_Email()
-        {
-            // Arrange
-            var testId = Guid.NewGuid();
-
-            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);
-            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
-            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
-
-            // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(this._validAppSettingsConfiguration);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
-                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
-                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));
-                Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
-            });
-        }
-
-        [Test]
-        public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Email_FirstEncountered_PriorityOverPhone()
-        {
-            // Arrange
-            PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            PartyResult testPartyPhone = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);
-
-            // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(this._validAppSettingsConfiguration);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
-                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
-                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // First encountered email is returned because the preferred address couldn't be determined
-                Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
-            });
-        }
-
-        [Test]
-        public void Party_Method_ForExistingResults_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone()
-        {
-            // Arrange
-            var testId = Guid.NewGuid();
-
-            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
-            PartyResults testPartyResults = GetTestPartyResults(testParty);
-
-            // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(this._validAppSettingsConfiguration);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualParty, Is.EqualTo(testParty));
-                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
-                Assert.That(actualEmailAddress, Is.Empty);  // Since email is priority, phone should be ignored
-                Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));
-            });
-        }
-
-        [Test]
-        public void Party_Method_ForExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
-        {
-            // Arrange
-            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
-            PartyResults testPartyResults = GetTestPartyResults(testParty);
-
-            // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
-                = testPartyResults.Party(this._validAppSettingsConfiguration);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actualParty, Is.EqualTo(testParty));
-                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
-                Assert.That(actualEmailAddress, Is.Empty);  // Since email is priority, phone should be ignored
-                Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));
-            });
-        }
-
-        #endregion
-
-        #region Helper methods
         private const string TestEmail = "john.doe@gmail.com";
         private const string TestPhone = "+44 7911 123456";
 
@@ -241,23 +355,23 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                             Type = "Facebook"
                         },
 
-                        new()  // Never preferred address but matching 1st phone (e-mails have priority)
+                        new()  // Not preferred address but valid phone (e-mails have priority => keep processing)
                         {
                             Id = GetUniqueId(addressId),
                             Value = TestPhone,
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         },
 
-                        new()  // Can be preferred address or not (addressId) matching 1st e-mail
+                        new()  // Not preferred address but valid e-mail (should be used if the preferred e-mail is not found => until then keep processing)
                         {
-                            Id = addressId,
+                            Id = GetUniqueId(addressId),
                             Value = $"first_{TestEmail}",
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         },
 
-                        new()  // Never preferred address but matching 2nd e-mail (not first encountered)
+                        new()  // Can be preferred address with valid e-mail (not first encountered, should be returned if preferred)
                         {
-                            Id = GetUniqueId(addressId),
+                            Id = addressId,
                             Value = $"second_{TestEmail}",
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         }
@@ -313,16 +427,16 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                             Type = "Facebook"
                         },
 
-                        new()  // Can be preferred address or not (addressId) matching 1st phone
+                        new()  // Not preferred address but valid phone (should be used if the preferred phone is not found => until then keep processing)
                         {
-                            Id = addressId,
+                            Id = GetUniqueId(addressId),
                             Value = $"first_{TestPhone}",
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         },
 
-                        new()  // Never preferred address but matching 2nd phone (not first encountered)
+                        new()  // Can be preferred address with valid phone (not first encountered, should be returned if preferred)
                         {
-                            Id = GetUniqueId(addressId),
+                            Id = addressId,
                             Value = $"second_{TestPhone}",
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         }
@@ -362,6 +476,18 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
             {
                 TException? exception = Assert.Throws<TException>(() =>
                     partyResults.Party(configuration));
+
+                Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
+            });
+        }
+
+        private static void AssertThrows<TException>(WebApiConfiguration configuration, PartyResult partyResult, string exceptionMessage)
+            where TException : Exception
+        {
+            Assert.Multiple(() =>
+            {
+                TException? exception = Assert.Throws<TException>(() =>
+                    PartyResults.Party(partyResult, configuration));
 
                 Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
             });
