@@ -154,6 +154,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult fallbackEmailOwningParty = default;
             PartyResult fallbackPhoneOwningParty = default;
 
+            if (partyResult.Expansion.DigitalAddresses.IsNullOrEmpty())
+            {
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
+            }
+
             Guid prefDigitalAddressId = partyResult.PreferredDigitalAddress.Id;
 
             // Looking which digital address should be used
