@@ -59,10 +59,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #2: The task needs to be assigned to a person
             // TODO: Disabled this check and its corresponding test because this is no longer correct
             // TODO: We should expand this check with a check on the involvedPartyUri being correct
-            //if (this._taskData.Identification.Type != IdTypes.Bsn)
+            //if (this._taskData.Identification.Type != IdTypes.Bsn)  // TODO: Check what other identification type is coming when we are processing "organization task"
             //{
             //    throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
             //}
+
+            // TODO: Add more meaningful errors in case of missing 1st enum (for citizen scenario), for invalid 2nd enum (organization), 3rd check none of enums is correct, and for missing "involvedPartyUri"
 
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
