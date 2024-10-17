@@ -754,7 +754,22 @@ Required to be set:
 
 #### 5.2.2.3. Requirements
 
-... To be done
+- The _initial notification_ has:
+  -- **Action:** Create
+  -- **Channel:** Cases
+  -- **Resource:** Status
+
+- The _case_ has 1 _status_ (it was never updated) => this is a new _case_
+
+- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+
+- The notification indication property (`informeren`) in _case type_ is set to _true_
+
+- All URIs are valid, source data complete, and JWT token or API keys correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.2.4. Template placeholders
 
@@ -812,7 +827,24 @@ Required to be set:
 
 #### 5.2.3.3. Requirements
 
-... To be done
+- The _initial notification_ has:
+  -- **Action:** Create
+  -- **Channel:** Cases
+  -- **Resource:** Status
+
+- The _case_ has 2+ _statuses_ (it was updated at least once)
+
+- The state of the last _status_ is not final (`isEindstatus`) => the _status_ of a _case_ is just updated
+
+- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+
+- The notification indication property (`informeren`) in _case type_ is set to _true_
+
+- All URIs are valid, source data complete, and JWT token or API keys correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.3.4. Template placeholders
 
@@ -874,7 +906,24 @@ Required to be set:
 
 #### 5.2.4.3. Requirements
 
-... To be done
+- The _initial notification_ has:
+  -- **Action:** Create
+  -- **Channel:** Cases
+  -- **Resource:** Status
+
+- The _case_ has 2+ _statuses_ (it was updated at least once)
+
+- The state of the last _status_ is final (`isEindstatus`) => the _case_ is closed
+
+- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+
+- The notification indication property (`informeren`) in _case type_ is set to _true_
+
+- All URIs are valid, source data complete, and JWT token or API keys correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.4.4. Template placeholders
 
