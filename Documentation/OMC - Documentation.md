@@ -616,9 +616,13 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 > **NOTE:** If some environment variable is missing but required by one of the countless scenarios, conditions, or workflows, the **OMC** application will return a readable and user-friendly API response with the name of the missing environment variable. This is the easiest way to figure out what else is required.
 
+</br>
+
 `ASPNETCORE_ENVIRONMENT`
 
 > Used by `[OMC]/events/version` endpoint and to determine which `appsettings[.xxx].json` will be used.
+
+</br>
 
 `OMC_AUTHORIZATION_JWT_SECRET`
 
@@ -634,13 +638,19 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 > Required to get access to **OMC** and be able to use it. Moreover, **Open Notificaties** Web API service will use this method to make an authorized requests while sending notification events to **OMC**.
 
+</br>
+
 `OMC_API_BASEURL_NOTIFYNL`
 
 > Without this URL notifications would not work.
 
+</br>
+
 `OMC_FEATURES_WORKFLOW_VERSION`
 
 > Without this setting (the version needs to be supported) the **OMC** Web API will not even run and specific implementations of underlying services will not be resolved by _Dependency Injection_ mechanism. By default you can always use `"1"` if you don't know yet which other [OMC Workflow](#workflow_versions) version you should use.
+
+</br>
 
 `USER_AUTHORIZATION_JWT_SECRET`
 
@@ -656,6 +666,8 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 > **JWT authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
 
+</br>
+
 `USER_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
 
 `USER_API_KEY_OBJECTEN`
@@ -665,6 +677,8 @@ To work properly **OMC** always requires these mandatory _environment variables_
 `USER_API_KEY_NOTIFYNL`
 
 > **API key authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
+
+</br>
 
 `USER_DOMAIN_OPENZAAK`
 
@@ -680,6 +694,8 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 > **Domains** might have different _paths_ (e.g., `domain/something/v1/`) depends on version of external API service used in certain [OMC Workflow](#workflow_versions). For example domains for OpenKlant and ContactMomenten depends on version of **Open Klant** Web API service. Moreover, domains and paths depends on the place where your version of Web API service was deployed (domain) and the way how it is internally structured (paths).
 
+</br>
+
 These _environment variables_ are optional:
 
 `SENTRY_DSN`
@@ -688,15 +704,17 @@ These _environment variables_ are optional:
 
 > Logging and analytics in third-party service ([Sentry.io](https://sentry.io)).
 
-#### 5.2.1.3. Conditioning
+#### 5.2.1.3. Requirements
 
 To process certain notification the specific internal criteria must be met. Usually, they are some pre-validation (analyzing the "initial notification" received from **Open Notificaties** Web API service), post-validation (to determine the scenario suited for this type of the notification), and whitelisting steps (to ensure that **OMC** should continue processing this type of notification). Sometimes, additional checks have to be performed - which depends on the specific **OMC** scenario.
 
 #### 5.2.1.4. Template placeholders
 
-When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
+When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by the specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
 
 ---
+
+# Examples
 
 ### 5.2.2. Case Created
 
@@ -734,13 +752,13 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKCREATE_IDS`
 
-#### 5.2.2.3. Conditioning
+#### 5.2.2.3. Requirements
 
 ... To be done
 
 #### 5.2.2.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
@@ -792,13 +810,13 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKUPDATE_IDS`
 
-#### 5.2.3.3. Conditioning
+#### 5.2.3.3. Requirements
 
 ... To be done
 
 #### 5.2.3.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
@@ -854,13 +872,13 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKCLOSE_IDS`
 
-#### 5.2.4.3. Conditioning
+#### 5.2.4.3. Requirements
 
 ... To be done
 
 #### 5.2.4.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
@@ -916,13 +934,13 @@ Required to be set:
 
 `USER_WHITELIST_TASKOBJECTTYPE_UUID`
 
-#### 5.2.5.3. Conditioning
+#### 5.2.5.3. Requirements
 
 ... To be done
 
 #### 5.2.5.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
@@ -987,13 +1005,13 @@ Required to be set:
 
 `USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION`
 
-#### 5.2.6.3. Conditioning
+#### 5.2.6.3. Requirements
 
 ... To be done
 
 #### 5.2.6.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
@@ -1089,13 +1107,13 @@ Required to be set:
 
 `USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
 
-#### 5.2.7.3. Conditioning
+#### 5.2.7.3. Requirements
 
 ... To be done
 
 #### 5.2.7.4. Template placeholders
 
-Required placeholders names in the template:
+Required placeholders names in the **Notify NL** template:
 
 `((klant.voornaam))`
 
