@@ -57,12 +57,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
 
             // Validation #2: The task needs to be assigned to a person
-            // TODO: Disabled this check and its corresponding test because this is no longer correct
-            // TODO: We should expand this check with a check on the involvedPartyUri being correct
-            //if (this._taskData.Identification.Type != IdTypes.Bsn)
-            //{
-            //    throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskNotPerson);
-            //}
+            if (this._taskData.Identification.Type is not (IdTypes.Bsn or IdTypes.Kvk))
+            {
+                throw new AbortedNotifyingException(Resources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
+            }
 
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
@@ -79,10 +77,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
 
             // Preparing party details
+            string? bsnNumber = this._taskData.Identification.Type == IdTypes.Bsn
+                ? this._taskData.Identification.Value  // BSN number
+                : null;
+
             return new PreparedData(
                 party: await this._queryContext.GetPartyDataAsync(
                     caseUri: this._case.Uri,
-                    bsnNumber: this._taskData.Identification.Value),  // BSN number
+                    bsnNumber),
                 caseUri: this._case.Uri);
         }
         #endregion
