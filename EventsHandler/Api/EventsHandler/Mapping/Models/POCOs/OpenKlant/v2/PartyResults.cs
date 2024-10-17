@@ -73,6 +73,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                     continue;  // Do not waste time on processing party data which would be for 100% invalid
                 }
 
+                // Determine which address is preferred
                 if (IsPreferredFound(configuration, partyResult,
                         ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
                         ref fallbackEmailAddress, ref fallbackPhoneNumber))
@@ -81,6 +82,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                 }
             }
 
+            // Pick any matching address
             return GetMatchingContactDetails(
                 fallbackEmailOwningParty, fallbackPhoneOwningParty,
                 fallbackEmailAddress, fallbackPhoneNumber);
@@ -101,14 +103,16 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
             DistributionChannels distributionChannel = default;
             string fallbackEmailAddress = string.Empty;
             string fallbackPhoneNumber = string.Empty;
-
+            
+            // Determine which address is preferred
             if (IsPreferredFound(configuration, partyResult,
                     ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
                     ref fallbackEmailAddress, ref fallbackPhoneNumber))
             {
                 return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
             }
-
+            
+            // Pick any matching address
             return GetMatchingContactDetails(
                 fallbackEmailOwningParty, fallbackPhoneOwningParty,
                 fallbackEmailAddress, fallbackPhoneNumber);
