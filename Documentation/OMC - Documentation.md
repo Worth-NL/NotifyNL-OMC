@@ -29,7 +29,9 @@ v.1.11.3
 
 3. [Setup](#setup)
 
-   3.1. [Configurations](#configurations)
+   - 3.1. [Configurations](#configurations)
+
+      - 3.1.1. [appsettings.json](#appsettings)
 
 
 [](#)
@@ -286,7 +288,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
 
 > **NOTE:** Here are defined settings related to HTTP connection, encryption used for JWT tokens to authorize HTTP requests to / from other Web API services, or default variables defining **OMC** domain setup - adjusting how the generic and agnostic [**Open Services**](#openServices-list) will be utilized.
 
-<h4 id="appsettings-content">Settings</h4>
+<h4 id="appsettings-example">3.1.1.1. Example</h4>
 
 > Full content of `appsettings.json` file.
 
@@ -363,7 +365,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 > Meant to store sensitive configurations and / or customizable per instances of the **OMC** application).
 
-**Required variables:**
+<h4 id="environment-variables-example">3.1.2.1. Example</h4>
 
 | Name*                                               | .NET Type | Example                                       | Is sensitive | Validation                                                                                                                                 | Notes                                                                                                                                                                                                                 |
 | --------------------------------------------------- | --------- | --------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -438,7 +440,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 \** GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
 
-<h4 id="get-environment-variables">3.1.2.1. How to get some of environment variables</h4>
+<h4 id="get-environment-variables">3.1.2.2. How to get some of environment variables</h4>
 
 `OMC_AUTHORIZATION_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
 
@@ -448,7 +450,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 `USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
-<h4 id="set-environment-variables">3.1.2.2. Setting environment variables</h4>
+<h4 id="set-environment-variables">3.1.2.3. Setting environment variables</h4>
 
 1. On Windows:
 
@@ -464,7 +466,7 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > To be finished...
 
-<h4 id="helm-charts">3.1.2.3. Using HELM Charts</h4>
+<h4 id="helm-charts">3.1.2.4. Using HELM Charts</h4>
 
 **NotifyNL** and **OMC** are meant to be used with [HELM Charts](https://helm.sh/) (helping to install them on your local machine / server).
 
