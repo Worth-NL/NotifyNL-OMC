@@ -1077,7 +1077,7 @@ Required to be set:
 
 #### 5.2.6.3. Requirements
 
-... To be done
+...
 
 #### 5.2.6.4. Template placeholders
 
@@ -1179,7 +1179,20 @@ Required to be set:
 
 #### 5.2.7.3. Requirements
 
-... To be done
+- The _initial notification_ has:
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Objects (`"objecten"`)
+  -- **Resource:** Object (`"object"`)
+
+- The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
+
+- Sending of messages is allowed in respective _environment variable_
+
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.7.4. Template placeholders
 
