@@ -1077,7 +1077,26 @@ Required to be set:
 
 #### 5.2.6.3. Requirements
 
-...
+- The _initial notification_ has:
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Objects (`"besluiten"`)
+  -- **Resource:** Object (`"besluitinformatieobject"`)
+
+- The **GUID** from _info object type URI_ (`"informatieobjecttype"`) linked to the _decision_ has to be **whitelisted** or `"*"` wildcard used (to accept all info object types) in respective whitelist _environment variable_
+
+- The _info object status_ (`"status"`) is set to definitive (`"definitief"`)
+
+- The _info object confidentiality_ (`"vertrouwelijkheidaanduiding"`) is set to non-confidential (`"openbaar"`)
+
+- The _case type identifier_ (`"zaaktypeIdentificatie"`) has to be **whitelisted** or `"*"` wildcard used (to accept all case types) in respective whitelist _environment variable_
+
+- The notification indication property (`"informeren"`) in _case type_ is set to _true_
+
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.6.4. Template placeholders
 
