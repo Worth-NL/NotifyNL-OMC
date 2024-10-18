@@ -23,6 +23,17 @@ v.1.11.3
     
          - 1.1.2.2. [Running profile](#running-profile)
 
+    - 1.2. [Docker](#docker)
+
+2. [Architecture](#architecture)
+
+3. [Setup](#setup)
+
+   3.1. [Configurations](#configurations)
+
+
+[](#)
+
 ---
 <h1 id="introduction">1. Introduction</h1>
 
@@ -248,7 +259,7 @@ in order to run an already created **docker container**.
 [Scenarios](#scenarios) implemented in **OMC** are following _Strategy Design Pattern_, and they are using JSON data deserialized into _POCO (Plain Old CLR Object)_ models, and passed as _DTO (Data Transfer Object)_ models to query services (reflecting the external micro-services architecture of third-party "Open Services"). Query services are aggregated under _IQueryContext_ and its implementation _QueryContext_ - following _Adapter Design Pattern_ thanks to which queries can be agnostic (dependencies resolved internally) and organized within a single testable abstraction, giving the developers access to all available API query methods.
 
 ---
-<h1 id="environment-variables">3. Environment variables</h1>
+<h1 id="setup">3. Setup</h1>
 
 <sup>[Go back](#start)</sup>
 
@@ -348,7 +359,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 > **NOTE:** Sometimes, in the documentation or in the code, when referring to this value a name "application mode(s)" might be used - because this _environment variable_ is usually defining the global setup / behavior of any **.NET** application.
 
-<h3 id="list-environment-variables">3.1.2. List of environment variables</h3>
+<h3 id="environment-variables">3.1.2. Environment variables</h3>
 
 > Meant to store sensitive configurations and / or customizable per instances of the **OMC** application).
 
