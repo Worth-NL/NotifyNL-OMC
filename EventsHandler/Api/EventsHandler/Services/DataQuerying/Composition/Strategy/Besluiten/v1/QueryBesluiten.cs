@@ -8,7 +8,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.v1
 {
     /// <inheritdoc cref="IQueryBesluiten"/>
     /// <remarks>
-    ///   Version: "Besluiten" (v1+) Web API service | "OMC workflow" v1.
+    ///   Version: "Besluiten" (v1) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryBesluiten : IQueryBesluiten

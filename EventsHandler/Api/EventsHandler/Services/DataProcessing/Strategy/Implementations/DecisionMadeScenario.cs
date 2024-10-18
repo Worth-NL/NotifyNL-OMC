@@ -89,7 +89,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                              await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                    this._decision.CaseUri));                 // 1. Case URI
 
-            // Validation #4: The case identifier must be whitelisted
+            // Validation #4: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
                 this._caseType.Identification, GetWhitelistEnvVarName());
