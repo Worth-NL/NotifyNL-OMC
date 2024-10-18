@@ -755,17 +755,17 @@ Required to be set:
 #### 5.2.2.3. Requirements
 
 - The _initial notification_ has:
-  -- **Action:** Create
-  -- **Channel:** Cases
-  -- **Resource:** Status
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Cases (`"zaken"`)
+  -- **Resource:** Status (`"status"`)
 
 - The _case_ has 1 _status_ (it was never updated) => this is a new _case_
 
-- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+- The _case type identifier_ (`"zaaktypeIdentificatie"`) has to be **whitelisted** or `"*"` wildcard used (to accept all case types) in respective whitelist _environment variable_
 
-- The notification indication property (`informeren`) in _case type_ is set to _true_
+- The notification indication property (`"informeren"`) in _case type_ is set to _true_
 
-- All URIs are valid, source data complete, and JWT token or API keys correct
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
 
 The notification will be processed and sent!
 
@@ -828,19 +828,19 @@ Required to be set:
 #### 5.2.3.3. Requirements
 
 - The _initial notification_ has:
-  -- **Action:** Create
-  -- **Channel:** Cases
-  -- **Resource:** Status
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Cases (`"zaken"`)
+  -- **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
-- The state of the last _status_ is not final (`isEindstatus`) => the _status_ of a _case_ is just updated
+- The last _case status_ is not set to final (`"isEindstatus" : false`) => the _status_ of a _case_ is just updated and not yet finalized
 
-- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+- The _case type identifier_ (`"zaaktypeIdentificatie"`) has to be **whitelisted** or `"*"` wildcard used (to accept all case types) in respective whitelist _environment variable_
 
-- The notification indication property (`informeren`) in _case type_ is set to _true_
+- The notification indication property (`"informeren"`) in _case type_ is set to _true_
 
-- All URIs are valid, source data complete, and JWT token or API keys correct
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
 
 The notification will be processed and sent!
 
@@ -907,19 +907,19 @@ Required to be set:
 #### 5.2.4.3. Requirements
 
 - The _initial notification_ has:
-  -- **Action:** Create
-  -- **Channel:** Cases
-  -- **Resource:** Status
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Cases (`"zaken"`)
+  -- **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
-- The state of the last _status_ is final (`isEindstatus`) => the _case_ is closed
+- The last _case status_ is set to final (`"isEindstatus" : true`) => the _case_ is closed
 
-- The _case type identifier_ (`zaaktypeIdentificatie`) has to be `whitelisted` or `*` wildcard used (to accept all case types) in respective whitelist _environment variable_
+- The _case type identifier_ (`"zaaktypeIdentificatie"`) has to be **whitelisted** or `"*"` wildcard used (to accept all case types) in respective whitelist _environment variable_
 
-- The notification indication property (`informeren`) in _case type_ is set to _true_
+- The notification indication property (`"informeren"`) in _case type_ is set to _true_
 
-- All URIs are valid, source data complete, and JWT token or API keys correct
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
 
 The notification will be processed and sent!
 
@@ -985,7 +985,28 @@ Required to be set:
 
 #### 5.2.5.3. Requirements
 
-... To be done
+- The _initial notification_ has:
+  -- **Action:** Create (`"create"`)
+  -- **Channel:** Objects (`"objecten"`)
+  -- **Resource:** Object (`"object"`)
+
+- The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
+
+- The _task_ status (`"status"`) from `record.data` nested object is set to open (`"open"`)
+
+- The _task_ identification type (`"type"`) from `record.data.identificatie` is set to:
+  -- private person (`"bsn"`)
+  -- or company (`"kvk"`)
+
+- The _case type identifier_ (`"zaaktypeIdentificatie"`) has to be **whitelisted** or `"*"` wildcard used (to accept all case types) in respective whitelist _environment variable_
+
+- The notification indication property (`"informeren"`) in _case type_ is set to _true_
+
+- All **URI**s are valid, source data complete, and **JWT token** or **API keys** correct
+
+The notification will be processed and sent!
+
+> Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
 #### 5.2.5.4. Template placeholders
 
