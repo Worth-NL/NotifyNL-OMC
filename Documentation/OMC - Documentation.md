@@ -33,8 +33,129 @@ v.1.11.3
 
       - 3.1.1. [appsettings.json](#appsettings)
 
+         - 3.1.1.1. [Example](#appsettings-example)
 
-[](#)
+      - 3.1.2. [Environment variables](#environment-variables)
+
+         - 3.1.2.1. [Example](#environment-variables-example)
+
+         - 3.1.2.2. [Get environment variables](#get-environment-variables)
+
+         - 3.1.2.3. [Set environment variables](#set-environment-variables)
+
+         - 3.1.2.4. [Using HELM Charts](#helm-charts)
+
+4. [Authorization and authentication](#authorization)
+
+   - 4.1. [JSON Web Tokens](#jwt-tokens)
+
+      - 4.1.1. [Required components](#jwt-required-components)
+
+         - 4.1.1.1. [Header (algorithm + type)](#jwt-header)
+
+         - 4.1.1.2. [Payload (claims)](#jwt-claims)
+
+         - 4.1.1.3. [Signature (secret)](#jwt-secret)
+
+      - 4.1.2. [Mapping of JWT claims from environment variables](#jwt-mapping-environment-variables)
+
+      - 4.1.3. [Using generated JSON Web Token (JWT)](#jwt-generating)
+
+         - 4.1.3.1. [Postman (authorization)](#postman-authorization)
+
+         - 4.1.3.2. [Swagger UI (authorization)](#swagger-ui-authorization)
+
+5. [OMC Workflow](#omc-workflow)
+
+   - 5.1. [Versions](#workflow_versions)
+
+      - 5.1.1. [Dependencies](#workflow_dependencies)
+
+         - 5.1.1.1. [OMC workflow v1 `(default)`](#omc-workflow-v1)
+
+         - 5.1.1.1. [OMC workflow v2](#omc-workflow-v2)
+
+   - 5.2. [Scenarios](#scenarios)
+
+      - 5.2.1. [General introduction](#scenarios-general-introduction)
+
+         - 5.2.1.1. [Notification](#scenarios-general-notification)
+
+         - 5.2.1.2. [Environment variables](#scenarios-general-environment-variables)
+
+         - 5.2.1.3. [Requirements](#scenarios-general-requirements)
+
+         - 5.2.1.4. [Template placeholders](#scenarios-general-template-placeholders)
+
+      - [Examples](#scenarios_examples)
+
+      - 5.2.2. [Case Created](#case-created)
+
+         - 5.2.2.1. [Notification](#case-created-notification)
+
+         - 5.2.2.2. [Environment variables](#case-created-environment-variables)
+
+         - 5.2.2.3. [Requirements](#case-created-requirements)
+
+         - 5.2.2.4. [Template placeholders](#case-created-template-placeholders)
+
+      - 5.2.3. [Case Updated](#case-updated)
+
+         - 5.2.3.1. [Notification](#case-updated-notification)
+
+         - 5.2.3.2. [Environment variables](#case-updated-environment-variables)
+
+         - 5.2.3.3. [Requirements](#case-updated-requirements)
+
+         - 5.2.3.4. [Template placeholders](#case-updated-template-placeholders)
+
+      - 5.2.4. [Case Closed](#case-closed)
+
+         - 5.2.4.1. [Notification](#case-closed-notification)
+
+         - 5.2.4.2. [Environment variables](#case-closed-environment-variables)
+
+         - 5.2.4.3. [Requirements](#case-closed-requirements)
+
+         - 5.2.4.4. [Template placeholders](#case-closed-template-placeholders)
+
+      - 5.2.5. [Task Assigned](#task-assigned)
+
+         - 5.2.5.1. [Notification](#task-assigned-notification)
+
+         - 5.2.5.2. [Environment variables](#task-assigned-environment-variables)
+
+         - 5.2.5.3. [Requirements](#task-assigned-requirements)
+
+         - 5.2.5.4. [Template placeholders](#task-assigned-template-placeholders)
+
+      - 5.2.6. [Decision Made](#decision-made)
+
+         - 5.2.6.1. [Notification](#decision-made-notification)
+
+         - 5.2.6.2. [Environment variables](#decision-made-environment-variables)
+
+         - 5.2.6.3. [Requirements](#decision-made-requirements)
+
+         - 5.2.6.4. [Template placeholders](#decision-made-template-placeholders)
+
+      - 5.2.7. [Message Received](#message-received)
+
+         - 5.2.7.1. [Notification](#message-received-notification)
+
+         - 5.2.7.2. [Environment variables](#message-received-environment-variables)
+
+         - 5.2.7.3. [Requirements](#message-received-requirements)
+
+         - 5.2.7.4. [Template placeholders](#message-received-template-placeholders)
+
+      - 5.2.99. [Not Implemented](#not-implemented-scenario)
+
+6. [Errors](#errors)
+
+   - 6.1. [Events Controller](#errors-events-controller)
+
+      - 6.1.2. [Message Received](#message-received)
 
 ---
 <h1 id="introduction">1. Introduction</h1>
@@ -440,7 +561,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 \** GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
 
-<h4 id="get-environment-variables">3.1.2.2. How to get some of environment variables</h4>
+<h4 id="get-environment-variables">3.1.2.2. Get environment variables</h4>
 
 `OMC_AUTHORIZATION_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
 
@@ -450,7 +571,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 `USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
-<h4 id="set-environment-variables">3.1.2.3. Setting environment variables</h4>
+<h4 id="set-environment-variables">3.1.2.3. Set environment variables</h4>
 
 1. On Windows:
 
@@ -516,7 +637,7 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 
 - Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
 
-<h3 id="jwt-required-components">4.1.1. Required JSON Web Token (JWT) components</h3>
+<h3 id="jwt-required-components">4.1.1. Required components</h3>
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
@@ -563,14 +684,14 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 
 <h3 id="jwt-generating">4.1.3. Using generated JSON Web Token (JWT)</h3>
 
-<h4 id="postman">4.1.3.1. Postman</h4>
+<h4 id="postman-authorization">4.1.3.1. Postman (authorization)</h4>
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI</h4>
+<h4 id="swagger-ui-authorization">4.1.3.2. Swagger UI (authorization)</h4>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
@@ -756,7 +877,7 @@ When everything is already validated, prepared, and processed, the **Notify NL**
 
 ---
 
-<h1 id="examples">Examples</h1>
+<h1 id="scenarios_examples">Examples</h1>
 
 <h3 id="case-created">5.2.2. Case Created</h3>
 
@@ -1305,7 +1426,7 @@ Endpoints:
 - `POST` .../Events/Listen
 - `GET` .../Events/Version
 
-<h4 id="errors-events-controller-possible-errors">6.1.2. Possible errors</h4>
+<h3 id="errors-events-controller-possible-errors">6.1.2. Possible errors</h3>
 
 > HTTP Status Code: 206 Partial Content
 
@@ -1355,7 +1476,7 @@ Endpoints:
 
 - `POST` .../Notify/Confirm
 
-<h4 id="errors-notify-controller-possible-errors">6.2.1. Possible errors</h4>
+<h3 id="errors-notify-controller-possible-errors">6.2.1. Possible errors</h3>
 
 > HTTP Status Code: 400 Bad Request
 
