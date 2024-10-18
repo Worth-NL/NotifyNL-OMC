@@ -1,15 +1,36 @@
-# **OMC** Documentation
+<h1 id="start">OMC Documentation</h1>
 
 v.1.11.3
 
-© 2024, Worth Systems.
+© 2023-2024, Worth Systems.
 
 ---
-# 1. Introduction
+
+<h1 id="table">Table of contents</h1>
+
+1. [Introduction](#introduction)
+
+   * [Open services](#openServices-list)
+   * [Notify](#notify-list)
+
+   - 1.1. [Swagger UI](#swagger-ui)
+
+      - 1.1.1. [Using web browser](#web-browser)
+
+      - 1.1.2. [Using IDE (Visual Studio)](#visual-studio)
+
+         - 1.1.2.1. [Customizing profile](#custom-lanunchSettings-profile)
+    
+         - 1.1.2.2. [Running profile](#running-profile)
+
+---
+<h1 id="introduction">1. Introduction</h1>
+
+<sup>[Go back](#start)</sup>
 
 **OMC (Output Management Component)** is a central point and the common hub of the communication workflow between third parties software such as:
 
-<h4 id="openServices-list"> Open services (repositories):</h4>
+<h4 id="openServices-list">Open services (repositories)</h4>
 
 - [**Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service)
@@ -19,7 +40,7 @@ v.1.11.3
 - [**ObjectTypen**](https://github.com/maykinmedia/objecttypes-api) (Web API service)
 - [**Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service)
 
-<h4 id="notify-list"> Notify:</h4>
+<h4 id="notify-list">Notify</h4>
 
 - [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
     
@@ -32,7 +53,7 @@ v.1.11.3
 
 > **NOTE:** Different versions of these external API services are handled by, so-called "[OMC Workflows](#workflow_versions)".
 
-## 1.1. Swagger UI
+<h2 id="swagger-ui">1.1. Swagger UI</h2>
 
 Since the **OMC** project is just an API, it would not have any user-friendly graphic representation if used as a standalone RESTful ASP.NET Web API project.
 
@@ -44,7 +65,7 @@ That's why **ASP.NET** projects are usually exposing a UI presentation layer for
 
 **NOTE**: Check the section dedicated to [requests authorization](#swagger-ui-authorization) when using **Swagger UI**.
 
-### 1.1.1. Using web browser
+<h3 id="web-browser">1.1.1. Using web browser</h3>
 
 The URL to **Swagger UI** can be recreated in the following way:
 
@@ -55,7 +76,7 @@ For example: https://omc.acc.notifynl.nl/swagger/index.html
 \* Usually https
 \** Where your **OMC** Web API application is deployed
 
-### 1.1.2. Using IDE (Visual Studio)
+<h3 id="visual-studio">1.1.2. Using IDE (Visual Studio)</h3>
 
 To run the application locally (using **Visual Studio**) select one of the `launchSettings.json` **profiles** to start **Swagger UI** page in your browser (which will be using `/localhost:...` address).
 
@@ -71,7 +92,7 @@ And all of them have **Swagger UI** specified as the default start option.
 
 > **NOTE:** In this example application will start in "Development" mode.
 
-<h4 id="custom-lanunchSettings-profile"> Customizing profile:</h4>
+<h4 id="custom-lanunchSettings-profile">1.1.2.1. Customizing profile</h4>
 
 > Full content of `launchSettings.json` file.
 
@@ -194,11 +215,11 @@ The developer can create more than one launch profile:
 
 ![Multiple custom launch profiles - launchSettings.json](images/launchSettings_many_custom.png)
 
-#### Running profile:
+<h4 id="running-profile">1.1.2.2. Running profile</h4>
 
 ![Invalid base URL - Error](images/launchProfiles_full.png)
 
-## 1.2. Docker
+<h2 id="docker">1.2. Docker</h2>
 
 - After cloning **OMC** Git repository:
 > git@github.com:Worth-NL/NotifyNL-OMC.git
@@ -220,14 +241,18 @@ The command from above is addressing the issue with building **docker image** fr
 in order to run an already created **docker container**.
  
 ---
-# 2. Architecture
+<h1 id="architecture">2. Architecture</h1>
+
+<sup>[Go back](#start)</sup>
 
 [Scenarios](#scenarios) implemented in **OMC** are following _Strategy Design Pattern_, and they are using JSON data deserialized into _POCO (Plain Old CLR Object)_ models, and passed as _DTO (Data Transfer Object)_ models to query services (reflecting the external micro-services architecture of third-party "Open Services"). Query services are aggregated under _IQueryContext_ and its implementation _QueryContext_ - following _Adapter Design Pattern_ thanks to which queries can be agnostic (dependencies resolved internally) and organized within a single testable abstraction, giving the developers access to all available API query methods.
 
 ---
-# 3. Required environment variables
+<h1 id="environment-variables">3. Environment variables</h1>
 
-## 3.1. Different configurations
+<sup>[Go back](#start)</sup>
+
+<h2 id="configurations">3.1. Configurations</h2>
 
 **OMC API** and related sub-systems (e.g., **Secrets Manager**) are using two types of configurations:
 
@@ -242,7 +267,7 @@ Which can also be divided into other two categories:
 Easier to monitor, test, modify, and maintain by developers are `appsettings.json`,
 but `environment variables` are easier to be adjusted by the end users of **OMC**.
 
-### 3.1.1. `appsettings.json`
+<h3 id="appsettings">3.1.1. `appsettings.json`</h3>
 
 > Made for public configurations (can be preserved in the code). They are not meant to be changed very often.
 
@@ -250,7 +275,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
 
 > **NOTE:** Here are defined settings related to HTTP connection, encryption used for JWT tokens to authorize HTTP requests to / from other Web API services, or default variables defining **OMC** domain setup - adjusting how the generic and agnostic [**Open Services**](#openServices-list) will be utilized.
 
-<h4 id="appsettings-content"> Settings:</h4>
+<h4 id="appsettings-content">Settings</h4>
 
 > Full content of `appsettings.json` file.
 
@@ -323,7 +348,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 > **NOTE:** Sometimes, in the documentation or in the code, when referring to this value a name "application mode(s)" might be used - because this _environment variable_ is usually defining the global setup / behavior of any **.NET** application.
 
-### 3.1.2. `environment variables`
+<h3 id="list-environment-variables">3.1.2. List of environment variables</h3>
 
 > Meant to store sensitive configurations and / or customizable per instances of the **OMC** application).
 
@@ -402,7 +427,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 \** GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
 
-#### 3.1.2.1. How to get some of these environment variables
+<h4 id="get-environment-variables">3.1.2.1. How to get some of environment variables</h4>
 
 `OMC_AUTHORIZATION_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTHORIZATION_[...]** configurations it's meant to be set by the user.
 
@@ -412,7 +437,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 `USER_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
-#### 3.1.2.2. Setting environment variables
+<h4 id="set-environment-variables">3.1.2.2. Setting environment variables</h4>
 
 1. On Windows:
 
@@ -428,7 +453,7 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > To be finished...
 
-#### 3.1.2.3. Using HELM Charts
+<h4 id="helm-charts">3.1.2.3. Using HELM Charts</h4>
 
 **NotifyNL** and **OMC** are meant to be used with [HELM Charts](https://helm.sh/) (helping to install them on your local machine / server).
 
@@ -437,7 +462,9 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 - [OMC HELM Charts (GitHub)](https://github.com/Worth-NL/helm-charts/tree/main/notifynl-omc)
 
 ---
-# 4. Authorization and authentication
+<h1 id="authorization">4. Authorization and authentication</h1>
+
+<sup>[Go back](#start)</sup>
 
 All of the API services involved in the notifying process (**OpenServices**, **OMC**, **Notify**) requires some type of authorization and authentication procedure.
 
@@ -445,7 +472,7 @@ All of the API services involved in the notifying process (**OpenServices**, **O
 
 > The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" [workflow](#workflow_versions) is used.
 
-## 4.1. JSON Web Tokens
+<h2 id="jwt-tokens">4.1. JSON Web Tokens</h2>
 
 In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ would be used internally (based on the provided credentials (_environment variables_). However, developers testing or maintaining the solution need to generate their own JWT tokens (e.g., to access the **OMC** API endpoints from **Swagger UI** or **Postman**) using one of the following approaches.
 
@@ -476,18 +503,18 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 
 - Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
 
-### 4.1.1. Required JSON Web Token (JWT) components
+<h3 id="jwt-required-components">4.1.1. Required JSON Web Token (JWT) components</h3>
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-#### 4.1.1.1. Header (algorithm + type)
+<h4 id="jwt-header">4.1.1.1. Header (algorithm + type)</h4>
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-#### 4.1.1.2. Payload (claims)
+<h4 id="jwt-claims">4.1.1.2. Payload (claims)</h4>
 
 > {
   "client_id": "",
@@ -499,13 +526,13 @@ Users can also execute their commands directly in the catalog where **SecretsMan
   "exp": 0000000000
 }
 
-#### 4.1.1.3. Signature (secret)
+<h4 id="jwt-secret">4.1.1.3. Signature (secret)</h4>
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-### 4.1.2. Mapping of JWT claims from environment variables
+<h3 id="jwt-mapping-environment-variables">4.1.2. Mapping of JWT claims from environment variables</h3>
 
 | JWT claims            | **OMC** Environment Variables                |
 | --------------------- | -------------------------------------------- |
@@ -521,9 +548,9 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-### 4.1.3. Using generated JSON Web Token (JWT)
+<h3 id="jwt-generating">4.1.3. Using generated JSON Web Token (JWT)</h3>
 
-#### 4.1.3.1. Postman
+<h4 id="postman">4.1.3.1. Postman</h4>
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
@@ -539,13 +566,15 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 And then click "Authorize".
 
 ---
-# 5. OMC Workflow
+<h1 id="omc-workflow">5. OMC Workflow</h1>
+
+<sup>[Go back](#start)</sup>
 
 ![Invalid base URL - Error](images/OMC_Sequence_Chart.png)
 
 > Version of **OMC** <= 1.7.4 (using "[OMC workflow v1](#workflow_dependencies)").
 
-<h2 id="workflow_versions">5.1. Versions of OMC workflows</h2>
+<h2 id="workflow_versions">5.1. Versions</h2>
 
 The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
 
@@ -555,7 +584,7 @@ The **OMC** API is using different configurations and setups to handle multiple 
 
 Here are the details which _workflows_ are using which versions of the external API services:
 
-#### OMC workflow v1 `(default)`:
+<h4 id="omc-workflow-v1">OMC workflow v1 `(default)`</h4>
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - "OpenKlant" v1.0.0
@@ -564,7 +593,7 @@ Here are the details which _workflows_ are using which versions of the external 
 - "ObjectTypen" v2.2.0
 - "Contactmomenten" v1.0.0
 
-#### OMC workflow v2:
+<h4 id="omc-workflow-v2">OMC workflow v2</h4>
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - <code>new</code> "OpenKlant" v2.0.0
@@ -579,7 +608,7 @@ Here are the details which _workflows_ are using which versions of the external 
 
 List of scenarios and the details how to use them with **OMC** (configurations, template personalizations, environment variables, business logic conditions, etc.).
 
-### 5.2.1. General introduction
+<h3 id="scenarios-general-introduction">5.2.1. General introduction</h3>
 
 **OMC** "Scenarios" are specific processing workflows, set up in the code to handle certain business requirements: _what_, _when_, _how_, and _which_ to process the "initial notification" received from a subscribed channel from a _message queue_ implemented by **Open Notificaties** Web API service.
 
@@ -600,7 +629,7 @@ Currently, the following business **scenarios** are implemented:
 - Receiving a _decision_
 - Receiving a _message_
  
-#### 5.2.1.1. Notification
+<h4 id="scenarios-general-notification">5.2.1.1. Notification</h4>
 
 Any **OMC** workflow relies on receiving the (initial) notification event from **Open Notificaties** Web API service to trigger the processing business logic.
 
@@ -610,7 +639,7 @@ Except of being awaited by **OMC** callback (`[OMC]/events/listen` endpoint) it 
 
 Using **Swagger UI** is recommended solution, because of its user-friendly User Interface, documentation of endpoints, parameters, remarks, JSON examples, model schemas, and validation; formatting of API responses is also better than in **Postman**.
 
-#### 5.2.1.2. Environment variables
+<h4 id="scenarios-general-environment-variables">5.2.1.2. Environment variables</h4>
 
 To work properly **OMC** always requires these mandatory _environment variables_ to be set:
 
@@ -704,23 +733,23 @@ These _environment variables_ are optional:
 
 > Logging and analytics in third-party service ([Sentry.io](https://sentry.io)).
 
-#### 5.2.1.3. Requirements
+<h4 id="scenarios-general-requirements">5.2.1.3. Requirements</h4>
 
 To process certain notification the specific internal criteria must be met. Usually, they are some pre-validation (analyzing the "initial notification" received from **Open Notificaties** Web API service), post-validation (to determine the scenario suited for this type of the notification), and whitelisting steps (to ensure that **OMC** should continue processing this type of notification). Sometimes, additional checks have to be performed - which depends on the specific **OMC** scenario.
 
-#### 5.2.1.4. Template placeholders
+<h4 id="scenarios-general-template-placeholders">5.2.1.4. Template placeholders</h4>
 
 When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by the specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
 
 ---
 
-# Examples
+<h1 id="examples">Examples</h1>
 
-### 5.2.2. Case Created
+<h3 id="case-created">5.2.2. Case Created</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) about the case being open for them. For the residents of The Netherlands the case is related to their unique personal identification number **BSN** (_Burgerservicenummer_), thanks to which their contact details and contact preferrences can be retrieved (whether they want to be notified and which notification method they prefer, e.g. by Email, SMS, etc.).
 
-#### 5.2.2.1. Notification
+<h4 id="case-created-notification">5.2.2.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -740,7 +769,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.2.2. Environment variables
+<h4 id="case-created-environment-variables">5.2.2.2. Environment variables</h4>
 
 Required to be set:
 
@@ -752,7 +781,7 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKCREATE_IDS`
 
-#### 5.2.2.3. Requirements
+<h4 id="case-created-requirements">5.2.2.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -771,7 +800,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.2.4. Template placeholders
+<h4 id="case-created-template-placeholders">5.2.2.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -789,11 +818,11 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.3. Case Status Updated
+<h3 id="case-updated">5.2.3. Case Status Updated</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) that the status of their case was updated.
 
-#### 5.2.3.1. Notification
+<h4 id="case-updated-notification">5.2.3.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -813,7 +842,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.3.2. Environment variables
+<h4 id="case-updated-environment-variables">5.2.3.2. Environment variables</h4>
 
 Required to be set:
 
@@ -825,7 +854,7 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKUPDATE_IDS`
 
-#### 5.2.3.3. Requirements
+<h4 id="case-updated-requirements">5.2.3.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -846,7 +875,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.3.4. Template placeholders
+<h4 id="case-updated-template-placeholders">5.2.3.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -868,11 +897,11 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.4. Case Closed
+<h3 id="case-closed">5.2.4. Case Closed</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) that their case was closed (e.g., resolved).
 
-#### 5.2.4.1. Notification
+<h4 id="case-closed-notification">5.2.4.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -892,7 +921,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.4.2. Environment variables
+<h4 id="case-closed-environment-variables">5.2.4.2. Environment variables</h4>
 
 Required to be set:
 
@@ -904,7 +933,7 @@ Required to be set:
 
 `USER_WHITELIST_ZAAKCLOSE_IDS`
 
-#### 5.2.4.3. Requirements
+<h4 id="case-closed-requirements">5.2.4.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -925,7 +954,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.4.4. Template placeholders
+<h4 id="case-closed-template-placeholders">5.2.4.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -947,11 +976,11 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.5. Task Assigned
+<h3 id="task-assigned">5.2.5. Task Assigned</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) that the new task was assigned to them.
 
-#### 5.2.5.1. Notification
+<h4 id="task-assigned-notification">5.2.5.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -969,7 +998,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.5.2. Environment variables
+<h4 id="task-assigned-environment-variables">5.2.5.2. Environment variables</h4>
 
 Required to be set:
 
@@ -983,7 +1012,7 @@ Required to be set:
 
 `USER_WHITELIST_TASKOBJECTTYPE_UUID`
 
-#### 5.2.5.3. Requirements
+<h4 id="task-assigned-requirements">5.2.5.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -1008,7 +1037,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.5.4. Template placeholders
+<h4 id="task-assigned-template-placeholders">5.2.5.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -1034,11 +1063,11 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.6. Decision Made
+<h3 id="decision-made">5.2.6. Decision Made</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) that the decision was made in their case.
 
-#### 5.2.6.1. Notification
+<h4 id="decision-made-notification">5.2.6.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -1057,7 +1086,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.6.2. Environment variables
+<h4 id="decision-made-environment-variables">5.2.6.2. Environment variables</h4>
 
 Required to be set:
 
@@ -1075,7 +1104,7 @@ Required to be set:
 
 `USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION`
 
-#### 5.2.6.3. Requirements
+<h4 id="decision-made-requirements">5.2.6.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -1098,7 +1127,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.6.4. Template placeholders
+<h4 id="decision-made-template-placeholders">5.2.6.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -1160,11 +1189,11 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.7. Message Received
+<h3 id="message-received">5.2.7. Message Received</h3>
 
 Notifies the respective party (e.g., a citizen or an organization) that the message with decision is available on their mailbox.
 
-#### 5.2.7.1. Notification
+<h4 id="message-received-notification">5.2.7.1. Notification</h4>
 
 Example of JSON schema:
 
@@ -1182,7 +1211,7 @@ Example of JSON schema:
 }
 ```
 
-#### 5.2.7.2. Environment variables
+<h4 id="message-received-environment-variables">5.2.7.2. Environment variables</h4>
 
 Required to be set:
 
@@ -1196,7 +1225,7 @@ Required to be set:
 
 `USER_WHITELIST_MESSAGEOBJECTTYPE_UUID`
 
-#### 5.2.7.3. Requirements
+<h4 id="message-received-requirements">5.2.7.3. Requirements</h4>
 
 - The _initial notification_ has:
   -- **Action:** Create (`"create"`)
@@ -1213,7 +1242,7 @@ The notification will be processed and sent!
 
 > Otherwise, user will get a meaningful API feedback from **OMC** application explaining what exactly is missing.
 
-#### 5.2.7.4. Template placeholders
+<h4 id="message-received-template-placeholders">5.2.7.4. Template placeholders</h4>
 
 Required placeholders names in the **Notify NL** template:
 
@@ -1231,14 +1260,16 @@ Required placeholders names in the **Notify NL** template:
 
 ---
 
-### 5.2.99. Not Implemented
+<h3 id="not-implemented-scenario">5.2.99. Not Implemented</h3>
 
 A special fallback scenario which only role is to report that the provided "initial notification" or conditions are not sufficient to determine a proper **OMC** scenario - to be resolved and used for processing the business logic.
 
 User can expect meaningful API response from **OMC**. This response will have _HTTP Status Code_ (206) that will not trigger **Open Notificaties** Web API service to retry sending the same type of "initial notification" again (which would be pointless and fail again since the **OMC** scenario or new condition are not yet implemented).
 
 ---
-# 6. Errors
+<h1 id="errors">6. Errors</h1>
+
+<sup>[Go back](#start)</sup>
 
 List of **validation** (format, requirements), **connectivity** or business logic **processing** errors that you might encounter during accessing **OMC** API endpoints.
 
@@ -1254,14 +1285,14 @@ List of **validation** (format, requirements), **connectivity** or business logi
 
 ![Invalid JWT secret - Error](images/general_jwt_secret_wrong.png)
 
-## 6.1. Events Controller
+<h2 id="errors-events-controller">6.1. Events Controller</h2>
 
 Endpoints:
 
 - `POST` .../Events/Listen
 - `GET` .../Events/Version
 
-#### 6.1.2. Possible errors
+<h4 id="errors-events-controller-possible-errors">6.1.2. Possible errors</h4>
 
 > HTTP Status Code: 206 Partial Content
 
@@ -1305,13 +1336,13 @@ Other cases (than not implemented business case scenarios) may raise 501 errors.
 This is however highly unlikely and might occur mainly in the development phase.
 
 ---
-## 6.2. Notify Controller
+<h2 id="errors-notify-controller">6.2. Notify Controller</h2>
 
 Endpoints:
 
 - `POST` .../Notify/Confirm
 
-#### 6.2.1. Possible errors
+<h4 id="errors-notify-controller-possible-errors">6.2.1. Possible errors</h4>
 
 > HTTP Status Code: 400 Bad Request
 
@@ -1331,9 +1362,9 @@ You woull get the following outcome (separated by pipes):
 > **NOTE**: Unfortunately, **OMC** Development Team cannot provide meaningful guidance how the external services were developed or configured.
 
 ---
-## 6.3. Test Controller
+<h2 id="errors-test-controller">6.3. Test Controller</h2>
 
-### 6.3.1. Testing Notify
+<h3 id="errors-test-controller-notify">6.3.1. Testing Notify</h3>
 
 Endpoints:
 
@@ -1341,9 +1372,9 @@ Endpoints:
 - `POST` .../Test/Notify/SendEmail
 - `POST` .../Test/Notify/SendSms
 
-#### 6.3.1.1. Possible errors
+<h4 id="errors-test-controller-notify-possible-errors">6.3.1.1. Possible errors</h4>
 
-##### a) Common for SendEmail + SendSms:
+<h5 id="errors-test-controller-notify-common">a) Common for SendEmail + SendSms</h5>
 
 > **HTTP Status Code: 403 Forbidden**
 
@@ -1379,7 +1410,7 @@ Endpoints:
 
 ![Missing required personalization - Error](images/test_notify_personalizationMissingError.png)
 
-##### b) SendEmail:
+<h5 id="errors-test-controller-notify-common-sendEmail">b) SendEmail</h5>
 
 - Missing required parameters:
 
@@ -1401,7 +1432,7 @@ Endpoints:
 
 ![Invalid email - Error](images/test_notify_emailInvalidError.png)
 
-##### c) SendSms:
+<h5 id="errors-test-controller-notify-common-sendSms">c) SendSms</h5>
 
 - Missing required parameters:
 
@@ -1441,12 +1472,12 @@ Endpoints:
 
 ![Invalid phone format - Error](images/test_notify_phoneFormatError.png)
 
-### 6.3.2. Testing Open services
+<h3 id="errors-test-controller-open">6.3.2. Testing Open services</h3>
 
 Endpoints:
 
 - `POST` .../Test/Open/ContactRegistration
 
-#### 6.3.2.1. Possible errors
+<h4 id="errors-test-controller-open-possible-errors">6.3.2.1. Possible errors</h4>
 
 > To be finished...
