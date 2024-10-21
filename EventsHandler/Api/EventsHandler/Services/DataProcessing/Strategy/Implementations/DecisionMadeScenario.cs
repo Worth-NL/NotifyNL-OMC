@@ -277,11 +277,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="KeyNotFoundException"/>
         private string PrepareDataJson(string subject, string body, string commaSeparatedUris)
         {
+            const string missing = "-";
+
             string identificationType = (this._bsnNumber.IsNullOrEmpty() ? IdTypes.Unknown : IdTypes.Bsn).GetEnumName();  // TODO: Which type should be used for organization?
             string identificationValue = this._bsnNumber.IsNullOrEmpty() ? "-" : this._bsnNumber;                         // TODO: Which value should be used for organization?
 
-            return $"\"onderwerp\":\"{subject}\"," +
-                   $"\"berichtTekst\":\"{body}\"," +
+            return $"\"onderwerp\":\"{(subject.IsNullOrEmpty() ? missing : subject)}\"," +
+                   $"\"berichtTekst\":\"{(body.IsNullOrEmpty() ? missing : body)}\"," +
                    $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +
                    $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
                    $"\"handelingsperspectief\":\"informatie verstrekken\"," + 
