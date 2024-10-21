@@ -732,13 +732,14 @@ And then click "Authorize".
 
 The **OMC** API is using different configurations and setups to handle multiple complex business cases. Sometimes, it is even required to support multiple versions of the same external API services (which might be very different from each other).
 
-<code>**Last update:** 03 Oct 2024</code>
+> **NOTE:** The OMC workflow can be changed using a respective _environment variable_ in the section of features.
 
 <h3 id="workflow_dependencies">5.1.1. Dependencies</h3>
 
 Here are the details which _workflows_ are using which versions of the external API services:
 
-<h4 id="omc_workflow_v1">OMC workflow v1 `(default)`</h4>
+<h4 id="omc_workflow_v1">OMC workflow v1 <kbd>(default)</kbd></h4>
+
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - "OpenKlant" v1.0.0
@@ -747,7 +748,10 @@ Here are the details which _workflows_ are using which versions of the external 
 - "ObjectTypen" v2.2.0
 - "Contactmomenten" v1.0.0
 
+> **NOTE:** This workflow is supporting only _citizens_ (using **BSN** numbers).
+
 <h4 id="omc_workflow_v2">OMC workflow v2</h4>
+
 - "OpenNotificaties" v1.6.0
 - "OpenZaak" v1.12.1
 - <code>new</code> "OpenKlant" v2.0.0
@@ -756,7 +760,7 @@ Here are the details which _workflows_ are using which versions of the external 
 - "ObjectTypen" v2.2.0
 - <code>new</code> "Klantcontacten" v2.0.0
 
-> **NOTE:** The OMC workflow can be changed using a respective _environment variable_ in the section of features.
+> **NOTE:** This workflow is supporting both _citizens_ (using **BSN** numbers) and _organizations_ (using **KVK** numbers). The term used to describe such different entities is "party".
 
 <h2 id="scenarios">5.2. Scenarios</h2>
 
