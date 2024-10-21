@@ -155,7 +155,27 @@ v.1.11.3
 
    - 6.1. [Events Controller](#errors-events-controller)
 
-      - 6.1.2. [Message Received](#message-received)
+      - 6.1.1. [Possible errors](#errors-events-controller-possible-errors)
+
+   - 6.2. [Notify Controller](#errors-notify-controller)
+
+      - 6.2.1. [Possible errors](#errors-notify-controller-possible-errors)
+
+   - 6.3. [Test Controller](#errors-test-controller)
+
+      - 6.3.1. [Testing Notify](#errors-test-controller-notify)
+
+         - 6.3.1.1. [Possible errors](#errors-test-controller-notify-possible-errors)
+         
+            a) [Common for SendEmail + SendSms](#errors-test-controller-notify-common)
+
+            b) [SendEmail](#errors-test-controller-notify-common-sendEmail)
+
+            c) [SendSms](#errors-test-controller-notify-common-sendSms)
+
+      - 6.3.2. [Testing Open services](#errors-test-controller-open)
+
+         - 6.3.2.1. [Possible errors](#errors-test-controller-open-possible-errors)
 
 ---
 <h1 id="introduction">1. Introduction</h1>
@@ -1426,7 +1446,7 @@ Endpoints:
 - `POST` .../Events/Listen
 - `GET` .../Events/Version
 
-<h3 id="errors-events-controller-possible-errors">6.1.2. Possible errors</h3>
+<h3 id="errors-events-controller-possible-errors">6.1.1. Possible errors</h3>
 
 > HTTP Status Code: 206 Partial Content
 
