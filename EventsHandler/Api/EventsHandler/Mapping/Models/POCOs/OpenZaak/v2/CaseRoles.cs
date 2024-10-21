@@ -44,7 +44,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         /// <summary>
-        /// Gets the <see cref="OpenZaak.CaseRole"/> with matching "initiator role" set.
+        /// Gets the desired <see cref="OpenZaak.CaseRole"/>.
         /// </summary>
         /// <returns>
         ///   The single role.
@@ -53,7 +53,6 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         /// <exception cref="KeyNotFoundException"/>
         internal readonly CaseRole CaseRole(WebApiConfiguration configuration)
         {
-            // Response does not contain any results (check notification or project configuration)
             if (this.Results.IsNullOrEmpty())
             {
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
