@@ -328,13 +328,8 @@
     <value>OMC</value>
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
-    <value>The given value cannot be deserialized into dedicated target object</value>
-  </data>
-  <data name="Deserialization_ERROR_CannotDeserialize_Target" xml:space="preserve">
-    <value>Target</value>
-  </data>
-  <data name="Deserialization_ERROR_CannotDeserialize_Value" xml:space="preserve">
-    <value>Value</value>
+    <value>The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}</value>
+    <comment>{0} = The model used as target for deserialzation, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
   </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
     <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
@@ -471,9 +466,6 @@
     <value>Internal error: The given URI is not an object.</value>
     <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
-  <data name="Deserialization_ERROR_CannotDeserialize_Required" xml:space="preserve">
-    <value>Required properties</value>
-  </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid" xml:space="preserve">
     <value>The notification can not be sent for this object type GUID: {0}. Check respective whitelist (depends on type of your object): {1}.</value>
     <comment>{0} = Object Type ID, {1} = Generic name of environment variables holding the whitelisted values</comment>
@@ -495,5 +487,8 @@
   <data name="Operation_ERROR_Internal_NotPartyUri" xml:space="preserve">
     <value>Internal error: The given URI is not a party.</value>
     <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_RequiredProperties" xml:space="preserve">
+    <value>The following properties were missing in JSON but they are required.</value>
   </data>
 </root>

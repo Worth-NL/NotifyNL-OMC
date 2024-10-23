@@ -148,36 +148,6 @@ namespace EventsHandler.UnitTests.Services.Serialization
             });
         }
 
-        [Test]
-        public void Deserialize_IJsonSerializable_From_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
-        {
-            // Act & Assert
-            foreach ((int id, Action deserialization, string? targetName, string? expectedResult) in GetSerializationTests(DefaultValues.Models.EmptyJson))
-            {
-                Assert.Multiple(() =>
-                {
-                    JsonException? exception = Assert.Throws<JsonException>(() => deserialization.Invoke());
-
-                    string expectedMessage =
-                       $"The given value cannot be deserialized into dedicated target object | " +
-                       $"Target: {targetName} | " +
-                       $"Value: {{}} | " +
-                       $"Required properties: {expectedResult}";
-
-                    Assert.That(exception?.Message, Is.EqualTo(expectedMessage), message: $"Test #{id}");
-                });
-            }
-
-            return;
-
-            IEnumerable<(int Id, Action Deserialization, string TargetName, string ExpectedResult)> GetSerializationTests(string testJson)
-            {
-                yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie, isEindstatus, informeren");
-                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres.uuid, partijIdentificatie.contactnaam.voornaam, _expand.digitaleAdressen.uuid, _expand.digitaleAdressen.adres, _expand.digitaleAdressen.soortDigitaalAdres");
-                yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "CaseUri, CaseId, Title, Status, ExpirationDate, Identification.type, Identification.value");
-            }
-        }
-
         private const string TaskDataJsonTheHague =
             $"{{" +
               $"\"url\":\"https://objecten.test.notifynl.nl/api/v1/objects/ced88e8f-83fb-4f9d-866e-33b4bd0e4e78\"," +
@@ -394,6 +364,108 @@ namespace EventsHandler.UnitTests.Services.Serialization
 
             // Assert
             AssertRequiredProperties(actualResult);
+        }
+        #endregion
+
+        #region Errors
+        internal struct Example : IJsonSerializable
+        {
+            [JsonRequired]
+            [JsonInclude]
+            public string Name { get; internal set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public int Age { get; internal set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public bool IsAdmin { get; internal set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public NestedExample Nested { get; private set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public NestedExample[] Array { get; private set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public List<NestedExample> List { get; private set; }
+        }
+
+        internal struct NestedExample : IJsonSerializable
+        {
+            [JsonRequired]
+            [JsonInclude]
+            public string Name2 { get; internal set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public int Age2 { get; internal set; }
+
+            [JsonRequired]
+            [JsonInclude]
+            public int IsAdmin2 { get; internal set; }
+        }
+
+        [Test]
+        public void Deserialize_IJsonSerializable_From_IncompleteJson_ThrowsJsonException_ListsRequiredProperties()
+        {
+            // Arrange
+            const string serialized = "{\"Name\":\"Aliana\",\"Age\":null,\"IsAdmin\":null}";
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                JsonException? exception = Assert.Throws<JsonException>(() => this._serializer.Deserialize<Example>(serialized));
+
+                const string expectedMessage = "The given JSON cannot be deserialized | " +
+                                               "Target model: 'Example.cs' | " +
+                                               "Failed: '$.Age' | " +
+                                               "Reason: Cannot get the value of a token type 'Null' as a number. | " +
+                                               "All required properties: " +
+                                                   "'Name', 'Age', 'IsAdmin', " +
+                                                   "'Nested.Name2', 'Nested.Age2', 'Nested.IsAdmin2', " +
+                                                   "'Array.Name2', 'Array.Age2', 'Array.IsAdmin2', " +
+                                                   "'List.Name2', 'List.Age2', 'List.IsAdmin2' | " +
+                                               "Source JSON: {\"Name\":\"Aliana\",\"Age\":null,\"IsAdmin\":null}";
+
+                Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            });
+        }
+
+        [Test]
+        public void Deserialize_IJsonSerializable_From_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
+        {
+            // Act & Assert
+            foreach ((int id, Action deserialization, string? targetName, string failed, string? expectedResult) in GetSerializationTests(DefaultValues.Models.EmptyJson))
+            {
+                Assert.Multiple(() =>
+                {
+                    JsonException? exception = Assert.Throws<JsonException>(() => deserialization.Invoke());
+
+                    string expectedMessage =
+                       $"The given JSON cannot be deserialized | " +
+                       $"Target model: '{targetName}.cs' | " +
+                       $"Failed: '{failed}' | " +
+                       $"Reason: {Properties.Resources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
+                       $"All required properties: {expectedResult} | " +
+                       $"Source JSON: {{}}";
+
+                    Assert.That(exception?.Message, Is.EqualTo(expectedMessage), message: $"Test #{id}");
+                });
+            }
+
+            return;
+
+            IEnumerable<(int Id, Action Deserialization, string TargetName, string Failed, string ExpectedResult)> GetSerializationTests(string testJson)
+            {
+                yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie", "'omschrijving', 'omschrijvingGeneriek', 'zaaktypeIdentificatie', 'isEindstatus', 'informeren'");
+                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres, partijIdentificatie, _expand", "'url', 'voorkeursDigitaalAdres.uuid', 'partijIdentificatie.contactnaam.voornaam', '_expand.digitaleAdressen.uuid', '_expand.digitaleAdressen.adres', '_expand.digitaleAdressen.soortDigitaalAdres'");
+                yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "record", "'CaseUri', 'CaseId', 'Title', 'Status', 'ExpirationDate', 'Identification.type', 'Identification.value'");
+            }
         }
         #endregion
 
