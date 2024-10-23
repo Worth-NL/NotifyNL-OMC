@@ -2,6 +2,7 @@
 
 using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
+using EventsHandler.Services.Settings.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 
@@ -43,23 +44,30 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v1
         }
 
         /// <summary>
-        /// Gets the most recent (last) <see cref="OpenZaak.CaseRole"/>.
+        /// Gets the desired <see cref="OpenZaak.CaseRole"/>.
         /// </summary>
         /// <value>
         ///   The single role.
         /// </value>
-        /// <exception cref="HttpRequestException"/>  // TODO: KeyNotFoundException
-        internal readonly CaseRole CaseRole
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        internal readonly CaseRole CaseRole(WebApiConfiguration configuration)
         {
-            get
+            if (this.Results.IsNullOrEmpty())
             {
-                if (this.Results.IsNullOrEmpty())
-                {
-                    throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
-                }
-
-                return this.Results[^1];  // TODO: Get party by initiator role
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyCaseRoles);
             }
+
+            foreach (CaseRole caseRole in this.Results)
+            {
+                if (caseRole.InitiatorRole == configuration.AppSettings.Variables.InitiatorRole())
+                {
+                    return caseRole;
+                }
+            }
+
+            // Zero initiator results were found (there is no initiator)
+            throw new HttpRequestException(Resources.HttpRequest_ERROR_MissingInitiatorRole);
         }
     }
 }

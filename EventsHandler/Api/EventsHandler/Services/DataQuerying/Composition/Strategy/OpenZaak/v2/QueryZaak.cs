@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (v1+) Web API service | "OMC workflow" v2.
+    ///   Version: "OpenZaak" (v2) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryZaak : IQueryZaak
@@ -42,7 +42,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2
                 .CaseRole(((IQueryZaak)this).Configuration);
         }
 
-        private async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, Uri caseUri, string subjectType)
+        private async Task<CaseRoles> GetCaseRolesV2Async(IQueryBase queryBase, Uri caseUri, string subjectType)  // TODO: Not used yet (at the moment, consulting)
         {
             // Predefined URL components
             string rolesEndpoint = $"https://{((IQueryZaak)this).GetDomain()}/rollen";

@@ -205,7 +205,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The given value cannot be deserialized into dedicated target object.
+        ///   Looks up a localized string similar to The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}.
         /// </summary>
         internal static string Deserialization_ERROR_CannotDeserialize_Message {
             get {
@@ -214,29 +214,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Required properties.
+        ///   Looks up a localized string similar to The following properties were missing in JSON but they are required..
         /// </summary>
-        internal static string Deserialization_ERROR_CannotDeserialize_Required {
+        internal static string Deserialization_ERROR_CannotDeserialize_RequiredProperties {
             get {
-                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Required", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target.
-        /// </summary>
-        internal static string Deserialization_ERROR_CannotDeserialize_Target {
-            get {
-                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Target", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Value.
-        /// </summary>
-        internal static string Deserialization_ERROR_CannotDeserialize_Value {
-            get {
-                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Value", resourceCulture);
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_RequiredProperties", resourceCulture);
             }
         }
         
@@ -619,15 +601,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The main object could not be retrieved from OpenZaak Web API service..
-        /// </summary>
-        internal static string HttpRequest_ERROR_NoMainObject {
-            get {
-                return ResourceManager.GetString("HttpRequest_ERROR_NoMainObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The message (object) could not be retrieved from Objecten Web API service..
         /// </summary>
         internal static string HttpRequest_ERROR_NoMessage {
@@ -862,11 +835,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number)..
+        ///   Looks up a localized string similar to The notification can not be sent if the task is not assigned to a person (missing BSN number) or to an organization (missing KVK number)..
         /// </summary>
-        internal static string Processing_ABORT_DoNotSendNotification_TaskNotPerson {
+        internal static string Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported {
             get {
-                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskNotPerson", resourceCulture);
+                return ResourceManager.GetString("Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported", resourceCulture);
             }
         }
         
@@ -1029,15 +1002,6 @@ namespace EventsHandler.Properties {
         internal static string Register_NotifyNL_SUCCESS_NotificationSent {
             get {
                 return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
