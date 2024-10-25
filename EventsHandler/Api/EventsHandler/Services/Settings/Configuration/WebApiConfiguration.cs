@@ -358,33 +358,33 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </summary>
         internal abstract record BaseComponent
         {
-            /// <inheritdoc cref="AuthorizationComponent"/>
+            /// <inheritdoc cref="AuthenticationComponent"/>
             [Config]
-            internal AuthorizationComponent Authorization { get; }
+            internal AuthenticationComponent Auth { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="BaseComponent"/> class.
             /// </summary>
             protected BaseComponent(ILoadersContext loadersContext, string parentName)
             {
-                this.Authorization = new AuthorizationComponent(loadersContext, parentName);
+                this.Auth = new AuthenticationComponent(loadersContext, parentName);
             }
 
             /// <summary>
-            /// The "Authorization" part of the settings.
+            /// The "Authentication" part of the settings.
             /// </summary>
-            internal sealed record AuthorizationComponent
+            internal sealed record AuthenticationComponent
             {
                 /// <inheritdoc cref="JwtComponent"/>
                 [Config]
                 internal JwtComponent JWT { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="AuthorizationComponent"/> class.
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                internal AuthorizationComponent(ILoadersContext loadersContext, string parentPath)
+                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Authorization));
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
                     this.JWT = new JwtComponent(loadersContext, currentPath);
                 }

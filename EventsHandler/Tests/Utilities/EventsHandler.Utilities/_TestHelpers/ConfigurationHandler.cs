@@ -62,21 +62,21 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetEnvironmentVariable<T>() mocking
             Dictionary<string /* Key */, string? /* Value */> keyValueMapping = new()
             {
-                { "OMC_AUTHORIZATION_JWT_SECRET",                GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_ISSUER",                GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_AUDIENCE",              GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_EXPIRESINMIN",          GetTestValue(isValid, testUshort) },
-                { "OMC_AUTHORIZATION_JWT_USERID",                GetTestValue(isValid, testString) },
-                { "OMC_AUTHORIZATION_JWT_USERNAME",              GetTestValue(isValid, testString) },
+                { "OMC_AUTH_JWT_SECRET",                         GetTestValue(isValid, testString) },
+                { "OMC_AUTH_JWT_ISSUER",                         GetTestValue(isValid, testString) },
+                { "OMC_AUTH_JWT_AUDIENCE",                       GetTestValue(isValid, testString) },
+                { "OMC_AUTH_JWT_EXPIRESINMIN",                   GetTestValue(isValid, testUshort) },
+                { "OMC_AUTH_JWT_USERID",                         GetTestValue(isValid, testString) },
+                { "OMC_AUTH_JWT_USERNAME",                       GetTestValue(isValid, testString) },
 
                 { "OMC_FEATURES_WORKFLOW_VERSION",               $"{omcWorkflow}" },
 
-                { "ZGW_AUTHORIZATION_JWT_SECRET",                GetTestValue(isValid, testString) },
-                { "ZGW_AUTHORIZATION_JWT_ISSUER",                GetTestValue(isValid, testString) },
-                { "ZGW_AUTHORIZATION_JWT_AUDIENCE",              GetTestValue(isValid, testString) },
-                { "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN",          GetTestValue(isValid, testUshort) },
-                { "ZGW_AUTHORIZATION_JWT_USERID",                GetTestValue(isValid, testString) },
-                { "ZGW_AUTHORIZATION_JWT_USERNAME",              GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_JWT_SECRET",                         GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_JWT_ISSUER",                         GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_JWT_AUDIENCE",                       GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_JWT_EXPIRESINMIN",                   GetTestValue(isValid, testUshort) },
+                { "ZGW_AUTH_JWT_USERID",                         GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_JWT_USERNAME",                       GetTestValue(isValid, testString) },
 
                 { "ZGW_API_KEY_OPENKLANT",                       GetTestValue(isValid, testString) },
                 { "ZGW_API_KEY_OBJECTEN",                        GetTestValue(isValid, testString) },
