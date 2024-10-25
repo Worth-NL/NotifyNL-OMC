@@ -301,12 +301,12 @@ And all of them have **Swagger UI** specified as the default start option.
         "ZGW_API_KEY_OBJECTTYPEN": "",
         "ZGW_API_KEY_NOTIFYNL": "",
         
-        "ZGW_DOMAIN_OPENNOTIFICATIES": "",
-        "ZGW_DOMAIN_OPENZAAK": "",
-        "ZGW_DOMAIN_OPENKLANT": "",
-        "ZGW_DOMAIN_OBJECTEN": "",
-        "ZGW_DOMAIN_OBJECTTYPEN": "",
-        "ZGW_DOMAIN_CONTACTMOMENTEN": "",
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "",
+        "ZGW_ENDPOINT_OPENZAAK": "",
+        "ZGW_ENDPOINT_OPENKLANT": "",
+        "ZGW_ENDPOINT_OBJECTEN": "",
+        "ZGW_ENDPOINT_OBJECTTYPEN": "",
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "",
         
         "ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
         "ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
@@ -536,13 +536,13 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | ZGW_API_KEY_OBJECTTYPEN                          | string    | "647c4eg120f98ed5f5a..."                      | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "ObjectTypen" Web API service UI                                                                                                                                               |
 | ZGW_API_KEY_NOTIFYNL                             | string    | "name-8-4-4-4-12-8-4-4-4-12" (ID + UUID x2)   | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                       |
 | ---                                              | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
-| ZGW_DOMAIN_OPENNOTIFICATIES                      | string    | "opennotificaties.mycity.nl/api/v1"           | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_OPENZAAK                              | string    | "openzaak.mycity.nl/zaken/api/v1"             | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_OPENKLANT                             | string    | "openklant.mycity.nl/klanten/api/v1"          | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_BESLUITEN                             | string    | "besluiten.mycity.nl/besluiten/api/v1"        | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_OBJECTEN                              | string    | "objecten.mycity.nl/api/v2"                   | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_OBJECTTYPEN                           | string    | "objecttypen.mycity.nl/api/v2"                | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
-| ZGW_DOMAIN_CONTACTMOMENTEN                       | string    | "openklant.mycity.nl/contactmomenten/api/v1"  | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OPENNOTIFICATIES                    | string    | "opennotificaties.mycity.nl/api/v1"           | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OPENZAAK                            | string    | "openzaak.mycity.nl/zaken/api/v1"             | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OPENKLANT                           | string    | "openklant.mycity.nl/klanten/api/v1"          | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_BESLUITEN                           | string    | "besluiten.mycity.nl/besluiten/api/v1"        | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OBJECTEN                            | string    | "objecten.mycity.nl/api/v2"                   | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OBJECTTYPEN                         | string    | "objecttypen.mycity.nl/api/v2"                | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_CONTACTMOMENTEN                     | string    | "openklant.mycity.nl/contactmomenten/api/v1"  | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
 | ---                                              | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
 | ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE                 | GUID**    | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE                 | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
@@ -864,17 +864,17 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 </br>
 
-`ZGW_DOMAIN_OPENZAAK`
+`ZGW_ENDPOINT_OPENZAAK`
 
-`ZGW_DOMAIN_OPENKLANT`
+`ZGW_ENDPOINT_OPENKLANT`
 
-`ZGW_DOMAIN_BESLUITEN`
+`ZGW_ENDPOINT_BESLUITEN`
 
-`ZGW_DOMAIN_OBJECTEN`
+`ZGW_ENDPOINT_OBJECTEN`
 
-`ZGW_DOMAIN_OBJECTTYPEN`
+`ZGW_ENDPOINT_OBJECTTYPEN`
 
-`ZGW_DOMAIN_CONTACTMOMENTEN`
+`ZGW_ENDPOINT_CONTACTMOMENTEN`
 
 > **Domains** might have different _paths_ (e.g., `domain/something/v1/`) depends on version of external API service used in certain [OMC Workflow](#workflow_versions). For example domains for OpenKlant and ContactMomenten depends on version of **Open Klant** Web API service. Moreover, domains and paths depends on the place where your version of Web API service was deployed (domain) and the way how it is internally structured (paths).
 

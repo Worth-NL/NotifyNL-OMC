@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.ZGW.Domain.ObjectTypen();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.ObjectTypen();
         #endregion
     }
 }

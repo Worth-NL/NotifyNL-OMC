@@ -92,7 +92,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.API.Key);
 
                 // ZGW | Domain
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Domain);
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
 
                 // ZGW | Templates (Email + SMS)
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.TemplateIds.Email);
@@ -140,13 +140,13 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Invalid: Not existing
             yield return ("#1", () => s_testConfiguration!.ZGW.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: ""
-            yield return ("#2", () => s_testConfiguration!.ZGW.Domain.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
-            yield return ("#3", () => s_testConfiguration!.ZGW.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#4", () => s_testConfiguration!.ZGW.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#5", () => s_testConfiguration!.ZGW.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#5", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: Empty
             yield return ("#6", () => s_testConfiguration!.ZGW.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
