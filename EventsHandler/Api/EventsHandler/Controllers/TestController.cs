@@ -270,7 +270,7 @@ namespace EventsHandler.Controllers
                 // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
                     this._configuration.Notify.API.BaseUrl().ToString(),
-                    this._configuration.ZGW.API.Key.NotifyNL());
+                    this._configuration.ZGW.Auth.API.Key.NotifyNL());
 
                 // Determine first possible Email template ID if nothing was provided
                 List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates; // NOTE: Assign to variables for debug purposes
