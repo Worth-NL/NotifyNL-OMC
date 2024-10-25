@@ -553,8 +553,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             return notifyMethod switch
             {
-                NotifyMethods.Email => configuration.ZGW.TemplateIds.Email.TaskAssigned(),
-                NotifyMethods.Sms => configuration.ZGW.TemplateIds.Sms.TaskAssigned(),
+                NotifyMethods.Email => configuration.Notify.TemplateIds.Email.TaskAssigned(),
+                NotifyMethods.Sms => configuration.Notify.TemplateIds.Sms.TaskAssigned(),
                 _ => Guid.Empty
             };
         }
