@@ -55,7 +55,8 @@ namespace EventsHandler.Services.Settings.Configuration
 
         private AppSettingsComponent? _appSettings;
         private OmcComponent? _omc;
-        private UserComponent? _user;
+        private ZgwComponent? _zgw;
+        private NotifyComponent? _notify;
 
         /// <summary>
         /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
@@ -65,19 +66,26 @@ namespace EventsHandler.Services.Settings.Configuration
             => this._appSettings ??= new AppSettingsComponent(GetLoader(LoaderTypes.AppSettings), nameof(AppSettings));
 
         /// <summary>
-        /// Gets the object representing Output Management Component (internal) settings.
+        /// Gets the settings used by internal service OMC (Output Management Component).
         /// </summary>
         [Config]
         internal OmcComponent OMC
             => this._omc ??= new OmcComponent(GetLoader(LoaderTypes.Environment), nameof(OMC));
 
         /// <summary>
-        /// Gets the object representing (external) settings configured by user for
-        /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
+        /// Gets the settings used by external services that belongs to the group of:
+        /// ZGW (Zaakgericht Werken) / "Open Services" - such as OpenNotificatie, OpenZaak, OpenKlant...
         /// </summary>
         [Config]
-        internal UserComponent User
-            => this._user ??= new UserComponent(GetLoader(LoaderTypes.Environment), nameof(User), this);
+        internal ZgwComponent ZGW
+            => this._zgw ??= new ZgwComponent(GetLoader(LoaderTypes.Environment), nameof(ZGW), this);
+
+        /// <summary>
+        /// Gets the settings used by external service Notify NL.
+        /// </summary>
+        [Config]
+        internal NotifyComponent Notify
+            => this._notify ??= new NotifyComponent(GetLoader(LoaderTypes.Environment), nameof(Notify));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
@@ -87,10 +95,10 @@ namespace EventsHandler.Services.Settings.Configuration
             this._serviceProvider = serviceProvider;
 
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
-            // NOTE: Initialize these components now to spare execution time during real-time (Activator.CreateInstance<T>)
             this._appSettings = AppSettings;
             this._omc = OMC;
-            this._user = User;
+            this._zgw = ZGW;
+            this._notify = Notify;
         }
         
         /// <summary>
@@ -346,7 +354,7 @@ namespace EventsHandler.Services.Settings.Configuration
         // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
 
         /// <summary>
-        /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
+        /// The common base for <see cref="OmcComponent"/> and <see cref="ZgwComponent"/>.
         /// </summary>
         internal abstract record BaseComponent
         {
@@ -437,10 +445,6 @@ namespace EventsHandler.Services.Settings.Configuration
         [UsedImplicitly]
         internal sealed record OmcComponent : BaseComponent
         {
-            /// <inheritdoc cref="ApiComponent"/>
-            [Config]
-            internal ApiComponent API { get; }
-
             /// <inheritdoc cref="FeaturesComponent"/>
             [Config]
             internal FeaturesComponent Features { get; }
@@ -451,51 +455,7 @@ namespace EventsHandler.Services.Settings.Configuration
             public OmcComponent(ILoadersContext loadersContext, string parentName)
                 : base(loadersContext, parentName)
             {
-                this.API = new ApiComponent(loadersContext, parentName);
                 this.Features = new FeaturesComponent(loadersContext, parentName);
-            }
-
-            /// <summary>
-            /// The "API" part of the settings.
-            /// </summary>
-            internal sealed record ApiComponent
-            {
-                /// <inheritdoc cref="BaseUrlComponent"/>
-                [Config]
-                internal BaseUrlComponent BaseUrl { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
-                /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-
-                    this.BaseUrl = new BaseUrlComponent(loadersContext, currentPath);
-                }
-
-                /// <summary>
-                /// The "Base URL" part of the settings.
-                /// </summary>
-                internal sealed record BaseUrlComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="BaseUrlComponent"/> class.
-                    /// </summary>
-                    public BaseUrlComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(BaseUrl));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Uri NotifyNL()
-                        => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
-                }
             }
 
             /// <summary>
@@ -523,10 +483,10 @@ namespace EventsHandler.Services.Settings.Configuration
         }
 
         /// <summary>
-        /// The "User" part of the settings.
+        /// The "ZGW" part of the settings.
         /// </summary>
         [UsedImplicitly]
-        internal sealed record UserComponent : BaseComponent
+        internal sealed record ZgwComponent : BaseComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
             [Config]
@@ -549,9 +509,9 @@ namespace EventsHandler.Services.Settings.Configuration
             internal VariablesComponent Variables { get; }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="UserComponent"/> class.
+            /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
-            public UserComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
+            public ZgwComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
                 : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName, configuration);
@@ -1004,6 +964,49 @@ namespace EventsHandler.Services.Settings.Configuration
             }
         }
 
+        /// <summary>
+        /// The "Notify" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        internal sealed record NotifyComponent : BaseComponent
+        {
+            /// <inheritdoc cref="ApiComponent"/>
+            [Config]
+            internal ApiComponent API { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
+            /// </summary>
+            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+                : base(loadersContext, parentName)
+            {
+                this.API = new ApiComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "API" part of the settings.
+            /// </summary>
+            internal sealed record ApiComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// </summary>
+                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal Uri BaseUrl()
+                    => GetCachedUri(this._loadersContext, this._currentPath, nameof(BaseUrl));
+            }
+        }
+
         // NOTE: Environment variables "SENTRY_DSN" and "SENTRY_ENVIRONMENT" are skipped because they are dependent on third-party (assured and validated)
         #endregion
 
@@ -1168,7 +1171,7 @@ namespace EventsHandler.Services.Settings.Configuration
             s_cachedGuids.Clear();
             s_cachedUris.Clear();
             s_cachedArrays.Clear();
-            this.User.Whitelist.Dispose();
+            this.ZGW.Whitelist.Dispose();
         }
     }
 }

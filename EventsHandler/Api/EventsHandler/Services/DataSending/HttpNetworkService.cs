@@ -151,15 +151,15 @@ namespace EventsHandler.Services.DataSending
             {
                 // TODO: Caching the token until the expiration time doesn't elapse yet
                 SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
-                    this._configuration.User.Authorization.JWT.Secret());
+                    this._configuration.ZGW.Authorization.JWT.Secret());
 
                 // Preparing JWT token
                 string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
-                    this._configuration.User.Authorization.JWT.Issuer(),
-                    this._configuration.User.Authorization.JWT.Audience(),
-                    this._configuration.User.Authorization.JWT.ExpiresInMin(),
-                    this._configuration.User.Authorization.JWT.UserId(),
-                    this._configuration.User.Authorization.JWT.UserName());
+                    this._configuration.ZGW.Authorization.JWT.Issuer(),
+                    this._configuration.ZGW.Authorization.JWT.Audience(),
+                    this._configuration.ZGW.Authorization.JWT.ExpiresInMin(),
+                    this._configuration.ZGW.Authorization.JWT.UserId(),
+                    this._configuration.ZGW.Authorization.JWT.UserName());
 
                 // Set Authorization header
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
@@ -184,13 +184,13 @@ namespace EventsHandler.Services.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.OpenKlant()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.API.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.Objecten()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.API.Key.Objecten()}",
 
                 HttpClientTypes.ObjectTypen
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.User.API.Key.ObjectTypen()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.API.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")

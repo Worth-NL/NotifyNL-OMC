@@ -41,7 +41,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
         {
             // Predefined URL components
-            string partiesEndpoint = $"https://{((IQueryKlant)this).Configuration.User.Domain.OpenKlant()}/partijen";
+            string partiesEndpoint = $"https://{((IQueryKlant)this).Configuration.ZGW.Domain.OpenKlant()}/partijen";
 
             string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
             string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase,string jsonBody)
         {
             // Predefined URL components
-            Uri klantContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.User.Domain.OpenKlant()}/klantcontacten");
+            Uri klantContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Domain.OpenKlant()}/klantcontacten");
 
             // Sending the request
             return await queryBase.ProcessPostAsync<ContactMoment>(
@@ -115,7 +115,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         async Task<RequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
-            Uri objectContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.User.Domain.OpenKlant()}/onderwerpobjecten");
+            Uri objectContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Domain.OpenKlant()}/onderwerpobjecten");
             
             // Sending the request
             return await networkService.PostAsync(
@@ -128,7 +128,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2
         async Task<RequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
-            Uri customerContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.User.Domain.OpenKlant()}/betrokkenen");
+            Uri customerContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Domain.OpenKlant()}/betrokkenen");
 
             // Sending the request
             return await networkService.PostAsync(

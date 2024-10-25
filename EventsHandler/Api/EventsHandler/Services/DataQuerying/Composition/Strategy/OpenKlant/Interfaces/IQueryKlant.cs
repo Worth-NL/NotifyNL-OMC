@@ -94,7 +94,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.User.Domain.OpenKlant();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Domain.OpenKlant();
         #endregion
     }
 }

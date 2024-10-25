@@ -68,7 +68,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             
             // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
-                this.Configuration.User.Whitelist.TaskAssigned_IDs().IsAllowed,
+                this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().IsAllowed,
                 caseType.Identification, GetWhitelistEnvVarName());
 
             // Validation #4: The notifications must be enabled
@@ -92,7 +92,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.Email.TaskAssigned();
+            => this.Configuration.ZGW.TemplateIds.Email.TaskAssigned();
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -142,7 +142,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-            => this.Configuration.User.TemplateIds.Sms.TaskAssigned();
+            => this.Configuration.ZGW.TemplateIds.Sms.TaskAssigned();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
@@ -153,7 +153,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
-        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.TaskAssigned_IDs().ToString();
+        protected override string GetWhitelistEnvVarName() => this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().ToString();
         #endregion
     }
 }
