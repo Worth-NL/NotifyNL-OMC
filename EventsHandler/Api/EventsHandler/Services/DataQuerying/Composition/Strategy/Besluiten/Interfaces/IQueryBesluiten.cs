@@ -192,7 +192,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.User.Domain.Besluiten();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Domain.Besluiten();
         #endregion
     }
 }

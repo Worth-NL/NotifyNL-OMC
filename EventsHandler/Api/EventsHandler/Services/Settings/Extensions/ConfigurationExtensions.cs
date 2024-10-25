@@ -22,9 +22,9 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Domain)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
+                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Domain)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Domain.OpenZaak)}")
                                                       .ToUpper();
             }
         }
@@ -35,9 +35,9 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Domain)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}")
+                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Domain)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Domain.OpenKlant)}")
                                                        .ToUpper();
             }
         }
@@ -48,9 +48,9 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Whitelist.Message_Allowed)}")
+                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist.Message_Allowed)}")
                                                       .ToUpper();
             }
         }
@@ -61,9 +61,9 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Whitelist.DecisionInfoObjectType_Uuids)}")
+                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Whitelist)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Whitelist.DecisionInfoObjectType_Uuids)}")
                                                        .ToUpper();
             }
         }
@@ -74,8 +74,8 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                      $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
+                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                      $"{nameof(WebApiConfiguration.ZGW.Whitelist)}_" +
                                                       $"...OBJECTTYPE_UUID")
                                                      .ToUpper();
             }
@@ -102,7 +102,7 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.User.Domain.OpenZaak();
+                return configuration.ZGW.Domain.OpenZaak();
             }
 
             // Case #2: Static usage
@@ -117,7 +117,7 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.User.Domain.OpenKlant();
+                return configuration.ZGW.Domain.OpenKlant();
             }
 
             // Case #2: Static usage

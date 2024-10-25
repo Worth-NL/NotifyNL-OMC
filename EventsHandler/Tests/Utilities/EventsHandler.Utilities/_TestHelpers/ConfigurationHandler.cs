@@ -69,55 +69,55 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTHORIZATION_JWT_USERID",                GetTestValue(isValid, testString) },
                 { "OMC_AUTHORIZATION_JWT_USERNAME",              GetTestValue(isValid, testString) },
 
-                { "OMC_API_BASEURL_NOTIFYNL",                    GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
-
                 { "OMC_FEATURES_WORKFLOW_VERSION",               $"{omcWorkflow}" },
 
-                { "USER_AUTHORIZATION_JWT_SECRET",               GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_ISSUER",               GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_AUDIENCE",             GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_EXPIRESINMIN",         GetTestValue(isValid, testUshort) },
-                { "USER_AUTHORIZATION_JWT_USERID",               GetTestValue(isValid, testString) },
-                { "USER_AUTHORIZATION_JWT_USERNAME",             GetTestValue(isValid, testString) },
+                { "ZGW_AUTHORIZATION_JWT_SECRET",                GetTestValue(isValid, testString) },
+                { "ZGW_AUTHORIZATION_JWT_ISSUER",                GetTestValue(isValid, testString) },
+                { "ZGW_AUTHORIZATION_JWT_AUDIENCE",              GetTestValue(isValid, testString) },
+                { "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN",          GetTestValue(isValid, testUshort) },
+                { "ZGW_AUTHORIZATION_JWT_USERID",                GetTestValue(isValid, testString) },
+                { "ZGW_AUTHORIZATION_JWT_USERNAME",              GetTestValue(isValid, testString) },
 
-                { "USER_API_KEY_OPENKLANT",                      GetTestValue(isValid, testString) },
-                { "USER_API_KEY_OBJECTEN",                       GetTestValue(isValid, testString) },
-                { "USER_API_KEY_OBJECTTYPEN",                    GetTestValue(isValid, testString) },
-                { "USER_API_KEY_NOTIFYNL",                       GetTestValue(isValid, testString) },
+                { "ZGW_API_KEY_OPENKLANT",                       GetTestValue(isValid, testString) },
+                { "ZGW_API_KEY_OBJECTEN",                        GetTestValue(isValid, testString) },
+                { "ZGW_API_KEY_OBJECTTYPEN",                     GetTestValue(isValid, testString) },
+                { "ZGW_API_KEY_NOTIFYNL",                        GetTestValue(isValid, testString) },
 
-                { "USER_DOMAIN_OPENNOTIFICATIES",                GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OPENZAAK",                        GetTestValue(isValid, testDomain, " ") },
-                { "USER_DOMAIN_OPENKLANT",                       GetTestValue(isValid, testDomain, "http://domain") },
-                { "USER_DOMAIN_BESLUITEN",                       GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_OBJECTEN",                        GetTestValue(isValid, testDomain, "https://domain") },
-                { "USER_DOMAIN_OBJECTTYPEN",                     GetTestValue(isValid, testDomain) },
-                { "USER_DOMAIN_CONTACTMOMENTEN",                 GetTestValue(isValid, testDomain) },
+                { "ZGW_DOMAIN_OPENNOTIFICATIES",                 GetTestValue(isValid, testDomain) },
+                { "ZGW_DOMAIN_OPENZAAK",                         GetTestValue(isValid, testDomain, " ") },
+                { "ZGW_DOMAIN_OPENKLANT",                        GetTestValue(isValid, testDomain, "http://domain") },
+                { "ZGW_DOMAIN_BESLUITEN",                        GetTestValue(isValid, testDomain) },
+                { "ZGW_DOMAIN_OBJECTEN",                         GetTestValue(isValid, testDomain, "https://domain") },
+                { "ZGW_DOMAIN_OBJECTTYPEN",                      GetTestValue(isValid, testDomain) },
+                { "ZGW_DOMAIN_CONTACTMOMENTEN",                  GetTestValue(isValid, testDomain) },
 
-                { "USER_TEMPLATEIDS_DECISIONMADE",               GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_DECISIONMADE",                GetTestValue(isValid, testGuid) },
 
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE",            GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED",         GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",      GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE",            GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE",            GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKCLOSE",             GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_EMAIL_TASKASSIGNED",          GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",       GetTestValue(isValid, testGuid) },
 
-                { "USER_TEMPLATEIDS_SMS_ZAAKCREATE",             GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKUPDATE",             GetTestValue(isValid, testGuid) },
-                { "USER_TEMPLATEIDS_SMS_ZAAKCLOSE",              GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_TASKASSIGNED",           GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED",        GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
+                { "ZGW_TEMPLATEIDS_SMS_ZAAKCREATE",              GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_SMS_ZAAKUPDATE",              GetTestValue(isValid, testGuid) },
+                { "ZGW_TEMPLATEIDS_SMS_ZAAKCLOSE",               GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
+                { "ZGW_TEMPLATEIDS_SMS_TASKASSIGNED",            GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
+                { "ZGW_TEMPLATEIDS_SMS_MESSAGERECEIVED",         GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
 
-                { "USER_WHITELIST_ZAAKCREATE_IDS",               GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_ZAAKUPDATE_IDS",               GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_ZAAKCLOSE_IDS",                GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
-                { "USER_WHITELIST_TASKASSIGNED_IDS",             GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_DECISIONMADE_IDS",             GetTestValue(isValid, testArray) },
-                { "USER_WHITELIST_MESSAGE_ALLOWED",              GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
-                { "USER_WHITELIST_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
-                { "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
-                { "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
+                { "ZGW_WHITELIST_ZAAKCREATE_IDS",                GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_ZAAKCLOSE_IDS",                 GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
+                { "ZGW_WHITELIST_TASKASSIGNED_IDS",              GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_DECISIONMADE_IDS",              GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_MESSAGE_ALLOWED",               GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
+                { "ZGW_WHITELIST_TASKOBJECTTYPE_UUID",           GetTestValue(isValid, TestTaskObjectTypeUuid) },
+                { "ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID",        GetTestValue(isValid, TestMessageObjectTypeUuid) },
+                { "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS",  GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
 
-                { "USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION", GetTestValue(isValid, "1") }
+                { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION", GetTestValue(isValid, "1") },
+
+                { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)

@@ -108,7 +108,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
                 Assert.That(exception?.Message.StartsWith(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType
                                               .Replace("{0}", $"{s_invalidInfoObjectType.TypeUri.GetGuid()}")
-                                              .Replace("{1}", "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS")), Is.True);
+                                              .Replace("{1}", "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS")), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
                 
                 VerifyGetDataMethodCalls(1, 1, 1, 0, 0, 0, 0, 0);
@@ -172,7 +172,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId
                     .Replace("{0}", "4")
-                    .Replace("{1}", "USER_WHITELIST_DECISIONMADE_IDS");
+                    .Replace("{1}", "ZGW_WHITELIST_DECISIONMADE_IDS");
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
@@ -244,7 +244,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
 
-                Guid expectedTemplateId = this._testConfiguration.User.TemplateIds.DecisionMade();
+                Guid expectedTemplateId = this._testConfiguration.ZGW.TemplateIds.DecisionMade();
                 string contactDetails;
 
                 if (testDistributionChannel == DistributionChannels.Both)
