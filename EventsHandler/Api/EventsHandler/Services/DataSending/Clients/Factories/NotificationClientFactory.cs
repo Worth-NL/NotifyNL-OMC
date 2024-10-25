@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
             return new NotifyClientProxy(
                 new NotificationClient(
                     baseUrl: this._configuration.Notify.API.BaseUrl().ToString(),  // The base URL to "Notify NL" API Service
-                    apiKey:  this._configuration.ZGW.API.Key.NotifyNL()));         // 3rd party-specific "Notify NL" API Key
+                    apiKey:  this._configuration.ZGW.Auth.API.Key.NotifyNL()));    // 3rd party-specific "Notify NL" API Key
         }
     }
 }
