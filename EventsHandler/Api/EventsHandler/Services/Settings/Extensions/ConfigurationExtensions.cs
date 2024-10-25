@@ -23,8 +23,8 @@ namespace EventsHandler.Services.Settings.Extensions
             lock (s_padlock)
             {
                 return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Domain)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Domain.OpenZaak)}")
+                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenZaak)}")
                                                       .ToUpper();
             }
         }
@@ -36,8 +36,8 @@ namespace EventsHandler.Services.Settings.Extensions
             lock (s_padlock)
             {
                 return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Domain)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Domain.OpenKlant)}")
+                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenKlant)}")
                                                        .ToUpper();
             }
         }
@@ -102,7 +102,7 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.ZGW.Domain.OpenZaak();
+                return configuration.ZGW.Endpoint.OpenZaak();
             }
 
             // Case #2: Static usage
@@ -117,7 +117,7 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.ZGW.Domain.OpenKlant();
+                return configuration.ZGW.Endpoint.OpenKlant();
             }
 
             // Case #2: Static usage

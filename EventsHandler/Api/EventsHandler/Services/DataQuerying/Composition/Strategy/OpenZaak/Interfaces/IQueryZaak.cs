@@ -179,7 +179,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.ZGW.Domain.OpenZaak();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.OpenZaak();
         #endregion
     }
 }

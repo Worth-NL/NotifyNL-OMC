@@ -492,9 +492,9 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal ApiComponent API { get; }
 
-            /// <inheritdoc cref="DomainComponent"/>
+            /// <inheritdoc cref="EndpointComponent"/>
             [Config]
-            internal DomainComponent Domain { get; }
+            internal EndpointComponent Endpoint { get; }
 
             /// <inheritdoc cref="TemplateIdsComponent"/>
             [Config]
@@ -515,7 +515,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName, configuration);
-                this.Domain = new DomainComponent(loadersContext, parentName);
+                this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
@@ -583,56 +583,56 @@ namespace EventsHandler.Services.Settings.Configuration
             }
 
             /// <summary>
-            /// The "Domain" part of the settings.
+            /// The "Endpoint" part of the settings.
             /// </summary>
-            internal sealed record DomainComponent
+            internal sealed record EndpointComponent
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="DomainComponent"/> class.
+                /// Initializes a new instance of the <see cref="EndpointComponent"/> class.
                 /// </summary>
-                internal DomainComponent(ILoadersContext loadersContext, string parentPath)
+                internal EndpointComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Domain));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Endpoint));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenNotificaties()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenZaak()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenKlant()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string Besluiten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Besluiten));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Besluiten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string Objecten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string ObjectTypen()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string ContactMomenten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
             }
 
             /// <summary>
@@ -1037,7 +1037,7 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <remarks>
         /// Validation: enabled
         /// </remarks>
-        private static string GetCachedDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        private static string GetCachedEndpointValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
                 currentPath + nodeName,

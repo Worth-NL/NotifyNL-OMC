@@ -83,13 +83,13 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_API_KEY_OBJECTTYPEN",                     GetTestValue(isValid, testString) },
                 { "ZGW_API_KEY_NOTIFYNL",                        GetTestValue(isValid, testString) },
 
-                { "ZGW_DOMAIN_OPENNOTIFICATIES",                 GetTestValue(isValid, testDomain) },
-                { "ZGW_DOMAIN_OPENZAAK",                         GetTestValue(isValid, testDomain, " ") },
-                { "ZGW_DOMAIN_OPENKLANT",                        GetTestValue(isValid, testDomain, "http://domain") },
-                { "ZGW_DOMAIN_BESLUITEN",                        GetTestValue(isValid, testDomain) },
-                { "ZGW_DOMAIN_OBJECTEN",                         GetTestValue(isValid, testDomain, "https://domain") },
-                { "ZGW_DOMAIN_OBJECTTYPEN",                      GetTestValue(isValid, testDomain) },
-                { "ZGW_DOMAIN_CONTACTMOMENTEN",                  GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OPENNOTIFICATIES",               GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OPENZAAK",                       GetTestValue(isValid, testDomain, " ") },
+                { "ZGW_ENDPOINT_OPENKLANT",                      GetTestValue(isValid, testDomain, "http://domain") },
+                { "ZGW_ENDPOINT_BESLUITEN",                      GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OBJECTEN",                       GetTestValue(isValid, testDomain, "https://domain") },
+                { "ZGW_ENDPOINT_OBJECTTYPEN",                    GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_CONTACTMOMENTEN",                GetTestValue(isValid, testDomain) },
 
                 { "ZGW_TEMPLATEIDS_DECISIONMADE",                GetTestValue(isValid, testGuid) },
 
