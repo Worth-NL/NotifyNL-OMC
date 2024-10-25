@@ -27,22 +27,22 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production",
 
-        "OMC_AUTHORIZATION_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
-        "OMC_AUTHORIZATION_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Production) | Workflow v1",
-        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Production) | Workflow v1",
+        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
+        "OMC_AUTH_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "60",
+        "OMC_AUTH_JWT_USERID": "OMC (Production) | Workflow v1",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Production) | Workflow v1",
 
         "OMC_FEATURES_WORKFLOW_VERSION": "1",
 
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
-        "ZGW_AUTHORIZATION_JWT_SECRET": "worthsys123",
-        "ZGW_AUTHORIZATION_JWT_ISSUER": "goc",
-        "ZGW_AUTHORIZATION_JWT_AUDIENCE": "",
-        "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "ZGW_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
-        "ZGW_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
+        "ZGW_AUTH_JWT_SECRET": "worthsys123",
+        "ZGW_AUTH_JWT_ISSUER": "goc",
+        "ZGW_AUTH_JWT_AUDIENCE": "",
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "60",
+        "ZGW_AUTH_JWT_USERID": "fmolenaar@worth.systems",
+        "ZGW_AUTH_JWT_USERNAME": "Frank Molenaar",
 
         "ZGW_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
         "ZGW_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
@@ -96,22 +96,22 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
 
-        "OMC_AUTHORIZATION_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
-        "OMC_AUTHORIZATION_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTHORIZATION_JWT_USERID": "OMC (Development) | Workflow v2",
-        "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development) | Workflow v2",
+        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
+        "OMC_AUTH_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "60",
+        "OMC_AUTH_JWT_USERID": "OMC (Development) | Workflow v2",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Development) | Workflow v2",
 
         "OMC_FEATURES_WORKFLOW_VERSION": "2",
 
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
-        "ZGW_AUTHORIZATION_JWT_SECRET": "worthsys123",
-        "ZGW_AUTHORIZATION_JWT_ISSUER": "goc",
-        "ZGW_AUTHORIZATION_JWT_AUDIENCE": "",
-        "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "ZGW_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
-        "ZGW_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
+        "ZGW_AUTH_JWT_SECRET": "worthsys123",
+        "ZGW_AUTH_JWT_ISSUER": "goc",
+        "ZGW_AUTH_JWT_AUDIENCE": "",
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "60",
+        "ZGW_AUTH_JWT_USERID": "fmolenaar@worth.systems",
+        "ZGW_AUTH_JWT_USERNAME": "Frank Molenaar",
 
         "ZGW_API_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Not required if OMC Workflow v1 is used
         "ZGW_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",

@@ -78,7 +78,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var omcConfiguration = s_testConfiguration.OMC;
 
                 // OMC | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Authorization.JWT);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Auth.JWT);
 
                 // OMC | Features
                 TestConfigProperties(ref counter, methodNames, omcConfiguration.Features);
@@ -86,7 +86,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var zgwConfiguration = s_testConfiguration.ZGW;
 
                 // ZGW | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Authorization.JWT);
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
 
                 // ZGW | API | Key
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.API.Key);

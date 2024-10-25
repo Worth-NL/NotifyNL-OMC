@@ -151,15 +151,15 @@ namespace EventsHandler.Services.DataSending
             {
                 // TODO: Caching the token until the expiration time doesn't elapse yet
                 SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
-                    this._configuration.ZGW.Authorization.JWT.Secret());
+                    this._configuration.ZGW.Auth.JWT.Secret());
 
                 // Preparing JWT token
                 string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
-                    this._configuration.ZGW.Authorization.JWT.Issuer(),
-                    this._configuration.ZGW.Authorization.JWT.Audience(),
-                    this._configuration.ZGW.Authorization.JWT.ExpiresInMin(),
-                    this._configuration.ZGW.Authorization.JWT.UserId(),
-                    this._configuration.ZGW.Authorization.JWT.UserName());
+                    this._configuration.ZGW.Auth.JWT.Issuer(),
+                    this._configuration.ZGW.Auth.JWT.Audience(),
+                    this._configuration.ZGW.Auth.JWT.ExpiresInMin(),
+                    this._configuration.ZGW.Auth.JWT.UserId(),
+                    this._configuration.ZGW.Auth.JWT.UserName());
 
                 // Set Authorization header
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
