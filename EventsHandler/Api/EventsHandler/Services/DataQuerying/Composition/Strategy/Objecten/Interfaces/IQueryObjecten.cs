@@ -106,7 +106,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.User.Domain.Objecten();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Domain.Objecten();
         #endregion
     }
 }

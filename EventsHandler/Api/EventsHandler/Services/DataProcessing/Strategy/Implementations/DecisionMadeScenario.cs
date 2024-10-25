@@ -62,7 +62,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #1: The info object needs to be of a specific type
             Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
-            if (!this.Configuration.User.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
+            if (!this.Configuration.ZGW.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
@@ -91,7 +91,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #4: The case type identifier must be whitelisted
             ValidateCaseId(
-                this.Configuration.User.Whitelist.DecisionMade_IDs().IsAllowed,
+                this.Configuration.ZGW.Whitelist.DecisionMade_IDs().IsAllowed,
                 this._caseType.Identification, GetWhitelistEnvVarName());
 
             // Validation #5: The notifications must be enabled
@@ -126,7 +126,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
+            => this.Configuration.ZGW.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -173,7 +173,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-            => this.Configuration.User.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
+            => this.Configuration.ZGW.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
@@ -299,7 +299,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
-        protected override string GetWhitelistEnvVarName() => this.Configuration.User.Whitelist.DecisionMade_IDs().ToString();
+        protected override string GetWhitelistEnvVarName() => this.Configuration.ZGW.Whitelist.DecisionMade_IDs().ToString();
         #endregion
     }
 }

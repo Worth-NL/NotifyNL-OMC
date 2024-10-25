@@ -34,56 +34,56 @@
         "OMC_AUTHORIZATION_JWT_USERID": "OMC (Production) | Workflow v1",
         "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Production) | Workflow v1",
 
-        "OMC_API_BASEURL_NOTIFYNL": "https://api.acc.notifynl.nl",
-
         "OMC_FEATURES_WORKFLOW_VERSION": "1",
 
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
-        "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
-        "USER_AUTHORIZATION_JWT_ISSUER": "goc",
-        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
-        "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
-        "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
+        "ZGW_AUTHORIZATION_JWT_SECRET": "worthsys123",
+        "ZGW_AUTHORIZATION_JWT_ISSUER": "goc",
+        "ZGW_AUTHORIZATION_JWT_AUDIENCE": "",
+        "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
+        "ZGW_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
+        "ZGW_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
 
-        "USER_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
-        "USER_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
-        "USER_API_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
-        "USER_API_KEY_NOTIFYNL": "omc_testdev__real_personalizations-f872ff87-26c9-46ad-9b99-b54cc5f85f75-86ff6134-d32a-4c2b-916a-99b9aa09553f",
+        "ZGW_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
+        "ZGW_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
+        "ZGW_API_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
+        "ZGW_API_KEY_NOTIFYNL": "omc_testdev__real_personalizations-f872ff87-26c9-46ad-9b99-b54cc5f85f75-86ff6134-d32a-4c2b-916a-99b9aa09553f",
 
-        "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
-        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
-        "USER_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl/klanten/api/v1", // NOTE: In OMC Workflow v1 this path is for clients
-        "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
-        "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
-        "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
-        "USER_DOMAIN_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register v1
+        "ZGW_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
+        "ZGW_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
+        "ZGW_DOMAIN_OPENKLANT": "openklant.test.notifynl.nl/klanten/api/v1", // NOTE: In OMC Workflow v1 this path is for clients
+        "ZGW_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
+        "ZGW_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
+        "ZGW_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
+        "ZGW_DOMAIN_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register v1
 
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
-        "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
-        "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
+        "ZGW_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
+        "ZGW_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
 
-        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
-        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
-        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
-        "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
+        "ZGW_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
+        "ZGW_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
 
-        "USER_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
+        "ZGW_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
 
-        "USER_WHITELIST_ZAAKCREATE_IDS": "*",
-        "USER_WHITELIST_ZAAKUPDATE_IDS": "*",
-        "USER_WHITELIST_ZAAKCLOSE_IDS": "*",
-        "USER_WHITELIST_TASKASSIGNED_IDS": "*",
-        "USER_WHITELIST_DECISIONMADE_IDS": "*",
-        "USER_WHITELIST_MESSAGE_ALLOWED": "true",
-        "USER_WHITELIST_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",
-        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
-        "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "f482b7a3-22b7-40e2-a187-52f737d4ef44",
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "*",
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
+        "ZGW_WHITELIST_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",
+        "ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
+        "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "f482b7a3-22b7-40e2-a187-52f737d4ef44",
 
-        "USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION": "1",
+        "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION": "1",
+
+        "NOTIFY_API_BASEURL": "https://api.acc.notifynl.nl",
 
         "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632",
         "SENTRY_ENVIRONMENT": "Worth Production | Workflow v1"
@@ -103,56 +103,56 @@
         "OMC_AUTHORIZATION_JWT_USERID": "OMC (Development) | Workflow v2",
         "OMC_AUTHORIZATION_JWT_USERNAME": "OMC (Development) | Workflow v2",
 
-        "OMC_API_BASEURL_NOTIFYNL": "https://api.acc.notifynl.nl",
-
         "OMC_FEATURES_WORKFLOW_VERSION": "2",
 
         // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
-        "USER_AUTHORIZATION_JWT_SECRET": "worthsys123",
-        "USER_AUTHORIZATION_JWT_ISSUER": "goc",
-        "USER_AUTHORIZATION_JWT_AUDIENCE": "",
-        "USER_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
-        "USER_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
-        "USER_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
+        "ZGW_AUTHORIZATION_JWT_SECRET": "worthsys123",
+        "ZGW_AUTHORIZATION_JWT_ISSUER": "goc",
+        "ZGW_AUTHORIZATION_JWT_AUDIENCE": "",
+        "ZGW_AUTHORIZATION_JWT_EXPIRESINMIN": "60",
+        "ZGW_AUTHORIZATION_JWT_USERID": "fmolenaar@worth.systems",
+        "ZGW_AUTHORIZATION_JWT_USERNAME": "Frank Molenaar",
 
-        "USER_API_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Not required if OMC Workflow v1 is used
-        "USER_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
-        "USER_API_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
-        "USER_API_KEY_NOTIFYNL": "omc_test_v2-f872ff87-26c9-46ad-9b99-b54cc5f85f75-2501a1db-8fa1-4854-85be-d28cd318a374",
+        "ZGW_API_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Not required if OMC Workflow v1 is used
+        "ZGW_API_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
+        "ZGW_API_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
+        "ZGW_API_KEY_NOTIFYNL": "omc_test_v2-f872ff87-26c9-46ad-9b99-b54cc5f85f75-2501a1db-8fa1-4854-85be-d28cd318a374",
 
-        "USER_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
-        "USER_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
-        "USER_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
-        "USER_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
-        "USER_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
-        "USER_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
-        "USER_DOMAIN_CONTACTMOMENTEN": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_DOMAIN_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
+        "ZGW_DOMAIN_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
+        "ZGW_DOMAIN_OPENKLANT": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_DOMAIN_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
+        "ZGW_DOMAIN_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
+        "ZGW_DOMAIN_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
+        "ZGW_DOMAIN_CONTACTMOMENTEN": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
 
-        "USER_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
+        "ZGW_TEMPLATEIDS_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
 
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
-        "USER_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
-        "USER_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
-        "USER_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE": "3b58f871-93cb-49e0-bb98-acc9ab1a4876",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "c71bb006-f131-465c-bac2-fb44c398c4cd",
+        "ZGW_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "f1c5af4f-9145-4049-836e-09edff8eb01d",
+        "ZGW_TEMPLATEIDS_EMAIL_TASKASSIGNED": "50ed4ca5-8638-4ad3-b774-884d0944c382",
+        "ZGW_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "0354a750-d1b1-4bff-b359-1b22a698b3f6",
 
-        "USER_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
-        "USER_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
-        "USER_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
-        "USER_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "USER_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
+        "ZGW_TEMPLATEIDS_SMS_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
+        "ZGW_TEMPLATEIDS_SMS_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
+        "ZGW_TEMPLATEIDS_SMS_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
 
-        "USER_WHITELIST_ZAAKCREATE_IDS": "*",
-        "USER_WHITELIST_ZAAKUPDATE_IDS": "*",
-        "USER_WHITELIST_ZAAKCLOSE_IDS": "*",
-        "USER_WHITELIST_TASKASSIGNED_IDS": "*",
-        "USER_WHITELIST_DECISIONMADE_IDS": "*",
-        "USER_WHITELIST_MESSAGE_ALLOWED": "true",
-        "USER_WHITELIST_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",
-        "USER_WHITELIST_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
-        "USER_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "f482b7a3-22b7-40e2-a187-52f737d4ef44",
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "*",
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
+        "ZGW_WHITELIST_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",
+        "ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
+        "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "f482b7a3-22b7-40e2-a187-52f737d4ef44",
 
-        "USER_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION": "1",
+        "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION": "1",
+
+        "NOTIFY_API_BASEURL": "https://api.acc.notifynl.nl",
 
         "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632",
         "SENTRY_ENVIRONMENT": "Worth Development | Workflow v2"
