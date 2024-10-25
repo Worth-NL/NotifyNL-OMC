@@ -51,6 +51,7 @@ namespace EventsHandler.Services.Settings.Configuration
             string[] /* Setting value */> s_cachedArrays = new();
         #endregion
 
+        #region Properties (root components)
         private readonly IServiceProvider _serviceProvider;
 
         private AppSettingsComponent? _appSettings;
@@ -86,6 +87,7 @@ namespace EventsHandler.Services.Settings.Configuration
         [Config]
         internal NotifyComponent Notify
             => this._notify ??= new NotifyComponent(GetLoader(LoaderTypes.Environment), nameof(Notify));
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
@@ -100,19 +102,8 @@ namespace EventsHandler.Services.Settings.Configuration
             this._zgw = ZGW;
             this._notify = Notify;
         }
-        
-        /// <summary>
-        /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
-        /// </summary>
-        private ILoadersContext GetLoader(LoaderTypes loaderType)
-        {
-            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
-            loaderContext.SetLoader(loaderType);
 
-            return loaderContext;
-        }
-
-        #region Settings
+        #region AppSettings.json
         /// <summary>
         /// The "appsettings[.xxx].json" part of the settings (not changing frequently).
         /// </summary>
@@ -350,24 +341,32 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
             }
         }
+        #endregion
 
+        #region Environment Variables
         // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
 
         /// <summary>
-        /// The common base for <see cref="OmcComponent"/> and <see cref="ZgwComponent"/>.
+        /// The "OMC" part of the settings.
         /// </summary>
-        internal abstract record BaseComponent
+        [UsedImplicitly]
+        internal sealed record OmcComponent
         {
             /// <inheritdoc cref="AuthenticationComponent"/>
             [Config]
             internal AuthenticationComponent Auth { get; }
 
+            /// <inheritdoc cref="FeaturesComponent"/>
+            [Config]
+            internal FeaturesComponent Features { get; }
+
             /// <summary>
-            /// Initializes a new instance of the <see cref="BaseComponent"/> class.
+            /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
-            protected BaseComponent(ILoadersContext loadersContext, string parentName)
+            public OmcComponent(ILoadersContext loadersContext, string parentName)
             {
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
+                this.Features = new FeaturesComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -437,26 +436,6 @@ namespace EventsHandler.Services.Settings.Configuration
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
             }
-        }
-
-        /// <summary>
-        /// The "OMC" part of the settings.
-        /// </summary>
-        [UsedImplicitly]
-        internal sealed record OmcComponent : BaseComponent
-        {
-            /// <inheritdoc cref="FeaturesComponent"/>
-            [Config]
-            internal FeaturesComponent Features { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="OmcComponent"/> class.
-            /// </summary>
-            public OmcComponent(ILoadersContext loadersContext, string parentName)
-                : base(loadersContext, parentName)
-            {
-                this.Features = new FeaturesComponent(loadersContext, parentName);
-            }
 
             /// <summary>
             /// The "Features" part of the settings.
@@ -486,8 +465,12 @@ namespace EventsHandler.Services.Settings.Configuration
         /// The "ZGW" part of the settings.
         /// </summary>
         [UsedImplicitly]
-        internal sealed record ZgwComponent : BaseComponent
+        internal sealed record ZgwComponent
         {
+            /// <inheritdoc cref="AuthenticationComponent"/>
+            [Config]
+            internal AuthenticationComponent Auth { get; }
+
             /// <inheritdoc cref="ApiComponent"/>
             [Config]
             internal ApiComponent API { get; }
@@ -508,12 +491,80 @@ namespace EventsHandler.Services.Settings.Configuration
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
             public ZgwComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
-                : base(loadersContext, parentName)
             {
+                this.Auth = new AuthenticationComponent(loadersContext, parentName);
                 this.API = new ApiComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "Authentication" part of the settings.
+            /// </summary>
+            internal sealed record AuthenticationComponent
+            {
+                /// <inheritdoc cref="JwtComponent"/>
+                [Config]
+                internal JwtComponent JWT { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
+                /// </summary>
+                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
+
+                    this.JWT = new JwtComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "JWT" part of the settings.
+                /// </summary>
+                internal sealed record JwtComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="JwtComponent"/> class.
+                    /// </summary>
+                    internal JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Secret()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Issuer()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Audience()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience), disableValidation: true);
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal ushort ExpiresInMin()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string UserId()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string UserName()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
+                }
             }
 
             /// <summary>
@@ -843,7 +894,7 @@ namespace EventsHandler.Services.Settings.Configuration
         /// The "Notify" part of the settings.
         /// </summary>
         [UsedImplicitly]
-        internal sealed record NotifyComponent : BaseComponent
+        internal sealed record NotifyComponent
         {
             /// <inheritdoc cref="ApiComponent"/>
             [Config]
@@ -857,7 +908,6 @@ namespace EventsHandler.Services.Settings.Configuration
             /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
             /// </summary>
             public NotifyComponent(ILoadersContext loadersContext, string parentName)
-                : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName);
                 this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
@@ -1008,6 +1058,19 @@ namespace EventsHandler.Services.Settings.Configuration
         }
 
         // NOTE: Environment variables "SENTRY_DSN" and "SENTRY_ENVIRONMENT" are skipped because they are dependent on third-party (assured and validated)
+        #endregion
+
+        #region Loading
+        /// <summary>
+        /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
+        /// </summary>
+        private ILoadersContext GetLoader(LoaderTypes loaderType)
+        {
+            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+            loaderContext.SetLoader(loaderType);
+
+            return loaderContext;
+        }
         #endregion
 
         #region Caching
@@ -1164,6 +1227,7 @@ namespace EventsHandler.Services.Settings.Configuration
         }
         #endregion
 
+        #region Disposing
         /// <inheritdoc cref="IDisposable.Dispose()"/>
         public void Dispose()
         {
@@ -1173,5 +1237,6 @@ namespace EventsHandler.Services.Settings.Configuration
             s_cachedArrays.Clear();
             this.ZGW.Whitelist.Dispose();
         }
+        #endregion
     }
 }
