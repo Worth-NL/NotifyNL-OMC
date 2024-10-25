@@ -244,7 +244,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 Assert.That(actualResult.Message, Is.EqualTo(Resources.Processing_SUCCESS_Scenario_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
 
-                Guid expectedTemplateId = this._testConfiguration.ZGW.TemplateIds.DecisionMade();
+                Guid expectedTemplateId = this._testConfiguration.Notify.TemplateIds.DecisionMade();
                 string contactDetails;
 
                 if (testDistributionChannel == DistributionChannels.Both)

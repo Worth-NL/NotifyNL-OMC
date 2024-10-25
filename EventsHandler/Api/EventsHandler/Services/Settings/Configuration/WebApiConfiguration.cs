@@ -496,10 +496,6 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal EndpointComponent Endpoint { get; }
 
-            /// <inheritdoc cref="TemplateIdsComponent"/>
-            [Config]
-            internal TemplateIdsComponent TemplateIds { get; }
-
             /// <inheritdoc cref="WhitelistComponent"/>
             [Config]
             internal WhitelistComponent Whitelist { get; }
@@ -516,7 +512,6 @@ namespace EventsHandler.Services.Settings.Configuration
             {
                 this.API = new ApiComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
-                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
             }
@@ -633,126 +628,6 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal string ContactMomenten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
-            }
-
-            /// <summary>
-            /// The "TemplateIds" part of the settings.
-            /// </summary>
-            internal sealed record TemplateIdsComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <inheritdoc cref="EmailComponent"/>
-                [Config]
-                internal EmailComponent Email { get; }
-
-                /// <inheritdoc cref="SmsComponent"/>
-                [Config]
-                internal SmsComponent Sms { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
-                /// </summary>
-                internal TemplateIdsComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
-
-                    this.Email = new EmailComponent(this._loadersContext, this._currentPath);
-                    this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                internal Guid DecisionMade()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
-
-                /// <summary>
-                /// The "Email" part of the settings.
-                /// </summary>
-                internal sealed record EmailComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
-                    /// </summary>
-                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakCreate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakUpdate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakClose()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid TaskAssigned()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid MessageReceived()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
-                }
-
-                /// <summary>
-                /// The "Sms" part of the settings.
-                /// </summary>
-                internal sealed record SmsComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
-                    /// </summary>
-                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakCreate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakUpdate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakClose()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid TaskAssigned()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid MessageReceived()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
-                }
             }
 
             /// <summary>
@@ -974,6 +849,10 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal ApiComponent API { get; }
 
+            /// <inheritdoc cref="TemplateIdsComponent"/>
+            [Config]
+            internal TemplateIdsComponent TemplateIds { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
             /// </summary>
@@ -981,6 +860,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 : base(loadersContext, parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName);
+                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -1004,6 +884,126 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal Uri BaseUrl()
                     => GetCachedUri(this._loadersContext, this._currentPath, nameof(BaseUrl));
+            }
+
+            /// <summary>
+            /// The "TemplateIds" part of the settings.
+            /// </summary>
+            internal sealed record TemplateIdsComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <inheritdoc cref="EmailComponent"/>
+                [Config]
+                internal EmailComponent Email { get; }
+
+                /// <inheritdoc cref="SmsComponent"/>
+                [Config]
+                internal SmsComponent Sms { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
+                /// </summary>
+                internal TemplateIdsComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
+
+                    this.Email = new EmailComponent(this._loadersContext, this._currentPath);
+                    this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal Guid DecisionMade()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+
+                /// <summary>
+                /// The "Email" part of the settings.
+                /// </summary>
+                internal sealed record EmailComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
+                    /// </summary>
+                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+                }
+
+                /// <summary>
+                /// The "SMS" part of the settings.
+                /// </summary>
+                internal sealed record SmsComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
+                    /// </summary>
+                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+                }
             }
         }
 

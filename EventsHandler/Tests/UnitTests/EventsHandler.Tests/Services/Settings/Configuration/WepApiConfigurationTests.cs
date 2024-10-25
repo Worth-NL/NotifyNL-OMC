@@ -94,10 +94,6 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // ZGW | Domain
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
 
-                // ZGW | Templates (Email + SMS)
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.TemplateIds.Email);
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.TemplateIds.Sms);
-
                 // ZGW | Whitelist
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
 
@@ -108,6 +104,10 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
                 // Notify | API
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.API);
+
+                // Notify | Templates (Email + SMS)
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateIds.Email);
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateIds.Sms);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {methodNames.Join()}");
@@ -147,18 +147,18 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
             yield return ("#5", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
-            // Invalid: Empty
-            yield return ("#6", () => s_testConfiguration!.ZGW.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.ZGW.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: 8-4-(2-2)-4-12
-            yield return ("#8", () => s_testConfiguration!.ZGW.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
-            // Invalid: (9)-4-4-4-12
-            yield return ("#9", () => s_testConfiguration!.ZGW.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
-            // Invalid: Special characters
-            yield return ("#10", () => s_testConfiguration!.ZGW.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Default URI
-            yield return ("#11", () => s_testConfiguration!.Notify.API.BaseUrl(), Resources.Configuration_ERROR_InvalidUri);
+            yield return ("#6", () => s_testConfiguration!.Notify.API.BaseUrl(), Resources.Configuration_ERROR_InvalidUri);
+            // Invalid: Empty
+            yield return ("#7", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: Empty
+            yield return ("#8", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: 8-4-(2-2)-4-12
+            yield return ("#9", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: (9)-4-4-4-12
+            yield return ("#10", () => s_testConfiguration!.Notify.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: Special characters
+            yield return ("#11", () => s_testConfiguration!.Notify.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
 
         [TestCase("1", true)]

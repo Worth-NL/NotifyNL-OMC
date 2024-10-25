@@ -126,7 +126,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => this.Configuration.ZGW.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
+            => this.Configuration.Notify.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -173,7 +173,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-            => this.Configuration.ZGW.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
+            => this.Configuration.Notify.TemplateIds.DecisionMade();  // NOTE: Decision has only one template
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)

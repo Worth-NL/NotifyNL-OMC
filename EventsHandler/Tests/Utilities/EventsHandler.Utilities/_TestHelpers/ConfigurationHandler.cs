@@ -62,6 +62,7 @@ namespace EventsHandler.Utilities._TestHelpers
             #region GetEnvironmentVariable<T>() mocking
             Dictionary<string /* Key */, string? /* Value */> keyValueMapping = new()
             {
+                // OMC environment variables
                 { "OMC_AUTH_JWT_SECRET",                         GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_ISSUER",                         GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_AUDIENCE",                       GetTestValue(isValid, testString) },
@@ -71,6 +72,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "OMC_FEATURES_WORKFLOW_VERSION",               $"{omcWorkflow}" },
 
+                // ZGW environment variables
                 { "ZGW_AUTH_JWT_SECRET",                         GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_JWT_ISSUER",                         GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_JWT_AUDIENCE",                       GetTestValue(isValid, testString) },
@@ -91,20 +93,6 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                    GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                GetTestValue(isValid, testDomain) },
 
-                { "ZGW_TEMPLATEIDS_DECISIONMADE",                GetTestValue(isValid, testGuid) },
-
-                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKCREATE",            GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKUPDATE",            GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_EMAIL_ZAAKCLOSE",             GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_EMAIL_TASKASSIGNED",          GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",       GetTestValue(isValid, testGuid) },
-
-                { "ZGW_TEMPLATEIDS_SMS_ZAAKCREATE",              GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_SMS_ZAAKUPDATE",              GetTestValue(isValid, testGuid) },
-                { "ZGW_TEMPLATEIDS_SMS_ZAAKCLOSE",               GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
-                { "ZGW_TEMPLATEIDS_SMS_TASKASSIGNED",            GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "ZGW_TEMPLATEIDS_SMS_MESSAGERECEIVED",         GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
-
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKCLOSE_IDS",                 GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
@@ -117,7 +105,20 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION", GetTestValue(isValid, "1") },
 
-                { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) }
+                // NOTIFY environment variables
+                { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
+
+                { "NOTIFY_TEMPLATEIDS_DECISIONMADE",             GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE",         GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE",         GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE",          GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED",       GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",    GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE",            GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
+                { "NOTIFY_TEMPLATEIDS_SMS_TASKASSIGNED",         GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
+                { "NOTIFY_TEMPLATEIDS_SMS_MESSAGERECEIVED",      GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)
