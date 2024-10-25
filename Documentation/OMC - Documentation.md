@@ -296,10 +296,10 @@ And all of them have **Swagger UI** specified as the default start option.
         "ZGW_AUTH_JWT_USERID": "",
         "ZGW_AUTH_JWT_USERNAME": "",
         
-        "ZGW_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
-        "ZGW_API_KEY_OBJECTEN": "",
-        "ZGW_API_KEY_OBJECTTYPEN": "",
-        "ZGW_API_KEY_NOTIFYNL": "",
+        "ZGW_AUTH_API_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
+        "ZGW_AUTH_API_KEY_OBJECTEN": "",
+        "ZGW_AUTH_API_KEY_OBJECTTYPEN": "",
+        "ZGW_AUTH_API_KEY_NOTIFYNL": "",
         
         "ZGW_ENDPOINT_OPENNOTIFICATIES": "",
         "ZGW_ENDPOINT_OPENZAAK": "",
@@ -323,11 +323,13 @@ And all of them have **Swagger UI** specified as the default start option.
         "NOTIFY_API_BASEURL": "",
         
         "NOTIFY_TEMPLATEIDS_DECISIONMADE": "",
+
         "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
         "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
         "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
         "NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
         "NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
+
         "NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE": "",
         "NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
         "NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
@@ -529,10 +531,10 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | ZGW_AUTH_JWT_EXPIRESINMIN                        | ushort    | "60"                                          | true         | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
 | ZGW_AUTH_JWT_USERID                              | string    | "admin"                                       | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
 | ZGW_AUTH_JWT_USERNAME                            | string    | "Municipality of Rotterdam"                   | false        | Cannot be missing and have null or empty value                                                                                             | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
-| ZGW_API_KEY_OPENKLANT                            | string    | "43dcba52d312d1e00bc..."                      | true         | Cannot be missing and have null or empty value (if you are using OMC Workflow v2 and above; otherwise, it's not mandatory)                 | It needs to be generated for OMC Workflow v2 and above from "OpenKlant" 2.0 Web API service UI                                                                                                               |
-| ZGW_API_KEY_OBJECTEN                             | string    | "56abcd24e75c02d44ee..."                      | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "Objecten" Web API service UI                                                                                                                                                  |
-| ZGW_API_KEY_OBJECTTYPEN                          | string    | "647c4eg120f98ed5f5a..."                      | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "ObjectTypen" Web API service UI                                                                                                                                               |
-| ZGW_API_KEY_NOTIFYNL                             | string    | "name-8-4-4-4-12-8-4-4-4-12" (ID + UUID x2)   | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                       |
+| ZGW_AUTH_API_KEY_OPENKLANT                       | string    | "43dcba52d312d1e00bc..."                      | true         | Cannot be missing and have null or empty value (if you are using OMC Workflow v2 and above; otherwise, it's not mandatory)                 | It needs to be generated for OMC Workflow v2 and above from "OpenKlant" 2.0 Web API service UI                                                                                                               |
+| ZGW_AUTH_API_KEY_OBJECTEN                        | string    | "56abcd24e75c02d44ee..."                      | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "Objecten" Web API service UI                                                                                                                                                  |
+| ZGW_AUTH_API_KEY_OBJECTTYPEN                     | string    | "647c4eg120f98ed5f5a..."                      | true         | Cannot be missing and have null or empty value                                                                                             | It needs to be generated from "ObjectTypen" Web API service UI                                                                                                                                               |
+| ZGW_AUTH_API_KEY_NOTIFYNL                        | string    | "name-8-4-4-4-12-8-4-4-4-12" (ID + UUID x2)   | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                       |
 | ---                                              | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
 | ZGW_ENDPOINT_OPENNOTIFICATIES                    | string    | "opennotificaties.mycity.nl/api/v1"           | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
 | ZGW_ENDPOINT_OPENZAAK                            | string    | "openzaak.mycity.nl/zaken/api/v1"             | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end     | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
@@ -582,7 +584,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 `ZGW_AUTH_JWT_SECRET` - Like other **ZGW_AUTH_[...]** configurations to be configured and set by the user after logging to **OpenZaak** Web API service.
 
-`ZGW_API_KEY_NOTIFYNL` - To be generated from **NotifyNL** Admin Portal => **API Integration** section.
+`ZGW_AUTH_API_KEY_NOTIFYNL` - To be generated from **NotifyNL** Admin Portal => **API Integration** section.
 
 `NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
@@ -850,13 +852,13 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 </br>
 
-`ZGW_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
+`ZGW_AUTH_API_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
 
-`ZGW_API_KEY_OBJECTEN`
+`ZGW_AUTH_API_KEY_OBJECTEN`
 
-`ZGW_API_KEY_OBJECTTYPEN`
+`ZGW_AUTH_API_KEY_OBJECTTYPEN`
 
-`ZGW_API_KEY_NOTIFYNL`
+`ZGW_AUTH_API_KEY_NOTIFYNL`
 
 > **API key authorization** is required by some versions of external API services used in certain [OMC Workflow](#workflow_versions) versions.
 

@@ -80,10 +80,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_AUTH_JWT_USERID",                         GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_JWT_USERNAME",                       GetTestValue(isValid, testString) },
 
-                { "ZGW_API_KEY_OPENKLANT",                       GetTestValue(isValid, testString) },
-                { "ZGW_API_KEY_OBJECTEN",                        GetTestValue(isValid, testString) },
-                { "ZGW_API_KEY_OBJECTTYPEN",                     GetTestValue(isValid, testString) },
-                { "ZGW_API_KEY_NOTIFYNL",                        GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_API_KEY_OPENKLANT",                  GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_API_KEY_OBJECTEN",                   GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_API_KEY_OBJECTTYPEN",                GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_API_KEY_NOTIFYNL",                   GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",               GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                       GetTestValue(isValid, testDomain, " ") },
@@ -109,11 +109,13 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
 
                 { "NOTIFY_TEMPLATEIDS_DECISIONMADE",             GetTestValue(isValid, testGuid) },
+
                 { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE",         GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE",         GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE",          GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED",       GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",    GetTestValue(isValid, testGuid) },
+
                 { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE",            GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },

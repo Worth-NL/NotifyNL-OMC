@@ -89,7 +89,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
 
                 // ZGW | API | Key
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.API.Key);
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.API.Key);
 
                 // ZGW | Domain
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
@@ -138,7 +138,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
             // Invalid: Not existing
-            yield return ("#1", () => s_testConfiguration!.ZGW.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => s_testConfiguration!.ZGW.Auth.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: ""
             yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
@@ -207,7 +207,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
 
             // Act
-            string openKlantApiKey = configuration.ZGW.API.Key.OpenKlant();
+            string openKlantApiKey = configuration.ZGW.Auth.API.Key.OpenKlant();
 
             // Assert
             Assert.Multiple(() =>
@@ -227,9 +227,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             Assert.Multiple(() =>
             {
                 Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(2));
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.API.Key.OpenKlant());
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.API.Key.OpenKlant());
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
-                    .Replace("{0}", "ZGW_API_KEY_OPENKLANT")));
+                    .Replace("{0}", "ZGW_AUTH_API_KEY_OPENKLANT")));
             });
         }
         #endregion

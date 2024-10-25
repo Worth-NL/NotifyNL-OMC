@@ -471,10 +471,6 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal AuthenticationComponent Auth { get; }
 
-            /// <inheritdoc cref="ApiComponent"/>
-            [Config]
-            internal ApiComponent API { get; }
-
             /// <inheritdoc cref="EndpointComponent"/>
             [Config]
             internal EndpointComponent Endpoint { get; }
@@ -492,8 +488,7 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             public ZgwComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
             {
-                this.Auth = new AuthenticationComponent(loadersContext, parentName);
-                this.API = new ApiComponent(loadersContext, parentName, configuration);
+                this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variables = new VariablesComponent(loadersContext, parentName);
@@ -508,14 +503,19 @@ namespace EventsHandler.Services.Settings.Configuration
                 [Config]
                 internal JwtComponent JWT { get; }
 
+                /// <inheritdoc cref="ApiComponent"/>
+                [Config]
+                internal ApiComponent API { get; }
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
+                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
                     this.JWT = new JwtComponent(loadersContext, currentPath);
+                    this.API = new ApiComponent(loadersContext, currentPath, configuration);
                 }
 
                 /// <summary>
@@ -565,66 +565,66 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
-            }
-
-            /// <summary>
-            /// The "API" part of the settings.
-            /// </summary>
-            internal sealed record ApiComponent
-            {
-                /// <inheritdoc cref="KeyComponent"/>
-                [Config]
-                internal KeyComponent Key { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// The "API" part of the settings.
                 /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                internal sealed record ApiComponent
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-
-                    this.Key = new KeyComponent(loadersContext, currentPath, configuration);
-                }
-
-                /// <summary>
-                /// The "Key" part of the settings.
-                /// </summary>
-                internal sealed record KeyComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-                    private readonly WebApiConfiguration _configuration;
+                    /// <inheritdoc cref="KeyComponent"/>
+                    [Config]
+                    internal KeyComponent Key { get; }
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="KeyComponent"/> class.
+                    /// Initializes a new instance of the <see cref="ApiComponent"/> class.
                     /// </summary>
-                    internal KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                    internal ApiComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                     {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
-                        this._configuration = configuration;
+                        string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+
+                        this.Key = new KeyComponent(loadersContext, currentPath, configuration);
                     }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string OpenKlant()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
-                           disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
+                    /// <summary>
+                    /// The "Key" part of the settings.
+                    /// </summary>
+                    internal sealed record KeyComponent
+                    {
+                        private readonly ILoadersContext _loadersContext;
+                        private readonly string _currentPath;
+                        private readonly WebApiConfiguration _configuration;
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string Objecten()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Objecten));
+                        /// <summary>
+                        /// Initializes a new instance of the <see cref="KeyComponent"/> class.
+                        /// </summary>
+                        internal KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                        {
+                            this._loadersContext = loadersContext;
+                            this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
+                            this._configuration = configuration;
+                        }
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string ObjectTypen()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+                        /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                        [Config]
+                        internal string OpenKlant()
+                            => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
+                               disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
 
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string NotifyNL()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                        /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                        [Config]
+                        internal string Objecten()
+                            => GetCachedValue(this._loadersContext, this._currentPath, nameof(Objecten));
+
+                        /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                        [Config]
+                        internal string ObjectTypen()
+                            => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                        /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                        [Config]
+                        internal string NotifyNL()
+                            => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
+                    }
                 }
             }
 
