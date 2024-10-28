@@ -98,10 +98,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",              GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",              GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",               GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
-                { "ZGW_WHITELIST_TASKOBJECTTYPE_UUID",           GetTestValue(isValid, TestTaskObjectTypeUuid) },
-                { "ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID",        GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS",  GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
 
+                { "ZGW_VARIABLES_OBJECTEN_TASKOBJECTTYPE_UUID",       GetTestValue(isValid, TestTaskObjectTypeUuid) },
+                { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID",    GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION", GetTestValue(isValid, "1") },
 
                 // NOTIFY environment variables

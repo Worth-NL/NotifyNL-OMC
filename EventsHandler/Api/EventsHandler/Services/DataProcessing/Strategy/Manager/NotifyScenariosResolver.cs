@@ -63,13 +63,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             {
                 Guid objectTypeId = notification.Attributes.ObjectTypeUri.GetGuid();
 
-                if (objectTypeId.Equals(this._configuration.ZGW.Whitelist.TaskObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.ZGW.Variables.Objecten.TaskObjectType_Uuid()))
                 {
                     // Scenario #4: "Task assigned"
                     return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
                 }
 
-                if (objectTypeId.Equals(this._configuration.ZGW.Whitelist.MessageObjectType_Uuid()))
+                if (objectTypeId.Equals(this._configuration.ZGW.Variables.Objecten.MessageObjectType_Uuid()))
                 {
                     // Scenario #6: "Message received"
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();

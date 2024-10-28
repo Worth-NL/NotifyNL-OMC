@@ -31,7 +31,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.ZGW.Whitelist.MessageObjectType_Uuid()}\"," +
+                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.ZGW.Variables.Objecten.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{this.Configuration.ZGW.Variables.Objecten.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
