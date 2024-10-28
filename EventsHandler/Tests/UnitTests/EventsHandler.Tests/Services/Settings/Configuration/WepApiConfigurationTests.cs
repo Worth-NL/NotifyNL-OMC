@@ -81,7 +81,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, omcConfiguration.Auth.JWT);
 
                 // OMC | Features
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Features);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Feature);
                 
                 var zgwConfiguration = s_testConfiguration.ZGW;
 
@@ -98,7 +98,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
 
                 // ZGW | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variables.Objecten);
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.Objecten);
                 
                 var notifyConfiguration = s_testConfiguration.Notify;
 
@@ -212,7 +212,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(1));
+                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(1));
                 Assert.That(openKlantApiKey, Is.Empty);
             });
         }
@@ -226,7 +226,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(2));
+                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(2));
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
                     .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));

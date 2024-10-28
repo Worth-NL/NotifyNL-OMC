@@ -319,7 +319,7 @@ namespace EventsHandler
         private static void RegisterOpenServices(this WebApplicationBuilder builder)
         {
             byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Features.Workflow_Version();
+                                                      .OMC.Feature.Workflow_Version();
             // Common query methods
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
@@ -402,7 +402,7 @@ namespace EventsHandler
         private static void RegisterResponders(this WebApplicationBuilder builder)
         {
             byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Features.Workflow_Version();
+                                                      .OMC.Feature.Workflow_Version();
 
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
             builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
