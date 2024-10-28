@@ -17,11 +17,13 @@ namespace EventsHandler.Services.Serialization
     internal sealed class SpecificSerializer : ISerializationService
     {
         private static readonly ConcurrentDictionary<Type, string> s_cachedRequiredProperties = new();
+
+        #region Custom converters
         private static readonly JsonSerializerOptions s_serializerOptions = new()
         {
             PropertyNameCaseInsensitive = true,
-
-            // Global converters
+            
+            // They will be applied globally, whenever JSON Serializer Options are used
             Converters =
             {
                 new BoolJsonConverter(),
@@ -34,6 +36,7 @@ namespace EventsHandler.Services.Serialization
                 new UriJsonConverter()
             }
         };
+        #endregion
 
         /// <inheritdoc cref="ISerializationService.Deserialize{TModel}(object)"/>
         TModel ISerializationService.Deserialize<TModel>(object json)
@@ -42,15 +45,9 @@ namespace EventsHandler.Services.Serialization
             {
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
-            catch (JsonException)
+            catch (JsonException exception)
             {
-                string requiredProperties = GetRequiredMembers<TModel>();
-
-                throw new JsonException(message:
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Message} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Target}: {typeof(TModel).Name} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Value}: {json} | " +
-                    $"{Resources.Deserialization_ERROR_CannotDeserialize_Required}: {(requiredProperties.IsNullOrEmpty() ? "_" : requiredProperties)}");
+                return GetDeserializationException<TModel>(exception, json);
             }
         }
 
@@ -61,6 +58,39 @@ namespace EventsHandler.Services.Serialization
         }
 
         #region Helper methods
+        private const string EmptyRequired = "_";
+        private const string QuotationMark = "'";
+
+        /// <summary>
+        /// Gets the human-friendly readable exception with details why the process of deserialization failed.
+        /// </summary>
+        private static TModel GetDeserializationException<TModel>(JsonException exception, object json)
+            where TModel : struct, IJsonSerializable
+        {
+            string failed;
+            string reason;
+
+            if (exception.Path.IsNotNullOrEmpty() &&
+                exception.InnerException != null)
+            {
+                failed = $"{QuotationMark}{exception.Path}{QuotationMark}";
+                reason = exception.InnerException.Message;
+            }
+            else
+            {
+                failed = $"{QuotationMark}{exception.Message[(exception.Message.IndexOf(':') + 2)..]}{QuotationMark}";
+                reason = Resources.Deserialization_ERROR_CannotDeserialize_RequiredProperties;
+            }
+
+            throw new JsonException(message:
+                string.Format(Resources.Deserialization_ERROR_CannotDeserialize_Message,
+                /* {0} - Target */   $"{QuotationMark}{typeof(TModel).Name}.cs{QuotationMark}",
+                /* {1} - Failed */   failed,
+                /* {2} - Reason */   reason,
+                /* {3} - Required */ GetRequiredMembers<TModel>(),
+                /* {4} - JSON */     json));
+        }
+
         /// <summary>
         /// Gets text representation of this specific <see cref="IJsonSerializable"/> object.
         /// </summary>
@@ -77,11 +107,11 @@ namespace EventsHandler.Services.Serialization
             }
             catch (Exception)
             {
-                return string.Empty;
+                return EmptyRequired;
             }
         }
 
-        private static IEnumerable<string> GetRequiredPropertiesNames(IReflect type, string parentName = "")
+        private static IEnumerable<string> GetRequiredPropertiesNames(IReflect type, string parentName = QuotationMark)
         {
             IEnumerable<PropertyInfo> requiredProperties = type
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -97,7 +127,14 @@ namespace EventsHandler.Services.Serialization
                     yield return GetRequiredPropertiesNames(requiredProperty.PropertyType, AppendParentName(parentName, requiredProperty))
                                  .Join();
                 }
-                // Case #2: Collection type
+                // Case #2: Array
+                else if (typeof(IEnumerable).IsAssignableFrom(requiredProperty.PropertyType.BaseType))
+                {
+                    // Get properties of the array element type
+                    yield return GetRequiredPropertiesNames(requiredProperty.PropertyType.GetElementType()!, AppendParentName(parentName, requiredProperty))
+                                 .Join();
+                }
+                // Case #3: Generic collection
                 else if (requiredProperty.PropertyType.IsGenericType &&  // Prevent exceptions if the simple type is encountered
                          typeof(IEnumerable).IsAssignableFrom(requiredProperty.PropertyType.GetGenericTypeDefinition()))
                 {
@@ -105,10 +142,10 @@ namespace EventsHandler.Services.Serialization
                     yield return GetRequiredPropertiesNames(requiredProperty.PropertyType.GenericTypeArguments[0], AppendParentName(parentName, requiredProperty))
                                  .Join();
                 }
-                // Case #3: Simple type
+                // Case #4: Simple type
                 else
                 {
-                    yield return IncludeParentName(parentName, requiredProperty);
+                    yield return $"{IncludeParentName(parentName, requiredProperty)}{QuotationMark}";
                 }
             }
         }

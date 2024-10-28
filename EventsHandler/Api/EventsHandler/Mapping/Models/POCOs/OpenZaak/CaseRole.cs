@@ -19,7 +19,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("betrokkene")]  // ENG: Involved party
         [JsonPropertyOrder(0)]
-        public Uri InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;  // NOTE: Might be missing for Citizens
 
         /// <summary>
         /// The general description of the <see cref="CaseRole"/> which includes the "initiator role" of the <see cref="Case"/>.
@@ -33,10 +33,10 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The data subject identification which includes details about a single citizen related to this <see cref="Case"/>.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonInclude]
         [JsonPropertyName("betrokkeneIdentificatie")]  // ENG: Data subject (party) identification
         [JsonPropertyOrder(2)]
-        public PartyData Party { get; internal set; }
+        public PartyData? Party { get; internal set; } = new PartyData();  // NOTE: Might be missing for Organizations
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseRole"/> struct.

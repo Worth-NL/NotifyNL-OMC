@@ -58,7 +58,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
                 new CaseRole { InitiatorRole = existingInitiatorRole, Party = expectedCitizen });  // Unique matching result
 
             // Act
-            PartyData actualParty = caseRoles.CaseRole(this._testConfiguration).Party;
+            PartyData actualParty = caseRoles.CaseRole(this._testConfiguration).Party!.Value;
 
             // Assert
             Assert.That(actualParty, Is.EqualTo(expectedCitizen));

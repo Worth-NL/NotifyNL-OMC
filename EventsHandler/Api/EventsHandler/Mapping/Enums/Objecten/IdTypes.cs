@@ -23,6 +23,12 @@ namespace EventsHandler.Mapping.Enums.Objecten
         /// The BSN (citizen service number) type of the <see cref="Identification"/>.
         /// </summary>
         [JsonPropertyName("bsn")]
-        Bsn = 1
+        Bsn = 1,
+
+        /// <summary>
+        /// The KVK (Chamber of Commerce number) type of the <see cref="Identification"/>.
+        /// </summary>
+        [JsonPropertyName("kvk")]
+        Kvk = 2
     }
 }
