@@ -62,12 +62,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #1: The info object needs to be of a specific type
             Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
-            if (!this.Configuration.ZGW.Whitelist.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
+            if (!this.Configuration.ZGW.Variables.Objecten.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
                         /* {0} */ $"{infoObjectTypeId}",
-                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistInfoObjectsEnvVarName()));
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetVariableInfoObjectsEnvVarName()));
             }
 
             // Validation #2: Status needs to be definitive
