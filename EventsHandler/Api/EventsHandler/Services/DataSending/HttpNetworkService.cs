@@ -184,13 +184,13 @@ namespace EventsHandler.Services.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.API.Key.OpenKlant()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.API.Key.Objecten()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
 
                 HttpClientTypes.ObjectTypen
-                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.API.Key.ObjectTypen()}",
+                    => $"{DefaultValues.Authorization.Static.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{Resources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
