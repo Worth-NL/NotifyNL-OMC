@@ -88,8 +88,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // ZGW | Authorization | JWT
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
 
-                // ZGW | API | Key
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.API.Key);
+                // ZGW | Key
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.Key);
 
                 // ZGW | Domain
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
@@ -137,18 +137,18 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
-            // Invalid: Not existing
-            yield return ("#1", () => s_testConfiguration!.ZGW.Auth.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: ""
-            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
-            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#5", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: Default URI
-            yield return ("#6", () => s_testConfiguration!.Notify.API.BaseUrl(), Resources.Configuration_ERROR_InvalidUri);
+            yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), Resources.Configuration_ERROR_InvalidUri);
+            // Invalid: Not existing
+            yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
             yield return ("#7", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
@@ -207,7 +207,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
 
             // Act
-            string openKlantApiKey = configuration.ZGW.Auth.API.Key.OpenKlant();
+            string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
 
             // Assert
             Assert.Multiple(() =>
@@ -227,9 +227,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             Assert.Multiple(() =>
             {
                 Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(2));
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.API.Key.OpenKlant());
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
-                    .Replace("{0}", "ZGW_AUTH_API_KEY_OPENKLANT")));
+                    .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));
             });
         }
         #endregion
