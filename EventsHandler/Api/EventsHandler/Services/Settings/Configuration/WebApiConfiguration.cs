@@ -709,17 +709,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
-                // ---------------------------
-                // Allowed types (UUID / GUID)
-                // ---------------------------
 
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid TaskObjectType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid MessageObjectType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 internal HashSet<Guid> DecisionInfoObjectType_Uuids()
@@ -856,6 +846,18 @@ namespace EventsHandler.Services.Settings.Configuration
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
                     }
+
+                    // ---------------------------
+                    // Allowed types (UUID / GUID)
+                    // ---------------------------
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    internal Guid TaskObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    internal Guid MessageObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
