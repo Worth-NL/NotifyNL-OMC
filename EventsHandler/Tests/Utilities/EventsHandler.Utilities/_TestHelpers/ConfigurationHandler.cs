@@ -70,7 +70,7 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "OMC_AUTH_JWT_USERID",                         GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_USERNAME",                       GetTestValue(isValid, testString) },
 
-                { "OMC_FEATURES_WORKFLOW_VERSION",               $"{omcWorkflow}" },
+                { "OMC_FEATURE_WORKFLOW_VERSION",                $"{omcWorkflow}" },
 
                 // ZGW environment variables
                 { "ZGW_AUTH_JWT_SECRET",                         GetTestValue(isValid, testString) },
@@ -99,10 +99,10 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",              GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",               GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
 
-                { "ZGW_VARIABLES_OBJECTEN_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
-                { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
-                { "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION",    GetTestValue(isValid, "1") },
-                { "ZGW_VARIABLES_OBJECTEN_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
+                { "ZGW_VARIABLE_OBJECTEN_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
+                { "ZGW_VARIABLE_OBJECTEN_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
+                { "ZGW_VARIABLE_OBJECTEN_MESSAGEOBJECTTYPE_VERSION",    GetTestValue(isValid, "1") },
+                { "ZGW_VARIABLE_OBJECTEN_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
 
                 // NOTIFY environment variables
                 { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
