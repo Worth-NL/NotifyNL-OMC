@@ -8,7 +8,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v
 {
     /// <inheritdoc cref="IQueryObjectTypen"/>
     /// <remarks>
-    ///   Version: "ObjectTypen" (v2+) Web API service | "OMC workflow" v1.
+    ///   Version: "ObjectTypen" (v1) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryObjectTypen : IQueryObjectTypen

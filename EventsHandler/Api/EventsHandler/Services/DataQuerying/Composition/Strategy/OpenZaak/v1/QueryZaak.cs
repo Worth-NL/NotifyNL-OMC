@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
 {
     /// <inheritdoc cref="IQueryZaak"/>
     /// <remarks>
-    ///   Version: "OpenZaak" (v1+) Web API service | "OMC workflow" v1.
+    ///   Version: "OpenZaak" (v1) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     internal sealed class QueryZaak : IQueryZaak
@@ -39,7 +39,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v1
             const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
 
             return (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
-                .CaseRole;
+                .CaseRole(((IQueryZaak)this).Configuration);
         }
 
         private async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, Uri caseUri, string subjectType)
