@@ -80,10 +80,9 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "ZGW_AUTH_JWT_USERID",                         GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_JWT_USERNAME",                       GetTestValue(isValid, testString) },
 
-                { "ZGW_AUTH_API_KEY_OPENKLANT",                  GetTestValue(isValid, testString) },
-                { "ZGW_AUTH_API_KEY_OBJECTEN",                   GetTestValue(isValid, testString) },
-                { "ZGW_AUTH_API_KEY_OBJECTTYPEN",                GetTestValue(isValid, testString) },
-                { "ZGW_AUTH_API_KEY_NOTIFYNL",                   GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENKLANT",                      GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OBJECTEN",                       GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OBJECTTYPEN",                    GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",               GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                       GetTestValue(isValid, testDomain, " ") },
@@ -107,6 +106,7 @@ namespace EventsHandler.Utilities._TestHelpers
 
                 // NOTIFY environment variables
                 { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
+                { "NOTIFY_API_KEY",                              GetTestValue(isValid, testString) },
 
                 { "NOTIFY_TEMPLATEIDS_DECISIONMADE",             GetTestValue(isValid, testGuid) },
 
