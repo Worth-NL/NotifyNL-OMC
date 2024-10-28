@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Constants;
 using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
-using EventsHandler.Constants;
 
 namespace EventsHandler.Extensions
 {

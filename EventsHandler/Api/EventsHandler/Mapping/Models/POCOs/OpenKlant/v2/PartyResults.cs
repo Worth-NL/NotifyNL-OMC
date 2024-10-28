@@ -52,118 +52,90 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         internal readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
             Party(WebApiConfiguration configuration)
         {
+            // Validation #1: Results
             if (this.Results.IsNullOrEmpty())
             {
                 throw new HttpRequestException(Resources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
-            string fallbackEmailAddress = string.Empty;
-            string fallbackPhoneNumber = string.Empty;
             PartyResult fallbackEmailOwningParty = default;
             PartyResult fallbackPhoneOwningParty = default;
+            DistributionChannels distributionChannel = default;
+            string fallbackEmailAddress = string.Empty;
+            string fallbackPhoneNumber = string.Empty;
 
             // Determine which party result should be returned and match the data
-            foreach (PartyResult party in this.Results)
+            foreach (PartyResult partyResult in this.Results)
             {
-                // VALIDATION: Addresses
-                if (party.Expansion.DigitalAddresses.IsNullOrEmpty())
+                // Validation #2: Addresses
+                if (partyResult.Expansion.DigitalAddresses.IsNullOrEmpty())
                 {
                     continue;  // Do not waste time on processing party data which would be for 100% invalid
                 }
 
-                Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
-
-                // Looking which digital address should be used
-                foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
+                // Determine which address is preferred
+                if (IsPreferredFound(configuration, partyResult,
+                        ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
+                        ref fallbackEmailAddress, ref fallbackPhoneNumber))
                 {
-                    // Recognize what type of digital address it is
-                    DistributionChannels distributionChannel =
-                        DetermineDistributionChannel(digitalAddress, configuration);
-
-                    // VALIDATION: Distribution channel
-                    if (distributionChannel is DistributionChannels.Unknown)
-                    {
-                        continue;  // Any digital address couldn't be found
-                    }
-
-                    (string emailAddress, string phoneNumber) =
-                        DetermineDigitalAddresses(digitalAddress, distributionChannel);
-
-                    // VALIDATION: e-mail and phone number
-                    if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
-                    {
-                        continue;  // Empty results cannot be used anyway
-                    }
-
-                    // 1. This address is the preferred one and should be prioritized
-                    if (prefDigitalAddressId != Guid.Empty &&
-                        prefDigitalAddressId == digitalAddress.Id)
-                    {
-                        return (party, distributionChannel, emailAddress, phoneNumber);
-                    }
-
-                    // 2a. This is one of many other addresses to be checked
-                    if (fallbackEmailAddress.IsNullOrEmpty() &&  // Only the first encountered one matters
-                        emailAddress.IsNotNullOrEmpty())
-                    {
-                        fallbackEmailAddress = emailAddress;
-                        fallbackEmailOwningParty = party;
-
-                        continue;  // The e-mail address always has priority over the phone number.
-                                   // If any e-mail address was found during this run then the phone
-                                   // number doesn't matter anymore since it will not be returned anyway
-                    }
-
-                    if (fallbackPhoneNumber.IsNullOrEmpty() &&  // Only the first encountered one matters
-                        phoneNumber.IsNotNullOrEmpty())
-                    {
-                        fallbackPhoneNumber = phoneNumber;
-                        fallbackPhoneOwningParty = party;
-                    }
+                    return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
                 }
             }
 
-            // 2b. FALLBACK APPROACH: If the party's preferred address couldn't be determined
-            //     the email address has priority and the first encountered one should be returned
-            if (fallbackEmailAddress.IsNotNullOrEmpty())
-            {
-                return (fallbackEmailOwningParty, DistributionChannels.Email,
-                        EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
-            }
-
-            // 2c. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
-            //     the first encountered telephone number (for SMS) should be returned instead
-            if (fallbackPhoneNumber.IsNotNullOrEmpty())
-            {
-                return (fallbackPhoneOwningParty, DistributionChannels.Sms,
-                        EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
-            }
-
-            // 2d. In the case of worst possible scenario, that preferred address couldn't be determined
-            //     neither any existing email address nor telephone number, then process can't be finished
-            throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
+            // Pick any matching address
+            return GetMatchingContactDetails(
+                fallbackEmailOwningParty, fallbackPhoneOwningParty,
+                fallbackEmailAddress, fallbackPhoneNumber);
         }
 
-        // TODO: Probably most of this code if not all can be reused by both methods
         /// <inheritdoc cref="Party(WebApiConfiguration)"/>
         internal static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
-            Party(PartyResult partyResult, WebApiConfiguration configuration)
+            Party(WebApiConfiguration configuration, PartyResult partyResult)
         {
-            string fallbackEmailAddress = string.Empty;
-            string fallbackPhoneNumber = string.Empty;
+            // Validation #1: Addresses
+            if (partyResult.Expansion.DigitalAddresses.IsNullOrEmpty())
+            {
+                throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
+            }
+
             PartyResult fallbackEmailOwningParty = default;
             PartyResult fallbackPhoneOwningParty = default;
+            DistributionChannels distributionChannel = default;
+            string fallbackEmailAddress = string.Empty;
+            string fallbackPhoneNumber = string.Empty;
+            
+            // Determine which address is preferred
+            if (IsPreferredFound(configuration, partyResult,
+                    ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
+                    ref fallbackEmailAddress, ref fallbackPhoneNumber))
+            {
+                return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
+            }
+            
+            // Pick any matching address
+            return GetMatchingContactDetails(
+                fallbackEmailOwningParty, fallbackPhoneOwningParty,
+                fallbackEmailAddress, fallbackPhoneNumber);
+        }
 
-            Guid prefDigitalAddressId = partyResult.PreferredDigitalAddress.Id;
+        #region Helper methods
+        // NOTE: Checks preferred contact address
+        private static bool IsPreferredFound(WebApiConfiguration configuration, PartyResult party,
+            ref PartyResult fallbackEmailOwningParty,
+            ref PartyResult fallbackPhoneOwningParty,
+            ref DistributionChannels distributionChannel,
+            ref string fallbackEmailAddress,
+            ref string fallbackPhoneNumber)
+        {
+            Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
 
             // Looking which digital address should be used
-            foreach (DigitalAddressLong digitalAddress in partyResult.Expansion.DigitalAddresses)
+            foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
             {
                 // Recognize what type of digital address it is
-                DistributionChannels distributionChannel =
-                    DetermineDistributionChannel(digitalAddress, configuration);
+                distributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
 
-                // VALIDATION: Distribution channel
+                // Validation #1: Distribution channel
                 if (distributionChannel is DistributionChannels.Unknown)
                 {
                     continue;  // Any digital address couldn't be found
@@ -172,7 +144,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                 (string emailAddress, string phoneNumber) =
                     DetermineDigitalAddresses(digitalAddress, distributionChannel);
 
-                // VALIDATION: e-mail and phone number
+                // Validation #2: E-mail and phone number
                 if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
                 {
                     continue;  // Empty results cannot be used anyway
@@ -182,30 +154,45 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                 if (prefDigitalAddressId != Guid.Empty &&
                     prefDigitalAddressId == digitalAddress.Id)
                 {
-                    return (partyResult, distributionChannel, emailAddress, phoneNumber);
+                    fallbackEmailOwningParty = party;
+                    fallbackEmailAddress = emailAddress;
+
+                    fallbackPhoneOwningParty = party;
+                    fallbackPhoneNumber = phoneNumber;
+
+                    return true;  // Preferred address is found
                 }
 
-                // 2a. This is one of many other addresses to be checked
+                // 2a. This is one of many other addresses to be checked (e-mail has priority)
                 if (fallbackEmailAddress.IsNullOrEmpty() &&  // Only the first encountered one matters
                     emailAddress.IsNotNullOrEmpty())
                 {
                     fallbackEmailAddress = emailAddress;
-                    fallbackEmailOwningParty = partyResult;
+                    fallbackEmailOwningParty = party;
 
                     continue;  // The e-mail address always has priority over the phone number.
                                // If any e-mail address was found during this run then the phone
                                // number doesn't matter anymore since it will not be returned anyway
                 }
 
+                // 2b. This address is not preferred but could be the only which was found as matching
                 if (fallbackPhoneNumber.IsNullOrEmpty() &&  // Only the first encountered one matters
                     phoneNumber.IsNotNullOrEmpty())
                 {
                     fallbackPhoneNumber = phoneNumber;
-                    fallbackPhoneOwningParty = partyResult;
+                    fallbackPhoneOwningParty = party;
                 }
             }
 
-            // 2b. FALLBACK APPROACH: If the party's preferred address couldn't be determined
+            return false;
+        }
+
+        // NOTE: Checks alternative contact addresses
+        private static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber) GetMatchingContactDetails(
+            PartyResult fallbackEmailOwningParty, PartyResult fallbackPhoneOwningParty,
+            string fallbackEmailAddress, string fallbackPhoneNumber)
+        {
+            // 3a. FALLBACK APPROACH: If the party's preferred address couldn't be determined
             //     the email address has priority and the first encountered one should be returned
             if (fallbackEmailAddress.IsNotNullOrEmpty())
             {
@@ -213,7 +200,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                         EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
             }
 
-            // 2c. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
+            // 3b. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
             //     the first encountered telephone number (for SMS) should be returned instead
             if (fallbackPhoneNumber.IsNotNullOrEmpty())
             {
@@ -221,12 +208,11 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
                         EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
             }
 
-            // 2d. In the case of worst possible scenario, that preferred address couldn't be determined
+            // 3c. In the case of worst possible scenario, that preferred address couldn't be determined
             //     neither any existing email address nor telephone number, then process can't be finished
             throw new HttpRequestException(Resources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
-        #region Helper methods
         /// <summary>
         /// Checks if the value from generic JSON property "Type" is
         /// matching to the predefined names of digital address types.
