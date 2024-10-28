@@ -313,10 +313,10 @@ And all of them have **Swagger UI** specified as the default start option.
         "ZGW_WHITELIST_TASKASSIGNED_IDS": "",
         "ZGW_WHITELIST_DECISIONMADE_IDS": "",
         "ZGW_WHITELIST_MESSAGE_ALLOWED": "false",
-        "ZGW_WHITELIST_TASKOBJECTTYPE_UUID": "",
-        "ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID": "",
         "ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS": "",
 
+        "ZGW_VARIABLES_OBJECTEN_TASKOBJECTTYPE_UUID": "",
+        "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID": "",
         "ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION" : "",
         
         "NOTIFY_API_BASEURL": "",
@@ -550,10 +550,10 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | ZGW_WHITELIST_TASKASSIGNED_IDS                   | string[]  | "1, 2, 3, 4" or "*" (allow everything)        | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
 | ZGW_WHITELIST_DECISIONMADE_IDS                   | string[]  | "1, 2, 3, 4" or "*" (allow everything)        | false        |                                                                                                                                            | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
 | ZGW_WHITELIST_MESSAGE_ALLOWED                    | bool      | "true" or "false"                             | false        | Cannot be missing and have null or empty value                                                                                             | Is provided by the user                                                                                                                                                                                      |
-| ZGW_WHITELIST_TASKOBJECTTYPE_UUID                | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
-| ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID             | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
 | ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS       | GUID[]    | "00000000-0000-..., 00000000-0000-..."        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                          |
 | ---                                              | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
+| ZGW_VARIABLES_OBJECTEN_TASKOBJECTTYPE_UUID       | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
+| ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID    | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
 | ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_VERSION | ushort    | "1"                                           | false        | Cannot be missing and have null or empty value                                                                                             | It can be taken from "version" value set in "ObjectTypen" Web API service                                                                                                                                    |
 | ---                                              | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
 | **Notify**                                       |           |                                               |              |                                                                                                                                            |                                                                                                                                                                                                              |
@@ -1168,7 +1168,7 @@ Required to be set:
 
 `ZGW_WHITELIST_TASKASSIGNED_IDS`
 
-`ZGW_WHITELIST_TASKOBJECTTYPE_UUID`
+`ZGW_VARIABLES_OBJECTEN_TASKOBJECTTYPE_UUID`
 
 <h4 id="task_assigned_requirements">5.2.5.3. Requirements</h4>
 
@@ -1256,7 +1256,7 @@ Required to be set:
 
 `ZGW_WHITELIST_DECISIONINFOOBJECTTYPE_UUIDS`
 
-`ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID`
+`ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID`
 
 </br>
 
@@ -1381,7 +1381,7 @@ Required to be set:
 
 `ZGW_WHITELIST_MESSAGE_ALLOWED`
 
-`ZGW_WHITELIST_MESSAGEOBJECTTYPE_UUID`
+`ZGW_VARIABLES_OBJECTEN_MESSAGEOBJECTTYPE_UUID`
 
 <h4 id="message_received_requirements">5.2.7.3. Requirements</h4>
 
