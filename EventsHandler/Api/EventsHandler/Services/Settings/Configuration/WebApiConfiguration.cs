@@ -356,9 +356,9 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal AuthenticationComponent Auth { get; }
 
-            /// <inheritdoc cref="FeaturesComponent"/>
+            /// <inheritdoc cref="FeatureComponent"/>
             [Config]
-            internal FeaturesComponent Features { get; }
+            internal FeatureComponent Feature { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
@@ -366,7 +366,7 @@ namespace EventsHandler.Services.Settings.Configuration
             public OmcComponent(ILoadersContext loadersContext, string parentName)
             {
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
-                this.Features = new FeaturesComponent(loadersContext, parentName);
+                this.Feature = new FeatureComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -438,20 +438,20 @@ namespace EventsHandler.Services.Settings.Configuration
             }
 
             /// <summary>
-            /// The "Features" part of the settings.
+            /// The "Feature" part of the settings.
             /// </summary>
-            internal sealed record FeaturesComponent
+            internal sealed record FeatureComponent
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
+                /// Initializes a new instance of the <see cref="FeatureComponent"/> class.
                 /// </summary>
-                internal FeaturesComponent(ILoadersContext loadersContext, string parentPath)
+                internal FeatureComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Feature));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -479,9 +479,9 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal WhitelistComponent Whitelist { get; }
 
-            /// <inheritdoc cref="VariablesComponent"/>
+            /// <inheritdoc cref="VariableComponent"/>
             [Config]
-            internal VariablesComponent Variables { get; }
+            internal VariableComponent Variable { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
@@ -491,7 +491,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
-                this.Variables = new VariablesComponent(loadersContext, parentName);
+                this.Variable = new VariableComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -589,7 +589,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal string OpenKlant()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
-                           disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
+                           disableValidation: this._configuration.OMC.Feature.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -816,20 +816,20 @@ namespace EventsHandler.Services.Settings.Configuration
             }
 
             /// <summary>
-            /// The "Variables" part of the settings.
+            /// The "Variable" part of the settings.
             /// </summary>
-            internal sealed record VariablesComponent
+            internal sealed record VariableComponent
             {
                 /// <inheritdoc cref="ObjectenComponent"/>
                 [Config]
                 internal ObjectenComponent Objecten { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
+                /// Initializes a new instance of the <see cref="VariableComponent"/> class.
                 /// </summary>
-                internal VariablesComponent(ILoadersContext loadersContext, string parentPath)
+                internal VariableComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variable));
 
                     this.Objecten = new ObjectenComponent(loadersContext, currentPath);
                 }

@@ -62,8 +62,8 @@ namespace EventsHandler.Services.Settings.Extensions
             lock (s_padlock)
             {
                 return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                      $"{nameof(WebApiConfiguration.ZGW.Variables)}_" +
-                                                      $"{nameof(WebApiConfiguration.ZGW.Variables.Objecten)}_" +
+                                                      $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
+                                                      $"{nameof(WebApiConfiguration.ZGW.Variable.Objecten)}_" +
                                                       $"...OBJECTTYPE_UUID")
                                                      .ToUpper();
             }
@@ -76,9 +76,9 @@ namespace EventsHandler.Services.Settings.Extensions
             lock (s_padlock)
             {
                 return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variables)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variables.Objecten)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variables.Objecten.DecisionInfoObjectType_Uuids)}")
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.Objecten)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.Objecten.DecisionInfoObjectType_Uuids)}")
                                                        .ToUpper();
             }
         }
