@@ -682,22 +682,27 @@ namespace EventsHandler.Services.Settings.Configuration
                 // ----------------------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakUpdate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakClose_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs TaskAssigned_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
@@ -706,15 +711,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 // --------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
-
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal HashSet<Guid> DecisionInfoObjectType_Uuids()
-                    => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
-
+                #region Helper methods
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
                 /// </summary>
@@ -724,6 +725,7 @@ namespace EventsHandler.Services.Settings.Configuration
                         key: nodeName,
                         value: new IDs(loadersContext, currentPath, nodeName));
                 }
+                #endregion
 
                 // ReSharper disable once InconsistentNaming
                 /// <summary>
@@ -799,6 +801,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     public override string ToString() => this._finalPath;
                 }
 
+                #region Disposing
                 /// <inheritdoc cref="IDisposable.Dispose()"/>
                 public void Dispose()
                 {
@@ -809,6 +812,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     s_cachedIDs.Clear();
                 }
+                #endregion
             }
 
             /// <summary>
@@ -852,10 +856,12 @@ namespace EventsHandler.Services.Settings.Configuration
                     // ---------------------------
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid TaskObjectType_Uuid()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
                     internal Guid MessageObjectType_Uuid()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
@@ -863,6 +869,11 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal ushort MessageObjectType_Version()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal HashSet<Guid> DecisionInfoObjectType_Uuids()
+                        => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
                 }
             }
         }

@@ -78,7 +78,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 throw new AbortedNotifyingException(
                     string.Format(TextResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid,
                         /* {0} */ $"{objectTypeId}",
-                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetWhitelistGenericObjectTypeEnvVarName()));
+                        /* {1} */ Settings.Extensions.ConfigurationExtensions.GetGenericVariableObjectTypeEnvVarName()));
             }
 
             // Scenario #5: "Decision made"
