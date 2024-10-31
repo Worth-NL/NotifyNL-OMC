@@ -33,7 +33,7 @@ namespace EventsHandler.Controllers
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
         private readonly ITelemetryService _telemetry;
-        private readonly IRespondingService<ProcessingResult, string> _responder;
+        private readonly IRespondingService<ProcessingStatus, string> _responder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController"/> class.
@@ -46,7 +46,7 @@ namespace EventsHandler.Controllers
             WebApiConfiguration configuration,
             ISerializationService serializer,
             ITelemetryService telemetry,
-            IRespondingService<ProcessingResult, string> responder)
+            IRespondingService<ProcessingStatus, string> responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;
@@ -80,9 +80,9 @@ namespace EventsHandler.Controllers
                 // Response
                 return result.IsSuccessStatusCode
                     // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success, result.ToString()))
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingStatus.Success, result.ToString()))
                     // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure, result.ToString()));
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingStatus.Failure, result.ToString()));
             }
             catch (Exception exception)
             {
@@ -240,9 +240,9 @@ namespace EventsHandler.Controllers
 
                 return response.IsSuccess
                     // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success, response.JsonResponse))
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingStatus.Success, response.JsonResponse))
                     // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure, response.JsonResponse));
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingStatus.Failure, response.JsonResponse));
             }
             catch (Exception exception)
             {
@@ -292,7 +292,7 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.GetResponse(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
+                                this._responder.GetResponse(ProcessingStatus.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
                 // Case #2: Personalization was provided by the user
@@ -318,13 +318,13 @@ namespace EventsHandler.Controllers
 
                         default:
                             return LogApiResponse(LogLevel.Error,
-                                this._responder.GetResponse(ProcessingResult.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
+                                this._responder.GetResponse(ProcessingStatus.Failure, Resources.Test_NotifyNL_ERROR_NotSupportedMethod));
                     }
                 }
 
                 // HttpStatus Code: 202 Accepted
                 return LogApiResponse(LogLevel.Information,
-                    this._responder.GetResponse(ProcessingResult.Success,
+                    this._responder.GetResponse(ProcessingStatus.Success,
                         string.Format(Resources.Test_NotifyNL_SUCCESS_NotificationSent, notifyMethod.GetEnumName())));
             }
             catch (Exception exception)

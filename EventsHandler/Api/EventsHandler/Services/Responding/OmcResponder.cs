@@ -3,11 +3,10 @@
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Details;
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Responding.Messages.Models.Information;
 using EventsHandler.Services.Responding.Messages.Models.Successes;
@@ -21,7 +20,7 @@ using System.Net;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
-    internal sealed class OmcResponder : IRespondingService<NotificationEvent>
+    internal sealed class OmcResponder : IRespondingService<ProcessingResult>
     {
         private readonly IDetailsBuilder _detailsBuilder;
 
@@ -42,7 +41,7 @@ namespace EventsHandler.Services.Responding
                 return this._detailsBuilder.Get<ErrorDetails>(Reasons.HttpRequestError, exception.Message).AsResult_400();
             }
 
-            return ((IRespondingService<NotificationEvent>)this).GetExceptionResponse(exception.Message);
+            return ((IRespondingService<ProcessingResult>)this).GetExceptionResponse(exception.Message);
         }
 
         /// <inheritdoc cref="IRespondingService.GetExceptionResponse(string)"/>
@@ -114,36 +113,29 @@ namespace EventsHandler.Services.Responding
         }
         #endregion
 
-        #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
-        ObjectResult IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>.GetResponse((ProcessingResult, string) result, BaseEnhancedDetails details)
-        {
-            return ((IRespondingService<NotificationEvent>)this).GetResponse(result, details);
-        }
-        #endregion
-
-        #region Implementation
-        /// <inheritdoc cref="IRespondingService{TModel}.GetResponse(ValueTuple{ProcessingResult, string}, BaseEnhancedDetails)"/>
-        ObjectResult IRespondingService<NotificationEvent>.GetResponse((ProcessingResult Status, string Description) result, BaseEnhancedDetails details)
+        #region IRespondingService<TResult>
+        /// <inheritdoc cref="IRespondingService{TResult}.GetResponse(TResult)"/>
+        ObjectResult IRespondingService<ProcessingResult>.GetResponse(ProcessingResult result)
         {
             return result.Status switch
             {
-                ProcessingResult.Success
+                ProcessingStatus.Success
                     => new ProcessingSucceeded(result.Description).AsResult_202(),
 
-                ProcessingResult.Skipped or
-                ProcessingResult.Aborted
+                ProcessingStatus.Skipped or
+                ProcessingStatus.Aborted
                     => new ProcessingSkipped(result.Description).AsResult_206(),
 
-                ProcessingResult.Failure
-                    => details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
-                        ? new HttpRequestFailed.Simplified(details).AsResult_400()
-                        : details.Cases.IsNotNullOrEmpty() && details.Reasons.Any()
-                            ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, details).AsResult_400()
+                ProcessingStatus.Failure
+                    => result.Details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
+                        ? new HttpRequestFailed.Simplified(result.Details).AsResult_400()
+
+                        : result.Details.Cases.IsNotNullOrEmpty() && result.Details.Reasons.HasAny()
+                            ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, result.Details).AsResult_400()
                             : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
 
-                ProcessingResult.NotPossible
-                    => new DeserializationFailed(details).AsResult_422(),
+                ProcessingStatus.NotPossible
+                    => new DeserializationFailed(result.Details).AsResult_422(),
 
                 _ => ObjectResultExtensions.AsResult_501()
             };

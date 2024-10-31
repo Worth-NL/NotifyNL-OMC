@@ -14,6 +14,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
@@ -254,7 +255,7 @@ namespace EventsHandler
             // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
-            builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
+            builder.Services.AddSingleton<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
@@ -405,10 +406,10 @@ namespace EventsHandler
                                                       .OMC.Features.Workflow_Version();
 
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
+            builder.Services.AddSingleton<IRespondingService<ProcessingResult>, OmcResponder>();
 
             // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(IRespondingService<ProcessingResult, string>), DetermineResponderVersion(omvWorkflowVersion));
+            builder.Services.AddSingleton(typeof(IRespondingService<ProcessingStatus, string>), DetermineResponderVersion(omvWorkflowVersion));
 
             return;
 

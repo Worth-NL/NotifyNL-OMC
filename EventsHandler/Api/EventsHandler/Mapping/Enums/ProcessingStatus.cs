@@ -7,7 +7,7 @@ namespace EventsHandler.Mapping.Enums
     /// <summary>
     /// The status of the core business logic processing.
     /// </summary>
-    public enum ProcessingResult
+    public enum ProcessingStatus
     {
         /// <summary>
         /// The <see cref="NotificationEvent"/> was processed successfully.

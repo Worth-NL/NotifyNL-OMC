@@ -17,7 +17,7 @@ using System.Text.RegularExpressions;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
-    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    public abstract partial class NotifyResponder : IRespondingService<ProcessingStatus, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <inheritdoc cref="ISerializationService"/>
         protected ISerializationService Serializer { get; }
@@ -199,15 +199,15 @@ namespace EventsHandler.Services.Responding
 
         #region IRespondingService<TResult, TDetails>
         /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
-        ObjectResult IRespondingService<ProcessingResult, string>.GetResponse(ProcessingResult result, string details)
+        ObjectResult IRespondingService<ProcessingStatus, string>.GetResponse(ProcessingStatus status, string details)
         {
-            return result switch
+            return status switch
             {
                 // HttpStatus Code: 202 Accepted
-                ProcessingResult.Success => ObjectResultExtensions.AsResult_202(details),
+                ProcessingStatus.Success => ObjectResultExtensions.AsResult_202(details),
 
                 // HttpStatus Code: 400 BadRequest
-                ProcessingResult.Failure => ((IRespondingService)this).GetExceptionResponse(details),
+                ProcessingStatus.Failure => ((IRespondingService)this).GetExceptionResponse(details),
 
                 // HttpStatus Code: 501 Not Implemented
                 _ => ObjectResultExtensions.AsResult_501()
