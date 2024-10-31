@@ -59,7 +59,7 @@ namespace EventsHandler.Extensions
         /// <returns>
         ///   The output enum of type B.
         /// </returns>
-        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)  // TODO: Missing code coverage
+        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)
         {
             return processingResult switch
             {
