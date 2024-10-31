@@ -61,6 +61,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not standardized (unexpected) API response | {0} | {1}.
+        /// </summary>
+        internal static string API_Response_ERROR_UnspecifiedResponse {
+            get {
+                return ResourceManager.GetString("API_Response_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | {1} | {2}.
+        /// </summary>
+        internal static string API_Response_STATUS_Logging {
+            get {
+                return ResourceManager.GetString("API_Response_STATUS_Logging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OMC.
         /// </summary>
         internal static string Application_Name {
@@ -880,6 +898,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Notify NL Exception | {0}.
+        /// </summary>
+        internal static string Processing_ERROR_Exception_Notify {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Exception_Notify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | {1}.
+        /// </summary>
+        internal static string Processing_ERROR_Exception_Unhandled {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Exception_Unhandled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to It wasn&apos;t possible to extract human-friendly error message.
         /// </summary>
         internal static string Processing_ERROR_ExecutingContext_UnknownErrorDetails {
@@ -961,11 +997,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not standardized (unexpected) API response.
+        ///   Looks up a localized string similar to {0} | Notification: {1}..
         /// </summary>
-        internal static string Processing_ERROR_UnspecifiedResponse {
+        internal static string Processing_STATUS_Notification {
             get {
-                return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+                return ResourceManager.GetString("Processing_STATUS_Notification", resourceCulture);
             }
         }
         

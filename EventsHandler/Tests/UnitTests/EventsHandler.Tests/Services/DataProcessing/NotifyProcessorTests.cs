@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Enums;
@@ -10,8 +9,11 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Services.Serialization.Interfaces;
+using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Utilities._TestHelpers;
 using Moq;
+using System.Text.Json;
 using ResourcesText = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.UnitTests.Services.DataProcessing
@@ -19,52 +21,79 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
     [TestFixture]
     public sealed class NotifyProcessorTests
     {
-        private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedScenariosResolver = null!;
-        private IProcessingService<NotificationEvent> _processor = null!;
+        private Mock<ISerializationService> _serializerMock = null!;
+        private Mock<IValidationService<NotificationEvent>> _validatorMock = null!;
+        private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedResolver = null!;
+
+        private IProcessingService _processor = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
-            this._mockedScenariosResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
-            this._processor = new NotifyProcessor(this._mockedScenariosResolver.Object);
+            this._serializerMock = new Mock<ISerializationService>(MockBehavior.Strict);
+            this._validatorMock = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
+            this._mockedResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
+            
+            this._processor = new NotifyProcessor(this._serializerMock.Object, this._validatorMock.Object, this._mockedResolver.Object);
         }
 
         [SetUp]
         public void ResetTests()
         {
-            this._mockedScenariosResolver.Reset();
+            this._serializerMock.Reset();
+            this._serializerMock
+                .Setup(mock => mock.Deserialize<NotificationEvent>(
+                    It.IsAny<object>()))
+                .Returns(NotificationEventHandler.GetNotification_Real_CaseCreateScenario_TheHague().Deserialized);
+            
+            this._validatorMock.Reset();
+            this._validatorMock
+                .Setup(mock => mock.Validate(
+                    ref It.Ref<NotificationEvent>.IsAny))
+                .Returns(HealthCheck.OK_Valid);
+
+            this._mockedResolver.Reset();
         }
 
         #region Test data
-        private static readonly NotificationEvent s_validNotification =
-            NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague().Deserialized();
+        private static readonly string s_validNotification =
+            NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague();
         #endregion
 
         #region ProcessAsync()
         [Test]
-        public async Task ProcessAsync_TestNotification_ReturnsProcessingResult_Skipped()
+        public async Task ProcessAsync_Failed_Deserialization_ReturnsProcessingResult_Skipped()
         {
             // Arrange
-            var testUri = new Uri("http://some.hoofdobject.nl/");
-
-            var testNotification = new NotificationEvent
-            {
-                Channel = Channels.Unknown,
-                Resource = Resources.Unknown,
-                MainObjectUri = testUri,
-                ResourceUri = testUri
-            };
+            this._serializerMock
+                .Setup(mock => mock.Deserialize<NotificationEvent>(
+                    It.IsAny<object>()))
+                .Throws<JsonException>();
 
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(testNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(new object());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
+                Assert.That(result.Description, Is.EqualTo("Exception of type 'System.Text.Json.JsonException' was thrown. | Notification: System.Object."));
+            });
+        }
+
+        [Test]
+        public async Task ProcessAsync_TestNotification_ReturnsProcessingResult_Skipped()
+        {
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(NotificationEventHandler.GetNotification_Test_Ping());
 
             // Assert
             VerifyMethodsCalls(0);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Skipped));
-                Assert.That(message, Is.EqualTo(ResourcesText.Processing_ERROR_Notification_Test));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
+                Assert.That(result.Description, Is.EqualTo(ResourcesText.Processing_ERROR_Notification_Test));
             });
         }
 
@@ -72,20 +101,20 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         public async Task ProcessAsync_ValidNotification_UnknownScenario_ReturnsProcessingResult_Skipped()
         {
             // Arrange
-            this._mockedScenariosResolver.Setup(mock => mock.DetermineScenarioAsync(
+            this._mockedResolver.Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .Throws<NotImplementedException>();
 
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
 
             // Assert
             VerifyMethodsCalls(1);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Skipped));
-                Assert.That(message, Is.EqualTo(ResourcesText.Processing_ERROR_Scenario_NotImplemented));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
+                Assert.That(result.Description, Is.EqualTo(ResourcesText.Processing_ERROR_Scenario_NotImplemented));
             });
         }
 
@@ -93,20 +122,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         public async Task ProcessAsync_InternalErrors_WhenResolvingScenario_ReturnsProcessingResult_Failure()
         {
             // Arrange
-            this._mockedScenariosResolver.Setup(mock => mock.DetermineScenarioAsync(
+            this._mockedResolver.Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .Throws<HttpRequestException>();
 
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
 
             // Assert
             VerifyMethodsCalls(1);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-                Assert.That(message, Does.StartWith($"{nameof(HttpRequestException)} | Exception of type '{typeof(HttpRequestException).FullName}' was"));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
+                Assert.That(result.Description, Does.StartWith(
+                    $"{nameof(HttpRequestException)} | Exception of type '{typeof(HttpRequestException).FullName}' was"));
             });
         }
 
@@ -120,26 +150,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(GettingDataResponse.Failure());
             
-            this._mockedScenariosResolver
+            this._mockedResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(mockedNotifyScenario.Object);
             
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
 
             // Assert
             VerifyMethodsCalls(1);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-
-                string expectedMessage =
-                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}",
-                        ResourcesText.Processing_ERROR_Scenario_NotificationMethod);
-
-                Assert.That(message, Is.EqualTo(expectedMessage));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
+                Assert.That(result.Description, Is.EqualTo(
+                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}", ResourcesText.Processing_ERROR_Scenario_NotificationMethod)));
             });
         }
 
@@ -163,25 +189,22 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<IReadOnlyCollection<NotifyData>>()))
                 .ReturnsAsync(ProcessingDataResponse.Failure(processingErrorText));
             
-            this._mockedScenariosResolver
+            this._mockedResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(mockedNotifyScenario.Object);
             
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
 
             // Assert
             VerifyMethodsCalls(1);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Failure));
-
-                string expectedMessage =
-                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}", processingErrorText);
-
-                Assert.That(message, Is.EqualTo(expectedMessage));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
+                Assert.That(result.Description, Is.EqualTo(
+                    ResourcesText.Processing_ERROR_Scenario_NotificationNotSent.Replace("{0}", processingErrorText)));
             });
         }
 
@@ -204,21 +227,21 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
                     It.IsAny<IReadOnlyCollection<NotifyData>>()))
                 .ReturnsAsync(ProcessingDataResponse.Success);
             
-            this._mockedScenariosResolver
+            this._mockedResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()))
                 .ReturnsAsync(mockedNotifyScenario.Object);
             
             // Act
-            (ProcessingResult status, string? message) = await this._processor.ProcessAsync(s_validNotification);
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
 
             // Assert
             VerifyMethodsCalls(1);
 
             Assert.Multiple(() =>
             {
-                Assert.That(status, Is.EqualTo(ProcessingResult.Success));
-                Assert.That(message, Is.EqualTo(ResourcesText.Processing_SUCCESS_Scenario_NotificationSent));
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Success));
+                Assert.That(result.Description, Is.EqualTo(ResourcesText.Processing_SUCCESS_Scenario_NotificationSent));
             });
         }
         #endregion
@@ -226,7 +249,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
         #region Verify
         private void VerifyMethodsCalls(int determineScenarioInvokeCount)
         {
-            this._mockedScenariosResolver
+            this._mockedResolver
                 .Verify(mock => mock.DetermineScenarioAsync(
                     It.IsAny<NotificationEvent>()),
                 Times.Exactly(determineScenarioInvokeCount));

@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 
 namespace EventsHandler.Services.Responding.Messages.Models.Details
@@ -13,7 +14,12 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
         /// <summary>
         /// Gets the default <see cref="InfoDetails"/>.
         /// </summary>
-        internal static InfoDetails Empty { get; } = new(string.Empty, string.Empty, Array.Empty<string>());
+        internal static InfoDetails Empty { get; } = new
+        (
+            message: DefaultValues.Models.DefaultEnumValueName,
+            cases:   DefaultValues.Models.DefaultEnumValueName,
+            reasons: Array.Empty<string>()
+        );
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoDetails"/> class.
