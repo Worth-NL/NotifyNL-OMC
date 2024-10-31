@@ -250,7 +250,7 @@
   </data>
   <data name="Processing_ERROR_Scenario_NotificationNotSent" xml:space="preserve">
     <value>The notification has not been sent to Notify NL: {0}.</value>
-    <comment>{0} = Error Message</comment>
+    <comment>{0} = Error message</comment>
   </data>
   <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine what to do with the received notification.</value>
@@ -334,8 +334,9 @@
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
     <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
   </data>
-  <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
-    <value>Not standardized (unexpected) API response</value>
+  <data name="API_Response_ERROR_UnspecifiedResponse" xml:space="preserve">
+    <value>Not standardized (unexpected) API response | {0} | {1}</value>
+    <comment>{0} = HTTP Status Code, {1} = Name of ObjectResult type</comment>
   </data>
   <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
     <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
@@ -490,5 +491,21 @@
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_RequiredProperties" xml:space="preserve">
     <value>The following properties were missing in JSON but they are required.</value>
+  </data>
+  <data name="API_Response_STATUS_Logging" xml:space="preserve">
+    <value>{0} | {1} | {2}</value>
+    <comment>{0} = Application name, {1} = Log level, {2} = Log message</comment>
+  </data>
+  <data name="Processing_ERROR_Exception_Notify" xml:space="preserve">
+    <value>Notify NL Exception | {0}</value>
+    <comment>{0} = Exception message</comment>
+  </data>
+  <data name="Processing_ERROR_Exception_Unhandled" xml:space="preserve">
+    <value>{0} | {1}</value>
+    <comment>{0} = Name of exception type, {1} = Exception message</comment>
+  </data>
+  <data name="Processing_STATUS_Notification" xml:space="preserve">
+    <value>{0} | Notification: {1}.</value>
+    <comment>{0} = Description of the result, {1} = The initial notification JSON</comment>
   </data>
 </root>

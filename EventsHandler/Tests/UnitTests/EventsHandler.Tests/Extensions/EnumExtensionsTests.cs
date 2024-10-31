@@ -49,12 +49,12 @@ namespace EventsHandler.UnitTests.Extensions
         #endregion
 
         #region ConvertToLogLevel
-        [TestCase(ProcessingResult.Success, LogLevel.Information)]
-        [TestCase(ProcessingResult.Skipped, LogLevel.Warning)]
-        [TestCase(ProcessingResult.Aborted, LogLevel.Warning)]
-        [TestCase(ProcessingResult.NotPossible, LogLevel.Error)]
-        [TestCase(ProcessingResult.Failure, LogLevel.Error)]
-        public void ConvertToLogLevel_ForValidEnum_ReturnsExpectedConvertedValue(ProcessingResult testStartValue, LogLevel expectedEndValue)
+        [TestCase(ProcessingStatus.Success, LogLevel.Information)]
+        [TestCase(ProcessingStatus.Skipped, LogLevel.Warning)]
+        [TestCase(ProcessingStatus.Aborted, LogLevel.Warning)]
+        [TestCase(ProcessingStatus.NotPossible, LogLevel.Error)]
+        [TestCase(ProcessingStatus.Failure, LogLevel.Error)]
+        public void ConvertToLogLevel_ForValidEnum_ReturnsExpectedConvertedValue(ProcessingStatus testStartValue, LogLevel expectedEndValue)
         {
             // Act
             LogLevel actualValue = testStartValue.ConvertToLogLevel();
@@ -63,8 +63,8 @@ namespace EventsHandler.UnitTests.Extensions
             Assert.That(actualValue, Is.EqualTo(expectedEndValue));
         }
 
-        [TestCase((ProcessingResult)666, LogLevel.None)]
-        public void ConvertToLogLevel_ForInvalidEnum_ReturnsExpectedConvertedValue(ProcessingResult testStartValue, LogLevel expectedEndValue)
+        [TestCase((ProcessingStatus)666, LogLevel.None)]
+        public void ConvertToLogLevel_ForInvalidEnum_ReturnsExpectedConvertedValue(ProcessingStatus testStartValue, LogLevel expectedEndValue)
         {
             // Act
             LogLevel actualValue = testStartValue.ConvertToLogLevel();

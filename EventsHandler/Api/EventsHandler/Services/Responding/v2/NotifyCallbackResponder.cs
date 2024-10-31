@@ -23,7 +23,7 @@ namespace EventsHandler.Services.Responding.v2
     internal sealed class NotifyCallbackResponder : NotifyResponder
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly IRespondingService<ProcessingResult, string> _responder;
+        private readonly IRespondingService<ProcessingStatus, string> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace EventsHandler.Services.Responding.v2
                     this._responder.GetResponse(feedbackType
                             is FeedbackTypes.Success
                             or FeedbackTypes.Info
-                                ? ProcessingResult.Success   // NOTE: Everything good (either final or intermediate state)
-                                : ProcessingResult.Failure,  // NOTE: The notification couldn't be delivered as planned
+                                ? ProcessingStatus.Success   // NOTE: Everything good (either final or intermediate state)
+                                : ProcessingStatus.Failure,  // NOTE: The notification couldn't be delivered as planned
                         GetDeliveryStatusLogMessage(callback)));
             }
             catch (Exception exception)

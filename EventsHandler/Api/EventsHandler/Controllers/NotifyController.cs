@@ -27,7 +27,7 @@ namespace EventsHandler.Controllers
         /// Initializes a new instance of the <see cref="NotifyController"/> class.
         /// </summary>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public NotifyController(IRespondingService<ProcessingResult, string> responder)
+        public NotifyController(IRespondingService<ProcessingStatus, string> responder)
         {
             this._responder = (NotifyResponder)responder;
         }

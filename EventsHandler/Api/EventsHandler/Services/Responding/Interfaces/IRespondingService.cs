@@ -1,8 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -48,6 +45,25 @@ namespace EventsHandler.Services.Responding.Interfaces
     /// <summary>
     /// <inheritdoc cref="IRespondingService"/>
     /// <para>
+    ///   Specialized in processing generic <typeparamref name="TResult"/>.
+    /// </para>
+    /// </summary>
+    /// <typeparam name="TResult">The generic type of the processing result.</typeparam>
+    /// <seealso cref="IRespondingService"/>
+    public interface IRespondingService<in TResult> : IRespondingService
+    {
+        /// <summary>
+        /// Gets standardized <see cref="IActionResult"/> based on the received generic <typeparamref name="TResult"/>.
+        /// </summary>
+        /// <param name="result">
+        ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TResult']"/>
+        /// </param>
+        internal ObjectResult GetResponse(TResult result);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IRespondingService"/>
+    /// <para>
     ///   Specialized in processing generic <typeparamref name="TResult"/> and <typeparamref name="TDetails"/>.
     /// </para>
     /// </summary>
@@ -66,20 +82,5 @@ namespace EventsHandler.Services.Responding.Interfaces
         ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TDetails']"/>
         /// </param>
         internal ObjectResult GetResponse(TResult result, TDetails details);
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
-    /// <para>
-    ///   Dedicated to be used with <typeparamref name="TModel"/> objects.
-    /// </para>
-    /// </summary>
-    /// <typeparam name="TModel">The type of the model.</typeparam>
-    /// <seealso cref="IRespondingService{TResult, TDetails}"/>
-    public interface IRespondingService<TModel> : IRespondingService<(ProcessingResult, string), BaseEnhancedDetails>  // NOTE: This interface is implicitly following Adapter Design Pattern
-        where TModel : IJsonSerializable
-    {
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
-        internal new ObjectResult GetResponse((ProcessingResult Status, string Description) result, BaseEnhancedDetails details);
     }
 }

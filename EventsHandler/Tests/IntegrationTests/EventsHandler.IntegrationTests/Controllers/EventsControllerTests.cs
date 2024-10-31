@@ -5,6 +5,7 @@ using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Base;
@@ -12,33 +13,23 @@ using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Builder;
-using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
-using EventsHandler.Utilities._TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Text.Json;
 
 namespace EventsHandler.IntegrationTests.Controllers
 {
     [TestFixture]
     public sealed class EventsControllerTests
     {
-        private static readonly object s_testJson = new();
-
-        private Mock<ISerializationService> _serializerMock = null!;
-        private Mock<IValidationService<NotificationEvent>> _validatorMock = null!;
-        private Mock<IProcessingService<NotificationEvent>> _processorMock = null!;
+        private Mock<IProcessingService> _processorMock = null!;
         private Mock<IRespondingService<NotificationEvent>> _responderMock = null!;
         private Mock<IVersionsRegister> _registerMock = null!;
 
         [OneTimeSetUp]
         public void InitializeMocks()
         {
-            this._serializerMock = new Mock<ISerializationService>(MockBehavior.Strict);
-            this._validatorMock = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
-            this._processorMock = new Mock<IProcessingService<NotificationEvent>>(MockBehavior.Strict);
+            this._processorMock = new Mock<IProcessingService>(MockBehavior.Strict);
             this._responderMock = new Mock<IRespondingService<NotificationEvent>>(MockBehavior.Strict);
             this._registerMock = new Mock<IVersionsRegister>(MockBehavior.Strict);
         }
@@ -46,66 +37,12 @@ namespace EventsHandler.IntegrationTests.Controllers
         [SetUp]
         public void InitializeTests()
         {
-            this._serializerMock.Reset();
-            this._serializerMock.Setup(mock => mock.Deserialize<NotificationEvent>(
-                    It.IsAny<object>()))
-                .Returns(NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated);
-
-            this._validatorMock.Reset();
-            this._validatorMock.Setup(mock => mock.Validate(
-                    ref It.Ref<NotificationEvent>.IsAny))
-                .Returns(HealthCheck.OK_Inconsistent);
-
             this._processorMock.Reset();
             this._responderMock.Reset();
+            this._registerMock.Reset();
         }
 
         #region Testing IActionResult API responses
-        [Test]
-        public async Task ListenAsync_Failure_Deserialize_ReturnsErrorResult()
-        {
-            // Arrange
-            this._serializerMock.Setup(mock => mock.Deserialize<NotificationEvent>(It.IsAny<object>()))
-                                .Throws<JsonException>();
-
-            EventsController testController = GetTestEventsController_WithRealResponder();
-
-            // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
-
-            // Assert
-            AssertWithConditions<UnprocessableEntityObjectResult, DeserializationFailed>(
-                actualResult,
-                HttpStatusCode.UnprocessableEntity,
-                Resources.Operation_ERROR_Deserialization_Failure,
-                Resources.Deserialization_ERROR_InvalidJson_Message);
-        }
-
-        [Test]
-        public async Task ListenAsync_Failure_Validate_ReturnsErrorResult()
-        {
-            // Arrange
-            this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
-                               .Returns((ref NotificationEvent notificationEvent) =>
-                               {
-                                   notificationEvent.Details = GetTestErrorDetails_Notification_Properties();  // NOTE: Other ErrorDetails are also possible, but that's covered in Validator tests
-
-                                   return HealthCheck.ERROR_Invalid;
-                               });
-
-            EventsController testController = GetTestEventsController_WithRealResponder();
-
-            // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
-
-            // Assert
-            AssertWithConditions<UnprocessableEntityObjectResult, DeserializationFailed>(
-                actualResult,
-                HttpStatusCode.UnprocessableEntity,
-                Resources.Operation_ERROR_Deserialization_Failure,
-                Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message);
-        }
-
         [Test]
         public async Task ListenAsync_Failure_ProcessAsync_ReturnsErrorResult()
         {
@@ -116,7 +53,7 @@ namespace EventsHandler.IntegrationTests.Controllers
             EventsController testController = GetTestEventsController_WithRealResponder();
 
             // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
+            IActionResult actualResult = await testController.ListenAsync(default!);
 
             // Assert
             AssertWithConditions<BadRequestObjectResult, HttpRequestFailed.Detailed>(
@@ -127,76 +64,30 @@ namespace EventsHandler.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task ListenAsync_Success_Validate_HealthCheck_OK_Inconsistent_ReturnsInfoResult()
-        {
-            // Arrange
-            this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
-                               .Returns((ref NotificationEvent notificationEvent) =>
-                               {
-                                   notificationEvent.Details = GetTestInfoDetails_Partial();
-
-                                   return HealthCheck.OK_Inconsistent;
-                               });
-
-            this._processorMock.Setup(mock => mock.ProcessAsync(It.IsAny<NotificationEvent>()))
-                               .ReturnsAsync((ProcessingResult.Success, Resources.Processing_SUCCESS_Scenario_NotificationSent));
-
-            EventsController testController = GetTestEventsController_WithRealResponder();
-
-            // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
-
-            // Assert
-            AssertWithConditions<ObjectResult, ProcessingSucceeded>(
-                actualResult,
-                HttpStatusCode.Accepted,
-                Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
-                Resources.Operation_SUCCESS_Deserialization_Partial);
-        }
-
-        [Test]
         public async Task ListenAsync_Success_Validate_HealthCheck_OK_Valid_ReturnsInfoResult()
         {
             // Arrange
-            this._validatorMock.Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
-                               .Returns((ref NotificationEvent notificationEvent) =>
-                               {
-                                   notificationEvent.Details = GetTestInfoDetails_Success();
-
-                                   return HealthCheck.OK_Valid;
-                               });
-
-            this._processorMock.Setup(mock => mock.ProcessAsync(It.IsAny<NotificationEvent>()))
-                               .ReturnsAsync((ProcessingResult.Success, Resources.Processing_SUCCESS_Scenario_NotificationSent));
+            this._processorMock
+                .Setup(mock => mock.ProcessAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(
+                    new ProcessingResult(ProcessingStatus.Success, Resources.Processing_SUCCESS_Scenario_NotificationSent, default!, GetTestInfoDetails_Success()));
 
             EventsController testController = GetTestEventsController_WithRealResponder();
 
             // Act
-            IActionResult actualResult = await testController.ListenAsync(s_testJson);
+            IActionResult actualResult = await testController.ListenAsync(default!);
 
             // Assert
             AssertWithConditions<ObjectResult, ProcessingSucceeded>(
                 actualResult,
                 HttpStatusCode.Accepted,
-                Resources.Processing_SUCCESS_Scenario_NotificationSent + AddNotificationDetails(s_testJson),
+                Resources.Processing_SUCCESS_Scenario_NotificationSent,
                 Resources.Operation_SUCCESS_Deserialization_Success);
         }
         #endregion
 
         #region Helper methods
-        private static ErrorDetails GetTestErrorDetails_Notification_Properties()
-        {
-            return new ErrorDetails(
-                Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
-                "hoofdObject, resourceUrl",
-                new[]
-                {
-                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
-                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
-                    Resources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
-                });
-        }
-
         private static InfoDetails GetTestInfoDetails_Partial()
             => new(Resources.Operation_SUCCESS_Deserialization_Partial, string.Empty, Array.Empty<string>());
 
@@ -205,12 +96,11 @@ namespace EventsHandler.IntegrationTests.Controllers
 
         private EventsController GetTestEventsController_WithRealResponder()
         {
-            return new EventsController(this._serializerMock.Object, this._validatorMock.Object,
-                                        this._processorMock.Object, GetRealResponderService(),
+            return new EventsController(this._processorMock.Object, GetRealResponderService(),
                                         this._registerMock.Object);
         }
 
-        private static IRespondingService<NotificationEvent> GetRealResponderService() => new OmcResponder(new DetailsBuilder());
+        private static IRespondingService<ProcessingResult> GetRealResponderService() => new OmcResponder(new DetailsBuilder());
 
         private static void AssertWithConditions
             <TExpectedApiActionResultType, TExpectedApiResponseBodyType>
@@ -247,8 +137,6 @@ namespace EventsHandler.IntegrationTests.Controllers
                 }
             });
         }
-
-        private static string AddNotificationDetails(object json) => $" | Notification: {json}";
         #endregion
     }
 }

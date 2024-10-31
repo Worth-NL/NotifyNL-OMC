@@ -2,6 +2,7 @@
 
 using Asp.Versioning;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +69,9 @@ namespace EventsHandler.Controllers.Base
         /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
         internal static void LogMessage(LogLevel logLevel, string logMessage)
         {
-            _ = SentrySdk.CaptureMessage($"{Resources.Application_Name} | {logLevel:G} | {logMessage}", s_logMapping[logLevel]);
+            _ = SentrySdk.CaptureMessage(
+                    message: string.Format(Resources.API_Response_STATUS_Logging, Resources.Application_Name, logLevel.GetEnumName(), logMessage),
+                    level: s_logMapping[logLevel]);
         }
 
         /// <inheritdoc cref="SentrySdk.CaptureException(Exception)"/>
@@ -94,7 +97,7 @@ namespace EventsHandler.Controllers.Base
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
-                _ => $"{Resources.Processing_ERROR_UnspecifiedResponse} | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
+                _ => string.Format(Resources.API_Response_ERROR_UnspecifiedResponse, objectResult.StatusCode, nameof(objectResult.Value))
             };
         }
         #endregion

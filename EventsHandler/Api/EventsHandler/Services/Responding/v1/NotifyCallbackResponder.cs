@@ -25,7 +25,7 @@ namespace EventsHandler.Services.Responding.v1
     internal sealed class NotifyCallbackResponder : NotifyResponder
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly IRespondingService<ProcessingResult, string> _responder;
+        private readonly IRespondingService<ProcessingStatus, string> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace EventsHandler.Services.Responding.v1
 
                     // Positive status was returned by Notify NL
                     ? OmcController.LogApiResponse(LogLevel.Information,
-                        this._responder.GetResponse(ProcessingResult.Success, GetDeliveryStatusLogMessage(callback)))
+                        this._responder.GetResponse(ProcessingStatus.Success, GetDeliveryStatusLogMessage(callback)))
 
                     // Failure status was returned by Notify NL
                     : OmcController.LogApiResponse(LogLevel.Error,
-                        this._responder.GetResponse(ProcessingResult.Failure, GetDeliveryStatusLogMessage(callback)));
+                        this._responder.GetResponse(ProcessingStatus.Failure, GetDeliveryStatusLogMessage(callback)));
             }
             catch (Exception exception)
             {
