@@ -126,6 +126,9 @@ namespace EventsHandler.Services.Responding
                 ProcessingStatus.Aborted
                     => new ProcessingSkipped(result.Description).AsResult_206(),
 
+                ProcessingStatus.NotPossible
+                    => new DeserializationFailed(result.Details).AsResult_206(),
+
                 ProcessingStatus.Failure
                     => result.Details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
                         ? new HttpRequestFailed.Simplified(result.Details).AsResult_400()
@@ -133,9 +136,6 @@ namespace EventsHandler.Services.Responding
                         : result.Details.Cases.IsNotNullOrEmpty() && result.Details.Reasons.HasAny()
                             ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, result.Details).AsResult_400()
                             : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
-
-                ProcessingStatus.NotPossible
-                    => new DeserializationFailed(result.Details).AsResult_206(),
 
                 _ => ObjectResultExtensions.AsResult_501()
             };
