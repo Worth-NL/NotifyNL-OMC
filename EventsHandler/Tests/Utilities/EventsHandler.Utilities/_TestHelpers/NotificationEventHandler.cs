@@ -40,7 +40,7 @@ namespace EventsHandler.Utilities._TestHelpers
         internal static NotificationEvent GetNotification_Test_Ping()
         {
             var testUri = new Uri("http://some.hoofdobject.nl/");
-
+            
             return new NotificationEvent
             {
                 Channel = Channels.Unknown,
@@ -260,6 +260,7 @@ namespace EventsHandler.Utilities._TestHelpers
         }
         #endregion
 
+        #region Helper methods
         internal static string GetOrphanSecondValue()
         {
             return Orphan_Test_Value_2.ToString().ToLower();
@@ -269,5 +270,11 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             return JsonSerializer.Deserialize<NotificationEvent>(jsonPayload);
         }
+
+        internal static string Serialized(this NotificationEvent notification)
+        {
+            return JsonSerializer.Serialize(notification);
+        }
+        #endregion
     }
 }
