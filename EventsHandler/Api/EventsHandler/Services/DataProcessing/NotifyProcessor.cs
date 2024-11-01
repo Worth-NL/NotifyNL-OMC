@@ -57,7 +57,8 @@ namespace EventsHandler.Services.DataProcessing
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
                     // STOP: The notification is not complete; any further processing of it would be pointless
-                    return new ProcessingResult(ProcessingStatus.NotPossible, notification.Details.Message, json, details);
+                    return new ProcessingResult(ProcessingStatus.NotPossible,
+                        ResourcesText.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
                 }
 
                 // Determine if the received notification is "test" (ping) event => In this case, do nothing
