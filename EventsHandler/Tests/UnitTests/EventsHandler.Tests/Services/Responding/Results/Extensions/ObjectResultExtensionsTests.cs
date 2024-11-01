@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Net;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
@@ -8,6 +7,7 @@ using EventsHandler.Services.Responding.Messages.Models.Information;
 using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
 {
