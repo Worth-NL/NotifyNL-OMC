@@ -119,7 +119,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.NotPossible));
                 Assert.That(result.Description, Is.EqualTo(ResourcesText.Processing_STATUS_Notification
-                    .Replace("{0}", TestExceptionMessage)
+                    .Replace("{0}", ResourcesText.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message)
                     .Replace("{1}", "System.Object")));
             });
         }

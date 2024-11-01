@@ -100,7 +100,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.Forbidden"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        private static ObjectResult AsResult_403(this BaseStandardResponseBody response)
+        internal static ObjectResult AsResult_403(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -152,7 +152,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.InternalServerError"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        private static ObjectResult AsResult_500(this BaseStandardResponseBody response)
+        internal static ObjectResult AsResult_500(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
@@ -168,6 +168,18 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         internal static ObjectResult AsResult_501()
         {
             return new ObjectResult(new NotImplemented())
+            {
+                StatusCode = StatusCodes.Status501NotImplemented
+            };
+        }
+
+        /// <summary>
+        /// Creates <see cref="HttpStatusCode.NotImplemented"/> object result.
+        /// </summary>
+        /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
+        internal static ObjectResult AsResult_501(this BaseStandardResponseBody response)
+        {
+            return new ObjectResult(response)
             {
                 StatusCode = StatusCodes.Status501NotImplemented
             };
