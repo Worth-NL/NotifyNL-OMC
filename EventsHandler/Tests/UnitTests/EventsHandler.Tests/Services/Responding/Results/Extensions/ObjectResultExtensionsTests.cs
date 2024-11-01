@@ -1,9 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Net;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Responding.Messages.Models.Information;
+using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +32,7 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
 
                 if (actualResult.Value is BaseStandardResponseBody baseResponse)
                 {
+                    Assert.That(baseResponse.StatusCode, Is.EqualTo((HttpStatusCode)test.StatusCode));
                     Assert.That(baseResponse.StatusDescription, Is.Not.Empty);
 
                     if (actualResult.Value is BaseSimpleStandardResponseBody simpleResponse)
@@ -54,31 +57,34 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
             Func<ObjectResult> Response, int StatusCode, string Id)> GetTestCases()
         {
             // Arrange
-            var testSimpleResponse = new ProcessingSkipped(TestStatusDescription);
-
             var testDetails = new InfoDetails(TestMessage, TestCases, new[] { TestReason });
-            var testDetailedResponse = new DeserializationFailed(testDetails);
 
             // Response-based extensions
-            yield return (testSimpleResponse.AsResult_206,   206, "#1");
-            yield return (testSimpleResponse.AsResult_400,   400, "#2");
+            yield return (new ProcessingSucceeded(TestStatusDescription).AsResult_202, 202, "#1");
+            yield return (new ProcessingSkipped(TestStatusDescription).AsResult_206, 206, "#2");
+            yield return (new HttpRequestFailed.Simplified(testDetails).AsResult_400, 400, "#3");
+            yield return (new HttpRequestFailed.Detailed(testDetails).AsResult_400, 400, "#4");
+            yield return (new DeserializationFailed(testDetails).AsResult_422, 422, "#5");
+            yield return (new InternalError(testDetails).AsResult_500, 500, "#6");
+            yield return (new NotImplemented().AsResult_501, 501, "#7");
 
-            yield return (testDetailedResponse.AsResult_202, 202, "#3");
-            yield return (testDetailedResponse.AsResult_206, 206, "#4");
-            yield return (testDetailedResponse.AsResult_400, 400, "#5");
-            yield return (testDetailedResponse.AsResult_422, 422, "#6");
+            yield return (new StandardResponseBody(HttpStatusCode.Accepted, TestMessage).AsResult_202, 202, "#8");
+            yield return (new StandardResponseBody(HttpStatusCode.PartialContent, TestMessage).AsResult_206, 206, "#9");
+            yield return (new StandardResponseBody(HttpStatusCode.BadRequest, TestMessage).AsResult_400, 400, "#10");
+            yield return (new StandardResponseBody(HttpStatusCode.Forbidden, TestMessage).AsResult_403, 403, "#11");
+            yield return (new StandardResponseBody(HttpStatusCode.InternalServerError, TestMessage).AsResult_500, 500, "#12");
 
             // Details-based extensions
-            yield return (testDetails.AsResult_400, 400, "#7");
-            yield return (testDetails.AsResult_422, 422, "#8");
-            yield return (testDetails.AsResult_500, 500, "#9");
+            yield return (testDetails.AsResult_400, 400, "#13");
+            yield return (testDetails.AsResult_422, 422, "#14");
+            yield return (testDetails.AsResult_500, 500, "#15");
 
             // Simple static methods
-            yield return (() => ObjectResultExtensions.AsResult_202(TestStatusDescription), 202, "#10");
-            yield return (() => ObjectResultExtensions.AsResult_400(TestStatusDescription), 400, "#11");
-            yield return (() => ObjectResultExtensions.AsResult_403(TestStatusDescription), 403, "#12");
-            yield return (() => ObjectResultExtensions.AsResult_500(TestStatusDescription), 500, "#13");
-            yield return (ObjectResultExtensions.AsResult_501, 501, "#14");
+            yield return (() => ObjectResultExtensions.AsResult_202(TestStatusDescription), 202, "#16");
+            yield return (() => ObjectResultExtensions.AsResult_400(TestStatusDescription), 400, "#17");
+            yield return (() => ObjectResultExtensions.AsResult_403(TestStatusDescription), 403, "#18");
+            yield return (() => ObjectResultExtensions.AsResult_500(TestStatusDescription), 500, "#19");
+            yield return (ObjectResultExtensions.AsResult_501, 501, "#20");
         }
     }
 }

@@ -135,7 +135,7 @@ namespace EventsHandler.Services.Responding
                             : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
 
                 ProcessingStatus.NotPossible
-                    => new DeserializationFailed(result.Details).AsResult_422(),
+                    => new DeserializationFailed(result.Details).AsResult_206(),
 
                 _ => ObjectResultExtensions.AsResult_501()
             };
