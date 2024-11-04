@@ -56,8 +56,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // AppSettings | Variables | UX Messages
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
-                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {methodNames.Join()}");
+                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.Out.Write($"Methods: {methodNames.Join()}");
             });
         }
         #endregion
@@ -107,8 +107,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // User | Variables | Objecten
                 TestConfigProperties(ref counter, methodNames, userConfiguration.Variables.Objecten);
 
-                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {methodNames.Join()}");
+                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.Out.Write($"Methods: {methodNames.Join()}");
             });
         }
 

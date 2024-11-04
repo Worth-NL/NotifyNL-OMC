@@ -179,7 +179,7 @@ namespace EventsHandler.UnitTests.Services.Templates
 
             Assert.Multiple(() =>
             {
-                TestContext.WriteLine(testCase.Description);
+                TestContext.Out.Write(testCase.Description);
 
                 Assert.That(actualPersonalization, Has.Count.EqualTo(testCase.Placeholders.Length));
                 Assert.That(serializedActualPersonalization, Is.EqualTo(testCase.SerializedExpectedPersonalization));
