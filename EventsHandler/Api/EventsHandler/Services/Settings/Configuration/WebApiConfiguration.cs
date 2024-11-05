@@ -801,8 +801,8 @@ namespace EventsHandler.Services.Settings.Configuration
             internal sealed record WhitelistComponent : IDisposable
             {
                 private static readonly object s_whitelistLock = new();
-                private static readonly HashSet<string> s_allWhitelistedCaseTypeIds = new();  // All whitelisted Case type IDs from different scenarios
-                private static readonly ConcurrentDictionary<string /* Node name */, IDs> s_cachedIDs = new();  // Cached IDs nested models
+                private static readonly HashSet<string> s_allWhitelistedCaseTypeIds = [];  // All whitelisted Case type IDs from different scenarios
+                private static readonly ConcurrentDictionary<string /* Node name */, IDs> s_cachedIDs = [];  // Cached IDs nested models
 
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;

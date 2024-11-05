@@ -339,7 +339,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             // Arrange
             INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, true);
 
-            NotifyData[] emptyNotifyData = Array.Empty<NotifyData>();
+            NotifyData[] emptyNotifyData = [];
 
             // Act
             ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, emptyNotifyData);
@@ -564,13 +564,13 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
             // IQueryContext
             (Document Document, InfoObject InfoObject)[] testData =
-            {
+            [
                 (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
                 (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
                 (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
                 (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
                 (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
-            };
+            ];
 
             this._mockedQueryContext
                 .Setup(mock => mock.GetDocumentsAsync(It.IsAny<DecisionResource?>()))
@@ -612,15 +612,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         private static IReadOnlyCollection<NotifyData> GetNotifyData(Dictionary<string, object>? personalization = null)
         {
-            return new[]
-            {
+            return
+            [
                 new NotifyData(
                     NotifyMethods.Email,
                     TestEmailAddress,
                     Guid.NewGuid(),
-                    personalization ?? new Dictionary<string, object>(),
+                    personalization ?? [],
                     default)
-            };
+            ];
         }
         #endregion
 

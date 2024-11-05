@@ -54,6 +54,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Responses
         /// Failure result.
         /// </summary>
         internal static GettingDataResponse Failure()
-            => new(false, Resources.Processing_ERROR_Scenario_NotificationMethod, Array.Empty<NotifyData>());
+            => new(false, Resources.Processing_ERROR_Scenario_NotificationMethod, []);
     }
 }

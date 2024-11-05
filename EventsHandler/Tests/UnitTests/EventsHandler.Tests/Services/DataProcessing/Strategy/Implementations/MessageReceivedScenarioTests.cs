@@ -165,7 +165,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 new NotifyData(NotifyMethods.Email));
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, []);
 
             // Assert
             Assert.Multiple(() =>
@@ -191,7 +191,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 testData);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -219,7 +219,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -247,7 +247,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>

@@ -32,7 +32,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidAppSettings);
 
             int counter = 0;
-            List<string> methodNames = new();
+            List<string> methodNames = [];
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -70,7 +70,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
 
             int counter = 0;
-            List<string> methodNames = new();
+            List<string> methodNames = [];
 
             // Act & Assert
             Assert.Multiple(() =>

@@ -57,7 +57,7 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
             Func<ObjectResult> Response, int StatusCode, string Id)> GetTestCases()
         {
             // Arrange
-            var testDetails = new InfoDetails(TestMessage, TestCases, new[] { TestReason });
+            var testDetails = new InfoDetails(TestMessage, TestCases, [TestReason]);
 
             // Response-based extensions
             yield return (new ProcessingSucceeded(TestStatusDescription).AsResult_202, 202, "#1");

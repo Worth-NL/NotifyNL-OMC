@@ -18,7 +18,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
         (
             message: DefaultValues.Models.DefaultEnumValueName,
             cases:   DefaultValues.Models.DefaultEnumValueName,
-            reasons: Array.Empty<string>()
+            reasons: []
         );
 
         /// <summary>
