@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Validation #1: Sending messages should be allowed
-            if (!this.Configuration.User.Whitelist.Message_Allowed())
+            if (!this.Configuration.ZGW.Whitelist.Message_Allowed())
             {
                 throw new AbortedNotifyingException(
                     string.Format(Resources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden, GetWhitelistEnvVarName()));
@@ -63,7 +63,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
-            => this.Configuration.User.TemplateIds.Email.MessageReceived();
+            => this.Configuration.Notify.TemplateId.Email.MessageReceived();
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
@@ -88,7 +88,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (SMS logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetSmsTemplateId()"/>
         protected override Guid GetSmsTemplateId()
-            => this.Configuration.User.TemplateIds.Sms.MessageReceived();
+            => this.Configuration.Notify.TemplateId.Sms.MessageReceived();
 
         /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
