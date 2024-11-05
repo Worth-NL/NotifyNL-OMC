@@ -98,7 +98,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
 
                 // ZGW | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.Objecten);
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
                 
                 var notifyConfiguration = s_testConfiguration.Notify;
 
