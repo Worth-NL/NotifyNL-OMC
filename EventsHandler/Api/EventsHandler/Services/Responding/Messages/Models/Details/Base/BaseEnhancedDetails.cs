@@ -22,7 +22,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// </summary>
         [JsonPropertyName(nameof(Reasons))]
         [JsonPropertyOrder(2)]
-        public string[] Reasons { get; internal set; } = Array.Empty<string>();
+        public string[] Reasons { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseEnhancedDetails"/> class.

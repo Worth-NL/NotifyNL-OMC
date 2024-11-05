@@ -14,7 +14,7 @@ namespace EventsHandler.Services.Serialization.Converters
     internal sealed class DocumentsJsonConverter : JsonConverter<Documents>
     {
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, List<Document>> s_serializedDocuments = new();
+        private static readonly Dictionary<string, List<Document>> s_serializedDocuments = [];
         private static string? s_resultsJsonPropertyName;
 
         public override bool HandleNull => true;
@@ -24,7 +24,7 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             return new Documents
             {
-                Results = JsonSerializer.Deserialize<List<Document>>(ref reader, options) ?? new List<Document>()
+                Results = JsonSerializer.Deserialize<List<Document>>(ref reader, options) ?? []
             };
         }
 

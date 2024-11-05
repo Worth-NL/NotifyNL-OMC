@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Reflection;
-using EventsHandler.Extensions;
-using System.Text;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
+using System.Reflection;
+using System.Text;
 using Guid = System.Guid;
 
 namespace EventsHandler.UnitTests.Extensions
@@ -239,7 +239,7 @@ namespace EventsHandler.UnitTests.Extensions
             MethodInfo? genericMethod = method?.MakeGenericMethod(expectedResultType);
 
             // Act
-            object? actualResult = genericMethod?.Invoke(null, new object[] { testString });
+            object? actualResult = genericMethod?.Invoke(null, [testString]);
 
             // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResultValue));
@@ -251,7 +251,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void Join_EmptyCollection_ReturnsEmptyString()
         {
             // Arrange
-            string[] emptyArray = Array.Empty<string>();
+            string[] emptyArray = [];
 
             // Act
             string actualResult = emptyArray.Join();
@@ -264,7 +264,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void Join_FullCollection_ReturnsEmptyString()
         {
             // Arrange
-            List<string> testList = new() { "test1", "test2", "test3" };
+            List<string> testList = ["test1", "test2", "test3"];
 
             // Act
             string actualResult = testList.Join();

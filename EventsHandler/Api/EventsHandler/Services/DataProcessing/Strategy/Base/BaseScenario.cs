@@ -61,18 +61,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return preparedData.Party.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success(new[] { GetEmailNotifyData(notification, preparedData) }),
+                    => GettingDataResponse.Success([GetEmailNotifyData(notification, preparedData)]),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success(new[] { GetSmsNotifyData(notification, preparedData) }),
+                    => GettingDataResponse.Success([GetSmsNotifyData(notification, preparedData)]),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
-                    => GettingDataResponse.Success(new[]
-                        {
-                            GetEmailNotifyData(notification, preparedData),
+                    => GettingDataResponse.Success(
+                    [
+                        GetEmailNotifyData(notification, preparedData),
                             GetSmsNotifyData(notification, preparedData)
-                        }),
+                    ]),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
                 _ => GettingDataResponse.Failure()

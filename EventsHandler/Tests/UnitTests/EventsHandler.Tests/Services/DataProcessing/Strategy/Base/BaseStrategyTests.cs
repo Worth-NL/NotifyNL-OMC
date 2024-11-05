@@ -265,7 +265,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, []);
 
             // Assert
             Assert.Multiple(() =>
@@ -296,7 +296,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -328,7 +328,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -360,7 +360,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>

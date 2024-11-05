@@ -37,19 +37,19 @@ namespace EventsHandler.Services.Versioning
 
             try
             {
-                services = new IVersionDetails[]
-                {
+                services =
+                [
                     this._serviceProvider.GetRequiredService<IQueryZaak>(),
                     this._serviceProvider.GetRequiredService<IQueryKlant>(),
                     this._serviceProvider.GetRequiredService<IQueryBesluiten>(),
                     this._serviceProvider.GetRequiredService<IQueryObjecten>(),
                     this._serviceProvider.GetRequiredService<IQueryObjectTypen>(),
                     this._serviceProvider.GetRequiredService<ITelemetryService>()
-                };
+                ];
             }
             catch (InvalidOperationException)
             {
-                services = Array.Empty<IVersionDetails>();
+                services = [];
             }
 
             return services.IsNullOrEmpty()

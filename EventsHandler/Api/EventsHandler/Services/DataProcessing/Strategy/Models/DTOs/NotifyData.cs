@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         /// The key-value pairs of notification data (values) to be fit into placeholders (keys)
         /// from the <see cref="TemplateResponse"/>.
         /// </summary>
-        internal Dictionary<string, object> Personalization { get; } = new();
+        internal Dictionary<string, object> Personalization { get; } = [];
         
         /// <inheritdoc cref="NotifyReference"/>
         internal NotifyReference Reference { get; }
