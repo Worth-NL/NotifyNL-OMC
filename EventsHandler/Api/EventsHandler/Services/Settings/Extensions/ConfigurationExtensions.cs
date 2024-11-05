@@ -18,26 +18,26 @@ namespace EventsHandler.Services.Settings.Extensions
 
         private static string? s_openZaakDomainEnvVarName;
 
-        private static string GetOpenZaakDomainEnvVarName()
+        private static string GetEndpointOpenZaakEnvVarName()
         {
             lock (s_padlock)
             {
-                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Domain)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Domain.OpenZaak)}")
+                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenZaak)}")
                                                       .ToUpper();
             }
         }
 
         private static string? s_openKlantDomainEnvVarName;
 
-        private static string GetOpenKlantDomainEnvVarName()
+        private static string GetEndpointOpenKlantEnvVarName()
         {
             lock (s_padlock)
             {
-                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Domain)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Domain.OpenKlant)}")
+                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenKlant)}")
                                                        .ToUpper();
             }
         }
@@ -48,36 +48,38 @@ namespace EventsHandler.Services.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
-                                                       $"{nameof(WebApiConfiguration.User.Whitelist.Message_Allowed)}")
+                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist)}_" +
+                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist.Message_Allowed)}")
                                                       .ToUpper();
-            }
-        }
-
-        private static string? s_infoObjectTypesEnvVarName;
-
-        internal static string GetWhitelistInfoObjectsEnvVarName()
-        {
-            lock (s_padlock)
-            {
-                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
-                                                        $"{nameof(WebApiConfiguration.User.Whitelist.DecisionInfoObjectType_Uuids)}")
-                                                       .ToUpper();
             }
         }
 
         private static string? s_genObjectTypeEnvVarName;
 
-        internal static string GetWhitelistGenericObjectTypeEnvVarName()
+        internal static string GetGenericVariableObjectTypeEnvVarName()
         {
             lock (s_padlock)
             {
-                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.User)}_" +
-                                                      $"{nameof(WebApiConfiguration.User.Whitelist)}_" +
+                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                      $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
+                                                      $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType)}_" +
                                                       $"...OBJECTTYPE_UUID")
                                                      .ToUpper();
+            }
+        }
+
+        private static string? s_infoObjectTypesEnvVarName;
+
+        internal static string GetVariableInfoObjectsEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType)}_" +
+                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids)}")
+                                                       .ToUpper();
             }
         }
         #endregion
@@ -102,12 +104,12 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.User.Domain.OpenZaak();
+                return configuration.ZGW.Endpoint.OpenZaak();
             }
 
             // Case #2: Static usage
             return s_openZaakDomainValue ??=
-                Environment.GetEnvironmentVariable(GetOpenZaakDomainEnvVarName()) ?? "x";
+                Environment.GetEnvironmentVariable(GetEndpointOpenZaakEnvVarName()) ?? "x";
         }
 
         private static string? s_openKlantDomainValue;
@@ -117,12 +119,12 @@ namespace EventsHandler.Services.Settings.Extensions
             // Case #1: Instance usage
             if (configuration != null)
             {
-                return configuration.User.Domain.OpenKlant();
+                return configuration.ZGW.Endpoint.OpenKlant();
             }
 
             // Case #2: Static usage
             return s_openKlantDomainValue ??=
-                Environment.GetEnvironmentVariable(GetOpenKlantDomainEnvVarName()) ?? "x";
+                Environment.GetEnvironmentVariable(GetEndpointOpenKlantEnvVarName()) ?? "x";
         }
         #endregion
 

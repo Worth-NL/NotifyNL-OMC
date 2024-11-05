@@ -67,7 +67,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                     Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(s_validNotification));
 
                 string expectedMessage = Resources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden
-                    .Replace("{0}", "USER_WHITELIST_MESSAGE_ALLOWED");
+                    .Replace("{0}", "ZGW_WHITELIST_MESSAGE_ALLOWED");
 
                 Assert.That(exception?.Message.StartsWith(expectedMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
@@ -326,8 +326,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             return notifyMethod switch
             {
-                NotifyMethods.Email => configuration.User.TemplateIds.Email.MessageReceived(),
-                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.MessageReceived(),
+                NotifyMethods.Email => configuration.Notify.TemplateId.Email.MessageReceived(),
+                NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.MessageReceived(),
                 _ => Guid.Empty
             };
         }
