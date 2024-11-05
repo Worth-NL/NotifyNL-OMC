@@ -421,17 +421,17 @@ namespace EventsHandler.Services.Settings.Configuration
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience), disableValidation: true);
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
+                    [Config, UsedImplicitly]
                     internal ushort ExpiresInMin()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
+                    [Config, UsedImplicitly]
                     internal string UserId()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
+                    [Config, UsedImplicitly]
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
@@ -820,9 +820,9 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             internal sealed record VariableComponent
             {
-                /// <inheritdoc cref="ObjectenComponent"/>
+                /// <inheritdoc cref="ObjectTypeComponent"/>
                 [Config]
-                internal ObjectenComponent Objecten { get; }
+                internal ObjectTypeComponent ObjectType { get; }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariableComponent"/> class.
@@ -831,24 +831,24 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variable));
 
-                    this.Objecten = new ObjectenComponent(loadersContext, currentPath);
+                    this.ObjectType = new ObjectTypeComponent(loadersContext, currentPath);
                 }
 
                 /// <summary>
                 /// The "Objecten" part of the settings.
                 /// </summary>
-                internal sealed class ObjectenComponent
+                internal sealed class ObjectTypeComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
+                    /// Initializes a new instance of the <see cref="ObjectTypeComponent"/> class.
                     /// </summary>
-                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
+                    internal ObjectTypeComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(ObjectType));
                     }
 
                     // ---------------------------
