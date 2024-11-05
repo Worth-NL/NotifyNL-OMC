@@ -33,15 +33,15 @@ namespace EventsHandler.Services.Settings.Configuration
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             string /* Setting value */> s_cachedStrings = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             Guid /* Setting value */> s_cachedGuids = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             HashSet<Guid> /* Setting value */> s_cachedArrayGuids = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             Uri /* Setting value */> s_cachedUris = new();
@@ -51,11 +51,13 @@ namespace EventsHandler.Services.Settings.Configuration
             string[] /* Setting value */> s_cachedArrays = new();
         #endregion
 
+        #region Properties (root components)
         private readonly IServiceProvider _serviceProvider;
 
         private AppSettingsComponent? _appSettings;
         private OmcComponent? _omc;
-        private UserComponent? _user;
+        private ZgwComponent? _zgw;
+        private NotifyComponent? _notify;
 
         /// <summary>
         /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
@@ -65,19 +67,27 @@ namespace EventsHandler.Services.Settings.Configuration
             => this._appSettings ??= new AppSettingsComponent(GetLoader(LoaderTypes.AppSettings), nameof(AppSettings));
 
         /// <summary>
-        /// Gets the object representing Output Management Component (internal) settings.
+        /// Gets the settings used by internal service OMC (Output Management Component).
         /// </summary>
         [Config]
         internal OmcComponent OMC
             => this._omc ??= new OmcComponent(GetLoader(LoaderTypes.Environment), nameof(OMC));
 
         /// <summary>
-        /// Gets the object representing (external) settings configured by user for
-        /// dependent services ("OpenNotificaties", "OpenZaak", "OpenKlant", "Notify NL").
+        /// Gets the settings used by external services that belongs to the group of:
+        /// ZGW (Zaakgericht Werken) / "Open Services" - such as OpenNotificatie, OpenZaak, OpenKlant, etc...
         /// </summary>
         [Config]
-        internal UserComponent User
-            => this._user ??= new UserComponent(GetLoader(LoaderTypes.Environment), nameof(User), this);
+        internal ZgwComponent ZGW
+            => this._zgw ??= new ZgwComponent(GetLoader(LoaderTypes.Environment), nameof(ZGW), this);
+
+        /// <summary>
+        /// Gets the settings used by external service Notify NL.
+        /// </summary>
+        [Config]
+        internal NotifyComponent Notify
+            => this._notify ??= new NotifyComponent(GetLoader(LoaderTypes.Environment), nameof(Notify));
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
@@ -87,24 +97,13 @@ namespace EventsHandler.Services.Settings.Configuration
             this._serviceProvider = serviceProvider;
 
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
-            // NOTE: Initialize these components now to spare execution time during real-time (Activator.CreateInstance<T>)
-            this._appSettings = AppSettings;
-            this._omc = OMC;
-            this._user = User;
-        }
-        
-        /// <summary>
-        /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
-        /// </summary>
-        private ILoadersContext GetLoader(LoaderTypes loaderType)
-        {
-            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
-            loaderContext.SetLoader(loaderType);
-
-            return loaderContext;
+            this._appSettings = this.AppSettings;
+            this._omc = this.OMC;
+            this._zgw = this.ZGW;
+            this._notify = this.Notify;
         }
 
-        #region Settings
+        #region AppSettings.json
         /// <summary>
         /// The "appsettings[.xxx].json" part of the settings (not changing frequently).
         /// </summary>
@@ -342,43 +341,181 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
             }
         }
+        #endregion
 
+        #region Environment Variables
         // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
 
         /// <summary>
-        /// The common base for <see cref="OmcComponent"/> and <see cref="UserComponent"/>.
+        /// The "OMC" part of the settings.
         /// </summary>
-        internal abstract record BaseComponent
+        [UsedImplicitly]
+        internal sealed record OmcComponent
         {
-            /// <inheritdoc cref="AuthorizationComponent"/>
+            /// <inheritdoc cref="AuthenticationComponent"/>
             [Config]
-            internal AuthorizationComponent Authorization { get; }
+            internal AuthenticationComponent Auth { get; }
+
+            /// <inheritdoc cref="FeatureComponent"/>
+            [Config]
+            internal FeatureComponent Feature { get; }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="BaseComponent"/> class.
+            /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
-            protected BaseComponent(ILoadersContext loadersContext, string parentName)
+            public OmcComponent(ILoadersContext loadersContext, string parentName)
             {
-                this.Authorization = new AuthorizationComponent(loadersContext, parentName);
+                this.Auth = new AuthenticationComponent(loadersContext, parentName);
+                this.Feature = new FeatureComponent(loadersContext, parentName);
             }
 
             /// <summary>
-            /// The "Authorization" part of the settings.
+            /// The "Authentication" part of the settings.
             /// </summary>
-            internal sealed record AuthorizationComponent
+            internal sealed record AuthenticationComponent
             {
                 /// <inheritdoc cref="JwtComponent"/>
                 [Config]
                 internal JwtComponent JWT { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="AuthorizationComponent"/> class.
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                internal AuthorizationComponent(ILoadersContext loadersContext, string parentPath)
+                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Authorization));
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
                     this.JWT = new JwtComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "JWT" part of the settings.
+                /// </summary>
+                internal sealed record JwtComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="JwtComponent"/> class.
+                    /// </summary>
+                    internal JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Secret()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Issuer()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal string Audience()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Audience), disableValidation: true);
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config, UsedImplicitly]
+                    internal ushort ExpiresInMin()
+                        => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ExpiresInMin));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config, UsedImplicitly]
+                    internal string UserId()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserId));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config, UsedImplicitly]
+                    internal string UserName()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
+                }
+            }
+
+            /// <summary>
+            /// The "Feature" part of the settings.
+            /// </summary>
+            internal sealed record FeatureComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="FeatureComponent"/> class.
+                /// </summary>
+                internal FeatureComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Feature));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal byte Workflow_Version()
+                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
+            }
+        }
+
+        /// <summary>
+        /// The "ZGW" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        internal sealed record ZgwComponent
+        {
+            /// <inheritdoc cref="AuthenticationComponent"/>
+            [Config]
+            internal AuthenticationComponent Auth { get; }
+
+            /// <inheritdoc cref="EndpointComponent"/>
+            [Config]
+            internal EndpointComponent Endpoint { get; }
+
+            /// <inheritdoc cref="WhitelistComponent"/>
+            [Config]
+            internal WhitelistComponent Whitelist { get; }
+
+            /// <inheritdoc cref="VariableComponent"/>
+            [Config]
+            internal VariableComponent Variable { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
+            /// </summary>
+            public ZgwComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
+            {
+                this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
+                this.Endpoint = new EndpointComponent(loadersContext, parentName);
+                this.Whitelist = new WhitelistComponent(loadersContext, parentName);
+                this.Variable = new VariableComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "Authentication" part of the settings.
+            /// </summary>
+            internal sealed record AuthenticationComponent
+            {
+                /// <inheritdoc cref="JwtComponent"/>
+                [Config]
+                internal JwtComponent JWT { get; }
+
+                /// <inheritdoc cref="KeyComponent"/>
+                [Config]
+                internal KeyComponent Key { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
+                /// </summary>
+                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
+
+                    this.JWT = new JwtComponent(loadersContext, currentPath);
+                    this.Key = new KeyComponent(loadersContext, currentPath, configuration);
                 }
 
                 /// <summary>
@@ -428,157 +565,6 @@ namespace EventsHandler.Services.Settings.Configuration
                     internal string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
-            }
-        }
-
-        /// <summary>
-        /// The "OMC" part of the settings.
-        /// </summary>
-        [UsedImplicitly]
-        internal sealed record OmcComponent : BaseComponent
-        {
-            /// <inheritdoc cref="ApiComponent"/>
-            [Config]
-            internal ApiComponent API { get; }
-
-            /// <inheritdoc cref="FeaturesComponent"/>
-            [Config]
-            internal FeaturesComponent Features { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="OmcComponent"/> class.
-            /// </summary>
-            public OmcComponent(ILoadersContext loadersContext, string parentName)
-                : base(loadersContext, parentName)
-            {
-                this.API = new ApiComponent(loadersContext, parentName);
-                this.Features = new FeaturesComponent(loadersContext, parentName);
-            }
-
-            /// <summary>
-            /// The "API" part of the settings.
-            /// </summary>
-            internal sealed record ApiComponent
-            {
-                /// <inheritdoc cref="BaseUrlComponent"/>
-                [Config]
-                internal BaseUrlComponent BaseUrl { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
-                /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-
-                    this.BaseUrl = new BaseUrlComponent(loadersContext, currentPath);
-                }
-
-                /// <summary>
-                /// The "Base URL" part of the settings.
-                /// </summary>
-                internal sealed record BaseUrlComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="BaseUrlComponent"/> class.
-                    /// </summary>
-                    public BaseUrlComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(BaseUrl));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Uri NotifyNL()
-                        => GetCachedUri(this._loadersContext, this._currentPath, nameof(NotifyNL));
-                }
-            }
-
-            /// <summary>
-            /// The "Features" part of the settings.
-            /// </summary>
-            internal sealed record FeaturesComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="FeaturesComponent"/> class.
-                /// </summary>
-                internal FeaturesComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Features));
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                internal byte Workflow_Version()
-                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
-            }
-        }
-
-        /// <summary>
-        /// The "User" part of the settings.
-        /// </summary>
-        [UsedImplicitly]
-        internal sealed record UserComponent : BaseComponent
-        {
-            /// <inheritdoc cref="ApiComponent"/>
-            [Config]
-            internal ApiComponent API { get; }
-
-            /// <inheritdoc cref="DomainComponent"/>
-            [Config]
-            internal DomainComponent Domain { get; }
-
-            /// <inheritdoc cref="TemplateIdsComponent"/>
-            [Config]
-            internal TemplateIdsComponent TemplateIds { get; }
-
-            /// <inheritdoc cref="WhitelistComponent"/>
-            [Config]
-            internal WhitelistComponent Whitelist { get; }
-
-            /// <inheritdoc cref="VariablesComponent"/>
-            [Config]
-            internal VariablesComponent Variables { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="UserComponent"/> class.
-            /// </summary>
-            public UserComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
-                : base(loadersContext, parentName)
-            {
-                this.API = new ApiComponent(loadersContext, parentName, configuration);
-                this.Domain = new DomainComponent(loadersContext, parentName);
-                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
-                this.Whitelist = new WhitelistComponent(loadersContext, parentName);
-                this.Variables = new VariablesComponent(loadersContext, parentName);
-            }
-
-            /// <summary>
-            /// The "API" part of the settings.
-            /// </summary>
-            internal sealed record ApiComponent
-            {
-                /// <inheritdoc cref="KeyComponent"/>
-                [Config]
-                internal KeyComponent Key { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
-                /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
-                {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
-
-                    this.Key = new KeyComponent(loadersContext, currentPath, configuration);
-                }
 
                 /// <summary>
                 /// The "Key" part of the settings.
@@ -603,7 +589,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal string OpenKlant()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
-                           disableValidation: this._configuration.OMC.Features.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
+                           disableValidation: this._configuration.OMC.Feature.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -614,185 +600,60 @@ namespace EventsHandler.Services.Settings.Configuration
                     [Config]
                     internal string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal string NotifyNL()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(NotifyNL));
                 }
             }
 
             /// <summary>
-            /// The "Domain" part of the settings.
+            /// The "Endpoint" part of the settings.
             /// </summary>
-            internal sealed record DomainComponent
+            internal sealed record EndpointComponent
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="DomainComponent"/> class.
+                /// Initializes a new instance of the <see cref="EndpointComponent"/> class.
                 /// </summary>
-                internal DomainComponent(ILoadersContext loadersContext, string parentPath)
+                internal EndpointComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Domain));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Endpoint));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenNotificaties()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenNotificaties));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenZaak()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenZaak));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string OpenKlant()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string Besluiten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Besluiten));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Besluiten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string Objecten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(Objecten));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string ObjectTypen()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string ContactMomenten()
-                    => GetCachedDomainValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
-            }
-
-            /// <summary>
-            /// The "TemplateIds" part of the settings.
-            /// </summary>
-            internal sealed record TemplateIdsComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <inheritdoc cref="EmailComponent"/>
-                [Config]
-                internal EmailComponent Email { get; }
-
-                /// <inheritdoc cref="SmsComponent"/>
-                [Config]
-                internal SmsComponent Sms { get; }
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
-                /// </summary>
-                internal TemplateIdsComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
-
-                    this.Email = new EmailComponent(this._loadersContext, this._currentPath);
-                    this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                internal Guid DecisionMade()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
-
-                /// <summary>
-                /// The "Email" part of the settings.
-                /// </summary>
-                internal sealed record EmailComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
-                    /// </summary>
-                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakCreate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakUpdate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakClose()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid TaskAssigned()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid MessageReceived()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
-                }
-
-                /// <summary>
-                /// The "Sms" part of the settings.
-                /// </summary>
-                internal sealed record SmsComponent
-                {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
-
-                    /// <summary>
-                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
-                    /// </summary>
-                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
-                    {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
-                    }
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakCreate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakUpdate()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid ZaakClose()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid TaskAssigned()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
-
-                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                    [Config]
-                    internal Guid MessageReceived()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
-                }
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
             }
 
             /// <summary>
@@ -821,22 +682,27 @@ namespace EventsHandler.Services.Settings.Configuration
                 // ----------------------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakCreate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakCreate_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakUpdate_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakUpdate_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs ZaakClose_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(ZaakClose_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs TaskAssigned_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(TaskAssigned_IDs));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
@@ -845,25 +711,11 @@ namespace EventsHandler.Services.Settings.Configuration
                 // --------------
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 internal bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
-                // ---------------------------
-                // Allowed types (UUID / GUID)
-                // ---------------------------
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid TaskObjectType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal Guid MessageObjectType_Uuid()
-                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                internal HashSet<Guid> DecisionInfoObjectType_Uuids()
-                    => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
-
+                #region Helper methods
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
                 /// </summary>
@@ -873,6 +725,7 @@ namespace EventsHandler.Services.Settings.Configuration
                         key: nodeName,
                         value: new IDs(loadersContext, currentPath, nodeName));
                 }
+                #endregion
 
                 // ReSharper disable once InconsistentNaming
                 /// <summary>
@@ -948,6 +801,7 @@ namespace EventsHandler.Services.Settings.Configuration
                     public override string ToString() => this._finalPath;
                 }
 
+                #region Disposing
                 /// <inheritdoc cref="IDisposable.Dispose()"/>
                 public void Dispose()
                 {
@@ -958,53 +812,258 @@ namespace EventsHandler.Services.Settings.Configuration
 
                     s_cachedIDs.Clear();
                 }
+                #endregion
             }
 
             /// <summary>
-            /// The "Variables" part of the settings.
+            /// The "Variable" part of the settings.
             /// </summary>
-            internal sealed record VariablesComponent
+            internal sealed record VariableComponent
             {
-                /// <inheritdoc cref="ObjectenComponent"/>
+                /// <inheritdoc cref="ObjectTypeComponent"/>
                 [Config]
-                internal ObjectenComponent Objecten { get; }
+                internal ObjectTypeComponent ObjectType { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
+                /// Initializes a new instance of the <see cref="VariableComponent"/> class.
                 /// </summary>
-                internal VariablesComponent(ILoadersContext loadersContext, string parentPath)
+                internal VariableComponent(ILoadersContext loadersContext, string parentPath)
                 {
-                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variable));
 
-                    this.Objecten = new ObjectenComponent(loadersContext, currentPath);
+                    this.ObjectType = new ObjectTypeComponent(loadersContext, currentPath);
                 }
 
                 /// <summary>
                 /// The "Objecten" part of the settings.
                 /// </summary>
-                internal sealed class ObjectenComponent
+                internal sealed class ObjectTypeComponent
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
 
                     /// <summary>
-                    /// Initializes a new instance of the <see cref="ObjectenComponent"/> class.
+                    /// Initializes a new instance of the <see cref="ObjectTypeComponent"/> class.
                     /// </summary>
-                    internal ObjectenComponent(ILoadersContext loadersContext, string parentPath)
+                    internal ObjectTypeComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Objecten));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(ObjectType));
                     }
+
+                    // ---------------------------
+                    // Allowed types (UUID / GUID)
+                    // ---------------------------
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid TaskObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskObjectType_Uuid));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid MessageObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageObjectType_Uuid));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal ushort MessageObjectType_Version()
                         => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(MessageObjectType_Version));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal HashSet<Guid> DecisionInfoObjectType_Uuids()
+                        => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
+                }
+            }
+        }
+
+        /// <summary>
+        /// The "Notify" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        internal sealed record NotifyComponent
+        {
+            /// <inheritdoc cref="ApiComponent"/>
+            [Config]
+            internal ApiComponent API { get; }
+
+            /// <inheritdoc cref="TemplateIdComponent"/>
+            [Config]
+            internal TemplateIdComponent TemplateId { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
+            /// </summary>
+            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+            {
+                this.API = new ApiComponent(loadersContext, parentName);
+                this.TemplateId = new TemplateIdComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "API" part of the settings.
+            /// </summary>
+            internal sealed record ApiComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// </summary>
+                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal Uri BaseUrl()
+                    => GetCachedUri(this._loadersContext, this._currentPath, nameof(BaseUrl));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal string Key()
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(Key));
+            }
+
+            /// <summary>
+            /// The "TemplateIds" part of the settings.
+            /// </summary>
+            internal sealed record TemplateIdComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <inheritdoc cref="EmailComponent"/>
+                [Config]
+                internal EmailComponent Email { get; }
+
+                /// <inheritdoc cref="SmsComponent"/>
+                [Config]
+                internal SmsComponent Sms { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
+                /// </summary>
+                internal TemplateIdComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateId));
+
+                    this.Email = new EmailComponent(this._loadersContext, this._currentPath);
+                    this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                internal Guid DecisionMade()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
+
+                /// <summary>
+                /// The "Email" part of the settings.
+                /// </summary>
+                internal sealed record EmailComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="EmailComponent"/> class.
+                    /// </summary>
+                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+                }
+
+                /// <summary>
+                /// The "SMS" part of the settings.
+                /// </summary>
+                internal sealed record SmsComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="SmsComponent"/> class.
+                    /// </summary>
+                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    internal Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
                 }
             }
         }
 
         // NOTE: Environment variables "SENTRY_DSN" and "SENTRY_ENVIRONMENT" are skipped because they are dependent on third-party (assured and validated)
+        #endregion
+
+        #region Loading
+        /// <summary>
+        /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
+        /// </summary>
+        private ILoadersContext GetLoader(LoaderTypes loaderType)
+        {
+            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+            loaderContext.SetLoader(loaderType);
+
+            return loaderContext;
+        }
         #endregion
 
         #region Caching
@@ -1034,7 +1093,7 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <remarks>
         /// Validation: enabled
         /// </remarks>
-        private static string GetCachedDomainValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        private static string GetCachedEndpointValue(ILoadingService loadersContext, string currentPath, string nodeName)
         {
             return s_cachedStrings.GetOrAdd(
                 currentPath + nodeName,
@@ -1042,7 +1101,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetWithoutProtocol());
         }
-        
+
         /// <summary>
         /// Retrieves cached multiple <see langword="string"/> values.
         /// </summary>
@@ -1058,7 +1117,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     // Validation #1: Checking if the string value is not null or empty
                     string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
-                        // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
+                                                                                                            // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
                         .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                         .ToArray();
 
@@ -1096,14 +1155,14 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    // Works with "A,B,C" and "A, B, C", or "  A, B, C, " => { "A", "B", "C" }
+                                                                                                   // Works with "A,B,C" and "A, B, C", or "  A, B, C, " => { "A", "B", "C" }
                     .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     // Convert each string into GUID
                     .Select(value => value.GetValidGuid())
                     // Combine them into a fast look-up oriented data structure
                     .ToHashSet());
         }
-        
+
         /// <summary>
         /// Retrieves cached <see cref="Uri"/> value (in correct format).
         /// </summary>
@@ -1118,7 +1177,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetValidUri());
         }
-        
+
         /// <summary>
         /// Retrieves cached <typeparamref name="TData"/> value.
         /// </summary>
@@ -1161,6 +1220,7 @@ namespace EventsHandler.Services.Settings.Configuration
         }
         #endregion
 
+        #region Disposing
         /// <inheritdoc cref="IDisposable.Dispose()"/>
         public void Dispose()
         {
@@ -1168,7 +1228,8 @@ namespace EventsHandler.Services.Settings.Configuration
             s_cachedGuids.Clear();
             s_cachedUris.Clear();
             s_cachedArrays.Clear();
-            this.User.Whitelist.Dispose();
+            this.ZGW.Whitelist.Dispose();
         }
+        #endregion
     }
 }
