@@ -30,7 +30,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<PartyResult> Results { get; internal set; } = new();
+        public List<PartyResult> Results { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResults"/> struct.

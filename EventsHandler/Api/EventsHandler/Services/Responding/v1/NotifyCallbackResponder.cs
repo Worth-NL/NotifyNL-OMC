@@ -84,12 +84,11 @@ namespace EventsHandler.Services.Responding.v1
             {
                 (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
                 RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
-                    new []
-                    {
-                        // User message body
-                        DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod),
+                [
+                    // User message body
+                    DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod)
 
-                    });
+                ]);
 
                 OmcController.LogApiResponse(LogLevel.Information, response.JsonResponse);
             }

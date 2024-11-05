@@ -71,15 +71,15 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
                 IssuedAt = issuedAt,  // "iat"
                 Expires = expiresAt,  // "exp"
 
-                Subject = new ClaimsIdentity(new[]
-                {
+                Subject = new ClaimsIdentity(
+                [
                     // Required
                     new Claim("client_id",           issuer),
 
                     // Optional: Used only for "audit trials"
                     new Claim("user_id",             userId),
-                    new Claim("user_representation", userName),
-                }),
+                    new Claim("user_representation", userName)
+                ]),
 
                 // Required
                 SigningCredentials = new SigningCredentials(securityKey, securityAlgorithm)

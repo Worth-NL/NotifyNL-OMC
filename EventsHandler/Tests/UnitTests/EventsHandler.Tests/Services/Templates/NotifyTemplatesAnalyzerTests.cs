@@ -195,7 +195,7 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "0 Placeholders with default Notification returns 0 Personalizations",
-                Placeholders = Array.Empty<string>(),
+                Placeholders = [],
                 Notification = default,
                 SerializedExpectedPersonalization = "{}"
             };
@@ -207,12 +207,12 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "3 mappable Placeholders used with manually created Notification having 3 matching properties (Orphans) returns 3 expected Personalizations",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     NotificationEventHandler.Orphan_Test_Property_1,  // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Orphan_Test_Property_2,  // Matching placeholder (the POCO model has this property) => nested
                     NotificationEventHandler.Orphan_Test_Property_3   // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -225,12 +225,12 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "3 mappable Placeholders used with dynamically deserialized Notification having 3 matching properties (Orphans) returns 3 expected Personalizations",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     NotificationEventHandler.Orphan_Test_Property_1,  // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Orphan_Test_Property_2,  // Matching placeholder (the POCO model has this property) => nested
                     NotificationEventHandler.Orphan_Test_Property_3   // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_AllAttributes_WithOrphans().Deserialized(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -243,11 +243,11 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "2 unmappable Placeholders used with Notification having 3 unmatching properties (Orphans) returns 2 default Personalizations",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     notExistingProperty1,  // Unmatching placeholder (the POCO model doesn't have such property)
                     notExistingProperty2   // Unmatching placeholder (the POCO model doesn't have such property)
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -260,12 +260,12 @@ namespace EventsHandler.UnitTests.Services.Templates
             {
                 Description = "3 Placeholders (1 unmappable, 2 mappable) used with Notification having 3 properties " +
                               "(1 unmatching and 2 matching Orphans) returns 3 Personalizations (1 default, 2 expected)",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     notExistingProperty1,                             // Unmatching placeholder (the POCO model doesn't have such property)
                     NotificationEventHandler.Orphan_Test_Property_1,  // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Orphan_Test_Property_2   // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_WithOrphans(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -279,11 +279,11 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "2 Placeholders (2 mappable) used with Notification having 2 matching properties (regular) returns 2 expected Personalizations",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     NotificationEventHandler.Regular_Real_Property_Channel,            // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Regular_Real_Property_SourceOrganization  // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -295,12 +295,12 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "3 Placeholders (1 unmappable, 2 mappable) used with Notification having 2 matching properties (regular) returns 2 Personalizations (1 default, 2 expected)",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     notExistingProperty1,                                              // Unmatching placeholder (the POCO model doesn't have such property)
                     NotificationEventHandler.Regular_Real_Property_Channel,            // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Regular_Real_Property_SourceOrganization  // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -314,8 +314,8 @@ namespace EventsHandler.UnitTests.Services.Templates
             yield return new TestCase
             {
                 Description = "7 Placeholders (2 unmappable, 5 mappable) used with Notification having 5 matching properties (2 regular, 3 Orphans) returns 7 Personalizations (2 default, 5 expected)",
-                Placeholders = new[]
-                {
+                Placeholders =
+                [
                     notExistingProperty1,                             // Unmatching placeholder (the POCO model doesn't have such property)
                     notExistingProperty2,                             // Unmatching placeholder (the POCO model doesn't have such property)
                     // Regular                                      
@@ -325,7 +325,7 @@ namespace EventsHandler.UnitTests.Services.Templates
                     NotificationEventHandler.Orphan_Test_Property_1,  // Matching placeholder (the POCO model has this property) => root
                     NotificationEventHandler.Orphan_Test_Property_2,  // Matching placeholder (the POCO model has this property) => nested
                     NotificationEventHandler.Orphan_Test_Property_3   // Matching placeholder (the POCO model has this property) => nested
-                },
+                ],
                 Notification = NotificationEventHandler.GetNotification_Test_WithMixed_RegularAndOrphans_Properties(),
                 SerializedExpectedPersonalization =
                 $"{{" +
@@ -344,7 +344,7 @@ namespace EventsHandler.UnitTests.Services.Templates
         {
             internal string Description { get; init; } = string.Empty;
 
-            internal string[] Placeholders { get; init; } = Array.Empty<string>();
+            internal string[] Placeholders { get; init; } = [];
 
             internal NotificationEvent Notification { get; init; }
 
