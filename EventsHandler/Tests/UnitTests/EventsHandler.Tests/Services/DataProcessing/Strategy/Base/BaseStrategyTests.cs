@@ -454,24 +454,24 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Base
                 nameof(CaseCreatedScenario) =>
                     notifyMethod switch
                     {
-                        NotifyMethods.Email => configuration.Notify.TemplateIds.Email.ZaakCreate(),
-                        NotifyMethods.Sms => configuration.Notify.TemplateIds.Sms.ZaakCreate(),
+                        NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakCreate(),
+                        NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakCreate(),
                         _ => Guid.Empty
                     },
 
                 nameof(CaseStatusUpdatedScenario) =>
                     notifyMethod switch
                     {
-                        NotifyMethods.Email => configuration.Notify.TemplateIds.Email.ZaakUpdate(),
-                        NotifyMethods.Sms => configuration.Notify.TemplateIds.Sms.ZaakUpdate(),
+                        NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakUpdate(),
+                        NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakUpdate(),
                         _ => Guid.Empty
                     },
 
                 nameof(CaseClosedScenario) =>
                     notifyMethod switch
                     {
-                        NotifyMethods.Email => configuration.Notify.TemplateIds.Email.ZaakClose(),
-                        NotifyMethods.Sms => configuration.Notify.TemplateIds.Sms.ZaakClose(),
+                        NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakClose(),
+                        NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakClose(),
                         _ => Guid.Empty
                     },
 
