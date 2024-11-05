@@ -128,9 +128,9 @@ namespace EventsHandler
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Validation parameters
-                    ValidIssuer = configuration.OMC.Authorization.JWT.Issuer(),
-                    ValidAudience = configuration.OMC.Authorization.JWT.Audience(),
-                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Authorization.JWT.Secret()),
+                    ValidIssuer = configuration.OMC.Auth.JWT.Issuer(),
+                    ValidAudience = configuration.OMC.Auth.JWT.Audience(),
+                    IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Auth.JWT.Secret()),
 
                     // Validation criteria
                     ValidateIssuer = true,
@@ -320,7 +320,7 @@ namespace EventsHandler
         private static void RegisterOpenServices(this WebApplicationBuilder builder)
         {
             byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Features.Workflow_Version();
+                                                      .OMC.Feature.Workflow_Version();
             // Common query methods
             builder.Services.AddSingleton<IQueryBase, QueryBase>();
 
@@ -403,7 +403,7 @@ namespace EventsHandler
         private static void RegisterResponders(this WebApplicationBuilder builder)
         {
             byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Features.Workflow_Version();
+                                                      .OMC.Feature.Workflow_Version();
 
             // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
             builder.Services.AddSingleton<IRespondingService<ProcessingResult>, OmcResponder>();

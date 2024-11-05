@@ -195,7 +195,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
                 string expectedErrorMessage = Resources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId
                     .Replace("{0}", "4")
-                    .Replace("{1}", "USER_WHITELIST_TASKASSIGNED_IDS");
+                    .Replace("{1}", "ZGW_WHITELIST_TASKASSIGNED_IDS");
 
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(Resources.Processing_ABORT), Is.True);
@@ -553,8 +553,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         {
             return notifyMethod switch
             {
-                NotifyMethods.Email => configuration.User.TemplateIds.Email.TaskAssigned(),
-                NotifyMethods.Sms => configuration.User.TemplateIds.Sms.TaskAssigned(),
+                NotifyMethods.Email => configuration.Notify.TemplateId.Email.TaskAssigned(),
+                NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.TaskAssigned(),
                 _ => Guid.Empty
             };
         }
