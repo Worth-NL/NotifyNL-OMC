@@ -108,19 +108,19 @@ namespace EventsHandler.Utilities._TestHelpers
                 { "NOTIFY_API_BASEURL",                          GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
                 { "NOTIFY_API_KEY",                              GetTestValue(isValid, testString) },
 
-                { "NOTIFY_TEMPLATEIDS_DECISIONMADE",             GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_DECISIONMADE",             GetTestValue(isValid, testGuid) },
 
-                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE",         GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE",         GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE",          GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED",       GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED",    GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE",         GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE",         GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE",          GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED",       GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED",    GetTestValue(isValid, testGuid) },
 
-                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
-                { "NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE",            GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
-                { "NOTIFY_TEMPLATEIDS_SMS_TASKASSIGNED",         GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "NOTIFY_TEMPLATEIDS_SMS_MESSAGERECEIVED",      GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") }
+                { "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE",           GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE",           GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE",            GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
+                { "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED",         GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
+                { "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED",      GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") }
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)

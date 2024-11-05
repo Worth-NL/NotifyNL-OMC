@@ -322,19 +322,19 @@ And all of them have **Swagger UI** specified as the default start option.
         "NOTIFY_API_BASEURL": "",
         "NOTIFY_API_KEY": "",
         
-        "NOTIFY_TEMPLATEIDS_DECISIONMADE": "",
+        "NOTIFY_TEMPLATEID_DECISIONMADE": "",
 
-        "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE": "",
-        "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE": "",
-        "NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE": "",
-        "NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED": "",
-        "NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "",
 
-        "NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE": "",
-        "NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE": "",
-        "NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE": "",
-        "NOTIFY_TEMPLATEIDS_SMS_TASKASSIGNED": "",
-        "NOTIFY_TEMPLATEIDS_SMS_MESSAGERECEIVED": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",
         
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
@@ -559,19 +559,19 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | NOTIFY_API_BASEURL                                 | URI       | "https://api.notify.nl"                       | false        | Cannot be missing and have null or empty value                                                                                             | The domain where your Notify API instance is listening (e.g.: "https://api.notifynl.nl")                                                                                                                     |
 | NOTIFY_API_KEY                                     | string    | "name-8-4-4-4-12-8-4-4-4-12" (ID + UUID x2)   | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                         | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                       |
 | ---                                                | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
-| NOTIFY_TEMPLATEIDS_DECISIONMADE                    | GUID**    | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_DECISIONMADE                     | GUID**    | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | ---                                                | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
-| NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE                | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE                | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE                 | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED              | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_EMAIL_MESSAGE                   | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE                 | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE                 | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE                  | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED               | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_MESSAGE                    | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | ---                                                | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
-| NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE                  | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE                  | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE                   | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_SMS_TASKASSIGNED                | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
-| NOTIFY_TEMPLATEIDS_SMS_MESSAGE                     | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_ZAAKCREATE                   | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE                   | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE                    | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_TASKASSIGNED                 | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_MESSAGE                      | GUID      | "00000000-0000-0000-0000-000000000000"        | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                    | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | ---                                                | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
 | **Monitoring settings**                            |           |                                               |              |                                                                                                                                            |                                                                                                                                                                                                              |
 | SENTRY_DSN                                         | URI       | "https://1abxxx@o1xxx.sentry.io/xxx"          | false        | Validated internally by Sentry.SDK                                                                                                         | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                  |
@@ -588,7 +588,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 `NOTIFY_API_KEY` - To be generated from **NotifyNL** Admin Portal => **API Integration** section.
 
-`NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
+`NOTIFY_TEMPLATEID_SMS_ZAAKCREATE` - All **Template IDs** (SMS and Email) will be generated (and then you can copy-paste them into environment variables) when the user create (one-by-one) new templates from **NotifyNL** Admin Portal => **Templates** section.
 
 <h4 id="set_environment_variables">3.1.2.3. Set environment variables</h4>
 
@@ -934,9 +934,9 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCREATE`
+`NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE`
 
-`NOTIFY_TEMPLATEIDS_SMS_ZAAKCREATE`
+`NOTIFY_TEMPLATEID_SMS_ZAAKCREATE`
 
 <h4 id="case_created_requirements">5.2.2.3. Requirements</h4>
 
@@ -1007,9 +1007,9 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_EMAIL_ZAAKUPDATE`
+`NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE`
 
-`NOTIFY_TEMPLATEIDS_SMS_ZAAKUPDATE`
+`NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE`
 
 <h4 id="case_updated_requirements">5.2.3.3. Requirements</h4>
 
@@ -1086,9 +1086,9 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_EMAIL_ZAAKCLOSE`
+`NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE`
 
-`NOTIFY_TEMPLATEIDS_SMS_ZAAKCLOSE`
+`NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE`
 
 <h4 id="case_closed_requirements">5.2.4.3. Requirements</h4>
 
@@ -1167,9 +1167,9 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_EMAIL_TASKASSIGNED`
+`NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED`
 
-`NOTIFY_TEMPLATEIDS_SMS_TASKASSIGNED`
+`NOTIFY_TEMPLATEID_SMS_TASKASSIGNED`
 
 <h4 id="task_assigned_requirements">5.2.5.3. Requirements</h4>
 
@@ -1261,7 +1261,7 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_DECISIONMADE`
+`NOTIFY_TEMPLATEID_DECISIONMADE`
 
 <h4 id="decision_made_requirements">5.2.6.3. Requirements</h4>
 
@@ -1382,9 +1382,9 @@ Required to be set:
 
 </br>
 
-`NOTIFY_TEMPLATEIDS_EMAIL_MESSAGERECEIVED`
+`NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED`
 
-`NOTIFY_TEMPLATEIDS_SMS_MESSAGERECEIVED`
+`NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED`
 
 <h4 id="message_received_requirements">5.2.7.3. Requirements</h4>
 

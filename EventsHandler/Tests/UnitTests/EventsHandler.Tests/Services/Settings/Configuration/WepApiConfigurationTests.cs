@@ -106,8 +106,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.API);
 
                 // Notify | Templates (Email + SMS)
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateIds.Email);
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateIds.Sms);
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
 
                 TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.WriteLine($"Methods: {methodNames.Join()}");
@@ -150,15 +150,15 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Invalid: Not existing
             yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#8", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#8", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#9", () => s_testConfiguration!.Notify.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#10", () => s_testConfiguration!.Notify.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration!.Notify.TemplateId.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#11", () => s_testConfiguration!.Notify.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#11", () => s_testConfiguration!.Notify.TemplateId.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
 
         [TestCase("1", true)]

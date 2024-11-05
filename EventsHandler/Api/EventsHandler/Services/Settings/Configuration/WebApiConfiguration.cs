@@ -33,15 +33,15 @@ namespace EventsHandler.Services.Settings.Configuration
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             string /* Setting value */> s_cachedStrings = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             Guid /* Setting value */> s_cachedGuids = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             HashSet<Guid> /* Setting value */> s_cachedArrayGuids = new();
-        
+
         private static readonly ConcurrentDictionary<
             string /* Unique final path */,
             Uri /* Setting value */> s_cachedUris = new();
@@ -75,7 +75,7 @@ namespace EventsHandler.Services.Settings.Configuration
 
         /// <summary>
         /// Gets the settings used by external services that belongs to the group of:
-        /// ZGW (Zaakgericht Werken) / "Open Services" - such as OpenNotificatie, OpenZaak, OpenKlant...
+        /// ZGW (Zaakgericht Werken) / "Open Services" - such as OpenNotificatie, OpenZaak, OpenKlant, etc...
         /// </summary>
         [Config]
         internal ZgwComponent ZGW
@@ -97,10 +97,10 @@ namespace EventsHandler.Services.Settings.Configuration
             this._serviceProvider = serviceProvider;
 
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
-            this._appSettings = AppSettings;
-            this._omc = OMC;
-            this._zgw = ZGW;
-            this._notify = Notify;
+            this._appSettings = this.AppSettings;
+            this._omc = this.OMC;
+            this._zgw = this.ZGW;
+            this._notify = this.Notify;
         }
 
         #region AppSettings.json
@@ -888,9 +888,9 @@ namespace EventsHandler.Services.Settings.Configuration
             [Config]
             internal ApiComponent API { get; }
 
-            /// <inheritdoc cref="TemplateIdsComponent"/>
+            /// <inheritdoc cref="TemplateIdComponent"/>
             [Config]
-            internal TemplateIdsComponent TemplateIds { get; }
+            internal TemplateIdComponent TemplateId { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
@@ -898,7 +898,7 @@ namespace EventsHandler.Services.Settings.Configuration
             public NotifyComponent(ILoadersContext loadersContext, string parentName)
             {
                 this.API = new ApiComponent(loadersContext, parentName);
-                this.TemplateIds = new TemplateIdsComponent(loadersContext, parentName);
+                this.TemplateId = new TemplateIdComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -932,7 +932,7 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// The "TemplateIds" part of the settings.
             /// </summary>
-            internal sealed record TemplateIdsComponent
+            internal sealed record TemplateIdComponent
             {
                 private readonly ILoadersContext _loadersContext;
                 private readonly string _currentPath;
@@ -946,12 +946,12 @@ namespace EventsHandler.Services.Settings.Configuration
                 internal SmsComponent Sms { get; }
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="TemplateIdsComponent"/> class.
+                /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
                 /// </summary>
-                internal TemplateIdsComponent(ILoadersContext loadersContext, string parentPath)
+                internal TemplateIdComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateIds));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateId));
 
                     this.Email = new EmailComponent(this._loadersContext, this._currentPath);
                     this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
@@ -1101,7 +1101,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetWithoutProtocol());
         }
-        
+
         /// <summary>
         /// Retrieves cached multiple <see langword="string"/> values.
         /// </summary>
@@ -1117,7 +1117,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 {
                     // Validation #1: Checking if the string value is not null or empty
                     string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
-                        // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
+                                                                                                            // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
                         .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                         .ToArray();
 
@@ -1155,14 +1155,14 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    // Works with "A,B,C" and "A, B, C", or "  A, B, C, " => { "A", "B", "C" }
+                                                                                                   // Works with "A,B,C" and "A, B, C", or "  A, B, C, " => { "A", "B", "C" }
                     .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     // Convert each string into GUID
                     .Select(value => value.GetValidGuid())
                     // Combine them into a fast look-up oriented data structure
                     .ToHashSet());
         }
-        
+
         /// <summary>
         /// Retrieves cached <see cref="Uri"/> value (in correct format).
         /// </summary>
@@ -1177,7 +1177,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetValidUri());
         }
-        
+
         /// <summary>
         /// Retrieves cached <typeparamref name="TData"/> value.
         /// </summary>
