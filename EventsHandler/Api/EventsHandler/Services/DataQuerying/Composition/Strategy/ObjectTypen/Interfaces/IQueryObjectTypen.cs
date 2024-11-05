@@ -31,9 +31,9 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.User.Whitelist.MessageObjectType_Uuid()}\"," +
+                     $"\"type\":\"https://{GetDomain()}/objecttypes/{this.Configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
-                       $"\"typeVersion\":\"{this.Configuration.User.Variables.Objecten.MessageObjectType_Version()}\"," +
+                       $"\"typeVersion\":\"{this.Configuration.ZGW.Variable.ObjectType.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
                          $"{dataJson}" +
                        $"}}," +
@@ -45,7 +45,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.I
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => this.Configuration.User.Domain.ObjectTypen();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.ObjectTypen();
         #endregion
     }
 }

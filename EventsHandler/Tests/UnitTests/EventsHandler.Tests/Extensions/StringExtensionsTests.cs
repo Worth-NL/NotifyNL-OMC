@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Reflection;
-using EventsHandler.Extensions;
-using System.Text;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
+using System.Reflection;
+using System.Text;
 using Guid = System.Guid;
 
 namespace EventsHandler.UnitTests.Extensions
