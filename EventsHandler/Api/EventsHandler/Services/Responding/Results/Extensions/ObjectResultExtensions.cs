@@ -100,7 +100,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         /// Creates <see cref="HttpStatusCode.Forbidden"/> object result.
         /// </summary>
         /// <param name="response">The specific custom response to be passed into <see cref="IActionResult"/>.</param>
-        internal static ObjectResult AsResult_403(this BaseStandardResponseBody response)
+        private static ObjectResult AsResult_403(this BaseStandardResponseBody response)
         {
             return new ObjectResult(response)
             {
