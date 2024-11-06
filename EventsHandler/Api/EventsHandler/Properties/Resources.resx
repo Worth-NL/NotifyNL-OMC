@@ -335,7 +335,7 @@
     <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
   </data>
   <data name="API_Response_ERROR_UnspecifiedResponse" xml:space="preserve">
-    <value>Not standardized (unexpected) API response | {0} | {1}</value>
+    <value>{0} | {1} | Not standardized (unexpected) API response</value>
     <comment>{0} = HTTP Status Code, {1} = Name of ObjectResult type</comment>
   </data>
   <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
