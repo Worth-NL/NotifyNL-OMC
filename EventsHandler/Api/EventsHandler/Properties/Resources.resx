@@ -285,7 +285,7 @@
     <comment>{0} = The template GUID that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
-    <value>The settings does not contain a given value, or the value is empty: {0}.</value>
+    <value>The settings do not contain a given value, or the value is empty: {0}.</value>
     <comment>{0} = Name of the environment variable holding this value</comment>
   </data>
   <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
@@ -329,7 +329,7 @@
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
     <value>The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}</value>
-    <comment>{0} = The model used as target for deserialzation, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
+    <comment>{0} = The model used as target for deserialization, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
   </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
     <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
@@ -454,7 +454,7 @@
     <value>The notification data were processed successfully by the selected notification scenario.</value>
   </data>
   <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
-    <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
+    <value>There was no possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages is forbidden (set to 'false') in the: {0}.</value>
@@ -490,7 +490,7 @@
     <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_RequiredProperties" xml:space="preserve">
-    <value>The following properties were missing in JSON but they are required.</value>
+    <value>The following properties were missing in JSON, but they are required.</value>
   </data>
   <data name="API_Response_STATUS_Logging" xml:space="preserve">
     <value>{0} | {1} | {2}</value>
