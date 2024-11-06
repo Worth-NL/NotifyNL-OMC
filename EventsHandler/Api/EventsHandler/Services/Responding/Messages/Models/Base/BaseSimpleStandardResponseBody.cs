@@ -28,7 +28,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Base
         /// <inheritdoc cref="object.ToString()"/>
         public sealed override string ToString()
         {
-            return $"{this.StatusDescription} | {this.Details.Message}";
+            return $"{base.ToString()} | {this.Details.Message}";
         }
     }
 }

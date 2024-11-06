@@ -30,7 +30,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Base
         /// <inheritdoc cref="object.ToString()"/>
         public override string ToString()
         {
-            return this.StatusDescription;
+            return $"{(int)this.StatusCode} {this.StatusCode} | {this.StatusDescription}";
         }
     }
 }
