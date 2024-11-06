@@ -28,22 +28,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Base
         /// <inheritdoc cref="object.ToString()"/>
         public sealed override string ToString()
         {
-            return $"{StatusDescription} | {Details.Message}";
-        }
-    }
-
-    /// <summary>
-    /// Concrete implementation of <see cref="BaseSimpleStandardResponseBody"/> allowing to initialize all properties manually.
-    /// </summary>
-    /// <seealso cref="BaseSimpleStandardResponseBody"/>
-    internal sealed record SimpleStandardResponseBody : BaseSimpleStandardResponseBody
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleStandardResponseBody"/> class.
-        /// </summary>
-        internal SimpleStandardResponseBody(HttpStatusCode statusCodes, string statusDescription, BaseSimpleDetails details)
-            : base(statusCodes, statusDescription, details)
-        {
+            return $"{this.StatusDescription} | {this.Details.Message}";
         }
     }
 }
