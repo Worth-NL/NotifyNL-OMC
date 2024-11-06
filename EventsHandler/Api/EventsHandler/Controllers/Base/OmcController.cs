@@ -84,6 +84,12 @@ namespace EventsHandler.Controllers.Base
         #region Helper methods
         /// <summary>
         /// Determines the log message based on the received <see cref="ObjectResult"/>.
+        /// <para>
+        ///   The format:
+        ///   <code>
+        ///     HTTP Status Code | Description | Message (optional) | Cases (optional)
+        ///   </code>
+        /// </para>
         /// </summary>
         private static string DetermineResultMessage(ObjectResult objectResult)
         {
@@ -97,7 +103,7 @@ namespace EventsHandler.Controllers.Base
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
-                _ => string.Format(Resources.API_Response_ERROR_UnspecifiedResponse, objectResult.StatusCode, nameof(objectResult.Value))
+                _ => string.Format(Resources.API_Response_ERROR_UnspecifiedResponse, objectResult.StatusCode, $"The response type {nameof(objectResult.Value)}")
             };
         }
         #endregion

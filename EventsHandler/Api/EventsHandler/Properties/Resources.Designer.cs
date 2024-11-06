@@ -61,7 +61,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not standardized (unexpected) API response | {0} | {1}.
+        ///   Looks up a localized string similar to {0} | {1} | Not standardized (unexpected) API response.
         /// </summary>
         internal static string API_Response_ERROR_UnspecifiedResponse {
             get {
