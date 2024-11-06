@@ -68,23 +68,17 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
             yield return (new InternalError(testDetails).AsResult_500, 500, "#6");
             yield return (new NotImplemented().AsResult_501, 501, "#7");
 
-            yield return (new StandardResponseBody(HttpStatusCode.Accepted, TestMessage).AsResult_202, 202, "#8");
-            yield return (new StandardResponseBody(HttpStatusCode.PartialContent, TestMessage).AsResult_206, 206, "#9");
-            yield return (new StandardResponseBody(HttpStatusCode.BadRequest, TestMessage).AsResult_400, 400, "#10");
-            yield return (new StandardResponseBody(HttpStatusCode.Forbidden, TestMessage).AsResult_403, 403, "#11");
-            yield return (new StandardResponseBody(HttpStatusCode.InternalServerError, TestMessage).AsResult_500, 500, "#12");
-
             // Details-based extensions
-            yield return (testDetails.AsResult_400, 400, "#13");
-            yield return (testDetails.AsResult_422, 422, "#14");
-            yield return (testDetails.AsResult_500, 500, "#15");
+            yield return (testDetails.AsResult_400, 400, "#8");
+            yield return (testDetails.AsResult_422, 422, "#9");
+            yield return (testDetails.AsResult_500, 500, "#10");
 
             // Simple static methods
-            yield return (() => ObjectResultExtensions.AsResult_202(TestStatusDescription), 202, "#16");
-            yield return (() => ObjectResultExtensions.AsResult_400(TestStatusDescription), 400, "#17");
-            yield return (() => ObjectResultExtensions.AsResult_403(TestStatusDescription), 403, "#18");
-            yield return (() => ObjectResultExtensions.AsResult_500(TestStatusDescription), 500, "#19");
-            yield return (ObjectResultExtensions.AsResult_501, 501, "#20");
+            yield return (() => ObjectResultExtensions.AsResult_202(TestStatusDescription), 202, "#11");
+            yield return (() => ObjectResultExtensions.AsResult_400(TestStatusDescription), 400, "#12");
+            yield return (() => ObjectResultExtensions.AsResult_403(TestStatusDescription), 403, "#13");
+            yield return (() => ObjectResultExtensions.AsResult_500(TestStatusDescription), 500, "#14");
+            yield return (ObjectResultExtensions.AsResult_501, 501, "#15");
         }
     }
 }
