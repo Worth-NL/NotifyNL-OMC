@@ -151,7 +151,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty: {0}..
+        ///   Looks up a localized string similar to The settings do not contain a given value, or the value is empty: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
@@ -232,7 +232,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following properties were missing in JSON but they are required..
+        ///   Looks up a localized string similar to The following properties were missing in JSON, but they are required..
         /// </summary>
         internal static string Deserialization_ERROR_CannotDeserialize_RequiredProperties {
             get {
@@ -952,7 +952,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
+        ///   Looks up a localized string similar to There was no possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
         /// </summary>
         internal static string Processing_ERROR_Scenario_MissingInfoObjectsURIs {
             get {
