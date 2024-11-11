@@ -2,10 +2,10 @@
 
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Enums.v2;
 using EventsHandler.Services.Responding.Interfaces;
@@ -19,11 +19,11 @@ namespace EventsHandler.Services.Responding.v2
     /// <remarks>
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
-    /// <seealso cref="IRespondingService{TResult, TDetails}"/>
+    /// <seealso cref="IRespondingService"/>
     internal sealed class NotifyCallbackResponder : NotifyResponder
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly IRespondingService<ProcessingStatus, string> _responder;
+        private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace EventsHandler.Services.Responding.v2
             : base(serializer)
         {
             this._configuration = configuration;
-            this._responder = this;  // NOTE: Shortcut to use interface methods faster (parent of this class derives from this interface)
+            this._responder = this;  // NOTE: Shortcut to use interface methods faster ("NotifyResponder" parent derives from "IRespondingService<T>" interface)
             this._telemetry = telemetry;
         }
 
@@ -97,12 +97,14 @@ namespace EventsHandler.Services.Responding.v2
                     // Log level
                     feedbackType == FeedbackTypes.Failure ? LogLevel.Error : LogLevel.Information,
                     // IActionResult
-                    this._responder.GetResponse(feedbackType
-                            is FeedbackTypes.Success
-                            or FeedbackTypes.Info
-                                ? ProcessingStatus.Success   // NOTE: Everything good (either final or intermediate state)
-                                : ProcessingStatus.Failure,  // NOTE: The notification couldn't be delivered as planned
-                        GetDeliveryStatusLogMessage(callback)));
+                    this._responder.GetResponse(
+                        feedbackType is FeedbackTypes.Success
+                                     or FeedbackTypes.Info
+                            // NOTE: Everything is good (either final or intermediate state)
+                            ? ProcessingResult.Success(GetDeliveryStatusLogMessage(callback))
+                            // NOTE: The notification couldn't be delivered as planned
+                            : ProcessingResult.Failure(GetDeliveryStatusLogMessage(callback))
+                        ));
             }
             catch (Exception exception)
             {

@@ -57,15 +57,14 @@ namespace EventsHandler.Services.DataProcessing
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
                     // STOP: The notification is not complete; any further processing of it would be pointless
-                    return new ProcessingResult(ProcessingStatus.NotPossible,
-                        ResourcesText.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
+                    return ProcessingResult.NotPossible(ResourcesText.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
                 }
 
                 // Determine if the received notification is "test" (ping) event => In this case, do nothing
                 if (IsTest(notification))
                 {
                     // STOP: The notification SHOULD not be sent; it's just a connectivity test not a failure
-                    return new ProcessingResult(ProcessingStatus.Skipped, ResourcesText.Processing_ERROR_Notification_Test, json, details);
+                    return ProcessingResult.Skipped(ResourcesText.Processing_ERROR_Notification_Test, json, details);
                 }
 
                 // Choose an adequate business-scenario (strategy) to process the notification
@@ -75,9 +74,10 @@ namespace EventsHandler.Services.DataProcessing
                 GettingDataResponse gettingDataResponse;
                 if ((gettingDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
+                    string message = string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, gettingDataResponse.Message);
+
                     // RETRY: The notification COULD not be sent due to missing or inconsistent data
-                    return new ProcessingResult(ProcessingStatus.Failure,
-                        string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, gettingDataResponse.Message), json, details);
+                    return ProcessingResult.Failure(message, json, details);
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
@@ -85,11 +85,11 @@ namespace EventsHandler.Services.DataProcessing
 
                 return processingDataResponse.IsFailure
                     // RETRY: Something bad happened and "Notify NL" did not send the notification as expected
-                    ? new ProcessingResult(ProcessingStatus.Failure,
+                    ? ProcessingResult.Failure(
                         string.Format(ResourcesText.Processing_ERROR_Scenario_NotificationNotSent, processingDataResponse.Message), json, details)
 
                     // SUCCESS: The notification was sent and the completion status was reported to the telemetry API
-                    : new ProcessingResult(ProcessingStatus.Success, ResourcesText.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                    : ProcessingResult.Success(ResourcesText.Processing_SUCCESS_Scenario_NotificationSent, json, details);
             }
             // Handling errors in a specific way depends on their types or severities
             catch (Exception exception)
@@ -120,20 +120,20 @@ namespace EventsHandler.Services.DataProcessing
             return exception switch
             {
                 // STOP: The JSON payload COULD not be deserialized; any further processing of it would be pointless
-                JsonException => new ProcessingResult(ProcessingStatus.Skipped, exception.Message, json, details),
+                JsonException => ProcessingResult.Skipped(exception.Message, json, details),
 
                 // STOP: The notification COULD not be sent, but it's not a failure
-                NotImplementedException => new ProcessingResult(ProcessingStatus.Skipped, ResourcesText.Processing_ERROR_Scenario_NotImplemented, json, details),
+                NotImplementedException => ProcessingResult.Skipped(ResourcesText.Processing_ERROR_Scenario_NotImplemented, json, details),
 
                 // STOP: The notification SHOULD not be sent due to internal condition
-                AbortedNotifyingException => new ProcessingResult(ProcessingStatus.Aborted, exception.Message, json, details),
+                AbortedNotifyingException => ProcessingResult.Aborted(exception.Message, json, details),
 
                 // RETRY: The notification COULD not be sent because of issues with "Notify NL" (e.g., authorization or service being down)
-                NotifyClientException => new ProcessingResult(ProcessingStatus.Failure,
+                NotifyClientException => ProcessingResult.Failure(
                     string.Format(ResourcesText.Processing_ERROR_Exception_Notify, exception.Message), json, details),
 
                 // RETRY: The notification COULD not be sent
-                _ => new ProcessingResult(ProcessingStatus.Failure,
+                _ => ProcessingResult.Failure(
                     string.Format(ResourcesText.Processing_ERROR_Exception_Unhandled, exception.GetType().Name, exception.Message), json, details)
             };
         }
