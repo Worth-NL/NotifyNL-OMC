@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Constants;
 using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 
 namespace EventsHandler.Services.Responding.Messages.Models.Details
@@ -11,11 +12,26 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
     internal sealed record ErrorDetails : BaseEnhancedDetails
     {
         /// <summary>
+        /// Gets the default <see cref="InfoDetails"/>.
+        /// </summary>
+        internal static ErrorDetails Empty { get; } = new
+        (
+            message: DefaultValues.Models.DefaultEnumValueName,
+            cases:   DefaultValues.Models.DefaultEnumValueName,
+            reasons: Array.Empty<string>()
+        );
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ErrorDetails"/> class.
         /// </summary>
         public ErrorDetails() { }  // NOTE: Used in generic constraints and by object initializer syntax
 
+        /// <summary>
         /// <inheritdoc cref="ErrorDetails()"/>
+        /// </summary>
+        /// <param name="message">The details message.</param>
+        /// <param name="cases">The cases included in details.</param>
+        /// <param name="reasons">The reasons of occurred cases.</param>
         internal ErrorDetails(string message, string cases, string[] reasons)
             : base(message, cases, reasons)
         {
