@@ -18,7 +18,10 @@ namespace EventsHandler.Controllers.Base
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
     // Swagger UI
-    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]  // REASON: JWT Token is invalid or expired
+    [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The HTTP Request wasn't successful
+    [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]          // REASON: Unexpected internal error
+    [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(BaseStandardResponseBody))]          // REASON: Something is not implemented
     public abstract class OmcController : Controller
     {
         /// <summary>
