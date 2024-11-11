@@ -202,7 +202,7 @@ namespace EventsHandler.Services.Responding
         }
         #endregion
 
-        #region IRespondingService<TResult, TDetails>
+        #region IRespondingService<TResult>
         /// <inheritdoc cref="IRespondingService{TResult}.GetResponse(TResult)"/>
         ObjectResult IRespondingService<ProcessingResult>.GetResponse(ProcessingResult result)
         {

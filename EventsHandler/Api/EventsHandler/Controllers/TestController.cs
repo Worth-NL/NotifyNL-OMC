@@ -12,6 +12,7 @@ using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities.Swagger.Examples;
@@ -28,6 +29,9 @@ namespace EventsHandler.Controllers
     /// Controller used to test other Web API services from which "Notify NL" OMC is dependent.
     /// </summary>
     /// <seealso cref="OmcController"/>
+    // Swagger UI
+    [ProducesResponseType(StatusCodes.Status202Accepted,            Type = typeof(BaseStandardResponseBody))]          // REASON: The API service is up and running
+    [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(BaseStandardResponseBody))]          // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestController : OmcController
     {
         private readonly WebApiConfiguration _configuration;
@@ -63,10 +67,6 @@ namespace EventsHandler.Controllers
         [ApiAuthorization]
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
-        // Swagger UI
-        [ProducesResponseType(StatusCodes.Status202Accepted)]             // REASON: The API service is up and running
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]           // REASON: The API service is currently down
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
         public async Task<IActionResult> HealthCheckAsync()
         {
             try
@@ -123,11 +123,7 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]             // REASON: The notification successfully sent to "Notify NL" API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]           // REASON: Issues on the "Notify NL" API service side
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]            // REASON: Base URL or API key to "Notify NL" API service were incorrect
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]  // REASON: The JSON structure is invalid
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendEmailAsync(
             [Required, FromQuery] string emailAddress,
             [Optional, FromQuery] string? emailTemplateId,
@@ -167,11 +163,7 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]             // REASON: The notification successfully sent to "Notify NL" API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]           // REASON: Issues on the "Notify NL" API service side
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]            // REASON: Base URL or API key to "Notify NL" API service were incorrect
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]  // REASON: The JSON structure is invalid
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // REASON: Unexpected internal error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendSmsAsync(
             [Required, FromQuery] string mobileNumber,
             [Optional, FromQuery] string? smsTemplateId,
@@ -219,10 +211,7 @@ namespace EventsHandler.Controllers
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]             // REASON: The registration was successfully sent to "Contactmomenten" API Web API service
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]           // REASON: One of the HTTP Request calls wasn't successful
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]  // REASON: The JSON structure is invalid
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // REASON: The registration wasn't sent / Unexpected internal error (if-else / try-catch-finally handle)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,
             [Required, FromQuery] NotifyMethods notifyMethod,
