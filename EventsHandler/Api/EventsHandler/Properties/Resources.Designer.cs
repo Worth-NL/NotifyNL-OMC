@@ -682,7 +682,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification could not be recognized (deserialized)..
+        ///   Looks up a localized string similar to The access to the external Web API service is forbidden..
+        /// </summary>
+        internal static string Operation_ERROR_AccessDenied {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification could not be recognized/deserialized..
         /// </summary>
         internal static string Operation_ERROR_Deserialization_Failure {
             get {
@@ -691,7 +700,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bad request..
+        ///   Looks up a localized string similar to The HTTP request wasn&apos;t completed successfully..
         /// </summary>
         internal static string Operation_ERROR_HttpRequest_Failure {
             get {
@@ -790,7 +799,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was partially recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was partially recognized/deserialized..
         /// </summary>
         internal static string Operation_SUCCESS_Deserialization_Partial {
             get {
@@ -799,7 +808,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was successfully recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was successfully recognized/deserialized..
         /// </summary>
         internal static string Operation_SUCCESS_Deserialization_Success {
             get {

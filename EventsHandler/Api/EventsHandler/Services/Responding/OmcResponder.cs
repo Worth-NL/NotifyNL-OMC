@@ -8,6 +8,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Messages.Models.Errors;
+using EventsHandler.Services.Responding.Messages.Models.Errors.Specific;
 using EventsHandler.Services.Responding.Messages.Models.Information;
 using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
@@ -20,7 +21,7 @@ using System.Net;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
-    internal sealed class OmcResponder : IRespondingService<ProcessingResult>
+    public sealed class OmcResponder : IRespondingService<ProcessingResult>
     {
         private readonly IDetailsBuilder _detailsBuilder;
 
@@ -38,7 +39,10 @@ namespace EventsHandler.Services.Responding
         {
             if (exception is HttpRequestException)
             {
-                return this._detailsBuilder.Get<ErrorDetails>(Reasons.HttpRequestError, exception.Message).AsResult_400();
+                return new BadRequest.Detailed(ProcessingResult.Failure(
+                        description: exception.Message,
+                        details: this._detailsBuilder.Get<ErrorDetails>(Reasons.HttpRequestError, exception.Message)))
+                    .AsResult_400();
             }
 
             return ((IRespondingService<ProcessingResult>)this).GetExceptionResponse(exception.Message);
@@ -52,18 +56,29 @@ namespace EventsHandler.Services.Responding
                 // JSON serialization issues
                 if (errorMessage.StartsWith(DefaultValues.Validation.Deserialization_MissingProperty))
                 {
-                    return this._detailsBuilder.Get<ErrorDetails>(Reasons.MissingProperties_Notification, GetMissingPropertiesNames(errorMessage)).AsResult_422();
+                    return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
+                            description: errorMessage,
+                            details: this._detailsBuilder.Get<ErrorDetails>(Reasons.MissingProperties_Notification, GetMissingPropertiesNames(errorMessage))))
+                        .AsResult_422();
                 }
 
-                return errorMessage.StartsWith(DefaultValues.Validation.Deserialization_InvalidValue)
-                    // JSON serialization issues
-                    ? this._detailsBuilder.Get<ErrorDetails>(Reasons.InvalidProperties_Notification, errorMessage).AsResult_422()
-                    // Invalid JSON structure
-                    : this._detailsBuilder.Get<ErrorDetails>(Reasons.InvalidJson, errorMessage).AsResult_422();
+                return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
+                        description: errorMessage,
+                        details : this._detailsBuilder.Get<ErrorDetails>(
+                            errorMessage.StartsWith(DefaultValues.Validation.Deserialization_InvalidValue)
+                                // JSON serialization issues
+                                ? Reasons.InvalidProperties_Notification
+                                // Invalid JSON structure
+                                : Reasons.InvalidJson,
+                            errorMessage)))
+                    .AsResult_422();
             }
             catch
             {
-                return this._detailsBuilder.Get<UnknownDetails>(Reasons.ValidationIssue).AsResult_500();
+                return new InternalError.Simplified(ProcessingResult.Unknown(
+                        description: errorMessage,
+                        details: this._detailsBuilder.Get<UnknownDetails>(Reasons.ValidationIssue)))
+                    .AsResult_500();
             }
         }
 
@@ -120,24 +135,24 @@ namespace EventsHandler.Services.Responding
             return result.Status switch
             {
                 ProcessingStatus.Success
-                    => new ProcessingSucceeded(result.Description).AsResult_202(),
+                    => new ProcessingSucceeded(result).AsResult_202(),
 
                 ProcessingStatus.Skipped or
                 ProcessingStatus.Aborted
-                    => new ProcessingSkipped(result.Description).AsResult_206(),
+                    => new ProcessingSkipped(result).AsResult_206(),
 
                 ProcessingStatus.NotPossible
-                    => new DeserializationFailed(result.Details).AsResult_206(),
+                    => new UnprocessableEntity.Detailed(result).AsResult_206(),
 
                 ProcessingStatus.Failure
                     => result.Details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
-                        ? new HttpRequestFailed.Simplified(result.Details).AsResult_400()
+                        ? new BadRequest.Simplified(result).AsResult_400()
 
                         : result.Details.Cases.IsNotNullOrEmpty() && result.Details.Reasons.HasAny()
-                            ? new ProcessingFailed.Detailed(HttpStatusCode.UnprocessableEntity, result.Description, result.Details).AsResult_400()
-                            : new ProcessingFailed.Simplified(HttpStatusCode.UnprocessableEntity, result.Description).AsResult_400(),
+                            ? new ProcessingFailed.Detailed(HttpStatusCode.PreconditionFailed, result).AsResult_412()
+                            : new ProcessingFailed.Simplified(HttpStatusCode.PreconditionFailed, result).AsResult_412(),
 
-                _ => ObjectResultExtensions.AsResult_501()
+                _ => new NotImplemented().AsResult_501()
             };
         }
         #endregion
