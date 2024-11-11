@@ -14,6 +14,7 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Controllers
@@ -60,9 +61,9 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]            // REASON: The notification was sent to "Notify NL" Web API service
-        [ProducesResponseType(StatusCodes.Status206PartialContent)]      // REASON: Test ping notification was received, serialization failed
-        [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]  // REASON: Some conditions predeceasing the request were not met
+        [ProducesResponseType(StatusCodes.Status202Accepted,           Type = typeof(BaseStandardResponseBody))]          // REASON: The notification was sent to "Notify NL" Web API service
+        [ProducesResponseType(StatusCodes.Status206PartialContent,     Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: Test ping notification was received, serialization failed
+        [ProducesResponseType(StatusCodes.Status412PreconditionFailed, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: Some conditions predeceasing the request were not met
         public async Task<IActionResult> ListenAsync([Required, FromBody] object json)
         {
             /* The validation of JSON payload structure and model-binding of [Required] properties are
