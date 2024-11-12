@@ -3,7 +3,6 @@
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
@@ -27,7 +26,6 @@ using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding;
-using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Serialization;
@@ -254,7 +252,7 @@ namespace EventsHandler
             // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
-            builder.Services.AddSingleton<IProcessingService<NotificationEvent>, NotifyProcessor>();
+            builder.Services.AddSingleton<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
@@ -404,11 +402,9 @@ namespace EventsHandler
             byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
                                                       .OMC.Feature.Workflow_Version();
 
-            // Implicit interface (Adapter) used by EventsController => check "IRespondingService<TModel>"
-            builder.Services.AddSingleton<IRespondingService<NotificationEvent>, OmcResponder>();
-
-            // Explicit interfaces (generic) used by other controllers => check "IRespondingService<TResult, TDetails>"
-            builder.Services.AddSingleton(typeof(IRespondingService<ProcessingResult, string>), DetermineResponderVersion(omvWorkflowVersion));
+            // TODO: Named interfaces
+            builder.Services.AddSingleton<OmcResponder>();
+            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(omvWorkflowVersion));
 
             return;
 

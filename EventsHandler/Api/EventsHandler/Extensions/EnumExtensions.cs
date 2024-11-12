@@ -53,23 +53,23 @@ namespace EventsHandler.Extensions
         }
 
         /// <summary>
-        /// Converts from <see cref="ProcessingResult"/> enum to <see cref="LogLevel"/> enum.
+        /// Converts from <see cref="ProcessingStatus"/> enum to <see cref="LogLevel"/> enum.
         /// </summary>
-        /// <param name="processingResult">The input enum of type A.</param>
+        /// <param name="processingStatus">The input enum of type A.</param>
         /// <returns>
         ///   The output enum of type B.
         /// </returns>
-        internal static LogLevel ConvertToLogLevel(this ProcessingResult processingResult)  // TODO: Missing code coverage
+        internal static LogLevel ConvertToLogLevel(this ProcessingStatus processingStatus)
         {
-            return processingResult switch
+            return processingStatus switch
             {
-                ProcessingResult.Success => LogLevel.Information,
+                ProcessingStatus.Success => LogLevel.Information,
 
-                ProcessingResult.Skipped or
-                ProcessingResult.Aborted => LogLevel.Warning,
+                ProcessingStatus.Skipped or
+                ProcessingStatus.Aborted => LogLevel.Warning,
 
-                ProcessingResult.NotPossible or
-                ProcessingResult.Failure => LogLevel.Error,
+                ProcessingStatus.NotPossible or
+                ProcessingStatus.Failure => LogLevel.Error,
                 _                        => LogLevel.None
             };
         }

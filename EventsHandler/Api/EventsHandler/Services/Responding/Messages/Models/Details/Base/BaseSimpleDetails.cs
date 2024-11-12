@@ -12,7 +12,6 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// <summary>
         /// The message containing a brief summary of the occurred situation.
         /// </summary>
-        [JsonPropertyName(nameof(Message))]
         [JsonPropertyOrder(0)]
         public string Message { get; internal set; } = string.Empty;
 
@@ -21,7 +20,10 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// </summary>
         protected BaseSimpleDetails() { }
 
+        /// <summary>
         /// <inheritdoc cref="BaseSimpleDetails()"/>
+        /// </summary>
+        /// <param name="message">The details message.</param>
         protected BaseSimpleDetails(string message)
         {
             this.Message = message;
@@ -37,6 +39,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleDetails"/> class.
         /// </summary>
+        /// <param name="message">The details message.</param>
         internal SimpleDetails(string message)
             : base(message)
         {
