@@ -36,7 +36,7 @@
 
         "OMC_FEATURE_WORKFLOW_VERSION": "1",
 
-        // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
+        // NOTE: In OMC Workflow v1 this will be used for OpenZaak, Besluiten, ContactMomenten, and OpenKlant 1, 
         "ZGW_AUTH_JWT_SECRET": "worthsys123",
         "ZGW_AUTH_JWT_ISSUER": "goc",
         "ZGW_AUTH_JWT_AUDIENCE": "",
@@ -105,7 +105,7 @@
 
         "OMC_FEATURE_WORKFLOW_VERSION": "2",
 
-        // NOTE: This will be still used for OpenZaak and OpenKlant 1.0 or only for OpenZaak 1.0 if OpenKlant 2.0 is used
+        // NOTE: In OMC Workflow v2 this will be used only for OpenZaak and Besluiten
         "ZGW_AUTH_JWT_SECRET": "worthsys123",
         "ZGW_AUTH_JWT_ISSUER": "goc",
         "ZGW_AUTH_JWT_AUDIENCE": "",
@@ -113,7 +113,7 @@
         "ZGW_AUTH_JWT_USERID": "fmolenaar@worth.systems",
         "ZGW_AUTH_JWT_USERNAME": "Frank Molenaar",
 
-        "ZGW_AUTH_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Not required if OMC Workflow v1 is used
+        "ZGW_AUTH_KEY_OPENKLANT": "b734934e83076d77b6b9b2e11ad21ae4196e66e1", // NOTE: Required if OMC Workflow v2 is used
         "ZGW_AUTH_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
         "ZGW_AUTH_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
 

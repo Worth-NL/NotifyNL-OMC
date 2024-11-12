@@ -61,6 +61,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} | {1} | Not standardized (unexpected) API response.
+        /// </summary>
+        internal static string API_Response_ERROR_UnspecifiedResponse {
+            get {
+                return ResourceManager.GetString("API_Response_ERROR_UnspecifiedResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | {1} | {2}.
+        /// </summary>
+        internal static string API_Response_STATUS_Logging {
+            get {
+                return ResourceManager.GetString("API_Response_STATUS_Logging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OMC.
         /// </summary>
         internal static string Application_Name {
@@ -133,7 +151,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings does not contain a given value, or the value is empty: {0}..
+        ///   Looks up a localized string similar to The settings do not contain a given value, or the value is empty: {0}..
         /// </summary>
         internal static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
@@ -214,7 +232,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following properties were missing in JSON but they are required..
+        ///   Looks up a localized string similar to The following properties were missing in JSON, but they are required..
         /// </summary>
         internal static string Deserialization_ERROR_CannotDeserialize_RequiredProperties {
             get {
@@ -664,7 +682,16 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification could not be recognized (deserialized)..
+        ///   Looks up a localized string similar to The access to the external Web API service is forbidden..
+        /// </summary>
+        internal static string Operation_ERROR_AccessDenied {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification could not be recognized/deserialized..
         /// </summary>
         internal static string Operation_ERROR_Deserialization_Failure {
             get {
@@ -673,7 +700,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bad request..
+        ///   Looks up a localized string similar to The HTTP request wasn&apos;t completed successfully..
         /// </summary>
         internal static string Operation_ERROR_HttpRequest_Failure {
             get {
@@ -772,7 +799,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was partially recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was partially recognized/deserialized..
         /// </summary>
         internal static string Operation_SUCCESS_Deserialization_Partial {
             get {
@@ -781,7 +808,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification was successfully recognized (deserialized)..
+        ///   Looks up a localized string similar to The notification was successfully recognized/deserialized..
         /// </summary>
         internal static string Operation_SUCCESS_Deserialization_Success {
             get {
@@ -880,6 +907,24 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Notify NL Exception | {0}.
+        /// </summary>
+        internal static string Processing_ERROR_Exception_Notify {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Exception_Notify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | {1}.
+        /// </summary>
+        internal static string Processing_ERROR_Exception_Unhandled {
+            get {
+                return ResourceManager.GetString("Processing_ERROR_Exception_Unhandled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to It wasn&apos;t possible to extract human-friendly error message.
         /// </summary>
         internal static string Processing_ERROR_ExecutingContext_UnknownErrorDetails {
@@ -916,7 +961,7 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
+        ///   Looks up a localized string similar to There was no possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless..
         /// </summary>
         internal static string Processing_ERROR_Scenario_MissingInfoObjectsURIs {
             get {
@@ -961,11 +1006,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not standardized (unexpected) API response.
+        ///   Looks up a localized string similar to {0} | Notification: {1}..
         /// </summary>
-        internal static string Processing_ERROR_UnspecifiedResponse {
+        internal static string Processing_STATUS_Notification {
             get {
-                return ResourceManager.GetString("Processing_ERROR_UnspecifiedResponse", resourceCulture);
+                return ResourceManager.GetString("Processing_STATUS_Notification", resourceCulture);
             }
         }
         
