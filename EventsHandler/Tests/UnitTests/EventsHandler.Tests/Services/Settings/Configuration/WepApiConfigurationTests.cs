@@ -78,34 +78,36 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 var omcConfiguration = s_testConfiguration.OMC;
 
                 // OMC | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Authorization.JWT);
-
-                // OMC | API | BaseUrl
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.API.BaseUrl);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Auth.JWT);
 
                 // OMC | Features
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Features);
+                TestConfigProperties(ref counter, methodNames, omcConfiguration.Feature);
                 
-                var userConfiguration = s_testConfiguration.User;
+                var zgwConfiguration = s_testConfiguration.ZGW;
 
-                // User | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, userConfiguration.Authorization.JWT);
+                // ZGW | Authorization | JWT
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
 
-                // User | API | Key
-                TestConfigProperties(ref counter, methodNames, userConfiguration.API.Key);
+                // ZGW | Key
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.Key);
 
-                // User | Domain
-                TestConfigProperties(ref counter, methodNames, userConfiguration.Domain);
+                // ZGW | Domain
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
 
-                // User | Templates (Email + SMS)
-                TestConfigProperties(ref counter, methodNames, userConfiguration.TemplateIds.Email);
-                TestConfigProperties(ref counter, methodNames, userConfiguration.TemplateIds.Sms);
+                // ZGW | Whitelist
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
 
-                // User | Whitelist
-                TestConfigProperties(ref counter, methodNames, userConfiguration.Whitelist);
+                // ZGW | Variables | Objecten
+                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
+                
+                var notifyConfiguration = s_testConfiguration.Notify;
 
-                // User | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, userConfiguration.Variables.Objecten);
+                // Notify | API
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.API);
+
+                // Notify | Templates (Email + SMS)
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
+                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
 
                 TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
                 TestContext.Out.Write($"Methods: {methodNames.Join()}");
@@ -135,28 +137,28 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
-            // Invalid: Not existing
-            yield return ("#1", () => s_testConfiguration!.User.API.Key.NotifyNL(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: ""
-            yield return ("#2", () => s_testConfiguration!.User.Domain.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
-            yield return ("#3", () => s_testConfiguration!.User.Domain.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#4", () => s_testConfiguration!.User.Domain.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
+            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#5", () => s_testConfiguration!.User.Domain.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
-            // Invalid: Empty
-            yield return ("#6", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: 8-4-(2-2)-4-12
-            yield return ("#8", () => s_testConfiguration!.User.TemplateIds.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
-            // Invalid: (9)-4-4-4-12
-            yield return ("#9", () => s_testConfiguration!.User.TemplateIds.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
-            // Invalid: Special characters
-            yield return ("#10", () => s_testConfiguration!.User.TemplateIds.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), Resources.Configuration_ERROR_ContainsHttp);
             // Invalid: Default URI
-            yield return ("#11", () => s_testConfiguration!.OMC.API.BaseUrl.NotifyNL(), Resources.Configuration_ERROR_InvalidUri);
+            yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), Resources.Configuration_ERROR_InvalidUri);
+            // Invalid: Not existing
+            yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: Empty
+            yield return ("#7", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakCreate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: Empty
+            yield return ("#8", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakUpdate(), Resources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            // Invalid: 8-4-(2-2)-4-12
+            yield return ("#9", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakClose(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: (9)-4-4-4-12
+            yield return ("#10", () => s_testConfiguration!.Notify.TemplateId.Sms.TaskAssigned(), Resources.Configuration_ERROR_InvalidTemplateId);
+            // Invalid: Special characters
+            yield return ("#11", () => s_testConfiguration!.Notify.TemplateId.Sms.MessageReceived(), Resources.Configuration_ERROR_InvalidTemplateId);
         }
 
         [TestCase("1", true)]
@@ -169,7 +171,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
 
             // Act
-            var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
+            var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
             bool isAllowed = whitelistedIDs.IsAllowed(caseId);
 
             // Assert
@@ -187,7 +189,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
 
             // Act
-            var whitelistedIDs = s_testConfiguration.User.Whitelist.ZaakCreate_IDs();
+            var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
             bool isAllowed = whitelistedIDs.IsAllowed("1");
 
             // Assert
@@ -205,12 +207,12 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
 
             // Act
-            string openKlantApiKey = configuration.User.API.Key.OpenKlant();
+            string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(1));
+                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(1));
                 Assert.That(openKlantApiKey, Is.Empty);
             });
         }
@@ -224,10 +226,10 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Act & Assert
             Assert.Multiple(() =>
             {
-                Assert.That(configuration.OMC.Features.Workflow_Version(), Is.EqualTo(2));
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.User.API.Key.OpenKlant());
+                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(2));
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
-                    .Replace("{0}", "USER_API_KEY_OPENKLANT")));
+                    .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));
             });
         }
         #endregion

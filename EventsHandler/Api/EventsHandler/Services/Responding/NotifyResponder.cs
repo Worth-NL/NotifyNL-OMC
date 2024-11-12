@@ -6,18 +6,23 @@ using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Errors;
+using EventsHandler.Services.Responding.Messages.Models.Errors.Specific;
+using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Extensions;
 using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace EventsHandler.Services.Responding
 {
-    /// <inheritdoc cref="IRespondingService{TResult, TDetails}"/>
-    public abstract partial class NotifyResponder : IRespondingService<ProcessingStatus, string>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    /// <inheritdoc cref="IRespondingService{TResult}"/>
+    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <inheritdoc cref="ISerializationService"/>
         protected ISerializationService Serializer { get; }
@@ -99,7 +104,7 @@ namespace EventsHandler.Services.Responding
                         message = match.Value;
 
                         // NOTE: This specific error message is inconsistently returned from Notify .NET client with 403 Forbidden status code (unlike others - with 400 BadRequest code)
-                        return ObjectResultExtensions.AsResult_403(message);
+                        return new ProcessingFailed.Simplified(HttpStatusCode.Forbidden, ProcessingResult.Failure(message)).AsResult_403();
                     }
 
                     // HttpStatus Code: 400 BadRequest
@@ -134,11 +139,11 @@ namespace EventsHandler.Services.Responding
 
                 // NOTE: Authorization issues wrapped around 403 Forbidden status code
                 case NotifyAuthException:
-                    return ObjectResultExtensions.AsResult_403(exception.Message);
+                    return new Forbidden.Simplified(ProcessingResult.Failure(exception.Message)).AsResult_403();
 
                 // NOTE: Unexpected issues wrapped around 500 Internal Server Error status code
                 default:
-                    return ObjectResultExtensions.AsResult_500(exception.Message);
+                    return new InternalError.Simplified(ProcessingResult.Failure(exception.Message)).AsResult_500();
             }
         }
 
@@ -158,7 +163,7 @@ namespace EventsHandler.Services.Responding
             }
 
             // HttpStatus Code: 400 BadRequest
-            return ObjectResultExtensions.AsResult_400(message ?? errorMessage);
+            return new BadRequest.Simplified(ProcessingResult.Failure(message ?? errorMessage)).AsResult_400();
         }
 
         /// <inheritdoc cref="IRespondingService.GetExceptionResponse(ResultExecutingContext, IDictionary{string, string[]})"/>
@@ -197,20 +202,20 @@ namespace EventsHandler.Services.Responding
         }
         #endregion
 
-        #region IRespondingService<TResult, TDetails>
-        /// <inheritdoc cref="IRespondingService{TResult, TDetails}.GetResponse(TResult, TDetails)"/>
-        ObjectResult IRespondingService<ProcessingStatus, string>.GetResponse(ProcessingStatus status, string details)
+        #region IRespondingService<TResult>
+        /// <inheritdoc cref="IRespondingService{TResult}.GetResponse(TResult)"/>
+        ObjectResult IRespondingService<ProcessingResult>.GetResponse(ProcessingResult result)
         {
-            return status switch
+            return result.Status switch
             {
                 // HttpStatus Code: 202 Accepted
-                ProcessingStatus.Success => ObjectResultExtensions.AsResult_202(details),
+                ProcessingStatus.Success => new ProcessingSucceeded(result).AsResult_202(),
 
                 // HttpStatus Code: 400 BadRequest
-                ProcessingStatus.Failure => ((IRespondingService)this).GetExceptionResponse(details),
+                ProcessingStatus.Failure => ((IRespondingService)this).GetExceptionResponse(result.Description),
 
                 // HttpStatus Code: 501 Not Implemented
-                _ => ObjectResultExtensions.AsResult_501()
+                _ => new NotImplemented().AsResult_501()
             };
         }
         #endregion

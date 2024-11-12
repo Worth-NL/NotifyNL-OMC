@@ -26,7 +26,12 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
         /// </summary>
         public InfoDetails() { }  // NOTE: Used in generic constraints and by object initializer syntax
 
+        /// <summary>
         /// <inheritdoc cref="InfoDetails()"/>
+        /// </summary>
+        /// <param name="message">The details message.</param>
+        /// <param name="cases">The cases included in details.</param>
+        /// <param name="reasons">The reasons of occurred cases.</param>
         internal InfoDetails(string message, string cases, string[] reasons)
             : base(message, cases, reasons)
         {

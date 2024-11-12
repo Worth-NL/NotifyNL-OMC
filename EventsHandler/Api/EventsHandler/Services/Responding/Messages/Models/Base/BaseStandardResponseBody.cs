@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using System.Net;
 using System.Text.Json.Serialization;
 
@@ -10,42 +11,48 @@ namespace EventsHandler.Services.Responding.Messages.Models.Base
     /// </summary>
     internal abstract record BaseStandardResponseBody
     {
-        [JsonPropertyName("Status code")]
         [JsonPropertyOrder(0)]
         public HttpStatusCode StatusCode { get; }
 
-        [JsonPropertyName("Status description")]
         [JsonPropertyOrder(1)]
         public string StatusDescription { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseStandardResponseBody"/> class.
         /// </summary>
-        protected BaseStandardResponseBody(HttpStatusCode statusCode, string statusDescription)
+        /// <param name="statusCode">The HTTP Status Code.</param>
+        /// <param name="description">The status description.</param>
+        protected BaseStandardResponseBody(HttpStatusCode statusCode, string description)
         {
             this.StatusCode = statusCode;
-            this.StatusDescription = statusDescription;
+            this.StatusDescription = description;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="BaseStandardResponseBody(HttpStatusCode, string)"/>
+        /// </summary>
+        /// <param name="statusCode">The HTTP Status Code.</param>
+        /// <param name="description">The status description.</param>
+        /// <param name="result">The processing result.</param>
+        protected BaseStandardResponseBody(HttpStatusCode statusCode, string description, ProcessingResult result)
+            : this(statusCode, $"{description} | {result.Description}")
+        {
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="BaseStandardResponseBody(HttpStatusCode, string)"/>
+        /// </summary>
+        /// <param name="statusCode">The HTTP Status Code.</param>
+        /// <param name="result">The processing result.</param>
+        protected BaseStandardResponseBody(HttpStatusCode statusCode, ProcessingResult result)
+            : this(statusCode, result.Description)
+        {
         }
 
         /// <inheritdoc cref="object.ToString()"/>
         public override string ToString()
         {
-            return StatusDescription;
-        }
-    }
-
-    /// <summary>
-    /// Concrete implementation of <see cref="BaseStandardResponseBody"/> allowing to initialize all properties manually.
-    /// </summary>
-    /// <seealso cref="BaseStandardResponseBody"/>
-    internal sealed record StandardResponseBody : BaseStandardResponseBody
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StandardResponseBody"/> class.
-        /// </summary>
-        internal StandardResponseBody(HttpStatusCode statusCode, string statusDescription)
-            : base(statusCode, statusDescription)
-        {
+            return $"{(int)this.StatusCode} {this.StatusCode} | {this.StatusDescription}";  // EXAMPLE: "202 Accepted | Operation successful."
         }
     }
 }

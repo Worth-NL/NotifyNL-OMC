@@ -56,31 +56,8 @@ namespace EventsHandler.Services.Responding.Interfaces
         /// Gets standardized <see cref="IActionResult"/> based on the received generic <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="result">
-        ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TResult']"/>
+        ///   <inheritdoc cref="IRespondingService{TResult}" path="/typeparam[@name='TResult']"/>
         /// </param>
         internal ObjectResult GetResponse(TResult result);
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="IRespondingService"/>
-    /// <para>
-    ///   Specialized in processing generic <typeparamref name="TResult"/> and <typeparamref name="TDetails"/>.
-    /// </para>
-    /// </summary>
-    /// <typeparam name="TResult">The generic type of the processing result.</typeparam>
-    /// <typeparam name="TDetails">The more insightful details about the processing outcome.</typeparam>
-    /// <seealso cref="IRespondingService"/>
-    public interface IRespondingService<in TResult, in TDetails> : IRespondingService
-    {
-        /// <summary>
-        /// Gets standardized <see cref="IActionResult"/> based on the received generic <typeparamref name="TResult"/> and <typeparamref name="TDetails"/>.
-        /// </summary>
-        /// <param name="result">
-        ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TResult']"/>
-        /// </param>
-        /// <param name="details">
-        ///   <inheritdoc cref="IRespondingService{TResult, TDetails}" path="/typeparam[@name='TDetails']"/>
-        /// </param>
-        internal ObjectResult GetResponse(TResult result, TDetails details);
     }
 }

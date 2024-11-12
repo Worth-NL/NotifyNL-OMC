@@ -2,11 +2,11 @@
 
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Enums.v2;
@@ -21,11 +21,11 @@ namespace EventsHandler.Services.Responding.v1
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
-    /// <seealso cref="IRespondingService{TResult, TDetails}"/>
+    /// <seealso cref="IRespondingService{TResult}"/>
     internal sealed class NotifyCallbackResponder : NotifyResponder
     {
         private readonly WebApiConfiguration _configuration;
-        private readonly IRespondingService<ProcessingStatus, string> _responder;
+        private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace EventsHandler.Services.Responding.v1
 
                     // Positive status was returned by Notify NL
                     ? OmcController.LogApiResponse(LogLevel.Information,
-                        this._responder.GetResponse(ProcessingStatus.Success, GetDeliveryStatusLogMessage(callback)))
+                        this._responder.GetResponse(ProcessingResult.Success(GetDeliveryStatusLogMessage(callback))))
 
                     // Failure status was returned by Notify NL
                     : OmcController.LogApiResponse(LogLevel.Error,
-                        this._responder.GetResponse(ProcessingStatus.Failure, GetDeliveryStatusLogMessage(callback)));
+                        this._responder.GetResponse(ProcessingResult.Failure(GetDeliveryStatusLogMessage(callback))));
             }
             catch (Exception exception)
             {
