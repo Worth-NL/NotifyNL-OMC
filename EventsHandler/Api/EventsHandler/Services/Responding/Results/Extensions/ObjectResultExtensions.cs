@@ -192,7 +192,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         /// Trims the missing details.
         /// </summary>
         /// <param name="details">The enhanced details.</param>
-        private static BaseSimpleDetails Trim(this BaseEnhancedDetails details)
+        private static SimpleDetails Trim(this BaseEnhancedDetails details)
         {
             // Details without Cases and Reasons
             return new SimpleDetails(details.Message);

@@ -200,7 +200,7 @@ namespace EventsHandler.UnitTests.Services.DataSending
         #endregion
 
         #region Setup
-        private static INotifyService<NotifyData> GetTestSendingService(
+        private static NotifyService GetTestSendingService(
             Mock<INotifyClient>? mockedClient = null)
         {
             var mockedClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);

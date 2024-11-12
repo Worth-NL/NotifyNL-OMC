@@ -111,7 +111,7 @@ namespace EventsHandler.Services.Serialization
             }
         }
 
-        private static IEnumerable<string> GetRequiredPropertiesNames(IReflect type, string parentName = QuotationMark)
+        private static IEnumerable<string> GetRequiredPropertiesNames(Type type, string parentName = QuotationMark)
         {
             IEnumerable<PropertyInfo> requiredProperties = type
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)

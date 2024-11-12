@@ -335,7 +335,7 @@ namespace EventsHandler.Controllers
             }
         }
 
-        private static bool IsEmptyOrDefault(IReadOnlyDictionary<string, object> personalization)
+        private static bool IsEmptyOrDefault(Dictionary<string, object> personalization)
         {
             return personalization.Count <= 1 &&
                    personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&

@@ -25,12 +25,12 @@ namespace EventsHandler.Mapping.Helpers
         /// <summary>
         /// Gets the pair of names English => (index, Dutch).
         /// </summary>
-        private IDictionary<string, (int Index, string DutchName)> English_To_Dutch { get; }
+        private Dictionary<string, (int Index, string DutchName)> English_To_Dutch { get; }
 
         /// <summary>
         /// Gets the pair of names Dutch => (index, English).
         /// </summary>
-        private IDictionary<string, (int Index, string EnglishName)> Dutch_To_English { get; }
+        private Dictionary<string, (int Index, string EnglishName)> Dutch_To_English { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertiesMetadata"/> class.
@@ -57,7 +57,7 @@ namespace EventsHandler.Mapping.Helpers
         /// <summary>
         /// Retrieves the instance public properties from a specified <see cref="Type"/>.
         /// </summary>
-        private static IEnumerable<PropertyInfo> GetPublicInstanceProperties(object instance)
+        private static PropertyInfo[] GetPublicInstanceProperties(object instance)
         {
             return instance.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
         }
