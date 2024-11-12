@@ -4,7 +4,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using System.Net;
 
-namespace EventsHandler.Services.Responding.Messages.Models.Errors
+namespace EventsHandler.Services.Responding.Messages.Models.Errors.Specific
 {
     /// <summary>
     /// The operation is not implemented.
