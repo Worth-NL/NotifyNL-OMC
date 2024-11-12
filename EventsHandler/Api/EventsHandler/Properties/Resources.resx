@@ -215,19 +215,23 @@
     <comment>HTTP Status Code = 500</comment>
   </data>
   <data name="Operation_ERROR_Deserialization_Failure" xml:space="preserve">
-    <value>The notification could not be recognized (deserialized).</value>
+    <value>The notification could not be recognized/deserialized.</value>
     <comment>HTTP Status Code = 406</comment>
   </data>
   <data name="Operation_SUCCESS_Deserialization_Partial" xml:space="preserve">
-    <value>The notification was partially recognized (deserialized).</value>
+    <value>The notification was partially recognized/deserialized.</value>
     <comment>HTTP Status Code = 206</comment>
   </data>
   <data name="Operation_SUCCESS_Deserialization_Success" xml:space="preserve">
-    <value>The notification was successfully recognized (deserialized).</value>
+    <value>The notification was successfully recognized/deserialized.</value>
     <comment>HTTP Status Code = 200</comment>
   </data>
+  <data name="Operation_ERROR_AccessDenied" xml:space="preserve">
+    <value>The access to the external Web API service is forbidden.</value>
+    <comment>HTTP Status Code = 403</comment>
+  </data>
   <data name="Operation_ERROR_HttpRequest_Failure" xml:space="preserve">
-    <value>Bad request.</value>
+    <value>The HTTP request wasn't completed successfully.</value>
     <comment>HTTP Status Code = 400</comment>
   </data>
   <data name="Operation_ERROR_NotImplemented" xml:space="preserve">
@@ -250,7 +254,7 @@
   </data>
   <data name="Processing_ERROR_Scenario_NotificationNotSent" xml:space="preserve">
     <value>The notification has not been sent to Notify NL: {0}.</value>
-    <comment>{0} = Error Message</comment>
+    <comment>{0} = Error message</comment>
   </data>
   <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
     <value>It was not possible to determine what to do with the received notification.</value>
@@ -285,7 +289,7 @@
     <comment>{0} = The template GUID that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
-    <value>The settings does not contain a given value, or the value is empty: {0}.</value>
+    <value>The settings do not contain a given value, or the value is empty: {0}.</value>
     <comment>{0} = Name of the environment variable holding this value</comment>
   </data>
   <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
@@ -329,13 +333,14 @@
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
     <value>The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}</value>
-    <comment>{0} = The model used as target for deserialzation, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
+    <comment>{0} = The model used as target for deserialization, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
   </data>
   <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
     <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
   </data>
-  <data name="Processing_ERROR_UnspecifiedResponse" xml:space="preserve">
-    <value>Not standardized (unexpected) API response</value>
+  <data name="API_Response_ERROR_UnspecifiedResponse" xml:space="preserve">
+    <value>{0} | {1} | Not standardized (unexpected) API response</value>
+    <comment>{0} = HTTP Status Code, {1} = Name of ObjectResult type</comment>
   </data>
   <data name="Configuration_ERROR_Loader_NotSet" xml:space="preserve">
     <value>It was not possible to retrieve any data provider. The loading service might not be set.</value>
@@ -453,7 +458,7 @@
     <value>The notification data were processed successfully by the selected notification scenario.</value>
   </data>
   <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
-    <value>There was not possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
+    <value>There was no possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
   </data>
   <data name="Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden" xml:space="preserve">
     <value>The notification can not be sent because processing messages is forbidden (set to 'false') in the: {0}.</value>
@@ -489,6 +494,22 @@
     <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
   </data>
   <data name="Deserialization_ERROR_CannotDeserialize_RequiredProperties" xml:space="preserve">
-    <value>The following properties were missing in JSON but they are required.</value>
+    <value>The following properties were missing in JSON, but they are required.</value>
+  </data>
+  <data name="Processing_ERROR_Exception_Notify" xml:space="preserve">
+    <value>Notify NL Exception | {0}</value>
+    <comment>{0} = Exception message</comment>
+  </data>
+  <data name="Processing_ERROR_Exception_Unhandled" xml:space="preserve">
+    <value>{0} | {1}</value>
+    <comment>{0} = Name of exception type, {1} = Exception message</comment>
+  </data>
+  <data name="Processing_STATUS_Notification" xml:space="preserve">
+    <value>{0} | Notification: {1}.</value>
+    <comment>{0} = Description of the result, {1} = The initial notification JSON</comment>
+  </data>
+  <data name="API_Response_STATUS_Logging" xml:space="preserve">
+    <value>{0} | {1} | {2}</value>
+    <comment>{0} = Application name, {1} = Log level, {2} = Log message</comment>
   </data>
 </root>

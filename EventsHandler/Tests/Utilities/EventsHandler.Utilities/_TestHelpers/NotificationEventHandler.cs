@@ -37,7 +37,20 @@ namespace EventsHandler.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Test)
-        internal static NotificationEvent GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated()
+        internal static NotificationEvent GetNotification_Test_Ping()
+        {
+            var testUri = new Uri("http://some.hoofdobject.nl/");
+            
+            return new NotificationEvent
+            {
+                Channel = Channels.Unknown,
+                Resource = Resources.Unknown,
+                MainObjectUri = testUri,
+                ResourceUri = testUri
+            };
+        }
+
+        internal static NotificationEvent GetNotification_Test_EmptyAttributes_WithOrphans()
         {
             // CASE #1: Manual creation of NotificationEvent
             NotificationEvent testNotification = new()
@@ -118,7 +131,7 @@ namespace EventsHandler.Utilities._TestHelpers
             return jsonPayload;
         }
 
-        internal static NotificationEvent GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization_ManuallyCreated()
+        internal static NotificationEvent GetNotification_Test_EmptyAttributes_With_Channel_And_SourceOrganization()
         {
             return new NotificationEvent
             {
@@ -130,9 +143,9 @@ namespace EventsHandler.Utilities._TestHelpers
             };
         }
 
-        internal static NotificationEvent GetNotification_Test_WithMixed_RegularAndOrphans_Properties_ManuallyCreated()
+        internal static NotificationEvent GetNotification_Test_WithMixed_RegularAndOrphans_Properties()
         {
-            NotificationEvent mixedNotification = GetNotification_Test_EmptyAttributes_WithOrphans_ManuallyCreated();
+            NotificationEvent mixedNotification = GetNotification_Test_EmptyAttributes_WithOrphans();
 
             // Update attributes
             EventAttributes updatedAttributes = mixedNotification.Attributes;
@@ -247,6 +260,7 @@ namespace EventsHandler.Utilities._TestHelpers
         }
         #endregion
 
+        #region Helper methods
         internal static string GetOrphanSecondValue()
         {
             return Orphan_Test_Value_2.ToString().ToLower();
@@ -256,5 +270,11 @@ namespace EventsHandler.Utilities._TestHelpers
         {
             return JsonSerializer.Deserialize<NotificationEvent>(jsonPayload);
         }
+
+        internal static string Serialized(this NotificationEvent notification)
+        {
+            return JsonSerializer.Serialize(notification);
+        }
+        #endregion
     }
 }

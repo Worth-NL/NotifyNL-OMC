@@ -2,6 +2,7 @@
 
 using Asp.Versioning;
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,10 @@ namespace EventsHandler.Controllers.Base
     [Consumes(DefaultValues.Request.ContentType)]
     [Produces(DefaultValues.Request.ContentType)]
     // Swagger UI
-    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]  // REASON: JWT Token is invalid or expired
+    [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The HTTP Request wasn't successful
+    [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]          // REASON: Unexpected internal error
+    [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(BaseStandardResponseBody))]          // REASON: Something is not implemented
     public abstract class OmcController : Controller
     {
         /// <summary>
@@ -68,7 +72,9 @@ namespace EventsHandler.Controllers.Base
         /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
         internal static void LogMessage(LogLevel logLevel, string logMessage)
         {
-            _ = SentrySdk.CaptureMessage($"{Resources.Application_Name} | {logLevel:G} | {logMessage}", s_logMapping[logLevel]);
+            _ = SentrySdk.CaptureMessage(
+                    message: string.Format(Resources.API_Response_STATUS_Logging, Resources.Application_Name, logLevel.GetEnumName(), logMessage),
+                    level: s_logMapping[logLevel]);
         }
 
         /// <inheritdoc cref="SentrySdk.CaptureException(Exception)"/>
@@ -81,6 +87,12 @@ namespace EventsHandler.Controllers.Base
         #region Helper methods
         /// <summary>
         /// Determines the log message based on the received <see cref="ObjectResult"/>.
+        /// <para>
+        ///   The format:
+        ///   <code>
+        ///     HTTP Status Code | Description | Message (optional) | Cases (optional)
+        ///   </code>
+        /// </para>
         /// </summary>
         private static string DetermineResultMessage(ObjectResult objectResult)
         {
@@ -94,7 +106,7 @@ namespace EventsHandler.Controllers.Base
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 
                 // Unknown object result
-                _ => $"{Resources.Processing_ERROR_UnspecifiedResponse} | {objectResult.StatusCode} | {nameof(objectResult.Value)}"
+                _ => string.Format(Resources.API_Response_ERROR_UnspecifiedResponse, objectResult.StatusCode, $"The response type {nameof(objectResult.Value)}")
             };
         }
         #endregion
