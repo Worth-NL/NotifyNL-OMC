@@ -474,7 +474,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Setup
-        private INotifyScenario ArrangeTaskScenario_TryGetData(
+        private TaskAssignedScenario ArrangeTaskScenario_TryGetData(
             DistributionChannels testDistributionChannel, CommonTaskData testTask, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
         {
             // IQueryContext
@@ -529,7 +529,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
-        private INotifyScenario ArrangeTaskScenario_ProcessData(
+        private TaskAssignedScenario ArrangeTaskScenario_ProcessData(
             bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {
             // IDataQueryService

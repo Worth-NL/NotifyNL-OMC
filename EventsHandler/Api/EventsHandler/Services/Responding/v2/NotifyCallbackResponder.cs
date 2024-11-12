@@ -88,7 +88,7 @@ namespace EventsHandler.Services.Responding.v2
             ]);
         }
 
-        private IActionResult LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        private ObjectResult LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
             try
             {

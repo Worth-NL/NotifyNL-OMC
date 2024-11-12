@@ -268,7 +268,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 : ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.InvalidEnvironment_v1);
         }
 
-        private INotifyScenario ArrangeMessageScenario_TryGetData(
+        private MessageReceivedScenario ArrangeMessageScenario_TryGetData(
             WebApiConfiguration configuration, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
@@ -301,7 +301,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
-        private INotifyScenario ArrangeMessageScenario_ProcessData(
+        private TaskAssignedScenario ArrangeMessageScenario_ProcessData(
             WebApiConfiguration configuration, bool isSendingSuccessful,
             NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {

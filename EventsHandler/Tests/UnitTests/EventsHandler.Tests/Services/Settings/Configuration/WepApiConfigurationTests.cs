@@ -233,7 +233,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         #endregion
 
         #region Helper methods
-        private static void TestConfigProperties(ref int counter, ICollection<string> methodNames, object instance, bool isRecursionEnabled = true)
+        private static void TestConfigProperties(ref int counter, List<string> methodNames, object instance, bool isRecursionEnabled = true)
         {
             const string variableTestErrorMessage =
                 $"Most likely the setting or environment variable name was changed in {nameof(WebApiConfiguration)} but not adjusted in {nameof(ConfigurationHandler)}.";
@@ -247,7 +247,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             }
         }
 
-        private static IEnumerable<MethodInfo> GetConfigMethods(IReflect currentType, bool isRecursionEnabled)
+        private static IEnumerable<MethodInfo> GetConfigMethods(Type currentType, bool isRecursionEnabled)
         {
             IEnumerable<MemberInfo> members = currentType
                 .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)

@@ -468,7 +468,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #endregion
 
         #region Setup
-        private INotifyScenario ArrangeDecisionScenario_TryGetData(
+        private DecisionMadeScenario ArrangeDecisionScenario_TryGetData(
             InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
@@ -553,7 +553,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         private static readonly Uri s_fourthDocumentObjectUri = new($"https://www.test4.nl/{new Guid()}");
         private static readonly Uri s_fifthDocumentObjectUri = new($"https://www.test5.nl/{new Guid()}");
 
-        private INotifyScenario ArrangeDecisionScenario_ProcessData(bool isGenerateSuccessful, bool hasValidUris, bool isCreationSuccessful)
+        private DecisionMadeScenario ArrangeDecisionScenario_ProcessData(bool isGenerateSuccessful, bool hasValidUris, bool isCreationSuccessful)
         {
             // INotifyService
             this._mockedNotifyService
@@ -610,7 +610,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
             return new DecisionMadeScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
-        private static IReadOnlyCollection<NotifyData> GetNotifyData(Dictionary<string, object>? personalization = null)
+        private static NotifyData[] GetNotifyData(Dictionary<string, object>? personalization = null)
         {
             return
             [
