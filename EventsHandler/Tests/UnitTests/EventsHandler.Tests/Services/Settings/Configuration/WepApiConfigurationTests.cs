@@ -125,7 +125,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);
 
                 string expectedFullMessage = test.ExpectedErrorMessage;
-                int leftCurlyBracketIndex = expectedFullMessage.IndexOf("{", StringComparison.Ordinal);
+                int leftCurlyBracketIndex = expectedFullMessage.IndexOf('{', StringComparison.Ordinal);
                 string expectedTrimmedMessage = expectedFullMessage[..leftCurlyBracketIndex];
 
                 Assert.That(exception?.Message.StartsWith(expectedTrimmedMessage), Is.True,
