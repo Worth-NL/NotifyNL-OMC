@@ -62,7 +62,7 @@ namespace EventsHandler.Services.Responding.Results.Extensions
         internal static ObjectResult AsResult_400(this BaseEnhancedDetails errorDetails)
         {
             return errorDetails.Cases.IsNotNullOrEmpty() &&  // NOTE: Not enough details
-                   errorDetails.Reasons.Any()
+                   errorDetails.Reasons.HasAny()
                 ? new HttpRequestFailed.Detailed(errorDetails).AsResult_400()
                 : new HttpRequestFailed.Simplified(errorDetails.Trim()).AsResult_400();
         }
