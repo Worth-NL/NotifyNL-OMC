@@ -2,10 +2,9 @@
 
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -32,9 +31,9 @@ namespace EventsHandler.Attributes.Validation
         static StandardizeApiResponsesAttribute()
         {
             // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
-            s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(IRespondingService<NotificationEvent>));
-            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(IRespondingService<ProcessingStatus, string>));
-            s_mappedControllersToResponders.TryAdd(typeof(TestController), typeof(IRespondingService<ProcessingResult>));
+            s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(OmcResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(NotifyResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(TestController), typeof(NotifyResponder));
         }
 
         /// <summary>

@@ -64,7 +64,7 @@ namespace EventsHandler.Services.Versioning
             /* {0} */ Resources.Application_Name,
             /* {1} */ DefaultValues.ApiController.Version,
             /* {2} */ Environment.GetEnvironmentVariable(DefaultValues.EnvironmentVariables.AspNetCoreEnvironment),
-            /* {3} */ this._configuration.OMC.Features.Workflow_Version(),
+            /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
             /* {4} */ componentsVersions);
         }
     }

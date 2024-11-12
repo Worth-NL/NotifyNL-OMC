@@ -7,13 +7,14 @@ using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Errors;
 using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Controllers
@@ -37,7 +38,7 @@ namespace EventsHandler.Controllers
         /// <param name="register">The register of versioned services.</param>
         public EventsController(
             IProcessingService processor,
-            IRespondingService<ProcessingResult> responder,
+            OmcResponder responder,
             IVersionsRegister register)
         {
             this._processor = processor;
@@ -60,12 +61,9 @@ namespace EventsHandler.Controllers
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
-        [ProducesResponseType(StatusCodes.Status202Accepted)]                                                       // REASON: The notification was valid, and it was successfully sent to "Notify NL" Web API service
-        [ProducesResponseType(StatusCodes.Status206PartialContent)]                                                 // REASON: The notification was not sent (e.g., "test" ping received or scenario is not yet implemented. No need to retry sending it)
-        [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(ProcessingFailed.Detailed))]  // REASON: The notification was not sent (e.g., it was invalid due to missing data or improper structure. Retry sending is required)
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Input deserialization error (e.g. model binding of required properties)
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProcessingFailed.Detailed))]  // REASON: Internal server error (if-else / try-catch-finally handle)
-        [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(string))]                     // REASON: Operation is not implemented (a new case is not yet supported)
+        [ProducesResponseType(StatusCodes.Status202Accepted,           Type = typeof(BaseStandardResponseBody))]          // REASON: The notification was sent to "Notify NL" Web API service
+        [ProducesResponseType(StatusCodes.Status206PartialContent,     Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: Test ping notification was received, serialization failed
+        [ProducesResponseType(StatusCodes.Status412PreconditionFailed, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: Some conditions predeceasing the request were not met
         public async Task<IActionResult> ListenAsync([Required, FromBody] object json)
         {
             /* The validation of JSON payload structure and model-binding of [Required] properties are
@@ -98,7 +96,7 @@ namespace EventsHandler.Controllers
         // User experience
         [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         public IActionResult Version()
         {
             LogApiResponse(LogLevel.Trace, Resources.Events_ApiVersionRequested);
