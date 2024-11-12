@@ -216,4 +216,5 @@ dotnet_style_qualification_for_event = false:silent
 dotnet_diagnostic.CS8625.severity = error
 dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.IDE0079.severity = none
+dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.IDE0305.severity = none
