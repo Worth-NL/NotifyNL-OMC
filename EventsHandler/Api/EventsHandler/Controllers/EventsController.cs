@@ -9,12 +9,12 @@ using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
+using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using Resources = EventsHandler.Properties.Resources;
 
 namespace EventsHandler.Controllers
