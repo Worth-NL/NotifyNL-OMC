@@ -47,7 +47,7 @@ namespace EventsHandler.UnitTests.Extensions
             string actualResult = date.ConvertToDutchDateString();
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("31-12-2024"));  // NOTE: UTC time is behind the local Dutch time
+            Assert.That(actualResult, Is.EqualTo("31-12-2024"));
         }
     }
 }
