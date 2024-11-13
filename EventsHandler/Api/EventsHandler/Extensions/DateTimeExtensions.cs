@@ -32,7 +32,15 @@ namespace EventsHandler.Extensions
             // Formatting the date and time
             return dateTime.ToString(DutchDateFormat, s_dutchCulture);
         }
-
+        
+        /// <summary>
+        /// Converts the given <see cref="DateOnly"/> into a <see langword="string"/> representation of the local (Dutch) date.
+        /// </summary>
+        /// <param name="date">The source date.</param>
+        /// <returns>
+        ///   The <see langword="string"/> representation of a date in the following format:
+        ///   <code>15-09-2024</code>
+        /// </returns>
         internal static string ConvertToDutchDateString(this DateOnly date)
         {
             // Formatting the date and time
