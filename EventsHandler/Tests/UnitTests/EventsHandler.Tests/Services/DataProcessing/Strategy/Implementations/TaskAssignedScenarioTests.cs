@@ -323,14 +323,14 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         #region GetPersonalizationAsync()
         // Person
         [TestCase(DistributionChannels.Email, IdTypes.Bsn, false, "-", "no")]
-        [TestCase(DistributionChannels.Email, IdTypes.Bsn, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Email, IdTypes.Bsn, true, "24-07-2024", "yes")]
         [TestCase(DistributionChannels.Sms, IdTypes.Bsn, false, "-", "no")]
-        [TestCase(DistributionChannels.Sms, IdTypes.Bsn, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Bsn, true, "24-07-2024", "yes")]
         // Organization
         [TestCase(DistributionChannels.Email, IdTypes.Kvk, false, "-", "no")]
-        [TestCase(DistributionChannels.Email, IdTypes.Kvk, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Email, IdTypes.Kvk, true, "24-07-2024", "yes")]
         [TestCase(DistributionChannels.Sms, IdTypes.Kvk, false, "-", "no")]
-        [TestCase(DistributionChannels.Sms, IdTypes.Kvk, true, "2024-07-24", "yes")]
+        [TestCase(DistributionChannels.Sms, IdTypes.Kvk, true, "24-07-2024", "yes")]
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, IdTypes idType, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
