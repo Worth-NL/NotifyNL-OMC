@@ -129,7 +129,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             => this.Configuration.Notify.TemplateId.DecisionMade();  // NOTE: Decision has only one template
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)

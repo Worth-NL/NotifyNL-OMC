@@ -20,7 +20,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// The list of reasons that might be responsible for the occurred situation.
         /// </summary>
         [JsonPropertyOrder(2)]
-        public string[] Reasons { get; internal set; } = Array.Empty<string>();
+        public string[] Reasons { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseEnhancedDetails"/> class.
@@ -52,7 +52,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details.Base
         /// </summary>
         /// <param name="details">The details.</param>
         internal EnhancedDetails(BaseSimpleDetails details)
-            : base(details.Message, string.Empty, Array.Empty<string>())
+            : base(details.Message, string.Empty, [])
         {
         }
     }
