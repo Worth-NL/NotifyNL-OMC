@@ -19,9 +19,9 @@ namespace EventsHandler.UnitTests.Extensions
 
         private static IEnumerable<(string Id, DateTime DateTime, string ExpectedResult)> GetDateTimeCases()
         {
-            yield return ("#1", DateTime.MinValue, "0001-01-01");
-            yield return ("#2", DateTime.MaxValue, "9999-12-31");
-            yield return ("#3", new DateTime(2024, 09, 19, 14, 10, 00), "2024-09-19");
+            yield return ("#1", DateTime.MinValue, "01-01-0001");
+            yield return ("#2", DateTime.MaxValue, "31-12-9999");
+            yield return ("#3", new DateTime(2024, 09, 19, 14, 10, 00), "19-09-2024");
         }
 
         [Test]
@@ -34,7 +34,20 @@ namespace EventsHandler.UnitTests.Extensions
             string actualResult = utcTime.ConvertToDutchDateString();
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo("2025-01-01"));  // NOTE: UTC time is behind the local Dutch time
+            Assert.That(actualResult, Is.EqualTo("01-01-2025"));  // NOTE: UTC time is behind the local Dutch time
+        }
+
+        [Test]
+        public void ConvertToDutchDateString_DateOnly_ReturnsExpectedLocalDutchDateString()
+        {
+            // Arrange
+            DateOnly date = new(2024, 12, 31);
+
+            // Act
+            string actualResult = date.ConvertToDutchDateString();
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo("31-12-2024"));
         }
     }
 }
