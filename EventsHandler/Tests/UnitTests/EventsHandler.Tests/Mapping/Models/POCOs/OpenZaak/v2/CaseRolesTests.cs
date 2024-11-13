@@ -70,10 +70,10 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         {
             var caseRoles = new CaseRoles
             {
-                Results = new List<CaseRole>
-                {
-                    new() { InitiatorRole = string.Empty }
-                }
+                Results =
+                [
+                    new CaseRole { InitiatorRole = string.Empty }
+                ]
             };
 
             caseRoles.Results.AddRange(roles);

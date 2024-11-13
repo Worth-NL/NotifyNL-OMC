@@ -19,7 +19,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v2
         [JsonInclude]
         [JsonPropertyName("digitaleAdressen")]
         [JsonPropertyOrder(0)]
-        public List<DigitalAddressLong> DigitalAddresses { get; internal set; } = new();
+        public List<DigitalAddressLong> DigitalAddresses { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expansion"/> struct.

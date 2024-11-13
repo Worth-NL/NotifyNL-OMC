@@ -96,7 +96,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             // Arrange
             NotificationEvent notification = new()
             {
-                Details = new ErrorDetails(TestExceptionMessage, string.Empty, Array.Empty<string>())
+                Details = new ErrorDetails(TestExceptionMessage, string.Empty, [])
             };
 
             this._mockedSerializer
@@ -238,10 +238,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Success(new[]
-                {
+                .ReturnsAsync(GettingDataResponse.Success(
+                [
                     new NotifyData(NotifyMethods.Email)
-                }));
+                ]));
 
             const string processingErrorText = "HTTP Bad Request";
             mockedNotifyScenario
@@ -279,10 +279,10 @@ namespace EventsHandler.UnitTests.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Success(new[]
-                {
+                .ReturnsAsync(GettingDataResponse.Success(
+                [
                     new NotifyData(NotifyMethods.Email)
-                }));
+                ]));
 
             mockedNotifyScenario
                 .Setup(mock => mock.ProcessDataAsync(

@@ -76,20 +76,19 @@ namespace EventsHandler.Services.Responding.v2
 
             // Registering new status of the notification (for user)
             await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
-                new[]
-                {
-                    // User message subject
-                    DetermineUserMessageSubject(this._configuration, feedbackType, notificationMethod),
+            [
+                // User message subject
+                DetermineUserMessageSubject(this._configuration, feedbackType, notificationMethod),
 
-                    // User message body
-                    DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod),
+                // User message body
+                DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod),
 
-                    // Is successfully sent
-                    feedbackType == FeedbackTypes.Success ? True : False
-                });
+                // Is successfully sent
+                feedbackType == FeedbackTypes.Success ? True : False
+            ]);
         }
 
-        private IActionResult LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        private ObjectResult LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
             try
             {

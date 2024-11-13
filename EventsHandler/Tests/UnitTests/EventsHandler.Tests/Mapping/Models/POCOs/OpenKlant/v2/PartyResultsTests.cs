@@ -264,7 +264,6 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         /// </summary>
         private static PartyResult GetTestPartyResult_None(WebApiConfiguration testConfiguration)
         {
-            
             var partyId = Guid.NewGuid();
             Guid firstAddressId = GetUniqueId(partyId);
             Guid secondAddressId = GetUniqueId(firstAddressId);
@@ -286,21 +285,22 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 },
                 Expansion = new Expansion
                 {
-                    DigitalAddresses = new List<DigitalAddressLong>
-                    {
-                        new()
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong
                         {
                             Id = firstAddressId,
                             Value = string.Empty,  // Just empty address
                             Type = testConfiguration.AppSettings.Variables.PhoneGenericDescription()
                         },
-                        new()
+
+                        new DigitalAddressLong
                         {
                             Id = secondAddressId,
                             Value = string.Empty,  // Just empty address
                             Type = testConfiguration.AppSettings.Variables.EmailGenericDescription()
                         }
-                    }
+                    ]
                 }
             };
         }
@@ -330,52 +330,52 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 },
                 Expansion = new Expansion
                 {
-                    DigitalAddresses = new List<DigitalAddressLong>
-                    {
-                        new(), // Just empty address (might be not fully initialized)
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong(), // Just empty address (might be not fully initialized)
 
-                        new()  // Preferred address and valid type but empty e-mail (cannot be used)
+                        new DigitalAddressLong()  // Preferred address and valid type but empty e-mail (cannot be used)
                         {
                             Id = partyId,
                             Value = string.Empty,
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         },
 
-                        new()  // Preferred address and valid email but empty type (cannot be used)
+                        new DigitalAddressLong()  // Preferred address and valid email but empty type (cannot be used)
                         {
                             Id = partyId,
                             Value = $"emptyType_{TestEmail}",
                             Type = string.Empty
                         },
 
-                        new()  // Preferred address but unsupported type (only e-mail and phone numbers)
+                        new DigitalAddressLong()  // Preferred address but unsupported type (only e-mail and phone numbers)
                         {
                             Id = partyId,
                             Value = "https://www.facebook.com/john.doe",
                             Type = "Facebook"
                         },
 
-                        new()  // Not preferred address but valid phone (e-mails have priority => keep processing)
+                        new DigitalAddressLong()  // Not preferred address but valid phone (e-mails have priority => keep processing)
                         {
                             Id = GetUniqueId(addressId),
                             Value = TestPhone,
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         },
 
-                        new()  // Not preferred address but valid e-mail (should be used if the preferred e-mail is not found => until then keep processing)
+                        new DigitalAddressLong()  // Not preferred address but valid e-mail (should be used if the preferred e-mail is not found => until then keep processing)
                         {
                             Id = GetUniqueId(addressId),
                             Value = $"first_{TestEmail}",
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         },
 
-                        new()  // Can be preferred address with valid e-mail (not first encountered, should be returned if preferred)
+                        new DigitalAddressLong()  // Can be preferred address with valid e-mail (not first encountered, should be returned if preferred)
                         {
                             Id = addressId,
                             Value = $"second_{TestEmail}",
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         }
-                    }
+                    ]
                 }
             };
         }
@@ -402,49 +402,50 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
                 },
                 Expansion = new Expansion
                 {
-                    DigitalAddresses = new List<DigitalAddressLong>
-                    {
-                        new(), // Just empty address (might be not fully initialized)
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong(), // Just empty address (might be not fully initialized)
 
-                        new()  // Preferred address and valid type but empty phone (cannot be used)
+                        new DigitalAddressLong()  // Preferred address and valid type but empty phone (cannot be used)
                         {
                             Id = partyId,
                             Value = string.Empty,
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         },
 
-                        new()  // Preferred address and valid phone but empty type (cannot be used)
+                        new DigitalAddressLong()  // Preferred address and valid phone but empty type (cannot be used)
                         {
                             Id = partyId,
                             Value = $"emptyType_{TestPhone}",
                             Type = string.Empty
                         },
 
-                        new()  // Preferred address but unsupported type (only e-mail and phone numbers)
+                        new DigitalAddressLong()  // Preferred address but unsupported type (only e-mail and phone numbers)
                         {
                             Id = partyId,
                             Value = "https://www.facebook.com/john.doe",
                             Type = "Facebook"
                         },
 
-                        new()  // Not preferred address but valid phone (should be used if the preferred phone is not found => until then keep processing)
+                        new DigitalAddressLong()  // Not preferred address but valid phone (should be used if the preferred phone is not found => until then keep processing)
                         {
                             Id = GetUniqueId(addressId),
                             Value = $"first_{TestPhone}",
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         },
 
-                        new()  // Can be preferred address with valid phone (not first encountered, should be returned if preferred)
+                        new DigitalAddressLong()  // Can be preferred address with valid phone (not first encountered, should be returned if preferred)
                         {
                             Id = addressId,
                             Value = $"second_{TestPhone}",
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
                         }
-                    }
+                    ]
                 }
             };
         }
 
+        // ReSharper disable once TailRecursiveCall
         private static Guid GetUniqueId(Guid addressId)
         {
             var newId = Guid.NewGuid();
@@ -458,10 +459,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenKlant.v2
         {
             var partyResults = new PartyResults
             {
-                Results = new List<PartyResult>
-                {
-                    new()  // Just empty result to always have at least a few of them + to handle uninitialized ones
-                }
+                Results = [default]
             };
 
             partyResults.Results.AddRange(parties);

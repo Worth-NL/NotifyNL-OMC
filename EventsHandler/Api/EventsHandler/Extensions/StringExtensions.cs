@@ -62,7 +62,7 @@ namespace EventsHandler.Extensions
         internal static byte[] Base64Decode(this string encodedTextValue)
         {
             return string.IsNullOrWhiteSpace(encodedTextValue)
-                ? Array.Empty<byte>()
+                ? []
                 : Convert.FromBase64String(encodedTextValue);
         }
         #endregion
@@ -144,7 +144,7 @@ namespace EventsHandler.Extensions
 
                 return (TData)Convert.ChangeType(validGuid, typeof(TData));
             }
-            
+
             // Retrieve as TData => Guid
             if (typeof(TData) == typeof(Uri))
             {

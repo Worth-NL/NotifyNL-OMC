@@ -29,7 +29,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CaseStatus> Results { get; internal set; } = new();
+        public List<CaseStatus> Results { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatuses"/> struct.

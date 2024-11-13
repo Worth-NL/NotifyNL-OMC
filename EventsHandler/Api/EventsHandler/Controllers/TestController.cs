@@ -30,8 +30,8 @@ namespace EventsHandler.Controllers
     /// </summary>
     /// <seealso cref="OmcController"/>
     // Swagger UI
-    [ProducesResponseType(StatusCodes.Status202Accepted,            Type = typeof(BaseStandardResponseBody))]          // REASON: The API service is up and running
-    [ProducesResponseType(StatusCodes.Status403Forbidden,           Type = typeof(BaseStandardResponseBody))]          // REASON: Incorrect URL or API key to "Notify NL" API service
+    [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]          // REASON: The API service is up and running
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]          // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestController : OmcController
     {
         private readonly WebApiConfiguration _configuration;
@@ -322,7 +322,7 @@ namespace EventsHandler.Controllers
             }
         }
 
-        private static bool IsEmptyOrDefault(IReadOnlyDictionary<string, object> personalization)
+        private static bool IsEmptyOrDefault(Dictionary<string, object> personalization)
         {
             return personalization.Count <= 1 &&
                    personalization.TryGetValue(PersonalizationExample.Key, out object? value) &&

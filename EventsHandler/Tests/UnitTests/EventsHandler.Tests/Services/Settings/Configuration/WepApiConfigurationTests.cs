@@ -32,7 +32,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidAppSettings);
 
             int counter = 0;
-            List<string> methodNames = new();
+            List<string> methodNames = [];
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -56,8 +56,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // AppSettings | Variables | UX Messages
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
-                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {methodNames.Join()}");
+                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.Out.Write($"Methods: {methodNames.Join()}");
             });
         }
         #endregion
@@ -70,7 +70,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
 
             int counter = 0;
-            List<string> methodNames = new();
+            List<string> methodNames = [];
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -109,8 +109,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
 
-                TestContext.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.WriteLine($"Methods: {methodNames.Join()}");
+                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.Out.Write($"Methods: {methodNames.Join()}");
             });
         }
 
@@ -127,7 +127,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 ArgumentException? exception = Assert.Throws<ArgumentException>(test.Logic);
 
                 string expectedFullMessage = test.ExpectedErrorMessage;
-                int leftCurlyBracketIndex = expectedFullMessage.IndexOf("{", StringComparison.Ordinal);
+                int leftCurlyBracketIndex = expectedFullMessage.IndexOf('{', StringComparison.Ordinal);
                 string expectedTrimmedMessage = expectedFullMessage[..leftCurlyBracketIndex];
 
                 Assert.That(exception?.Message.StartsWith(expectedTrimmedMessage), Is.True,
@@ -235,7 +235,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         #endregion
 
         #region Helper methods
-        private static void TestConfigProperties(ref int counter, ICollection<string> methodNames, object instance, bool isRecursionEnabled = true)
+        private static void TestConfigProperties(ref int counter, List<string> methodNames, object instance, bool isRecursionEnabled = true)
         {
             const string variableTestErrorMessage =
                 $"Most likely the setting or environment variable name was changed in {nameof(WebApiConfiguration)} but not adjusted in {nameof(ConfigurationHandler)}.";
@@ -249,7 +249,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             }
         }
 
-        private static IEnumerable<MethodInfo> GetConfigMethods(IReflect currentType, bool isRecursionEnabled)
+        private static IEnumerable<MethodInfo> GetConfigMethods(Type currentType, bool isRecursionEnabled)
         {
             IEnumerable<MemberInfo> members = currentType
                 .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)

@@ -4,7 +4,7 @@
     <!-- Project -->
     <AssemblyName>NotifyNL.Utilities</AssemblyName>
     
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -13,8 +13,8 @@
   <!-- Packages -->
   <ItemGroup>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />  <!-- NOTE: Do not upgrade yet. Changing behavior of serialization. Might require .NET 9 -->
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="MoqExt" Version="1.0.2" />
   </ItemGroup>
   
