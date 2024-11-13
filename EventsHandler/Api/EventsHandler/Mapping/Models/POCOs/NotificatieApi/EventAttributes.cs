@@ -127,7 +127,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         [JsonInclude]
         [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(99)]
-        public Dictionary<string, object> Orphans { get; internal set; } = new();
+        public Dictionary<string, object> Orphans { get; internal set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventAttributes"/> struct.

@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Responding.Messages.Models.Details;
@@ -10,7 +11,6 @@ using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using EventsHandler.Properties;
 
 namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
 {
@@ -22,7 +22,7 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Extensions
         private const string TestJson = "{ }";
         private const string TestMessage = "Test message";
         private const string TestCases = "Case 1, Case 2";
-        private static readonly string[] s_testReasons = { "Reason 1, Reason2, Reason 3" };
+        private static readonly string[] s_testReasons = ["Reason 1, Reason2, Reason 3"];
 
         private static readonly InfoDetails s_infoDetails = new(TestMessage, TestCases, s_testReasons);
         private static readonly ErrorDetails s_errorDetails = new(TestMessage, TestCases, s_testReasons);

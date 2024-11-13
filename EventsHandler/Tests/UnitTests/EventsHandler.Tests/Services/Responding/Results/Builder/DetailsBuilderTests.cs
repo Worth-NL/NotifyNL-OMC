@@ -185,7 +185,7 @@ namespace EventsHandler.UnitTests.Services.Responding.Results.Builder
             // Assert
             string serializedActualDetails = JsonSerializer.Serialize(actualDetails);
 
-            TestContext.WriteLine(serializedActualDetails);
+            TestContext.Out.Write(serializedActualDetails);
 
             const string serializedExpectedDetails =
                 $"{{" +

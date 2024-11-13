@@ -165,7 +165,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 new NotifyData(NotifyMethods.Email));
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, Array.Empty<NotifyData>());
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, []);
 
             // Assert
             Assert.Multiple(() =>
@@ -191,7 +191,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 testData);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -219,7 +219,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -247,7 +247,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
 
             // Act
-            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, new[] { testData });
+            ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
 
             // Assert
             Assert.Multiple(() =>
@@ -268,7 +268,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                 : ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.InvalidEnvironment_v1);
         }
 
-        private INotifyScenario ArrangeMessageScenario_TryGetData(
+        private MessageReceivedScenario ArrangeMessageScenario_TryGetData(
             WebApiConfiguration configuration, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
@@ -301,7 +301,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
 
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
-        private INotifyScenario ArrangeMessageScenario_ProcessData(
+        private TaskAssignedScenario ArrangeMessageScenario_ProcessData(
             WebApiConfiguration configuration, bool isSendingSuccessful,
             NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {

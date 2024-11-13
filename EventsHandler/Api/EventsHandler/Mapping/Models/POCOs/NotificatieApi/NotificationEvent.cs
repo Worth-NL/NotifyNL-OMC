@@ -124,7 +124,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         [JsonInclude]
         [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(7)]
-        public Dictionary<string, object> Orphans { get; internal set; } = new();
+        public Dictionary<string, object> Orphans { get; internal set; } = [];
 
         #region Internal Properties
         /// <summary>
@@ -152,13 +152,13 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         internal readonly bool IsInvalidEvent(out int[] invalidPropertiesIndices)
         {
             bool[] validatedProperties =
-            {
+            [
                 this.Action        == Actions.Unknown,
                 this.Channel       == Channels.Unknown,
                 this.Resource      == Resources.Unknown,
                 this.MainObjectUri == DefaultValues.Models.EmptyUri,
                 this.ResourceUri   == DefaultValues.Models.EmptyUri
-            };
+            ];
 
             List<int>? invalidIndices = null;
 
@@ -166,7 +166,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
             {
                 if (validatedProperties[index])  // Is invalid
                 {
-                    (invalidIndices ??= new List<int>()).Add(index);
+                    (invalidIndices ??= []).Add(index);
                 }
             }
 
@@ -174,7 +174,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
 
             invalidPropertiesIndices = arePropertiesInvalid
                 ? invalidIndices!.ToArray()
-                : Array.Empty<int>();
+                : [];
 
             return arePropertiesInvalid;
         }

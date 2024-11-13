@@ -26,7 +26,7 @@ namespace EventsHandler.Services.Templates
 
         internal const string ValueNotAvailable = "Niet beschikbaar";
 
-        private static readonly Dictionary<string, dynamic> s_emptyDictionary = new();
+        private static readonly Dictionary<string, dynamic> s_emptyDictionary = [];
 
         /// <inheritdoc cref="ITemplatesService{TTemplate, TModel}.GetPlaceholders(TTemplate)"/>
         string[] ITemplatesService<TemplateResponse, NotificationEvent>.GetPlaceholders(TemplateResponse template)
@@ -35,7 +35,7 @@ namespace EventsHandler.Services.Templates
             if (string.IsNullOrEmpty(template.subject) ||
                 string.IsNullOrEmpty(template.body))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             MatchCollection matches = s_templatePlaceholdersRegex.Matches(template.subject + template.body);
@@ -43,7 +43,7 @@ namespace EventsHandler.Services.Templates
             // No placeholders found
             if (!matches.HasAny())
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             // Return placeholders
@@ -60,7 +60,7 @@ namespace EventsHandler.Services.Templates
                 return s_emptyDictionary;
             }
 
-            Dictionary<string, dynamic> mappedPlaceholders = new();
+            Dictionary<string, dynamic> mappedPlaceholders = [];
 
             for (int index = 0; index < placeholders.Length; index++)
             {

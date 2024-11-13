@@ -70,7 +70,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             => this.Configuration.Notify.TemplateId.Email.ZaakCreate();
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = new();  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)

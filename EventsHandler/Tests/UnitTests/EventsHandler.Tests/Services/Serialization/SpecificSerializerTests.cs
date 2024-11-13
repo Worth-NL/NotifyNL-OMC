@@ -786,11 +786,11 @@ namespace EventsHandler.UnitTests.Services.Serialization
             // Arrange
             var documents = new Documents
             {
-                Results = new List<Document>
-                {
-                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri },
-                    new() { InfoObjectUri = DefaultValues.Models.EmptyUri }
-                }
+                Results =
+                [
+                    new Document { InfoObjectUri = DefaultValues.Models.EmptyUri },
+                    new Document { InfoObjectUri = DefaultValues.Models.EmptyUri }
+                ]
             };
 
             // Act

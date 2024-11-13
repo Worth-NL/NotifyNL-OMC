@@ -12,7 +12,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void HasAny_ForValidArray_ReturnsTrue()
         {
             // Arrange
-            int[] testArray = { 1, 2 };
+            int[] testArray = [1, 2];
 
             // Act
             bool actualResult = testArray.HasAny();
@@ -25,7 +25,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void HasAny_ForEmptyArray_ReturnsFalse()
         {
             // Arrange
-            int[] testArray = Array.Empty<int>();
+            int[] testArray = [];
 
             // Act
             bool actualResult = testArray.HasAny();
@@ -40,7 +40,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void HasAny_ForValidCollection_ReturnsTrue()
         {
             // Arrange
-            List<int> testArray = new() { 1, 2, 3 };
+            List<int> testArray = [1, 2, 3];
 
             // Act
             bool actualResult = testArray.HasAny();
@@ -52,11 +52,8 @@ namespace EventsHandler.UnitTests.Extensions
         [Test]
         public void HasAny_ForEmptyCollection_ReturnsFalse()
         {
-            // Arrange
-            Dictionary<int, string> testArray = new();
-
             // Act
-            bool actualResult = testArray.HasAny();
+            bool actualResult = new Dictionary<int, string>().HasAny();
 
             // Assert
             Assert.That(actualResult, Is.False);
@@ -68,7 +65,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void IsEmpty_ForValidArray_ReturnsFalse()
         {
             // Arrange
-            int[] testArray = { 1, 2 };
+            int[] testArray = [1, 2];
 
             // Act
             bool actualResult = testArray.IsEmpty();
@@ -81,7 +78,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void IsEmpty_ForEmptyArray_ReturnsTrue()
         {
             // Arrange
-            int[] testArray = Array.Empty<int>();
+            int[] testArray = [];
 
             // Act
             bool actualResult = testArray.IsEmpty();
@@ -96,7 +93,7 @@ namespace EventsHandler.UnitTests.Extensions
         public void IsEmpty_ForValidCollection_ReturnsFalse()
         {
             // Arrange
-            List<int> testArray = new() { 1, 2, 3 };
+            List<int> testArray = [1, 2, 3];
 
             // Act
             bool actualResult = testArray.IsEmpty();
@@ -108,11 +105,8 @@ namespace EventsHandler.UnitTests.Extensions
         [Test]
         public void IsEmpty_ForEmptyCollection_ReturnsTrue()
         {
-            // Arrange
-            Dictionary<int, string> testArray = new();
-
             // Act
-            bool actualResult = testArray.IsEmpty();
+            bool actualResult = new Dictionary<int, string>().IsEmpty();
 
             // Assert
             Assert.That(actualResult, Is.True);
