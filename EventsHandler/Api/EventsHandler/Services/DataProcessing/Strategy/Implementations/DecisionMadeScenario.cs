@@ -141,15 +141,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
                 s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date:O}";
+                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
                 s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
                 s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate:O}";
-                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate:O}";
+                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
                 s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate:O}";
-                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate:O}";
-                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate:O}";
+                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
 
                 s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
                 s_emailPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
@@ -160,7 +160,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate:O}";
+                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
 
                 s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
                 s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
@@ -284,7 +284,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             return $"\"onderwerp\":\"{(subject.IsNullOrEmpty() ? missing : subject)}\"," +
                    $"\"berichtTekst\":\"{(body.IsNullOrEmpty() ? missing : body)}\"," +
-                   $"\"publicatiedatum\":\"{this._decision.PublicationDate:O}\"," +
+                   $"\"publicatiedatum\":\"{this._decision.PublicationDate.ConvertToDutchDateString()}\"," +
                    $"\"referentie\":\"{this._decisionResource.DecisionUri}\"," +
                    $"\"handelingsperspectief\":\"informatie verstrekken\"," + 
                    $"\"geopend\":false," +

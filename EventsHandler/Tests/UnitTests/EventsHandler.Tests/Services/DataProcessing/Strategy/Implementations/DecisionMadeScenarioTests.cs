@@ -303,15 +303,15 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"klant.voorvoegselAchternaam\":null," +
                       $"\"klant.achternaam\":\"Chan\"," +
                       $"\"besluit.identificatie\":\"\"," +
-                      $"\"besluit.datum\":\"0001-01-01\"," +
+                      $"\"besluit.datum\":\"01-01-0001\"," +
                       $"\"besluit.toelichting\":\"\"," +
                       $"\"besluit.bestuursorgaan\":\"\"," +
-                      $"\"besluit.ingangsdatum\":\"0001-01-01\"," +
-                      $"\"besluit.vervaldatum\":\"0001-01-01\"," +
+                      $"\"besluit.ingangsdatum\":\"01-01-0001\"," +
+                      $"\"besluit.vervaldatum\":\"01-01-0001\"," +
                       $"\"besluit.vervalreden\":\"\"," +
-                      $"\"besluit.publicatiedatum\":\"0001-01-01\"," +
-                      $"\"besluit.verzenddatum\":\"0001-01-01\"," +
-                      $"\"besluit.uiterlijkereactiedatum\":\"0001-01-01\"," +
+                      $"\"besluit.publicatiedatum\":\"01-01-0001\"," +
+                      $"\"besluit.verzenddatum\":\"01-01-0001\"," +
+                      $"\"besluit.uiterlijkereactiedatum\":\"01-01-0001\"," +
                       $"\"besluittype.omschrijving\":\"\"," +
                       $"\"besluittype.omschrijvingGeneriek\":\"\"," +
                       $"\"besluittype.besluitcategorie\":\"\"," +
@@ -320,7 +320,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
                       $"\"besluittype.toelichting\":\"\"," +
                       $"\"zaak.identificatie\":\"ZAAK-2024-00000000001\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"zaak.registratiedatum\":\"0001-01-01\"," +
+                      $"\"zaak.registratiedatum\":\"01-01-0001\"," +
                       $"\"zaaktype.omschrijving\":\"\"," +
                       $"\"zaaktype.omschrijvingGeneriek\":\"\"" +
                     $"}}";
