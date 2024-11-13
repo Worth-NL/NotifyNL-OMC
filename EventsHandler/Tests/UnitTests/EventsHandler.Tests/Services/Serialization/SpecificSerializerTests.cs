@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
@@ -608,7 +609,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                       $"\"zaak\":\"{DefaultValues.Models.EmptyUri}\"," +
                       $"\"title\":\"\"," +
                       $"\"status\":\"-\"," +
-                      $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
+                      $"\"verloopdatum\":\"{DateTime.MinValue.ConvertToDutchDateString()}\"," +
                       $"\"identificatie\":{{" +
                         $"\"type\":\"-\"," +
                         $"\"value\":\"\"" +
@@ -638,7 +639,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                         $"\"uuid\":\"{Guid.Empty}\"," +
                         $"\"registratie\":\"-\"" +
                       $"}}," +
-                      $"\"verloopdatum\":\"{DateTime.MinValue:O}\"," +
+                      $"\"verloopdatum\":\"{DateTime.MinValue.ConvertToDutchDateString()}\"," +
                       $"\"identificatie\":{{" +
                         $"\"type\":\"-\"," +
                         $"\"value\":\"\"" +
@@ -684,7 +685,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                       $"\"zaak\":\"{TestUrl}\"," +
                       $"\"title\":\"{TestString}\"," +
                       $"\"status\":\"open\"," +
-                      $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                      $"\"verloopdatum\":\"05-09-2024\"," +
                       $"\"identificatie\":{{" +
                         $"\"type\":\"bsn\"," +
                         $"\"value\":\"{TestString}\"" +
@@ -737,7 +738,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                         $"\"uuid\":\"{Guid.Empty}\"," +
                         $"\"registratie\":\"zaak\"" +
                       $"}}," +
-                      $"\"verloopdatum\":\"2024-09-05T15:45:30.0000000Z\"," +
+                      $"\"verloopdatum\":\"05-09-2024\"," +
                       $"\"identificatie\":{{" +
                         $"\"type\":\"bsn\"," +
                         $"\"value\":\"{TestString}\"" +
@@ -839,7 +840,7 @@ namespace EventsHandler.UnitTests.Services.Serialization
                   $"\"CaseId\":\"{testGuid}\"," +
                   $"\"Title\":\"text\"," +
                   $"\"Status\":\"open\"," +
-                  $"\"ExpirationDate\":\"9999-12-31T23:59:59.9999999\"," +
+                  $"\"ExpirationDate\":\"31-12-9999\"," +
                   $"\"Identification\":{{" +
                     $"\"type\":\"bsn\"," +
                     $"\"value\":\"123456789\"" +

@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using EventsHandler.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,7 +27,7 @@ namespace EventsHandler.Services.Serialization.Converters
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue($"{value:O}");
+            writer.WriteStringValue($"{value.ConvertToDutchDateString()}");
         }
     }
 }
