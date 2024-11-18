@@ -52,41 +52,30 @@ namespace EventsHandler.Services.Settings.Configuration
         #endregion
 
         #region Properties (root components)
-        private readonly IServiceProvider _serviceProvider;
-
-        private AppSettingsComponent? _appSettings;
-        private OmcComponent? _omc;
-        private ZgwComponent? _zgw;
-        private NotifyComponent? _notify;
-
         /// <summary>
         /// Gets the object representing "appsettings[.xxx].json" configuration file with predefined flags and variables.
         /// </summary>
         [Config]
-        internal AppSettingsComponent AppSettings
-            => this._appSettings ??= new AppSettingsComponent(GetLoader(LoaderTypes.AppSettings), nameof(AppSettings));
+        internal AppSettingsComponent AppSettings { get; }
 
         /// <summary>
         /// Gets the settings used by internal service OMC (Output Management Component).
         /// </summary>
         [Config]
-        internal OmcComponent OMC
-            => this._omc ??= new OmcComponent(GetLoader(LoaderTypes.Environment), nameof(OMC));
+        internal OmcComponent OMC { get; }
 
         /// <summary>
         /// Gets the settings used by external services that belongs to the group of:
         /// ZGW (Zaakgericht Werken) / "Open Services" - such as OpenNotificatie, OpenZaak, OpenKlant, etc...
         /// </summary>
         [Config]
-        internal ZgwComponent ZGW
-            => this._zgw ??= new ZgwComponent(GetLoader(LoaderTypes.Environment), nameof(ZGW), this);
+        internal ZgwComponent ZGW { get; }
 
         /// <summary>
         /// Gets the settings used by external service Notify NL.
         /// </summary>
         [Config]
-        internal NotifyComponent Notify
-            => this._notify ??= new NotifyComponent(GetLoader(LoaderTypes.Environment), nameof(Notify));
+        internal NotifyComponent Notify { get; }
         #endregion
 
         /// <summary>
@@ -94,16 +83,28 @@ namespace EventsHandler.Services.Settings.Configuration
         /// </summary>
         public WebApiConfiguration(IServiceProvider serviceProvider)  // NOTE: The only constructor to be used with Dependency Injection
         {
-            this._serviceProvider = serviceProvider;
-
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
-            this._appSettings = this.AppSettings;
-            this._omc = this.OMC;
-            this._zgw = this.ZGW;
-            this._notify = this.Notify;
+            this.AppSettings = new AppSettingsComponent(serviceProvider, nameof(AppSettings));
+            this.OMC = new OmcComponent(serviceProvider, nameof(OMC));
+            this.ZGW = new ZgwComponent(serviceProvider, nameof(ZGW), this);
+            this.Notify = new NotifyComponent(serviceProvider, nameof(Notify));
         }
 
         #region AppSettings.json
+        /// <summary>
+        /// The wrapper responsible for handling "fallback" scenarios (switching between different <see cref="ILoadersContext"/>s if necessary).
+        /// </summary>
+        internal readonly struct FallbackContextWrapper(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath, string parentNote)
+        {
+            internal ILoadersContext PrimaryLoadersContext { get; } = firstLoadersContext;
+
+            internal ILoadersContext FallbackLoadersContext { get; } = secondLoadersContext;
+
+            internal string PrimaryCurrentPath => this.PrimaryLoadersContext.GetPathWithNode(parentPath, parentNote);
+
+            internal string FallbackCurrentPath => this.FallbackLoadersContext.GetPathWithNode(parentPath, parentNote);
+        }
+
         /// <summary>
         /// The "appsettings[.xxx].json" part of the settings (not changing frequently).
         /// </summary>
@@ -129,11 +130,14 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="AppSettingsComponent"/> class.
             /// </summary>
-            public AppSettingsComponent(ILoadersContext loadersContext, string parentName)
+            public AppSettingsComponent(IServiceProvider serviceProvider, string parentName)
             {
-                this.Network = new NetworkComponent(loadersContext, parentName);
-                this.Encryption = new EncryptionComponent(loadersContext, parentName);
-                this.Variables = new VariablesComponent(loadersContext, parentName);
+                ILoadersContext firstLoadersContext = GetLoader(serviceProvider, LoaderTypes.AppSettings);
+                ILoadersContext secondLoadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
+                this.Network = new NetworkComponent(firstLoadersContext, secondLoadersContext, parentName);
+                this.Encryption = new EncryptionComponent(firstLoadersContext, secondLoadersContext, parentName);
+                this.Variables = new VariablesComponent(firstLoadersContext, secondLoadersContext, parentName);
             }
 
             /// <summary>
@@ -141,32 +145,31 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             internal sealed record NetworkComponent
             {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
+                private readonly FallbackContextWrapper _fallbackContextWrapper;
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="NetworkComponent"/> class.
                 /// </summary>
-                internal NetworkComponent(ILoadersContext loadersContext, string parentPath)
+                internal NetworkComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
                 {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Network));
+                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Network));
                 }
 
+                // TODO: paths should be also path of some object, to handle them easier and more consistently
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal ushort ConnectionLifetimeInSeconds()
-                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(ConnectionLifetimeInSeconds));
+                    => GetCachedValue<ushort>(this._fallbackContextWrapper, nameof(ConnectionLifetimeInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal ushort HttpRequestTimeoutInSeconds()
-                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestTimeoutInSeconds));
+                    => GetCachedValue<ushort>(this._fallbackContextWrapper, nameof(HttpRequestTimeoutInSeconds));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal ushort HttpRequestsSimultaneousNumber()
-                    => GetCachedValue<ushort>(this._loadersContext, this._currentPath, nameof(HttpRequestsSimultaneousNumber));
+                    => GetCachedValue<ushort>(this._fallbackContextWrapper, nameof(HttpRequestsSimultaneousNumber));
             }
 
             /// <summary>
@@ -174,22 +177,20 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             internal sealed record EncryptionComponent
             {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
+                private readonly FallbackContextWrapper _fallbackContextWrapper;
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="EncryptionComponent"/> class.
                 /// </summary>
-                internal EncryptionComponent(ILoadersContext loadersContext, string parentPath)
+                internal EncryptionComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
                 {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Encryption));
+                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Encryption));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal bool IsAsymmetric()
-                    => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(IsAsymmetric));
+                    => GetCachedValue<bool>(this._fallbackContextWrapper, nameof(IsAsymmetric));
             }
 
             /// <summary>
@@ -197,8 +198,7 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             internal sealed record VariablesComponent
             {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
+                private readonly FallbackContextWrapper _fallbackContextWrapper;
 
                 /// <inheritdoc cref="OpenKlantComponent"/>
                 [Config]
@@ -211,10 +211,9 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
                 /// </summary>
-                internal VariablesComponent(ILoadersContext loadersContext, string parentPath)
+                internal VariablesComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
                 {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variables));
+                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Variables));
 
                     this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
                     this.UxMessages = new UxMessagesComponent(loadersContext, this._currentPath);
@@ -223,59 +222,57 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string SubjectType()
-                    => GetCachedValue(this._loadersContext, this._currentPath, "BetrokkeneType");
+                    => GetCachedValue(this._fallbackContextWrapper, "BetrokkeneType");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string InitiatorRole()
-                    => GetCachedValue(this._loadersContext, this._currentPath, "OmschrijvingGeneriek");
+                    => GetCachedValue(this._fallbackContextWrapper, "OmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string PartyIdentifier()
-                    => GetCachedValue(this._loadersContext, this._currentPath, "PartijIdentificator");
+                    => GetCachedValue(this._fallbackContextWrapper, "PartijIdentificator");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string EmailGenericDescription()
-                    => GetCachedValue(this._loadersContext, this._currentPath, "EmailOmschrijvingGeneriek");
+                    => GetCachedValue(this._fallbackContextWrapper, "EmailOmschrijvingGeneriek");
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
                 internal string PhoneGenericDescription()
-                    => GetCachedValue(this._loadersContext, this._currentPath, "TelefoonOmschrijvingGeneriek");
+                    => GetCachedValue(this._fallbackContextWrapper, "TelefoonOmschrijvingGeneriek");
 
                 /// <summary>
                 /// The "OpenKlant" part of the settings.
                 /// </summary>
                 internal sealed class OpenKlantComponent
                 {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
+                    private readonly FallbackContextWrapper _fallbackContextWrapper;
 
                     /// <summary>
                     /// Initializes a new instance of the <see cref="OpenKlantComponent"/> class.
                     /// </summary>
-                    internal OpenKlantComponent(ILoadersContext loadersContext, string parentPath)
+                    internal OpenKlantComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
                     {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(OpenKlant));
+                        this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(OpenKlant));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string CodeObjectType()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectType));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string CodeRegister()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeRegister));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string CodeObjectTypeId()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(CodeObjectTypeId));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectTypeId));
                 }
 
                 /// <summary>
@@ -283,60 +280,58 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// </summary>
                 internal sealed class UxMessagesComponent
                 {
-                    private readonly ILoadersContext _loadersContext;
-                    private readonly string _currentPath;
+                    private readonly FallbackContextWrapper _fallbackContextWrapper;
 
                     /// <summary>
                     /// Initializes a new instance of the <see cref="UxMessagesComponent"/> class.
                     /// </summary>
-                    internal UxMessagesComponent(ILoadersContext loadersContext, string parentPath)
+                    internal UxMessagesComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
                     {
-                        this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(UxMessages));
+                        this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(UxMessages));
                     }
 
                     #region SMS
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string SMS_Success_Subject()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Subject));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(SMS_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string SMS_Success_Body()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Success_Body));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(SMS_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string SMS_Failure_Subject()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Subject));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(SMS_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string SMS_Failure_Body()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(SMS_Failure_Body));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(SMS_Failure_Body));
                     #endregion
 
                     #region E-mail
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string Email_Success_Subject()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Subject));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Success_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string Email_Success_Body()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Success_Body));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Success_Body));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string Email_Failure_Subject()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Subject));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Failure_Subject));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     internal string Email_Failure_Body()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Email_Failure_Body));
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Failure_Body));
                     #endregion
                 }
             }
@@ -363,8 +358,10 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
-            public OmcComponent(ILoadersContext loadersContext, string parentName)
+            public OmcComponent(IServiceProvider serviceProvider, string parentName)
             {
+                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
                 this.Feature = new FeatureComponent(loadersContext, parentName);
             }
@@ -486,8 +483,10 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
-            public ZgwComponent(ILoadersContext loadersContext, string parentName, WebApiConfiguration configuration)
+            public ZgwComponent(IServiceProvider serviceProvider, string parentName, WebApiConfiguration configuration)
             {
+                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
                 this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
@@ -895,8 +894,10 @@ namespace EventsHandler.Services.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
             /// </summary>
-            public NotifyComponent(ILoadersContext loadersContext, string parentName)
+            public NotifyComponent(IServiceProvider serviceProvider, string parentName)
             {
+                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
                 this.API = new ApiComponent(loadersContext, parentName);
                 this.TemplateId = new TemplateIdComponent(loadersContext, parentName);
             }
@@ -1057,9 +1058,9 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <summary>
         /// Initializes a specific type of <see cref="ILoadersContext"/> with predefined <see cref="ILoadingService"/>.
         /// </summary>
-        private ILoadersContext GetLoader(LoaderTypes loaderType)
+        private static ILoadersContext GetLoader(IServiceProvider serviceProvider, LoaderTypes loaderType)
         {
-            ILoadersContext loaderContext = new LoadersContext(this._serviceProvider);
+            ILoadersContext loaderContext = new LoadersContext(serviceProvider);
             loaderContext.SetLoader(loaderType);
 
             return loaderContext;
@@ -1085,6 +1086,52 @@ namespace EventsHandler.Services.Settings.Configuration
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation));  // Validate not empty (if validation is enabled)
+        }
+
+        /// <summary>
+        /// Retrieves cached <see langword="string"/> value (with optional validation).
+        /// </summary>
+        /// <remarks>
+        /// A shortcut to not use GetValue&lt;<see langword="string"/>&gt; method invocation for the most common settings value type.
+        /// <para>
+        /// Validation: optional
+        /// </para>
+        /// </remarks>
+        private static string GetCachedValue(FallbackContextWrapper contextWrapper, string nodeName, bool disableValidation = false)
+        {
+            // Check if settings values are already cached
+            if (s_cachedStrings.TryGetValue(contextWrapper.PrimaryCurrentPath + nodeName, out string? value))
+            {
+                // First attempt
+                return value;
+            }
+
+            if (s_cachedStrings.TryGetValue(contextWrapper.FallbackCurrentPath + nodeName, out value))
+            {
+                // Second attempt
+                return value;
+            }
+
+            // Try to load settings values and then cache them
+            try
+            {
+                // First attempt
+                return GetAndCache(contextWrapper.PrimaryLoadersContext, contextWrapper.PrimaryCurrentPath, nodeName, disableValidation);
+            }
+            catch
+            {
+                // Second attempt
+                return GetAndCache(contextWrapper.FallbackLoadersContext, contextWrapper.FallbackCurrentPath, nodeName, disableValidation);
+            }
+            
+            // NOTE: Shorthand to not use the most popular <string> type in most cases
+            static string GetAndCache(ILoadersContext loadersContext, string currentPath, string nodeName, bool disableValidation)
+            {
+                // Validation happens once during initial loading, before caching the value
+                string value = GetValue<string>(loadersContext, currentPath, nodeName, disableValidation);  // Validate not empty (if validation is enabled)
+
+                return s_cachedStrings.TryAdd(currentPath + nodeName, value) ? value : string.Empty;
+            }
         }
 
         /// <summary>
@@ -1187,12 +1234,24 @@ namespace EventsHandler.Services.Settings.Configuration
         private static TData GetCachedValue<TData>(ILoadingService loadersContext, string currentPath, string nodeName, bool disableValidation = false)
             where TData : notnull
         {
-            string value = s_cachedStrings.GetOrAdd(
+            return s_cachedStrings.GetOrAdd(
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}");  // Validate not empty (if validation is enabled)
+                $"{GetValue<TData>(loadersContext, currentPath, nodeName, disableValidation)}")  // Validate not empty (if validation is enabled)
+                    .ChangeType<TData>();
+        }
 
-            return value.ChangeType<TData>();
+        /// <summary>
+        /// Retrieves cached <typeparamref name="TData"/> value.
+        /// </summary>
+        /// <remarks>
+        /// Validation: optional
+        /// </remarks>
+        private static TData GetCachedValue<TData>(FallbackContextWrapper contextWrapper, string nodeName, bool disableValidation = false)
+            where TData : notnull
+        {
+            return GetCachedValue(contextWrapper, nodeName, disableValidation)
+                .ChangeType<TData>();
         }
         #endregion
 
