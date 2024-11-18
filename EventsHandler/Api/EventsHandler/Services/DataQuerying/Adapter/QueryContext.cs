@@ -23,10 +23,12 @@ namespace EventsHandler.Services.DataQuerying.Adapter
     /// <inheritdoc cref="IQueryContext"/>
     internal sealed class QueryContext : IQueryContext
     {
-        private readonly IHttpNetworkService _networkService;
-        private readonly IQueryBase _queryBase;
+        private readonly IHttpNetworkService _networkService;  // Universal raw HTTP methods
+
+        private readonly IQueryBase _queryBase;                // Common class for API microservices
+
         private readonly IQueryZaak _queryZaak;                // Case API microservice
-        private readonly IQueryKlant _queryKlant;              // Customer API microservice
+        private readonly IQueryKlant _queryKlant;              // Client API microservice
         private readonly IQueryBesluiten _queryBesluiten;      // Decision API microservice
         private readonly IQueryObjecten _queryObjecten;        // Object API microservice
         private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
