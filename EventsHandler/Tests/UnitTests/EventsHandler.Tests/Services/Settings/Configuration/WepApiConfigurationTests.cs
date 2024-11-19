@@ -56,8 +56,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 // AppSettings | Variables | UX Messages
                 TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
 
-                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.Out.Write($"Methods: {methodNames.Join()}");
+                TestContext.Out.WriteLine($"Tested appsettings.json values: {counter}{Environment.NewLine}");
+                TestContext.Out.WriteLine($"Methods: {Environment.NewLine}");
+                TestContext.Out.WriteLine($"{methodNames.Join(Environment.NewLine)}");
             });
         }
         #endregion
@@ -109,8 +110,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
                 TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
 
-                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.Out.Write($"Methods: {methodNames.Join()}");
+                TestContext.Out.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
+                TestContext.Out.WriteLine($"Methods: {Environment.NewLine}");
+                TestContext.Out.WriteLine($"{methodNames.Join(Environment.NewLine)}");
             });
         }
 
@@ -242,10 +244,12 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
             foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
             {
-                counter++;
-                methodNames.Add($"{method.Name}()");
+                object? result = method.Invoke(instance, null);
 
-                Assert.That(method.Invoke(instance, null), Is.Not.Default, $"{method.Name}: {variableTestErrorMessage}");
+                counter++;
+                methodNames.Add($"{method.Name}(): \"{result}\"");
+
+                Assert.That(result, Is.Not.Default, $"{method.Name}: {variableTestErrorMessage}");
             }
         }
 
