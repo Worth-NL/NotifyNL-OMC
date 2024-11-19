@@ -39,7 +39,7 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.BothValid_v1);
+            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
         }
 
         [TearDown]
