@@ -4,6 +4,10 @@ using EventsHandler.Constants;
 using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.DAO.Interfaces;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,6 +20,9 @@ namespace EventsHandler.Utilities._TestHelpers
     /// </summary>
     internal static class ConfigurationHandler
     {
+        // NOTE: IConfiguration
+
+        #region IConfiguration
         /// <summary>
         /// Gets the test <see cref="IConfiguration"/> with (re)created "appsettings.Test.json" and environment variables.
         /// </summary>
@@ -27,12 +34,15 @@ namespace EventsHandler.Utilities._TestHelpers
 
             return configuration;
         }
+        #endregion
 
-        #region ILoadingService mocks
-        internal const string TestTaskObjectTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
+        // NOTE: IConfiguration or IEnvironment => ILoadersContext
+
+        #region ILoadingService
+        internal const string TestTaskObjectTypeUuid    = "0236e468-2ad8-43d6-a723-219cb22acb37";
         internal const string TestMessageObjectTypeUuid = "9aae4a81-36c5-4fc9-958c-71ecdcdf48a7";
-        internal const string TestInfoObjectTypeUuid1 = "38327774-7023-4f25-9386-acb0c6f10636";
-        internal const string TestInfoObjectTypeUuid2 = "6468cfd4-d827-473a-8f24-114af046ce7f";
+        internal const string TestInfoObjectTypeUuid1   = "38327774-7023-4f25-9386-acb0c6f10636";
+        internal const string TestInfoObjectTypeUuid2   = "6468cfd4-d827-473a-8f24-114af046ce7f";
 
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.
@@ -52,10 +62,10 @@ namespace EventsHandler.Utilities._TestHelpers
             var mockedEnvironmentReader = new Mock<IEnvironment>();
 
             const string testString = "xyz";
-            const string testArray = "1, 2, 3";
+            const string testArray  = "1, 2, 3";
             const string testUshort = "60";
-            const string testGuid = "01234567-89ab-cdef-1234-567890123456";
-            const string testBool = "true";
+            const string testGuid   = "01234567-89ab-cdef-1234-567890123456";
+            const string testBool   = "true";
             const string testDomain = "test.domain/api/v1";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
@@ -143,17 +153,52 @@ namespace EventsHandler.Utilities._TestHelpers
         }
         #endregion
 
-        #region Web API Configuration
-        internal static WebApiConfiguration GetWebApiConfiguration(ServiceCollection? serviceCollection = null)
+        // NOTE: IServiceCollection[] { ILoadersContext } => IServiceProvider
+
+        #region ILoadersContext
+        internal static ILoadersContext GetLoadersContext(LoaderTypes loaderTypes)
         {
             // IServiceCollection
-            serviceCollection ??= [];
+            ServiceCollection serviceCollection = [];
 
+            serviceCollection.AddSingleton<ILoadingService>(loaderTypes switch
+            {
+                LoaderTypes.AppSettings => GetAppSettingsLoader(),
+                LoaderTypes.Environment => GetEnvironmentLoader(1),
+
+                _ => throw new ArgumentException($"Not supported loader type: {loaderTypes}")
+            });
+
+            // ILoadersContext
+            ILoadersContext loadersContext = new LoadersContext(
+                // IServiceProvider
+                GetServiceProvider(serviceCollection));
+
+            loadersContext.SetLoader(loaderTypes);
+
+            return loadersContext;
+        }
+
+        private static MockingContext GetServiceProvider(ServiceCollection serviceCollection)
+        {
             // IServiceProvider
-            var serviceProvider = new MockingContext(serviceCollection);
+            return new MockingContext(serviceCollection);
+        }
+        #endregion
 
+        // NOTE: IServiceProvider => WebApiConfiguration
+
+        #region Web API Configuration
+        internal static WebApiConfiguration GetWebApiConfiguration()
+        {
             // Web API Configuration
-            return new WebApiConfiguration(serviceProvider);
+            return GetWebApiConfiguration([]);
+        }
+
+        private static WebApiConfiguration GetWebApiConfiguration(ServiceCollection serviceCollection)
+        {
+            // Web API Configuration
+            return new WebApiConfiguration(GetServiceProvider(serviceCollection));
         }
 
         internal static WebApiConfiguration GetWebApiConfigurationWith(TestLoaderTypes testLoaderTypes)
