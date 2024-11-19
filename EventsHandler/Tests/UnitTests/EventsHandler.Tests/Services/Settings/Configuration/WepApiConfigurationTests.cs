@@ -6,6 +6,11 @@ using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Utilities._TestHelpers;
 using System.Reflection;
+using EventsHandler.Services.Settings;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
+using MoqExt;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
 #pragma warning disable IDE0008  // Declaration of static types would be too long
@@ -232,6 +237,57 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
                 Assert.That(exception?.Message, Is.EqualTo(Resources.Configuration_ERROR_ValueNotFoundOrEmpty
                     .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));
+            });
+        }
+        #endregion
+
+        #region FallbackContextWrapper
+        private const string TestParentNode = "Parent";
+        private const string TestChildNode = "Child";
+
+        [Test]
+        public void Constructor_InitializesPropertiesAsExpected()
+        {
+            // Arrange
+            ILoadersContext appSettingsContext = GetLoadersContext(LoaderTypes.AppSettings);
+            ILoadersContext environmentContext = GetLoadersContext(LoaderTypes.Environment);
+
+            // Act
+            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(contextWrapper.PrimaryLoadersContext, Is.EqualTo(appSettingsContext));
+                Assert.That(contextWrapper.FallbackLoadersContext, Is.EqualTo(environmentContext));
+
+                Assert.That(contextWrapper.PrimaryCurrentPath, Is.EqualTo($"{TestParentNode}:{TestChildNode}"));
+                Assert.That(contextWrapper.FallbackCurrentPath, Is.EqualTo($"{TestParentNode.ToUpper()}_{TestChildNode.ToUpper()}"));
+            });
+        }
+
+        [Test]
+        public void Update_InitializesPropertiesAsExpected()
+        {
+            // Arrange
+            ILoadersContext appSettingsContext = GetLoadersContext(LoaderTypes.AppSettings);
+            ILoadersContext environmentContext = GetLoadersContext(LoaderTypes.Environment);
+
+            const string testExtensionNode = "Extra";
+
+            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+            
+            // Act
+            contextWrapper = contextWrapper.Update(testExtensionNode);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(contextWrapper.PrimaryLoadersContext, Is.EqualTo(appSettingsContext));
+                Assert.That(contextWrapper.FallbackLoadersContext, Is.EqualTo(environmentContext));
+
+                Assert.That(contextWrapper.PrimaryCurrentPath, Is.EqualTo($"{TestParentNode}:{TestChildNode}:{testExtensionNode}"));
+                Assert.That(contextWrapper.FallbackCurrentPath, Is.EqualTo($"{TestParentNode.ToUpper()}_{TestChildNode.ToUpper()}_{testExtensionNode.ToUpper()}"));
             });
         }
         #endregion
