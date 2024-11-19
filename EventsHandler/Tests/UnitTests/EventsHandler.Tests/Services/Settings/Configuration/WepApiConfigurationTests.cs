@@ -4,13 +4,10 @@ using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Utilities._TestHelpers;
-using System.Reflection;
-using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
-using EventsHandler.Services.Settings.Strategy.Manager;
-using MoqExt;
+using EventsHandler.Utilities._TestHelpers;
+using System.Reflection;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
 #pragma warning disable IDE0008  // Declaration of static types would be too long
@@ -34,7 +31,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidAppSettings);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
 
             int counter = 0;
             List<string> methodNames = [];
@@ -73,7 +70,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void WebApiConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
             int counter = 0;
             List<string> methodNames = [];
@@ -126,7 +123,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -175,7 +172,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
@@ -193,7 +190,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
@@ -211,7 +208,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            using var configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
@@ -228,7 +225,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v2);
+            using var configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
