@@ -147,7 +147,7 @@ namespace EventsHandler.Utilities._TestHelpers
         internal static WebApiConfiguration GetWebApiConfiguration(ServiceCollection? serviceCollection = null)
         {
             // IServiceCollection
-            serviceCollection ??= new ServiceCollection();
+            serviceCollection ??= [];
 
             // IServiceProvider
             var serviceProvider = new MockingContext(serviceCollection);
