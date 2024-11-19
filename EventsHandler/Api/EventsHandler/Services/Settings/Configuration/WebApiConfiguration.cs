@@ -94,15 +94,38 @@ namespace EventsHandler.Services.Settings.Configuration
         /// <summary>
         /// The wrapper responsible for handling "fallback" scenarios (switching between different <see cref="ILoadersContext"/>s if necessary).
         /// </summary>
-        internal readonly struct FallbackContextWrapper(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath, string parentNote)
+        internal struct FallbackContextWrapper
         {
-            internal ILoadersContext PrimaryLoadersContext { get; } = firstLoadersContext;
+            internal ILoadersContext PrimaryLoadersContext { get; }
 
-            internal ILoadersContext FallbackLoadersContext { get; } = secondLoadersContext;
+            internal ILoadersContext FallbackLoadersContext { get; }
 
-            internal string PrimaryCurrentPath => this.PrimaryLoadersContext.GetPathWithNode(parentPath, parentNote);
+            internal string PrimaryCurrentPath { get; private set; }
 
-            internal string FallbackCurrentPath => this.FallbackLoadersContext.GetPathWithNode(parentPath, parentNote);
+            internal string FallbackCurrentPath { get; private set; }
+            
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FallbackContextWrapper"/> struct.
+            /// </summary>
+            public FallbackContextWrapper(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath, string currentNode)
+            {
+                this.PrimaryLoadersContext = firstLoadersContext;
+                this.FallbackLoadersContext = secondLoadersContext;
+
+                this.PrimaryCurrentPath = this.PrimaryLoadersContext.GetPathWithNode(parentPath, currentNode);
+                this.FallbackCurrentPath = this.FallbackLoadersContext.GetPathWithNode(parentPath, currentNode);
+            }
+
+            /// <summary>
+            /// Updates both paths using the given node.
+            /// </summary>
+            internal FallbackContextWrapper Update(string currentNode)
+            {
+                this.PrimaryCurrentPath = this.PrimaryLoadersContext.GetPathWithNode(this.PrimaryCurrentPath, currentNode);
+                this.FallbackCurrentPath = this.FallbackLoadersContext.GetPathWithNode(this.FallbackCurrentPath, currentNode);
+
+                return this;
+            }
         }
 
         /// <summary>
@@ -135,9 +158,9 @@ namespace EventsHandler.Services.Settings.Configuration
                 ILoadersContext firstLoadersContext = GetLoader(serviceProvider, LoaderTypes.AppSettings);
                 ILoadersContext secondLoadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
-                this.Network = new NetworkComponent(firstLoadersContext, secondLoadersContext, parentName);
-                this.Encryption = new EncryptionComponent(firstLoadersContext, secondLoadersContext, parentName);
-                this.Variables = new VariablesComponent(firstLoadersContext, secondLoadersContext, parentName);
+                this.Network = new NetworkComponent(new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentName, nameof(Network)));
+                this.Encryption = new EncryptionComponent(new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentName, nameof(Encryption)));
+                this.Variables = new VariablesComponent(new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentName, nameof(Variables)));
             }
 
             /// <summary>
@@ -150,9 +173,9 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="NetworkComponent"/> class.
                 /// </summary>
-                internal NetworkComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
+                internal NetworkComponent(FallbackContextWrapper contextWrapper)
                 {
-                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Network));
+                    this._fallbackContextWrapper = contextWrapper;
                 }
 
                 // TODO: paths should be also path of some object, to handle them easier and more consistently
@@ -182,9 +205,9 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="EncryptionComponent"/> class.
                 /// </summary>
-                internal EncryptionComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
+                internal EncryptionComponent(FallbackContextWrapper contextWrapper)
                 {
-                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Encryption));
+                    this._fallbackContextWrapper = contextWrapper;
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -211,12 +234,12 @@ namespace EventsHandler.Services.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
                 /// </summary>
-                internal VariablesComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
+                internal VariablesComponent(FallbackContextWrapper contextWrapper)
                 {
-                    this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(Variables));
+                    this._fallbackContextWrapper = contextWrapper;
 
-                    this.OpenKlant = new OpenKlantComponent(loadersContext, this._currentPath);
-                    this.UxMessages = new UxMessagesComponent(loadersContext, this._currentPath);
+                    this.OpenKlant = new OpenKlantComponent(this._fallbackContextWrapper);
+                    this.UxMessages = new UxMessagesComponent(this._fallbackContextWrapper);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -254,9 +277,9 @@ namespace EventsHandler.Services.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="OpenKlantComponent"/> class.
                     /// </summary>
-                    internal OpenKlantComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
+                    internal OpenKlantComponent(FallbackContextWrapper contextWrapper)
                     {
-                        this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(OpenKlant));
+                        this._fallbackContextWrapper = contextWrapper.Update(nameof(OpenKlant));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -285,9 +308,9 @@ namespace EventsHandler.Services.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="UxMessagesComponent"/> class.
                     /// </summary>
-                    internal UxMessagesComponent(ILoadersContext firstLoadersContext, ILoadersContext secondLoadersContext, string parentPath)
+                    internal UxMessagesComponent(FallbackContextWrapper contextWrapper)
                     {
-                        this._fallbackContextWrapper = new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentPath, nameof(UxMessages));
+                        this._fallbackContextWrapper = contextWrapper.Update(nameof(UxMessages));
                     }
 
                     #region SMS
