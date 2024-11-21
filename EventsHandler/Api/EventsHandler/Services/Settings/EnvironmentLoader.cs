@@ -45,6 +45,12 @@ namespace EventsHandler.Services.Settings
                 return string.Empty;
             }
 
+            // Skip "AppSettings" as part of the configuration path (during mapping to environment variables)
+            if (currentPath == ILoadingService.AppSettings)
+            {
+                return nodeName;
+            }
+
             return $"{currentPath.ToUpper()}" +
                    $"{((ILoadingService)this).GetNodePath(nodeName)}";
         }
