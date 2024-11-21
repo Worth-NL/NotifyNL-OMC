@@ -155,8 +155,8 @@ namespace EventsHandler.Services.Settings.Configuration
             /// </summary>
             public AppSettingsComponent(IServiceProvider serviceProvider, string parentName)
             {
-                ILoadersContext firstLoadersContext = GetLoader(serviceProvider, LoaderTypes.AppSettings);
-                ILoadersContext secondLoadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+                ILoadersContext firstLoadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);  // NOTE: Prefer Environment Variables first to make "overriding" AppSettings possible
+                ILoadersContext secondLoadersContext = GetLoader(serviceProvider, LoaderTypes.AppSettings);
 
                 this.Network = new NetworkComponent(new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentName, nameof(Network)));
                 this.Encryption = new EncryptionComponent(new FallbackContextWrapper(firstLoadersContext, secondLoadersContext, parentName, nameof(Encryption)));

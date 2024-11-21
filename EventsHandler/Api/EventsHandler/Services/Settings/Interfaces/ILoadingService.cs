@@ -11,6 +11,11 @@ namespace EventsHandler.Services.Settings.Interfaces
     public interface ILoadingService
     {
         /// <summary>
+        /// The "AppSettings" node present in "appsettings.json" configuration file, or when mapping "appsettings.json" => environment variables.
+        /// </summary>
+        protected internal const string AppSettings = nameof(AppSettings);
+
+        /// <summary>
         /// Loads a generic type of data using the dedicated <see langword="string"/> key.
         /// </summary>
         /// <typeparam name="TData">The generic type of data to be returned.</typeparam>
