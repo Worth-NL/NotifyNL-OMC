@@ -28,8 +28,8 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
         #region AppSettings
         [Test]
-        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()
-        {
+        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()  // NOTE: This test is checking two things: 1. Loading appsettings.json (from the test file) as expected
+        {                                                                            //                                         2. Using second LoadingContext by FallbackContextWrapper logic
             // Arrange
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
 
@@ -61,6 +61,42 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 TestContext.Out.WriteLine($"Tested appsettings.json values: {counter}{Environment.NewLine}");
                 TestContext.Out.WriteLine($"Methods: {Environment.NewLine}");
                 TestContext.Out.WriteLine($"{methodNames.Join(Environment.NewLine)}");
+            });
+        }
+
+        [Test]
+        public void WebApiConfiguration_FallbackStrategy_EnvVars_OverloadsAppSettings()
+        {
+            // Arrange
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(s_testConfiguration.AppSettings.Variables.PartyIdentifier(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.EmailGenericDescription(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.PhoneGenericDescription(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.OpenKlant.CodeObjectType(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.SMS_Success_Subject(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.Email_Failure_Body(), Does.StartWith(EnvPrefix));
+            });
+        }
+
+        [Test]
+        public void WebApiConfiguration_FallbackStrategy_IfEnvVariableNotPresent_KeepsAppSettings()
+        {
+            // Arrange
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(s_testConfiguration.AppSettings.Variables.PartyIdentifier(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.EmailGenericDescription(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.PhoneGenericDescription(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.OpenKlant.CodeObjectType(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.SMS_Success_Subject(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.Email_Failure_Body(), Does.Not.StartWith(EnvPrefix));
             });
         }
         #endregion
