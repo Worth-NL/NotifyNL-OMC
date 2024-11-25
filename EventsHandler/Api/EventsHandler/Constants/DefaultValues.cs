@@ -64,6 +64,8 @@ namespace EventsHandler.Constants
         {
             internal static string EmptyJson => "{}";
 
+            internal const string DefaultStringValue = "-";  // Constant only
+
             internal const string DefaultEnumValueName = "-";  // Constant only
 
             internal static Uri EmptyUri { get; } = new(@"http://0.0.0.0:0/");
