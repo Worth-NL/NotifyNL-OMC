@@ -149,7 +149,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
+            #pragma warning restore IDE00008
             bool isAllowed = whitelistedIDs.IsAllowed(caseId);
 
             // Assert
@@ -167,7 +169,9 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
+            #pragma warning restore IDE00008
             bool isAllowed = whitelistedIDs.IsAllowed("1");
 
             // Assert
@@ -182,7 +186,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
+            using WebApiConfiguration configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
@@ -199,7 +203,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v2);
+            using WebApiConfiguration configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
