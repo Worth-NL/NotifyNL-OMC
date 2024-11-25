@@ -43,7 +43,9 @@ v.1.12.4
 
          - 3.1.2.3. [Set environment variables](#set_environment_variables)
 
-         - 3.1.2.4. [Using HELM Charts](#helm_charts)
+         - 3.1.2.4. [Overriding appsettings.json](#overriding_appsettings)
+         
+         - 3.1.2.5. [Using HELM Charts](#helm_charts)
 
 4. [Authorization and authentication](#authorization)
 
@@ -606,7 +608,7 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > To be finished...
 
-<h4 id="helm_charts">3.1.2.4. Overriding appsettings.json</h4>
+<h4 id="overriding_appsettings">3.1.2.4. Overriding appsettings.json</h4>
 
 As mentioned earlier, one of the two main differences between _appsettings.json_ and _environment variables_ is that _appsettings.json_ are meant to hold some predefined, rarely-changing values and modifying them is not as easy for end-users as modifying _environment variables_.
 
