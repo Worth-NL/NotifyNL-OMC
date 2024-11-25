@@ -10,6 +10,7 @@ using EventsHandler.Services.Settings.Strategy.Interfaces;
 using EventsHandler.Services.Settings.Strategy.Manager;
 using JetBrains.Annotations;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace EventsHandler.Services.Settings.Configuration
 {
@@ -1299,6 +1300,131 @@ namespace EventsHandler.Services.Settings.Configuration
             where TData : notnull
         {
             return loadersContext.GetData<TData>(finalPath, disableValidation);
+        }
+        #endregion
+
+        #region Testing
+        // ReSharper disable SuggestVarOrType_SimpleTypes
+
+        /// <summary>
+        /// Test if all "appsettings.json" configurations are present.
+        /// </summary>
+        internal static string TestAppSettingsConfigs(WebApiConfiguration webApiConfiguration)
+        {
+            int counter = 0;
+            List<string> methodNames = [];
+
+            var appSettings = webApiConfiguration.AppSettings;
+
+            // AppSettings | Network
+            TryGetConfigurations(ref counter, methodNames, appSettings.Network);
+
+            // AppSettings | Encryption
+            TryGetConfigurations(ref counter, methodNames, appSettings.Encryption);
+
+            var variablesSettings = webApiConfiguration.AppSettings.Variables;
+
+            // AppSettings | Variables
+            TryGetConfigurations(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);  // NOTE: Variables contains properties and other nodes. Disabling recursion will display only those separate properties without nods
+
+            // AppSettings | Variables | OpenKlant
+            TryGetConfigurations(ref counter, methodNames, variablesSettings.OpenKlant);
+
+            // AppSettings | Variables | UX Messages
+            TryGetConfigurations(ref counter, methodNames, variablesSettings.UxMessages);
+
+            return $"Tested appsettings.json values: {counter}" +
+                   $"{Environment.NewLine}" +
+                   $"{Environment.NewLine}" +
+                   $"Methods:" +
+                     $"{Environment.NewLine}" +
+                     $"{methodNames.Join(Environment.NewLine)}";
+        }
+
+        /// <summary>
+        /// Test if all environment variables configurations are present.
+        /// </summary>
+        internal static string TestEnvVariablesConfigs(WebApiConfiguration webApiConfiguration)
+        {
+            int counter = 0;
+            List<string> methodNames = [];
+            
+            var omcConfiguration = webApiConfiguration.OMC;
+
+            // OMC | Authorization | JWT
+            TryGetConfigurations(ref counter, methodNames, omcConfiguration.Auth.JWT);
+
+            // OMC | Features
+            TryGetConfigurations(ref counter, methodNames, omcConfiguration.Feature);
+                
+            var zgwConfiguration = webApiConfiguration.ZGW;
+
+            // ZGW | Authorization | JWT
+            TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Auth.JWT);
+
+            // ZGW | Key
+            TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Auth.Key);
+
+            // ZGW | Domain
+            TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Endpoint);
+
+            // ZGW | Whitelist
+            TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Whitelist);
+
+            // ZGW | Variables | Objecten
+            TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
+                
+            var notifyConfiguration = webApiConfiguration.Notify;
+
+            // Notify | API
+            TryGetConfigurations(ref counter, methodNames, notifyConfiguration.API);
+
+            // Notify | Templates (Email + SMS)
+            TryGetConfigurations(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
+            TryGetConfigurations(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
+
+            return $"Tested environment variables: {counter}" +
+                   $"{Environment.NewLine}" +
+                   $"{Environment.NewLine}" +
+                   $"Methods:" +
+                     $"{Environment.NewLine}" +
+                     $"{methodNames.Join(Environment.NewLine)}";
+        }
+
+        private static void TryGetConfigurations(ref int counter, List<string> methodNames, object instance, bool isRecursionEnabled = true)
+        {
+            foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
+            {
+                object? result = method.Invoke(instance, null);
+
+                counter++;
+                methodNames.Add($"  {method.Name}() => \"{result}\"");
+            }
+        }
+
+        private static IEnumerable<MethodInfo> GetConfigMethods(Type currentType, bool isRecursionEnabled)
+        {
+            IEnumerable<MemberInfo> members = currentType
+                .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(member => member.GetCustomAttribute<ConfigAttribute>() != null);
+
+            foreach (MemberInfo member in members)
+            {
+                // Returning method
+                if (member is MethodInfo method)
+                {
+                    yield return method;
+                }
+
+                if (isRecursionEnabled && member is PropertyInfo property)
+                {
+                    // Traversing recursively to get methods from property
+                    foreach (MethodInfo nestedMethod in GetConfigMethods(property.PropertyType, isRecursionEnabled))
+                    {
+                        yield return nestedMethod;
+                    }
+                }
+            }
         }
         #endregion
 

@@ -177,6 +177,35 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
+        /// Tests if all the configurations (from "appsettings.json" and environment variables) are present and contains non-empty values (if required).
+        /// </summary>
+        [HttpGet]
+        [Route("OMC/TestConfigs")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        public async Task<IActionResult> TestConfigsAsync()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    _ = WebApiConfiguration.TestAppSettingsConfigs(this._configuration);
+                    _ = WebApiConfiguration.TestEnvVariablesConfigs(this._configuration);
+                    
+                    // HttpStatus Code: 202 Accepted
+                    return LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(Resources.Test_OMC_PropertiesCheck_SUCCESS)));
+                }
+                catch (Exception exception)
+                {
+                    // HttpStatus Code: 500 Internal Server Error
+                    return this._responder.GetExceptionResponse(exception);
+                }
+            });
+        }
+
+        /// <summary>
         /// Simulates behavior of Notify/Confirm endpoint, mocking (with better control) the response from "Notify NL" Web API service.
         /// </summary>
         /// <remarks>
