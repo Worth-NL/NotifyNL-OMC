@@ -1103,5 +1103,14 @@ namespace EventsHandler.Properties {
                 return ResourceManager.GetString("Test_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All required appsettings.json and environment variables..
+        /// </summary>
+        internal static string Test_OMC_PropertiesCheck_SUCCESS {
+            get {
+                return ResourceManager.GetString("Test_OMC_PropertiesCheck_SUCCESS", resourceCulture);
+            }
+        }
     }
 }

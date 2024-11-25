@@ -1,16 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.Enums;
 using EventsHandler.Services.Settings.Strategy.Interfaces;
-using EventsHandler.Utilities._TestHelpers;
-using System.Reflection;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
-#pragma warning disable IDE0008  // Declaration of static types would be too long
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
 namespace EventsHandler.UnitTests.Services.Settings.Configuration
@@ -33,34 +28,13 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Arrange
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
 
-            int counter = 0;
-            List<string> methodNames = [];
-
             // Act & Assert
             Assert.Multiple(() =>
             {
-                var appSettings = s_testConfiguration.AppSettings;
-
-                // AppSettings | Network
-                TestConfigProperties(ref counter, methodNames, appSettings.Network);
-
-                // AppSettings | Encryption
-                TestConfigProperties(ref counter, methodNames, appSettings.Encryption);
-
-                var variablesSettings = s_testConfiguration.AppSettings.Variables;
-
-                // AppSettings | Variables
-                TestConfigProperties(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);
-
-                // AppSettings | Variables | OpenKlant
-                TestConfigProperties(ref counter, methodNames, variablesSettings.OpenKlant);
-
-                // AppSettings | Variables | UX Messages
-                TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
-
-                TestContext.Out.WriteLine($"Tested appsettings.json values: {counter}{Environment.NewLine}");
-                TestContext.Out.WriteLine($"Methods: {Environment.NewLine}");
-                TestContext.Out.WriteLine($"{methodNames.Join(Environment.NewLine)}");
+                // NOTE: Exception would occur if the configurations are invalid
+                string result = WebApiConfiguration.TestAppSettingsConfigs(s_testConfiguration);
+                
+                TestContext.Out.WriteLine(result);
             });
         }
 
@@ -108,49 +82,13 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             // Arrange
             s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
-            int counter = 0;
-            List<string> methodNames = [];
-
             // Act & Assert
             Assert.Multiple(() =>
             {
-                var omcConfiguration = s_testConfiguration.OMC;
-
-                // OMC | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Auth.JWT);
-
-                // OMC | Features
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Feature);
+                // NOTE: Exception would occur if the configurations are invalid
+                string result = WebApiConfiguration.TestEnvVariablesConfigs(s_testConfiguration);
                 
-                var zgwConfiguration = s_testConfiguration.ZGW;
-
-                // ZGW | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
-
-                // ZGW | Key
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.Key);
-
-                // ZGW | Domain
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
-
-                // ZGW | Whitelist
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
-
-                // ZGW | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
-                
-                var notifyConfiguration = s_testConfiguration.Notify;
-
-                // Notify | API
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.API);
-
-                // Notify | Templates (Email + SMS)
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
-
-                TestContext.Out.WriteLine($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.Out.WriteLine($"Methods: {Environment.NewLine}");
-                TestContext.Out.WriteLine($"{methodNames.Join(Environment.NewLine)}");
+                TestContext.Out.WriteLine(result);
             });
         }
 
@@ -322,49 +260,6 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
                 Assert.That(contextWrapper.PrimaryCurrentPath, Is.EqualTo($"{TestParentNode}:{TestChildNode}:{testExtensionNode}"));
                 Assert.That(contextWrapper.FallbackCurrentPath, Is.EqualTo($"{TestParentNode.ToUpper()}_{TestChildNode.ToUpper()}_{testExtensionNode.ToUpper()}"));
             });
-        }
-        #endregion
-
-        #region Helper methods
-        private static void TestConfigProperties(ref int counter, List<string> methodNames, object instance, bool isRecursionEnabled = true)
-        {
-            const string variableTestErrorMessage =
-                $"Most likely the setting or environment variable name was changed in {nameof(WebApiConfiguration)} but not adjusted in {nameof(ConfigurationHandler)}.";
-
-            foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
-            {
-                object? result = method.Invoke(instance, null);
-
-                counter++;
-                methodNames.Add($"{method.Name}(): \"{result}\"");
-
-                Assert.That(result, Is.Not.Default, $"{method.Name}: {variableTestErrorMessage}");
-            }
-        }
-
-        private static IEnumerable<MethodInfo> GetConfigMethods(Type currentType, bool isRecursionEnabled)
-        {
-            IEnumerable<MemberInfo> members = currentType
-                .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(member => member.GetCustomAttribute<ConfigAttribute>() != null);
-
-            foreach (MemberInfo member in members)
-            {
-                // Returning method
-                if (member is MethodInfo method)
-                {
-                    yield return method;
-                }
-
-                if (isRecursionEnabled && member is PropertyInfo property)
-                {
-                    // Traversing recursively to get methods from property
-                    foreach (MethodInfo nestedMethod in GetConfigMethods(property.PropertyType, isRecursionEnabled))
-                    {
-                        yield return nestedMethod;
-                    }
-                }
-            }
         }
         #endregion
     }

@@ -143,7 +143,7 @@ namespace EventsHandler.Services.Responding
 
                 // NOTE: Unexpected issues wrapped around 500 Internal Server Error status code
                 default:
-                    return new InternalError.Simplified(ProcessingResult.Failure(exception.Message)).AsResult_500();
+                    return new InternalError.Simplified(ProcessingResult.Failure(exception.InnerException?.Message ?? exception.Message)).AsResult_500();
             }
         }
 
