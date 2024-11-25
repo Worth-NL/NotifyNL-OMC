@@ -1304,6 +1304,7 @@ namespace EventsHandler.Services.Settings.Configuration
         #endregion
 
         #region Testing
+        #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
         // ReSharper disable SuggestVarOrType_SimpleTypes
 
         /// <summary>
@@ -1426,6 +1427,7 @@ namespace EventsHandler.Services.Settings.Configuration
                 }
             }
         }
+        #pragma warning restore IDE00008
         #endregion
 
         #region Disposing
