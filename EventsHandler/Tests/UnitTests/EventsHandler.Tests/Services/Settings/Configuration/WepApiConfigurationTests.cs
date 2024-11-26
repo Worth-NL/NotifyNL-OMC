@@ -1,14 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.Settings.Attributes;
 using EventsHandler.Services.Settings.Configuration;
-using EventsHandler.Utilities._TestHelpers;
-using System.Reflection;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
 using static EventsHandler.Utilities._TestHelpers.ConfigurationHandler;
 
-#pragma warning disable IDE0008  // Declaration of static types would be too long
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
 namespace EventsHandler.UnitTests.Services.Settings.Configuration
@@ -26,38 +23,54 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
 
         #region AppSettings
         [Test]
-        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()
-        {
+        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()  // NOTE: This test is checking two things: 1. Loading appsettings.json (from the test file) as expected
+        {                                                                            //                                         2. Using second LoadingContext by FallbackContextWrapper logic
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidAppSettings);
-
-            int counter = 0;
-            List<string> methodNames = [];
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
-                var appSettings = s_testConfiguration.AppSettings;
+                // NOTE: Exception would occur if the configurations are invalid
+                string result = WebApiConfiguration.TestAppSettingsConfigs(s_testConfiguration);
+                
+                TestContext.Out.WriteLine(result);
+            });
+        }
 
-                // AppSettings | Network
-                TestConfigProperties(ref counter, methodNames, appSettings.Network);
+        [Test]
+        public void WebApiConfiguration_FallbackStrategy_EnvVars_OverloadsAppSettings()
+        {
+            // Arrange
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings);
 
-                // AppSettings | Encryption
-                TestConfigProperties(ref counter, methodNames, appSettings.Encryption);
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(s_testConfiguration.AppSettings.Variables.PartyIdentifier(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.EmailGenericDescription(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.PhoneGenericDescription(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.OpenKlant.CodeObjectType(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.SMS_Success_Subject(), Does.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.Email_Failure_Body(), Does.StartWith(EnvPrefix));
+            });
+        }
 
-                var variablesSettings = s_testConfiguration.AppSettings.Variables;
+        [Test]
+        public void WebApiConfiguration_FallbackStrategy_IfEnvVariableNotPresent_KeepsAppSettings()
+        {
+            // Arrange
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidAppSettings);
 
-                // AppSettings | Variables
-                TestConfigProperties(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);
-
-                // AppSettings | Variables | OpenKlant
-                TestConfigProperties(ref counter, methodNames, variablesSettings.OpenKlant);
-
-                // AppSettings | Variables | UX Messages
-                TestConfigProperties(ref counter, methodNames, variablesSettings.UxMessages);
-
-                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.Out.Write($"Methods: {methodNames.Join()}");
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(s_testConfiguration.AppSettings.Variables.PartyIdentifier(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.EmailGenericDescription(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.PhoneGenericDescription(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.OpenKlant.CodeObjectType(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.SMS_Success_Subject(), Does.Not.StartWith(EnvPrefix));
+                Assert.That(s_testConfiguration.AppSettings.Variables.UxMessages.Email_Failure_Body(), Does.Not.StartWith(EnvPrefix));
             });
         }
         #endregion
@@ -67,50 +80,15 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void WebApiConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
-
-            int counter = 0;
-            List<string> methodNames = [];
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act & Assert
             Assert.Multiple(() =>
             {
-                var omcConfiguration = s_testConfiguration.OMC;
-
-                // OMC | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Auth.JWT);
-
-                // OMC | Features
-                TestConfigProperties(ref counter, methodNames, omcConfiguration.Feature);
+                // NOTE: Exception would occur if the configurations are invalid
+                string result = WebApiConfiguration.TestEnvVariablesConfigs(s_testConfiguration);
                 
-                var zgwConfiguration = s_testConfiguration.ZGW;
-
-                // ZGW | Authorization | JWT
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.JWT);
-
-                // ZGW | Key
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Auth.Key);
-
-                // ZGW | Domain
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Endpoint);
-
-                // ZGW | Whitelist
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Whitelist);
-
-                // ZGW | Variables | Objecten
-                TestConfigProperties(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
-                
-                var notifyConfiguration = s_testConfiguration.Notify;
-
-                // Notify | API
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.API);
-
-                // Notify | Templates (Email + SMS)
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Email);
-                TestConfigProperties(ref counter, methodNames, notifyConfiguration.TemplateId.Sms);
-
-                TestContext.Out.Write($"Tested environment variables: {counter}{Environment.NewLine}");
-                TestContext.Out.Write($"Methods: {methodNames.Join()}");
+                TestContext.Out.WriteLine(result);
             });
         }
 
@@ -119,7 +97,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -168,10 +146,12 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.ValidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
+            #pragma warning restore IDE00008
             bool isAllowed = whitelistedIDs.IsAllowed(caseId);
 
             // Assert
@@ -186,10 +166,12 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            s_testConfiguration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
             var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ZaakCreate_IDs();
+            #pragma warning restore IDE00008
             bool isAllowed = whitelistedIDs.IsAllowed("1");
 
             // Assert
@@ -204,7 +186,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v1);
+            using WebApiConfiguration configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
@@ -221,7 +203,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
         {
             // Arrange
-            using var configuration = GetWebApiConfigurationWith(TestLoaderTypes.InvalidEnvironment_v2);
+            using WebApiConfiguration configuration = GetWebApiConfigurationWith(TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -234,44 +216,54 @@ namespace EventsHandler.UnitTests.Services.Settings.Configuration
         }
         #endregion
 
-        #region Helper methods
-        private static void TestConfigProperties(ref int counter, List<string> methodNames, object instance, bool isRecursionEnabled = true)
+        #region FallbackContextWrapper
+        private const string TestParentNode = "Parent";
+        private const string TestChildNode = "Child";
+
+        [Test]
+        public void Constructor_InitializesPropertiesAsExpected()
         {
-            const string variableTestErrorMessage =
-                $"Most likely the setting or environment variable name was changed in {nameof(WebApiConfiguration)} but not adjusted in {nameof(ConfigurationHandler)}.";
+            // Arrange
+            ILoadersContext appSettingsContext = GetLoadersContext(LoaderTypes.AppSettings);
+            ILoadersContext environmentContext = GetLoadersContext(LoaderTypes.Environment);
 
-            foreach (MethodInfo method in GetConfigMethods(instance.GetType(), isRecursionEnabled).ToArray())
+            // Act
+            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+
+            // Assert
+            Assert.Multiple(() =>
             {
-                counter++;
-                methodNames.Add($"{method.Name}()");
+                Assert.That(contextWrapper.PrimaryLoadersContext, Is.EqualTo(appSettingsContext));
+                Assert.That(contextWrapper.FallbackLoadersContext, Is.EqualTo(environmentContext));
 
-                Assert.That(method.Invoke(instance, null), Is.Not.Default, $"{method.Name}: {variableTestErrorMessage}");
-            }
+                Assert.That(contextWrapper.PrimaryCurrentPath, Is.EqualTo($"{TestParentNode}:{TestChildNode}"));
+                Assert.That(contextWrapper.FallbackCurrentPath, Is.EqualTo($"{TestParentNode.ToUpper()}_{TestChildNode.ToUpper()}"));
+            });
         }
 
-        private static IEnumerable<MethodInfo> GetConfigMethods(Type currentType, bool isRecursionEnabled)
+        [Test]
+        public void Update_InitializesPropertiesAsExpected()
         {
-            IEnumerable<MemberInfo> members = currentType
-                .GetMembers(BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(member => member.GetCustomAttribute<ConfigAttribute>() != null);
+            // Arrange
+            ILoadersContext appSettingsContext = GetLoadersContext(LoaderTypes.AppSettings);
+            ILoadersContext environmentContext = GetLoadersContext(LoaderTypes.Environment);
 
-            foreach (MemberInfo member in members)
+            const string testExtensionNode = "Extra";
+
+            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+            
+            // Act
+            contextWrapper = contextWrapper.Update(testExtensionNode);
+
+            // Assert
+            Assert.Multiple(() =>
             {
-                // Returning method
-                if (member is MethodInfo method)
-                {
-                    yield return method;
-                }
+                Assert.That(contextWrapper.PrimaryLoadersContext, Is.EqualTo(appSettingsContext));
+                Assert.That(contextWrapper.FallbackLoadersContext, Is.EqualTo(environmentContext));
 
-                if (isRecursionEnabled && member is PropertyInfo property)
-                {
-                    // Traversing recursively to get methods from property
-                    foreach (MethodInfo nestedMethod in GetConfigMethods(property.PropertyType, isRecursionEnabled))
-                    {
-                        yield return nestedMethod;
-                    }
-                }
-            }
+                Assert.That(contextWrapper.PrimaryCurrentPath, Is.EqualTo($"{TestParentNode}:{TestChildNode}:{testExtensionNode}"));
+                Assert.That(contextWrapper.FallbackCurrentPath, Is.EqualTo($"{TestParentNode.ToUpper()}_{TestChildNode.ToUpper()}_{testExtensionNode.ToUpper()}"));
+            });
         }
         #endregion
     }

@@ -1,9 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Constants;
+using EventsHandler.Extensions;
 using EventsHandler.Services.Settings;
 using EventsHandler.Services.Settings.Configuration;
 using EventsHandler.Services.Settings.DAO.Interfaces;
+using EventsHandler.Services.Settings.Enums;
+using EventsHandler.Services.Settings.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Interfaces;
+using EventsHandler.Services.Settings.Strategy.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,6 +21,9 @@ namespace EventsHandler.Utilities._TestHelpers
     /// </summary>
     internal static class ConfigurationHandler
     {
+        // NOTE: IConfiguration
+
+        #region IConfiguration
         /// <summary>
         /// Gets the test <see cref="IConfiguration"/> with (re)created "appsettings.Test.json" and environment variables.
         /// </summary>
@@ -27,12 +35,15 @@ namespace EventsHandler.Utilities._TestHelpers
 
             return configuration;
         }
+        #endregion
 
-        #region ILoadingService mocks
-        internal const string TestTaskObjectTypeUuid = "0236e468-2ad8-43d6-a723-219cb22acb37";
+        // NOTE: IConfiguration or IEnvironment => ILoadersContext
+
+        #region ILoadingService
+        internal const string TestTaskObjectTypeUuid    = "0236e468-2ad8-43d6-a723-219cb22acb37";
         internal const string TestMessageObjectTypeUuid = "9aae4a81-36c5-4fc9-958c-71ecdcdf48a7";
-        internal const string TestInfoObjectTypeUuid1 = "38327774-7023-4f25-9386-acb0c6f10636";
-        internal const string TestInfoObjectTypeUuid2 = "6468cfd4-d827-473a-8f24-114af046ce7f";
+        internal const string TestInfoObjectTypeUuid1   = "38327774-7023-4f25-9386-acb0c6f10636";
+        internal const string TestInfoObjectTypeUuid2   = "6468cfd4-d827-473a-8f24-114af046ce7f";
 
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.
@@ -52,10 +63,10 @@ namespace EventsHandler.Utilities._TestHelpers
             var mockedEnvironmentReader = new Mock<IEnvironment>();
 
             const string testString = "xyz";
-            const string testArray = "1, 2, 3";
+            const string testArray  = "1, 2, 3";
             const string testUshort = "60";
-            const string testGuid = "01234567-89ab-cdef-1234-567890123456";
-            const string testBool = "true";
+            const string testGuid   = "01234567-89ab-cdef-1234-567890123456";
+            const string testBool   = "true";
             const string testDomain = "test.domain/api/v1";
 
             // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
@@ -141,58 +152,214 @@ namespace EventsHandler.Utilities._TestHelpers
                 Environment = mockedEnvironmentReader.Object
             };
         }
+
+        internal const string EnvPrefix = "Env_";
+
+        /// <summary>
+        /// Gets the mocked <see cref="EnvironmentLoader"/> overloading configurations in "appsettings.json" from <see cref="AppSettingsLoader"/>.
+        /// </summary>
+        private static EnvironmentLoader GetEnvVarsOverloadingAppSettings()
+        {
+            var mockedEnvironmentReader = new Mock<IEnvironment>();
+
+            #region GetEnvironmentVariable<T>() mocking
+            // Get all final paths (without nested elements) with values from "appsettings.json"
+            (string Path, string Value)[] sections = GetConfiguration().GetChildren()
+                .SelectMany(GetAllPaths)
+                // Convert paths "app:settings:item" into "ENVIRONMENT_VARIABLE" convention
+                .Select(section => (
+                    // Path
+                    section.Path
+                        .ToUpper()
+                        .Replace(":", "_")
+                        .Replace(".", "_"),
+                    // Value
+                    section.Value))
+                .ToArray();
+
+            foreach ((string Path, string Value) section in sections)
+            {
+                mockedEnvironmentReader
+                    .Setup(mock => mock.GetEnvironmentVariable(section.Path))
+                    .Returns($"{EnvPrefix}{section.Value}");
+            }
+            #endregion
+
+            return new EnvironmentLoader
+            {
+                Environment = mockedEnvironmentReader.Object
+            };
+
+            static IEnumerable<(string Path, string Value)> GetAllPaths(IConfigurationSection section)
+            {
+                IConfigurationSection[] configurationSections = section.GetChildren().ToArray();
+
+                // Dive deeper into nested levels of a given section
+                if (configurationSections.HasAny())
+                {
+                    foreach (IConfigurationSection configurationSection in configurationSections)
+                    {
+                        foreach ((string Path, string Value) item in GetAllPaths(configurationSection))
+                        {
+                            yield return (item.Path, item.Value);  // NOTE: This line is returning the results (row by row) of
+                                                                   // GetAllPaths method, where empty values are skipped already
+                        }
+                    }
+                }
+
+                // Return section which doesn't have more nested levels
+                if (section.Value.IsNullOrEmpty())
+                {
+                    yield break;  // Skip path with empty value because that's most likely a "parent node"
+                }
+
+                yield return (section.Path, section.Value);
+            }
+        }
         #endregion
 
-        #region Web API Configuration
-        internal static WebApiConfiguration GetWebApiConfiguration(ServiceCollection? serviceCollection = null)
+        // NOTE: IServiceCollection[] { ILoadersContext } => IServiceProvider
+
+        #region ILoadersContext
+        internal static ILoadersContext GetLoadersContext(LoaderTypes loaderTypes)
         {
             // IServiceCollection
-            serviceCollection ??= new ServiceCollection();
+            ServiceCollection serviceCollection = [];
 
-            // IServiceProvider
-            var serviceProvider = new MockingContext(serviceCollection);
+            serviceCollection.AddSingleton<ILoadingService>(loaderTypes switch
+            {
+                LoaderTypes.AppSettings => GetAppSettingsLoader(),
+                LoaderTypes.Environment => GetEnvironmentLoader(1),
 
-            // Web API Configuration
-            return new WebApiConfiguration(serviceProvider);
+                _ => throw new ArgumentException($"Not supported loader type: {loaderTypes}")
+            });
+
+            // ILoadersContext
+            ILoadersContext loadersContext = new LoadersContext(
+                // IServiceProvider
+                GetServiceProvider(serviceCollection));
+
+            loadersContext.SetLoader(loaderTypes);
+
+            return loadersContext;
         }
 
-        internal static WebApiConfiguration GetWebApiConfigurationWith(TestLoaderTypes testLoaderTypes)
+        private static MockingContext GetServiceProvider(ServiceCollection serviceCollection)
+        {
+            // IServiceProvider
+            return new MockingContext(serviceCollection);
+        }
+        #endregion
+
+        // NOTE: IServiceProvider => WebApiConfiguration
+
+        #region Web API Configuration
+        internal static WebApiConfiguration GetWebApiConfiguration()
+        {
+            // Web API Configuration
+            return GetWebApiConfiguration([]);
+        }
+
+        private static WebApiConfiguration GetWebApiConfiguration(ServiceCollection serviceCollection)
+        {
+            // Web API Configuration
+            return new WebApiConfiguration(GetServiceProvider(serviceCollection));
+        }
+
+        internal static WebApiConfiguration GetWebApiConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
             => s_presetConfigurations[testLoaderTypes];
 
-        internal enum TestLoaderTypes
+        /// <summary>
+        /// The enum representing <see cref="LoaderTypes"/> in preconfigured setups used for testing.
+        /// </summary>
+        internal enum TestLoaderTypesSetup
         {
             // ReSharper disable InconsistentNaming
+
+            /// <summary>
+            /// Valid appsettings.json | not existing environment variables.
+            /// </summary>
             ValidAppSettings,
+
+            /// <summary>
+            /// Invalid appsettings.json | not existing environment variables.
+            /// </summary>
             InvalidAppSettings,
+
+            /// <summary>
+            /// Not existing appsettings.json | valid environment variables (OMC workflow v1).
+            /// </summary>
             ValidEnvironment_v1,
+
+            /// <summary>
+            /// Not existing appsettings.json | valid environment variables (OMC workflow v2).
+            /// </summary>
             ValidEnvironment_v2,
+
+            /// <summary>
+            /// Not existing appsettings.json | invalid environment variables (+ wrong OMC workflow).
+            /// </summary>
             InvalidEnvironment,
+
+            /// <summary>
+            /// Not existing appsettings.json | invalid environment variables (OMC workflow v1).
+            /// </summary>
             InvalidEnvironment_v1,
+
+            /// <summary>
+            /// Not existing appsettings.json | invalid environment variables (OMC workflow v2).
+            /// </summary>
             InvalidEnvironment_v2,
+
+            /// <summary>
+            /// Valid appsettings.json | valid environment variables (OMC workflow v1).
+            /// </summary>
             BothValid_v1,
+
+            /// <summary>
+            /// Valid appsettings.json | valid environment variables (OMC workflow v2).
+            /// </summary>
             BothValid_v2,
+
+            /// <summary>
+            /// Invalid appsettings.json | invalid environment variables (+ wrong OMC workflow).
+            /// </summary>
             BothInvalid,
+
+            /// <summary>
+            /// Invalid appsettings.json | invalid environment variables (OMC workflow v1).
+            /// </summary>
             BothInvalid_v1,
-            BothInvalid_v2
+
+            /// <summary>
+            /// Invalid appsettings.json | invalid environment variables (OMC workflow v2).
+            /// </summary>
+            BothInvalid_v2,
+
+            /// <summary>
+            /// Environment variables using "underscore" convention reflecting appsettings.json | valid appsettings.json (overloaded by environment variables).
+            /// </summary>
+            EnvVar_Overloading_AppSettings
         }
 
-        private static readonly Dictionary<TestLoaderTypes, WebApiConfiguration> s_presetConfigurations = new()
+        private static readonly Dictionary<TestLoaderTypesSetup, WebApiConfiguration> s_presetConfigurations = new()
         {
-            { TestLoaderTypes.ValidAppSettings,      GetWebApiConfiguration(TestLoaderTypes.ValidAppSettings)      },
-            { TestLoaderTypes.InvalidAppSettings,    GetWebApiConfiguration(TestLoaderTypes.InvalidAppSettings)    },
-            { TestLoaderTypes.ValidEnvironment_v1,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment_v1)   },
-            { TestLoaderTypes.ValidEnvironment_v2,   GetWebApiConfiguration(TestLoaderTypes.ValidEnvironment_v2)   },
-            { TestLoaderTypes.InvalidEnvironment,    GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment)    },
-            { TestLoaderTypes.InvalidEnvironment_v1, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment_v1) },
-            { TestLoaderTypes.InvalidEnvironment_v2, GetWebApiConfiguration(TestLoaderTypes.InvalidEnvironment_v2) },
-            { TestLoaderTypes.BothValid_v1,          GetWebApiConfiguration(TestLoaderTypes.BothValid_v1)          },
-            { TestLoaderTypes.BothValid_v2,          GetWebApiConfiguration(TestLoaderTypes.BothValid_v2)          },
-            { TestLoaderTypes.BothInvalid,           GetWebApiConfiguration(TestLoaderTypes.BothInvalid)           },
-            { TestLoaderTypes.BothInvalid_v1,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid_v1)        },
-            { TestLoaderTypes.BothInvalid_v2,        GetWebApiConfiguration(TestLoaderTypes.BothInvalid_v2)        }
+            { TestLoaderTypesSetup.ValidAppSettings,               GetWebApiConfiguration(TestLoaderTypesSetup.ValidAppSettings)               },
+            { TestLoaderTypesSetup.InvalidAppSettings,             GetWebApiConfiguration(TestLoaderTypesSetup.InvalidAppSettings)             },
+            { TestLoaderTypesSetup.ValidEnvironment_v1,            GetWebApiConfiguration(TestLoaderTypesSetup.ValidEnvironment_v1)            },
+            { TestLoaderTypesSetup.ValidEnvironment_v2,            GetWebApiConfiguration(TestLoaderTypesSetup.ValidEnvironment_v2)            },
+            { TestLoaderTypesSetup.InvalidEnvironment,             GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment)             },
+            { TestLoaderTypesSetup.InvalidEnvironment_v1,          GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v1)          },
+            { TestLoaderTypesSetup.InvalidEnvironment_v2,          GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v2)          },
+            { TestLoaderTypesSetup.BothValid_v1,                   GetWebApiConfiguration(TestLoaderTypesSetup.BothValid_v1)                   },
+            { TestLoaderTypesSetup.BothValid_v2,                   GetWebApiConfiguration(TestLoaderTypesSetup.BothValid_v2)                   },
+            { TestLoaderTypesSetup.BothInvalid,                    GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid)                    },
+            { TestLoaderTypesSetup.BothInvalid_v1,                 GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid_v1)                 },
+            { TestLoaderTypesSetup.BothInvalid_v2,                 GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid_v2)                 },
+            { TestLoaderTypesSetup.EnvVar_Overloading_AppSettings, GetWebApiConfiguration(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings) }
         };
 
-        private static WebApiConfiguration GetWebApiConfiguration(TestLoaderTypes loaderType)
+        private static WebApiConfiguration GetWebApiConfiguration(TestLoaderTypesSetup loaderType)
         {
             // IServiceCollection
             var serviceCollection = new ServiceCollection();
@@ -200,58 +367,70 @@ namespace EventsHandler.Utilities._TestHelpers
             // ILoaderService
             switch (loaderType)
             {
-                case TestLoaderTypes.ValidAppSettings:
+                case TestLoaderTypesSetup.ValidAppSettings:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
+                    // Not existing environment variables
                     break;
 
-                case TestLoaderTypes.InvalidAppSettings:
+                case TestLoaderTypesSetup.InvalidAppSettings:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
+                    // Not existing environment variables
                     break;
 
-                case TestLoaderTypes.ValidEnvironment_v1:
+                case TestLoaderTypesSetup.ValidEnvironment_v1:
+                    // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
                     break;
 
-                case TestLoaderTypes.ValidEnvironment_v2:
+                case TestLoaderTypesSetup.ValidEnvironment_v2:
+                    // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true));
                     break;
 
-                case TestLoaderTypes.InvalidEnvironment:
+                case TestLoaderTypesSetup.InvalidEnvironment:
+                    // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
                     break;
 
-                case TestLoaderTypes.InvalidEnvironment_v1:
+                case TestLoaderTypesSetup.InvalidEnvironment_v1:
+                    // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
                     break;
 
-                case TestLoaderTypes.InvalidEnvironment_v2:
+                case TestLoaderTypesSetup.InvalidEnvironment_v2:
+                    // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: false));
                     break;
 
-                case TestLoaderTypes.BothValid_v1:
+                case TestLoaderTypesSetup.BothValid_v1:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
                     break;
 
-                case TestLoaderTypes.BothValid_v2:
+                case TestLoaderTypesSetup.BothValid_v2:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true));
                     break;
 
                 default:
-                case TestLoaderTypes.BothInvalid:
+                case TestLoaderTypesSetup.BothInvalid:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
                     break;
 
-                case TestLoaderTypes.BothInvalid_v1:
+                case TestLoaderTypesSetup.BothInvalid_v1:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
                     break;
 
-                case TestLoaderTypes.BothInvalid_v2:
+                case TestLoaderTypesSetup.BothInvalid_v2:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: false));
+                    break;
+
+                case TestLoaderTypesSetup.EnvVar_Overloading_AppSettings:
+                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));  // NOTE: AppSettings are absolutely ok and valid here, as one of the loading strategies
+                    serviceCollection.AddSingleton(GetEnvVarsOverloadingAppSettings());   // NOTE: But in "FallbackContextWrapper" the EnvironmentVariables will take the priority
                     break;
             }
 

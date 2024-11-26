@@ -264,8 +264,8 @@ namespace EventsHandler.UnitTests.Services.DataProcessing.Strategy.Implementatio
         private static WebApiConfiguration GetConfiguration(bool isMessageAllowed)
         {
             return isMessageAllowed
-                ? ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment_v1)
-                : ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.InvalidEnvironment_v1);
+                ? ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1)
+                : ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
         }
 
         private MessageReceivedScenario ArrangeMessageScenario_TryGetData(

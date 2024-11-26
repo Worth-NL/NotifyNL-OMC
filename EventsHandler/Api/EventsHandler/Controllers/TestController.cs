@@ -58,11 +58,14 @@ namespace EventsHandler.Controllers
             this._responder = responder;
         }
 
+        #region NotifyNL endpoints
+        private const string NotifyNL = nameof(NotifyNL);
+
         /// <summary>
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route("NotifyNL/HealthCheck")]
+        [Route(NotifyNL + "/HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -116,7 +119,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("NotifyNL/SendEmail")]
+        [Route(NotifyNL + "/SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -156,7 +159,7 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route("NotifyNL/SendSms")]
+        [Route(NotifyNL + "/SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -174,6 +177,39 @@ namespace EventsHandler.Controllers
                 mobileNumber,
                 smsTemplateId,
                 personalization);
+        }
+        #endregion
+
+        #region OMC endpoints
+        private const string OMC = nameof(OMC);
+
+        /// <summary>
+        /// Tests if all the configurations (from "appsettings.json" and environment variables) are present and contains non-empty values (if required).
+        /// </summary>
+        [HttpGet]
+        [Route(OMC + "/TestConfigs")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        public async Task<IActionResult> TestConfigsAsync()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    _ = WebApiConfiguration.TestAppSettingsConfigs(this._configuration);
+                    _ = WebApiConfiguration.TestEnvVariablesConfigs(this._configuration);
+                    
+                    // HttpStatus Code: 202 Accepted
+                    return LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(Resources.Test_OMC_PropertiesCheck_SUCCESS)));
+                }
+                catch (Exception exception)
+                {
+                    // HttpStatus Code: 500 Internal Server Error
+                    return this._responder.GetExceptionResponse(exception);
+                }
+            });
         }
 
         /// <summary>
@@ -205,7 +241,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("OMC/Confirm")]
+        [Route(OMC + "/Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -238,6 +274,7 @@ namespace EventsHandler.Controllers
                     this._responder.GetExceptionResponse(exception));
             }
         }
+        #endregion
 
         #region Helper methods
         /// <summary>

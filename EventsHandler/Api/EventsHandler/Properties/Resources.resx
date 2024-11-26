@@ -239,7 +239,7 @@
     <comment>HTTP Status Code = 501. Unhandled case</comment>
   </data>
   <data name="Operation_ERROR_Internal_Unknown" xml:space="preserve">
-    <value>Internal error: An unknown issue occurred.</value>
+    <value>Internal error: An unexpected issue occurred.</value>
     <comment>HTTP Status Code = 501. Unhandled case</comment>
   </data>
   <data name="Processing_ERROR_Notification_DeliveryMethodUnknown" xml:space="preserve">
@@ -511,5 +511,9 @@
   <data name="API_Response_STATUS_Logging" xml:space="preserve">
     <value>{0} | {1} | {2}</value>
     <comment>{0} = Application name, {1} = Log level, {2} = Log message</comment>
+  </data>
+  <data name="Test_OMC_PropertiesCheck_SUCCESS" xml:space="preserve">
+    <value>All required appsettings.json and environment variables are existing and have non-empty values</value>
+    <comment>API Endpoint: Test/OMC/TestConfigs</comment>
   </data>
 </root>
