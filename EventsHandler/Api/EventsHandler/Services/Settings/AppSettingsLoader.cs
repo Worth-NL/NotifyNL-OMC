@@ -49,7 +49,8 @@ namespace EventsHandler.Services.Settings
                 return string.Empty;
             }
 
-            if (currentPath == "AppSettings")  // Skip "AppSettings" as part of the configuration path
+            // Skip "AppSettings" as part of the configuration path
+            if (currentPath == ILoadingService.AppSettings)
             {
                 return nodeName;
             }

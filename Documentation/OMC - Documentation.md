@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.12.3
+v.1.12.4
 
 © 2023-2024, Worth Systems.
 
@@ -43,7 +43,9 @@ v.1.12.3
 
          - 3.1.2.3. [Set environment variables](#set_environment_variables)
 
-         - 3.1.2.4. [Using HELM Charts](#helm_charts)
+         - 3.1.2.4. [Overriding appsettings.json](#overriding_appsettings)
+         
+         - 3.1.2.5. [Using HELM Charts](#helm_charts)
 
 4. [Authorization and authentication](#authorization)
 
@@ -421,9 +423,9 @@ Which can also be divided into other two categories:
 Easier to monitor, test, modify, and maintain by developers are `appsettings.json`,
 but `environment variables` are easier to be adjusted by the end users of **OMC**.
 
-<h3 id="appsettings">3.1.1. `appsettings.json`</h3>
+<h3 id="appsettings">3.1.1. appsettings.json</h3>
 
-> Made for public configurations (can be preserved in the code). They are not meant to be changed very often.
+> Made for public configurations (can be safely preserved in the code, without causing confidentiality issues). They are not meant to be changed very often.
 
 ![Invalid base URL - Error](images/appsettings.png)
 
@@ -606,7 +608,68 @@ Additionally, environment variables can be also defined in **Visual Studio**'s `
 
 > To be finished...
 
-<h4 id="helm_charts">3.1.2.4. Using HELM Charts</h4>
+<h4 id="overriding_appsettings">3.1.2.4. Overriding appsettings.json</h4>
+
+As mentioned earlier, one of the two main differences between _appsettings.json_ and _environment variables_ is that _appsettings.json_ are meant to hold some predefined, rarely-changing values and modifying them is not as easy for end-users as modifying _environment variables_.
+
+> Configurations inside of `appsettings.json` file are included as an embeded resource with the .NET solution and read from this file whenever requested by **OMC**. This means, that changing such configurations requires updating `appsettings.json` file, rebuilding the solution, re-creating **Docker image**, and then re-deploying it afterwards.
+
+However, there is an option to override a specific _appsettings.json_ configuration with respective _environment variable_, if that's intended.
+
+To achieve this, the specific configuration needs to be set as _environment variable_ using the `UNDERSCORE_CAPITAL_CASE` _environment variables naming convention_ (similar to the one used in _Python_ or _C++_ languages when defining _constants_) and matching the configuration name from the original `appsettings.json` file.
+
+When **OMC** will attempt to read a configuration for the first time (before caching them), and about which it's internally known that it's present in _appsettings.json_, then a special "loader context" fallback strategy will prioritize checking if the _environment variable_ overriden `key` is already existing in the system.
+
+If it is existing:
+- then the `value` of this _environment variable_ will be used;
+- otherwise, configuration will be taken from `appsettings.json`.
+
+---
+**EXAMPLE:**
+
+1. You can check which configurations are present in `appsettings.json` file [here](#appsettings).
+
+2. Pick which configuration should be overriden.
+
+Let's say the following "SMS_Success_Subject" configuration from `appsettings.json` needs to be overriden:
+
+```JSON
+{
+  "Variables": {
+    "UxMessages": {
+      "SMS_Success_Subject": "Notificatie verzonden"
+    }
+  }
+}
+```
+
+3. Determine name of the new _environment variable_ by translating _JSON schema convention_ into _environment variables naming convention_:
+
+    3.1. **Flattening** the _JSON schema structure_ to reduce the nesting:
+
+    > Variables:UxMessages:SMS_Success_Subject
+
+    3.2. **Replacing** all special characters (`:`, `.`) by `_` underscore:
+
+    > Variables_UxMessages_SMS_Success_Subject
+
+    3.3. **Capitalizing** all remaining characters, using "upper case" convention:
+
+    > VARIABLES_UXMESSAGES_SMS_SUCCESS_SUBJECT
+
+    > **NOTE:** You can also use text editor such as **Notepad++** for this task. There are even online converters available (e.g., https://convertcase.net/).
+
+4. Adding new _environment variable_ `key` to the system, and assigning a `value` to it.
+
+5. Restart **OMC** Web API service, so the recent changes in _environment variables_ can be reflected.
+
+6. When running the application, the **OMC** "loader context" fallback strategy will do the same steps as stated in point **3**, and try to access the given `appsettings.json` configuration, using its _environment variable_ alternative `key`.
+
+> **NOTE:** The fallback strategy is working only for overriding `appsettings.json` configurations by _environment variables_, not the opposite.
+
+---
+
+<h4 id="helm_charts">3.1.2.5. Using HELM Charts</h4>
 
 **NotifyNL** and **OMC** are meant to be used with [HELM Charts](https://helm.sh/) (helping to install them on your local machine / server).
 

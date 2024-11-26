@@ -16,7 +16,7 @@ namespace EventsHandler.UnitTests.Mapping.Models.POCOs.OpenZaak.v2
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings);
+            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
         }
 
         [OneTimeTearDown]

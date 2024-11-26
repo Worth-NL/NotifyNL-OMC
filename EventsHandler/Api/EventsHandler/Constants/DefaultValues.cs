@@ -12,7 +12,7 @@ namespace EventsHandler.Constants
         {
             internal const string Route = "[controller]";
 
-            internal const string Version = "1.123";
+            internal const string Version = "1.124";
         }
         #endregion
 
@@ -63,6 +63,8 @@ namespace EventsHandler.Constants
         internal static class Models
         {
             internal static string EmptyJson => "{}";
+
+            internal const string DefaultStringValue = "-";  // Constant only
 
             internal const string DefaultEnumValueName = "-";  // Constant only
 
