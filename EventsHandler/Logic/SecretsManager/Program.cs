@@ -18,16 +18,16 @@ namespace SecretsManager
             var context = new EncryptionContext(new SymmetricEncryptionStrategy());
 
             // Get security key
-            SecurityKey securityKey = context.GetSecurityKey(GetConfigValue("OMC_AUTHORIZATION_JWT_SECRET"));  // TODO: Remove hardcoded paths
+            SecurityKey securityKey = context.GetSecurityKey(GetConfigValue("OMC_AUTH_JWT_SECRET"));  // TODO: Remove hardcoded paths
 
             // Generate JSON Web Token
             string jwtToken = context.GetJwtToken(
                 securityKey,
-                issuer: GetConfigValue("OMC_AUTHORIZATION_JWT_ISSUER"),
-                audience: GetConfigValue("OMC_AUTHORIZATION_JWT_AUDIENCE"),
+                issuer: GetConfigValue("OMC_AUTH_JWT_ISSUER"),
+                audience: GetConfigValue("OMC_AUTH_JWT_AUDIENCE"),
                 expiresAt: validDateTime,
-                userId: GetConfigValue("OMC_AUTHORIZATION_JWT_USERID"),
-                userName: GetConfigValue("OMC_AUTHORIZATION_JWT_USERNAME"));
+                userId: GetConfigValue("OMC_AUTH_JWT_USERID"),
+                userName: GetConfigValue("OMC_AUTH_JWT_USERNAME"));
 
             // Write JWT tokens
             context.SaveJwtToken(jwtToken);
