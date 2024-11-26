@@ -165,12 +165,13 @@ namespace EventsHandler.Extensions
         /// Joins the specified collection into a comma-separated <see langword="string"/>.
         /// </summary>
         /// <param name="collection">The collection to be parsed.</param>
+        /// <param name="suffix">The additional element to put after the separator.</param>
         /// <returns>
         ///   A comma-separated string
         /// </returns>
-        internal static string Join(this IEnumerable<string> collection)
+        internal static string Join(this IEnumerable<string> collection, string suffix = "")
         {
-            return string.Join(CommaSeparator, collection);
+            return string.Join(CommaSeparator + suffix, collection);
         }
         #endregion
     }

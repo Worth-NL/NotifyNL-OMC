@@ -20,7 +20,7 @@ namespace EventsHandler.UnitTests.Services.Settings.Extensions
         public void InitializeTests()
         {
             this._appSettingsConfiguration = ConfigurationHandler.GetConfiguration();
-            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidEnvironment_v1);
+            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
         }
 
         [OneTimeTearDown]

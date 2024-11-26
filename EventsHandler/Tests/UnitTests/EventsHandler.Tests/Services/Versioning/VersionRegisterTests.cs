@@ -47,7 +47,7 @@ namespace EventsHandler.UnitTests.Services.Versioning
             // Arrange
             var serviceCollection = new ServiceCollection();
             using WebApiConfiguration configuration =
-                ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.ValidAppSettings);
+                ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
 
             serviceCollection.AddSingleton(configuration);
 
@@ -74,7 +74,7 @@ namespace EventsHandler.UnitTests.Services.Versioning
             // Arrange
             var serviceCollection = new ServiceCollection();
             using WebApiConfiguration configuration =
-                ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypes.BothValid_v1);
+                ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
 
             serviceCollection.AddSingleton(configuration);
 
