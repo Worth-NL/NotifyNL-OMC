@@ -16,7 +16,6 @@ namespace EventsHandler.Tests.Utilities._TestHelpers
     public static class NotificationEventHandler
     {
         #region Constants
-
         public const string SourceOrganization_Real_TheHague = "286130270";
         public const string ResponsibleOrganization_Real_TheHague = "999990639";
 
@@ -39,7 +38,6 @@ namespace EventsHandler.Tests.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Test)
-
         public static NotificationEvent GetNotification_Test_Ping()
         {
             var testUri = new Uri("http://some.hoofdobject.nl/");
@@ -163,7 +161,6 @@ namespace EventsHandler.Tests.Utilities._TestHelpers
         #endregion
 
         #region Notifications (Real)
-
         public static string GetNotification_Real_CaseUpdateScenario_TheHague()
         {
             const string jsonPayload =
@@ -265,7 +262,6 @@ namespace EventsHandler.Tests.Utilities._TestHelpers
         #endregion
 
         #region Helper methods
-
         public static string GetOrphanSecondValue()
         {
             return Orphan_Test_Value_2.ToString().ToLower();
