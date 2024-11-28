@@ -234,7 +234,7 @@ namespace EventsHandler.Tests.Unit.Extensions
         {
             // Arrange
             MethodInfo? method = typeof(StringExtensions)
-                .GetMethod(nameof(StringExtensions.ChangeType), BindingFlags.Static | BindingFlags.NonPublic);
+                .GetMethod(nameof(StringExtensions.ChangeType), BindingFlags.Static | BindingFlags.Public);
 
             MethodInfo? genericMethod = method?.MakeGenericMethod(expectedResultType);
 

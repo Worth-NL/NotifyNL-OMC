@@ -24,13 +24,6 @@
     <ProjectReference Include="..\..\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
   </ItemGroup>
 
-  <!-- Settings -->
-  <ItemGroup>
-    <Content Include="..\..\..\..\Core\Domain\EventsHandler\appsettings.Test.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <!-- Code coverage -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
