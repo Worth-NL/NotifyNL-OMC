@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <!-- Project -->
+    <AssemblyName>NotifyNL.EventsHandler.Tests.Integration</AssemblyName>
+
+    <TargetFramework>net8.0</TargetFramework>
+
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="NUnit" Version="4.2.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="4.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Projects -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
+  </ItemGroup>
+
+  <!-- Code coverage -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,501 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Deserialization_ERROR_InvalidJson_Message" xml:space="preserve">
+    <value>The JSON payload is invalid.</value>
+  </data>
+  <data name="Deserialization_ERROR_InvalidJson_Reason1" xml:space="preserve">
+    <value>SENDER: The input cannot be recognized as JSON format.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Message" xml:space="preserve">
+    <value>Required properties are missing in the given JSON payload.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2" xml:space="preserve">
+    <value>SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3" xml:space="preserve">
+    <value>RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Value_Message" xml:space="preserve">
+    <value>Received value could not be recognized (might be unexpected).</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1" xml:space="preserve">
+    <value>SENDER: In the JSON schema some data (value) of property (key) has a different type, format, or is out of range than supported in the POCO model.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2" xml:space="preserve">
+    <value>RECEIVER: In the POCO model the type, format or range of expected data was recently changed, causing a mismatch with the JSON schema.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message" xml:space="preserve">
+    <value>Some values of properties in the nested 'attributes' ('kenmerken') in the POCO model are missing.</value>
+  </data>
+  <data name="Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1" xml:space="preserve">
+    <value>SENDER: In the JSON schema some properties from the nested 'attributes' ('kenmerken') are missing, although they were previously defined in the POCO model.</value>
+  </data>
+  <data name="Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2" xml:space="preserve">
+    <value>SENDER: In the JSON schema some keys of properties in the nested 'attributes' ('kenmerken') were renamed, causing mismatch with the POCO model.</value>
+  </data>
+  <data name="Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3" xml:space="preserve">
+    <value>RECEIVER: In the POCO model the custom names of some attributes are different from the keys of properties in the nested 'attributes' ('kenmerken') in the received JSON payload.</value>
+  </data>
+  <data name="Deserialization_INFO_UnexpectedData_Attributes_Message" xml:space="preserve">
+    <value>The JSON payload contains more properties in the nested 'attributes' ('kenmerken') than expected by the POCO model.</value>
+  </data>
+  <data name="Deserialization_INFO_UnexpectedData_Attributes_Reason1" xml:space="preserve">
+    <value>SENDER: The JSON schema was recently changed and some properties in the nested 'attributes' ('kenmerken') were added to it.</value>
+  </data>
+  <data name="Deserialization_INFO_UnexpectedData_Attributes_Reason2" xml:space="preserve">
+    <value>RECEIVER: In the POCO model some existing properties were removed from the nested 'attributes', causing a mismatch with the JSON schema.</value>
+  </data>
+  <data name="Deserialization_ERROR_UnexpectedData_Notification_Message" xml:space="preserve">
+    <value>The JSON payload contains more root 'notification' properties than expected by the POCO model.</value>
+  </data>
+  <data name="Deserialization_INFO_UnexpectedData_Notification_Reason1" xml:space="preserve">
+    <value>SENDER: The JSON schema was recently changed and some root 'notification' properties were added to it.</value>
+  </data>
+  <data name="Deserialization_INFO_UnexpectedData_Notification_Reason2" xml:space="preserve">
+    <value>RECEIVER: In the POCO model some existing properties were removed from the root 'notification', causing a mismatch with the JSON schema.</value>
+  </data>
+  <data name="HttpRequest_ERROR_HttpsProtocolExpected" xml:space="preserve">
+    <value>The HTTPS protocol is expected.</value>
+  </data>
+  <data name="HttpRequest_ERROR_Message" xml:space="preserve">
+    <value>The HTTP Request sent to external Web API service failed.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoCase" xml:space="preserve">
+    <value>HTTP Request: Case could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoCaseDetails" xml:space="preserve">
+    <value>HTTP Request: Case details could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoCaseRole" xml:space="preserve">
+    <value>HTTP Request: Case role could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoCaseStatuses" xml:space="preserve">
+    <value>HTTP Request: Case statuses could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoCaseStatusType" xml:space="preserve">
+    <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoPartyResults" xml:space="preserve">
+    <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoDecision" xml:space="preserve">
+    <value>HTTP Request: The decision could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoFeedbackKlant" xml:space="preserve">
+    <value>HTTP Request: The contact moment could not be retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoSourceOrganization" xml:space="preserve">
+    <value>HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization ('bronorganisatie').</value>
+  </data>
+  <data name="HttpRequest_ERROR_Reason1" xml:space="preserve">
+    <value>RECEIVER: The requested resource is unavailable or not existing.</value>
+  </data>
+  <data name="HttpRequest_ERROR_Reason2" xml:space="preserve">
+    <value>SENDER: The network configuration is improper.</value>
+  </data>
+  <data name="Operation_ERROR_Unknown_ValidationIssue_Message" xml:space="preserve">
+    <value>An unknown validation issue occurred.</value>
+    <comment>HTTP Status Code = 500</comment>
+  </data>
+  <data name="Operation_ERROR_Deserialization_Failure" xml:space="preserve">
+    <value>The notification could not be recognized/deserialized.</value>
+    <comment>HTTP Status Code = 406</comment>
+  </data>
+  <data name="Operation_SUCCESS_Deserialization_Partial" xml:space="preserve">
+    <value>The notification was partially recognized/deserialized.</value>
+    <comment>HTTP Status Code = 206</comment>
+  </data>
+  <data name="Operation_SUCCESS_Deserialization_Success" xml:space="preserve">
+    <value>The notification was successfully recognized/deserialized.</value>
+    <comment>HTTP Status Code = 200</comment>
+  </data>
+  <data name="Operation_ERROR_AccessDenied" xml:space="preserve">
+    <value>The access to the external Web API service is forbidden.</value>
+    <comment>HTTP Status Code = 403</comment>
+  </data>
+  <data name="Operation_ERROR_HttpRequest_Failure" xml:space="preserve">
+    <value>The HTTP request wasn't completed successfully.</value>
+    <comment>HTTP Status Code = 400</comment>
+  </data>
+  <data name="Operation_ERROR_NotImplemented" xml:space="preserve">
+    <value>This operation is not implemented. Internal server error.</value>
+    <comment>HTTP Status Code = 501. Unhandled case</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_Unknown" xml:space="preserve">
+    <value>Internal error: An unexpected issue occurred.</value>
+    <comment>HTTP Status Code = 501. Unhandled case</comment>
+  </data>
+  <data name="Processing_ERROR_Notification_DeliveryMethodUnknown" xml:space="preserve">
+    <value>The notification method ('aanmaakkanaal') is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None.</value>
+  </data>
+  <data name="Processing_ERROR_Notification_Test" xml:space="preserve">
+    <value>The test notification was received and ignored.</value>
+    <comment>HTTP Status Code = 206</comment>
+  </data>
+  <data name="Processing_ERROR_Scenario_NotificationMethod" xml:space="preserve">
+    <value>The notification method is missing, unknown, or not supported.</value>
+  </data>
+  <data name="Processing_ERROR_Scenario_NotificationNotSent" xml:space="preserve">
+    <value>The notification has not been sent to Notify NL: {0}.</value>
+    <comment>{0} = Error message</comment>
+  </data>
+  <data name="Processing_ERROR_Scenario_NotImplemented" xml:space="preserve">
+    <value>It was not possible to determine what to do with the received notification.</value>
+    <comment>HTTP Status Code = 206</comment>
+  </data>
+  <data name="Processing_SUCCESS_Scenario_NotificationSent" xml:space="preserve">
+    <value>The notification has been successfully processed and sent to Notify NL.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
+  </data>
+  <data name="Swagger_UI_Authentication_Description" xml:space="preserve">
+    <value>Insert received JWT token here</value>
+    <comment>Swagger UI</comment>
+  </data>
+  <data name="Swagger_UI_Description" xml:space="preserve">
+    <value>API handling the data and communication workflow between multiple third-party components in order to send notifications through Notify NL.</value>
+    <comment>Swagger UI</comment>
+  </data>
+  <data name="Swagger_UI_Title" xml:space="preserve">
+    <value>OMC (Output Management Component)</value>
+    <comment>Swagger UI</comment>
+  </data>
+  <data name="Swagger_UI_Version" xml:space="preserve">
+    <value>1.0</value>
+    <comment>Swagger UI</comment>
+  </data>
+  <data name="Processing_ERROR_ExecutingContext_UnknownErrorDetails" xml:space="preserve">
+    <value>It wasn't possible to extract human-friendly error message</value>
+  </data>
+  <data name="Processing_ERROR_ExecutingContext_UnregisteredApiController" xml:space="preserve">
+    <value>This controller is not yet registered as handled StandardizeApiResponse</value>
+  </data>
+  <data name="Endpoint_Test_Notify_SendEmailSms_ERROR_NotSupportedMethod" xml:space="preserve">
+    <value>This notification method is not supported.</value>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms</comment>
+  </data>
+  <data name="Endpoint_Test_Notify_SendEmailSms_SUCCESS_NotificationSent" xml:space="preserve">
+    <value>The {0} notification was successfully sent to Notify NL.</value>
+    <comment>API Endpoint: Test/Notify/SendEmail or SendSms; {0} = The type of notification: Email / SMS</comment>
+  </data>
+  <data name="Register_NotifyNL_SUCCESS_NotificationSent" xml:space="preserve">
+    <value>The registration of details about successfully processed notification was completed.</value>
+    <comment>HTTP Status Code = 202 or 206</comment>
+  </data>
+  <data name="Endpoint_Notify_Confirm_ERROR_UnexpectedFailure" xml:space="preserve">
+    <value>An unexpected error occurred during processing the notification with ID: {0} | {1}.</value>
+    <comment>API Endpoint: Notify/Confirm. {0} = ID, {1} = Exception message</comment>
+  </data>
+  <data name="Endpoint_Notify_Confirm_INFO_NotificationStatus" xml:space="preserve">
+    <value>The status of notification with ID: {0} | {1}.</value>
+    <comment>API Endpoint: Notify/Confirm. {0} = ID, {1} = Notification status</comment>
+  </data>
+  <data name="Endpoint_Events_Version_INFO_ApiVersionRequested" xml:space="preserve">
+    <value>The version of the API was requested.</value>
+    <comment>API Endpoint: Events/Version</comment>
+  </data>
+  <data name="Application_Name" xml:space="preserve">
+    <value>OMC</value>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_Message" xml:space="preserve">
+    <value>The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}</value>
+    <comment>{0} = The model used as target for deserialization, {1} = The properties that failed during deserialization, {2} = The reason why deserialization failed, {3} = The properties that are required, {4} = The JSON used as data to be deserialized</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoLastStatus" xml:space="preserve">
+    <value>HTTP Request: The case (obtained from OpenZaak Web API service) does not contain any statuses.</value>
+  </data>
+  <data name="API_Response_ERROR_UnspecifiedResponse" xml:space="preserve">
+    <value>{0} | {1} | Not standardized (unexpected) API response</value>
+    <comment>{0} = HTTP Status Code, {1} = Name of ObjectResult type</comment>
+  </data>
+  <data name="HttpRequest_ERROR_EmptyCaseRoles" xml:space="preserve">
+    <value>HTTP Request: Results representing case roles (retrieved from OpenZaak Web API service) are empty.</value>
+  </data>
+  <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
+    <value>HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
+  </data>
+  <data name="Authorization_ERROR_HttpClientTypeNotSuported" xml:space="preserve">
+    <value>This type of HttpClient is not supported yet:</value>
+  </data>
+  <data name="Operation_INFO_NotifyClientInitialized" xml:space="preserve">
+    <value>The Notify HttpClient was initialized for organization ID: {0}.</value>
+    <comment>{0} = Organization ID / Responsible Organization ID</comment>
+  </data>
+  <data name="HttpRequest_ERROR_EmptyPartiesResults" xml:space="preserve">
+    <value>HTTP Request: Results representing results about parties (retrieved from OpenKlant Web API service) are empty.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoDigitalAddresses" xml:space="preserve">
+    <value>HTTP Request: It was not possible to determine any matching digital addresses (e-mail or phone number) in any of the contact details for any of the parties (citizens, organizations) retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1" xml:space="preserve">
+    <value>SENDER: In the received notification some [Required] properties are either null, empty, or with default values.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId" xml:space="preserve">
+    <value>The notification can not be sent because the case type with identification '{0}' is not included in the {1}.</value>
+    <comment>{0} = Case Type ID, {1} = Name of the environment variable holding this value</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
+    <value>HTTP Request: The task (object) could not be retrieved from Objecten Web API service.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_TaskClosed" xml:space="preserve">
+    <value>The notification can not be sent if the task is already closed.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported" xml:space="preserve">
+    <value>The notification can not be sent if the task is not assigned to a person (missing BSN number) or to an organization (missing KVK number).</value>
+  </data>
+  <data name="Operation_ERROR_Internal_NotCaseTypeUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a case type.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_NotCaseUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a case.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_NotDecisionResourceUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a decision resource.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Informeren" xml:space="preserve">
+    <value>The notification can not be sent because the inform field in the case type is set to false.</value>
+  </data>
+  <data name="Processing_ABORT" xml:space="preserve">
+    <value>Processing aborted.</value>
+    <comment>Suffix to Processing_ABORT_[...] messages</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_DecisionConfidentiality" xml:space="preserve">
+    <value>The notification can not be sent because of the confidentiality setting '{0}' in information object related to decision.</value>
+    <comment>{0} = A name of option from Confidentiality enum</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_DecisionStatus" xml:space="preserve">
+    <value>The notification can not be sent because the status of the decision is not definitive.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType" xml:space="preserve">
+    <value>The notification can not be sent for this information object type GUID: {0}, because it is not included in the: {1}.</value>
+    <comment>{0} = Object Type ID, {1} = Name of the environment variable holding the whitelisted values</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoDecisionResource" xml:space="preserve">
+    <value>HTTP Request: The decision resource could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoDocuments" xml:space="preserve">
+    <value>HTTP Request: The documents could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="HttpRequest_ERROR_NoInfoObject" xml:space="preserve">
+    <value>HTTP Request: The information object could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_NotInfoObjectUri" xml:space="preserve">
+    <value>Internal error: The given URI is not an information object.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoDecisionType" xml:space="preserve">
+    <value>HTTP Request: The decision type could not be retrieved from OpenZaak Web API service.</value>
+  </data>
+  <data name="Processing_SUCCESS_Scenario_DataRetrieved" xml:space="preserve">
+    <value>The notification data were retrieved successfully by the selected notification scenario.</value>
+  </data>
+  <data name="Processing_ERROR_Scenario_MissingNotifyData" xml:space="preserve">
+    <value>There are no Notify Data to be processed by the selected notification scenario.</value>
+  </data>
+  <data name="Processing_SUCCESS_Scenario_DataProcessed" xml:space="preserve">
+    <value>The notification data were processed successfully by the selected notification scenario.</value>
+  </data>
+  <data name="Processing_ERROR_Scenario_MissingInfoObjectsURIs" xml:space="preserve">
+    <value>There was no possible to determine URIs of any matching InfoObjects. Continuation of processing the selected notification scenario is pointless.</value>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden" xml:space="preserve">
+    <value>The notification can not be sent because processing messages is forbidden (set to 'false') in the: {0}.</value>
+    <comment>{0} = Name of the environment variable holding the whitelisted values</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoMessage" xml:space="preserve">
+    <value>HTTP Request: The message (object) could not be retrieved from Objecten Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_NotObjectUri" xml:space="preserve">
+    <value>Internal error: The given URI is not an object.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid" xml:space="preserve">
+    <value>The notification can not be sent for this object type GUID: {0}. Check respective whitelist (depends on type of your object): {1}.</value>
+    <comment>{0} = Object Type ID, {1} = Generic name of environment variables holding the whitelisted values</comment>
+  </data>
+  <data name="Endpoint_Events_Version_INFO_OmcVersionSummary" xml:space="preserve">
+    <value>{0}: v{1} ({2}) | Workflow: v{3} ({4}).</value>
+    <comment>API Endpoint: Events/Version; {0} = Application name, {1} = OMC version, {2} = Application mode (Dev, Prod...), {3} = OMC Workflow version, {4} = API components versions</comment>
+  </data>
+  <data name="HttpRequest_ERROR_NoPartyDetails" xml:space="preserve">
+    <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
+  </data>
+  <data name="Operation_ERROR_Internal_MissingBsnNumber" xml:space="preserve">
+    <value>Internal error: The BSN number is expected.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Operation_ERROR_Internal_NotPartyUri" xml:space="preserve">
+    <value>Internal error: The given URI is not a party.</value>
+    <comment>HTTP Status Code = 422. The developer used wrong method or in a wrong way</comment>
+  </data>
+  <data name="Deserialization_ERROR_CannotDeserialize_RequiredProperties" xml:space="preserve">
+    <value>The following properties were missing in JSON, but they are required.</value>
+  </data>
+  <data name="Processing_ERROR_Exception_Notify" xml:space="preserve">
+    <value>Notify NL Exception | {0}</value>
+    <comment>{0} = Exception message</comment>
+  </data>
+  <data name="Processing_ERROR_Exception_Unhandled" xml:space="preserve">
+    <value>{0} | {1}</value>
+    <comment>{0} = Name of exception type, {1} = Exception message</comment>
+  </data>
+  <data name="Processing_STATUS_Notification" xml:space="preserve">
+    <value>{0} | Notification: {1}.</value>
+    <comment>{0} = Description of the result, {1} = The initial notification JSON</comment>
+  </data>
+  <data name="API_Response_STATUS_Logging" xml:space="preserve">
+    <value>{0} | {1} | {2}</value>
+    <comment>{0} = Application name, {1} = Log level, {2} = Log message</comment>
+  </data>
+  <data name="Endpoint_Test_OMC_TestConfigs_SUCCESS_ConfigurationsValid" xml:space="preserve">
+    <value>All required appsettings.json and environment variables are existing and have non-empty values.</value>
+    <comment>API Endpoint: Test/OMC/TestConfigs</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionBesluitenUnknown" xml:space="preserve">
+    <value>The version of Besluiten service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionNotifyResponderUnknown" xml:space="preserve">
+    <value>The version of NotifyResponder service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionObjectenUnknown" xml:space="preserve">
+    <value>The version of Objecten service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionObjectTypenUnknown" xml:space="preserve">
+    <value>The version of ObjectTypen service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionOpenKlantUnknown" xml:space="preserve">
+    <value>The version of OpenKlant service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionOpenZaakUnknown" xml:space="preserve">
+    <value>The version of OpenZaak service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+  <data name="ServiceResolving_ERROR_VersionTelemetryUnknown" xml:space="preserve">
+    <value>The version of Telemetry service to be used by OMC is unknown or not supported. Check used version of OMC workflow.</value>
+    <comment>Resolving the service version during Dependency Injection</comment>
+  </data>
+</root>
