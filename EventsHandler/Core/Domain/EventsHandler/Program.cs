@@ -62,7 +62,7 @@ using Responder = EventsHandler.Services.Responding;
 namespace EventsHandler
 {
     /// <summary>
-    /// The entry point to the Web API application, responsible for configuring and starting the application.
+    /// The entry point to the Web API application, responsible for configuring and starting its instance.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
@@ -74,35 +74,39 @@ namespace EventsHandler
         internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
-                .ConfigureServices()      // 1. Add and configure different types of services used by this application
-                .ConfigureHttpPipeline()  // 2. Configure pipeline what should happen during HTTP request-response cycle
-                .Run();                   // 3. Start the application
+                .AddConfiguration()       // 1. Configuration (appsettings.json)
+                .AddExternalServices()    // 2. Microsoft .NET services
+                .AddInternalServices()    // 3. Internal OMC services
+                .ConfigureHttpPipeline()  // 4. Configure pipeline (what should happen during HTTP request-response cycle)
+                .Run();                   // 5. Start the application
         }
+
+        #region Configuration
+        /// <summary>
+        /// Adding application configurations from JSON files.
+        /// </summary>
+        /// <param name="builder">The builder of the web application (used for configuration).</param>
+        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
+        private static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
+        {
+            // Configuration appsettings.json files
+            const string settingsFileName = "appsettings";
+
+            builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
+                                 .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
+
+            return builder;
+        }
+        #endregion
 
         #region Services: External (.NET)
-        /// <summary>
-        /// Adds services to the <see cref="IServiceCollection"/> container.
-        /// </summary>
-        /// <returns>Configured <see cref="WebApplicationBuilder"/>.</returns>
-        private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
-        {
-            return builder
-                .AddNetServices()      // Microsoft .NET services
-                .AddCustomServices();  // Our custom Web API services
-        }
-
         /// <summary>
         /// Registration of .NET services, used by the application.
         /// </summary>
         /// <param name="builder">The builder of the web application (used for configuration).</param>
         /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
-        private static WebApplicationBuilder AddNetServices(this WebApplicationBuilder builder)
+        private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
-            // Configuration appsettings.json files
-            const string settingsFileName = "appsettings";
-            builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
-                                 .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
-
             // API Controllers
             builder.Services.AddControllers();
 
@@ -242,12 +246,14 @@ namespace EventsHandler
         /// </summary>
         /// <param name="builder">The builder of the web application (used for configuration).</param>
         /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with custom services.</returns>
-        private static WebApplicationBuilder AddCustomServices(this WebApplicationBuilder builder)
+        private static WebApplicationBuilder AddInternalServices(this WebApplicationBuilder builder)
         {
             // Configurations
             builder.Services.AddSingleton<WebApiConfiguration>();
-            builder.RegisterEncryptionStrategy();
             builder.Services.RegisterLoadingStrategies();
+
+            // JWT generation
+            builder.Services.RegisterEncryptionStrategy(builder);
 
             // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
@@ -260,7 +266,7 @@ namespace EventsHandler
             // Domain queries and resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
-            builder.RegisterOpenServices();
+            builder.Services.RegisterOpenServices(builder);
 
             // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
@@ -270,23 +276,23 @@ namespace EventsHandler
             builder.Services.AddSingleton<IVersionsRegister, VersionsRegister>();
 
             // User Interaction
-            builder.RegisterResponders();
+            builder.Services.RegisterResponders(builder);
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
         }
 
         #region Aggregated registrations
-        private static void RegisterEncryptionStrategy(this WebApplicationBuilder builder)
+        private static void RegisterEncryptionStrategy(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Strategies
-            builder.Services.AddSingleton(typeof(IJwtEncryptionStrategy),
+            services.AddSingleton(typeof(IJwtEncryptionStrategy),
                 builder.Configuration.IsEncryptionAsymmetric()
                     ? typeof(AsymmetricEncryptionStrategy)
                     : typeof(SymmetricEncryptionStrategy));
 
             // Context
-            builder.Services.AddSingleton<EncryptionContext>();
+            services.AddSingleton<EncryptionContext>();
         }
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
@@ -314,22 +320,22 @@ namespace EventsHandler
             services.AddSingleton<NotImplementedScenario>();
         }
 
-        private static void RegisterOpenServices(this WebApplicationBuilder builder)
+        private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Feature.Workflow_Version();
+            byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
+            
             // Common query methods
-            builder.Services.AddSingleton<IQueryBase, QueryBase>();
+            services.AddSingleton<IQueryBase, QueryBase>();
 
             // Strategies
-            builder.Services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omvWorkflowVersion));
-            builder.Services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omvWorkflowVersion));
+            services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
+            services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
+            services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
+            services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
+            services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
 
             // Feedback and telemetry
-            builder.Services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omvWorkflowVersion));
+            services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
 
             return;
 
@@ -397,14 +403,12 @@ namespace EventsHandler
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
-        private static void RegisterResponders(this WebApplicationBuilder builder)
+        private static void RegisterResponders(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            byte omvWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>()
-                                                      .OMC.Feature.Workflow_Version();
+            byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
 
-            // TODO: Named interfaces
-            builder.Services.AddSingleton<OmcResponder>();
-            builder.Services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(omvWorkflowVersion));
+            services.AddSingleton<OmcResponder>();
+            services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(omcWorkflowVersion));
 
             return;
 
