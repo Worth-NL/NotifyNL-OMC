@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Project -->
     <AssemblyName>NotifyNL.Common.Tests.Utilities</AssemblyName>
     
     <TargetFramework>net8.0</TargetFramework>
