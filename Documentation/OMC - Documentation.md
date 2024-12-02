@@ -364,6 +364,28 @@ And all of them have **Swagger UI** specified as the default start option.
 }
 ```
 
+> Full content of `launchSettings.json` file for **Secrets Manager** project.
+
+```JSON
+{
+  "profiles": {
+    "SecretsManager": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+
+        "OMC_AUTH_JWT_SECRET": "",
+        "OMC_AUTH_JWT_ISSUER": "",
+        "OMC_AUTH_JWT_AUDIENCE": "",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "",
+        "OMC_AUTH_JWT_USERID": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        "OMC_AUTH_JWT_USERNAME": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+      }
+    }
+  }
+}
+```
+
 > **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
 The developer can create more than one launch profile:
