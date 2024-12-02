@@ -90,10 +90,10 @@ namespace EventsHandler
         private static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
         {
             // Configuration appsettings.json files
-            const string settingsFileName = "appsettings";
+            const string appSettingsRootName = "appsettings";
 
-            builder.Configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
-                                 .AddJsonFile($"{settingsFileName}.{builder.Environment.EnvironmentName}.json", optional: true);
+            builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
+                                 .AddJsonFile($"{appSettingsRootName}.{builder.Environment.EnvironmentName}.json", optional: true);
 
             return builder;
         }
