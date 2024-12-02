@@ -696,7 +696,7 @@ In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ 
 
 - **SecretsManager.exe** from `CLI (Command Line Interface)` externally (e.g., `CMD.exe on Windows`, using valid credentials defined in _environment variables_)
 
-> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md)'s documentation.
+> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Core/Domain/SecretsManager/Readme.md)'s documentation.
 > **NOTE:** Do not use `PowerShell`.
 
 An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
@@ -711,7 +711,7 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 
 - **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
-> To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md).
+> To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Core/Domain/SecretsManager/Readme.md).
 
 - By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
 
