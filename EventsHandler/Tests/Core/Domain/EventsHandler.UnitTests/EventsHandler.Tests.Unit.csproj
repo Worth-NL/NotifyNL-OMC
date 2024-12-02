@@ -31,8 +31,6 @@
   
   <!-- Projects -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
-    <ProjectReference Include="..\..\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
     <ProjectReference Include="..\EventsHandler.Utilities\EventsHandler.Tests.Utilities.csproj" />
   </ItemGroup>
 
