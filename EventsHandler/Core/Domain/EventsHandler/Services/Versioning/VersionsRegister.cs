@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Constants;
 using Common.Extensions;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
+using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
@@ -63,7 +63,7 @@ namespace EventsHandler.Services.Versioning
         {
             return string.Format(ApiResources.Endpoint_Events_Version_INFO_OmcVersionSummary,
             /* {0} */ ApiResources.Application_Name,
-            /* {1} */ CommonValues.Default.ApiController.Version,
+            /* {1} */ ApiValues.Default.ApiController.Version,
             /* {2} */ Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment),
             /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
             /* {4} */ componentsVersions);

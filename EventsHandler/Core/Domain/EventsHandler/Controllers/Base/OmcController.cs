@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using Asp.Versioning;
-using Common.Constants;
+using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Messages.Models.Base;
@@ -13,10 +13,10 @@ namespace EventsHandler.Controllers.Base
     /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
-    [ApiVersion(CommonValues.Default.ApiController.Version)]
-    [Route(CommonValues.Default.ApiController.Route)]
-    [Consumes(CommonValues.Default.Request.ContentType)]
-    [Produces(CommonValues.Default.Request.ContentType)]
+    [ApiVersion(ApiValues.Default.ApiController.Version)]
+    [Route(ApiValues.Default.ApiController.Route)]
+    [Consumes(ApiValues.Default.ApiController.ContentType)]
+    [Produces(ApiValues.Default.ApiController.ContentType)]
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The HTTP Request wasn't successful
     [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired

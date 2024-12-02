@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using Common.Settings.Configuration;
+using EventsHandler.Constants;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Clients.Factories;
@@ -64,7 +65,7 @@ namespace EventsHandler.Services.DataSending
         async Task<RequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, CommonValues.Default.Request.ContentType);
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, ApiValues.Default.ApiController.ContentType);
 
             return await ExecuteCallAsync(httpClientType, uri, requestBody);
         }
@@ -163,7 +164,7 @@ namespace EventsHandler.Services.DataSending
 
                 // Set Authorization header
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    CommonValues.Default.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
+                    ApiValues.Default.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
 
                 return httpClient;
             }
@@ -184,13 +185,13 @@ namespace EventsHandler.Services.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
+                    => $"{ApiValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
-                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
+                    => $"{ApiValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
 
                 HttpClientTypes.ObjectTypen
-                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
+                    => $"{ApiValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{ApiResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")

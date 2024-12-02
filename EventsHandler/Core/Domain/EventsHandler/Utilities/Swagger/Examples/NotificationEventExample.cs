@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Constants;
+using EventsHandler.Constants;
 using EventsHandler.Mapping.Enums.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using Swashbuckle.AspNetCore.Filters;
@@ -27,13 +28,13 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 {
                     // Cases
                     CaseTypeUri = CommonValues.Default.Models.EmptyUri,
-                    SourceOrganization = CommonValues.Default.Models.DefaultOrganization,
+                    SourceOrganization = ApiValues.Default.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential,
                     // Objects
                     ObjectTypeUri = CommonValues.Default.Models.EmptyUri,
                     // Decisions
                     DecisionTypeUri = CommonValues.Default.Models.EmptyUri,
-                    ResponsibleOrganization = CommonValues.Default.Models.DefaultOrganization
+                    ResponsibleOrganization = ApiValues.Default.Models.DefaultOrganization
                 },
                 MainObjectUri = CommonValues.Default.Models.EmptyUri,
                 ResourceUri = CommonValues.Default.Models.EmptyUri,
