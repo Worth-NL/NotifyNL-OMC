@@ -252,9 +252,9 @@ And all of them have **Swagger UI** specified as the default start option.
 
 <h4 id="custom_lanunchSettings_profile">1.1.2.1. Customizing profile</h4>
 
-> Full content of `launchSettings.json` file.
+> Full content of `launchSettings.json` file for **Events Handler** project.
 
-```json
+```JSON
 {
   "profiles": {
     "http": {
@@ -977,7 +977,7 @@ Notifies the respective party (e.g., a citizen or an organization) about the cas
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1050,7 +1050,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the stat
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1129,7 +1129,7 @@ Notifies the respective party (e.g., a citizen or an organization) that their ca
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1208,7 +1208,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the new 
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "objecten",
@@ -1297,7 +1297,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the deci
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "besluiten",
@@ -1423,7 +1423,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the mess
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "objecten",
