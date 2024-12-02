@@ -22,7 +22,7 @@ namespace EventsHandler.Tests.Unit.Extensions
         public void GetGuid_ForDefaultUri_ReturnsEmptyGuid()
         {
             // Act
-            Guid actualGuid = DefaultValues.Models.EmptyUri.GetGuid();
+            Guid actualGuid = CommonValues.Default.Models.EmptyUri.GetGuid();
 
             // Assert
             Assert.That(actualGuid, Is.Default);

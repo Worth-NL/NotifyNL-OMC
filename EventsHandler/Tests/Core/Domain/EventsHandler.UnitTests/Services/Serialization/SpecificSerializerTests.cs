@@ -55,8 +55,8 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                 Assert.That(notification.Channel, Is.Not.EqualTo(Channels.Unknown));
                 Assert.That(notification.Resource, Is.Not.EqualTo(Resources.Unknown));
                 Assert.That(notification.Attributes, Is.Not.Default);
-                Assert.That(notification.MainObjectUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(notification.ResourceUri, Is.Not.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(notification.MainObjectUri, Is.Not.EqualTo(CommonValues.Default.Models.EmptyUri));
+                Assert.That(notification.ResourceUri, Is.Not.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(notification.CreateDate, Is.Not.Default);
             });
         }
@@ -144,7 +144,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(actualResult.InvolvedPartyUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualResult.InvolvedPartyUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(actualResult.InitiatorRole, Is.EqualTo(TestString));
                 Assert.That(actualResult.Party, Is.Null);
             });
@@ -442,7 +442,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         public void Deserialize_IJsonSerializable_From_EmptyJson_ThrowsJsonException_ListsRequiredProperties()  // NOTE: Simple model
         {
             // Act & Assert
-            foreach ((int id, Action deserialization, string? targetName, string failed, string? expectedResult) in GetSerializationTests(DefaultValues.Models.EmptyJson))
+            foreach ((int id, Action deserialization, string? targetName, string failed, string? expectedResult) in GetSerializationTests(CommonValues.Default.Models.EmptyJson))
             {
                 Assert.Multiple(() =>
                 {
@@ -482,10 +482,10 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
             // Assert
             string expectedResult =
                 $"{{" +
-                  $"\"url\":\"{DefaultValues.Models.EmptyUri}\"," +
+                  $"\"url\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                   $"\"identificatie\":\"\"," +
                   $"\"omschrijving\":\"\"," +
-                  $"\"zaaktype\":\"{DefaultValues.Models.EmptyUri}\"," +
+                  $"\"zaaktype\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                   $"\"registratiedatum\":\"0001-01-01\"" +
                 $"}}";
 
@@ -607,7 +607,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                 $"{{" +
                   $"\"record\":{{" +
                     $"\"data\":{{" +
-                      $"\"zaak\":\"{DefaultValues.Models.EmptyUri}\"," +
+                      $"\"zaak\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                       $"\"title\":\"\"," +
                       $"\"status\":\"-\"," +
                       $"\"verloopdatum\":\"{DateTime.MinValue.ConvertToDutchDateString()}\"," +
@@ -790,8 +790,8 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
             {
                 Results =
                 [
-                    new Document { InfoObjectUri = DefaultValues.Models.EmptyUri },
-                    new Document { InfoObjectUri = DefaultValues.Models.EmptyUri }
+                    new Document { InfoObjectUri = CommonValues.Default.Models.EmptyUri },
+                    new Document { InfoObjectUri = CommonValues.Default.Models.EmptyUri }
                 ]
             };
 
@@ -802,8 +802,8 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
             string expectedResult =
                 $"{{" +
                   $"\"results\":[" +
-                    $"{{\"informatieobject\":\"{DefaultValues.Models.EmptyUri}\"}}," +
-                    $"{{\"informatieobject\":\"{DefaultValues.Models.EmptyUri}\"}}" +
+                    $"{{\"informatieobject\":\"{CommonValues.Default.Models.EmptyUri}\"}}," +
+                    $"{{\"informatieobject\":\"{CommonValues.Default.Models.EmptyUri}\"}}" +
                   $"]" +
                 $"}}";
 
@@ -861,7 +861,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
             // Assert
             string expectedResult =
                 $"{{" +
-                  $"\"url\":\"{DefaultValues.Models.EmptyUri}\"" +
+                  $"\"url\":\"{CommonValues.Default.Models.EmptyUri}\"" +
                 $"}}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));

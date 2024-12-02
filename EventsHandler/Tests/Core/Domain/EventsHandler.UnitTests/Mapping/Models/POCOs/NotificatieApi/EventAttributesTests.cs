@@ -43,13 +43,13 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
         private static readonly string s_unexpectedJson =
             "{" +
                // Cases
-               $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", " +
+               $"\"zaaktype\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                $"\"bronorganisatie\": \"{NotificationEventHandler.SourceOrganization_Real_TheHague}\", " +
                 "\"vertrouwelijkheidaanduiding\": 2, " +
                // Objects
-               $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", " +
+               $"\"objectType\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                // Decisions
-               $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
+               $"\"besluittype\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                $"\"verantwoordelijkeOrganisatie\": \"{NotificationEventHandler.ResponsibleOrganization_Real_TheHague}\", " +
                // Orphans
                $"\"{NotificationEventHandler.Orphan_Test_Property_1}\": \"{NotificationEventHandler.Orphan_Test_Value_1}\", " +
@@ -106,13 +106,13 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
             Assert.Multiple(() =>
             {
                 // Cases
-                Assert.That(actualObject.CaseTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.CaseTypeUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(actualObject.SourceOrganization, Is.EqualTo(NotificationEventHandler.SourceOrganization_Real_TheHague));
                 Assert.That(actualObject.ConfidentialityNotice, Is.EqualTo(PrivacyNotices.NonConfidential));
                 // Objects
-                Assert.That(actualObject.ObjectTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.ObjectTypeUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 // Decisions
-                Assert.That(actualObject.DecisionTypeUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.DecisionTypeUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(actualObject.ResponsibleOrganization, Is.EqualTo(NotificationEventHandler.ResponsibleOrganization_Real_TheHague));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(2));

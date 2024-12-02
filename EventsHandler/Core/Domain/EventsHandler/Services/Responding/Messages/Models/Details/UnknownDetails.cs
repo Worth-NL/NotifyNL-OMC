@@ -16,7 +16,7 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
         /// </summary>
         internal static UnknownDetails Empty { get; } = new()
         {
-            Message = DefaultValues.Models.DefaultStringValue
+            Message = CommonValues.Default.Models.DefaultStringValue
         };
 
         /// <summary>

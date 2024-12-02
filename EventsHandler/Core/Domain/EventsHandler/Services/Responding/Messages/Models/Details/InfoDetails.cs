@@ -16,8 +16,8 @@ namespace EventsHandler.Services.Responding.Messages.Models.Details
         /// </summary>
         internal static InfoDetails Empty { get; } = new
         (
-            message: DefaultValues.Models.DefaultStringValue,
-            cases:   DefaultValues.Models.DefaultStringValue,
+            message: CommonValues.Default.Models.DefaultStringValue,
+            cases:   CommonValues.Default.Models.DefaultStringValue,
             reasons: []
         );
 

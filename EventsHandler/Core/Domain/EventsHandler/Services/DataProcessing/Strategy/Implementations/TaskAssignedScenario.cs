@@ -125,7 +125,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             return isValid
                 ? expirationDate.ConvertToDutchDateString()  // 01-01-2001
-                : DefaultValues.Models.DefaultStringValue;
+                : CommonValues.Default.Models.DefaultStringValue;
         }
 
         private static string GetExpirationDateProvided(bool isValid)

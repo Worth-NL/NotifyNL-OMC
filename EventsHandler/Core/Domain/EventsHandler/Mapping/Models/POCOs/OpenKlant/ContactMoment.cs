@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri ReferenceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri ReferenceUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactMoment"/> struct.

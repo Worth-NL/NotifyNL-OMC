@@ -26,17 +26,17 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 Attributes = new EventAttributes
                 {
                     // Cases
-                    CaseTypeUri = DefaultValues.Models.EmptyUri,
-                    SourceOrganization = DefaultValues.Models.DefaultOrganization,
+                    CaseTypeUri = CommonValues.Default.Models.EmptyUri,
+                    SourceOrganization = CommonValues.Default.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential,
                     // Objects
-                    ObjectTypeUri = DefaultValues.Models.EmptyUri,
+                    ObjectTypeUri = CommonValues.Default.Models.EmptyUri,
                     // Decisions
-                    DecisionTypeUri = DefaultValues.Models.EmptyUri,
-                    ResponsibleOrganization = DefaultValues.Models.DefaultOrganization
+                    DecisionTypeUri = CommonValues.Default.Models.EmptyUri,
+                    ResponsibleOrganization = CommonValues.Default.Models.DefaultOrganization
                 },
-                MainObjectUri = DefaultValues.Models.EmptyUri,
-                ResourceUri = DefaultValues.Models.EmptyUri,
+                MainObjectUri = CommonValues.Default.Models.EmptyUri,
+                ResourceUri = CommonValues.Default.Models.EmptyUri,
                 CreateDate = DateTime.UtcNow
             };
         }

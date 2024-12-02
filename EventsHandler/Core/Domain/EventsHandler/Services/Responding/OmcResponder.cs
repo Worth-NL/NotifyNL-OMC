@@ -54,7 +54,7 @@ namespace EventsHandler.Services.Responding
             try
             {
                 // JSON serialization issues
-                if (errorMessage.StartsWith(DefaultValues.Validation.Deserialization_MissingProperty))
+                if (errorMessage.StartsWith(CommonValues.Default.Validation.Deserialization_MissingProperty))
                 {
                     return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
                             description: errorMessage,
@@ -65,7 +65,7 @@ namespace EventsHandler.Services.Responding
                 return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
                         description: errorMessage,
                         details : this._detailsBuilder.Get<ErrorDetails>(
-                            errorMessage.StartsWith(DefaultValues.Validation.Deserialization_InvalidValue)
+                            errorMessage.StartsWith(CommonValues.Default.Validation.Deserialization_InvalidValue)
                                 // JSON serialization issues
                                 ? Reasons.InvalidProperties_Notification
                                 // Invalid JSON structure
@@ -145,7 +145,7 @@ namespace EventsHandler.Services.Responding
                     => new UnprocessableEntity.Detailed(result).AsResult_206(),
 
                 ProcessingStatus.Failure
-                    => result.Details.Message.StartsWith(DefaultValues.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
+                    => result.Details.Message.StartsWith(CommonValues.Default.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
                         ? new BadRequest.Simplified(result).AsResult_400()
 
                         : result.Details.Cases.IsNotNullOrEmpty() && result.Details.Reasons.HasAny()

@@ -159,9 +159,9 @@ namespace Common.Tests.Unit.Settings.Extensions
             // Act & Assert
             Assert.Multiple(() =>
             {
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => DefaultValues.Models.EmptyUri.ToString().GetValidUri());
+                ArgumentException? exception = Assert.Throws<ArgumentException>(() => CommonValues.Default.Models.EmptyUri.ToString().GetValidUri());
                 Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_InvalidUri
-                                                  .Replace("{0}", DefaultValues.Models.EmptyUri.ToString())));
+                                                  .Replace("{0}", CommonValues.Default.Models.EmptyUri.ToString())));
             });
         }
 

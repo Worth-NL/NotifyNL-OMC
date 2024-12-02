@@ -64,7 +64,7 @@ namespace EventsHandler.Services.DataSending
         async Task<RequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, DefaultValues.Request.ContentType);
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, CommonValues.Default.Request.ContentType);
 
             return await ExecuteCallAsync(httpClientType, uri, requestBody);
         }
@@ -163,7 +163,7 @@ namespace EventsHandler.Services.DataSending
 
                 // Set Authorization header
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    DefaultValues.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
+                    CommonValues.Default.Authorization.OpenApiSecurityScheme.BearerSchema, jwtToken);
 
                 return httpClient;
             }
@@ -173,7 +173,7 @@ namespace EventsHandler.Services.DataSending
         /// Gets static token for "Headers" part of the HTTP Request.
         /// </summary>
         /// <remarks>
-        /// The token will be got from a specific setting defined (per API service) in <see cref="Common.Settings.Configuration.WebApiConfiguration"/>.
+        /// The token will be got from a specific setting defined (per API service) in <see cref="WebApiConfiguration"/>.
         /// </remarks>
         /// <returns>
         /// The Key and Value of the "Header" used for authorization purpose.
@@ -184,13 +184,13 @@ namespace EventsHandler.Services.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{DefaultValues.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
-                    => $"{DefaultValues.Authorization.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
 
                 HttpClientTypes.ObjectTypen
-                    => $"{DefaultValues.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{ApiResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
@@ -207,7 +207,7 @@ namespace EventsHandler.Services.DataSending
             try
             {
                 // HTTPS protocol validation
-                if (uri.Scheme != DefaultValues.Request.HttpsProtocol)
+                if (uri.Scheme != CommonValues.Default.Request.HttpsProtocol)
                 {
                     return RequestResponse.Failure(ApiResources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }

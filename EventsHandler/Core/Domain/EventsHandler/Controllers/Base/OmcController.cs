@@ -13,10 +13,10 @@ namespace EventsHandler.Controllers.Base
     /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
-    [ApiVersion(DefaultValues.ApiController.Version)]
-    [Route(DefaultValues.ApiController.Route)]
-    [Consumes(DefaultValues.Request.ContentType)]
-    [Produces(DefaultValues.Request.ContentType)]
+    [ApiVersion(CommonValues.Default.ApiController.Version)]
+    [Route(CommonValues.Default.ApiController.Route)]
+    [Consumes(CommonValues.Default.Request.ContentType)]
+    [Produces(CommonValues.Default.Request.ContentType)]
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The HTTP Request wasn't successful
     [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired

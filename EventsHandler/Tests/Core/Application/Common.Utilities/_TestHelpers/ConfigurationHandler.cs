@@ -121,7 +121,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
 
                 // NOTIFY environment variables
-                { "NOTIFY_API_BASEURL",                                   GetTestValue(isValid, "https://www.test.notify.nl/", DefaultValues.Models.EmptyUri.ToString()) },
+                { "NOTIFY_API_BASEURL",                                   GetTestValue(isValid, "https://www.test.notify.nl/", CommonValues.Default.Models.EmptyUri.ToString()) },
                 { "NOTIFY_API_KEY",                                       GetTestValue(isValid, testString) },
 
                 { "NOTIFY_TEMPLATEID_DECISIONMADE",                       GetTestValue(isValid, testGuid) },

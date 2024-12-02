@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(0)]
-        public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <inheritdoc cref="CommonTaskData.Title"/>
         [JsonRequired]

@@ -84,20 +84,20 @@ namespace EventsHandler.Tests.Utilities._TestHelpers
                   $"\"resource\": \"zaak\", " +
                   $"\"kenmerken\": {{" +
                     // Cases
-                    $"\"zaaktype\": \"{DefaultValues.Models.EmptyUri}\", " +
+                    $"\"zaaktype\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                     $"\"bronorganisatie\": \"{SourceOrganization_Real_TheHague}\", " +
                     $"\"vertrouwelijkheidaanduiding\": 2, " +
                     // Objects
-                    $"\"objectType\": \"{DefaultValues.Models.EmptyUri}\", " +
+                    $"\"objectType\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                     // Decisions
-                    $"\"besluittype\": \"{DefaultValues.Models.EmptyUri}\", " +
+                    $"\"besluittype\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                     $"\"verantwoordelijkeOrganisatie\": \"{ResponsibleOrganization_Real_TheHague}\", " +
                     // Orphans (attributes)
                     $"\"{Orphan_Test_Property_2}\": {GetOrphanSecondValue()}, " +  // Unexpected JSON property => will be moved to nested Orphans
                     $"\"{Orphan_Test_Property_3}\": \"{Orphan_Test_Value_3}\"" +   // Unexpected JSON property => will be moved to nested Orphans
                   $"}}, " +
-                  $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
-                  $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+                  $"\"hoofdObject\": \"{CommonValues.Default.Models.EmptyUri}\", " +
+                  $"\"resourceUrl\": \"{CommonValues.Default.Models.EmptyUri}\", " +
                   $"\"aanmaakdatum\": \"2023-09-12T13:58:29.9237316Z\", " +
                   // Orphans (event)
                   $"\"{Orphan_Test_Property_1}\": {Orphan_Test_Value_1}" +  // Unexpected JSON property => will be moved to root Orphans
