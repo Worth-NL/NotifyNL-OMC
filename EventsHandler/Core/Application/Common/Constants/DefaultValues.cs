@@ -21,7 +21,7 @@ namespace Common.Constants
             /// <summary>
             /// The controller version.
             /// </summary>
-            public const string Version = "1.124";
+            public const string Version = "1.125";
         }
         #endregion
 
