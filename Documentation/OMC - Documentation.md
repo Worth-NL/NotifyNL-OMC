@@ -51,21 +51,23 @@ v.1.12.4
 
    - 4.1. [JSON Web Tokens](#jwt_tokens)
 
-      - 4.1.1. [Required components](#jwt_required_components)
+      - 4.1.1. [Generating](#jwt_generating)
 
-         - 4.1.1.1. [Header (algorithm + type)](#jwt_header)
+      - 4.1.2. [Required components](#jwt_required_components)
 
-         - 4.1.1.2. [Payload (claims)](#jwt_claims)
+         - 4.1.2.1. [Header (algorithm + type)](#jwt_header)
 
-         - 4.1.1.3. [Signature (secret)](#jwt_secret)
+         - 4.1.2.2. [Payload (claims)](#jwt_claims)
 
-      - 4.1.2. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
+         - 4.1.2.3. [Signature (secret)](#jwt_secret)
 
-      - 4.1.3. [Using generated JSON Web Token (JWT)](#jwt_generating)
+      - 4.1.3. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
 
-         - 4.1.3.1. [Postman (authorization)](#postman_authorization)
+      - 4.1.4. [Using generated JSON Web Token (JWT)](#jwt_generating)
 
-         - 4.1.3.2. [Swagger UI (authorization)](#swagger_ui_authorization)
+         - 4.1.4.1. [Postman (authorization)](#postman_authorization)
+
+         - 4.1.4.2. [Swagger UI (authorization)](#swagger_ui_authorization)
 
 5. [OMC Workflow](#omc_workflow)
 
@@ -692,6 +694,8 @@ All of the API services involved in the notifying process (**OpenServices**, **O
 
 In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ would be used internally (based on the provided credentials (_environment variables_). However, developers testing or maintaining the solution need to generate their own JWT tokens (e.g., to access the **OMC** API endpoints from **Swagger UI** or **Postman**) using one of the following approaches.
 
+<h3 id="jwt_generating">4.1.1. Generating</h3>
+
 **JSON Web Token (JWT)** can be generated using:
 
 - **SecretsManager.exe** from `CLI (Command Line Interface)` externally (e.g., `CMD.exe on Windows`, using valid credentials defined in _environment variables_)
@@ -709,28 +713,28 @@ pause
 
 Users can also execute their commands directly in the catalog where **SecretsManager.exe** is located.
 
-- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
+- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ `OR` overruled from launch profile in _launchSettings.json_ in the project consuming the **Secrets Manager** project)
 
 > To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Core/Domain/SecretsManager/Readme.md).
 
-- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
+- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ `OR` overruled from launch profile in _launchSettings.json_ in the **Secrets Manager** project)
 
 ![Configuration in appsettings.json](images/launchProfiles_secrets_manager.png)
 
 - Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
 
-<h3 id="jwt_required_components">4.1.1. Required components</h3>
+<h3 id="jwt_required_components">4.1.2. Required components</h3>
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-<h4 id="jwt_header">4.1.1.1. Header (algorithm + type)</h4>
+<h4 id="jwt_header">4.1.2.1. Header (algorithm + type)</h4>
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-<h4 id="jwt_claims">4.1.1.2. Payload (claims)</h4>
+<h4 id="jwt_claims">4.1.2.2. Payload (claims)</h4>
 
 > {
   "client_id": "",
@@ -742,13 +746,13 @@ Users can also execute their commands directly in the catalog where **SecretsMan
   "exp": 0000000000
 }
 
-<h4 id="jwt_secret">4.1.1.3. Signature (secret)</h4>
+<h4 id="jwt_secret">4.1.2.3. Signature (secret)</h4>
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-<h3 id="jwt_mapping_environment_variables">4.1.2. Mapping of JWT claims from environment variables</h3>
+<h3 id="jwt_mapping_environment_variables">4.1.3. Mapping of JWT claims from environment variables</h3>
 
 | JWT claims            | **OMC** Environment Variables            |
 | --------------------- | ---------------------------------------- |
@@ -764,16 +768,16 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-<h3 id="jwt_generating">4.1.3. Using generated JSON Web Token (JWT)</h3>
+<h3 id="jwt_generating">4.1.4. Using generated JSON Web Token (JWT)</h3>
 
-<h4 id="postman_authorization">4.1.3.1. Postman (authorization)</h4>
+<h4 id="postman_authorization">4.1.4.1. Postman (authorization)</h4>
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger_ui_authorization">4.1.3.2. Swagger UI (authorization)</h4>
+<h4 id="swagger_ui_authorization">4.1.4.2. Swagger UI (authorization)</h4>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
