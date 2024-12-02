@@ -1,12 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Extensions;
+using Common.Extensions;
 using EventsHandler.Mapping.Enums.NotifyNL;
 using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Common.Extensions;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {
@@ -28,7 +27,7 @@ namespace EventsHandler.Utilities.Swagger.Examples
             {
                 Id = Guid.NewGuid(),
                 #pragma warning disable VSTHRD002  // Synchronously waiting on tasks or awaiters may cause deadlocks: This is class used only for Swagger UI example
-                Reference = Task.Run(async () => await StringExtensions.CompressGZipAsync(s_serializedNotification, CancellationToken.None)).Result,
+                Reference = Task.Run(async () => await s_serializedNotification.CompressGZipAsync(CancellationToken.None)).Result,
                 #pragma warning restore VSTHRD002
                 Recipient = "hello@gov.nl",
                 Status = DeliveryStatuses.Delivered,

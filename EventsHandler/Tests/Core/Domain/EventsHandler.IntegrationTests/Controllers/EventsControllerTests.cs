@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-namespace EventsHandler.IntegrationTests.Controllers
+namespace EventsHandler.Tests.Integration.Controllers
 {
     [TestFixture]
     public sealed class EventsControllerTests

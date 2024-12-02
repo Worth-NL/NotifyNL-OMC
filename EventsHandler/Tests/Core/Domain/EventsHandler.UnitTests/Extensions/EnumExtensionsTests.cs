@@ -8,7 +8,7 @@ using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Enums.v2;
 using Microsoft.Extensions.Logging;
 
-namespace EventsHandler.UnitTests.Extensions
+namespace EventsHandler.Tests.Unit.Extensions
 {
     [TestFixture]
     public sealed class EnumExtensionsTests

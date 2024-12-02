@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Extensions;
 using EventsHandler.Extensions;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Mapping.Models.POCOs.OpenKlant;
@@ -85,7 +84,7 @@ namespace EventsHandler.Services.Register.v1
         {
             return $"{{" +
                      $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +    // URI
-                     $"\"klant\":\"{GuidExtensions.RecreatePartyUri(reference.PartyId)}\"," +  // URI
+                     $"\"klant\":\"{reference.PartyId.RecreatePartyUri()}\"," +  // URI
                      $"\"rol\":\"belanghebbende\"," +
                      $"\"gelezen\":false" +
                    $"}}";
