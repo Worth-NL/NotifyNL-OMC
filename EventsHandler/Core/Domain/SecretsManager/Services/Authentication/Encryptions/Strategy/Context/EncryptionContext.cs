@@ -10,7 +10,10 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy.Context
     /// </summary>
     public sealed class EncryptionContext
     {
-        internal IJwtEncryptionStrategy Strategy { get; set; }
+        /// <summary>
+        /// The current encryption strategy.
+        /// </summary>
+        private IJwtEncryptionStrategy Strategy { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncryptionContext"/> class.

@@ -64,6 +64,11 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
             SecurityKey securityKey, string issuer, string audience, DateTime issuedAt,
             DateTime expiresAt, string securityAlgorithm, string userId, string userName)
         {
+            // Claim types
+            const string clientIdClaimType = "client_id";
+            const string userIdClaimType = "user_id";
+            const string userNameClaimType = "user_representation";
+
             SecurityTokenDescriptor tokenDescriptor = new()
             {
                 // Required
@@ -74,11 +79,11 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
                 Subject = new ClaimsIdentity(
                 [
                     // Required
-                    new Claim("client_id",           issuer),
+                    new Claim(clientIdClaimType, issuer),
 
                     // Optional: Used only for "audit trials"
-                    new Claim("user_id",             userId),
-                    new Claim("user_representation", userName)
+                    new Claim(userIdClaimType, userId),
+                    new Claim(userNameClaimType, userName)
                 ]),
 
                 // Required
