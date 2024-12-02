@@ -6,7 +6,7 @@ using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Responding.Results.Enums;
 using System.Text.Json;
 
-namespace EventsHandler.UnitTests.Services.Responding.Results.Builder
+namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
 {
     [TestFixture]
     public sealed class DetailsBuilderTests
