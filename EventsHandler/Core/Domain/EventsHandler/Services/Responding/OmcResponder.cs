@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Constants;
 using Common.Extensions;
 using EventsHandler.Mapping.Enums;
 using EventsHandler.Properties;
@@ -23,6 +22,10 @@ namespace EventsHandler.Services.Responding
     /// <inheritdoc cref="IRespondingService{TModel}"/>
     public sealed class OmcResponder : IRespondingService<ProcessingResult>
     {
+        private const string DeserializationMissingProperty = "JSON deserialization";
+        private const string DeserializationInvalidValue = "The JSON value";
+        private const string HttpRequestErrorMessage = "HTTP Request";
+
         private readonly IDetailsBuilder _detailsBuilder;
 
         /// <summary>
@@ -54,7 +57,7 @@ namespace EventsHandler.Services.Responding
             try
             {
                 // JSON serialization issues
-                if (errorMessage.StartsWith(CommonValues.Default.Validation.Deserialization_MissingProperty))
+                if (errorMessage.StartsWith(DeserializationMissingProperty))
                 {
                     return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
                             description: errorMessage,
@@ -65,7 +68,7 @@ namespace EventsHandler.Services.Responding
                 return new UnprocessableEntity.Detailed(ProcessingResult.Failure(
                         description: errorMessage,
                         details : this._detailsBuilder.Get<ErrorDetails>(
-                            errorMessage.StartsWith(CommonValues.Default.Validation.Deserialization_InvalidValue)
+                            errorMessage.StartsWith(DeserializationInvalidValue)
                                 // JSON serialization issues
                                 ? Reasons.InvalidProperties_Notification
                                 // Invalid JSON structure
@@ -145,7 +148,7 @@ namespace EventsHandler.Services.Responding
                     => new UnprocessableEntity.Detailed(result).AsResult_206(),
 
                 ProcessingStatus.Failure
-                    => result.Details.Message.StartsWith(CommonValues.Default.Validation.HttpRequest_ErrorMessage)  // NOTE: HTTP Request error messages are always simplified
+                    => result.Details.Message.StartsWith(HttpRequestErrorMessage)  // NOTE: HTTP Request error messages are always simplified
                         ? new BadRequest.Simplified(result).AsResult_400()
 
                         : result.Details.Cases.IsNotNullOrEmpty() && result.Details.Reasons.HasAny()

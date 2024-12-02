@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Constants;
 using Common.Settings.Configuration;
+using EventsHandler.Constants;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using System.Net.Http.Headers;
 
@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
 
             // Set universal Request Headers
             httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(CommonValues.Default.Request.ContentType));  // Content-Type: application/json
+                new MediaTypeWithQualityHeaderValue(ApiValues.Default.ApiController.ContentType));  // Content-Type: application/json
 
             // Set custom Request Headers
             for (int index = 0; index < requestHeaders.Length; index++)
