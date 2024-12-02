@@ -29,8 +29,12 @@ namespace Common.Tests.Utilities._TestHelpers
         /// </summary>
         public static IConfiguration GetConfiguration()
         {
+            const string appSettingsFileName = "appsettings.Test.json";
+
+            string appSettingsPath = Path.Combine(AppContext.BaseDirectory, appSettingsFileName);
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.Test.json")
+                .AddJsonFile(appSettingsPath)
                 .Build();
 
             return configuration;

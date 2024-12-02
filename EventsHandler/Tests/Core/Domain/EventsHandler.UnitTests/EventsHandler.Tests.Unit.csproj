@@ -36,6 +36,13 @@
     <ProjectReference Include="..\EventsHandler.Utilities\EventsHandler.Tests.Utilities.csproj" />
   </ItemGroup>
 
+  <!-- Settings (copied from the main solution) -->
+  <ItemGroup>
+    <Content Include="..\..\..\..\Core\Domain\EventsHandler\appsettings.Test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <!-- Code coverage -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
