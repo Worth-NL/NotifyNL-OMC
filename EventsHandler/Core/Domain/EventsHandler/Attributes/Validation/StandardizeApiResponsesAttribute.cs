@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Constants;
 using EventsHandler.Controllers;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
@@ -80,9 +79,10 @@ namespace EventsHandler.Attributes.Validation
         /// </returns>
         private static bool ContainsValidationProblems(ResultExecutingContext context, out ValidationProblemDetails? validationProblemDetails)
         {
+            const string errorsOccurred = "One or more validation errors occurred.";
+
             if (!context.ModelState.IsValid &&
-                context.Result is BadRequestObjectResult { Value: ValidationProblemDetails details } &&
-                details.Title == CommonValues.Default.Validation.ErrorsOccurred)
+                context.Result is BadRequestObjectResult { Value: ValidationProblemDetails { Title: errorsOccurred } details })
             {
                 validationProblemDetails = details;
 

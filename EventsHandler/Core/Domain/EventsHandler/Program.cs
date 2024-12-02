@@ -7,6 +7,7 @@ using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
+using EventsHandler.Constants;
 using EventsHandler.Controllers;
 using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
@@ -167,8 +168,8 @@ namespace EventsHandler
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = CommonValues.Default.Authorization.OpenApiSecurityScheme.BearerFormat,
-                    Name = CommonValues.Default.Authorization.Name,
+                    BearerFormat = ApiValues.Default.Authorization.OpenApiSecurityScheme.BearerFormat,
+                    Name = ApiValues.Default.Authorization.Name,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
                     Description = ApiResources.Swagger_UI_Authentication_Description,
@@ -230,7 +231,7 @@ namespace EventsHandler
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
             // Version of the application ("OMC Web API" in this case)
-            options.Release = CommonValues.Default.ApiController.Version;
+            options.Release = ApiValues.Default.ApiController.Version;
 
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
