@@ -70,8 +70,8 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
                 $"\"besluittype\": null, " +
                 $"\"verantwoordelijkeOrganisatie\": null" +
               $"}}," +
-              $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
-              $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"hoofdObject\": \"{CommonValues.Default.Models.EmptyUri}\", " +
+              $"\"resourceUrl\": \"{CommonValues.Default.Models.EmptyUri}\", " +
               $"\"aanmaakdatum\": \"0001-01-01T00:00:00\"" +
             $"}}";
 
@@ -91,8 +91,8 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
                 $"\"besluittype\": null, " +
                 $"\"verantwoordelijkeOrganisatie\": null" +
               $"}}," +
-              $"\"hoofdObject\": \"{DefaultValues.Models.EmptyUri}\", " +
-              $"\"resourceUrl\": \"{DefaultValues.Models.EmptyUri}\", " +
+              $"\"hoofdObject\": \"{CommonValues.Default.Models.EmptyUri}\", " +
+              $"\"resourceUrl\": \"{CommonValues.Default.Models.EmptyUri}\", " +
               $"\"aanmaakdatum\": \"0001-01-01T00:00:00\", " +
               // Orphans (event)
               $"\"{NotificationEventHandler.Orphan_Test_Property_3}\": \"{NotificationEventHandler.Orphan_Test_Value_3}\"" +
@@ -143,8 +143,8 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.Channel, Is.EqualTo(Channels.Cases));
                 Assert.That(actualObject.Resource, Is.EqualTo(Resources.Object));
                 // NOTE: EventAttributes are covered by other unit tests
-                Assert.That(actualObject.MainObjectUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.ResourceUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.MainObjectUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
+                Assert.That(actualObject.ResourceUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(0));
@@ -164,8 +164,8 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
                 Assert.That(actualObject.Channel, Is.EqualTo(Channels.Cases));
                 Assert.That(actualObject.Resource, Is.EqualTo(Resources.Object));
                 // NOTE: EventAttributes are covered by other unit tests
-                Assert.That(actualObject.MainObjectUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
-                Assert.That(actualObject.ResourceUri, Is.EqualTo(DefaultValues.Models.EmptyUri));
+                Assert.That(actualObject.MainObjectUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
+                Assert.That(actualObject.ResourceUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
                 Assert.That(actualObject.CreateDate, Is.EqualTo(default(DateTime)));
                 // Orphans
                 Assert.That(actualObject.Orphans, Has.Count.EqualTo(1));

@@ -34,7 +34,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(1)]
-        public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri TypeUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format:
@@ -46,7 +46,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(2)]
-        public Uri CaseUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date when the <see cref="Decision"/> was issued.

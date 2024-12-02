@@ -63,7 +63,7 @@ namespace EventsHandler.Services.Versioning
         {
             return string.Format(ApiResources.Endpoint_Events_Version_INFO_OmcVersionSummary,
             /* {0} */ ApiResources.Application_Name,
-            /* {1} */ DefaultValues.ApiController.Version,
+            /* {1} */ CommonValues.Default.ApiController.Version,
             /* {2} */ Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment),
             /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
             /* {4} */ componentsVersions);

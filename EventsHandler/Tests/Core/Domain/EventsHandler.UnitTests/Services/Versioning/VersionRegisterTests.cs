@@ -94,7 +94,7 @@ namespace EventsHandler.Tests.Unit.Services.Versioning
             string actualResult = register.GetOmcVersion(testVersions);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo($"OMC: v{DefaultValues.ApiController.Version} () | Workflow: v1 ({testVersions})."));
+            Assert.That(actualResult, Is.EqualTo($"OMC: v{CommonValues.Default.ApiController.Version} () | Workflow: v1 ({testVersions})."));
         }
     }
 }

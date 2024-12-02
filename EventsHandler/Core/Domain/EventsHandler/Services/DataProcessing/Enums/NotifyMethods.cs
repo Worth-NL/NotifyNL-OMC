@@ -13,7 +13,7 @@ namespace EventsHandler.Services.DataProcessing.Enums
     public enum NotifyMethods
     {
         /// <inheritdoc cref="DistributionChannels.None"/>
-        [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
+        [JsonPropertyName(CommonValues.Default.Models.DefaultEnumValueName)]
         None = DistributionChannels.None,  // 1
 
         /// <inheritdoc cref="DistributionChannels.Email"/>

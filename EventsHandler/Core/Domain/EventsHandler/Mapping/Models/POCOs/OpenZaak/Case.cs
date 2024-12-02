@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri Uri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri Uri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The identification of the <see cref="Case"/> in the following format:
@@ -55,7 +55,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(3)]
-        public Uri CaseTypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseTypeUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date when the <see cref="Case"/> was registered.

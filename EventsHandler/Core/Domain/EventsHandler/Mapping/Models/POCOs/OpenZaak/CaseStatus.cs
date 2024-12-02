@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("statustype")]
         [JsonPropertyOrder(0)]
-        public Uri TypeUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri TypeUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date and time when the <see cref="CaseStatus"/> was created.

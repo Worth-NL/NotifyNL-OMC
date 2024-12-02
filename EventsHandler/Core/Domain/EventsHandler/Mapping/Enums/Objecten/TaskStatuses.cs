@@ -16,7 +16,7 @@ namespace EventsHandler.Mapping.Enums.Objecten
         /// <summary>
         /// The default value.
         /// </summary>
-        [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
+        [JsonPropertyName(CommonValues.Default.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         /// <summary>

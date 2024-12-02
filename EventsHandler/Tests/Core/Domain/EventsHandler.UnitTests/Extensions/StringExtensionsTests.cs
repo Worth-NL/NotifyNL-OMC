@@ -219,7 +219,7 @@ namespace EventsHandler.Tests.Unit.Extensions
             Uri actualResult = invalidUriString.ChangeType<Uri>();
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo(DefaultValues.Models.EmptyUri));
+            Assert.That(actualResult, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
         }
 
         [TestCase("1", 1, typeof(int))]

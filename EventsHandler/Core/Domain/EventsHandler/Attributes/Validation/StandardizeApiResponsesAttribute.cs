@@ -82,7 +82,7 @@ namespace EventsHandler.Attributes.Validation
         {
             if (!context.ModelState.IsValid &&
                 context.Result is BadRequestObjectResult { Value: ValidationProblemDetails details } &&
-                details.Title == DefaultValues.Validation.ErrorsOccurred)
+                details.Title == CommonValues.Default.Validation.ErrorsOccurred)
             {
                 validationProblemDetails = details;
 

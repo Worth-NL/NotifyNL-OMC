@@ -43,7 +43,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak.v2
         [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(2)]
-        public Uri CaseTypeUrl { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri CaseTypeUrl { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseDetails"/> struct.

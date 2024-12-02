@@ -22,7 +22,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenKlant.v1
         [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri Uri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri Uri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonRequired]

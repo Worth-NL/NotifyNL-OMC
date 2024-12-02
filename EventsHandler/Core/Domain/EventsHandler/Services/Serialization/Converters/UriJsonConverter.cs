@@ -19,13 +19,13 @@ namespace EventsHandler.Services.Serialization.Converters
         {
             return Uri.TryCreate(reader.GetString(), UriKind.Absolute, out Uri? uriString)
                 ? uriString
-                : DefaultValues.Models.EmptyUri;
+                : CommonValues.Default.Models.EmptyUri;
         }
 
         /// <inheritdoc cref="JsonConverter{TValue}.Write(Utf8JsonWriter, TValue, JsonSerializerOptions)"/>
         public override void Write(Utf8JsonWriter writer, Uri? value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value?.AbsoluteUri ?? DefaultValues.Models.EmptyUri.AbsoluteUri);
+            writer.WriteStringValue(value?.AbsoluteUri ?? CommonValues.Default.Models.EmptyUri.AbsoluteUri);
         }
     }
 }

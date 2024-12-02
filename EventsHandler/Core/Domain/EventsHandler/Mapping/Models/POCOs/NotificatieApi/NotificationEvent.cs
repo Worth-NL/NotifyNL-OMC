@@ -93,7 +93,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         [JsonInclude]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
-        public Uri MainObjectUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri MainObjectUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The reference to the resource in <see cref="Uri"/> format:
@@ -106,7 +106,7 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
         [JsonInclude]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
-        public Uri ResourceUri { get; internal set; } = DefaultValues.Models.EmptyUri;
+        public Uri ResourceUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date and time when the action took place.
@@ -156,8 +156,8 @@ namespace EventsHandler.Mapping.Models.POCOs.NotificatieApi
                 this.Action        == Actions.Unknown,
                 this.Channel       == Channels.Unknown,
                 this.Resource      == Resources.Unknown,
-                this.MainObjectUri == DefaultValues.Models.EmptyUri,
-                this.ResourceUri   == DefaultValues.Models.EmptyUri
+                this.MainObjectUri == CommonValues.Default.Models.EmptyUri,
+                this.ResourceUri   == CommonValues.Default.Models.EmptyUri
             ];
 
             List<int>? invalidIndices = null;
