@@ -167,8 +167,8 @@ namespace EventsHandler
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = DefaultValues.Authorization.OpenApiSecurityScheme.BearerFormat,
-                    Name = DefaultValues.Authorization.Name,
+                    BearerFormat = CommonValues.Default.Authorization.OpenApiSecurityScheme.BearerFormat,
+                    Name = CommonValues.Default.Authorization.Name,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
                     Description = ApiResources.Swagger_UI_Authentication_Description,
@@ -230,12 +230,12 @@ namespace EventsHandler
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
             // Version of the application ("OMC Web API" in this case)
-            options.Release = DefaultValues.ApiController.Version;
+            options.Release = CommonValues.Default.ApiController.Version;
 
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment) ??
-                                  DefaultValues.Models.DefaultStringValue;
+                                  CommonValues.Default.Models.DefaultStringValue;
         }
         #endregion
         #endregion

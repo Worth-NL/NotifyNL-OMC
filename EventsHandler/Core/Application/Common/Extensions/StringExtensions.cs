@@ -150,7 +150,7 @@ namespace Common.Extensions
             {
                 _ = Uri.TryCreate(originalTextValue, UriKind.Absolute, out Uri? validUri);
 
-                return (TData)Convert.ChangeType(validUri ?? DefaultValues.Models.EmptyUri, typeof(TData));
+                return (TData)Convert.ChangeType(validUri ?? CommonValues.Default.Models.EmptyUri, typeof(TData));
             }
 
             // Retrieve as TData => int, ushort, bool

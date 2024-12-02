@@ -28,7 +28,7 @@ namespace EventsHandler.Mapping.Enums.NotifyNL
         ///   (for example if the API was recently changed).
         /// </para>
         /// </summary>
-        [JsonPropertyName(DefaultValues.Models.DefaultEnumValueName)]
+        [JsonPropertyName(CommonValues.Default.Models.DefaultEnumValueName)]
         Unknown = 0,
 
         #region Email statuses (common with SMS as well)

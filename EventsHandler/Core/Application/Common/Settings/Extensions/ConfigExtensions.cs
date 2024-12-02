@@ -184,7 +184,7 @@ namespace Common.Settings.Extensions
         /// <exception cref="ArgumentException"/>
         public static string GetWithoutProtocol(this string value)
         {
-            return !value.StartsWith(DefaultValues.Request.HttpProtocol)  // HTTPS will be also handled this way
+            return !value.StartsWith(CommonValues.Default.Request.HttpProtocol)  // HTTPS will be also handled this way
                 ? value
                 : ThrowArgumentException<string>(AppResources.Configuration_ERROR_ContainsHttp, value);
         }
@@ -209,7 +209,7 @@ namespace Common.Settings.Extensions
         public static Uri GetValidUri(this string value)
         {
             return Uri.TryCreate(value, UriKind.Absolute, out Uri? createdUri) &&
-                   createdUri != DefaultValues.Models.EmptyUri
+                   createdUri != CommonValues.Default.Models.EmptyUri
                 ? createdUri
                 : ThrowArgumentException<Uri>(AppResources.Configuration_ERROR_InvalidUri, value);
         }

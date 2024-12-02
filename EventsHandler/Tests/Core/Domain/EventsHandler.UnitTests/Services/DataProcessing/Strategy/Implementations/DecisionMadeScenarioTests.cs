@@ -65,7 +65,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         
         private static readonly InfoObject s_invalidInfoObjectType = new()
         {
-            TypeUri = DefaultValues.Models.EmptyUri
+            TypeUri = CommonValues.Default.Models.EmptyUri
         };
 
         private static readonly InfoObject s_invalidInfoObjectStatus = new()

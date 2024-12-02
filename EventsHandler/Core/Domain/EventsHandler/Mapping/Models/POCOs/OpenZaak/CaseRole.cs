@@ -19,7 +19,7 @@ namespace EventsHandler.Mapping.Models.POCOs.OpenZaak
         [JsonInclude]
         [JsonPropertyName("betrokkene")]  // ENG: Involved party
         [JsonPropertyOrder(0)]
-        public Uri InvolvedPartyUri { get; internal set; } = DefaultValues.Models.EmptyUri;  // NOTE: Might be missing for Citizens
+        public Uri InvolvedPartyUri { get; internal set; } = CommonValues.Default.Models.EmptyUri;  // NOTE: Might be missing for Citizens
 
         /// <summary>
         /// The general description of the <see cref="CaseRole"/> which includes the "initiator role" of the <see cref="Case"/>.

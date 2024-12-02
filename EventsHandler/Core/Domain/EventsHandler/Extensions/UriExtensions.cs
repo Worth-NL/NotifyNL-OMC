@@ -26,7 +26,7 @@ namespace EventsHandler.Extensions
         internal static Guid GetGuid(this Uri? uri)
         {
             if (uri == null ||
-                uri == DefaultValues.Models.EmptyUri)
+                uri == CommonValues.Default.Models.EmptyUri)
             {
                 return Guid.Empty;
             }
@@ -49,7 +49,7 @@ namespace EventsHandler.Extensions
         /// </returns>
         internal static bool IsNullOrDefault([NotNullWhen(false)] this Uri? uri)
         {
-            return DefaultValues.Models.EmptyUri.Equals(uri);
+            return CommonValues.Default.Models.EmptyUri.Equals(uri);
         }
         
         /// <summary>
