@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using SecretsManager.Properties;
 using SecretsManager.Services.Authentication.Encryptions.Strategy;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
@@ -45,10 +46,10 @@ namespace SecretsManager
             // Configuration appsettings.json files
             return builder.ConfigureAppConfiguration((builderContext, configuration) =>
             {
-                const string settingsFileName = "manager.appsettings";
+                const string appSettingsRootName = "manager.appsettings";
 
-                configuration.AddJsonFile($"{settingsFileName}.json", optional: false)
-                             .AddJsonFile($"{settingsFileName}.{builderContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+                configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
+                             .AddJsonFile($"{appSettingsRootName}.{builderContext.HostingEnvironment.EnvironmentName}.json", optional: true);
             });
         }
         #endregion
@@ -103,14 +104,24 @@ namespace SecretsManager
         /// </summary>
         private static void ProduceJwtToken(IHost host, string[] args)
         {
-            // Determine for how long the JWT token should be valid
-            DateTime validDateTime = GetJwtTokenValidity(args);
+            try
+            {
+                // Determine for how long the JWT token should be valid
+                (DateTime ExpirationDateTime, string LogMessage) result = GetJwtTokenValidity(args);
 
-            // Generate a new JWT token and save it to the file
-            GenerateJwtToken(host, validDateTime);
+                // Generate a new JWT token and save it to the file
+                GenerateJwtToken(host, result.ExpirationDateTime);
+
+                // UX feedback
+                Console.WriteLine(result.LogMessage);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.InnerException?.Message ?? exception.Message);
+            }
         }
 
-        private static DateTime GetJwtTokenValidity(string[] args)
+        private static (DateTime ExpirationDateTime, string LogMessage) GetJwtTokenValidity(string[] args)
         {
             double validForNextMinutes = 60;  // NOTE: Standard value, unless specified otherwise
             DateTime currentDateTime = DateTime.UtcNow;
@@ -124,12 +135,10 @@ namespace SecretsManager
                 {
                     if (futureDateTime <= currentDateTime)
                     {
-                        throw new ArgumentException("The expected date time should be from the future!");
+                        throw new ArgumentException(ManagerResources.Processing_ERROR_ExpirationShouldBeFuture);
                     }
 
-                    Console.WriteLine($"The token will be valid until: {futureDateTime:F}");
-
-                    return futureDateTime;
+                    return (futureDateTime, string.Format(ManagerResources.Processing_LOG_TokenValidityDate, futureDateTime));
                 }
 
                 // Variant #2: Use specific range in minutes (e.g., valid for 120 minutes from now)
@@ -139,15 +148,13 @@ namespace SecretsManager
                 }
                 else
                 {
-                    throw new FormatException("The expected program argument should be date time (e.g., 2023-12-31T23:59:59) or minutes!");
+                    throw new FormatException(ManagerResources.Processing_ERROR_InputNotDateTimeFormat);
                 }
             }
 
             futureDateTime = currentDateTime.AddMinutes(validForNextMinutes);
 
-            Console.WriteLine($"The token will be valid for the next {validForNextMinutes} minutes");
-
-            return futureDateTime;
+            return (futureDateTime, string.Format(ManagerResources.Processing_LOG_TokenValidityMinutes, validForNextMinutes));
         }
 
         private static void GenerateJwtToken(IHost host, DateTime validDateTime)
@@ -160,13 +167,12 @@ namespace SecretsManager
             SecurityKey securityKey = context.GetSecurityKey(configuration.OMC.Auth.JWT.Secret());
 
             // Generate JSON Web Token
-            string jwtToken = context.GetJwtToken(
-                securityKey,
-                issuer: configuration.OMC.Auth.JWT.Issuer(),
-                audience: configuration.OMC.Auth.JWT.Audience(),
+            string jwtToken = context.GetJwtToken(securityKey,
+                issuer:    configuration.OMC.Auth.JWT.Issuer(),
+                audience:  configuration.OMC.Auth.JWT.Audience(),
                 expiresAt: validDateTime,
-                userId: configuration.OMC.Auth.JWT.UserId(),
-                userName: configuration.OMC.Auth.JWT.UserName());
+                userId:    configuration.OMC.Auth.JWT.UserId(),
+                userName:  configuration.OMC.Auth.JWT.UserName());
 
             // Write JWT tokens
             context.SaveJwtToken(jwtToken);
