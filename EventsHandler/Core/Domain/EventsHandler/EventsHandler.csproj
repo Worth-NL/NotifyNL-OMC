@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <!-- Project -->
     <AssemblyName>NotifyNL.EventsHandler</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
