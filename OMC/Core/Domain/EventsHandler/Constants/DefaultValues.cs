@@ -24,11 +24,6 @@ namespace EventsHandler.Constants
                 internal const string Route = "[controller]";
 
                 /// <summary>
-                /// The controller version.
-                /// </summary>
-                internal const string Version = "1.125";
-
-                /// <summary>
                 /// The HTTP Request content type.
                 /// </summary>
                 internal const string ContentType = "application/json";
