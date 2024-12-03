@@ -9,9 +9,9 @@ namespace EventsHandler.Services.Versioning
     {
         private static int Major => 1;
 
-        private static int Minor => 12;
+        private static int Minor => 13;
 
-        private static int Patch => 5;
+        private static int Patch => 0;
 
         /// <summary>
         /// Gets the .NET version of the software, accepted by API Controllers, e.g.:
