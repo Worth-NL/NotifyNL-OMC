@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.12.5
+v.1.13.0
 
 © 2023-2024, Worth Systems.
 
