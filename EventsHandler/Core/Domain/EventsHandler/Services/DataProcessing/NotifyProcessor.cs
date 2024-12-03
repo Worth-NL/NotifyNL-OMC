@@ -67,7 +67,7 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // Choose an adequate business-scenario (strategy) to process the notification
-                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here
+                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 GettingDataResponse gettingDataResponse;
