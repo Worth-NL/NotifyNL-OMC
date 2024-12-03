@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using Asp.Versioning;
+using EventsHandler.Attributes.Versioning;
 using EventsHandler.Constants;
 using EventsHandler.Extensions;
 using EventsHandler.Properties;
@@ -13,7 +13,7 @@ namespace EventsHandler.Controllers.Base
     /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
-    [ApiVersion(ApiValues.Default.ApiController.Version)]
+    [OmcVersion]
     [Route(ApiValues.Default.ApiController.Route)]
     [Consumes(ApiValues.Default.ApiController.ContentType)]
     [Produces(ApiValues.Default.ApiController.ContentType)]

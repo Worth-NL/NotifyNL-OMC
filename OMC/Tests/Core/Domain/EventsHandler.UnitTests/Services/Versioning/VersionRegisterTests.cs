@@ -2,7 +2,6 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Constants;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.v1;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
@@ -94,7 +93,7 @@ namespace EventsHandler.Tests.Unit.Services.Versioning
             string actualResult = register.GetOmcVersion(testVersions);
 
             // Assert
-            Assert.That(actualResult, Is.EqualTo($"OMC: v{ApiValues.Default.ApiController.Version} () | Workflow: v1 ({testVersions})."));
+            Assert.That(actualResult, Is.EqualTo($"OMC: v{OmcVersion.GetExpandedVersion()} () | Workflow: v1 ({testVersions})."));
         }
     }
 }

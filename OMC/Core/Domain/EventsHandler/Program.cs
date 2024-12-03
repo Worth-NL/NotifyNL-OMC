@@ -231,7 +231,7 @@ namespace EventsHandler
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
             // Version of the application ("OMC Web API" in this case)
-            options.Release = ApiValues.Default.ApiController.Version;
+            options.Release = OmcVersion.GetExpandedVersion();
 
             // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
