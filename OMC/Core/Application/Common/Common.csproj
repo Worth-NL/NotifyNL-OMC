@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>NotifyNL.Common</AssemblyName>
+    <AssemblyName>OMC.Common</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
 
