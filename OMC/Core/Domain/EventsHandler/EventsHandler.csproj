@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <AssemblyName>NotifyNL.EventsHandler</AssemblyName>
+    <AssemblyName>OMC.EventsHandler</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
 
@@ -49,9 +49,9 @@
 
   <!-- Exposition to internal members -->
   <ItemGroup>
-    <InternalsVisibleTo Include="NotifyNL.EventsHandler.Tests.Integration" />
-    <InternalsVisibleTo Include="NotifyNL.EventsHandler.Tests.Unit" />
-    <InternalsVisibleTo Include="NotifyNL.EventsHandler.Tests.Utilities" />
+    <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Integration" />
+    <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Unit" />
+    <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Utilities" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

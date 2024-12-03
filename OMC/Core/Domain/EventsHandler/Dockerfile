@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["EventsHandler/Core/Domain/EventsHandler/EventsHandler.csproj", "EventsHandler/Core/Domain/EventsHandler/"]
-RUN dotnet restore "EventsHandler/Core/Domain/EventsHandler/EventsHandler.csproj"
+COPY ["OMC/Core/Domain/EventsHandler/EventsHandler.csproj", "EventsHandler/Core/Domain/EventsHandler/"]
+RUN dotnet restore "OMC/Core/Domain/EventsHandler/EventsHandler.csproj"
 COPY . .
-WORKDIR "/src/EventsHandler/Core/Domain/EventsHandler"
+WORKDIR "/src/OMC/Core/Domain/EventsHandler"
 RUN dotnet build "EventsHandler.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -19,4 +19,4 @@ RUN dotnet publish "EventsHandler.csproj" -c Release -o /app/publish /p:UseAppHo
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NotifyNL.EventsHandler.dll"]
+ENTRYPOINT ["dotnet", "OMC.EventsHandler.dll"]

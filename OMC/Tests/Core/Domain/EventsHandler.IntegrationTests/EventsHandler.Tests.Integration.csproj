@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <AssemblyName>NotifyNL.Common.Tests.Unit</AssemblyName>
+    <AssemblyName>OMC.EventsHandler.Tests.Integration</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
 
@@ -30,14 +30,7 @@
 
   <!-- Projects -->
   <ItemGroup>
-    <ProjectReference Include="..\Common.Utilities\Common.Tests.Utilities.csproj" />
-  </ItemGroup>
-
-  <!-- Settings -->
-  <ItemGroup>
-    <Content Include="..\..\..\..\Core\Domain\EventsHandler\appsettings.Test.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
   </ItemGroup>
 
   <!-- Code coverage -->
