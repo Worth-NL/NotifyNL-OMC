@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>NotifyNL.EventsHandler.Tests.Unit</AssemblyName>
+    <AssemblyName>OMC.EventsHandler.Tests.Unit</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
     
