@@ -1030,9 +1030,9 @@ Required to be set:
 <h4 id="case_created_requirements">5.2.2.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 1 _status_ (it was never updated) => this is a new _case_
 
@@ -1103,9 +1103,9 @@ Required to be set:
 <h4 id="case_updated_requirements">5.2.3.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
@@ -1182,9 +1182,9 @@ Required to be set:
 <h4 id="case_closed_requirements">5.2.4.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
@@ -1263,9 +1263,9 @@ Required to be set:
 <h4 id="task_assigned_requirements">5.2.5.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"objecten"`)
-  -- **Resource:** Object (`"object"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"objecten"`)
+  - **Resource:** Object (`"object"`)
 
 - The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
 
@@ -1355,9 +1355,9 @@ Required to be set:
 <h4 id="decision_made_requirements">5.2.6.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"besluiten"`)
-  -- **Resource:** Object (`"besluitinformatieobject"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"besluiten"`)
+  - **Resource:** Object (`"besluitinformatieobject"`)
 
 - The **GUID** from _info object type URI_ (`"informatieobjecttype"`) linked to the _decision_ has to be **whitelisted** or `"*"` wildcard used (to accept all info object types) in respective whitelist _environment variable_
 
@@ -1478,9 +1478,9 @@ Required to be set:
 <h4 id="message_received_requirements">5.2.7.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"objecten"`)
-  -- **Resource:** Object (`"object"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"objecten"`)
+  - **Resource:** Object (`"object"`)
 
 - The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
 
