@@ -88,25 +88,25 @@ namespace EventsHandler.Services.DataSending
             
             // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
             this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
-                .GetHttpClient([acceptCrs, contentCrs]));
+                .GetHttpClient([acceptCrs, contentCrs]));  // JWT Token
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
-                .GetHttpClient([acceptCrs, contentCrs]));
+                .GetHttpClient([acceptCrs, contentCrs]));  // JWT Token
 
             this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
-                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2))]));
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2))]));  // API Key
 
             this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
-                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)), contentCrs]));
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)), contentCrs]));  // API Key
 
             this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
-                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), contentCrs]));
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), contentCrs]));  // API Key
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
-                .GetHttpClient([("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty)]));
+                .GetHttpClient([("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty)]));  // JWT Token
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
-                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));  // API Key
         }
 
         /// <summary>
