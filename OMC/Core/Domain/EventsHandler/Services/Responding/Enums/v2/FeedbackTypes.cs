@@ -1,11 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Enums.NotifyNL;
+using NotifyNL;
 
 namespace EventsHandler.Services.Responding.Enums.v2
 {
     /// <summary>
-    /// The types of feedback mapping "Notify NL" Web API service <see cref="DeliveryStatuses"/>.
+    /// The types of feedback mapping "Notify NL" Web API service <see cref="ZhvModels.Mapping.Enums.NotifyNL.DeliveryStatuses"/>.
     /// </summary>
     /// <remarks>
     /// NOTE: In "OMC workflow v2" the final communication with the user is based on this value.

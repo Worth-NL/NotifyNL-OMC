@@ -1,14 +1,17 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Settings.Configuration;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using System.Diagnostics.CodeAnalysis;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using OpenKlant;
+using OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -33,11 +36,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic
         private const string ExclusionJustificationMessage = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.";
 
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
             => await Task.FromResult(NotImplemented<PreparedData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override NotifyData GetSmsNotifyData(NotificationEvent notification, PreparedData preparedData)
             => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
@@ -47,12 +50,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override NotifyData GetEmailNotifyData(NotificationEvent notification, PreparedData preparedData)
             => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
@@ -62,7 +65,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes

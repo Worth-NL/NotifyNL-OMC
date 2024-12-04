@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using System.Net;
+using NotificatieApi;
 
 namespace EventsHandler.Services.Responding.Messages.Models.Errors.Specific
 {
     /// <summary>
-    /// Serialization of <see cref="NotificationEvent"/> was unsuccessful.
+    /// Serialization of <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> was unsuccessful.
     /// </summary>
     /// <seealso cref="BaseEnhancedStandardResponseBody"/>
     internal abstract record UnprocessableEntity

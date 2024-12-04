@@ -2,17 +2,6 @@
 
 using Common.Constants;
 using Common.Extensions;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Enums.Objecten;
-using EventsHandler.Mapping.Enums.Objecten.vNijmegen;
-using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;

@@ -1,7 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Models.Interfaces;
-
 namespace EventsHandler.Services.Templates.Interfaces
 {
     /// <summary>

@@ -1,8 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.Interfaces;
-
 namespace EventsHandler.Services.Validation.Interfaces
 {
     /// <summary>

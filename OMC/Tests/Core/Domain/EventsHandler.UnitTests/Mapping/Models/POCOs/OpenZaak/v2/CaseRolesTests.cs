@@ -2,8 +2,6 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Properties;
 
 namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2

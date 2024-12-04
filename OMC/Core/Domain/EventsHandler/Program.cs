@@ -9,7 +9,6 @@ using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;

@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Notify.Models.Responses;
 using System.Text.Json;
+using NotificatieApi;
 
 namespace EventsHandler.Tests.Unit.Services.Templates
 {
@@ -187,7 +187,7 @@ namespace EventsHandler.Tests.Unit.Services.Templates
         }
 
         /// <summary>
-        /// Emits test <see cref="NotificationEvent"/>s.
+        /// Emits test <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>s.
         /// </summary>
         private static IEnumerable<TestCase> GetNotifications_WithOrphans()
         {

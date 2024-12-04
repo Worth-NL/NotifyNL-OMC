@@ -1,8 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Constants;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using System.Text.Json;
 

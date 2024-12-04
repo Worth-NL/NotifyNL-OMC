@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Enums.OpenKlant;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using System.Text.Json;
+using OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Interfaces
 {
@@ -26,7 +26,7 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
         /// </exception>
         /// <exception cref="JsonException">The HTTP response wasn't deserialized properly.</exception>
         /// <exception cref="InvalidOperationException">
-        ///   Strategy could not be determined or <see cref="DistributionChannels"/> option is invalid.
+        ///   Strategy could not be determined or <see cref="ZhvModels.Mapping.Enums.OpenKlant.DistributionChannels"/> option is invalid.
         /// </exception>
         internal Task<ProcessingResult> ProcessAsync(object json);
     }

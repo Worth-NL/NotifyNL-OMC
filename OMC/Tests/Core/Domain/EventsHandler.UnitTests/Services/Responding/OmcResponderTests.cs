@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding;

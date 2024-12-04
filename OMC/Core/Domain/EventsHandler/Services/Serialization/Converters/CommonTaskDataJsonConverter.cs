@@ -1,14 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task.Converters;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Task;
 
 namespace EventsHandler.Services.Serialization.Converters
 {
     /// <summary>
-    /// The custom converter specialized in handling <see cref="CommonTaskData"/> types.
+    /// The custom converter specialized in handling <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Task.CommonTaskData"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class CommonTaskDataJsonConverter : JsonConverter<CommonTaskData>
