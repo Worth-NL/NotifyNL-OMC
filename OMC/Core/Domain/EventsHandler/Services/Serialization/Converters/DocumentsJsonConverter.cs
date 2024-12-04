@@ -1,14 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Decision;
 
 namespace EventsHandler.Services.Serialization.Converters
 {
     /// <summary>
-    /// The custom converter specialized in handling <see cref="Documents"/> types.
+    /// The custom converter specialized in handling <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Documents"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class DocumentsJsonConverter : JsonConverter<Documents>

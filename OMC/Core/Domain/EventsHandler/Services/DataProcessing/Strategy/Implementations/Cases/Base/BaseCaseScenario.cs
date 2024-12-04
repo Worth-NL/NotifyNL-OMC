@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Interfaces;

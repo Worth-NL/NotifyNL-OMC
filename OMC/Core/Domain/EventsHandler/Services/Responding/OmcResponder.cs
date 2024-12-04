@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;

@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using System.Text.Json;
 

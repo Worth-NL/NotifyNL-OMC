@@ -4,7 +4,6 @@ using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;

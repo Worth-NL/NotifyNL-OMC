@@ -1,27 +1,27 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.Interfaces;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using System.Text.Json.Serialization;
+using Interfaces;
+using NotificatieApi;
+using OpenKlant;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
 {
     /// <summary>
     /// The set of data used to pass as a "reference" to "Notify NL" Web API service.
     /// </summary>
-    /// <seealso cref="IJsonSerializable" />
+    /// <seealso cref="ZhvModels.Mapping.Models.Interfaces.IJsonSerializable" />
     public struct NotifyReference : IJsonSerializable  // NOTE: This model is used in endpoints + Swagger UI examples and it must be public
     {
-        /// <inheritdoc cref="NotificationEvent"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(0)]
         public NotificationEvent Notification { get; internal set; } = default;
 
         /// <summary>
-        /// The extracted GUID component from <see cref="Case.Uri"/>.
+        /// The extracted GUID component from <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case.Uri"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]
@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
         public Guid? CaseId { get; internal set; } = Guid.Empty;  // NOTE: Sometimes, case URI might be missing
 
         /// <summary>
-        /// The extracted GUID component from <see cref="CommonPartyData.Uri"/>.
+        /// The extracted GUID component from <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData.Uri"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]

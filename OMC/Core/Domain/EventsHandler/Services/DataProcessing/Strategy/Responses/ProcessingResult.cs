@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Messages.Models.Details.Base;

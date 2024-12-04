@@ -2,8 +2,6 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Mapping.Enums.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
 using EventsHandler.Properties;
 
 namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2

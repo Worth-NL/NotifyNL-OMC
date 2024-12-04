@@ -4,9 +4,6 @@ using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
@@ -14,6 +11,9 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Interfaces;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
@@ -94,7 +94,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
         #region Filters
         /// <summary>
-        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
+        /// OMC is meant to process <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether case scenarios would be processed.
@@ -110,7 +110,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         }
 
         /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        ///   <inheritdoc cref="IsCaseScenario(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether task scenarios would be processed.
@@ -126,7 +126,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         }
 
         /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        ///   <inheritdoc cref="IsCaseScenario(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether decision scenarios would be processed.

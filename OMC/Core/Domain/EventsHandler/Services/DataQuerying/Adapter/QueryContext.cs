@@ -1,13 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Extensions;
+using Decision;
+using Decision;
+using Decision;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
@@ -18,6 +15,8 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
+using NotificatieApi;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
 {
@@ -57,7 +56,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         }
 
         #region IQueryBase
-        /// <inheritdoc cref="IQueryContext.SetNotification(NotificationEvent)"/>
+        /// <inheritdoc cref="IQueryContext.SetNotification(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
         void IQueryContext.SetNotification(NotificationEvent notification)
         {
             this._queryBase.Notification = notification;
@@ -73,7 +72,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
             => await this._queryZaak.TryGetCaseStatusesAsync(this._queryBase, caseUri);
 
-        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(CaseStatuses?)"/>
+        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses?)"/>
         async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? caseStatuses)
         {
             // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
@@ -151,15 +150,15 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
             => await this._queryBesluiten.TryGetInfoObjectAsync(this._queryBase, parameter);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
         async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
             => await this._queryBesluiten.TryGetDecisionAsync(this._queryBase, decisionResource);
 
-        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
         async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
             => await this._queryBesluiten.TryGetDocumentsAsync(this._queryBase, decisionResource);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision?)"/>
         async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
             => await this._queryBesluiten.TryGetDecisionTypeAsync(this._queryBase, decision);
         #endregion

@@ -2,9 +2,6 @@
 
 using Common.Settings.Configuration;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant.Converters;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant.v2;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;

@@ -1,8 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Constants;
-using EventsHandler.Mapping.Enums.OpenKlant;
 using System.Text.Json.Serialization;
+using OpenKlant;
+using OpenKlant;
+using OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Enums
 {
@@ -12,15 +14,15 @@ namespace EventsHandler.Services.DataProcessing.Enums
     [JsonConverter(typeof(JsonStringEnumConverter))]  // NOTE: Simple JSON converter to display enum options in Swagger UI
     public enum NotifyMethods
     {
-        /// <inheritdoc cref="DistributionChannels.None"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Enums.OpenKlant.DistributionChannels.None"/>
         [JsonPropertyName(CommonValues.Default.Models.DefaultEnumValueName)]
         None = DistributionChannels.None,  // 1
 
-        /// <inheritdoc cref="DistributionChannels.Email"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Enums.OpenKlant.DistributionChannels.Email"/>
         [JsonPropertyName("email")]
         Email = DistributionChannels.Email,  // 2
 
-        /// <inheritdoc cref="DistributionChannels.Sms"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Enums.OpenKlant.DistributionChannels.Sms"/>
         [JsonPropertyName("sms")]
         Sms = DistributionChannels.Sms  // 3
     }

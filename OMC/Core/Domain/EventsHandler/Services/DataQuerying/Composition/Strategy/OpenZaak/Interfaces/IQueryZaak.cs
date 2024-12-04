@@ -2,12 +2,24 @@
 
 using Common.Settings.Configuration;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces
 {
@@ -27,7 +39,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         #region Parent (Case)
         #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
         /// <summary>
-        /// Gets the <see cref="Case"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="caseUri">
@@ -55,10 +67,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
 
         /// <summary>
-        /// Gets the <see cref="CaseStatuses"/> of the specific <see cref="Case"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses"/> of the specific <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
+        /// <param name="caseUri">The reference to the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> in <seealso cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
@@ -85,10 +97,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
         }
 
         /// <summary>
-        /// Gets the most recent <see cref="CaseType"/> from <see cref="CaseStatuses"/> from "OpenZaak" Web API service.
+        /// Gets the most recent <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseType"/> from <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseStatuses"><inheritdoc cref="CaseStatuses" path="/summary"/></param>
+        /// <param name="caseStatuses"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses" path="/summary"/></param>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses caseStatuses)
@@ -106,10 +118,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Abstract (BSN Number)
         /// <summary>
-        /// Gets BSN number of a specific citizen linked to the <see cref="Case"/> from "OpenZaak" Web API service.
+        /// Gets BSN number of a specific citizen linked to the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseUri">The <see cref="Case"/> in <see cref="Uri"/> format.</param>
+        /// <param name="caseUri">The <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> in <see cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
@@ -130,10 +142,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Abstract (Case Role)
         /// <summary>
-        /// Gets the <see cref="CaseRole"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseRole"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseUri">The <see cref="Case"/> in <see cref="Uri"/> format.</param>
+        /// <param name="caseUri">The <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> in <see cref="Uri"/> format.</param>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
@@ -142,10 +154,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Inte
 
         #region Abstract (Case type URI)
         /// <summary>
-        /// Gets the <see cref="Case"/> type in <see cref="Uri"/> format from version-specific CaseDetails from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> type in <see cref="Uri"/> format from version-specific CaseDetails from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
+        /// <param name="caseUri">The reference to the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> in <seealso cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>

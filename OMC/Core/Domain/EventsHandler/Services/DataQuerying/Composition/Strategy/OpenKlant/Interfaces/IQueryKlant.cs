@@ -2,13 +2,17 @@
 
 using Common.Settings.Configuration;
 using EventsHandler.Exceptions;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using OpenKlant;
+using OpenKlant;
+using OpenKlant;
+using OpenKlant;
+using OpenKlant;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces
 {
@@ -57,12 +61,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
 
         #region Abstract (Telemetry)
         /// <summary>
-        /// Creates the <see cref="ContactMoment"/> in the register from "OpenKlant" Web API service.
+        /// Creates the <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment"/> in the register from "OpenKlant" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="jsonBody">The JSON body to be passed.</param>
         /// <returns>
-        ///   The response from "OpenZaak" Web API service mapped into a <see cref="ContactMoment"/> object.
+        ///   The response from "OpenZaak" Web API service mapped into a <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment"/> object.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
@@ -70,7 +74,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         internal Task<ContactMoment> CreateContactMomentAsync(IQueryBase queryBase, string jsonBody);
 
         /// <summary>
-        /// Links the <see cref="ContactMoment"/> with the <see cref="Case"/>.
+        /// Links the <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment"/> with the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/>.
         /// </summary>
         /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
         /// <param name="jsonBody">The JSON body to be passed.</param>
@@ -81,7 +85,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Int
         internal Task<RequestResponse> LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
 
         /// <summary>
-        /// Links the <see cref="ContactMoment"/> with the <see cref="CommonPartyData"/>.
+        /// Links the <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment"/> with the <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData"/>.
         /// </summary>
         /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
         /// <param name="jsonBody">The JSON body to be passed.</param>

@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Mapping.Models.Interfaces;
 using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
@@ -10,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Interfaces;
 
 namespace EventsHandler.Services.Serialization
 {
@@ -92,7 +92,7 @@ namespace EventsHandler.Services.Serialization
         }
 
         /// <summary>
-        /// Gets text representation of this specific <see cref="IJsonSerializable"/> object.
+        /// Gets text representation of this specific <see cref="ZhvModels.Mapping.Models.Interfaces.IJsonSerializable"/> object.
         /// </summary>
         private static string GetRequiredMembers<TModel>()
             where TModel : struct, IJsonSerializable

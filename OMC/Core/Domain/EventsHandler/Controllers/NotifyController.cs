@@ -3,7 +3,6 @@
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Utilities.Swagger.Examples;

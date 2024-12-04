@@ -3,13 +3,6 @@
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
-using EventsHandler.Mapping.Enums.Objecten;
-using EventsHandler.Mapping.Enums.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;

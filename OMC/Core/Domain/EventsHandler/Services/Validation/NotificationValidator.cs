@@ -1,15 +1,21 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Helpers;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Responding.Results.Enums;
 using EventsHandler.Services.Validation.Interfaces;
 using System.Reflection;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
 using EventAttributes = EventsHandler.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
 
 namespace EventsHandler.Services.Validation
@@ -28,7 +34,7 @@ namespace EventsHandler.Services.Validation
         }
 
         /// <summary>
-        /// Checks the result of deserialization of the <see cref="NotificationEvent"/> notification (and it's nested components).
+        /// Checks the result of deserialization of the <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> notification (and it's nested components).
         /// </summary>
         /// <param name="notification">The notification model to be implicitly validated.</param>
         HealthCheck IValidationService<NotificationEvent>.Validate(ref NotificationEvent notification)
@@ -53,12 +59,12 @@ namespace EventsHandler.Services.Validation
 
         #region Helper methods
         /// <summary>
-        /// Gets the names of invalid <see cref="NotificationEvent"/> properties.
+        /// Gets the names of invalid <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> properties.
         /// </summary>
         /// <param name="notification">The notification to which invalid properties belongs.</param>
         /// <param name="invalidPropertiesIndices">The collection of indices of invalid properties.</param>
         /// <returns>
-        ///   The comma-separated names of invalid <see cref="NotificationEvent"/> properties.
+        ///   The comma-separated names of invalid <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> properties.
         /// </returns>
         private HealthCheck ReportInvalidPropertiesNames(ref NotificationEvent notification, IEnumerable<int> invalidPropertiesIndices)
         {
@@ -74,23 +80,23 @@ namespace EventsHandler.Services.Validation
         }
 
         /// <summary>
-        /// Determines whether specific properties from <see cref="EventAttributes"/> POCO notification wasn't properly deserialized.
+        /// Determines whether specific properties from <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> POCO notification wasn't properly deserialized.
         /// <para>
-        ///   DETAILS: <see cref="EventAttributes"/> sub-notification can potentially contain undefined, missing or unmatching
+        ///   DETAILS: <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> sub-notification can potentially contain undefined, missing or unmatching
         ///   properties (because different Web APIs may define their own key-value pairs as "kenmerken" [attributes /
         ///   characteristics], and because different types of notifications contains different dynamic properties e.g.,
         ///   for the purpose of business processing: cases, objects, decisions, etc...).
         /// </para>
         /// </summary>
         /// <remarks>
-        ///   NOTE: Only the properties related to the specific notification type (defined in <see cref="NotificationEvent"/>.<see cref="Channels"/>)
+        ///   NOTE: Only the properties related to the specific notification type (defined in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>.<see cref="ZhvModels.Mapping.Enums.NotificatieApi.Channels"/>)
         ///   will be validated, to not produce any unnecessary validation noise (by checking properties which are not
         ///   essential anyway for this specific business case).
         /// </remarks>
         /// <param name="notification">The notification to be validated.</param>
         /// <param name="healthCheck">The final health check.</param>
         /// <returns>
-        ///   <see langword="true"/> if value of any specific <see cref="EventAttributes"/> property is missing
+        ///   <see langword="true"/> if value of any specific <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> property is missing
         ///   (weren't mapped as expected); otherwise, <see langword="false"/>.
         /// </returns>
         private bool HasEmptyAttributes(ref NotificationEvent notification, out HealthCheck healthCheck)
@@ -133,7 +139,7 @@ namespace EventsHandler.Services.Validation
 
         /// <summary>
         /// Determines whether there are any JSON properties that couldn't be matched with
-        /// <see cref="NotificationEvent"/> or <see cref="EventAttributes"/> models properties.
+        /// <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> or <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> models properties.
         /// <para>
         ///   Eventual mismatches should be reported back as errors to not risk loosing any important data in the process.
         /// </para>

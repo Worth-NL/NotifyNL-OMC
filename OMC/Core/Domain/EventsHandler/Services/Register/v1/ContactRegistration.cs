@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using Microsoft.VisualStudio.Threading;
+using NotificatieApi;
+using OpenKlant;
+using OpenKlant;
 
 namespace EventsHandler.Services.Register.v1
 {
@@ -42,7 +42,7 @@ namespace EventsHandler.Services.Register.v1
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
@@ -70,7 +70,7 @@ namespace EventsHandler.Services.Register.v1
                    $"}}";
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment, NotifyReference)"/>
+        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment, NotifyReference)"/>
         string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
             return $"{{" +
@@ -79,7 +79,7 @@ namespace EventsHandler.Services.Register.v1
                    $"}}";
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment, NotifyReference)"/>
+        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment, NotifyReference)"/>
         string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference)
         {
             return $"{{" +

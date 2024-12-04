@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Mapping.Enums.NotifyNL;
-using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;

@@ -1,6 +1,12 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
 
 namespace EventsHandler.Services.Responding.Results.Enums
 {
@@ -25,7 +31,7 @@ namespace EventsHandler.Services.Responding.Results.Enums
         InvalidJson = 1,
 
         /// <summary>
-        /// Details for missing data in <see cref="NotificationEvent"/> due to failed deserialization of its properties.
+        /// Details for missing data in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> due to failed deserialization of its properties.
         /// <para>
         ///   To be used with the names of missing JSON parameters.
         /// </para>
@@ -33,7 +39,7 @@ namespace EventsHandler.Services.Responding.Results.Enums
         MissingProperties_Notification = 2,
 
         /// <summary>
-        /// Details for unexpected value in <see cref="NotificationEvent"/> due to unsupported data type, format or range.
+        /// Details for unexpected value in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> due to unsupported data type, format or range.
         /// <para>
         ///   To be used with the unexpected value.
         /// </para>
@@ -41,7 +47,7 @@ namespace EventsHandler.Services.Responding.Results.Enums
         InvalidProperties_Notification = 3,
 
         /// <summary>
-        /// Details for missing data in <see cref="EventAttributes"/> due to failed deserialization of its properties.
+        /// Details for missing data in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> due to failed deserialization of its properties.
         /// <para>
         ///   To be used with the names of missing JSON parameters.
         /// </para>
@@ -49,17 +55,17 @@ namespace EventsHandler.Services.Responding.Results.Enums
         MissingProperties_Attributes = 4,
 
         /// <summary>
-        /// Details for unexpected data in <see cref="NotificationEvent"/>.
+        /// Details for unexpected data in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>.
         /// <para>
-        ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="NotificationEvent"/> model.
+        ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> model.
         /// </para>
         /// </summary>
         UnexpectedProperties_Notification = 5,
 
         /// <summary>
-        /// Details for unexpected data in <see cref="EventAttributes"/>.
+        /// Details for unexpected data in <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/>.
         /// <para>
-        ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="EventAttributes"/> model.
+        ///   To be used with the JSON properties which couldn't be matched with the existing <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes"/> model.
         /// </para>
         /// </summary>
         UnexpectedProperties_Attributes = 6,

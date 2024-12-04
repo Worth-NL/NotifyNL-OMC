@@ -2,8 +2,6 @@
 
 using Common.Settings.Configuration;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
@@ -11,6 +9,10 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using Message;
+using Message;
+using Task;
+using Task;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces
 {
@@ -30,12 +32,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
         #pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
         #region Parent (Task)
         /// <summary>
-        /// Gets the <see cref="CommonTaskData"/> from "Objecten" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Task.CommonTaskData"/> from "Objecten" Web API service.
         /// </summary>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
-        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="CommonTaskData"/> model.
+        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Task.CommonTaskData"/> model.
         /// </exception>
         internal sealed async Task<CommonTaskData> GetTaskAsync(IQueryBase queryBase)
         {
@@ -56,12 +58,12 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Inte
 
         #region Parent (Message)
         /// <summary>
-        /// Gets the <see cref="MessageObject"/> from "Objecten" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Message.MessageObject"/> from "Objecten" Web API service.
         /// </summary>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException">
-        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="MessageObject"/> model.
+        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Message.MessageObject"/> model.
         /// </exception>
         internal sealed async Task<MessageObject> GetMessageAsync(IQueryBase queryBase)
         {

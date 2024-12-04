@@ -3,8 +3,6 @@
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums.NotifyNL;
-using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;

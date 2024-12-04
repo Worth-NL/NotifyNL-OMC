@@ -1,9 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Enums.NotifyNL;
-using EventsHandler.Mapping.Enums.Objecten;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.Responding.Enums.v2;
 using Microsoft.Extensions.Logging;

@@ -2,12 +2,22 @@
 
 using Common.Settings.Configuration;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
 
 namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces
 {
@@ -26,7 +36,7 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Parent (DecisionResource)
         /// <summary>
-        /// Gets the <see cref="DecisionResource"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="resourceUri">The resource <see cref="Uri"/>.</param>
@@ -51,14 +61,14 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Parent (InfoObject)
         /// <summary>
-        /// Gets the <see cref="InfoObject"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="parameter">
         ///   <list type="number">
-        ///     <item>Nothing => Info Object <see cref="Uri"/> will be queried from 2. <see cref="DecisionResource"/></item>
-        ///     <item><see cref="DecisionResource"/> => containing Info Object <see cref="Uri"/></item>
-        ///     <item><see cref="Document"/> => containing Info Object <see cref="Uri"/></item>
+        ///     <item>Nothing => Info Object <see cref="Uri"/> will be queried from 2. <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/></item>
+        ///     <item><see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/> => containing Info Object <see cref="Uri"/></item>
+        ///     <item><see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Document"/> => containing Info Object <see cref="Uri"/></item>
         ///   </list>
         /// </param>
         /// <exception cref="ArgumentException"/>
@@ -100,10 +110,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Parent (Decision)
         /// <summary>
-        /// Gets the <see cref="Decision"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="decisionResource"><inheritdoc cref="DecisionResource" path="/summary"/></param>
+        /// <param name="decisionResource"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource" path="/summary"/></param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
@@ -125,10 +135,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Parent (Document)
         /// <summary>
-        /// Gets the <see cref="Documents"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Documents"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="decisionResource"><inheritdoc cref="DecisionResource" path="/summary"/></param>
+        /// <param name="decisionResource"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource" path="/summary"/></param>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
@@ -156,10 +166,10 @@ namespace EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Int
 
         #region Parent (DecisionType)
         /// <summary>
-        /// Gets the <see cref="DecisionType"/> from "OpenZaak" Web API service.
+        /// Gets the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionType"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="decision"><inheritdoc cref="Decision" path="/summary"/></param>
+        /// <param name="decision"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision" path="/summary"/></param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
