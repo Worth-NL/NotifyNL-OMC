@@ -2,8 +2,6 @@
 
 using Common.Extensions;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotifyNL;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
@@ -19,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
 using System.Net;
 using System.Text.RegularExpressions;
+using NotifyNL;
 
 namespace EventsHandler.Services.Responding
 {
@@ -230,7 +229,7 @@ namespace EventsHandler.Services.Responding
 
         #region Parent        
         /// <summary>
-        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback.
+        /// Extracts the notification data from received <see cref="ZhvModels.Mapping.Models.POCOs.NotifyNL.DeliveryReceipt"/> callback.
         /// </summary>
         /// <param name="callback">The callback to be analyzed.</param>
         /// <returns>

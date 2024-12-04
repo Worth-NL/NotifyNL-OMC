@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.v2;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;

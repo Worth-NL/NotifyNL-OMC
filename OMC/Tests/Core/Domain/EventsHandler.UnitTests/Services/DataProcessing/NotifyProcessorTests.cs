@@ -1,7 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Enums;

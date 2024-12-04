@@ -1,11 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Message;
-using EventsHandler.Mapping.Models.POCOs.Objecten.Task;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
+using Decision;
 using EventsHandler.Services.DataQuerying.Composition.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
 using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
@@ -14,6 +17,21 @@ using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfa
 using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using NotificatieApi;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {
@@ -41,25 +59,25 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         #region IQueryZaak
         /// <inheritdoc cref="IQueryZaak.TryGetCaseAsync(IQueryBase, Uri?)"/>
         /// <remarks>
-        ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
+        ///   The <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can
         ///   be extracted internally from the queried case details (cost is an additional overhead) from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Case> GetCaseAsync(Uri? caseUri = null);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusesAsync(IQueryBase, Uri?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/>.
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/>.
         ///   <para>
         ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
-        ///     directly from the initial notification <see cref="NotificationEvent.MainObjectUri"/> (which
+        ///     directly from the initial notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.MainObjectUri"/> (which
         ///     will work only if the notification was meant to be used with Case scenarios).
         ///   </para>
         /// </remarks>
         internal Task<CaseStatuses> GetCaseStatusesAsync(Uri? caseUri = null);
 
-        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync(IQueryBase, CaseStatuses)"/>
+        /// <inheritdoc cref="IQueryZaak.GetLastCaseTypeAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="CaseStatuses"/>, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses"/>, but it produces an additional
         ///   overhead since the missing statuses will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<CaseType> GetLastCaseTypeAsync(CaseStatuses? caseStatuses = null);
@@ -69,11 +87,11 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         
         /// <inheritdoc cref="IQueryZaak.TryGetCaseTypeUriAsync(IQueryBase, Uri?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/> as query parameter.
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> as query parameter.
         ///   <para>
-        ///     NOTE: Bear in mind that if the <see cref="Case"/> <see cref="Uri"/> is missing, the looked
-        ///     up <see cref="CaseType"/> <see cref="Uri"/> will be attempted to retrieve directly from the
-        ///     initial notification from <see cref="EventAttributes.CaseTypeUri"/> (which will work only if
+        ///     NOTE: Bear in mind that if the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> is missing, the looked
+        ///     up <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseType"/> <see cref="Uri"/> will be attempted to retrieve directly from the
+        ///     initial notification from <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes.CaseTypeUri"/> (which will work only if
         ///     the notification was meant to be used with Case scenarios).
         ///   </para>
         /// </remarks>
@@ -88,13 +106,13 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
         ///   overhead since the missing BSN will be queried internally anyway from "OpenZaak" Web API service.
         ///   <para>
-        ///     NOTE: While querying party details (e.g., citizen or organization) the <see cref="Case"/> <see cref="Uri"/> can be
-        ///     used to get <see cref="CaseRole"/> and based on that determine whether the organization data will be retrieved, or
+        ///     NOTE: While querying party details (e.g., citizen or organization) the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> can be
+        ///     used to get <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseRole"/> and based on that determine whether the organization data will be retrieved, or
         ///     rather the citizen data.
         ///     <para>
         ///       In case of getting citizen data the BSN number should be provided; otherwise, the missing BSN will be obtained using
-        ///       the provided <see cref="Case"/> <see cref="Uri"/> which, if missing, will be attempted to be obtained from the initial
-        ///       notification <see cref="NotificationEvent.MainObjectUri"/> (which will work only if the notification was meant to be
+        ///       the provided <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> which, if missing, will be attempted to be obtained from the initial
+        ///       notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.MainObjectUri"/> (which will work only if the notification was meant to be
         ///       used with Case scenarios).
         ///     </para>
         ///   </para>
@@ -117,7 +135,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
         ///   <para>
         ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
-        ///     directly from the initial notification <see cref="NotificationEvent.ResourceUri"/> (which will
+        ///     directly from the initial notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.ResourceUri"/> (which will
         ///     work only if the notification was meant to be used with Decision scenarios).
         ///   </para>
         /// </remarks>
@@ -125,32 +143,32 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryBesluiten.TryGetInfoObjectAsync(IQueryBase, object?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionAsync(IQueryBase, DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDocumentsAsync(IQueryBase, DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDocumentsAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         internal Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionTypeAsync(IQueryBase, Decision?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionTypeAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision?)"/>
         /// <remarks>
-        ///   Simpler usage doesn't require providing <see cref="Decision"/>, but it produces an additional
+        ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision"/>, but it produces an additional
         ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
-        ///   service. One of alternatives is that just before querying <see cref="Decision"/> to get desired
-        ///   <seealso cref="DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
-        ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
+        ///   service. One of alternatives is that just before querying <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision"/> to get desired
+        ///   <seealso cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
+        ///   the initial notification from <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes.DecisionTypeUri"/> (which will work
         ///   only if the notification was meant to be used with Decision scenarios).
         /// </remarks>
         internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);

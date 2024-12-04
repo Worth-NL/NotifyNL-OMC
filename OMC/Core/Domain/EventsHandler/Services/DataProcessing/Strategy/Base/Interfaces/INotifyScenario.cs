@@ -1,10 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using System.Text.Json;
+using NotificatieApi;
+using NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
 {
@@ -16,7 +17,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <summary>
         /// Prepares all data consumed by "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
@@ -40,7 +41,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <summary>
         /// Processes the prepared data in a specific way (determined by the scenario itself).
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
         /// <param name="notifyData"><inheritdoc cref="NotifyData" path="/summary"/></param>
         /// <returns>
         ///   The status of the processing operation.

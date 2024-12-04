@@ -5,13 +5,6 @@ using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
 using EventsHandler.Extensions;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Enums.Objecten;
-using EventsHandler.Mapping.Enums.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak.Decision;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
@@ -23,6 +16,12 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.DataSending.Responses;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Decision;
+using Decision;
+using NotificatieApi;
+using NotificatieApi;
+using OpenKlant;
+using OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -53,7 +52,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
 
         #region Polymorphic (PrepareDataAsync)
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
@@ -133,7 +132,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             lock (s_padlock)
@@ -177,7 +176,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => this.Configuration.Notify.TemplateId.DecisionMade();  // NOTE: Decision has only one template
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
             return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
@@ -196,7 +195,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                                               .Replace("\t", "\\t");
         }
 
-        /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        /// <inheritdoc cref="BaseScenario.ProcessDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
             if (notifyData.IsEmpty())
@@ -235,10 +234,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
 
         /// <summary>
-        /// Gets references in <see cref="Uri"/> format to <see cref="InfoObject"/>s meeting certain criteria.
+        /// Gets references in <see cref="Uri"/> format to <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject"/>s meeting certain criteria.
         /// </summary>
         /// <returns>
-        ///   The comma-separated absolute <see cref="Uri"/> references to valid <see cref="InfoObject"/>s in the given format:
+        ///   The comma-separated absolute <see cref="Uri"/> references to valid <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject"/>s in the given format:
         ///   <code>
         ///     ""absoluteUri", "absoluteUri", "absoluteUri""
         ///   </code>

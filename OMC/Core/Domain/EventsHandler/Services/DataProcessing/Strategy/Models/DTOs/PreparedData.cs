@@ -1,8 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using EventsHandler.Mapping.Models.POCOs.OpenKlant;
-using EventsHandler.Mapping.Models.POCOs.OpenZaak;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
+using OpenKlant;
+using OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
 {
@@ -11,10 +11,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Models.DTOs
     /// </summary>
     internal readonly struct PreparedData
     {
-        /// <inheritdoc cref="CommonPartyData"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData"/>
         internal CommonPartyData Party { get; }
 
-        /// <inheritdoc cref="Case.Uri"/>
+        /// <inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case.Uri"/>
         internal Uri? CaseUri { get; }
 
         /// <summary>

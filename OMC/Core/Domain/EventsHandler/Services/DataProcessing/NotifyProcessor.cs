@@ -1,9 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Mapping.Enums;
-using EventsHandler.Mapping.Enums.NotificatieApi;
-using EventsHandler.Mapping.Models.POCOs.NotificatieApi;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
@@ -15,6 +12,7 @@ using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
+using NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing
 {
@@ -99,7 +97,7 @@ namespace EventsHandler.Services.DataProcessing
 
         #region Helper methods
         /// <summary>
-        /// Determines whether the received <see cref="NotificationEvent"/> is just a "test" ping.
+        /// Determines whether the received <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> is just a "test" ping.
         /// </summary>
         private static bool IsTest(NotificationEvent notification)
         {
