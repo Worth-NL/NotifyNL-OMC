@@ -21,7 +21,7 @@ namespace EventsHandler.Services.Validation
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationValidator"/> class.
         /// </summary>
-        internal NotificationValidator(IDetailsBuilder detailsBuilder)
+        public NotificationValidator(IDetailsBuilder detailsBuilder)  // Dependency Injection (DI)
         {
             this._detailsBuilder = detailsBuilder;
         }

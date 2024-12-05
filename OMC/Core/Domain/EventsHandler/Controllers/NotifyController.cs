@@ -19,7 +19,7 @@ namespace EventsHandler.Controllers
     /// <seealso cref="OmcController"/>
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
-    internal sealed class NotifyController : OmcController
+    public sealed class NotifyController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly NotifyResponder _responder;
 
