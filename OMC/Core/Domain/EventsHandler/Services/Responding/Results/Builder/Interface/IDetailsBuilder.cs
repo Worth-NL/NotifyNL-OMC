@@ -1,14 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
-using EventsHandler.Services.Responding.Results.Enums;
+using Common.Models.Messages.Details.Base;
+using EventsHandler.Enums.Responding;
 
 namespace EventsHandler.Services.Responding.Results.Builder.Interface
 {
     /// <summary>
     /// The builder to create specialized components:
     /// </summary>
-    public interface IDetailsBuilder
+    internal interface IDetailsBuilder
     {
         /// <summary>
         /// Gets the specific type of <see cref="BaseEnhancedDetails"/> with proper content.

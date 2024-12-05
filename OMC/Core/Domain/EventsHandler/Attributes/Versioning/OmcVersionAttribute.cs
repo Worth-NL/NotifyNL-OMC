@@ -13,7 +13,7 @@ namespace EventsHandler.Attributes.Versioning
         /// <summary>
         /// Initializes a new instance of the <see cref="OmcVersionAttribute"/> class.
         /// </summary>
-        public OmcVersionAttribute() : base(OmcVersion.GetNetVersion())
+        internal OmcVersionAttribute() : base(OmcVersion.GetNetVersion())
         {
             // Satisfies API controllers with .NET version of the software (major.minor)
         }

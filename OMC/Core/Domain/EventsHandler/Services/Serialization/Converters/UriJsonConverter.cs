@@ -12,6 +12,7 @@ namespace EventsHandler.Services.Serialization.Converters
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class UriJsonConverter : JsonConverter<Uri>
     {
+        /// <inheritdoc cref="JsonConverter{TValue}.HandleNull"/>
         public override bool HandleNull => true;
 
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>

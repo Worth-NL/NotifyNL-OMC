@@ -1,21 +1,26 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using Moq;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
 {
@@ -99,7 +104,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
             
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -157,7 +162,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -189,7 +194,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>

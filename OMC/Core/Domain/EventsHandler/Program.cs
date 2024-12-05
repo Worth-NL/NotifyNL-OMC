@@ -9,6 +9,7 @@ using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
 using EventsHandler.Constants;
 using EventsHandler.Controllers;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -17,13 +18,12 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataQuerying;
 using EventsHandler.Services.DataQuerying.Adapter;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Base;
-using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Base;
+using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
@@ -51,11 +51,12 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Besluiten = EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten;
-using Objecten = EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten;
-using ObjectTypen = EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen;
-using OpenKlant = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant;
-using OpenZaak = EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using Besluiten = EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten;
+using Objecten = EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten;
+using ObjectTypen = EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen;
+using OpenKlant = EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenZaak = EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = EventsHandler.Services.Register;
 using Responder = EventsHandler.Services.Responding;
 
@@ -353,7 +354,7 @@ namespace EventsHandler
             {
                 return omvWorkflowVersion switch
                 {
-                    1 => typeof(OpenKlant.v1.QueryKlant),
+                    1 => typeof(OpenKlant.v2.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
                     _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenKlantUnknown)
                 };

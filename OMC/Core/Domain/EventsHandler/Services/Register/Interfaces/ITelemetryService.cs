@@ -1,14 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Enums.Processing;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Versioning.Interfaces;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.Register.Interfaces
 {
@@ -16,7 +15,7 @@ namespace EventsHandler.Services.Register.Interfaces
     /// The service to collect and send feedback about the current business activities to the dedicated external API endpoint.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
-    public interface ITelemetryService : IVersionDetails
+    internal interface ITelemetryService : IVersionDetails
     {
         /// <inheritdoc cref="IQueryContext"/>
         internal IQueryContext QueryContext { get; }
@@ -60,7 +59,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>

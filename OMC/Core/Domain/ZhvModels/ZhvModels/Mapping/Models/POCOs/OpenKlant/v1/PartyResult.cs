@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.Interfaces;
@@ -18,51 +19,44 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
     {
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri Uri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri Uri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(1)]
-        public string Name { get; public set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
-        [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(2)]
-        public string SurnamePrefix { get; public set; } = string.Empty;
+        public string SurnamePrefix { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.Surname"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("achternaam")]
         [JsonPropertyOrder(3)]
-        public string Surname { get; public set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.DistributionChannel"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("aanmaakkanaal")]
         [JsonPropertyOrder(4)]
-        public DistributionChannels DistributionChannel { get; public set; }
+        public DistributionChannels DistributionChannel { get; set; }
 
         /// <inheritdoc cref="CommonPartyData.TelephoneNumber"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("telefoonnummer")]
         [JsonPropertyOrder(5)]
-        public string TelephoneNumber { get; public set; } = string.Empty;
+        public string TelephoneNumber { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.EmailAddress"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("emailadres")]
         [JsonPropertyOrder(6)]
-        public string EmailAddress { get; public set; } = string.Empty;
+        public string EmailAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResult"/> struct.

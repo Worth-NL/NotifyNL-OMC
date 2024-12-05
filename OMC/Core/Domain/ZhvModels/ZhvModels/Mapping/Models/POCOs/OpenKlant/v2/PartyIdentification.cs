@@ -16,9 +16,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
     {
         /// <inheritdoc cref="PartyDetails"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("contactnaam")]
         [JsonPropertyOrder(0)]
-        public PartyDetails Details { get; public set; }
+        public PartyDetails Details { get; set; }
     }
 }

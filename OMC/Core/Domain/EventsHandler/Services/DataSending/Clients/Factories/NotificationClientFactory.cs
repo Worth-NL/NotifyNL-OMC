@@ -21,7 +21,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationClientFactory"/> class.
         /// </summary>
-        public NotificationClientFactory(WebApiConfiguration configuration)
+        internal NotificationClientFactory(WebApiConfiguration configuration)
         {
             this._configuration = configuration;
         }

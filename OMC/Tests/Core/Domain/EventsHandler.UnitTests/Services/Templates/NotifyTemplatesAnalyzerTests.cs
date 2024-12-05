@@ -5,7 +5,7 @@ using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Notify.Models.Responses;
 using System.Text.Json;
-using NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Tests.Unit.Services.Templates
 {
@@ -187,7 +187,7 @@ namespace EventsHandler.Tests.Unit.Services.Templates
         }
 
         /// <summary>
-        /// Emits test <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>s.
+        /// Emits test <see cref="NotificationEvent"/>s.
         /// </summary>
         private static IEnumerable<TestCase> GetNotifications_WithOrphans()
         {

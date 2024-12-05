@@ -3,17 +3,18 @@
 using Common.Constants;
 using Common.Settings.Configuration;
 using EventsHandler.Constants;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using Microsoft.IdentityModel.Tokens;
 using SecretsManager.Services.Authentication.Encryptions.Strategy.Context;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 using System.Text;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Services.DataSending
 {
@@ -37,7 +38,7 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpNetworkService"/> class.
         /// </summary>
-        public HttpNetworkService(
+        internal HttpNetworkService(
             WebApiConfiguration configuration,
             EncryptionContext encryptionContext,
             IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)
@@ -210,7 +211,7 @@ namespace EventsHandler.Services.DataSending
                 // HTTPS protocol validation
                 if (uri.Scheme != CommonValues.Default.Request.HttpsProtocol)
                 {
-                    return RequestResponse.Failure(ApiResources.HttpRequest_ERROR_HttpsProtocolExpected);
+                    return RequestResponse.Failure(ZhvResources.HttpRequest_ERROR_HttpsProtocolExpected);
                 }
 
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)

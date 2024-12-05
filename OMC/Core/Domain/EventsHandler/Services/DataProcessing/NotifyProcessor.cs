@@ -1,18 +1,23 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Enums.Validation;
+using Common.Models.Messages.Details;
+using Common.Models.Messages.Details.Base;
+using Common.Models.Responses;
 using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.Responding.Messages.Models.Details;
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
-using NotificatieApi;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Properties;
+using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Models.Responses.Processing;
 
 namespace EventsHandler.Services.DataProcessing
 {
@@ -29,7 +34,7 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="resolver">The strategies resolving service.</param>
-        public NotifyProcessor(
+        internal NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
             IScenariosResolver<INotifyScenario, NotificationEvent> resolver)
@@ -54,7 +59,7 @@ namespace EventsHandler.Services.DataProcessing
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
                     // STOP: The notification is not complete; any further processing of it would be pointless
-                    return ProcessingResult.NotPossible(ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
+                    return ProcessingResult.NotPossible(ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
                 }
 
                 // Determine if the received notification is "test" (ping) event => In this case, do nothing
@@ -68,17 +73,18 @@ namespace EventsHandler.Services.DataProcessing
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
-                GettingDataResponse gettingDataResponse;
-                if ((gettingDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
+                QueryingDataResponse queryDataResponse;
+
+                if ((queryDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
-                    string message = string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent, gettingDataResponse.Message);
+                    string message = string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent, queryDataResponse.Message);
 
                     // RETRY: The notification COULD not be sent due to missing or inconsistent data
                     return ProcessingResult.Failure(message, json, details);
                 }
 
                 // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
-                ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, gettingDataResponse.Content);
+                ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, queryDataResponse.Content);
 
                 return processingDataResponse.IsFailure
                     // RETRY: Something bad happened and "Notify NL" did not send the notification as expected
@@ -97,7 +103,7 @@ namespace EventsHandler.Services.DataProcessing
 
         #region Helper methods
         /// <summary>
-        /// Determines whether the received <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> is just a "test" ping.
+        /// Determines whether the received <see cref="NotificationEvent"/> is just a "test" ping.
         /// </summary>
         private static bool IsTest(NotificationEvent notification)
         {

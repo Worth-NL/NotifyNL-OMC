@@ -3,6 +3,8 @@
 using Common.Constants;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using System.Text.Json;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.NotificatieApi
 {

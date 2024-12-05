@@ -3,20 +3,23 @@
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Querying;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
 {
@@ -37,7 +40,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             this._mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
             this._mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Failure());
+                .ReturnsAsync(QueryingDataResponse.Failure());
 
             this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
             this._mockedNotifyService = new Mock<INotifyService<NotifyData>>(MockBehavior.Strict);

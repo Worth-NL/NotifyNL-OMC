@@ -4,11 +4,11 @@ using EventsHandler.Controllers;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Collections.Concurrent;
-using NotificatieApi;
+using Common.Models.Messages.Base;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Attributes.Validation
 {
@@ -37,7 +37,7 @@ namespace EventsHandler.Attributes.Validation
 
         /// <summary>
         /// Intercepts the <see cref="IActionResult"/> error messages from the validation of
-        /// <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> to display <see cref="BaseStandardResponseBody"/>.
+        /// <see cref="NotificationEvent"/> to display <see cref="BaseStandardResponseBody"/>.
         /// </summary>
         public override void OnResultExecuting(ResultExecutingContext context)
         {

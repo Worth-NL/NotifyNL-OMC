@@ -1,28 +1,29 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
+using Common.Enums.Responses;
 using Common.Extensions;
-using EventsHandler.Extensions;
+using Common.Models.Messages.Errors;
+using Common.Models.Messages.Errors.Specific;
+using Common.Models.Messages.Successes;
+using Common.Models.Responses;
+using EventsHandler.Extensions.Responding;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Errors;
-using EventsHandler.Services.Responding.Messages.Models.Errors.Specific;
-using EventsHandler.Services.Responding.Messages.Models.Successes;
-using EventsHandler.Services.Responding.Results.Extensions;
 using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
 using System.Net;
 using System.Text.RegularExpressions;
-using NotifyNL;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TResult}"/>
-    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    internal abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <inheritdoc cref="ISerializationService"/>
         protected ISerializationService Serializer { get; }
@@ -229,7 +230,7 @@ namespace EventsHandler.Services.Responding
 
         #region Parent        
         /// <summary>
-        /// Extracts the notification data from received <see cref="ZhvModels.Mapping.Models.POCOs.NotifyNL.DeliveryReceipt"/> callback.
+        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback.
         /// </summary>
         /// <param name="callback">The callback to be analyzed.</param>
         /// <returns>

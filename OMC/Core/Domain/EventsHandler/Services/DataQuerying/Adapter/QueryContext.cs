@@ -1,22 +1,23 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Extensions;
-using Decision;
-using Decision;
-using Decision;
-using EventsHandler.Extensions;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
-using NotificatieApi;
-using OpenZaak;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Services.DataQuerying.Adapter
 {
@@ -36,7 +37,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        public QueryContext(
+        internal QueryContext(
             IHttpNetworkService networkService,
             IQueryBase queryBase,
             IQueryZaak queryZaak,
@@ -56,7 +57,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         }
 
         #region IQueryBase
-        /// <inheritdoc cref="IQueryContext.SetNotification(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        /// <inheritdoc cref="IQueryContext.SetNotification(NotificationEvent)"/>
         void IQueryContext.SetNotification(NotificationEvent notification)
         {
             this._queryBase.Notification = notification;

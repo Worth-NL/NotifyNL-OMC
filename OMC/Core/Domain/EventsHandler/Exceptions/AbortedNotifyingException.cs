@@ -13,7 +13,7 @@ namespace EventsHandler.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="AbortedNotifyingException"/> class.
         /// </summary>
-        public AbortedNotifyingException(string message)
+        internal AbortedNotifyingException(string message)
             : base($"{message} {ApiResources.Processing_ABORT}")
         {
         }

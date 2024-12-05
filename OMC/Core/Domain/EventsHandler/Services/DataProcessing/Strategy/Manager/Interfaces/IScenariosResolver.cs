@@ -3,7 +3,6 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using System.Text.Json;
-using NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
 {
@@ -18,7 +17,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
         /// <summary>
         /// Determines which scenario should be used based on the given <typeparamref name="TDeterminant"/>.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The resolved <typeparamref name="TService"/> strategy.
         /// </returns>

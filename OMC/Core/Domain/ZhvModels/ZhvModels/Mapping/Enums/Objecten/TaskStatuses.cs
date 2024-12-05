@@ -1,7 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
+using Common.Enums.Converters;
 using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Converters;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 
 namespace ZhvModels.Mapping.Enums.Objecten

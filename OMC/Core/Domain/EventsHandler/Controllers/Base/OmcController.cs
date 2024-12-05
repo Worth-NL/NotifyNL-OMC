@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Extensions;
+using Common.Models.Messages.Base;
 using EventsHandler.Attributes.Versioning;
 using EventsHandler.Constants;
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsHandler.Controllers.Base
@@ -22,7 +22,7 @@ namespace EventsHandler.Controllers.Base
     [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]          // REASON: Unexpected internal error
     [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(BaseStandardResponseBody))]          // REASON: Something is not implemented
-    public abstract class OmcController : Controller
+    internal abstract class OmcController : Controller
     {
         /// <summary>
         /// Logs the message and returns the API response.

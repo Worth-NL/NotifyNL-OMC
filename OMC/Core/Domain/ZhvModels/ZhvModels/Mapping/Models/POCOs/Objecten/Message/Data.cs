@@ -15,28 +15,25 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
         /// The subject of the <see cref="MessageObject"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("onderwerp")]
         [JsonPropertyOrder(0)]
-        public string Subject { get; public set; } = string.Empty;
+        public string Subject { get; set; } = string.Empty;
 
         /// <summary>
         /// The actions perspective of the <see cref="MessageObject"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("handelingsperspectief")]
         [JsonPropertyOrder(1)]
-        public string ActionsPerspective { get; public set; } = string.Empty;
+        public string ActionsPerspective { get; set; } = string.Empty;
 
         /// <summary>
         /// The identification details of the <see cref="MessageObject"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(2)]
-        public Identification Identification { get; public set; }
+        public Identification Identification { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Data"/> struct.

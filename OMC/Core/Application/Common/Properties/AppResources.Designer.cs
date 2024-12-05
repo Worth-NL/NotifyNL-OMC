@@ -70,7 +70,7 @@ namespace Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: The key used to retrieve configuration value is null, empty, or whitespace..
+        ///   Looks up a localized string similar to public error: The key used to retrieve configuration value is null, empty, or whitespace..
         /// </summary>
         public static string Configuration_ERROR_InvalidKey {
             get {
@@ -120,6 +120,60 @@ namespace Common.Properties {
         public static string Configuration_ERROR_ValueNotFoundOrEmpty {
             get {
                 return ResourceManager.GetString("Configuration_ERROR_ValueNotFoundOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The access to the external Web API service is forbidden..
+        /// </summary>
+        public static string Operation_ERROR_AccessDenied {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notification could not be recognized/deserialized..
+        /// </summary>
+        public static string Operation_ERROR_Deserialization_Failure {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Deserialization_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The HTTP request wasn&apos;t completed successfully..
+        /// </summary>
+        public static string Operation_ERROR_HttpRequest_Failure {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_HttpRequest_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public error: An unexpected issue occurred..
+        /// </summary>
+        public static string Operation_ERROR_Internal {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_Internal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation is not implemented. Internal server error..
+        /// </summary>
+        public static string Operation_ERROR_NotImplemented {
+            get {
+                return ResourceManager.GetString("Operation_ERROR_NotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | Notification: {1}..
+        /// </summary>
+        public static string Operation_STATUS_Notification {
+            get {
+                return ResourceManager.GetString("Operation_STATUS_Notification", resourceCulture);
             }
         }
     }

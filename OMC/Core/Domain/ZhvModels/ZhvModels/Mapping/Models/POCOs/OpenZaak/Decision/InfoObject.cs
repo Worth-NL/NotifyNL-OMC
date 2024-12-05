@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Enums.OpenZaak;
@@ -15,17 +16,15 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
     {
         /// <inheritdoc cref="PrivacyNotices"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("vertrouwelijkheidaanduiding")]
         [JsonPropertyOrder(0)]
-        public PrivacyNotices Confidentiality { get; public set; }  // TODO: Test options for this enum. Only "openbaar" is expected and this enum is reused from notification
+        public PrivacyNotices Confidentiality { get; set; }  // TODO: Test options for this enum. Only "openbaar" is expected and this enum is reused from notification
 
         /// <inheritdoc cref="MessageStatus"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(1)]
-        public MessageStatus Status { get; public set; }
+        public MessageStatus Status { get; set; }
 
         /// <summary>
         /// The type of the <see cref="InfoObject"/> in <see cref="Uri"/> format:
@@ -34,10 +33,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("informatieobjecttype")]
         [JsonPropertyOrder(2)]
-        public Uri TypeUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri TypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoObject"/> struct.

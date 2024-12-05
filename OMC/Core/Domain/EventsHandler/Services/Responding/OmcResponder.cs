@@ -1,17 +1,18 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Enums.Responses;
 using Common.Extensions;
+using Common.Models.Messages.Details;
+using Common.Models.Messages.Errors;
+using Common.Models.Messages.Errors.Specific;
+using Common.Models.Messages.Information;
+using Common.Models.Messages.Successes;
+using Common.Models.Responses;
+using EventsHandler.Enums.Responding;
+using EventsHandler.Extensions.Responding;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Details;
-using EventsHandler.Services.Responding.Messages.Models.Errors;
-using EventsHandler.Services.Responding.Messages.Models.Errors.Specific;
-using EventsHandler.Services.Responding.Messages.Models.Information;
-using EventsHandler.Services.Responding.Messages.Models.Successes;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
-using EventsHandler.Services.Responding.Results.Enums;
-using EventsHandler.Services.Responding.Results.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
@@ -19,7 +20,7 @@ using System.Net;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
-    public sealed class OmcResponder : IRespondingService<ProcessingResult>
+    internal sealed class OmcResponder : IRespondingService<ProcessingResult>
     {
         private const string DeserializationMissingProperty = "JSON deserialization";
         private const string DeserializationInvalidValue = "The JSON value";
@@ -30,7 +31,7 @@ namespace EventsHandler.Services.Responding
         /// <summary>
         /// Initializes a new instance of the <see cref="OmcResponder"/> class.
         /// </summary>
-        public OmcResponder(IDetailsBuilder builder)
+        internal OmcResponder(IDetailsBuilder builder)
         {
             this._detailsBuilder = builder;
         }

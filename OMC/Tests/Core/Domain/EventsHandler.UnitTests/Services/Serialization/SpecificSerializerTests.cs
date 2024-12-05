@@ -2,13 +2,25 @@
 
 using Common.Constants;
 using Common.Extensions;
-using EventsHandler.Properties;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.Objecten;
+using ZhvModels.Mapping.Enums.Objecten.vNijmegen;
+using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant.v2;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZhvModels.Properties;
+using Task = ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Tests.Unit.Services.Serialization
 {
@@ -441,7 +453,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                        $"The given JSON cannot be deserialized | " +
                        $"Target model: '{targetName}.cs' | " +
                        $"Failed: '{failed}' | " +
-                       $"Reason: {ApiResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
+                       $"Reason: {ZhvResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
                        $"All required properties: {expectedResult} | " +
                        $"Source JSON: {{}}";
 
@@ -589,7 +601,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         public void Serialize_TaskObject_Hague_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: Very complex model: nested objects (with objects and enums) should be initialized as well
         {
             // Act
-            string actualResult = this._serializer.Serialize(isDefault ? default : new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject());
+            string actualResult = this._serializer.Serialize(isDefault ? default : new Task.vHague.TaskObject());
 
             // Assert
             string expectedResult =
@@ -616,7 +628,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         public void Serialize_TaskObject_Nijmegen_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: 2nd variant of TaskObject JSON schema
         {
             // Act
-            string actualResult = this._serializer.Serialize(isDefault ? default : new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject());
+            string actualResult = this._serializer.Serialize(isDefault ? default : new Task.vNijmegen.TaskObject());
 
             // Assert
             string expectedResult =
@@ -645,11 +657,11 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         public void Serialize_TaskObject_Hague_ValidModel_ReturnsExpectedJson()
         {
             // Arrange
-            var testModel = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject
+            var testModel = new Task.vHague.TaskObject
             {
-                Record = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.Record
+                Record = new Task.vHague.Record
                 {
-                    Data = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vHague.Data
+                    Data = new Task.vHague.Data
                     {
                         CaseUri = new Uri($"https://www.domain.test/{Guid.Empty}"),
                         Title = TestString,
@@ -691,15 +703,15 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         public void Serialize_TaskObject_Nijmegen_ValidModel_ReturnsExpectedJson()
         {
             // Arrange
-            var testModel = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject
+            var testModel = new Task.vNijmegen.TaskObject
             {
-                Record = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Record
+                Record = new Task.vNijmegen.Record
                 {
-                    Data = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Data
+                    Data = new Task.vNijmegen.Data
                     {
                         Title = TestString,
                         Status = TaskStatuses.Open,
-                        Coupling = new EventsHandler.Mapping.Models.POCOs.Objecten.Task.vNijmegen.Coupling
+                        Coupling = new Task.vNijmegen.Coupling
                         {
                             Id = Guid.Empty,
                             Type = Registrations.Case

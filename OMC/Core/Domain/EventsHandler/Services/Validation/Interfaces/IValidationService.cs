@@ -1,12 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Enums.Validation;
+using ZhvModels.Mapping.Models.Interfaces;
+
 namespace EventsHandler.Services.Validation.Interfaces
 {
     /// <summary>
     /// The service to validate a certain types of models.
     /// </summary>
     /// <typeparam name="TModel">The type of the model.</typeparam>
-    public interface IValidationService<TModel>
+    internal interface IValidationService<TModel>
         where TModel : IJsonSerializable
     {
         /// <summary>

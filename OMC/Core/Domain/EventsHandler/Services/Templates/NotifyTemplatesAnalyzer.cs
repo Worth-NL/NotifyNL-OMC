@@ -4,6 +4,8 @@ using Common.Extensions;
 using EventsHandler.Services.Templates.Interfaces;
 using Notify.Models.Responses;
 using System.Text.RegularExpressions;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.Templates
 {
@@ -30,8 +32,8 @@ namespace EventsHandler.Services.Templates
         string[] ITemplatesService<TemplateResponse, NotificationEvent>.GetPlaceholders(TemplateResponse template)
         {
             // Invalid template
-            if (string.IsNullOrEmpty(template.subject) ||
-                string.IsNullOrEmpty(template.body))
+            if (template.subject.IsNullOrEmpty() ||
+                template.body.IsNullOrEmpty())
             {
                 return [];
             }

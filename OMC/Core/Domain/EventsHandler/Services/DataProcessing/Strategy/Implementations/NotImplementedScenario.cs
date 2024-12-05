@@ -1,17 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Settings.Configuration;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using System.Diagnostics.CodeAnalysis;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -25,7 +22,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
-        public NotImplementedScenario(
+        internal NotImplementedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
@@ -36,11 +33,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic
         private const string ExclusionJustificationMessage = $"This method is unreachable, since it is dependent on {nameof(PrepareDataAsync)} => throwing exception.";
 
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
             => await Task.FromResult(NotImplemented<PreparedData>());
 
-        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override NotifyData GetSmsNotifyData(NotificationEvent notification, PreparedData preparedData)
             => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes
@@ -55,7 +52,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, PreparedData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailNotifyData(NotificationEvent, PreparedData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override NotifyData GetEmailNotifyData(NotificationEvent notification, PreparedData preparedData)
             => NotImplemented<NotifyData>();  // NOTE: Only for compilation purposes

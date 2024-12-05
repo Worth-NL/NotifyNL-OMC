@@ -19,19 +19,17 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         /// The ID of the <see cref="Coupling"/> object (e.g., case).
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("uuid")]
         [JsonPropertyOrder(0)]
-        public Guid Id { get; public set; } = Guid.Empty;
+        public Guid Id { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The type of the <see cref="Coupling"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("registratie")]
         [JsonPropertyOrder(1)]
-        public Registrations Type { get; public set; }
+        public Registrations Type { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Coupling"/> struct.

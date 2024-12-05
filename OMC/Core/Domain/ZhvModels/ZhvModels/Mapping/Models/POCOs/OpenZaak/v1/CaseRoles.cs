@@ -1,7 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Extensions;
+using Common.Settings.Configuration;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Properties;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
 {
@@ -18,20 +21,18 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
         /// The number of received results.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
-        public int Count { get; public set; }
+        public int Count { get; set; }
         
         /// <summary>
         /// The collection of:
         /// <inheritdoc cref="OpenZaak.CaseRole"/>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CaseRole> Results { get; public set; } = [];
+        public List<CaseRole> Results { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseRoles"/> struct.
@@ -50,9 +51,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
         /// <exception cref="KeyNotFoundException"/>
         public readonly CaseRole CaseRole(WebApiConfiguration configuration)
         {
-            if (this.Results.IsNullOrEmpty())
+            if (this.Results.IsEmpty())
             {
-                throw new HttpRequestException(ApiResources.HttpRequest_ERROR_EmptyCaseRoles);
+                throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_EmptyCaseRoles);
             }
 
             foreach (CaseRole caseRole in this.Results)
@@ -64,7 +65,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
             }
 
             // Zero initiator results were found (there is no initiator)
-            throw new HttpRequestException(ApiResources.HttpRequest_ERROR_MissingInitiatorRole);
+            throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_MissingInitiatorRole);
         }
     }
 }

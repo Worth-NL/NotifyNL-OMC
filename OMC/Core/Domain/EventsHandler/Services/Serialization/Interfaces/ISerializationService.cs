@@ -1,13 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
 using System.Text.Json;
+using ZhvModels.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Services.Serialization.Interfaces
 {
     /// <summary>
     /// The service to deserialize JSON into &lt;TModel&gt; object and to serialize it back to JSON.
     /// </summary>
-    public interface ISerializationService
+    internal interface ISerializationService
     {
         /// <summary>
         /// Deserializes the given JSON into a specified object (POCO model).

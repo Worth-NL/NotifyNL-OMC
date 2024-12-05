@@ -16,10 +16,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
     {
         /// <inheritdoc cref="DigitalAddressLong"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("digitaleAdressen")]
         [JsonPropertyOrder(0)]
-        public List<DigitalAddressLong> DigitalAddresses { get; public set; } = [];
+        public List<DigitalAddressLong> DigitalAddresses { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expansion"/> struct.

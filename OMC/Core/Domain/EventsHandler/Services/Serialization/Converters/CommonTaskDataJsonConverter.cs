@@ -2,12 +2,14 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Task;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task.Converters;
+using Task = ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Services.Serialization.Converters
 {
     /// <summary>
-    /// The custom converter specialized in handling <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Task.CommonTaskData"/> types.
+    /// The custom converter specialized in handling <see cref="CommonTaskData"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class CommonTaskDataJsonConverter : JsonConverter<CommonTaskData>
@@ -23,6 +25,7 @@ namespace EventsHandler.Services.Serialization.Converters
             { nameof(CommonTaskData.Identification), string.Empty }
         };
 
+        /// <inheritdoc cref="JsonConverter{TValue}.HandleNull"/>
         public override bool HandleNull => true;
 
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>
@@ -31,13 +34,13 @@ namespace EventsHandler.Services.Serialization.Converters
             try
             {
                 // Case #1: JSON schema used by The Hague
-                return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vHague.TaskObject>(ref reader, options)
+                return JsonSerializer.Deserialize<Task.vHague.TaskObject>(ref reader, options)
                     .ConvertToUnified();
             }
             catch (JsonException)
             {
                 // Case #2: JSON schema used by Nijmegen
-                return JsonSerializer.Deserialize<Mapping.Models.POCOs.Objecten.Task.vNijmegen.TaskObject>(ref reader, options)
+                return JsonSerializer.Deserialize<Task.vNijmegen.TaskObject>(ref reader, options)
                     .ConvertToUnified();
             }
         }

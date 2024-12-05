@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,10 +19,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri Uri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri Uri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The identification of the <see cref="Case"/> in the following format:
@@ -30,19 +30,17 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(1)]
-        public string Identification { get; public set; } = string.Empty;
+        public string Identification { get; set; } = string.Empty;
 
         /// <summary>
         /// The name of the <see cref="Case"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(2)]
-        public string Name { get; public set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The type of the <see cref="Case"/> in <see cref="System.Uri"/> format:
@@ -51,19 +49,17 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(3)]
-        public Uri CaseTypeUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri CaseTypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date when the <see cref="Case"/> was registered.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("registratiedatum")]
         [JsonPropertyOrder(4)]
-        public DateOnly RegistrationDate { get; public set; }
+        public DateOnly RegistrationDate { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Case"/> struct.

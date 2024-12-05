@@ -1,19 +1,26 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
+using Common.Enums.Responses;
+using Common.Enums.Validation;
+using Common.Models.Messages.Details;
+using Common.Models.Responses;
+using Common.Properties;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.Responding.Messages.Models.Details;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
 using System.Text.Json;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing
 {
@@ -82,7 +89,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 0, 0);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", TestExceptionMessage)
                     .Replace("{1}", "System.Object")));
             });
@@ -116,8 +123,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 0);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.NotPossible));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
-                    .Replace("{0}", ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message)
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
+                    .Replace("{0}", ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message)
                     .Replace("{1}", "System.Object")));
             });
         }
@@ -142,7 +149,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 0);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", ApiResources.Processing_ERROR_Notification_Test)
                     .Replace("{1}", "{\"actie\":\"-\",\"kanaal\":\"-\",\"resource\":\"-\",\"kenmerken\":{\"zaaktype\":null," +
                                     "\"bronorganisatie\":null,\"vertrouwelijkheidaanduiding\":null,\"objectType\":null,\"besluittype\":null," +
@@ -168,7 +175,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 1);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Skipped));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", ApiResources.Processing_ERROR_Scenario_NotImplemented)
                     .Replace("{1}", s_validNotification)));
             });
@@ -191,7 +198,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 1);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", nameof(HttpRequestException) + $" | {TestExceptionMessage}")
                     .Replace("{1}", s_validNotification)));
             });
@@ -205,7 +212,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Failure());
+                .ReturnsAsync(QueryingDataResponse.Failure());
             
             this._mockedResolver
                 .Setup(mock => mock.DetermineScenarioAsync(
@@ -221,7 +228,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 1);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", ApiResources.Processing_ERROR_Scenario_NotificationNotSent
                         .Replace("{0}", ApiResources.Processing_ERROR_Scenario_NotificationMethod))
                     .Replace("{1}", s_validNotification)));
@@ -236,7 +243,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Success(
+                .ReturnsAsync(QueryingDataResponse.Success(
                 [
                     new NotifyData(NotifyMethods.Email)
                 ]));
@@ -262,7 +269,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 1);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", ApiResources.Processing_ERROR_Scenario_NotificationNotSent
                         .Replace("{0}", processingErrorText))
                     .Replace("{1}", s_validNotification)));
@@ -277,7 +284,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             mockedNotifyScenario
                 .Setup(mock => mock.TryGetDataAsync(
                     It.IsAny<NotificationEvent>()))
-                .ReturnsAsync(GettingDataResponse.Success(
+                .ReturnsAsync(QueryingDataResponse.Success(
                 [
                     new NotifyData(NotifyMethods.Email)
                 ]));
@@ -302,7 +309,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 VerifyMethodsCalls(1, 1, 1);
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Success));
-                Assert.That(result.Description, Is.EqualTo(ApiResources.Processing_STATUS_Notification
+                Assert.That(result.Description, Is.EqualTo(AppResources.Operation_STATUS_Notification
                     .Replace("{0}", ApiResources.Processing_SUCCESS_Scenario_NotificationSent)
                     .Replace("{1}", s_validNotification)));
             });

@@ -1,15 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using Common.Enums.Processing;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataSending;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Tests.Unit.Services.DataSending
 {

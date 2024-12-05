@@ -19,19 +19,17 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten
         /// The type of the <see cref="Identification"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("type")]
         [JsonPropertyOrder(0)]
-        public IdTypes Type { get; public set; }
+        public IdTypes Type { get; set; }
 
         /// <summary>
         /// The value of the <see cref="Identification"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("value")]
         [JsonPropertyOrder(1)]
-        public string Value { get; public set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Identification"/> struct.

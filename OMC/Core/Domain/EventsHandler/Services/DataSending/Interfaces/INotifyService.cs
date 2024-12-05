@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataSending.Responses;
+using EventsHandler.Models.Responses.Sending;
 
 namespace EventsHandler.Services.DataSending.Interfaces
 {
@@ -9,7 +9,7 @@ namespace EventsHandler.Services.DataSending.Interfaces
     /// </summary>
     /// <typeparam name="TPackage">The type of the package.</typeparam>
     /// <seealso cref="IDisposable" />
-    public interface INotifyService<in TPackage> : IDisposable
+    internal interface INotifyService<in TPackage> : IDisposable
         where TPackage : struct
     {
         /// <summary>

@@ -1,14 +1,15 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Models.Messages.Base;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Services.Responding;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Controllers
 {
@@ -18,7 +19,7 @@ namespace EventsHandler.Controllers
     /// <seealso cref="OmcController"/>
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
-    public sealed class NotifyController : OmcController
+    internal sealed class NotifyController : OmcController
     {
         private readonly NotifyResponder _responder;
 

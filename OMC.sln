@@ -61,6 +61,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsHandler.Tests.Unit", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZhvModels", "OMC\Core\Domain\ZhvModels\ZhvModels\ZhvModels.csproj", "{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZhvModels.Tests.Unit", "OMC\Tests\Core\Domain\ZhvModels.UnitTests\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj", "{EB0A9D92-637E-4DFB-9540-5A53745FE213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0A9D92-637E-4DFB-9540-5A53745FE213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0A9D92-637E-4DFB-9540-5A53745FE213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0A9D92-637E-4DFB-9540-5A53745FE213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0A9D92-637E-4DFB-9540-5A53745FE213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{8AD42C80-1687-4F9C-85D5-509194E58ED6} = {713B1DC7-1A87-44EF-BF40-E72836CF8007}
 		{5AE1F1F6-3EAB-4F2F-8127-EA39BF8315A4} = {713B1DC7-1A87-44EF-BF40-E72836CF8007}
 		{ED8BB585-AE4F-4D47-BC09-48D8845ED98B} = {10BF9C43-D441-4DCE-949E-77EB3C838307}
+		{EB0A9D92-637E-4DFB-9540-5A53745FE213} = {713B1DC7-1A87-44EF-BF40-E72836CF8007}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FA7FF699-DC1A-4496-9041-6F973951FB8E}

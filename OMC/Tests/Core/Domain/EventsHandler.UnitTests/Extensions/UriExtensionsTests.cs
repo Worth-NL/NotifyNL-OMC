@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Constants;
-using EventsHandler.Extensions;
+using ZhvModels.Extensions;
 
 namespace EventsHandler.Tests.Unit.Extensions
 {

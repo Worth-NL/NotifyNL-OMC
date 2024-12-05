@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,10 +19,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri ReferenceUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri ReferenceUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactMoment"/> struct.

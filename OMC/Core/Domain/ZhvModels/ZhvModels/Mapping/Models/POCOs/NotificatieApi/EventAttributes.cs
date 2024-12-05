@@ -67,24 +67,21 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
-        public Uri? CaseTypeUri { get; public set; }
+        public Uri? CaseTypeUri { get; set; }
 
         /// <summary>
         /// The name of the source organization.
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("bronorganisatie")]
         [JsonPropertyOrder(1)]
-        public string? SourceOrganization { get; public set; }
+        public string? SourceOrganization { get; set; }
 
         /// <inheritdoc cref="PrivacyNotices"/>
-        [JsonInclude]
         [JsonPropertyName("vertrouwelijkheidaanduiding")]
         [JsonPropertyOrder(2)]
-        public PrivacyNotices? ConfidentialityNotice { get; public set; }
+        public PrivacyNotices? ConfidentialityNotice { get; set; }
         #endregion
 
         #region Object properties
@@ -94,10 +91,9 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("objectType")]
         [JsonPropertyOrder(3)]
-        public Uri? ObjectTypeUri { get; public set; }
+        public Uri? ObjectTypeUri { get; set; }
         #endregion
 
         #region Decision properties
@@ -107,27 +103,24 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]
-        public Uri? DecisionTypeUri { get; public set; }
+        public Uri? DecisionTypeUri { get; set; }
 
         /// <summary>
         /// The name of the responsible organization.
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("verantwoordelijkeOrganisatie")]
         [JsonPropertyOrder(5)]
-        public string? ResponsibleOrganization { get; public set; }
+        public string? ResponsibleOrganization { get; set; }
         #endregion
 
         /// <summary>
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
         /// </summary>
-        [JsonInclude]
         [JsonExtensionData]  // Aggregate all JSON properties that couldn't be matched with this model
         [JsonPropertyOrder(99)]
-        public Dictionary<string, object> Orphans { get; public set; } = [];
+        public Dictionary<string, object> Orphans { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventAttributes"/> struct.

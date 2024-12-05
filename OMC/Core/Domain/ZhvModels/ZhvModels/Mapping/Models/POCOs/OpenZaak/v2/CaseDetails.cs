@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,19 +19,17 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v2
         /// The <see cref="Case"/> identification.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(0)]
-        public string Identification { get; public set; } = string.Empty;
+        public string Identification { get; set; } = string.Empty;
 
         /// <summary>
         /// The <see cref="Case"/> description.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(1)]
-        public string Description { get; public set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// The <see cref="CaseType"/> in <seealso cref="Uri"/> format.
@@ -39,10 +38,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v2
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(2)]
-        public Uri CaseTypeUrl { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri CaseTypeUrl { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseDetails"/> struct.

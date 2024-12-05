@@ -1,13 +1,13 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataSending.Responses;
+using EventsHandler.Models.Responses.Sending;
 
 namespace EventsHandler.Services.DataSending.Clients.Interfaces
 {
     /// <summary>
     /// The common interface to be used either with business or test/mock notification client.
     /// </summary>
-    public interface INotifyClient
+    internal interface INotifyClient
     {
         /// <summary>
         /// Sends the e-mail asynchronously.

@@ -2,6 +2,7 @@
 
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Properties;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
 {
@@ -15,20 +16,18 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// The number of received results.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
-        public int Count { get; public set; }
+        public int Count { get; set; }
 
         /// <summary>
         /// The collection of:
         /// <inheritdoc cref="CaseStatus"/>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<CaseStatus> Results { get; public set; } = [];
+        public List<CaseStatus> Results { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatuses"/> struct.
@@ -51,7 +50,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         {
             // NOTE: The statuses are ordered in reversed order (first item is the newest one)
             return this.Count > 0 ? this.Results[0]  // The very latest status
-                                  : throw new HttpRequestException(ApiResources.HttpRequest_ERROR_NoLastStatus);
+                                  : throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_NoLastStatus);
         }
     }
 }

@@ -3,22 +3,22 @@
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
     /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}"/>
-    public sealed class NotifyScenariosResolver : IScenariosResolver<INotifyScenario, NotificationEvent>
+    internal sealed class NotifyScenariosResolver : IScenariosResolver<INotifyScenario, NotificationEvent>
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
@@ -27,7 +27,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
         /// </summary>
-        public NotifyScenariosResolver(
+        internal NotifyScenariosResolver(
             WebApiConfiguration configuration,
             IServiceProvider serviceProvider,
             IDataQueryService<NotificationEvent> dataQuery)
@@ -94,7 +94,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
         #region Filters
         /// <summary>
-        /// OMC is meant to process <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/>s with certain characteristics (determining the workflow).
+        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether case scenarios would be processed.
@@ -110,7 +110,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         }
 
         /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether task scenarios would be processed.
@@ -126,7 +126,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         }
 
         /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
         /// </summary>
         /// <remarks>
         ///   This check is verifying whether decision scenarios would be processed.

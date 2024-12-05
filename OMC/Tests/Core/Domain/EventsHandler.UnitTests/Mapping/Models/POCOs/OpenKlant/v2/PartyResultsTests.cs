@@ -2,7 +2,9 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Properties;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant.v2;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
 {
@@ -34,7 +36,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             var partyResults = new PartyResults();  // Empty "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, ApiResources.HttpRequest_ERROR_EmptyPartiesResults);
+            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, ZhvResources.HttpRequest_ERROR_EmptyPartiesResults);
         }
 
         [Test]
@@ -44,7 +46,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults partyResults = GetTestPartyResults();  // Empty "DigitalAddresses" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]
@@ -55,7 +57,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults partyResults = GetTestPartyResults(partyResult);  // Missing e-mails and phone numbers
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResults, ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]
@@ -158,7 +160,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult partyResult = new();  // Empty digital addresses
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]
@@ -168,7 +170,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult partyResult = GetTestPartyResult_None(this._validAppSettingsConfiguration);  // Missing e-mails and phone numbers
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+            AssertThrows<HttpRequestException>(this._validAppSettingsConfiguration, partyResult, ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         [Test]

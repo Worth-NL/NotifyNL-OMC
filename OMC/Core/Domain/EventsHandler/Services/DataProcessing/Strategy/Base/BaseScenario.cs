@@ -1,25 +1,23 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Enums.Processing;
 using Common.Extensions;
 using Common.Settings.Configuration;
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using JetBrains.Annotations;
 using System.Text.Json;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
 {
@@ -56,8 +54,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         }
 
         #region Parent (TryGetDataAsync)
-        /// <inheritdoc cref="INotifyScenario.TryGetDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
-        async Task<GettingDataResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
+        /// <inheritdoc cref="INotifyScenario.TryGetDataAsync(NotificationEvent)"/>
+        async Task<QueryingDataResponse> INotifyScenario.TryGetDataAsync(NotificationEvent notification)
         {
             PreparedData preparedData = await PrepareDataAsync(notification);
 
@@ -65,21 +63,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return preparedData.Party.DistributionChannel switch
             {
                 DistributionChannels.Email
-                    => GettingDataResponse.Success([GetEmailNotifyData(notification, preparedData)]),
+                    => QueryingDataResponse.Success([GetEmailNotifyData(notification, preparedData)]),
 
                 DistributionChannels.Sms
-                    => GettingDataResponse.Success([GetSmsNotifyData(notification, preparedData)]),
+                    => QueryingDataResponse.Success([GetSmsNotifyData(notification, preparedData)]),
 
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
-                    => GettingDataResponse.Success(
+                    => QueryingDataResponse.Success(
                     [
                         GetEmailNotifyData(notification, preparedData),
                             GetSmsNotifyData(notification, preparedData)
                     ]),
 
                 // NOTE: Notification method cannot be unknown or undefined. Fill the data properly in "OpenKlant"
-                _ => GettingDataResponse.Failure()
+                _ => QueryingDataResponse.Failure()
             };
         }
         #endregion
@@ -120,7 +118,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the e-mail notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="preparedData"><inheritdoc cref="PreparedData" path="/summary"/></param>
         /// <returns>
         ///   The e-mail data for "Notify NL" Web API service.
@@ -147,7 +145,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Gets the SMS notify data to be used with "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="preparedData"><inheritdoc cref="PreparedData" path="/summary"/></param>
         /// <returns>
         ///   The SMS data for "Notify NL" Web API service.
@@ -171,11 +169,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         #endregion
 
         #region Virtual (ProcessData)
-        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         async Task<ProcessingDataResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
             => await ProcessDataAsync(notification, notifyData);
 
-        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected virtual async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
             if (notifyData.IsEmpty())
@@ -207,7 +205,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// <summary>
         /// Prepares all the data required by this specific scenario.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The data containing basic information required to send the notification.
         /// </returns>

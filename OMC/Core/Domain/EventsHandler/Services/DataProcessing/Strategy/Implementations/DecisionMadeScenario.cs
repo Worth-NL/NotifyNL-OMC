@@ -4,24 +4,25 @@ using Common.Extensions;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Decision;
-using Decision;
-using NotificatieApi;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.Objecten;
+using ZhvModels.Mapping.Enums.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -43,7 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
         /// </summary>
-        public DecisionMadeScenario(
+        internal DecisionMadeScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
@@ -52,7 +53,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
 
         #region Polymorphic (PrepareDataAsync)
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup
@@ -195,7 +196,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                                               .Replace("\t", "\\t");
         }
 
-        /// <inheritdoc cref="BaseScenario.ProcessDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, IReadOnlyCollection{NotifyData})"/>
+        /// <inheritdoc cref="BaseScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         protected override async Task<ProcessingDataResponse> ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
         {
             if (notifyData.IsEmpty())

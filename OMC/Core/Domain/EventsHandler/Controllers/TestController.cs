@@ -1,19 +1,19 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
+using Common.Extensions;
+using Common.Models.Messages.Base;
+using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Extensions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ namespace EventsHandler.Controllers
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]          // REASON: The API service is up and running
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]          // REASON: Incorrect URL or API key to "Notify NL" API service
-    public sealed class TestController : OmcController
+    internal sealed class TestController : OmcController
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
@@ -46,11 +46,7 @@ namespace EventsHandler.Controllers
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public TestController(
-            WebApiConfiguration configuration,
-            ISerializationService serializer,
-            ITelemetryService telemetry,
-            NotifyResponder responder)
+        public TestController(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, NotifyResponder responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;

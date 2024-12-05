@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -21,10 +22,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
-        public Uri CaseTypeUrl { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri CaseTypeUrl { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseDetails"/> struct.

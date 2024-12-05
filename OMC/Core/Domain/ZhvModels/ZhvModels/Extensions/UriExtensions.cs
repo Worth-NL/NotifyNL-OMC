@@ -1,8 +1,12 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using Common.Constants;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace ZhvModels.Extensions
 {
@@ -61,7 +65,7 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="Case"/> <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
@@ -73,7 +77,7 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseType"/> <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="CaseType"/> <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
@@ -97,7 +101,7 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Task.CommonTaskData"/> from Task or <see cref="ZhvModels.Mapping.Models.POCOs.Objecten.Message.MessageObject"/>) <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain object (e.g., <see cref="CommonTaskData"/> from Task or <see cref="MessageObject"/>) <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>
@@ -109,7 +113,7 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
-        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource"/> <see cref="Uri"/>.
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="DecisionResource"/> <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>
         /// <returns>

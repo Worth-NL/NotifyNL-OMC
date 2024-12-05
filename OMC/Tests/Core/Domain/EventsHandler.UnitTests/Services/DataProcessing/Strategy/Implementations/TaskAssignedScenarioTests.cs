@@ -1,20 +1,28 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using Moq;
 using System.Text.Json;
+using ZhvModels.Mapping.Enums.Objecten;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementations
 {
@@ -239,7 +247,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 true);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -271,7 +279,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 isNotificationExpected: true);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>
@@ -338,7 +346,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 isNotificationExpected: true);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(s_validNotification);
 
             // Assert
             Assert.Multiple(() =>

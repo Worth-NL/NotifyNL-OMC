@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,19 +19,17 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("statustype")]
         [JsonPropertyOrder(0)]
-        public Uri TypeUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri TypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date and time when the <see cref="CaseStatus"/> was created.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("datumStatusGezet")]
         [JsonPropertyOrder(1)]
-        public DateTime Created { get; public set; }
+        public DateTime Created { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatus"/> struct.

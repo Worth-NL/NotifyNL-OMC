@@ -1,8 +1,11 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Extensions;
+using Common.Settings.Configuration;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Properties;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
 {
@@ -19,17 +22,15 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// The number of received results.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
-        public int Count { get; public set; }
+        public int Count { get; set; }
 
         /// <inheritdoc cref="PartyResult"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<PartyResult> Results { get; public set; } = [];
+        public List<PartyResult> Results { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResults"/> struct.
@@ -49,9 +50,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             Party(WebApiConfiguration configuration)
         {
             // Validation #1: Results
-            if (this.Results.IsNullOrEmpty())
+            if (this.Results.IsEmpty())
             {
-                throw new HttpRequestException(ApiResources.HttpRequest_ERROR_EmptyPartiesResults);
+                throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
             PartyResult fallbackEmailOwningParty = default;
@@ -64,7 +65,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             foreach (PartyResult partyResult in this.Results)
             {
                 // Validation #2: Addresses
-                if (partyResult.Expansion.DigitalAddresses.IsNullOrEmpty())
+                if (partyResult.Expansion.DigitalAddresses.IsEmpty())
                 {
                     continue;  // Do not waste time on processing party data which would be for 100% invalid
                 }
@@ -89,9 +90,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             Party(WebApiConfiguration configuration, PartyResult partyResult)
         {
             // Validation #1: Addresses
-            if (partyResult.Expansion.DigitalAddresses.IsNullOrEmpty())
+            if (partyResult.Expansion.DigitalAddresses.IsEmpty())
             {
-                throw new HttpRequestException(ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+                throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
             }
 
             PartyResult fallbackEmailOwningParty = default;
@@ -206,7 +207,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
 
             // 3c. In the case of worst possible scenario, that preferred address couldn't be determined
             //     neither any existing email address nor telephone number, then process can't be finished
-            throw new HttpRequestException(ApiResources.HttpRequest_ERROR_NoDigitalAddresses);
+            throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_NoDigitalAddresses);
         }
 
         /// <summary>

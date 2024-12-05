@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using Notify.Client;
 using Notify.Exceptions;
 using Notify.Models.Responses;
@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataSending.Clients.Proxy
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyClientProxy"/> class.
         /// </summary>
-        public NotifyClientProxy(NotificationClient notificationClient)
+        internal NotifyClientProxy(NotificationClient notificationClient)
         {
             this._notificationClient = notificationClient;
         }

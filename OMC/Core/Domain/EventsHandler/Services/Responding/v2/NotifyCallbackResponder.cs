@@ -1,16 +1,17 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
+using Common.Enums.Responding;
+using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Extensions;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Services.Register.Interfaces;
-using EventsHandler.Services.Responding.Enums.v2;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding.v2
 {
@@ -31,7 +32,7 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        public NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)
+        internal NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)
             : base(serializer)
         {
             this._configuration = configuration;
