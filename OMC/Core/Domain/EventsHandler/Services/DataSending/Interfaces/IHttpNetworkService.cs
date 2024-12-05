@@ -1,14 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataSending.Clients.Enums;
-using EventsHandler.Services.DataSending.Responses;
 
 namespace EventsHandler.Services.DataSending.Interfaces
 {
     /// <summary>
     /// The service defining basic HTTP Requests contracts (e.g., GET, POST).
     /// </summary>
-    public interface IHttpNetworkService
+    internal interface IHttpNetworkService
     {
         /// <summary>
         /// Sends request to the given Web API service using a specific <see cref="HttpClient"/>.

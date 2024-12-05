@@ -22,7 +22,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(0)]
         public Uri CaseUri { get; init; }  // NOTE: Some task data might not have it (recreating of URI is necessary)
 
@@ -30,7 +29,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// The ID of the related object.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(1)]
         public Guid CaseId { get; init; }  // NOTE: Some task data might have only URI (extracting GUID is necessary)
 
@@ -38,7 +36,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// The title of the task.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(2)]
         public string Title { get; init; }
 
@@ -46,7 +43,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// The status of the task.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(3)]
         public TaskStatuses Status { get; init; }
 
@@ -54,7 +50,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// The deadline by which the task should be completed.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(4)]
         public DateTime ExpirationDate { get; init; }
 
@@ -62,7 +57,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task
         /// The identification details of the task.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyOrder(5)]
         public Identification Identification { get; init; }
     }

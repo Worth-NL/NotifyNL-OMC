@@ -1,37 +1,19 @@
 ﻿// © 2024, Worth Systems.
 
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using Decision;
-using EventsHandler.Services.DataQuerying.Composition.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
+using EventsHandler.Models.Responses.Sending;
+using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using NotificatieApi;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
-using OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
 {
@@ -69,7 +51,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/>.
         ///   <para>
         ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
-        ///     directly from the initial notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.MainObjectUri"/> (which
+        ///     directly from the initial notification <see cref="NotificationEvent.MainObjectUri"/> (which
         ///     will work only if the notification was meant to be used with Case scenarios).
         ///   </para>
         /// </remarks>
@@ -91,7 +73,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   <para>
         ///     NOTE: Bear in mind that if the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> is missing, the looked
         ///     up <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseType"/> <see cref="Uri"/> will be attempted to retrieve directly from the
-        ///     initial notification from <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes.CaseTypeUri"/> (which will work only if
+        ///     initial notification from <see cref="EventAttributes.CaseTypeUri"/> (which will work only if
         ///     the notification was meant to be used with Case scenarios).
         ///   </para>
         /// </remarks>
@@ -112,7 +94,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///     <para>
         ///       In case of getting citizen data the BSN number should be provided; otherwise, the missing BSN will be obtained using
         ///       the provided <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/> <see cref="Uri"/> which, if missing, will be attempted to be obtained from the initial
-        ///       notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.MainObjectUri"/> (which will work only if the notification was meant to be
+        ///       notification <see cref="NotificationEvent.MainObjectUri"/> (which will work only if the notification was meant to be
         ///       used with Case scenarios).
         ///     </para>
         ///   </para>
@@ -135,7 +117,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
         ///   <para>
         ///     NOTE: However, in this case the missing <seealso cref="Uri"/> will be attempted to retrieve
-        ///     directly from the initial notification <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent.ResourceUri"/> (which will
+        ///     directly from the initial notification <see cref="NotificationEvent.ResourceUri"/> (which will
         ///     work only if the notification was meant to be used with Decision scenarios).
         ///   </para>
         /// </remarks>
@@ -168,7 +150,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
         ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
         ///   service. One of alternatives is that just before querying <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision"/> to get desired
         ///   <seealso cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionType"/> <see cref="Uri"/> will be attempted to retrieve directly from
-        ///   the initial notification from <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes.DecisionTypeUri"/> (which will work
+        ///   the initial notification from <see cref="EventAttributes.DecisionTypeUri"/> (which will work
         ///   only if the notification was meant to be used with Decision scenarios).
         /// </remarks>
         internal Task<DecisionType> GetDecisionTypeAsync(Decision? decision = null);

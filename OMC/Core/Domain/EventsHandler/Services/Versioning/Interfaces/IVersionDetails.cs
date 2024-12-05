@@ -5,7 +5,7 @@ namespace EventsHandler.Services.Versioning.Interfaces
     /// <summary>
     /// Stores information about version of a specific service or component.
     /// </summary>
-    public interface IVersionDetails
+    internal interface IVersionDetails
     {
         /// <summary>
         /// Gets the name of a specific service or component.

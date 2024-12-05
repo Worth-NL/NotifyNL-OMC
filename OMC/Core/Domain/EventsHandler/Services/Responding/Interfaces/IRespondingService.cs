@@ -8,7 +8,7 @@ namespace EventsHandler.Services.Responding.Interfaces
     /// <summary>
     /// The service producing human user-friendly <see cref="IActionResult"/> API responses.
     /// </summary>
-    public interface IRespondingService
+    internal interface IRespondingService
     {
         /// <summary>
         /// Gets the standardized <see cref="IActionResult"/> based on the received <see cref="Exception"/>.
@@ -50,7 +50,7 @@ namespace EventsHandler.Services.Responding.Interfaces
     /// </summary>
     /// <typeparam name="TResult">The generic type of the processing result.</typeparam>
     /// <seealso cref="IRespondingService"/>
-    public interface IRespondingService<in TResult> : IRespondingService
+    internal interface IRespondingService<in TResult> : IRespondingService
     {
         /// <summary>
         /// Gets standardized <see cref="IActionResult"/> based on the received generic <typeparamref name="TResult"/>.

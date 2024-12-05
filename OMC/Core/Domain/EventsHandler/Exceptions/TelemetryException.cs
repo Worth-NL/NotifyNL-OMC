@@ -11,7 +11,7 @@ namespace EventsHandler.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryException"/> class.
         /// </summary>
-        public TelemetryException(string message)
+        internal TelemetryException(string message)
             : base(message)
         {
         }

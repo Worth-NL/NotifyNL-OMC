@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,10 +19,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("informatieobject")]
         [JsonPropertyOrder(0)]
-        public Uri InfoObjectUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri InfoObjectUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Document"/> struct.

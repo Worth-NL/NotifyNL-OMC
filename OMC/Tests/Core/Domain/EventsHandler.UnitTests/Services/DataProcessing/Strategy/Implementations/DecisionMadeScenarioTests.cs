@@ -1,22 +1,34 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Constants;
+using Common.Enums.Processing;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
-using EventsHandler.Extensions;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Enums;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using Moq;
 using System.Text.Json;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Enums.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using Decision = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision;
+using DecisionResource = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource;
+using DecisionType = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionType;
+using Document = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Document;
+using Documents = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Documents;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementations
 {
@@ -56,25 +68,25 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private static readonly Uri s_validUri =
             new($"https://www.domain.com/{ConfigurationHandler.TestInfoObjectTypeUuid2}");  // NOTE: Matches to UUID from test Environment Configuration
         
-        private static readonly InfoObject s_invalidInfoObjectType = new()
+        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectType = new()
         {
             TypeUri = CommonValues.Default.Models.EmptyUri
         };
 
-        private static readonly InfoObject s_invalidInfoObjectStatus = new()
+        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectStatus = new()
         {
             Status = MessageStatus.Unknown,
             TypeUri = s_validUri
         };
 
-        private static readonly InfoObject s_invalidInfoObjectConfidentiality = new()
+        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectConfidentiality = new()
         {
             Confidentiality = PrivacyNotices.Confidential,
             Status = MessageStatus.Definitive,
             TypeUri = s_validUri
         };
 
-        private static readonly InfoObject s_validInfoObject = new()
+        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_validInfoObject = new()
         {
             Confidentiality = PrivacyNotices.NonConfidential,
             Status = MessageStatus.Definitive,
@@ -204,7 +216,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 s_validInfoObject, true, true, testDistributionChannel);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -228,7 +240,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 s_validInfoObject, true, true, testDistributionChannel);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -280,7 +292,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 testDistributionChannel: testDistributionChannel);
 
             // Act
-            GettingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
 
             // Assert
             Assert.Multiple(() =>
@@ -462,7 +474,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
         #region Setup
         private DecisionMadeScenario ArrangeDecisionScenario_TryGetData(
-            InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
+            ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
             this._mockedQueryContext
@@ -556,13 +568,13 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                     : NotifyTemplateResponse.Failure(TestGenerationError));
 
             // IQueryContext
-            (Document Document, InfoObject InfoObject)[] testData =
+            (Document Document, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject InfoObject)[] testData =
             [
-                (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
-                (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
-                (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
-                (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
-                (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
+                (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
             ];
 
             this._mockedQueryContext
@@ -576,7 +588,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
             if (hasValidUris)
             {
-                foreach ((Document Document, InfoObject InfoObject) data in testData)
+                foreach ((Document Document, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject InfoObject) data in testData)
                 {
                     this._mockedQueryContext
                         .Setup(mock => mock.GetInfoObjectAsync(data.Document))

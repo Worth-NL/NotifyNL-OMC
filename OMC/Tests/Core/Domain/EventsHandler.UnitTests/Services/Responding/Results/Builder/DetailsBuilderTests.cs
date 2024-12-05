@@ -1,9 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.Responding.Messages.Models.Details;
+using Common.Models.Messages.Details;
+using EventsHandler.Enums.Responding;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
-using EventsHandler.Services.Responding.Results.Enums;
 using System.Text.Json;
 
 namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
@@ -21,6 +21,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
             this._detailsBuilder = new DetailsBuilder();
         }
 
+        #region Get<T>
         [Test]
         public void DetailsBuilder_ForInvalidJson_ReturnsErrorDetails_WithExpectedStrings()
         {
@@ -194,5 +195,6 @@ namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
 
             Assert.That(serializedActualDetails, Is.EqualTo(serializedExpectedDetails));
         }
+        #endregion
     }
 }

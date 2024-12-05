@@ -3,14 +3,15 @@
 using Common.Constants;
 using Common.Tests.Utilities._TestHelpers;
 using System.Text.Json;
-using NotificatieApi;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 // ReSharper disable InconsistentNaming => allow constants with underscores (for readability)
 
 namespace EventsHandler.Tests.Utilities._TestHelpers
 {
     /// <summary>
-    /// Collection of utility methods related to retrieving or manipulating of <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> class.
+    /// Collection of utility methods related to retrieving or manipulating of <see cref="NotificationEvent"/> class.
     /// </summary>
     public static class NotificationEventHandler
     {

@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using EventsHandler.Models.DTOs.Processing;
 using System.Text.Json;
-using NotificatieApi;
-using NotificatieApi;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
 {
@@ -17,7 +17,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <summary>
         /// Prepares all data consumed by "Notify NL" API Client.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <returns>
         ///   The data required by "Notify NL".
         /// </returns>
@@ -36,12 +36,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
         /// <exception cref="AbortedNotifyingException">
         ///   The notification should not be sent.
         /// </exception>
-        internal Task<GettingDataResponse> TryGetDataAsync(NotificationEvent notification);
+        internal Task<QueryingDataResponse> TryGetDataAsync(NotificationEvent notification);
 
         /// <summary>
         /// Processes the prepared data in a specific way (determined by the scenario itself).
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent" path="/summary"/></param>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="notifyData"><inheritdoc cref="NotifyData" path="/summary"/></param>
         /// <returns>
         ///   The status of the processing operation.

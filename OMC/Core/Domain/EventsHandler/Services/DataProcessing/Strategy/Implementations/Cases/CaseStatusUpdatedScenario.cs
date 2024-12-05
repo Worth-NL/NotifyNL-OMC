@@ -1,16 +1,16 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Settings.Configuration;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 {
@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatusUpdatedScenario"/> class.
         /// </summary>
-        public CaseStatusUpdatedScenario(
+        internal CaseStatusUpdatedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
@@ -38,7 +38,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         }
 
         #region Polymorphic (PrepareDataAsync)
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Setup

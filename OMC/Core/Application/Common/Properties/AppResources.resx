@@ -122,7 +122,7 @@
     <comment>{0} = The domain that triggered the validation error</comment>
   </data>
   <data name="Configuration_ERROR_InvalidKey" xml:space="preserve">
-    <value>Internal error: The key used to retrieve configuration value is null, empty, or whitespace.</value>
+    <value>public error: The key used to retrieve configuration value is null, empty, or whitespace.</value>
   </data>
   <data name="Configuration_ERROR_InvalidTemplateId" xml:space="preserve">
     <value>In the settings the Template ID is invalid (should be UUID: 00000000-0000-0000-0000-000000000000): {0}.</value>
@@ -141,5 +141,29 @@
   <data name="Configuration_ERROR_ValueNotFoundOrEmpty" xml:space="preserve">
     <value>The settings do not contain a given value, or the value is empty: {0}.</value>
     <comment>{0} = Name of the environment variable holding this value</comment>
+  </data>
+  <data name="Operation_ERROR_AccessDenied" xml:space="preserve">
+    <value>The access to the external Web API service is forbidden.</value>
+    <comment>HTTP Status Code = 403</comment>
+  </data>
+  <data name="Operation_ERROR_Deserialization_Failure" xml:space="preserve">
+    <value>The notification could not be recognized/deserialized.</value>
+    <comment>HTTP Status Code = 406</comment>
+  </data>
+  <data name="Operation_ERROR_HttpRequest_Failure" xml:space="preserve">
+    <value>The HTTP request wasn't completed successfully.</value>
+    <comment>HTTP Status Code = 400</comment>
+  </data>
+  <data name="Operation_ERROR_Internal" xml:space="preserve">
+    <value>public error: An unexpected issue occurred.</value>
+    <comment>HTTP Status Code = 500</comment>
+  </data>
+  <data name="Operation_ERROR_NotImplemented" xml:space="preserve">
+    <value>This operation is not implemented. Internal server error.</value>
+    <comment>HTTP Status Code = 501. Unhandled case</comment>
+  </data>
+  <data name="Operation_STATUS_Notification" xml:space="preserve">
+    <value>{0} | Notification: {1}.</value>
+    <comment>{0} = Description of the result, {1} = The initial notification JSON</comment>
   </data>
 </root>

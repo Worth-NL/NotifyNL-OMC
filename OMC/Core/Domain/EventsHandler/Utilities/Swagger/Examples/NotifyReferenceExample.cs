@@ -1,14 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Models.DTOs.Processing;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
-using NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {
     /// <summary>
-    /// An example of <see cref="ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent"/> to be used in Swagger UI.
+    /// An example of <see cref="NotificationEvent"/> to be used in Swagger UI.
     /// </summary>
     /// <seealso cref="IExamplesProvider{T}"/>
     [ExcludeFromCodeCoverage(Justification = "This is example model used by Swagger UI; testing how third-party dependency is dealing with it is unnecessary.")]

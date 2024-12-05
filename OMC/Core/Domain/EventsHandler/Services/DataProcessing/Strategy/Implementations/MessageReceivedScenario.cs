@@ -3,16 +3,16 @@
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Interfaces;
+using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReceivedScenario"/> class.
         /// </summary>
-        public MessageReceivedScenario(
+        internal MessageReceivedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
@@ -37,7 +37,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
 
         #region Polymorphic (PrepareDataAsync)
-        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent)"/>
+        /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
             // Validation #1: Sending messages should be allowed

@@ -1,20 +1,21 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Extensions;
+using Common.Models.Messages.Base;
+using Common.Models.Responses;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Extensions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Responding.Messages.Models.Base;
 using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Controllers
 {
@@ -23,7 +24,7 @@ namespace EventsHandler.Controllers
     /// data from the municipalities in The Netherlands ("OpenZaak" and "OpenKlaant"), and "Notify NL" API service.
     /// </summary>
     /// <seealso cref="OmcController"/>
-    public sealed class EventsController : OmcController
+    internal sealed class EventsController : OmcController
     {
         private readonly IProcessingService _processor;
         private readonly IRespondingService<ProcessingResult> _responder;
@@ -35,10 +36,7 @@ namespace EventsHandler.Controllers
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="register">The register of versioned services.</param>
-        public EventsController(
-            IProcessingService processor,
-            OmcResponder responder,
-            IVersionsRegister register)
+        public EventsController(IProcessingService processor, OmcResponder responder, IVersionsRegister register)
         {
             this._processor = processor;
             this._responder = responder;

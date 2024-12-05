@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -18,10 +19,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(0)]
-        public string Identification { get; public set; } = string.Empty;
+        public string Identification { get; set; } = string.Empty;
 
         /// <summary>
         /// The type of the <see cref="Decision"/> in <see cref="Uri"/> format:
@@ -30,10 +30,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(1)]
-        public Uri TypeUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri TypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The reference to the <see cref="Case"/> in <see cref="Uri"/> format:
@@ -42,91 +41,81 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// </code>
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("zaak")]
         [JsonPropertyOrder(2)]
-        public Uri CaseUri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri CaseUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date when the <see cref="Decision"/> was issued.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("datum")]
         [JsonPropertyOrder(3)]
-        public DateOnly Date { get; public set; }
+        public DateOnly Date { get; set; }
 
         /// <summary>
         /// The explanation of the <see cref="Decision"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("toelichting")]
         [JsonPropertyOrder(4)]
-        public string Explanation { get; public set; } = string.Empty;
+        public string Explanation { get; set; } = string.Empty;
 
         /// <summary>
         /// The name of the institution issuing this <see cref="Decision"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("bestuursorgaan")]
         [JsonPropertyOrder(5)]
-        public string GoverningBody { get; public set; } = string.Empty;
+        public string GoverningBody { get; set; } = string.Empty;
 
         /// <summary>
         /// The date from which the <see cref="Decision"/> starts to operate (begins).
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("ingangsdatum")]
         [JsonPropertyOrder(6)]
-        public DateOnly EffectiveDate { get; public set; }
+        public DateOnly EffectiveDate { get; set; }
 
         /// <summary>
         /// The date after which the <see cref="Decision"/> will expire (ends).
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("vervaldatum")]
         [JsonPropertyOrder(7)]
-        public DateOnly ExpirationDate { get; public set; }
+        public DateOnly ExpirationDate { get; set; }
 
         /// <summary>
         /// The reason explaining the <see cref="Decision"/> expiration.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("vervalreden")]
         [JsonPropertyOrder(8)]
-        public string ExpirationReason { get; public set; } = string.Empty;
+        public string ExpirationReason { get; set; } = string.Empty;
 
         /// <summary>
         /// The date when the <see cref="Decision"/> is meant to be published.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("publicatiedatum")]
         [JsonPropertyOrder(9)]
-        public DateOnly PublicationDate { get; public set; }
+        public DateOnly PublicationDate { get; set; }
 
         /// <summary>
         /// The date when the <see cref="Decision"/> is meant to be shipped.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("verzenddatum")]
         [JsonPropertyOrder(10)]
-        public DateOnly ShippingDate { get; public set; }
+        public DateOnly ShippingDate { get; set; }
 
         /// <summary>
         /// The date up to which party (e.g., citizen, or organization) can appeal the <see cref="Decision"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("uiterlijkeReactiedatum")]
         [JsonPropertyOrder(11)]
-        public DateOnly ResponseDate { get; public set; }
+        public DateOnly ResponseDate { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Decision"/> struct.
