@@ -15,7 +15,7 @@ namespace EventsHandler.Services.Register.Interfaces
     /// The service to collect and send feedback about the current business activities to the dedicated external API endpoint.
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
-    internal interface ITelemetryService : IVersionDetails
+    public interface ITelemetryService : IVersionDetails
     {
         /// <inheritdoc cref="IQueryContext"/>
         internal IQueryContext QueryContext { get; }
@@ -71,7 +71,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="contactMoment"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment" path="/summary"/></param>
+        /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
@@ -81,7 +81,7 @@ namespace EventsHandler.Services.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="contactMoment"><inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.ContactMoment" path="/summary"/></param>
+        /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.

@@ -85,8 +85,8 @@ namespace ZhvModels.Mapping.Helpers
                 string dutchPropertyName = RetrievePropertyDutchName(currentProperty);
 
                 this.Properties[index] = currentProperty;
-                this.English_To_Dutch.Add(englishPropertyName, (index, dutchPropertyName));
-                this.Dutch_To_English.Add(dutchPropertyName, (index, englishPropertyName));
+                this.English_To_Dutch.TryAdd(englishPropertyName, (index, dutchPropertyName));
+                this.Dutch_To_English.TryAdd(dutchPropertyName, (index, englishPropertyName));
             }
         }
 

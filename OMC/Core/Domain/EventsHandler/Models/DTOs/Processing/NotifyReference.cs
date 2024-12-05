@@ -10,7 +10,7 @@ namespace EventsHandler.Models.DTOs.Processing
     /// The set of data used to pass as a "reference" to "Notify NL" Web API service.
     /// </summary>
     /// <seealso cref="IJsonSerializable" />
-    internal struct NotifyReference : IJsonSerializable  // NOTE: This model is used in endpoints + Swagger UI examples and it must be public
+    public struct NotifyReference : IJsonSerializable  // NOTE: This model is used in endpoints + Swagger UI examples and it must be public
     {
         /// <inheritdoc cref="NotificationEvent"/>
         [JsonRequired]
@@ -27,7 +27,7 @@ namespace EventsHandler.Models.DTOs.Processing
         internal Guid? CaseId { get; set; } = Guid.Empty;  // NOTE: Sometimes, case URI might be missing
 
         /// <summary>
-        /// The extracted GUID component from <see cref="ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData.Uri"/>.
+        /// The extracted GUID component from <see cref="CommonPartyData.Uri"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]

@@ -14,7 +14,7 @@ namespace EventsHandler.Services.DataQuerying.Proxy
         /// <summary>
         /// Initializes a new instance of the <see cref="DataQueryService"/> class.
         /// </summary>
-        internal DataQueryService(IQueryContext queryContext)
+        public DataQueryService(IQueryContext queryContext)  // Dependency Injection (DI)
         {
             this._queryContext = queryContext;
         }

@@ -11,7 +11,7 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
     ///   This is the heart of the <see cref="EventsHandler"/> business logic.
     /// </para>
     /// </summary>
-    internal interface IProcessingService
+    public interface IProcessingService
     {
         /// <summary>
         /// Processes the given input data in a certain way.

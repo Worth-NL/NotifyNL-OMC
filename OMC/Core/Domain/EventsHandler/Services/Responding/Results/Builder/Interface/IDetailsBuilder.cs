@@ -8,7 +8,7 @@ namespace EventsHandler.Services.Responding.Results.Builder.Interface
     /// <summary>
     /// The builder to create specialized components:
     /// </summary>
-    internal interface IDetailsBuilder
+    public interface IDetailsBuilder
     {
         /// <summary>
         /// Gets the specific type of <see cref="BaseEnhancedDetails"/> with proper content.

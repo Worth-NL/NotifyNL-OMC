@@ -22,7 +22,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryObjecten"/> class.
         /// </summary>
-        internal QueryObjecten(WebApiConfiguration configuration)
+        public QueryObjecten(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryObjecten)this).Configuration = configuration;
         }
