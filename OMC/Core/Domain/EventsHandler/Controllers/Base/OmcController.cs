@@ -22,7 +22,7 @@ namespace EventsHandler.Controllers.Base
     [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]          // REASON: Unexpected internal error
     [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(BaseStandardResponseBody))]          // REASON: Something is not implemented
-    internal abstract class OmcController : Controller
+    public abstract class OmcController : Controller
     {
         /// <summary>
         /// Logs the message and returns the API response.

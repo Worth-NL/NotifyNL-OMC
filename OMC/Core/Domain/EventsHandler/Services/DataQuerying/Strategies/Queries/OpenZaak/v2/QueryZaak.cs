@@ -27,7 +27,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryZaak"/> class.
         /// </summary>
-        internal QueryZaak(WebApiConfiguration configuration)
+        public QueryZaak(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryZaak)this).Configuration = configuration;
         }

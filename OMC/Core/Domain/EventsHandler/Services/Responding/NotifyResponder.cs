@@ -23,7 +23,7 @@ using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TResult}"/>
-    internal abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <inheritdoc cref="ISerializationService"/>
         protected ISerializationService Serializer { get; }

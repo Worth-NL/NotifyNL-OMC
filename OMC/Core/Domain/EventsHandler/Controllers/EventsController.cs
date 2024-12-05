@@ -24,7 +24,7 @@ namespace EventsHandler.Controllers
     /// data from the municipalities in The Netherlands ("OpenZaak" and "OpenKlaant"), and "Notify NL" API service.
     /// </summary>
     /// <seealso cref="OmcController"/>
-    internal sealed class EventsController : OmcController
+    public sealed class EventsController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly IProcessingService _processor;
         private readonly IRespondingService<ProcessingResult> _responder;

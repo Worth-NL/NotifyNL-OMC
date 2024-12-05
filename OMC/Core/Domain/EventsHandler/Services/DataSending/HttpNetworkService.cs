@@ -38,10 +38,8 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpNetworkService"/> class.
         /// </summary>
-        internal HttpNetworkService(
-            WebApiConfiguration configuration,
-            EncryptionContext encryptionContext,
-            IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)
+        public HttpNetworkService(WebApiConfiguration configuration, EncryptionContext encryptionContext,
+                                  IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
             this._encryptionContext = encryptionContext;

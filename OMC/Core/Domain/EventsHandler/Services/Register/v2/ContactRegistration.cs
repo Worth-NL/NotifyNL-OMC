@@ -33,7 +33,7 @@ namespace EventsHandler.Services.Register.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        internal ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)
+        public ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
             this.QueryContext = queryContext;

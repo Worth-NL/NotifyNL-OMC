@@ -24,7 +24,7 @@ namespace EventsHandler.Services.Versioning
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionsRegister"/> class.
         /// </summary>
-        internal VersionsRegister(IServiceProvider serviceProvider, WebApiConfiguration configuration)
+        public VersionsRegister(IServiceProvider serviceProvider, WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
             this._serviceProvider = serviceProvider;
             this._configuration = configuration;

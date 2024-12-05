@@ -22,7 +22,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBesluiten"/> class.
         /// </summary>
-        internal QueryBesluiten(WebApiConfiguration configuration)
+        public QueryBesluiten(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryBesluiten)this).Configuration = configuration;
         }

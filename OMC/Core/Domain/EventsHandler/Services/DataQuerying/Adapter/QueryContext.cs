@@ -37,14 +37,14 @@ namespace EventsHandler.Services.DataQuerying.Adapter
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
         /// </summary>
-        internal QueryContext(
+        public QueryContext(
             IHttpNetworkService networkService,
             IQueryBase queryBase,
             IQueryZaak queryZaak,
             IQueryKlant queryKlant,
             IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
-            IQueryObjectTypen queryObjectTypen)
+            IQueryObjectTypen queryObjectTypen)  // Dependency Injection (DI)
         {
             // Composition
             this._networkService = networkService;

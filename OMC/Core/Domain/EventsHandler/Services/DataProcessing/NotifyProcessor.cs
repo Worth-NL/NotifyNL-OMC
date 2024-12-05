@@ -34,10 +34,10 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="resolver">The strategies resolving service.</param>
-        internal NotifyProcessor(
+        public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
-            IScenariosResolver<INotifyScenario, NotificationEvent> resolver)
+            IScenariosResolver<INotifyScenario, NotificationEvent> resolver)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
             this._validator = validator;

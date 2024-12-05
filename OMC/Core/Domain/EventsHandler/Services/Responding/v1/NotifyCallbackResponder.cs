@@ -34,7 +34,7 @@ namespace EventsHandler.Services.Responding.v1
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        internal NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)
+        public NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;

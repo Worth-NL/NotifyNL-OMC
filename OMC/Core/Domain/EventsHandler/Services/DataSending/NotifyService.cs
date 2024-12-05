@@ -29,9 +29,7 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
-        internal NotifyService(
-            IHttpClientFactory<INotifyClient, string> notifyClientFactory,
-            ISerializationService serializer)
+        public NotifyService(IHttpClientFactory<INotifyClient, string> notifyClientFactory, ISerializationService serializer)  // Dependency Injection (DI)
         {
             this._notifyClientFactory = notifyClientFactory;
             this._serializer = serializer;

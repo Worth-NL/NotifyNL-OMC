@@ -30,9 +30,9 @@ namespace EventsHandler.Controllers
     /// </summary>
     /// <seealso cref="OmcController"/>
     // Swagger UI
-    [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]          // REASON: The API service is up and running
-    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]          // REASON: Incorrect URL or API key to "Notify NL" API service
-    internal sealed class TestController : OmcController
+    [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
+    public sealed class TestController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;

@@ -8,7 +8,7 @@ namespace EventsHandler.Services.Serialization.Interfaces
     /// <summary>
     /// The service to deserialize JSON into &lt;TModel&gt; object and to serialize it back to JSON.
     /// </summary>
-    internal interface ISerializationService
+    public interface ISerializationService
     {
         /// <summary>
         /// Deserializes the given JSON into a specified object (POCO model).

@@ -27,10 +27,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
         /// </summary>
-        internal NotifyScenariosResolver(
+        public NotifyScenariosResolver(
             WebApiConfiguration configuration,
             IServiceProvider serviceProvider,
-            IDataQueryService<NotificationEvent> dataQuery)
+            IDataQueryService<NotificationEvent> dataQuery)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
             this._serviceProvider = serviceProvider;

@@ -29,10 +29,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseCreatedScenario"/> class.
         /// </summary>
-        internal CaseCreatedScenario(
+        public CaseCreatedScenario(
             WebApiConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotifyData> notifyService)
+            INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)
         {
         }

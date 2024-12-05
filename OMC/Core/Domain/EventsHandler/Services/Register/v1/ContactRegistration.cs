@@ -36,7 +36,7 @@ namespace EventsHandler.Services.Register.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        internal ContactRegistration(IQueryContext queryContext)
+        public ContactRegistration(IQueryContext queryContext)  // Dependency Injection (DI)
         {
             this.QueryContext = queryContext;
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());

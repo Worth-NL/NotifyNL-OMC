@@ -32,7 +32,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryKlant"/> class.
         /// </summary>
-        internal QueryKlant(WebApiConfiguration configuration)
+        public QueryKlant(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryKlant)this).Configuration = configuration;
         }
