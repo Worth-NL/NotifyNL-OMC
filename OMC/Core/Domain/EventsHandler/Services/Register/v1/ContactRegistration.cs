@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Extensions;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using Common.Enums.Processing;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using Microsoft.VisualStudio.Threading;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.Register.v1
 {
@@ -36,22 +36,22 @@ namespace EventsHandler.Services.Register.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(IQueryContext queryContext)
+        internal ContactRegistration(IQueryContext queryContext)
         {
             this.QueryContext = queryContext;
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
-            #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
+            #pragma warning disable VSTHRD1  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
             CaseStatus caseStatus = this._taskFactory
                 .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
                 .Join()
                 .LastStatus();
-            #pragma warning restore VSTHRD104
+            #pragma warning restore VSTHRD1
 
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 

@@ -1,6 +1,12 @@
 ﻿// © 2023, Worth Systems.
 
 using System.Text.Json;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Mapping.Enums.Objecten;
+using ZhvModels.Mapping.Enums.Objecten.vNijmegen;
+using ZhvModels.Mapping.Enums.OpenKlant;
+using ZhvModels.Mapping.Enums.OpenZaak;
 
 namespace EventsHandler.Tests.Unit.Mapping.Enums
 {

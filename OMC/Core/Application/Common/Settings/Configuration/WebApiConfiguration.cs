@@ -60,7 +60,7 @@ namespace Common.Settings.Configuration
         public AppSettingsComponent AppSettings { get; }
 
         /// <summary>
-        /// Gets the settings used by internal service OMC (Output Management Component).
+        /// Gets the settings used by public service OMC (Output Management Component).
         /// </summary>
         [Config]
         public OmcComponent OMC { get; }
@@ -166,7 +166,7 @@ namespace Common.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="AppSettingsComponent"/> class.
             /// </summary>
-            internal AppSettingsComponent(IServiceProvider serviceProvider, string parentName)
+            public AppSettingsComponent(IServiceProvider serviceProvider, string parentName)
             {
                 ILoadersContext firstLoadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);  // NOTE: Prefer Environment Variables first to make "overriding" AppSettings possible
                 ILoadersContext secondLoadersContext = GetLoader(serviceProvider, LoaderTypes.AppSettings);
@@ -186,7 +186,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="NetworkComponent"/> class.
                 /// </summary>
-                internal NetworkComponent(FallbackContextWrapper contextWrapper)
+                public NetworkComponent(FallbackContextWrapper contextWrapper)
                 {
                     this._fallbackContextWrapper = contextWrapper;
                 }
@@ -218,7 +218,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="EncryptionComponent"/> class.
                 /// </summary>
-                internal EncryptionComponent(FallbackContextWrapper contextWrapper)
+                public EncryptionComponent(FallbackContextWrapper contextWrapper)
                 {
                     this._fallbackContextWrapper = contextWrapper;
                 }
@@ -247,7 +247,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariablesComponent"/> class.
                 /// </summary>
-                internal VariablesComponent(FallbackContextWrapper contextWrapper)
+                public VariablesComponent(FallbackContextWrapper contextWrapper)
                 {
                     this._fallbackContextWrapper = contextWrapper;
 
@@ -290,7 +290,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="OpenKlantComponent"/> class.
                     /// </summary>
-                    internal OpenKlantComponent(FallbackContextWrapper contextWrapper)
+                    public OpenKlantComponent(FallbackContextWrapper contextWrapper)
                     {
                         this._fallbackContextWrapper = contextWrapper.Update(nameof(OpenKlant));
                     }
@@ -321,7 +321,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="UxMessagesComponent"/> class.
                     /// </summary>
-                    internal UxMessagesComponent(FallbackContextWrapper contextWrapper)
+                    public UxMessagesComponent(FallbackContextWrapper contextWrapper)
                     {
                         this._fallbackContextWrapper = contextWrapper.Update(nameof(UxMessages));
                     }
@@ -394,7 +394,7 @@ namespace Common.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
-            internal OmcComponent(IServiceProvider serviceProvider, string parentName)
+            public OmcComponent(IServiceProvider serviceProvider, string parentName)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
@@ -414,7 +414,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
+                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
@@ -432,7 +432,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="JwtComponent"/> class.
                     /// </summary>
-                    internal JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    public JwtComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
@@ -481,7 +481,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="FeatureComponent"/> class.
                 /// </summary>
-                internal FeatureComponent(ILoadersContext loadersContext, string parentPath)
+                public FeatureComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Feature));
@@ -519,7 +519,7 @@ namespace Common.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
-            internal ZgwComponent(IServiceProvider serviceProvider, string parentName, WebApiConfiguration configuration)
+            public ZgwComponent(IServiceProvider serviceProvider, string parentName, WebApiConfiguration configuration)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
@@ -545,7 +545,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                internal AuthenticationComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
@@ -564,7 +564,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="JwtComponent"/> class.
                     /// </summary>
-                    internal JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    public JwtComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
@@ -613,7 +613,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="KeyComponent"/> class.
                     /// </summary>
-                    internal KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                    public KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
@@ -649,7 +649,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="EndpointComponent"/> class.
                 /// </summary>
-                internal EndpointComponent(ILoadersContext loadersContext, string parentPath)
+                public EndpointComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Endpoint));
@@ -706,7 +706,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="WhitelistComponent"/> class.
                 /// </summary>
-                internal WhitelistComponent(ILoadersContext loadersContext, string parentPath)
+                public WhitelistComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Whitelist));
@@ -863,7 +863,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="VariableComponent"/> class.
                 /// </summary>
-                internal VariableComponent(ILoadersContext loadersContext, string parentPath)
+                public VariableComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Variable));
 
@@ -881,7 +881,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="ObjectTypeComponent"/> class.
                     /// </summary>
-                    internal ObjectTypeComponent(ILoadersContext loadersContext, string parentPath)
+                    public ObjectTypeComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(ObjectType));
@@ -931,7 +931,7 @@ namespace Common.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="NotifyComponent"/> class.
             /// </summary>
-            internal NotifyComponent(IServiceProvider serviceProvider, string parentName)
+            public NotifyComponent(IServiceProvider serviceProvider, string parentName)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
@@ -950,7 +950,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="ApiComponent"/> class.
                 /// </summary>
-                internal ApiComponent(ILoadersContext loadersContext, string parentPath)
+                public ApiComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
@@ -986,7 +986,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
                 /// </summary>
-                internal TemplateIdComponent(ILoadersContext loadersContext, string parentPath)
+                public TemplateIdComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
                     this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateId));
@@ -1011,7 +1011,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="EmailComponent"/> class.
                     /// </summary>
-                    internal EmailComponent(ILoadersContext loadersContext, string parentPath)
+                    public EmailComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
@@ -1054,7 +1054,7 @@ namespace Common.Settings.Configuration
                     /// <summary>
                     /// Initializes a new instance of the <see cref="SmsComponent"/> class.
                     /// </summary>
-                    internal SmsComponent(ILoadersContext loadersContext, string parentPath)
+                    public SmsComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));

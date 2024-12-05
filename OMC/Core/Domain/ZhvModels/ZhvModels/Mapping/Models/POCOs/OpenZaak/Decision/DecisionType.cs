@@ -15,55 +15,49 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         /// The name of the <see cref="DecisionType"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("omschrijving")]
         [JsonPropertyOrder(0)]
-        public string Name { get; public set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The description of the <see cref="DecisionType"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("omschrijvingGeneriek")]
         [JsonPropertyOrder(1)]
-        public string Description { get; public set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// The category of the <see cref="DecisionType"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("besluitcategorie")]
         [JsonPropertyOrder(2)]
-        public string Category { get; public set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
 
         /// <summary>
         /// The indication of the publication.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("publicatieIndicatie")]
         [JsonPropertyOrder(3)]
-        public bool PublicationIndicator { get; public set; }
+        public bool PublicationIndicator { get; set; }
 
         /// <summary>
         /// The text of the publication.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("publicatietekst")]
         [JsonPropertyOrder(4)]
-        public string PublicationText { get; public set; } = string.Empty;
+        public string PublicationText { get; set; } = string.Empty;
 
         /// <summary>
         /// The explanation of the <see cref="DecisionType"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("toelichting")]
         [JsonPropertyOrder(5)]
-        public string Explanation { get; public set; } = string.Empty;
+        public string Explanation { get; set; } = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionType"/> struct.

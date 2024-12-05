@@ -18,38 +18,33 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task.vNijmegen
     {
         /// <inheritdoc cref="CommonTaskData.Title"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("titel")]
         [JsonPropertyOrder(0)]
-        public string Title { get; public set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonTaskData.Status"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("status")]
         [JsonPropertyOrder(1)]
-        public TaskStatuses Status { get; public set; }
+        public TaskStatuses Status { get; set; }
 
         /// <inheritdoc cref="vNijmegen.Coupling"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("koppeling")]
         [JsonPropertyOrder(2)]
-        public Coupling Coupling { get; public set; }
+        public Coupling Coupling { get; set; }
 
         /// <inheritdoc cref="CommonTaskData.ExpirationDate"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("verloopdatum")]
         [JsonPropertyOrder(3)]
-        public DateTime ExpirationDate { get; public set; }
+        public DateTime ExpirationDate { get; set; }
 
         /// <inheritdoc cref="CommonTaskData.Identification"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(4)]
-        public Identification Identification { get; public set; }
+        public Identification Identification { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Data"/> struct.

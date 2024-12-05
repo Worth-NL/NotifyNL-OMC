@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Constants;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -17,34 +18,30 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
     {
         /// <inheritdoc cref="CommonPartyData.Uri"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("url")]
         [JsonPropertyOrder(0)]
-        public Uri Uri { get; public set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri Uri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <inheritdoc cref="DigitalAddressShort"/>
         /// <remarks>
         /// Preferred by the user.
         /// </remarks>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("voorkeursDigitaalAdres")]
         [JsonPropertyOrder(1)]
-        public DigitalAddressShort PreferredDigitalAddress { get; public set; }
+        public DigitalAddressShort PreferredDigitalAddress { get; set; }
 
         /// <inheritdoc cref="PartyIdentification"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("partijIdentificatie")]
         [JsonPropertyOrder(2)]
-        public PartyIdentification Identification { get; public set; }
+        public PartyIdentification Identification { get; set; }
 
         /// <inheritdoc cref="v2.Expansion"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("_expand")]
         [JsonPropertyOrder(3)]
-        public Expansion Expansion { get; public set; }
+        public Expansion Expansion { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResult"/> struct.

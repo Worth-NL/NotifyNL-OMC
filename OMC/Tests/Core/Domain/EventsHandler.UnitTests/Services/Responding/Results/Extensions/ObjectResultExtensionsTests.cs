@@ -1,14 +1,14 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Properties;
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
-using EventsHandler.Services.Responding.Messages.Models.Base;
-using EventsHandler.Services.Responding.Messages.Models.Details;
-using EventsHandler.Services.Responding.Messages.Models.Errors;
-using EventsHandler.Services.Responding.Messages.Models.Errors.Specific;
-using EventsHandler.Services.Responding.Messages.Models.Information;
-using EventsHandler.Services.Responding.Messages.Models.Successes;
-using EventsHandler.Services.Responding.Results.Extensions;
+using Common.Models.Messages.Base;
+using Common.Models.Messages.Details;
+using Common.Models.Messages.Errors;
+using Common.Models.Messages.Errors.Specific;
+using Common.Models.Messages.Information;
+using Common.Models.Messages.Successes;
+using Common.Models.Responses;
+using Common.Properties;
+using EventsHandler.Extensions.Responding;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -83,19 +83,19 @@ namespace EventsHandler.Tests.Unit.Services.Responding.Results.Extensions
             yield return ("#03", new ProcessingFailed.Simplified(HttpStatusCode.PreconditionFailed, s_failedResult).AsResult_412, 412, $"{TestDescription} | Notification: {TestJson}.");
             yield return ("#04", new ProcessingFailed.Detailed(HttpStatusCode.PreconditionFailed, s_failedResult).AsResult_412, 412, $"{TestDescription} | Notification: {TestJson}.");
 
-            yield return ("#05", new BadRequest.Simplified(s_failedResult).AsResult_400, 400, $"{ApiResources.Operation_ERROR_HttpRequest_Failure} | {TestDescription} | Notification: {TestJson}.");
-            yield return ("#06", new BadRequest.Detailed(s_failedResult).AsResult_400, 400, $"{ApiResources.Operation_ERROR_HttpRequest_Failure} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#05", new BadRequest.Simplified(s_failedResult).AsResult_400, 400, $"{AppResources.Operation_ERROR_HttpRequest_Failure} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#06", new BadRequest.Detailed(s_failedResult).AsResult_400, 400, $"{AppResources.Operation_ERROR_HttpRequest_Failure} | {TestDescription} | Notification: {TestJson}.");
             
-            yield return ("#07", new Forbidden.Simplified(s_failedResult).AsResult_403, 403, $"{ApiResources.Operation_ERROR_AccessDenied} | {TestDescription} | Notification: {TestJson}.");
-            yield return ("#08", new Forbidden.Detailed(s_failedResult).AsResult_403, 403, $"{ApiResources.Operation_ERROR_AccessDenied} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#07", new Forbidden.Simplified(s_failedResult).AsResult_403, 403, $"{AppResources.Operation_ERROR_AccessDenied} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#08", new Forbidden.Detailed(s_failedResult).AsResult_403, 403, $"{AppResources.Operation_ERROR_AccessDenied} | {TestDescription} | Notification: {TestJson}.");
             
-            yield return ("#09", new UnprocessableEntity.Simplified(s_failedResult).AsResult_422, 422, $"{ApiResources.Operation_ERROR_Deserialization_Failure} | {TestDescription} | Notification: {TestJson}.");
-            yield return ("#10", new UnprocessableEntity.Detailed(s_failedResult).AsResult_422, 422, $"{ApiResources.Operation_ERROR_Deserialization_Failure} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#09", new UnprocessableEntity.Simplified(s_failedResult).AsResult_422, 422, $"{AppResources.Operation_ERROR_Deserialization_Failure} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#10", new UnprocessableEntity.Detailed(s_failedResult).AsResult_422, 422, $"{AppResources.Operation_ERROR_Deserialization_Failure} | {TestDescription} | Notification: {TestJson}.");
             
-            yield return ("#11", new InternalError.Simplified(s_failedResult).AsResult_500, 500, $"{ApiResources.Operation_ERROR_Internal_Unknown} | {TestDescription} | Notification: {TestJson}.");
-            yield return ("#12", new InternalError.Detailed(s_failedResult).AsResult_500, 500, $"{ApiResources.Operation_ERROR_Internal_Unknown} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#11", new InternalError.Simplified(s_failedResult).AsResult_500, 500, $"{AppResources.Operation_ERROR_Internal} | {TestDescription} | Notification: {TestJson}.");
+            yield return ("#12", new InternalError.Detailed(s_failedResult).AsResult_500, 500, $"{AppResources.Operation_ERROR_Internal} | {TestDescription} | Notification: {TestJson}.");
             
-            yield return ("#13", new NotImplemented().AsResult_501, 501, ApiResources.Operation_ERROR_NotImplemented);
+            yield return ("#13", new NotImplemented().AsResult_501, 501, AppResources.Operation_ERROR_NotImplemented);
         }
     }
 }

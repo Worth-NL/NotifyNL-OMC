@@ -1,10 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Models.Messages.Details;
+using Common.Models.Messages.Details.Base;
+using EventsHandler.Enums.Responding;
 using EventsHandler.Properties;
-using EventsHandler.Services.Responding.Messages.Models.Details;
-using EventsHandler.Services.Responding.Messages.Models.Details.Base;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
-using EventsHandler.Services.Responding.Results.Enums;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Services.Responding.Results.Builder
 {
@@ -13,7 +14,7 @@ namespace EventsHandler.Services.Responding.Results.Builder
     /// Building <see cref="ErrorDetails"/>.
     /// </summary>
     /// <seealso cref="IDetailsBuilder"/>
-    public sealed class DetailsBuilder : IDetailsBuilder
+    internal sealed class DetailsBuilder : IDetailsBuilder
     {
         private static readonly object s_lock = new();
 
@@ -35,59 +36,59 @@ namespace EventsHandler.Services.Responding.Results.Builder
         {
             {
                 Reasons.InvalidJson,
-                (ApiResources.Deserialization_ERROR_InvalidJson_Message,
+                (ZhvResources.Deserialization_ERROR_InvalidJson_Message,
                 [
-                    ApiResources.Deserialization_ERROR_InvalidJson_Reason1
+                    ZhvResources.Deserialization_ERROR_InvalidJson_Reason1
                 ])
             },
             {
                 Reasons.MissingProperties_Notification,
-                (ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
+                (ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
                 [
-                    ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
-                    ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
-                    ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
+                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
+                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
+                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
                 ])
             },
             {
                 Reasons.InvalidProperties_Notification,
-                (ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Message,
+                (ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Message,
                 [
-                    ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1,
-                    ApiResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2
+                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1,
+                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2
                 ])
             },
             {
                 Reasons.MissingProperties_Attributes,
-                (ApiResources.Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message,
+                (ZhvResources.Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message,
                 [
-                    ApiResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1,
-                    ApiResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2,
-                    ApiResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3
+                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1,
+                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2,
+                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3
                 ])
             },
             {
                 Reasons.UnexpectedProperties_Notification,
-                (ApiResources.Deserialization_ERROR_UnexpectedData_Notification_Message,
+                (ZhvResources.Deserialization_ERROR_UnexpectedData_Notification_Message,
                 [
-                    ApiResources.Deserialization_INFO_UnexpectedData_Notification_Reason1,
-                    ApiResources.Deserialization_INFO_UnexpectedData_Notification_Reason2
+                    ZhvResources.Deserialization_INFO_UnexpectedData_Notification_Reason1,
+                    ZhvResources.Deserialization_INFO_UnexpectedData_Notification_Reason2
                 ])
             },
             {
                 Reasons.UnexpectedProperties_Attributes,
-                (ApiResources.Deserialization_INFO_UnexpectedData_Attributes_Message,
+                (ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Message,
                 [
-                    ApiResources.Deserialization_INFO_UnexpectedData_Attributes_Reason1,
-                    ApiResources.Deserialization_INFO_UnexpectedData_Attributes_Reason2
+                    ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Reason1,
+                    ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Reason2
                 ])
             },
             {
                 Reasons.HttpRequestError,
-                (ApiResources.HttpRequest_ERROR_Message,
+                (ZhvResources.HttpRequest_ERROR_Message,
                 [
-                    ApiResources.HttpRequest_ERROR_Reason1,
-                    ApiResources.HttpRequest_ERROR_Reason2
+                    ZhvResources.HttpRequest_ERROR_Reason1,
+                    ZhvResources.HttpRequest_ERROR_Reason2
                 ])
             },
             {

@@ -18,9 +18,8 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task.vHague
         /// The record related to the <see cref="TaskObject"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("record")]
         [JsonPropertyOrder(0)]
-        public Record Record { get; public set; }
+        public Record Record { get; set; }
     }
 }

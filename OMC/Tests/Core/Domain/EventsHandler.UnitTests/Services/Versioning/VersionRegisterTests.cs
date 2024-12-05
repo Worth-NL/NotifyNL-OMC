@@ -2,16 +2,16 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.v1;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.v1;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.v1;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.v2;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.v2;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.v1;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.v1;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.v1;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.v2;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.v2;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Register.v2;
 using EventsHandler.Services.Versioning;

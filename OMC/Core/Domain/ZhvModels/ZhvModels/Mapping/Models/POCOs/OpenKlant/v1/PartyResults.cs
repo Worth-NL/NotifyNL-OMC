@@ -1,7 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Extensions;
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Properties;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
 {
@@ -18,17 +20,15 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
         /// The number of received results.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
-        public int Count { get; public set; }
+        public int Count { get; set; }
 
         /// <inheritdoc cref="PartyResult"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("results")]
         [JsonPropertyOrder(1)]
-        public List<PartyResult> Results { get; public set; } = [];
+        public List<PartyResult> Results { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResults"/> struct.
@@ -48,9 +48,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
         {
             get
             {
-                if (this.Results.IsNullOrEmpty())
+                if (this.Results.IsEmpty())
                 {
-                    throw new HttpRequestException(ApiResources.HttpRequest_ERROR_EmptyPartiesResults);
+                    throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_EmptyPartiesResults);
                 }
 
                 return this.Results[^1];

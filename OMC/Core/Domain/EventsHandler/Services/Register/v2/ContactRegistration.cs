@@ -1,15 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Enums.Processing;
 using Common.Settings.Configuration;
-using EventsHandler.Extensions;
-using EventsHandler.Services.DataProcessing.Enums;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
-using NotificatieApi;
-using OpenKlant;
-using OpenKlant;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.Register.v2
 {
@@ -34,13 +33,13 @@ namespace EventsHandler.Services.Register.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)
+        internal ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)
         {
             this._configuration = configuration;
             this.QueryContext = queryContext;
         }
         
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(ZhvModels.Mapping.Models.POCOs.NotificatieApi.NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {

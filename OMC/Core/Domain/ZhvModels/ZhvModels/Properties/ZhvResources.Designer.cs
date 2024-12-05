@@ -61,6 +61,195 @@ namespace ZhvModels.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The given JSON cannot be deserialized | Target model: {0} | Failed: {1} | Reason: {2} | All required properties: {3} | Source JSON: {4}.
+        /// </summary>
+        public static string Deserialization_ERROR_CannotDeserialize_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following properties were missing in JSON, but they are required..
+        /// </summary>
+        public static string Deserialization_ERROR_CannotDeserialize_RequiredProperties {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_CannotDeserialize_RequiredProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The JSON payload is invalid..
+        /// </summary>
+        public static string Deserialization_ERROR_InvalidJson_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_InvalidJson_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: The input cannot be recognized as JSON format..
+        /// </summary>
+        public static string Deserialization_ERROR_InvalidJson_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_InvalidJson_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some values of properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) in the POCO model are missing..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required properties are missing in the given JSON payload..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: In the received notification some [Required] properties are either null, empty, or with default values..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: The standard JSON schema was recently changed and some mandatory properties were removed from it..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model new [Required] properties were added, causing a mismatch with the standard JSON schema..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received value could not be recognized (might be unexpected)..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Value_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Value_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: In the JSON schema some data (value) of property (key) has a different type, format, or is out of range than supported in the POCO model..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model the type, format or range of expected data was recently changed, causing a mismatch with the JSON schema..
+        /// </summary>
+        public static string Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2 {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The JSON payload contains more root &apos;notification&apos; properties than expected by the POCO model..
+        /// </summary>
+        public static string Deserialization_ERROR_UnexpectedData_Notification_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_ERROR_UnexpectedData_Notification_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: In the JSON schema some properties from the nested &apos;attributes&apos; (&apos;kenmerken&apos;) are missing, although they were previously defined in the POCO model..
+        /// </summary>
+        public static string Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: In the JSON schema some keys of properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) were renamed, causing mismatch with the POCO model..
+        /// </summary>
+        public static string Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model the custom names of some attributes are different from the keys of properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) in the received JSON payload..
+        /// </summary>
+        public static string Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The JSON payload contains more properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) than expected by the POCO model..
+        /// </summary>
+        public static string Deserialization_INFO_UnexpectedData_Attributes_Message {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Attributes_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: The JSON schema was recently changed and some properties in the nested &apos;attributes&apos; (&apos;kenmerken&apos;) were added to it..
+        /// </summary>
+        public static string Deserialization_INFO_UnexpectedData_Attributes_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Attributes_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model some existing properties were removed from the nested &apos;attributes&apos;, causing a mismatch with the JSON schema..
+        /// </summary>
+        public static string Deserialization_INFO_UnexpectedData_Attributes_Reason2 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Attributes_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENDER: The JSON schema was recently changed and some root &apos;notification&apos; properties were added to it..
+        /// </summary>
+        public static string Deserialization_INFO_UnexpectedData_Notification_Reason1 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Notification_Reason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECEIVER: In the POCO model some existing properties were removed from the root &apos;notification&apos;, causing a mismatch with the JSON schema..
+        /// </summary>
+        public static string Deserialization_INFO_UnexpectedData_Notification_Reason2 {
+            get {
+                return ResourceManager.GetString("Deserialization_INFO_UnexpectedData_Notification_Reason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Results representing case roles (retrieved from OpenZaak Web API service) are empty..
         /// </summary>
         public static string HttpRequest_ERROR_EmptyCaseRoles {

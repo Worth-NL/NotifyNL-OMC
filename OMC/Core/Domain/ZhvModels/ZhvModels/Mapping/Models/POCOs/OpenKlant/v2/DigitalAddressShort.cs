@@ -18,10 +18,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// The UUID / GUID of the digital address.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("uuid")]
         [JsonPropertyOrder(0)]
-        public Guid Id { get; public set; } = Guid.Empty;
+        public Guid Id { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DigitalAddressShort"/> struct.

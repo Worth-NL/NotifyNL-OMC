@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories
         /// <summary>
         /// Initializes a new instance of the <see cref="RegularHttpClientFactory"/> class.
         /// </summary>
-        public RegularHttpClientFactory(WebApiConfiguration configuration)
+        internal RegularHttpClientFactory(WebApiConfiguration configuration)
         {
             this._configuration = configuration;
         }

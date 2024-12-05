@@ -1,14 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Extensions;
-using EventsHandler.Services.DataProcessing.Strategy.Models.DTOs;
+using EventsHandler.Models.DTOs.Processing;
+using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataSending.Clients.Factories;
 using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.DataSending.Responses;
 using EventsHandler.Services.Serialization.Interfaces;
+using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataSending
 {
@@ -28,7 +29,7 @@ namespace EventsHandler.Services.DataSending
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyService"/> class.
         /// </summary>
-        public NotifyService(
+        internal NotifyService(
             IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ISerializationService serializer)
         {

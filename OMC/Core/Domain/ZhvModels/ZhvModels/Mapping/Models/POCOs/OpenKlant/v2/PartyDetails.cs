@@ -16,22 +16,19 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
     {
         /// <inheritdoc cref="CommonPartyData.Name"/>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("voornaam")]
         [JsonPropertyOrder(0)]
-        public string Name { get; public set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <inheritdoc cref="CommonPartyData.SurnamePrefix"/>
-        [JsonInclude]
         [JsonPropertyName("voorvoegselAchternaam")]
         [JsonPropertyOrder(1)]
-        public string SurnamePrefix { get; public set; } = string.Empty;  // NOTE: Will be absent if the company data is retrieved
+        public string SurnamePrefix { get; set; } = string.Empty;  // NOTE: Will be absent if the company data is retrieved
 
         /// <inheritdoc cref="CommonPartyData.Surname"/>
-        [JsonInclude]
         [JsonPropertyName("achternaam")]
         [JsonPropertyOrder(2)]
-        public string Surname { get; public set; } = string.Empty;  // NOTE: Will be absent if the company data is retrieved
+        public string Surname { get; set; } = string.Empty;  // NOTE: Will be absent if the company data is retrieved
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyDetails"/> struct.

@@ -15,9 +15,8 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
         /// The record related to the <see cref="MessageObject"/>.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("record")]
         [JsonPropertyOrder(0)]
-        public Record Record { get; public set; }
+        public Record Record { get; set; }
     }
 }

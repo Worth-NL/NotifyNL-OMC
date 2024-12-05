@@ -3,12 +3,12 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Decision;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Services.Serialization.Converters
 {
     /// <summary>
-    /// The custom converter specialized in handling <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Documents"/> types.
+    /// The custom converter specialized in handling <see cref="Documents"/> types.
     /// </summary>
     /// <seealso cref="JsonConverter{TValue}" />
     internal sealed class DocumentsJsonConverter : JsonConverter<Documents>
@@ -16,7 +16,8 @@ namespace EventsHandler.Services.Serialization.Converters
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, List<Document>> s_serializedDocuments = [];
         private static string? s_resultsJsonPropertyName;
-
+        
+        /// <inheritdoc cref="JsonConverter{TValue}.HandleNull"/>
         public override bool HandleNull => true;
 
         /// <inheritdoc cref="JsonConverter{TValue}.Read(ref Utf8JsonReader, Type, JsonSerializerOptions)"/>

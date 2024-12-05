@@ -15,10 +15,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// The BSN (citizen service number) of the citizen.
         /// </summary>
         [JsonRequired]
-        [JsonInclude]
         [JsonPropertyName("inpBsn")]
         [JsonPropertyOrder(0)]
-        public string BsnNumber { get; public set; } = string.Empty;
+        public string BsnNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyData"/> struct.

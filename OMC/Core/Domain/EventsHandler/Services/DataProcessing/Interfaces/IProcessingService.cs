@@ -1,8 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Services.DataProcessing.Strategy.Responses;
+using Common.Models.Responses;
 using System.Text.Json;
-using OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Interfaces
 {
@@ -12,7 +11,7 @@ namespace EventsHandler.Services.DataProcessing.Interfaces
     ///   This is the heart of the <see cref="EventsHandler"/> business logic.
     /// </para>
     /// </summary>
-    public interface IProcessingService
+    internal interface IProcessingService
     {
         /// <summary>
         /// Processes the given input data in a certain way.

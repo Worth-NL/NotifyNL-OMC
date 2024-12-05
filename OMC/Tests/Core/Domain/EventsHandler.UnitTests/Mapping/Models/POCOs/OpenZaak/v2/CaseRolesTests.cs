@@ -2,7 +2,9 @@
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
-using EventsHandler.Properties;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.v1;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
 {
@@ -33,7 +35,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
             var caseRoles = new CaseRoles();  // Empty "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(testConfiguration, caseRoles, ApiResources.HttpRequest_ERROR_EmptyCaseRoles);
+            AssertThrows<HttpRequestException>(testConfiguration, caseRoles, ZhvResources.HttpRequest_ERROR_EmptyCaseRoles);
         }
 
         [Test]
@@ -43,7 +45,7 @@ namespace EventsHandler.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
             CaseRoles caseRoles = GetTestCaseRoles();  // Invalid "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, ApiResources.HttpRequest_ERROR_MissingInitiatorRole);
+            AssertThrows<HttpRequestException>(this._testConfiguration, caseRoles, ZhvResources.HttpRequest_ERROR_MissingInitiatorRole);
         }
 
         [Test]

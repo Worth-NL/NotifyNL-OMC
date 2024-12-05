@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Extensions;
-using EventsHandler.Properties;
 using EventsHandler.Services.Serialization.Converters;
 using EventsHandler.Services.Serialization.Interfaces;
 using System.Collections;
@@ -9,7 +8,8 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Interfaces;
+using ZhvModels.Mapping.Models.Interfaces;
+using ZhvModels.Properties;
 
 namespace EventsHandler.Services.Serialization
 {
@@ -79,11 +79,11 @@ namespace EventsHandler.Services.Serialization
             else
             {
                 failed = $"{QuotationMark}{exception.Message[(exception.Message.IndexOf(':') + 2)..]}{QuotationMark}";
-                reason = ApiResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties;
+                reason = ZhvResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties;
             }
 
             throw new JsonException(message:
-                string.Format(ApiResources.Deserialization_ERROR_CannotDeserialize_Message,
+                string.Format(ZhvResources.Deserialization_ERROR_CannotDeserialize_Message,
                 /* {0} - Target */   $"{QuotationMark}{typeof(TModel).Name}.cs{QuotationMark}",
                 /* {1} - Failed */   failed,
                 /* {2} - Reason */   reason,
@@ -92,7 +92,7 @@ namespace EventsHandler.Services.Serialization
         }
 
         /// <summary>
-        /// Gets text representation of this specific <see cref="ZhvModels.Mapping.Models.Interfaces.IJsonSerializable"/> object.
+        /// Gets text representation of this specific <see cref="IJsonSerializable"/> object.
         /// </summary>
         private static string GetRequiredMembers<TModel>()
             where TModel : struct, IJsonSerializable

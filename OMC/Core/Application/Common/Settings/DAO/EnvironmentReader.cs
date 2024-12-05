@@ -3,7 +3,7 @@
 namespace Common.Settings.DAO
 {
     /// <inheritdoc cref="IEnvironment"/>
-    internal sealed class EnvironmentReader : IEnvironment
+    public sealed class EnvironmentReader : IEnvironment
     {
         /// <inheritdoc cref="IEnvironment.GetEnvironmentVariable(string)"/>
         public string? GetEnvironmentVariable(string key)

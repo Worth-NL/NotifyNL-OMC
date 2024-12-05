@@ -4,11 +4,11 @@ using Common.Extensions;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Properties;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Besluiten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.Objecten.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.ObjectTypen.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenKlant.Interfaces;
-using EventsHandler.Services.DataQuerying.Composition.Strategy.OpenZaak.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using Microsoft.IdentityModel.Tokens;
@@ -24,7 +24,7 @@ namespace EventsHandler.Services.Versioning
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionsRegister"/> class.
         /// </summary>
-        public VersionsRegister(IServiceProvider serviceProvider, WebApiConfiguration configuration)
+        internal VersionsRegister(IServiceProvider serviceProvider, WebApiConfiguration configuration)
         {
             this._serviceProvider = serviceProvider;
             this._configuration = configuration;
