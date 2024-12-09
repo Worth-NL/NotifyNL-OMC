@@ -1,5 +1,6 @@
 ﻿// // © 2024, Worth Systems.
 
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotifyNL;
 
 namespace ZhvModels.Extensions

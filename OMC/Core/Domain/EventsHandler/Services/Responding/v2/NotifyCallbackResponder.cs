@@ -8,8 +8,8 @@ using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding.v2

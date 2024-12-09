@@ -30,7 +30,8 @@
   
   <!-- Projects -->
   <ItemGroup>
-    <ProjectReference Include="..\EventsHandler.Utilities\EventsHandler.Tests.Utilities.csproj" />
+    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
+    <ProjectReference Include="..\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj" />
   </ItemGroup>
 
   <!-- Settings (copied from the main solution) -->

@@ -2,10 +2,10 @@
 
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
-using EventsHandler.Tests.Utilities._TestHelpers;
 using Notify.Models.Responses;
 using System.Text.Json;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.Templates
 {

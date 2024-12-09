@@ -14,13 +14,12 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
-using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
 using System.Text.Json;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
+using ZhvModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing
 {

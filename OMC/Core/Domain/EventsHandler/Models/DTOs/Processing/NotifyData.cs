@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using Notify.Models.Responses;
-using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Enums;
 
 namespace EventsHandler.Models.DTOs.Processing
 {

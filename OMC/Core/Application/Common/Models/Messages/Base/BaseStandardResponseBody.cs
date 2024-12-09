@@ -11,9 +11,15 @@ namespace Common.Models.Messages.Base
     /// </summary>
     public abstract record BaseStandardResponseBody
     {
+        /// <summary>
+        /// The response status code.
+        /// </summary>
         [JsonPropertyOrder(0)]
         public HttpStatusCode StatusCode { get; }
-
+        
+        /// <summary>
+        /// The response status description.
+        /// </summary>
         [JsonPropertyOrder(1)]
         public string StatusDescription { get; }
 
@@ -24,8 +30,8 @@ namespace Common.Models.Messages.Base
         /// <param name="description">The status description.</param>
         protected BaseStandardResponseBody(HttpStatusCode statusCode, string description)
         {
-            StatusCode = statusCode;
-            StatusDescription = description;
+            this.StatusCode = statusCode;
+            this.StatusDescription = description;
         }
 
         /// <summary>
@@ -52,7 +58,7 @@ namespace Common.Models.Messages.Base
         /// <inheritdoc cref="object.ToString()"/>
         public override string ToString()
         {
-            return $"{(int)StatusCode} {StatusCode} | {StatusDescription}";  // EXAMPLE: "202 Accepted | Operation successful."
+            return $"{(int)this.StatusCode} {this.StatusCode} | {this.StatusDescription}";  // EXAMPLE: "202 Accepted | Operation successful."
         }
     }
 }

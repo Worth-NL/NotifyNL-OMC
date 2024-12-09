@@ -5,10 +5,10 @@ using EventsHandler.Enums.Responding;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
-using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
-using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.Validation
 {

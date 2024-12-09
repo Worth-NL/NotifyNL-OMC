@@ -21,7 +21,7 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Enums;
 
 namespace EventsHandler.Controllers
 {
