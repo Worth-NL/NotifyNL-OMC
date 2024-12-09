@@ -142,14 +142,8 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interf
         #endregion
 
         #region Abstract (Case type URI)
-        /// <summary>
-        /// Gets the <see cref="Case"/> type in <see cref="Uri"/> format from version-specific CaseDetails from "OpenZaak" Web API service.
-        /// </summary>
-        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
+        /// <inheritdoc cref="GetCaseTypeUriAsync(IQueryBase, Uri?)"/>
         /// <exception cref="ArgumentException"/>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="JsonException"/>
         internal async Task<Uri> TryGetCaseTypeUriAsync(IQueryBase queryBase, Uri? caseUri = null)
         {
             // Case #1: The required URI is not provided so, it needs to be obtained from elsewhere
@@ -174,7 +168,14 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak.Interf
             // Case #3: The Case type URI needs to be queried from Case URI
             return await GetCaseTypeUriAsync(queryBase, caseUri);
         }
-
+        
+        /// <summary>
+        /// Gets the <see cref="Case"/> type in <see cref="Uri"/> format from version-specific CaseDetails from "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
         protected Task<Uri> GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 

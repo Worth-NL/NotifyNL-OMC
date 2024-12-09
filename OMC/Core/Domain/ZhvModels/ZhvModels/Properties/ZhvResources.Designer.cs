@@ -29,7 +29,7 @@ namespace ZhvModels.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public ZhvResources() {
+        internal ZhvResources() {
         }
         
         /// <summary>

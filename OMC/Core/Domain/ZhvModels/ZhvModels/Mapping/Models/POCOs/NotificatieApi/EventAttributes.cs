@@ -69,7 +69,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(0)]
-        public Uri? CaseTypeUri { get; set; }
+        public Uri? CaseTypeUri { get; init; }
 
         /// <summary>
         /// The name of the source organization.
@@ -81,7 +81,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// <inheritdoc cref="PrivacyNotices"/>
         [JsonPropertyName("vertrouwelijkheidaanduiding")]
         [JsonPropertyOrder(2)]
-        public PrivacyNotices? ConfidentialityNotice { get; set; }
+        public PrivacyNotices? ConfidentialityNotice { get; init; }
         #endregion
 
         #region Object properties
@@ -93,7 +93,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         [JsonPropertyName("objectType")]
         [JsonPropertyOrder(3)]
-        public Uri? ObjectTypeUri { get; set; }
+        public Uri? ObjectTypeUri { get; init; }
         #endregion
 
         #region Decision properties
@@ -105,14 +105,14 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// </summary>
         [JsonPropertyName("besluittype")]
         [JsonPropertyOrder(4)]
-        public Uri? DecisionTypeUri { get; set; }
+        public Uri? DecisionTypeUri { get; init; }
 
         /// <summary>
         /// The name of the responsible organization.
         /// </summary>
         [JsonPropertyName("verantwoordelijkeOrganisatie")]
         [JsonPropertyOrder(5)]
-        public string? ResponsibleOrganization { get; set; }
+        public string? ResponsibleOrganization { get; init; }
         #endregion
 
         /// <summary>
