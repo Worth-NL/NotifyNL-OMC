@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Enums.Processing;
-using Common.Enums.Responding;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
@@ -11,6 +10,7 @@ using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding.v2
