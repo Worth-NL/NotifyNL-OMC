@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Enums.Processing;
-using Common.Enums.Responding;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
