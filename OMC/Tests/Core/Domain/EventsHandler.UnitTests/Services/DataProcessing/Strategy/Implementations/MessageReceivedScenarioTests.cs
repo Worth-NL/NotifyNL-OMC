@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Enums.Processing;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
@@ -15,6 +14,7 @@ using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using Moq;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;

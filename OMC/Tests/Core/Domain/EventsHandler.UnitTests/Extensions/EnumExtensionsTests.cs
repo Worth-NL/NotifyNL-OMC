@@ -1,9 +1,9 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Enums.Responses;
-using Common.Enums.Validation;
 using Common.Extensions;
 using Microsoft.Extensions.Logging;
+using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Enums.Objecten;
 
 namespace EventsHandler.Tests.Unit.Extensions

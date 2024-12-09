@@ -3,7 +3,7 @@
 using Common.Constants;
 using System.Text.Json.Serialization;
 
-namespace Common.Enums.Processing
+namespace ZhvModels.Mapping.Enums.NotifyNL
 {
     /// <summary>
     /// The notification method used by "Notify NL" API Client to communicate with a citizen.

@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Enums.Validation;
 using Common.Models.Messages.Details;
 using Common.Models.Messages.Details.Base;
 using Common.Models.Responses;
