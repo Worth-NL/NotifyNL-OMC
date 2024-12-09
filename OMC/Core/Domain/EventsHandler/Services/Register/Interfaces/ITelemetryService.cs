@@ -1,11 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Enums.Processing;
 using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
