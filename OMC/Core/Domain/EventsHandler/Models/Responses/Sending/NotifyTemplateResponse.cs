@@ -15,7 +15,7 @@ namespace EventsHandler.Models.Responses.Sending
         /// <summary>
         /// The negated status of the <see cref="NotifyTemplateResponse"/>.
         /// </summary>
-        internal bool IsFailure => !IsSuccess;
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The subject of the <see cref="NotifyTemplateResponse"/>.
@@ -37,10 +37,10 @@ namespace EventsHandler.Models.Responses.Sending
         /// </summary>
         private NotifyTemplateResponse(bool isSuccess, string subject, string body, string exception)
         {
-            IsSuccess = isSuccess;
-            Subject = subject;
-            Body = body;
-            Error = exception;
+            this.IsSuccess = isSuccess;
+            this.Subject = subject;
+            this.Body = body;
+            this.Error = exception;
         }
 
         /// <summary>

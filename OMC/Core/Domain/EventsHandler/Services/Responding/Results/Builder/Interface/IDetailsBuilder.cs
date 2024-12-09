@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Models.Messages.Details.Base;
-using EventsHandler.Enums.Responding;
+using EventsHandler.Services.Responding.Enums;
 
 namespace EventsHandler.Services.Responding.Results.Builder.Interface
 {

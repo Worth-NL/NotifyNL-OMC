@@ -2,7 +2,6 @@
 
 using Common.Extensions;
 using Common.Models.Messages.Details;
-using EventsHandler.Enums.Responding;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Validation.Interfaces;
 using System.Reflection;
@@ -10,6 +9,7 @@ using ZhvModels.Enums;
 using ZhvModels.Mapping.Helpers;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using EventAttributes = ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
+using EventsHandler.Services.Responding.Enums;
 
 namespace EventsHandler.Services.Validation
 {

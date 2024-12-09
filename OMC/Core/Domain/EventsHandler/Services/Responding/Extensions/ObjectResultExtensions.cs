@@ -4,7 +4,7 @@ using Common.Models.Messages.Base;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace EventsHandler.Extensions.Responding
+namespace EventsHandler.Services.Responding.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="ObjectResult"/>s.
