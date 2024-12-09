@@ -2,9 +2,9 @@
 
 using EventsHandler.Exceptions;
 using EventsHandler.Models.DTOs.Processing;
-using System.Text.Json;
 using EventsHandler.Models.Responses.Processing;
 using EventsHandler.Models.Responses.Querying;
+using System.Text.Json;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces

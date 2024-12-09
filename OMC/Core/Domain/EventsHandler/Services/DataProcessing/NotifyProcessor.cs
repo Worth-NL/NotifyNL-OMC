@@ -5,6 +5,8 @@ using Common.Models.Messages.Details;
 using Common.Models.Messages.Details.Base;
 using Common.Models.Responses;
 using EventsHandler.Exceptions;
+using EventsHandler.Models.Responses.Processing;
+using EventsHandler.Models.Responses.Querying;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
@@ -16,8 +18,6 @@ using System.Text.Json;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
-using EventsHandler.Models.Responses.Querying;
-using EventsHandler.Models.Responses.Processing;
 
 namespace EventsHandler.Services.DataProcessing
 {
