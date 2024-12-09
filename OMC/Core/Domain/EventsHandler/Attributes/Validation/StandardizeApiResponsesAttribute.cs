@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Models.Messages.Base;
 using EventsHandler.Controllers;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding;
@@ -7,7 +8,6 @@ using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Collections.Concurrent;
-using Common.Models.Messages.Base;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Attributes.Validation

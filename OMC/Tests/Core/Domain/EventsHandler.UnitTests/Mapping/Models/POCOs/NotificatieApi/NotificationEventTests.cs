@@ -1,10 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Text.Json;
 using Common.Constants;
-using EventsHandler.Services.Serialization;
-using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
+using System.Text.Json;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
