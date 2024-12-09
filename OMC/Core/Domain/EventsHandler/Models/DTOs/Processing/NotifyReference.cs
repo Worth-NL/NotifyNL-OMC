@@ -3,6 +3,8 @@
 using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Models.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Models.DTOs.Processing
 {
@@ -19,7 +21,7 @@ namespace EventsHandler.Models.DTOs.Processing
         internal NotificationEvent Notification { get; set; } = default;
 
         /// <summary>
-        /// The extracted GUID component from <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case.Uri"/>.
+        /// The extracted GUID component from <see cref="Case.Uri"/>.
         /// </summary>
         [JsonRequired]
         [JsonInclude]

@@ -11,7 +11,7 @@ namespace ZhvModels.Extensions
     public static class DeliveryStatusesExtensions
     {
         /// <summary>
-        /// Converts from <see cref="FeedbackTypes"/> enum to <see cref="deliveryStatus"/> enum.
+        /// Converts from <see cref="FeedbackTypes"/> enum to <see cref="DeliveryStatuses"/> enum.
         /// </summary>
         /// <param name="deliveryStatus">The input enum of type A.</param>
         /// <returns>

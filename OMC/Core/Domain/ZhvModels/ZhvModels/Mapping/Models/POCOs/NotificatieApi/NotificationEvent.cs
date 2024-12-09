@@ -25,7 +25,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// <summary>
         /// Gets metadata of all (useful) public instance properties from the <see cref="NotificationEvent"/> POCO model.
         /// </summary>
-        [JsonIgnore]
+        [JsonIgnore]  // NOTE: PropertyInfo type (which is part of PropertiesMetadata class) cannot be serialized at all
         public readonly PropertiesMetadata Properties
         {
             get
@@ -51,7 +51,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]               // Property is required and must be mapped
         [JsonPropertyName("actie")]  // Specific JSON name to be mapped into property. In this case: "Dutch => English"
         [JsonPropertyOrder(0)]       // Specific order of properties - useful when displaying serialized objects
-        public Actions Action { get; set; }
+        public Actions Action { get; init; }
 
         /// <inheritdoc cref="Channels"/>
         [Required]
@@ -65,7 +65,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("resource")]
         [JsonPropertyOrder(2)]
-        public Resources Resource { get; set; }
+        public Resources Resource { get; init; }
 
         /// <summary>
         /// The generic attributes of the <see cref="NotificationEvent"/>.
@@ -89,7 +89,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("hoofdObject")]
         [JsonPropertyOrder(4)]
-        public Uri MainObjectUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri MainObjectUri { get; init; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The reference to the resource in <see cref="Uri"/> format:
@@ -101,7 +101,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("resourceUrl")]
         [JsonPropertyOrder(5)]
-        public Uri ResourceUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri ResourceUri { get; init; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date and time when the action took place.
@@ -110,7 +110,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonRequired]
         [JsonPropertyName("aanmaakdatum")]
         [JsonPropertyOrder(6)]
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; init; }
 
         /// <summary>
         /// The JSON properties that couldn't be matched with properties of this specific POCO model => The orphans.
