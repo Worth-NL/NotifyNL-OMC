@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Constants;
-using Common.Enums.Processing;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
@@ -19,6 +18,7 @@ using Moq;
 using System.Text.Json;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Enums.OpenZaak;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;

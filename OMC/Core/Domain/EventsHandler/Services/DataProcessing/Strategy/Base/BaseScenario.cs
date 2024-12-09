@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Enums.Processing;
 using Common.Extensions;
 using Common.Settings.Configuration;
 using EventsHandler.Exceptions;
@@ -15,6 +14,7 @@ using EventsHandler.Services.DataSending.Interfaces;
 using JetBrains.Annotations;
 using System.Text.Json;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;

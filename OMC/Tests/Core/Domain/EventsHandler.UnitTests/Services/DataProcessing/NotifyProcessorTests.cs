@@ -1,8 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Enums.Processing;
 using Common.Enums.Responses;
-using Common.Enums.Validation;
 using Common.Models.Messages.Details;
 using Common.Models.Responses;
 using Common.Properties;
@@ -19,6 +17,8 @@ using EventsHandler.Services.Validation.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
 using System.Text.Json;
+using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
 

@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Enums.Processing;
 using Common.Enums.Responses;
 using Common.Extensions;
 using Common.Models.Messages.Errors;
@@ -18,6 +17,7 @@ using Notify.Exceptions;
 using System.Net;
 using System.Text.RegularExpressions;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding

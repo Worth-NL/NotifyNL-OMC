@@ -1,6 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-using Common.Enums.Processing;
 using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataSending;
@@ -10,6 +9,7 @@ using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
+using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Tests.Unit.Services.DataSending
