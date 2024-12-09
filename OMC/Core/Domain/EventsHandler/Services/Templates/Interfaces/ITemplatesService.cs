@@ -9,7 +9,7 @@ namespace EventsHandler.Services.Templates.Interfaces
     /// </summary>
     /// <typeparam name="TTemplate">The type of the template.</typeparam>
     /// <typeparam name="TModel">The type of the model.</typeparam>
-    internal interface ITemplatesService<in TTemplate, in TModel>
+    public interface ITemplatesService<in TTemplate, in TModel>
         where TTemplate : class
         where TModel : IJsonSerializable
     {

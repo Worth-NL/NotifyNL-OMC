@@ -7,7 +7,7 @@ namespace EventsHandler.Services.DataSending.Clients.Interfaces
     /// <summary>
     /// The common interface to be used either with business or test/mock notification client.
     /// </summary>
-    internal interface INotifyClient
+    public interface INotifyClient
     {
         /// <summary>
         /// Sends the e-mail asynchronously.

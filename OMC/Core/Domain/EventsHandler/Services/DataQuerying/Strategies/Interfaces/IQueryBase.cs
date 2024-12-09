@@ -11,7 +11,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Interfaces
     /// <summary>
     /// The common HTTP methods to be used for requesting data from external services.
     /// </summary>
-    internal interface IQueryBase
+    public interface IQueryBase
     {
         /// <summary>
         /// The notification from "OpenNotificaties" Web API service.

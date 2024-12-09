@@ -9,7 +9,7 @@ namespace EventsHandler.Services.Validation.Interfaces
     /// The service to validate a certain types of models.
     /// </summary>
     /// <typeparam name="TModel">The type of the model.</typeparam>
-    internal interface IValidationService<TModel>
+    public interface IValidationService<TModel>
         where TModel : IJsonSerializable
     {
         /// <summary>

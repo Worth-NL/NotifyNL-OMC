@@ -31,7 +31,7 @@ namespace EventsHandler.Services.DataQuerying.Adapter.Interfaces
     /// <seealso cref="IQueryBesluiten"/>
     /// <seealso cref="IQueryObjecten"/>
     /// <seealso cref="IQueryObjectTypen"/>
-    internal interface IQueryContext
+    public interface IQueryContext
     {
         #region IQueryBase
         /// <inheritdoc cref="IQueryBase.Notification"/>

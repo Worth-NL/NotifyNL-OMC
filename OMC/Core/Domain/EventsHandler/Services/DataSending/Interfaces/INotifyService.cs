@@ -9,7 +9,7 @@ namespace EventsHandler.Services.DataSending.Interfaces
     /// </summary>
     /// <typeparam name="TPackage">The type of the package.</typeparam>
     /// <seealso cref="IDisposable" />
-    internal interface INotifyService<in TPackage> : IDisposable
+    public interface INotifyService<in TPackage> : IDisposable
         where TPackage : struct
     {
         /// <summary>

@@ -4,7 +4,6 @@ using Common.Settings.Configuration;
 using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
-using EventsHandler.Services.DataQuerying.Strategies.Queries;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
@@ -21,7 +20,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interf
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
     /// <seealso cref="IDomain"/>
-    internal interface IQueryObjecten : IVersionDetails, IDomain
+    public interface IQueryObjecten : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }
@@ -29,7 +28,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interf
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-#pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
+        #pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
         #region Parent (Task)
         /// <summary>
         /// Gets the <see cref="CommonTaskData"/> from "Objecten" Web API service.
@@ -81,7 +80,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten.Interf
                 fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoMessage);
         }
         #endregion
-#pragma warning restore CA1822
+        #pragma warning restore CA1822
 
         #region Parent (Create object)        
         /// <summary>
