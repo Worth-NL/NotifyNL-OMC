@@ -18,7 +18,7 @@ namespace Common.Settings
         /// <summary>
         /// Initializes a new instance of the <see cref="AppSettingsLoader"/> class.
         /// </summary>
-        public AppSettingsLoader(IConfiguration configuration)
+        public AppSettingsLoader(IConfiguration configuration)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
         }

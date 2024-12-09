@@ -5,7 +5,7 @@ namespace EventsHandler.Services.DataSending.Clients.Factories.Interfaces
     /// <summary>
     /// The service to return a specific instance of HTTP Client.
     /// </summary>
-    internal interface IHttpClientFactory<out THttpClient, in TParameters>
+    public interface IHttpClientFactory<out THttpClient, in TParameters>
         where THttpClient : class
         where TParameters : notnull
     {

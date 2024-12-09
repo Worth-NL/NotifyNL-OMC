@@ -2,7 +2,6 @@
 
 using Common.Extensions;
 using Common.Settings.Configuration;
-using EventsHandler.Services.DataQuerying.Strategies.Queries;
 using EventsHandler.Services.Versioning.Interfaces;
 
 namespace EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
@@ -12,7 +11,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen.Int
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
     /// <seealso cref="IDomain"/>
-    internal interface IQueryObjectTypen : IVersionDetails, IDomain
+    public interface IQueryObjectTypen : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }

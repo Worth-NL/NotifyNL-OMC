@@ -4,7 +4,6 @@ using Common.Settings.Configuration;
 using EventsHandler.Exceptions;
 using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
-using EventsHandler.Services.DataQuerying.Strategies.Queries;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
@@ -17,7 +16,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant.Inter
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
     /// <seealso cref="IDomain"/>
-    internal interface IQueryKlant : IVersionDetails, IDomain
+    public interface IQueryKlant : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }

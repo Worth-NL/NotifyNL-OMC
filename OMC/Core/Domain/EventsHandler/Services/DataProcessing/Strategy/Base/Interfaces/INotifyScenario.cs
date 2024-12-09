@@ -12,7 +12,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
     /// <summary>
     /// The "Notify NL" business-cases for notification scenarios.
     /// </summary>
-    internal interface INotifyScenario
+    public interface INotifyScenario
     {
         /// <summary>
         /// Prepares all data consumed by "Notify NL" API Client.

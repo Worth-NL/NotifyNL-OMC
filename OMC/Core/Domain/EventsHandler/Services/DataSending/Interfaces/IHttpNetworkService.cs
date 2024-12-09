@@ -8,7 +8,7 @@ namespace EventsHandler.Services.DataSending.Interfaces
     /// <summary>
     /// The service defining basic HTTP Requests contracts (e.g., GET, POST).
     /// </summary>
-    internal interface IHttpNetworkService
+    public interface IHttpNetworkService
     {
         /// <summary>
         /// Sends request to the given Web API service using a specific <see cref="HttpClient"/>.
