@@ -19,7 +19,7 @@ namespace EventsHandler.Models.Responses.Querying
         /// <summary>
         /// The negated status of the <see cref="QueryingDataResponse"/>.
         /// </summary>
-        internal bool IsFailure => !IsSuccess;
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The details about result of <see cref="QueryingDataResponse"/>.
@@ -39,9 +39,9 @@ namespace EventsHandler.Models.Responses.Querying
         /// </summary>
         private QueryingDataResponse(bool isSuccess, string message, IReadOnlyCollection<NotifyData> content)
         {
-            IsSuccess = isSuccess;
-            Message = message;
-            Content = content;
+            this.IsSuccess = isSuccess;
+            this.Message = message;
+            this.Content = content;
         }
 
         /// <summary>

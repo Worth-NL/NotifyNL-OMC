@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Models.Messages.Details;
-using EventsHandler.Enums.Responding;
+using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
