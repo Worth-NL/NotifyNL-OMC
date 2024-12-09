@@ -2,7 +2,7 @@
 
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
-namespace EventsHandler.Enums.Responding
+namespace EventsHandler.Services.Responding.Enums
 {
     /// <summary>
     /// The specific purpose of result details.

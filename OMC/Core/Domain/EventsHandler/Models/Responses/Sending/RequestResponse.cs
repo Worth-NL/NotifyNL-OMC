@@ -16,7 +16,7 @@ namespace EventsHandler.Models.Responses.Sending
         /// <summary>
         /// The negated status of the HTTP Request.
         /// </summary>
-        internal bool IsFailure => !IsSuccess;
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The JSON response from the Web API service.
@@ -28,8 +28,8 @@ namespace EventsHandler.Models.Responses.Sending
         /// </summary>
         private RequestResponse(bool isSuccess, string jsonResponse)
         {
-            IsSuccess = isSuccess;
-            JsonResponse = jsonResponse;
+            this.IsSuccess = isSuccess;
+            this.JsonResponse = jsonResponse;
         }
 
         /// <summary>

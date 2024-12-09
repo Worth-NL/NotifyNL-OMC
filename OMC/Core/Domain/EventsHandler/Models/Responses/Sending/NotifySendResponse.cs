@@ -17,7 +17,7 @@ namespace EventsHandler.Models.Responses.Sending
         /// <summary>
         /// The negated status of the <see cref="NotifySendResponse"/>.
         /// </summary>
-        internal bool IsFailure => !IsSuccess;
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The error which occurred during the communication with "Notify NL".
@@ -29,8 +29,8 @@ namespace EventsHandler.Models.Responses.Sending
         /// </summary>
         private NotifySendResponse(bool isSuccess, string error)
         {
-            IsSuccess = isSuccess;
-            Error = error;
+            this.IsSuccess = isSuccess;
+            this.Error = error;
         }
 
         /// <summary>

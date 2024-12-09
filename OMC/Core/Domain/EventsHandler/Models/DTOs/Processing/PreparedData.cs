@@ -2,6 +2,7 @@
 
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Models.DTOs.Processing
 {
@@ -13,7 +14,7 @@ namespace EventsHandler.Models.DTOs.Processing
         /// <inheritdoc cref="CommonPartyData"/>
         internal CommonPartyData Party { get; }
 
-        /// <inheritdoc cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case.Uri"/>
+        /// <inheritdoc cref="Case.Uri"/>
         internal Uri? CaseUri { get; }
 
         /// <summary>
@@ -21,8 +22,8 @@ namespace EventsHandler.Models.DTOs.Processing
         /// </summary>
         internal PreparedData(CommonPartyData party, Uri? caseUri)
         {
-            Party = party;
-            CaseUri = caseUri;
+            this.Party = party;
+            this.CaseUri = caseUri;
         }
     }
 }

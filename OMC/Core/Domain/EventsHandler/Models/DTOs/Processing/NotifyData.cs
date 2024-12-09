@@ -42,10 +42,10 @@ namespace EventsHandler.Models.DTOs.Processing
             Dictionary<string, object> personalization, NotifyReference reference)
             : this(notificationMethod)
         {
-            ContactDetails = contactDetails;
-            TemplateId = templateId;
-            Personalization = personalization;
-            Reference = reference;
+            this.ContactDetails = contactDetails;
+            this.TemplateId = templateId;
+            this.Personalization = personalization;
+            this.Reference = reference;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace EventsHandler.Models.DTOs.Processing
         /// </summary>
         internal NotifyData(NotifyMethods notificationMethod)
         {
-            NotificationMethod = notificationMethod;
+            this.NotificationMethod = notificationMethod;
         }
     }
 }

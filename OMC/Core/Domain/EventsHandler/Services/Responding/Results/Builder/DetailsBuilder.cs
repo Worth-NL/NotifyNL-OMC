@@ -2,8 +2,8 @@
 
 using Common.Models.Messages.Details;
 using Common.Models.Messages.Details.Base;
-using EventsHandler.Enums.Responding;
 using EventsHandler.Properties;
+using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using ZhvModels.Properties;
 

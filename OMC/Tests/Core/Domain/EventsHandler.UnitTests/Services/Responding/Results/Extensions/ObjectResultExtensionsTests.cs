@@ -8,7 +8,7 @@ using Common.Models.Messages.Information;
 using Common.Models.Messages.Successes;
 using Common.Models.Responses;
 using Common.Properties;
-using EventsHandler.Extensions.Responding;
+using EventsHandler.Services.Responding.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
