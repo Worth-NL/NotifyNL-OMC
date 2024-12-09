@@ -54,7 +54,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Integration" />
     <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Unit" />
-    <InternalsVisibleTo Include="OMC.EventsHandler.Tests.Utilities" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
