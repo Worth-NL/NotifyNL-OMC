@@ -15,7 +15,7 @@ using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using Moq;
 using System.Text.Json;
-using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.Objecten;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;

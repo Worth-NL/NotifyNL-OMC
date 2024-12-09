@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using ZhvModels.Mapping.Enums.NotificatieApi;
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Services.Validation.Interfaces
