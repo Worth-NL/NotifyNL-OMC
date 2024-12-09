@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Constants;
-using Common.Enums.Converters;
 using System.Text.Json.Serialization;
+using ZhvModels.Mapping.Converters;
 
 namespace ZhvModels.Mapping.Enums.NotificatieApi
 {

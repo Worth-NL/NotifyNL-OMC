@@ -7,10 +7,10 @@ using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
 using EventsHandler.Services.DataSending.Clients.Interfaces;
 using EventsHandler.Services.DataSending.Interfaces;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Tests.Utilities._TestHelpers;
 using Moq;
-using ZhvModels.Mapping.Enums.NotifyNL;
+using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.DataSending
 {

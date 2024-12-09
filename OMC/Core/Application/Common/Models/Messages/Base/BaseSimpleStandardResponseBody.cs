@@ -14,6 +14,9 @@ namespace Common.Models.Messages.Base
     /// <seealso cref="BaseStandardResponseBody"/>
     public abstract record BaseSimpleStandardResponseBody : BaseStandardResponseBody
     {
+        /// <summary>
+        /// Gets response details (simplified).
+        /// </summary>
         [JsonPropertyOrder(2)]
         public BaseSimpleDetails Details { get; }
 
@@ -25,7 +28,7 @@ namespace Common.Models.Messages.Base
         protected BaseSimpleStandardResponseBody(HttpStatusCode statusCode, ProcessingResult result)
             : base(statusCode, result)
         {
-            Details = result.Details.Trim();
+            this.Details = result.Details.Trim();
         }
 
         /// <summary>
@@ -40,13 +43,13 @@ namespace Common.Models.Messages.Base
         protected BaseSimpleStandardResponseBody(HttpStatusCode statusCode, string description, ProcessingResult result)
             : base(statusCode, description, result)
         {
-            Details = result.Details.Trim();
+            this.Details = result.Details.Trim();
         }
 
         /// <inheritdoc cref="object.ToString()"/>
         public sealed override string ToString()
         {
-            return $"{base.ToString()} | {Details}";
+            return $"{base.ToString()} | {this.Details}";
         }
     }
 }

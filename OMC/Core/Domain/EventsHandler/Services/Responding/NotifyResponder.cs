@@ -16,8 +16,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
 using System.Net;
 using System.Text.RegularExpressions;
+using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Services.Responding

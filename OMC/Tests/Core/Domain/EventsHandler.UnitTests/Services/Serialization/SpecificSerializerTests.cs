@@ -4,7 +4,6 @@ using Common.Constants;
 using Common.Extensions;
 using EventsHandler.Services.Serialization;
 using EventsHandler.Services.Serialization.Interfaces;
-using EventsHandler.Tests.Utilities._TestHelpers;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -20,6 +19,7 @@ using ZhvModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 using ZhvModels.Properties;
+using ZhvModels.Tests.Unit._TestHelpers;
 using Task = ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Tests.Unit.Services.Serialization
