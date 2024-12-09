@@ -3,7 +3,6 @@
 using Common.Settings.Configuration;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
-using EventsHandler.Services.DataQuerying.Strategies.Queries;
 using EventsHandler.Services.DataSending.Clients.Enums;
 using EventsHandler.Services.Versioning.Interfaces;
 using System.Text.Json;
@@ -18,7 +17,7 @@ namespace EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten.Inter
     /// </summary>
     /// <seealso cref="IVersionDetails"/>
     /// <seealso cref="IDomain"/>
-    internal interface IQueryBesluiten : IVersionDetails, IDomain
+    public interface IQueryBesluiten : IVersionDetails, IDomain
     {
         /// <inheritdoc cref="WebApiConfiguration"/>
         protected internal WebApiConfiguration Configuration { get; set; }

@@ -25,6 +25,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         /// <summary>
         /// Gets metadata of all (useful) public instance properties from the <see cref="NotificationEvent"/> POCO model.
         /// </summary>
+        [JsonIgnore]
         public readonly PropertiesMetadata Properties
         {
             get
@@ -118,7 +119,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
         [JsonPropertyOrder(7)]
         public Dictionary<string, object> Orphans { get; set; } = [];
 
-        #region public Properties
+        #region Internal Properties
         /// <summary>
         /// A specific details encountered during <see cref="NotificationEvent"/> validation.
         /// <para>

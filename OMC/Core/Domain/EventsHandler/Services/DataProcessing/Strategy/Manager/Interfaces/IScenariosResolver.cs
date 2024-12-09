@@ -3,6 +3,7 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using System.Text.Json;
+using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
 {
@@ -11,7 +12,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
     /// </summary>
     /// <typeparam name="TService">The type of the service.</typeparam>
     /// <typeparam name="TDeterminant">The type of the determinant.</typeparam>
-    internal interface IScenariosResolver<TService, in TDeterminant>
+    public interface IScenariosResolver<TService, in TDeterminant>
         where TService : class
     {
         /// <summary>
