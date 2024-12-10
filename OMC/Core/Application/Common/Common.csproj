@@ -1,4 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- © 2022, Worth Systems. -->
+
+<!-- The library project defining application-wide reusable elements (enums, models, extensions, utilities) -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>OMC.Common</AssemblyName>

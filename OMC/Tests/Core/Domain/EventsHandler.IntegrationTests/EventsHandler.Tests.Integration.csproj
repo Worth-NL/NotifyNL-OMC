@@ -1,4 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- © 2023, Worth Systems. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
     <AssemblyName>OMC.EventsHandler.Tests.Integration</AssemblyName>
