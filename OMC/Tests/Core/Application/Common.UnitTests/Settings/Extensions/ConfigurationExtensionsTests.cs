@@ -60,7 +60,7 @@ namespace Common.Tests.Unit.Settings.Extensions
             Assert.Multiple(() =>
             {
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => testValue.GetNotEmpty(testValue));
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_ValueNotFoundOrEmpty
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty
                                                   .Replace("{0}", testValue)));
             });
         }
@@ -88,7 +88,7 @@ namespace Common.Tests.Unit.Settings.Extensions
             Assert.Multiple(() =>
             {
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => testUrl.GetWithoutProtocol());
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_ContainsHttp
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_ContainsHttp
                                                   .Replace("{0}", testUrl)));
             });
         }
@@ -131,7 +131,7 @@ namespace Common.Tests.Unit.Settings.Extensions
             Assert.Multiple(() =>
             {
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => testTemplateId.GetValidGuid());
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_InvalidTemplateId
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_InvalidTemplateId
                                                   .Replace("{0}", testTemplateId)));
             });
         }
@@ -160,7 +160,7 @@ namespace Common.Tests.Unit.Settings.Extensions
             Assert.Multiple(() =>
             {
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => CommonValues.Default.Models.EmptyUri.ToString().GetValidUri());
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_InvalidUri
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_InvalidUri
                                                   .Replace("{0}", CommonValues.Default.Models.EmptyUri.ToString())));
             });
         }

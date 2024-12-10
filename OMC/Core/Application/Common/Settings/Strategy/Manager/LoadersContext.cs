@@ -35,7 +35,7 @@ namespace Common.Settings.Strategy.Manager
                 // Reading configurations from the preset environment variables (e.g. in Windows, Linux, macOS)
                 LoaderTypes.Environment => this._serviceProvider.GetRequiredService<EnvironmentLoader>(),
 
-                _ => throw new NotImplementedException(AppResources.Configuration_ERROR_Loader_NotImplemented)
+                _ => throw new NotImplementedException(CommonResources.Configuration_ERROR_Loader_NotImplemented)
             };
         }
         #endregion
@@ -56,7 +56,7 @@ namespace Common.Settings.Strategy.Manager
         private ILoadingService FromLoader()
         {
             return this._loadingService ??
-                throw new InvalidOperationException(AppResources.Configuration_ERROR_Loader_NotSet);
+                throw new InvalidOperationException(CommonResources.Configuration_ERROR_Loader_NotSet);
         }
         #endregion
     }

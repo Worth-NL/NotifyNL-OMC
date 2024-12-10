@@ -7,9 +7,8 @@ using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
-using EventsHandler.Constants;
+using Common.Versioning.Models;
 using EventsHandler.Controllers;
-using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -18,29 +17,14 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.DataQuerying.Adapter;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Proxy;
-using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
-using EventsHandler.Services.DataQuerying.Strategies.Base;
-using EventsHandler.Services.DataQuerying.Strategies.Interfaces;
-using EventsHandler.Services.DataSending;
-using EventsHandler.Services.DataSending.Clients.Factories;
-using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
-using EventsHandler.Services.DataSending.Clients.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
-using EventsHandler.Services.Serialization;
-using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Templates;
 using EventsHandler.Services.Templates.Interfaces;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
-using EventsHandler.Services.Versioning;
-using EventsHandler.Services.Versioning.Interfaces;
+using EventsHandler.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -51,13 +35,29 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using WebQueries.DataQuerying.Adapter;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Proxy;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataQuerying.Strategies.Base;
+using WebQueries.DataQuerying.Strategies.Interfaces;
+using WebQueries.DataSending;
+using WebQueries.DataSending.Clients.Factories;
+using WebQueries.DataSending.Clients.Factories.Interfaces;
+using WebQueries.DataSending.Clients.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Register.Interfaces;
+using WebQueries.Versioning;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using Besluiten = EventsHandler.Services.DataQuerying.Strategies.Queries.Besluiten;
-using Objecten = EventsHandler.Services.DataQuerying.Strategies.Queries.Objecten;
-using ObjectTypen = EventsHandler.Services.DataQuerying.Strategies.Queries.ObjectTypen;
-using OpenKlant = EventsHandler.Services.DataQuerying.Strategies.Queries.OpenKlant;
-using OpenZaak = EventsHandler.Services.DataQuerying.Strategies.Queries.OpenZaak;
-using Register = EventsHandler.Services.Register;
+using ZhvModels.Serialization;
+using ZhvModels.Serialization.Interfaces;
+using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
+using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
+using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
+using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
+using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
 
 namespace EventsHandler
@@ -167,12 +167,12 @@ namespace EventsHandler
                 // Enable required JWT authentication tokens from Headers in Swagger UI
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
-                    Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = ApiValues.Default.Authorization.OpenApiSecurityScheme.BearerFormat,
-                    Name = ApiValues.Default.Authorization.Name,
-                    In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
                     Description = ApiResources.Swagger_UI_Authentication_Description,
+                    Name = CommonValues.Default.Authorization.OpenApi.SecurityScheme.Name,
+                    In = ParameterLocation.Header,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = CommonValues.Default.Authorization.OpenApi.SecurityScheme.BearerFormat,
                     Reference = new OpenApiReference
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
@@ -274,7 +274,8 @@ namespace EventsHandler
             builder.Services.RegisterClientFactories();
 
             // Versioning
-            builder.Services.AddSingleton<IVersionsRegister, VersionsRegister>();
+            builder.Services.AddSingleton<OmcVersionRegister>();
+            builder.Services.AddSingleton<ZhvVersionRegister>();
 
             // User Interaction
             builder.Services.RegisterResponders(builder);
@@ -354,7 +355,7 @@ namespace EventsHandler
             {
                 return omvWorkflowVersion switch
                 {
-                    1 => typeof(OpenKlant.v2.QueryKlant),
+                    1 => typeof(OpenKlant.v1.QueryKlant),
                     2 => typeof(OpenKlant.v2.QueryKlant),
                     _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenKlantUnknown)
                 };

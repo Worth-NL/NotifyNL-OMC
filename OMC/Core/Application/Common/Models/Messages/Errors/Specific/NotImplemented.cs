@@ -16,7 +16,7 @@ namespace Common.Models.Messages.Errors.Specific
         /// Initializes a new instance of the <see cref="NotImplemented"/> class.
         /// </summary>
         public NotImplemented()
-            : base(HttpStatusCode.NotImplemented, AppResources.Operation_ERROR_NotImplemented)
+            : base(HttpStatusCode.NotImplemented, CommonResources.Operation_ERROR_NotImplemented)
         {
         }
     }

@@ -4,6 +4,7 @@ using Common.Constants;
 using EventsHandler.Constants;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
+using ZhvModels.Constants;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
@@ -28,13 +29,13 @@ namespace EventsHandler.Utilities.Swagger.Examples
                 {
                     // Cases
                     CaseTypeUri = CommonValues.Default.Models.EmptyUri,
-                    SourceOrganization = ApiValues.Default.Models.DefaultOrganization,
+                    SourceOrganization = ZhvValues.Default.Models.DefaultOrganization,
                     ConfidentialityNotice = PrivacyNotices.NonConfidential,
                     // Objects
                     ObjectTypeUri = CommonValues.Default.Models.EmptyUri,
                     // Decisions
                     DecisionTypeUri = CommonValues.Default.Models.EmptyUri,
-                    ResponsibleOrganization = ApiValues.Default.Models.DefaultOrganization
+                    ResponsibleOrganization = ZhvValues.Default.Models.DefaultOrganization
                 },
                 MainObjectUri = CommonValues.Default.Models.EmptyUri,
                 ResourceUri = CommonValues.Default.Models.EmptyUri,

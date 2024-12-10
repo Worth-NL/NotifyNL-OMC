@@ -22,7 +22,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Simplified(ProcessingResult result)
-                : base(HttpStatusCode.InternalServerError, AppResources.Operation_ERROR_Internal, result)
+                : base(HttpStatusCode.InternalServerError, CommonResources.Operation_ERROR_Internal, result)
             {
             }
         }
@@ -36,7 +36,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Detailed(ProcessingResult result)
-                : base(HttpStatusCode.InternalServerError, AppResources.Operation_ERROR_Internal, result)
+                : base(HttpStatusCode.InternalServerError, CommonResources.Operation_ERROR_Internal, result)
             {
             }
         }
