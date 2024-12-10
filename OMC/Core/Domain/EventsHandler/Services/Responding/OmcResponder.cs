@@ -9,13 +9,13 @@ using Common.Models.Messages.Information;
 using Common.Models.Messages.Successes;
 using Common.Models.Responses;
 using EventsHandler.Properties;
+using EventsHandler.Services.Responding.Enums;
+using EventsHandler.Services.Responding.Extensions;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
-using EventsHandler.Services.Responding.Enums;
-using EventsHandler.Services.Responding.Extensions;
 
 namespace EventsHandler.Services.Responding
 {

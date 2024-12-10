@@ -1,7 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Constants;
-using EventsHandler.Constants;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using ZhvModels.Constants;
