@@ -1,4 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- © 2024, Worth Systems. -->
+
+<!-- The library project handling HTTP communication with external Web API services -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>OMC.WebQueries</AssemblyName>

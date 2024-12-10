@@ -1,4 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- © 2024, Worth Systems. -->
+
+<!-- The library project defining domain (DDD) enums, models, converters, and extensions -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>OMC.ZhvModels</AssemblyName>
