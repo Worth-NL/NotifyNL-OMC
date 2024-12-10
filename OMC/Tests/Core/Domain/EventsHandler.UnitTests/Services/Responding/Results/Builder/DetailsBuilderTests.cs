@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
 using Common.Models.Messages.Details;
+using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Results.Builder;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using System.Text.Json;
-using EventsHandler.Services.Responding.Enums;
 
 namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
 {
