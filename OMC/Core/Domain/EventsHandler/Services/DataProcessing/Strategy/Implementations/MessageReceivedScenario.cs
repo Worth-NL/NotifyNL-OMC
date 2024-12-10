@@ -3,13 +3,13 @@
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
-using EventsHandler.Models.DTOs.Processing;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;

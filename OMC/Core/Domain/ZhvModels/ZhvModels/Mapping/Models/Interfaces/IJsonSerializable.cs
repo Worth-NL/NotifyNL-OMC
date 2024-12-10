@@ -5,7 +5,5 @@ namespace ZhvModels.Mapping.Models.Interfaces
     /// <summary>
     /// Serializable type of object.
     /// </summary>
-    public interface IJsonSerializable
-    {
-    }
+    public interface IJsonSerializable;
 }

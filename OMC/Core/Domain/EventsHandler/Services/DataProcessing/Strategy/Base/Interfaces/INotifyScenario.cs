@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
 using EventsHandler.Exceptions;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Processing;
-using EventsHandler.Models.Responses.Querying;
+using EventsHandler.Services.DataProcessing.Models.Responses;
 using System.Text.Json;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Models.DTOs;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces

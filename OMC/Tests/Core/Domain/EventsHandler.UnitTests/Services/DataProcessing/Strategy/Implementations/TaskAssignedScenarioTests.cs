@@ -3,18 +3,19 @@
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Processing;
-using EventsHandler.Models.Responses.Querying;
-using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Models.Responses;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
 using Moq;
 using System.Text.Json;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Properties;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.Objecten;
 using ZhvModels.Mapping.Enums.OpenKlant;
@@ -253,7 +254,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsFailure, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_ERROR_Scenario_NotificationMethod));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_ERROR_NotificationMethodMissing));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(1, 1, 1, 1, 1);
@@ -285,7 +286,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_SUCCESS_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
 
                 string contactDetails;
@@ -352,7 +353,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_SUCCESS_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
                 string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
@@ -415,7 +416,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResponse.IsFailure, Is.True);
-                Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_ERROR_Notification_DeliveryMethodUnknown));
+                Assert.That(actualResponse.Message, Is.EqualTo(QueryResources.Response_ProcessingData_ERROR_DeliveryMethodUnknown));
 
                 VerifyProcessDataMethodCalls(0, 0);
             });

@@ -22,7 +22,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Simplified(ProcessingResult result)
-                : base(HttpStatusCode.Forbidden, AppResources.Operation_ERROR_AccessDenied, result)
+                : base(HttpStatusCode.Forbidden, CommonResources.Operation_ERROR_AccessDenied, result)
             {
             }
         }
@@ -36,7 +36,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Detailed(ProcessingResult result)
-                : base(HttpStatusCode.Forbidden, AppResources.Operation_ERROR_AccessDenied, result)
+                : base(HttpStatusCode.Forbidden, CommonResources.Operation_ERROR_AccessDenied, result)
             {
             }
         }

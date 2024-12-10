@@ -4,17 +4,18 @@ using Common.Extensions;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Processing;
-using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Models.Responses;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.DataSending.Models.Reponses;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Enums.Objecten;
@@ -227,8 +228,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             string dataJson = PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
 
-            RequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
-                                                    this._queryContext.PrepareObjectJsonBody(dataJson));
+            HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
+                                                        this._queryContext.PrepareObjectJsonBody(dataJson));
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();

@@ -3,14 +3,14 @@
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Register.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
+using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v2
 {

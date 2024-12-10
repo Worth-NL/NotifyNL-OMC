@@ -170,11 +170,11 @@ namespace Common.Settings.Extensions
             return value switch
             {
                 string stringValue => string.IsNullOrWhiteSpace(stringValue)
-                    ? ThrowArgumentException<T>(AppResources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
+                    ? ThrowArgumentException<T>(CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
                     : value,
 
                 _ => value ??  // Valid value
-                     ThrowArgumentException<T>(AppResources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
+                     ThrowArgumentException<T>(CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty, key)
             };
         }
 
@@ -184,9 +184,9 @@ namespace Common.Settings.Extensions
         /// <exception cref="ArgumentException"/>
         public static string GetWithoutProtocol(this string value)
         {
-            return !value.StartsWith(CommonValues.Default.Request.HttpProtocol)  // HTTPS will be also handled this way
+            return !value.StartsWith(CommonValues.Default.Network.HttpProtocol)  // HTTPS will be also handled this way
                 ? value
-                : ThrowArgumentException<string>(AppResources.Configuration_ERROR_ContainsHttp, value);
+                : ThrowArgumentException<string>(CommonResources.Configuration_ERROR_ContainsHttp, value);
         }
         #endregion
 
@@ -199,7 +199,7 @@ namespace Common.Settings.Extensions
         {
             return Guid.TryParse(value, out Guid createdGuid)
                 ? createdGuid
-                : ThrowArgumentException<Guid>(AppResources.Configuration_ERROR_InvalidTemplateId, value);
+                : ThrowArgumentException<Guid>(CommonResources.Configuration_ERROR_InvalidTemplateId, value);
         }
         
         /// <summary>
@@ -211,7 +211,7 @@ namespace Common.Settings.Extensions
             return Uri.TryCreate(value, UriKind.Absolute, out Uri? createdUri) &&
                    createdUri != CommonValues.Default.Models.EmptyUri
                 ? createdUri
-                : ThrowArgumentException<Uri>(AppResources.Configuration_ERROR_InvalidUri, value);
+                : ThrowArgumentException<Uri>(CommonResources.Configuration_ERROR_InvalidUri, value);
         }
         #endregion
 

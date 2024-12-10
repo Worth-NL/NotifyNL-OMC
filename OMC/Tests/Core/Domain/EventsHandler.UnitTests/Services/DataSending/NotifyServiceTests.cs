@@ -1,15 +1,15 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Sending;
-using EventsHandler.Services.DataSending;
-using EventsHandler.Services.DataSending.Clients.Factories.Interfaces;
-using EventsHandler.Services.DataSending.Clients.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using Moq;
+using WebQueries.DataSending;
+using WebQueries.DataSending.Clients.Factories.Interfaces;
+using WebQueries.DataSending.Clients.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.DataSending.Models.Reponses;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Serialization.Interfaces;
 using ZhvModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.DataSending

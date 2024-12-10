@@ -12,11 +12,51 @@ namespace Common.Constants
         /// </summary>
         public static class Default
         {
-            #region HTTP
+            #region Security
+            /// <summary>
+            /// The authorization constants.
+            /// </summary>
+            public static class Authorization
+            {
+                /// <summary>
+                /// The token HTTP Request header.
+                /// </summary>
+                public static string Token => "Token";
+
+                /// <summary>
+                /// The Open API constants.
+                /// </summary>
+                public static class OpenApi
+                {
+                    /// <summary>
+                    /// The security scheme constants.
+                    /// </summary>
+                    public static class SecurityScheme
+                    {
+                        /// <summary>
+                        /// The authorization HTTP Request header.
+                        /// </summary>
+                        public static string Name => "Authorization";
+
+                        /// <summary>
+                        /// The bearer token format.
+                        /// </summary>
+                        public static string BearerFormat => "JWT";
+
+                        /// <summary>
+                        /// The bearer token schema.
+                        /// </summary>
+                        public static string BearerSchema => "Bearer";
+                    }
+                }
+            }
+            #endregion
+
+            #region Communication
             /// <summary>
             /// The HTTP Request constants.
             /// </summary>
-            public static class Request
+            public static class Network
             {
                 /// <summary>
                 /// The HTTP protocol.

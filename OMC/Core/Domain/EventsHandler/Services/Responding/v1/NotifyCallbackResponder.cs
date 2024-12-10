@@ -3,16 +3,16 @@
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Sending;
-using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Register.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.POCOs.NotifyNL;
+using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v1
 {
@@ -82,7 +82,7 @@ namespace EventsHandler.Services.Responding.v1
             try
             {
                 (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
-                RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
+                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
                 [
                     // User message body
                     DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod)

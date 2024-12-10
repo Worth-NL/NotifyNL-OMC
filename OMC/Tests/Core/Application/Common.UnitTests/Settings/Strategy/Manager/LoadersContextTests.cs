@@ -42,7 +42,7 @@ namespace Common.Tests.Unit.Settings.Strategy.Manager
                 NotImplementedException? exception =
                     Assert.Throws<NotImplementedException>(() => this._loadersContext!.SetLoader(invalidType));
 
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_Loader_NotImplemented));
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_Loader_NotImplemented));
             });
         }
         #endregion

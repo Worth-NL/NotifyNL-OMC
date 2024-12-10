@@ -31,7 +31,7 @@ namespace Common.Settings
             // The key is missing
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new KeyNotFoundException(AppResources.Configuration_ERROR_InvalidKey);
+                throw new KeyNotFoundException(CommonResources.Configuration_ERROR_InvalidKey);
             }
 
             TData? value = this._configuration.GetValue<TData>(key);

@@ -11,7 +11,7 @@ namespace Common.Models.Responses
     /// <summary>
     /// Contains the result of processing the given notification JSON.
     /// </summary>
-    public readonly struct ProcessingResult  // NOTE: Has to be public to be used in Dependency Injection
+    public readonly struct ProcessingResult
     {
         /// <summary>
         /// The details of processing result.
@@ -93,7 +93,7 @@ namespace Common.Models.Responses
         {
             return json == null
                 ? description
-                : string.Format(AppResources.Operation_STATUS_Notification, description, json);
+                : string.Format(CommonResources.Response_Processing_STATUS_NotificationOperation, description, json);
         }
         #endregion
     }

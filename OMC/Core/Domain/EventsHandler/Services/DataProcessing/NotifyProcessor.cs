@@ -4,20 +4,20 @@ using Common.Models.Messages.Details;
 using Common.Models.Messages.Details.Base;
 using Common.Models.Responses;
 using EventsHandler.Exceptions;
-using EventsHandler.Models.Responses.Processing;
-using EventsHandler.Models.Responses.Querying;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using EventsHandler.Services.DataProcessing.Models.Responses;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
+using WebQueries.DataQuerying.Models.Responses;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
+using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing
 {

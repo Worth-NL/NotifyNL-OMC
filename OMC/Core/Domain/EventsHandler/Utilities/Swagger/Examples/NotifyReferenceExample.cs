@@ -1,8 +1,8 @@
 ﻿// © 2023, Worth Systems.
 
-using EventsHandler.Models.DTOs.Processing;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
+using WebQueries.DataSending.Models.DTOs;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Utilities.Swagger.Examples
