@@ -11,6 +11,12 @@
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- Documentation (.xml) -->
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <!-- Resources -->
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
 </Project>
