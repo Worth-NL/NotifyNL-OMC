@@ -1,6 +1,6 @@
 ﻿<!-- © 2022, Worth Systems. -->
 
-<!-- The main start-up project (API) to handle callback requests; responsible for procecessing business logic -->
+<!-- The main start-up ASP.NET Web API project defining API endpoints procecessing business logic -->
 
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
