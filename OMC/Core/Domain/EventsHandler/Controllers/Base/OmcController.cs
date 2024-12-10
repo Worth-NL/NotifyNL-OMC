@@ -13,7 +13,7 @@ namespace EventsHandler.Controllers.Base
     /// Parent of all API Controllers in "Notify NL" OMC.
     /// </summary>
     [ApiController]
-    [OmcVersion]
+    [OmcApiVersion]
     [Route(ApiValues.Default.ApiController.Route)]
     [Consumes(ApiValues.Default.ApiController.ContentType)]
     [Produces(ApiValues.Default.ApiController.ContentType)]

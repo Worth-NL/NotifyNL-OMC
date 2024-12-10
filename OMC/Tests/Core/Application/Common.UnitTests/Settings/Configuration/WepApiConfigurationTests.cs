@@ -117,27 +117,27 @@ namespace Common.Tests.Unit.Settings.Configuration
         private static IEnumerable<(string CaseId, TestDelegate ActualMethod, string ExpectedErrorMessage)> GetTestCases()
         {
             // Invalid: ""
-            yield return ("#1", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), AppResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#1", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
-            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), AppResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: http://domain
-            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), AppResources.Configuration_ERROR_ContainsHttp);
+            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), CommonResources.Configuration_ERROR_ContainsHttp);
             // Invalid: https://domain
-            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), AppResources.Configuration_ERROR_ContainsHttp);
+            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), CommonResources.Configuration_ERROR_ContainsHttp);
             // Invalid: Default URI
-            yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), AppResources.Configuration_ERROR_InvalidUri);
+            yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), CommonResources.Configuration_ERROR_InvalidUri);
             // Invalid: Not existing
-            yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), AppResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#7", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakCreate(), AppResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#7", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakCreate(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
-            yield return ("#8", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakUpdate(), AppResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#8", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakUpdate(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: 8-4-(2-2)-4-12
-            yield return ("#9", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakClose(), AppResources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#9", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakClose(), CommonResources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: (9)-4-4-4-12
-            yield return ("#10", () => s_testConfiguration!.Notify.TemplateId.Sms.TaskAssigned(), AppResources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#10", () => s_testConfiguration!.Notify.TemplateId.Sms.TaskAssigned(), CommonResources.Configuration_ERROR_InvalidTemplateId);
             // Invalid: Special characters
-            yield return ("#11", () => s_testConfiguration!.Notify.TemplateId.Sms.MessageReceived(), AppResources.Configuration_ERROR_InvalidTemplateId);
+            yield return ("#11", () => s_testConfiguration!.Notify.TemplateId.Sms.MessageReceived(), CommonResources.Configuration_ERROR_InvalidTemplateId);
         }
 
         [TestCase("1", true)]
@@ -211,7 +211,7 @@ namespace Common.Tests.Unit.Settings.Configuration
             {
                 Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(2));
                 ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_ValueNotFoundOrEmpty
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty
                     .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));
             });
         }

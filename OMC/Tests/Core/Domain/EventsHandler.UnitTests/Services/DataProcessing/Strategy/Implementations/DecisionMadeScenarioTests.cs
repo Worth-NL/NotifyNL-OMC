@@ -4,18 +4,19 @@ using Common.Constants;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using EventsHandler.Exceptions;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Processing;
-using EventsHandler.Models.Responses.Querying;
-using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
+using EventsHandler.Services.DataProcessing.Models.Responses;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
-using EventsHandler.Services.DataQuerying.Adapter.Interfaces;
-using EventsHandler.Services.DataQuerying.Proxy.Interfaces;
-using EventsHandler.Services.DataSending.Interfaces;
 using Moq;
 using System.Text.Json;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Interfaces;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Properties;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
@@ -24,11 +25,7 @@ using ZhvModels.Mapping.Enums.OpenZaak;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using Decision = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision;
-using DecisionResource = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource;
-using DecisionType = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionType;
-using Document = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Document;
-using Documents = ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Documents;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementations
 {
@@ -68,25 +65,25 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private static readonly Uri s_validUri =
             new($"https://www.domain.com/{ConfigurationHandler.TestInfoObjectTypeUuid2}");  // NOTE: Matches to UUID from test Environment Configuration
         
-        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectType = new()
+        private static readonly InfoObject s_invalidInfoObjectType = new()
         {
             TypeUri = CommonValues.Default.Models.EmptyUri
         };
 
-        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectStatus = new()
+        private static readonly InfoObject s_invalidInfoObjectStatus = new()
         {
             Status = MessageStatus.Unknown,
             TypeUri = s_validUri
         };
 
-        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_invalidInfoObjectConfidentiality = new()
+        private static readonly InfoObject s_invalidInfoObjectConfidentiality = new()
         {
             Confidentiality = PrivacyNotices.Confidential,
             Status = MessageStatus.Definitive,
             TypeUri = s_validUri
         };
 
-        private static readonly ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject s_validInfoObject = new()
+        private static readonly InfoObject s_validInfoObject = new()
         {
             Confidentiality = PrivacyNotices.NonConfidential,
             Status = MessageStatus.Definitive,
@@ -222,7 +219,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsFailure, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_ERROR_Scenario_NotificationMethod));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_ERROR_NotificationMethodMissing));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
                 VerifyGetDataMethodCalls(1, 1, 1, 1, 1, 1, 1, 1);
@@ -246,7 +243,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_SUCCESS_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(notifyDataCount));
 
                 Guid expectedTemplateId = this._testConfiguration.Notify.TemplateId.DecisionMade();
@@ -298,7 +295,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             Assert.Multiple(() =>
             {
                 Assert.That(actualResult.IsSuccess, Is.True);
-                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataRetrieved));
+                Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_SUCCESS_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
                 string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
@@ -474,7 +471,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
         #region Setup
         private DecisionMadeScenario ArrangeDecisionScenario_TryGetData(
-            ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
+            InfoObject testInfoObject, bool isCaseTypeIdWhitelisted, bool isNotificationExpected, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
             this._mockedQueryContext
@@ -568,13 +565,13 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                     : NotifyTemplateResponse.Failure(TestGenerationError));
 
             // IQueryContext
-            (Document Document, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject InfoObject)[] testData =
+            (Document Document, InfoObject InfoObject)[] testData =
             [
-                (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
-                (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
-                (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
-                (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
-                (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
+                (new Document { InfoObjectUri = s_firstDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_secondDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.NonConfidential }),  // Valid InfoObject
+                (new Document { InfoObjectUri = s_thirdDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.NonConfidential }),  // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fourthDocumentObjectUri }, new InfoObject { Status = MessageStatus.Definitive, Confidentiality = PrivacyNotices.Confidential }),     // Invalid InfoObject
+                (new Document { InfoObjectUri = s_fifthDocumentObjectUri  }, new InfoObject { Status = MessageStatus.Unknown,    Confidentiality = PrivacyNotices.Confidential })      // Invalid InfoObject
             ];
 
             this._mockedQueryContext
@@ -588,7 +585,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
             if (hasValidUris)
             {
-                foreach ((Document Document, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.InfoObject InfoObject) data in testData)
+                foreach ((Document Document, InfoObject InfoObject) data in testData)
                 {
                     this._mockedQueryContext
                         .Setup(mock => mock.GetInfoObjectAsync(data.Document))
@@ -603,8 +600,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             this._mockedQueryContext
                 .Setup(mock => mock.CreateObjectAsync(It.IsAny<string>()))
                 .ReturnsAsync(isCreationSuccessful
-                    ? RequestResponse.Success(TestJsonResponse)
-                    : RequestResponse.Failure(TestCreationError));
+                    ? HttpRequestResponse.Success(TestJsonResponse)
+                    : HttpRequestResponse.Failure(TestCreationError));
 
             // IDataQueryService
             this._mockedDataQuery

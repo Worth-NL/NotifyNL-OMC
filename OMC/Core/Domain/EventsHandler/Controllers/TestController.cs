@@ -7,13 +7,9 @@ using Common.Settings.Configuration;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Models.DTOs.Processing;
-using EventsHandler.Models.Responses.Sending;
 using EventsHandler.Properties;
-using EventsHandler.Services.Register.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Serialization.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Notify.Client;
@@ -21,7 +17,11 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Register.Interfaces;
 using ZhvModels.Enums;
+using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Controllers
 {
@@ -255,7 +255,7 @@ namespace EventsHandler.Controllers
                 NotifyReference reference = this._serializer.Deserialize<NotifyReference>(json);
              
                 // Processing reporting operation
-                RequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
+                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
 
                 return response.IsSuccess
                     // HttpStatus Code: 202 Accepted

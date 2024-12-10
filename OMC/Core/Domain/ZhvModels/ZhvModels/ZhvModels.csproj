@@ -19,14 +19,14 @@
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
-  <!-- Packages -->
-  <ItemGroup>
-    <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
-  </ItemGroup>
-
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\Application\Common\Common.csproj" />
+  </ItemGroup>
+
+  <!-- Exposition to internal members -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <!-- Resources (text / localization) -->
@@ -37,7 +37,6 @@
       <DependentUpon>ZhvResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\ZhvResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

@@ -22,7 +22,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Simplified(ProcessingResult result)
-                : base(HttpStatusCode.UnprocessableEntity, AppResources.Operation_ERROR_Deserialization_Failure, result)
+                : base(HttpStatusCode.UnprocessableEntity, CommonResources.Operation_ERROR_Deserialization_Failure, result)
             {
             }
         }
@@ -36,7 +36,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Detailed(ProcessingResult result)
-                : base(HttpStatusCode.UnprocessableEntity, AppResources.Operation_ERROR_Deserialization_Failure, result)
+                : base(HttpStatusCode.UnprocessableEntity, CommonResources.Operation_ERROR_Deserialization_Failure, result)
             {
             }
         }

@@ -21,7 +21,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Simplified(ProcessingResult result)
-                : base(HttpStatusCode.BadRequest, AppResources.Operation_ERROR_HttpRequest_Failure, result)
+                : base(HttpStatusCode.BadRequest, CommonResources.Operation_ERROR_HttpRequest_Failure, result)
             {
             }
         }
@@ -35,7 +35,7 @@ namespace Common.Models.Messages.Errors.Specific
             /// </summary>
             /// <param name="result">The processing result.</param>
             public Detailed(ProcessingResult result)
-                : base(HttpStatusCode.BadRequest, AppResources.Operation_ERROR_HttpRequest_Failure, result)
+                : base(HttpStatusCode.BadRequest, CommonResources.Operation_ERROR_HttpRequest_Failure, result)
             {
             }
         }

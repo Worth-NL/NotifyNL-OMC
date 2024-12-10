@@ -23,7 +23,7 @@ namespace Common.Tests.Unit.Settings
             {
                 KeyNotFoundException? exception = Assert.Throws<KeyNotFoundException>(() =>
                     this._loadingService.GetData<string>(emptyKey, disableValidation: false));
-                Assert.That(exception?.Message, Is.EqualTo(AppResources.Configuration_ERROR_InvalidKey));
+                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_InvalidKey));
             });
         }
         #endregion

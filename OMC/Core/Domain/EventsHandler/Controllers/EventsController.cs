@@ -3,6 +3,7 @@
 using Common.Extensions;
 using Common.Models.Messages.Base;
 using Common.Models.Responses;
+using Common.Versioning.Interfaces;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
@@ -10,11 +11,12 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Services.Versioning.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
+using EventsHandler.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
+using WebQueries.Versioning;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Controllers
@@ -28,19 +30,22 @@ namespace EventsHandler.Controllers
     {
         private readonly IProcessingService _processor;
         private readonly IRespondingService<ProcessingResult> _responder;
-        private readonly IVersionsRegister _register;
+        private readonly IVersionRegister _omcRegister;
+        private readonly IVersionRegister _zhvRegister;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
         /// </summary>
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        /// <param name="register">The register of versioned services.</param>
-        public EventsController(IProcessingService processor, OmcResponder responder, IVersionsRegister register)
+        /// <param name="omcRegister">The OMC version register.</param>
+        /// <param name="zhvRegister">The ZHV version register.</param>
+        public EventsController(IProcessingService processor, OmcResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
         {
             this._processor = processor;
             this._responder = responder;
-            this._register = register;
+            this._omcRegister = omcRegister;
+            this._zhvRegister = zhvRegister;
         }
 
         /// <summary>
@@ -98,8 +103,8 @@ namespace EventsHandler.Controllers
         {
             LogApiResponse(LogLevel.Trace, ApiResources.Endpoint_Events_Version_INFO_ApiVersionRequested);
 
-            return Ok(this._register.GetOmcVersion(
-                      this._register.GetApisVersions()));
+            return Ok(this._omcRegister.GetVersion(
+                      this._zhvRegister.GetVersion()));
         }
     }
 }

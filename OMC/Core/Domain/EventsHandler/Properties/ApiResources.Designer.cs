@@ -88,15 +88,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This type of HttpClient is not supported yet:.
-        /// </summary>
-        internal static string Authorization_ERROR_HttpClientTypeNotSuported {
-            get {
-                return ResourceManager.GetString("Authorization_ERROR_HttpClientTypeNotSuported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The version of the API was requested..
         /// </summary>
         internal static string Endpoint_Events_Version_INFO_ApiVersionRequested {
@@ -108,9 +99,9 @@ namespace EventsHandler.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}: v{1} ({2}) | Workflow: v{3} ({4})..
         /// </summary>
-        internal static string Endpoint_Events_Version_INFO_OmcVersionSummary {
+        internal static string Endpoint_Events_Version_INFO_OmcVersionsSummary {
             get {
-                return ResourceManager.GetString("Endpoint_Events_Version_INFO_OmcVersionSummary", resourceCulture);
+                return ResourceManager.GetString("Endpoint_Events_Version_INFO_OmcVersionsSummary", resourceCulture);
             }
         }
         
@@ -160,83 +151,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internal error: The BSN number is expected..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_MissingBsnNumber {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_MissingBsnNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not a case type..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotCaseTypeUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotCaseTypeUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not a case..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotCaseUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotCaseUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not a decision resource..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotDecisionResourceUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotDecisionResourceUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not an information object..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotInfoObjectUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotInfoObjectUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not an object..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotObjectUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotObjectUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal error: The given URI is not a party..
-        /// </summary>
-        internal static string Operation_ERROR_Internal_NotPartyUri {
-            get {
-                return ResourceManager.GetString("Operation_ERROR_Internal_NotPartyUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to An unknown validation issue occurred..
         /// </summary>
         internal static string Operation_ERROR_Unknown_ValidationIssue_Message {
             get {
                 return ResourceManager.GetString("Operation_ERROR_Unknown_ValidationIssue_Message", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Notify HttpClient was initialized for organization ID: {0}..
-        /// </summary>
-        internal static string Operation_INFO_NotifyClientInitialized {
-            get {
-                return ResourceManager.GetString("Operation_INFO_NotifyClientInitialized", resourceCulture);
             }
         }
         
@@ -385,15 +304,6 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification method (&apos;aanmaakkanaal&apos;) is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None..
-        /// </summary>
-        internal static string Processing_ERROR_Notification_DeliveryMethodUnknown {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Notification_DeliveryMethodUnknown", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The test notification was received and ignored..
         /// </summary>
         internal static string Processing_ERROR_Notification_Test {
@@ -417,15 +327,6 @@ namespace EventsHandler.Properties {
         internal static string Processing_ERROR_Scenario_MissingNotifyData {
             get {
                 return ResourceManager.GetString("Processing_ERROR_Scenario_MissingNotifyData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The notification method is missing, unknown, or not supported..
-        /// </summary>
-        internal static string Processing_ERROR_Scenario_NotificationMethod {
-            get {
-                return ResourceManager.GetString("Processing_ERROR_Scenario_NotificationMethod", resourceCulture);
             }
         }
         
@@ -457,29 +358,11 @@ namespace EventsHandler.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The notification data were retrieved successfully by the selected notification scenario..
-        /// </summary>
-        internal static string Processing_SUCCESS_Scenario_DataRetrieved {
-            get {
-                return ResourceManager.GetString("Processing_SUCCESS_Scenario_DataRetrieved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The notification has been successfully processed and sent to Notify NL..
         /// </summary>
         internal static string Processing_SUCCESS_Scenario_NotificationSent {
             get {
                 return ResourceManager.GetString("Processing_SUCCESS_Scenario_NotificationSent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
-        /// </summary>
-        internal static string Register_NotifyNL_SUCCESS_NotificationSent {
-            get {
-                return ResourceManager.GetString("Register_NotifyNL_SUCCESS_NotificationSent", resourceCulture);
             }
         }
         
