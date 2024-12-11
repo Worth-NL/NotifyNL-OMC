@@ -286,7 +286,7 @@ namespace ZhvModels.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). There is no initiator at all..
+        ///   Looks up a localized string similar to HTTP Request: None of the case roles (retrieved from OpenZaak Web API service) contain the initiator role matching to the one specified in the project configuration (&apos;OmschrijvingGeneriek&apos;). There is no initiator at all..
         /// </summary>
         public static string HttpRequest_ERROR_MissingInitiatorRole {
             get {

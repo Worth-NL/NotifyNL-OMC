@@ -194,7 +194,7 @@
     <value>The HTTP Request sent to external Web API service failed.</value>
   </data>
   <data name="HttpRequest_ERROR_MissingInitiatorRole" xml:space="preserve">
-    <value>HTTP Request: Any case role (retrieved from OpenZaak Web API service) does not have initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
+    <value>HTTP Request: None of the case roles (retrieved from OpenZaak Web API service) contain the initiator role matching to the one specified in the project configuration ('OmschrijvingGeneriek'). There is no initiator at all.</value>
   </data>
   <data name="HttpRequest_ERROR_NoCase" xml:space="preserve">
     <value>HTTP Request: Case could not be retrieved from OpenZaak Web API service.</value>
