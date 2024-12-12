@@ -17,6 +17,7 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
@@ -36,6 +37,7 @@ namespace EventsHandler.Controllers
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
+        private readonly IQueryContext _queryContext;
         private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult> _responder;
 
@@ -44,12 +46,19 @@ namespace EventsHandler.Controllers
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
+        /// <param name="queryContext">The adapter containing external Web API queries.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public TestController(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, NotifyResponder responder)
+        public TestController(
+            WebApiConfiguration configuration,
+            ISerializationService serializer,
+            IQueryContext queryContext,
+            ITelemetryService telemetry,
+            NotifyResponder responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;
+            this._queryContext = queryContext;
             this._telemetry = telemetry;
             this._responder = responder;
         }
@@ -65,7 +74,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [StandardizeApiResponses]
         public async Task<IActionResult> HealthCheckAsync()
         {
             try
@@ -119,7 +128,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [StandardizeApiResponses]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -159,7 +168,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [StandardizeApiResponses]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -176,6 +185,43 @@ namespace EventsHandler.Controllers
         }
         #endregion
 
+        #region ZHV endpoints
+        private const string ZHV = nameof(ZHV);
+
+        /// <summary>
+        /// Checks the state of the "Open Zaak" Web API service health.
+        /// </summary>
+        [HttpGet]
+        [Route(ZHV + "/OpenZaakHealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]
+        public async Task<IActionResult> OpenZaakHealthCheckAsync()
+        {
+            try
+            {
+                // Request
+                HttpRequestResponse result = await this._queryContext.GetZaakHealthCheckAsync();
+
+                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
+
+                // Response
+                return result.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
+        }
+        #endregion
+
         #region OMC endpoints
         private const string OMC = nameof(OMC);
 
@@ -187,7 +233,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [StandardizeApiResponses]
         public async Task<IActionResult> TestConfigsAsync()
         {
             return await Task.Run(() =>
@@ -241,7 +287,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [StandardizeApiResponses]
         [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(

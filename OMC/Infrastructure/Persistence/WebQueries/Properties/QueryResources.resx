@@ -161,4 +161,10 @@
   <data name="Response_ProcessingData_ERROR_DeliveryMethodUnknown" xml:space="preserve">
     <value>The notification method ('aanmaakkanaal') is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None.</value>
   </data>
+  <data name="Response_HealthCheck_ERROR_State" xml:space="preserve">
+    <value>The service is unreachable or the request was unsuccessful.</value>
+  </data>
+  <data name="Response_HealthCheck_SUCCESS_State" xml:space="preserve">
+    <value>The service is reachable and the request was successful.</value>
+  </data>
 </root>
