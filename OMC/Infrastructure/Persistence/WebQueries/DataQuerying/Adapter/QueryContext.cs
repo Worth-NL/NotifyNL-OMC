@@ -65,6 +65,10 @@ namespace WebQueries.DataQuerying.Adapter
         #endregion
 
         #region IQueryZaak
+        /// <inheritdoc cref="IQueryContext.GetZaakHealthCheckAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.GetZaakHealthCheckAsync()
+            => await _queryZaak.GetHealthCheckAsync(_networkService);
+
         /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
         async Task<Case> IQueryContext.GetCaseAsync(Uri? caseUri)
             => await _queryZaak.TryGetCaseAsync(_queryBase, caseUri);
@@ -73,7 +77,7 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
             => await _queryZaak.TryGetCaseStatusesAsync(_queryBase, caseUri);
 
-        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.CaseStatuses?)"/>
+        /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(CaseStatuses?)"/>
         async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? caseStatuses)
         {
             // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
@@ -151,15 +155,15 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<InfoObject> IQueryContext.GetInfoObjectAsync(object? parameter)
             => await _queryBesluiten.TryGetInfoObjectAsync(_queryBase, parameter);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDecisionAsync(DecisionResource?)"/>
         async Task<Decision> IQueryContext.GetDecisionAsync(DecisionResource? decisionResource)
             => await _queryBesluiten.TryGetDecisionAsync(_queryBase, decisionResource);
 
-        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDocumentsAsync(DecisionResource?)"/>
         async Task<Documents> IQueryContext.GetDocumentsAsync(DecisionResource? decisionResource)
             => await _queryBesluiten.TryGetDocumentsAsync(_queryBase, decisionResource);
 
-        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision?)"/>
+        /// <inheritdoc cref="IQueryContext.GetDecisionTypeAsync(Decision?)"/>
         async Task<DecisionType> IQueryContext.GetDecisionTypeAsync(Decision? decision)
             => await _queryBesluiten.TryGetDecisionTypeAsync(_queryBase, decision);
         #endregion
