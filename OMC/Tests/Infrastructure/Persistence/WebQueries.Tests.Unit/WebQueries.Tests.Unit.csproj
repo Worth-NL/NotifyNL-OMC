@@ -28,6 +28,7 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Infrastructure\Persistence\WebQueries\WebQueries.csproj" />
+    <ProjectReference Include="..\..\..\Core\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
   </ItemGroup>
 
 </Project>
