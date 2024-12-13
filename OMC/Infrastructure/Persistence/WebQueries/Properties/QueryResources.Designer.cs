@@ -142,6 +142,24 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The service is unreachable or the request was unsuccessful..
+        /// </summary>
+        public static string Response_HealthCheck_ERROR_State {
+            get {
+                return ResourceManager.GetString("Response_HealthCheck_ERROR_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The service is reachable and the request was successful..
+        /// </summary>
+        public static string Response_HealthCheck_SUCCESS_State {
+            get {
+                return ResourceManager.GetString("Response_HealthCheck_SUCCESS_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The notification method (&apos;aanmaakkanaal&apos;) is unknown. The citizen data are incomplete. There should be declared at least one distribution channel: SMS, e-mail, Both, or None..
         /// </summary>
         public static string Response_ProcessingData_ERROR_DeliveryMethodUnknown {
