@@ -39,6 +39,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryZaak
+        /// <inheritdoc cref="IQueryZaak.GetHealthCheckAsync(IHttpNetworkService)"/>
+        public Task<HttpRequestResponse> GetZaakHealthCheckAsync();
+
         /// <inheritdoc cref="IQueryZaak.TryGetCaseAsync(IQueryBase, Uri?)"/>
         /// <remarks>
         ///   The <see cref="Case"/> can be queried either directly from the provided <see cref="Uri"/>, or domain object, or it can

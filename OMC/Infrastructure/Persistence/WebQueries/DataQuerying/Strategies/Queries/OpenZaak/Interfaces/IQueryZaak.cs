@@ -3,8 +3,10 @@
 using Common.Settings.Configuration;
 using Common.Versioning.Interfaces;
 using System.Text.Json;
+using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
+using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
@@ -24,6 +26,22 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenZaak";
+        
+        #region Health Check
+        /// <summary>
+        /// Gets the health check.
+        /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <returns>
+        ///   The status of the service.
+        /// </returns>
+        internal async Task<HttpRequestResponse> GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
+        }
+        #endregion
 
         #region Parent (Case)
         #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
