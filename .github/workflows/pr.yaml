@@ -17,6 +17,9 @@ jobs:
       matrix:
         dotnet-version: ["8.0.x"]
 
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
     steps:
       - uses: szenius/set-timezone@v2.0
         with:
@@ -30,9 +33,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
           cache: true
+          cache-dependency-path: "EventsHandler/Api/EventsHandler/packages.lock.json"
         name: Install dotnet [${{ matrix.dotnet-version }}] and setup cache
 
-      - run: dotnet restore
+      - run: dotnet restore --locked-mode
         name: Install application dependencies (dotnet restore)
 
       - run: dotnet build --configuration Release --no-restore
