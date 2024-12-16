@@ -27,16 +27,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Besluiten";
 
-        #region Health Check
-        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
-        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
-        {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/besluiten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
-
-            return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
-        }
-        #endregion
-
         #region Parent (DecisionResource)
         /// <summary>
         /// Gets the <see cref="DecisionResource"/> from "OpenZaak" Web API service.
@@ -206,6 +196,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => Configuration.ZGW.Endpoint.Besluiten();
+        #endregion
+
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/besluiten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
+        }
         #endregion
     }
 }

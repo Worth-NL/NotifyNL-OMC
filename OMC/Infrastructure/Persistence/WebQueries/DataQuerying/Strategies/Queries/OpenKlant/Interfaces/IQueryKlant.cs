@@ -5,7 +5,6 @@ using Common.Versioning.Interfaces;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
-using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
