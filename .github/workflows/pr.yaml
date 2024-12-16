@@ -56,6 +56,19 @@ jobs:
           path: ${{ steps.run-tests.outputs.coverage-report-path }}
         name: Upload coverage report
 
+      - uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: ${{ steps.run-tests.outputs.coverage-report-path }}
+          format: markdown
+          hide_complexity: true
+          indicators: true
+          output: file
+          thresholds: '50'
+        name: Code Coverage Report
+
+      - run: cat **code-coverage-results.md** >> $GITHUB_STEP_SUMMARY
+        name: Write to Job Summary
+
   docker-build-and-push:
     runs-on: ubuntu-latest
     needs: app-build-and-test
