@@ -109,6 +109,9 @@ jobs:
         with:
           config: ${{ secrets.K8S_CONFIG }}
 
+      - run: helm repo add denhaag https://gemeente-denhaag.github.io/helm-charts/
+        name: Install helm chart dependency repository
+
       - run: helm dependency build
         working-directory: ${{ github.workspace }}/notifynl-omc
         name: Helm chart dependency build
