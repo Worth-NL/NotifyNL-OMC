@@ -1,8 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-
-// © 2023, Worth Systems.
-
 using System.Text.Json.Serialization;
 
 namespace Common.Models.Messages.Details.Base
@@ -29,7 +26,7 @@ namespace Common.Models.Messages.Details.Base
         /// <param name="message">The details message.</param>
         protected BaseSimpleDetails(string message)
         {
-            Message = message;
+            this.Message = message;
         }
     }
 

@@ -1,8 +1,5 @@
 ﻿// © 2023, Worth Systems.
 
-
-// © 2023, Worth Systems.
-
 using System.Text.Json.Serialization;
 
 namespace Common.Models.Messages.Details.Base
@@ -39,8 +36,8 @@ namespace Common.Models.Messages.Details.Base
         protected BaseEnhancedDetails(string message, string cases, string[] reasons)
             : base(message)
         {
-            Cases = cases;
-            Reasons = reasons;
+            this.Cases = cases;
+            this.Reasons = reasons;
         }
     }
 
