@@ -5,16 +5,11 @@ using Common.Models.Responses;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
-using EventsHandler.Properties;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
-using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
-using Notify.Client;
-using Notify.Models.Responses;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
-using ZhvModels.Enums;
 
 namespace EventsHandler.Controllers
 {
