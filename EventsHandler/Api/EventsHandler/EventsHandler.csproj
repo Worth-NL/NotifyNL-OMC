@@ -10,6 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
     <!-- Documentation (.xml) -->
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
