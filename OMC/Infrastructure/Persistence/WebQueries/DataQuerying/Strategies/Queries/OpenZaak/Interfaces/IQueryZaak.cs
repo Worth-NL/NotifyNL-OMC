@@ -26,16 +26,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenZaak";
-        
-        #region Health Check
-        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
-        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
-        {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
-
-            return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
-        }
-        #endregion
 
         #region Parent (Case)
         #pragma warning disable CA1822  // Method(s) can be marked as static but that would be inconsistent for interface
@@ -194,6 +184,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => Configuration.ZGW.Endpoint.OpenZaak();
+        #endregion
+        
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
+        }
         #endregion
     }
 }

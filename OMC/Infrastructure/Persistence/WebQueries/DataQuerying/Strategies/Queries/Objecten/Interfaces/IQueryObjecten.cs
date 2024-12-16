@@ -28,16 +28,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-        #region Health Check
-        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
-        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
-        {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objects");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
-
-            return await networkService.GetAsync(HttpClientTypes.Objecten, healthCheckEndpointUri);
-        }
-        #endregion
-
         #pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
         #region Parent (Task)
         /// <summary>
@@ -118,6 +108,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => Configuration.ZGW.Endpoint.Objecten();
+        #endregion
+
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objects");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.Objecten, healthCheckEndpointUri);
+        }
         #endregion
     }
 }

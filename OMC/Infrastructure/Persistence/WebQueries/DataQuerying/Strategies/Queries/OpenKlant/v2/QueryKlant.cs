@@ -37,16 +37,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             ((IQueryKlant)this).Configuration = configuration;
         }
 
-        #region Polymorphic (Health Check)
-        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
-        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
-        {
-            Uri healthCheckEndpointUri = new($"https://{((IQueryKlant)this).GetDomain()}/klanten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
-
-            return await networkService.GetAsync(HttpClientTypes.OpenKlant_v2, healthCheckEndpointUri);
-        }
-        #endregion
-
         #region Polymorphic (Party data)
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
@@ -146,6 +136,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: customerContactMomentUri,  // Request URL
                 jsonBody);
+        }
+        #endregion
+
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{((IQueryKlant)this).GetDomain()}/klanten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.OpenKlant_v2, healthCheckEndpointUri);
         }
         #endregion
     }
