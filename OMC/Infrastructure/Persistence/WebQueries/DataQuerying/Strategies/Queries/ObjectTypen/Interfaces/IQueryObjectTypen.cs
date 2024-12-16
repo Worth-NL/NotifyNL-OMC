@@ -23,14 +23,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         string IVersionDetails.Name => "ObjectTypen";
 
         #region Health Check
-        /// <summary>
-        /// Gets the health check.
-        /// </summary>
-        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
-        /// <returns>
-        ///   The status of the service.
-        /// </returns>
-        internal async Task<HttpRequestResponse> GetHealthCheckAsync(IHttpNetworkService networkService)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
             Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objecttypes");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 

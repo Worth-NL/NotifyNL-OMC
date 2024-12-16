@@ -25,17 +25,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenKlant";
 
-        #region Health Check
-        /// <summary>
-        /// Gets the health check.
-        /// </summary>
-        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
-        /// <returns>
-        ///   The status of the service.
-        /// </returns>
-        internal Task<HttpRequestResponse> GetHealthCheckAsync(IHttpNetworkService networkService);
-        #endregion
-
         #region Abstract (Party data)
         /// <summary>
         /// Gets the details of a specific party (e.g., citizen or organization) from "OpenKlant" Web API service.
