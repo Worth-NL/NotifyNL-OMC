@@ -84,6 +84,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryKlant
+        /// <inheritdoc cref="IQueryKlant.GetHealthCheckAsync(IHttpNetworkService)"/>
+        public Task<HttpRequestResponse> GetKlantHealthCheckAsync();
+
         /// <summary>
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         /// </summary>
@@ -115,6 +118,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryBesluiten
+        /// <inheritdoc cref="IQueryBesluiten.GetHealthCheckAsync(IHttpNetworkService)"/>
+        public Task<HttpRequestResponse> GetBesluitenHealthCheckAsync();
+
         /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionResourceAsync(IQueryBase, Uri?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing resource <see cref="Uri"/>.
@@ -160,6 +166,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryObjecten
+        /// <inheritdoc cref="IQueryObjecten.GetHealthCheckAsync(IHttpNetworkService)"/>
+        public Task<HttpRequestResponse> GetObjectenHealthCheckAsync();
+
         /// <inheritdoc cref="IQueryObjecten.GetTaskAsync(IQueryBase)"/>
         public Task<CommonTaskData> GetTaskAsync();
 
@@ -171,6 +180,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #endregion
 
         #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryObjectTypen.GetHealthCheckAsync(IHttpNetworkService)"/>
+        public Task<HttpRequestResponse> GetObjectTypenHealthCheckAsync();
+
         /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string)"/>
         public string PrepareObjectJsonBody(string dataJson);
         #endregion

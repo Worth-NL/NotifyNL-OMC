@@ -106,6 +106,10 @@ namespace WebQueries.DataQuerying.Adapter
         #endregion
 
         #region IQueryKlant
+        /// <inheritdoc cref="IQueryContext.GetKlantHealthCheckAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.GetKlantHealthCheckAsync()
+            => await _queryKlant.GetHealthCheckAsync(_networkService);
+
         /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?)"/>
         async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber)
         {
@@ -147,6 +151,10 @@ namespace WebQueries.DataQuerying.Adapter
         #endregion
 
         #region IQueryBesluiten
+        /// <inheritdoc cref="IQueryContext.GetBesluitenHealthCheckAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.GetBesluitenHealthCheckAsync()
+            => await _queryBesluiten.GetHealthCheckAsync(_networkService);
+
         /// <inheritdoc cref="IQueryContext.GetDecisionResourceAsync(Uri?)"/>
         async Task<DecisionResource> IQueryContext.GetDecisionResourceAsync(Uri? resourceUri)
             => await _queryBesluiten.TryGetDecisionResourceAsync(_queryBase, resourceUri);
@@ -169,6 +177,10 @@ namespace WebQueries.DataQuerying.Adapter
         #endregion
 
         #region IQueryObjecten
+        /// <inheritdoc cref="IQueryContext.GetObjectenHealthCheckAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.GetObjectenHealthCheckAsync()
+            => await _queryObjecten.GetHealthCheckAsync(_networkService);
+
         /// <inheritdoc cref="IQueryContext.GetTaskAsync()"/>
         Task<CommonTaskData> IQueryContext.GetTaskAsync()
             => _queryObjecten.GetTaskAsync(_queryBase);
@@ -183,6 +195,10 @@ namespace WebQueries.DataQuerying.Adapter
         #endregion
 
         #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryContext.GetObjectTypenHealthCheckAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.GetObjectTypenHealthCheckAsync()
+            => await _queryObjectTypen.GetHealthCheckAsync(_networkService);
+
         /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string)"/>
         string IQueryContext.PrepareObjectJsonBody(string dataJson)
             => _queryObjectTypen.PrepareObjectJsonBody(dataJson);

@@ -28,7 +28,23 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "Objecten";
 
-        #pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
+        #region Health Check
+        /// <summary>
+        /// Gets the health check.
+        /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <returns>
+        ///   The status of the service.
+        /// </returns>
+        internal async Task<HttpRequestResponse> GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objects");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.Objecten, healthCheckEndpointUri);
+        }
+        #endregion
+
+#pragma warning disable CA1822  // These methods can be marked as static but that would be inconsistent for interfaces
         #region Parent (Task)
         /// <summary>
         /// Gets the <see cref="CommonTaskData"/> from "Objecten" Web API service.

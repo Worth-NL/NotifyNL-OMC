@@ -37,6 +37,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             ((IQueryKlant)this).Configuration = configuration;
         }
 
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IQueryKlant.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IQueryKlant.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{((IQueryKlant)this).GetDomain()}/klanten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.OpenKlant_v2, healthCheckEndpointUri);
+        }
+        #endregion
+
         #region Polymorphic (Party data)
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
