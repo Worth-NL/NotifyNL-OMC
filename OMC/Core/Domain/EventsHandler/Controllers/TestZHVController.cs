@@ -2,7 +2,6 @@
 
 using Common.Models.Messages.Base;
 using Common.Models.Responses;
-using Common.Settings.Configuration;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
@@ -11,8 +10,6 @@ using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
-using WebQueries.Register.Interfaces;
-using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Controllers
 {
@@ -27,31 +24,19 @@ namespace EventsHandler.Controllers
         Type = typeof(BaseStandardResponseBody))] // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestZHVController : OmcController // Swagger UI requires this class to be public
     {
-        private readonly WebApiConfiguration _configuration;
-        private readonly ISerializationService _serializer;
         private readonly IQueryContext _queryContext;
-        private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult> _responder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestController"/> class.
+        /// Initializes a new instance of the <see cref="TestZHVController"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration of the application.</param>
-        /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="queryContext">The adapter containing external Web API queries.</param>
-        /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestZHVController(
-            WebApiConfiguration configuration,
-            ISerializationService serializer,
             IQueryContext queryContext,
-            ITelemetryService telemetry,
             NotifyResponder responder)
         {
-            this._configuration = configuration;
-            this._serializer = serializer;
             this._queryContext = queryContext;
-            this._telemetry = telemetry;
             this._responder = responder;
         }
 
@@ -231,7 +216,6 @@ namespace EventsHandler.Controllers
                     this._responder.GetExceptionResponse(exception));
             }
         }
-
         #endregion
     }
 }

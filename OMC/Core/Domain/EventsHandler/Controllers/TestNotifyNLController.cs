@@ -17,7 +17,6 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
@@ -33,44 +32,38 @@ namespace EventsHandler.Controllers
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
-    public sealed class TestController : OmcController  // Swagger UI requires this class to be public
+    public sealed class TestNotifyNLController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
-        private readonly IQueryContext _queryContext;
         private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult> _responder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestController"/> class.
+        /// Initializes a new instance of the <see cref="TestNotifyNLController"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
-        /// <param name="queryContext">The adapter containing external Web API queries.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public TestController(
+        public TestNotifyNLController(
             WebApiConfiguration configuration,
             ISerializationService serializer,
-            IQueryContext queryContext,
             ITelemetryService telemetry,
             NotifyResponder responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;
-            this._queryContext = queryContext;
             this._telemetry = telemetry;
             this._responder = responder;
         }
 
         #region NotifyNL endpoints
-        private const string NotifyNL = nameof(NotifyNL);
-
         /// <summary>
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route(NotifyNL + "/HealthCheck")]
+        [Route("HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -124,7 +117,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route(NotifyNL + "/SendEmail")]
+        [Route("SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -164,7 +157,7 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route(NotifyNL + "/SendSms")]
+        [Route("SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -213,7 +206,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route(NotifyNL + "/Confirm")]
+        [Route("Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -245,39 +238,6 @@ namespace EventsHandler.Controllers
                 return LogApiResponse(exception,
                     this._responder.GetExceptionResponse(exception));
             }
-        }
-        #endregion
-
-        #region OMC endpoints
-        private const string OMC = nameof(OMC);
-
-        /// <summary>
-        /// Tests if all the configurations (from "appsettings.json" and environment variables) are present and contains non-empty values (if required).
-        /// </summary>
-        [HttpGet]
-        [Route(OMC + "/TestConfigs")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> TestConfigsAsync()
-        {
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    _ = WebApiConfiguration.TestAppSettingsConfigs(this._configuration);
-                    _ = WebApiConfiguration.TestEnvVariablesConfigs(this._configuration);
-                    
-                    // HttpStatus Code: 202 Accepted
-                    return LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(ApiResources.Endpoint_Test_OMC_TestConfigs_SUCCESS_ConfigurationsValid)));
-                }
-                catch (Exception exception)
-                {
-                    // HttpStatus Code: 500 Internal Server Error
-                    return this._responder.GetExceptionResponse(exception);
-                }
-            });
         }
         #endregion
 
