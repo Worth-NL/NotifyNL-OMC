@@ -44,7 +44,7 @@ jobs:
 
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
-          project: 'EventsHandler/Tests/UnitTests/EventsHandler.Tests/EventsHandler.UnitTests.csproj'
+          project: 'EventsHandler/Tests/UnitTests/EventsHandler.Tests'
           threshold: 50
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
@@ -100,10 +100,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: Worth-NL/notifynl-charts-private
+          repository: Worth-NL/helm-charts
           ref: main
           token: ${{ secrets.WORTHNL_PAT }}
-        name: Checkout Worth-NL/notifynl-charts-private
+        name: Checkout Worth-NL/helm-charts
 
       - uses: bwvolleyball/k8s-toolkit@v1.0.0
         with:
@@ -111,5 +111,10 @@ jobs:
 
       - run: |
           helm version
-          helm upgrade --install notifynl-api notifynl-api/ -n ${{ secrets.K8S_NAMESPACE }} --reuse-values --set dockerTagOverride=${{ needs.docker-build-and-push.outputs.tag }} --wait
-        name: Deploy chart
+          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait
+        name: Deploy v1 chart
+
+      - run: |
+          helm version
+          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait
+        name: Deploy v2 chart
