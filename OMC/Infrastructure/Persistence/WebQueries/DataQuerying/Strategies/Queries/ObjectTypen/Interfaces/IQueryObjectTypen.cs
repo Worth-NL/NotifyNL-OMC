@@ -22,16 +22,6 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";
 
-        #region Health Check
-        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
-        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
-        {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objecttypes");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
-
-            return await networkService.GetAsync(HttpClientTypes.ObjectTypen, healthCheckEndpointUri);
-        }
-        #endregion
-
         #region Parent (Create message object)
         /// <summary>
         /// Prepares an object type JSON representation following a schema from "ObjectTypen" Web API service.
@@ -59,6 +49,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => Configuration.ZGW.Endpoint.ObjectTypen();
+        #endregion
+
+        #region Polymorphic (Health Check)
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
+        {
+            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objecttypes");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.ObjectTypen, healthCheckEndpointUri);
+        }
         #endregion
     }
 }
