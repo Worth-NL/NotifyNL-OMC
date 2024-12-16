@@ -11,6 +11,7 @@ namespace Common.Extensions
     {
         private static readonly TimeZoneInfo s_cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
         private static readonly CultureInfo s_dutchCulture = new("nl-NL");
+
         private const string DutchDateFormat = "dd-MM-yyyy";
 
         /// <summary>

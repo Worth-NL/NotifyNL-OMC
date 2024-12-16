@@ -4,6 +4,7 @@ using PostSharp.Aspects;
 using PostSharp.Serialization;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 namespace Common.Utilities.Diagnostics
 {
@@ -11,6 +12,7 @@ namespace Common.Utilities.Diagnostics
     /// The runtime profiler, used to measure how long does a specific method is executing.
     /// </summary>
     /// <seealso cref="OnMethodBoundaryAspect" />
+    [UsedImplicitly]  // NOTE: Do not mark this class as never used. It will be used on demand by developer to check performance of a specific method
     [PSerializable]
     [ExcludeFromCodeCoverage(Justification = "This is utility class, relying on third-party dependency.")]
     internal sealed class StopWatchProfilerAttribute : OnMethodBoundaryAspect

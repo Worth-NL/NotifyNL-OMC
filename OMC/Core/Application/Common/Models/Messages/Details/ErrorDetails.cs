@@ -17,7 +17,7 @@ namespace Common.Models.Messages.Details
         public static ErrorDetails Empty { get; } = new
         (
             message: CommonValues.Default.Models.DefaultStringValue,
-            cases: CommonValues.Default.Models.DefaultStringValue,
+            cases:   CommonValues.Default.Models.DefaultStringValue,
             reasons: []
         );
 
