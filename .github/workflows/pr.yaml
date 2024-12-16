@@ -1,0 +1,111 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Don't want the tests running in parallel
+  cancel-in-progress: true
+
+jobs:
+  app-build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ["8.0.x"]
+
+    steps:
+      - uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Europe/Amsterdam"
+        name: Set Timezone to Europe/Amsterdam
+
+      - uses: actions/checkout@v4
+        name: Checkout repository
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          cache: true
+        name: Install dotnet [${{ matrix.dotnet-version }}] and setup cache
+
+      - run: dotnet restore
+        name: Install application dependencies (dotnet restore)
+
+      - run: dotnet build --configuration Release --no-restore
+        name: Build
+
+      - uses: alsi-lawr/dotnet-test-coverlet@v1
+        with:
+          project: 'EventsHandler/Tests/EventsHandler.Tests/EventsHandler.UnitTests.csproj'
+          threshold: 50
+          dotnet-version: ${{ matrix.dotnet-version }}
+        name: Run unit tests and generate coverage
+        id: run-tests
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ${{ steps.run-tests.outputs.coverage-report-path }}
+        name: Upload coverage report
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: app-build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          TAG=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" EventsHandler/Api/EventsHandler/EventsHandler.csproj)-dev${{ github.run_number }}
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        name: Set tag
+        id: set-tag
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        name: Login at dockerhub
+
+      - uses: docker/setup-qemu-action@v3
+        name: Setup QEMU
+
+      - uses: docker/setup-buildx-action@v3
+        name: Setup buildx
+
+      - uses: docker/build-push-action@v6
+        with:
+          file: EventsHandler/Api/EventsHandler/Dockerfile
+          push: true
+          tags: worthnl/notifynl-omc:${{ env.TAG }}
+        name: Docker build and push ${{ env.TAG }}
+
+    outputs:
+      tag: ${{ steps.set-tag.outputs.tag }}
+
+  helm-release:
+    runs-on: ubuntu-latest
+    needs: docker-build-and-push
+    environment: Test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Worth-NL/notifynl-charts-private
+          ref: main
+          token: ${{ secrets.WORTHNL_PAT }}
+        name: Checkout Worth-NL/notifynl-charts-private
+
+      - uses: bwvolleyball/k8s-toolkit@v1.0.0
+        with:
+          config: ${{ secrets.K8S_CONFIG }}
+
+      - run: |
+          helm version
+          helm upgrade --install notifynl-api notifynl-api/ -n ${{ secrets.K8S_NAMESPACE }} --reuse-values --set dockerTagOverride=${{ needs.docker-build-and-push.outputs.tag }} --wait
+        name: Deploy chart
