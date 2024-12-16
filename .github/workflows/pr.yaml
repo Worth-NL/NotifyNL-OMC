@@ -58,7 +58,7 @@ jobs:
 
       - uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: ${{ steps.run-tests.outputs.coverage-report-path }}
+          filename: ${{ steps.run-tests.outputs.coverage-report-path }}/lcov.cobertura.xml
           format: markdown
           hide_complexity: true
           indicators: true
