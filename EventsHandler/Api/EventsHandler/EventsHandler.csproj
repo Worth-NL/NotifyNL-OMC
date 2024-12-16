@@ -3,11 +3,13 @@
   <PropertyGroup>
     <!-- Project -->
     <AssemblyName>NotifyNL.EventsHandler</AssemblyName>
+    <VersionPrefix>1.12.4</VersionPrefix>
 
     <TargetFramework>net8.0</TargetFramework>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
 
     <!-- Documentation (.xml) -->
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
