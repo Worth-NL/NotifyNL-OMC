@@ -5,6 +5,7 @@ using Common.Versioning.Interfaces;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
+using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
@@ -23,6 +24,17 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "OpenKlant";
+
+        #region Health Check
+        /// <summary>
+        /// Gets the health check.
+        /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <returns>
+        ///   The status of the service.
+        /// </returns>
+        internal Task<HttpRequestResponse> GetHealthCheckAsync(IHttpNetworkService networkService);
+        #endregion
 
         #region Abstract (Party data)
         /// <summary>

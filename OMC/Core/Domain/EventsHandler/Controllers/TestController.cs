@@ -220,6 +220,138 @@ namespace EventsHandler.Controllers
                     this._responder.GetExceptionResponse(exception));
             }
         }
+
+        /// <summary>
+        /// Checks the state of the "Open Klant" Web API service health.
+        /// </summary>
+        [HttpGet]
+        [Route(ZHV + "/OpenKlantHealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]
+        public async Task<IActionResult> OpenKlantHealthCheckAsync()
+        {
+            try
+            {
+                // Request
+                HttpRequestResponse result = await this._queryContext.GetKlantHealthCheckAsync();
+
+                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
+
+                // Response
+                return result.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
+        }
+
+        /// <summary>
+        /// Checks the state of the "Open Besluiten" Web API service health.
+        /// </summary>
+        [HttpGet]
+        [Route(ZHV + "/OpenBesluitenHealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]
+        public async Task<IActionResult> OpenBesluitenHealthCheckAsync()
+        {
+            try
+            {
+                // Request
+                HttpRequestResponse result = await this._queryContext.GetBesluitenHealthCheckAsync();
+
+                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
+
+                // Response
+                return result.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
+        }
+
+        /// <summary>
+        /// Checks the state of the "Open Objecten" Web API service health.
+        /// </summary>
+        [HttpGet]
+        [Route(ZHV + "/OpenObjectenHealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]
+        public async Task<IActionResult> OpenObjectenHealthCheckAsync()
+        {
+            try
+            {
+                // Request
+                HttpRequestResponse result = await this._queryContext.GetObjectenHealthCheckAsync();
+
+                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
+
+                // Response
+                return result.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
+        }
+
+        /// <summary>
+        /// Checks the state of the "Open ObjectTypen" Web API service health.
+        /// </summary>
+        [HttpGet]
+        [Route(ZHV + "/OpenObjectTypenHealthCheck")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [StandardizeApiResponses]
+        public async Task<IActionResult> OpenObjectTypenHealthCheckAsync()
+        {
+            try
+            {
+                // Request
+                HttpRequestResponse result = await this._queryContext.GetObjectTypenHealthCheckAsync();
+
+                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
+
+                // Response
+                return result.IsSuccess
+                    // HttpStatus Code: 202 Accepted
+                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
+                    // HttpStatus Code: 400 Bad Request
+                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
+        }
         #endregion
 
         #region OMC endpoints
