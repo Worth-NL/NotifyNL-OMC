@@ -110,6 +110,7 @@ jobs:
           config: ${{ secrets.K8S_CONFIG }}
 
       - run: helm dependency build
+        working-directory: ${{ github.workspace }}/notifynl-omc
         name: Helm chart dependency build
 
       - run: |
