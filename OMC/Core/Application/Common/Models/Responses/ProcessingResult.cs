@@ -33,9 +33,9 @@ namespace Common.Models.Responses
         /// </summary>
         private ProcessingResult(ProcessingStatus status, string description, BaseEnhancedDetails details)
         {
-            Status = status;
-            Description = description;
-            Details = details;
+            this.Status = status;
+            this.Description = description;
+            this.Details = details;
         }
 
         #region Responses

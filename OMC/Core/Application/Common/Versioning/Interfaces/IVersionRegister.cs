@@ -3,7 +3,7 @@
 namespace Common.Versioning.Interfaces
 {
     /// <summary>
-    /// Manages the information about version of registered service or application component (implementing <see cref="IVersionDetails"/>).
+    /// Manages the information about version of registered service or application component.
     /// </summary>
     public interface IVersionRegister
     {

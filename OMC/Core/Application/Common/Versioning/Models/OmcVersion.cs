@@ -17,6 +17,9 @@ namespace Common.Versioning.Models
         /// Gets the .NET version of the software, accepted by API Controllers, e.g.:
         /// <code>1.101</code>
         /// </summary>
+        /// <remarks>
+        ///   This standard is required by ASP.NET Web API controllers (leading to a potential incorrect format exception).
+        /// </remarks>
         public static string GetNetVersion() => $"{Major}.{Minor}{Patch}";
 
         /// <summary>
