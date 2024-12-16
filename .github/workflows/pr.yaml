@@ -44,7 +44,7 @@ jobs:
 
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
-          project: 'EventsHandler/Tests/EventsHandler.Tests/EventsHandler.UnitTests.csproj'
+          project: 'EventsHandler/Tests/UnitTests/EventsHandler.Tests/EventsHandler.UnitTests.csproj'
           threshold: 50
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
