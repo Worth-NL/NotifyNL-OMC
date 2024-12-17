@@ -42,6 +42,7 @@ namespace WebQueries.Register.v1
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
+        #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
@@ -75,7 +76,7 @@ namespace WebQueries.Register.v1
         {
             return $"{{" +
                      $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," +  // URI
-                     $"\"zaak\":\"{reference.CaseId}\"" +                     // URI
+                     $"\"zaak\":\"{reference.CaseId}\"" +                      // URI
                    $"}}";
         }
 
@@ -89,5 +90,6 @@ namespace WebQueries.Register.v1
                      $"\"gelezen\":false" +
                    $"}}";
         }
+        #endregion
     }
 }
