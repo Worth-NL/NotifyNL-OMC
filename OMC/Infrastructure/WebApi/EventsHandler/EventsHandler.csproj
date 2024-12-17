@@ -47,8 +47,6 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\Infrastructure\Persistence\WebQueries\WebQueries.csproj" />
-    <ProjectReference Include="..\SecretsManager\SecretsManager.csproj" />
-    <ProjectReference Include="..\ZhvModels\ZhvModels\ZhvModels.csproj" />
   </ItemGroup>
 
   <!-- Exposition to internal members -->

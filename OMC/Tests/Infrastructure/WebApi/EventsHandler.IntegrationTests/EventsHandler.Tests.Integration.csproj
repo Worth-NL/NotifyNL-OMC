@@ -32,7 +32,7 @@
 
   <!-- Projects -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
+    <ProjectReference Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\EventsHandler.csproj" />
   </ItemGroup>
 
   <!-- Code coverage -->

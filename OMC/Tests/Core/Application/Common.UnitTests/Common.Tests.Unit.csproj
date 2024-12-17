@@ -37,7 +37,7 @@
 
   <!-- Settings -->
   <ItemGroup>
-    <Content Include="..\..\..\..\Core\Domain\EventsHandler\appsettings.Test.json">
+    <Content Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\appsettings.Test.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

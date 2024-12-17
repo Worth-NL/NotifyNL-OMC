@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["OMC/Core/Domain/EventsHandler/EventsHandler.csproj", "EventsHandler/Core/Domain/EventsHandler/"]
-RUN dotnet restore "OMC/Core/Domain/EventsHandler/EventsHandler.csproj"
+COPY ["OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj", "OMC/Infrastructure/WebApi/EventsHandler/"]
+RUN dotnet restore "OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj"
 COPY . .
-WORKDIR "/src/OMC/Core/Domain/EventsHandler"
+WORKDIR "/src/OMC/Infrastructure/WebApi/EventsHandler"
 RUN dotnet build "EventsHandler.csproj" -c Release -o /app/build
 
 FROM build AS publish
