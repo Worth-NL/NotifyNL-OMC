@@ -34,7 +34,7 @@ namespace EventsHandler.Controllers
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestZHVController(
             IQueryContext queryContext,
-            NotifyResponder responder)
+            GeneralResponder responder)
         {
             this._queryContext = queryContext;
             this._responder = responder;
