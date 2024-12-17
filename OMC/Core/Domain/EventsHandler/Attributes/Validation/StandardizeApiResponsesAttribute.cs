@@ -30,7 +30,7 @@ namespace EventsHandler.Attributes.Validation
         static StandardizeApiResponsesAttribute()
         {
             // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
-            s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(OmcResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(NotificationEventResponder));
             s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(GeneralResponder));
             s_mappedControllersToResponders.TryAdd(typeof(TestNotifyController), typeof(GeneralResponder));
             s_mappedControllersToResponders.TryAdd(typeof(TestZHVController), typeof(GeneralResponder));

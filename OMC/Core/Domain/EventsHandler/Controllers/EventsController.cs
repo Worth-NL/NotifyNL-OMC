@@ -40,7 +40,7 @@ namespace EventsHandler.Controllers
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="omcRegister">The OMC version register.</param>
         /// <param name="zhvRegister">The ZHV version register.</param>
-        public EventsController(IProcessingService processor, OmcResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
+        public EventsController(IProcessingService processor, NotificationEventResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
         {
             this._processor = processor;
             this._responder = responder;
