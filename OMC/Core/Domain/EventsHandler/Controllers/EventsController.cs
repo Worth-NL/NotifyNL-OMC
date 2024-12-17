@@ -40,7 +40,7 @@ namespace EventsHandler.Controllers
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="omcRegister">The OMC version register.</param>
         /// <param name="zhvRegister">The ZHV version register.</param>
-        public EventsController(IProcessingService processor, OmcResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
+        public EventsController(IProcessingService processor, NotificationEventResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
         {
             this._processor = processor;
             this._responder = responder;
@@ -60,7 +60,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [AspNetExceptionsHandler]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(NotificationEvent), typeof(NotificationEventExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted,           Type = typeof(BaseStandardResponseBody))]          // REASON: The notification was sent to "Notify NL" Web API service
@@ -69,7 +69,7 @@ namespace EventsHandler.Controllers
         public async Task<IActionResult> ListenAsync([Required, FromBody] object json)
         {
             /* The validation of JSON payload structure and model-binding of [Required] properties are
-             * happening on the level of [FromBody] annotation. The attribute [StandardizeApiResponses]
+             * happening on the level of [FromBody] annotation. The attribute [AspNetExceptionsHandler]
              * is meant to intercept native framework errors, raised immediately by ASP.NET Core validation
              * mechanism, and to re-pack them ("beautify") into user-friendly standardized API responses */
             try
@@ -96,7 +96,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [AspNetExceptionsHandler]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         public IActionResult Version()

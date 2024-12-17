@@ -23,16 +23,16 @@ using ZhvModels.Serialization.Interfaces;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TResult}"/>
-    public abstract partial class NotifyResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
+    public abstract partial class GeneralResponder : IRespondingService<ProcessingResult>  // NOTE: "partial" is introduced by the new RegEx generation approach
     {
         /// <inheritdoc cref="ISerializationService"/>
         protected ISerializationService Serializer { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyResponder"/> class.
+        /// Initializes a new instance of the <see cref="GeneralResponder"/> class.
         /// </summary>
         /// <param name="serializer">The input de(serializing) service.</param>
-        protected NotifyResponder(ISerializationService serializer)
+        protected GeneralResponder(ISerializationService serializer)
         {
             this.Serializer = serializer;
         }
