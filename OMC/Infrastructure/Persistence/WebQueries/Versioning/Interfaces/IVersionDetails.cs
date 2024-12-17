@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-namespace Common.Versioning.Interfaces
+namespace WebQueries.Versioning.Interfaces
 {
     /// <summary>
     /// Stores information about version of a specific service or component.

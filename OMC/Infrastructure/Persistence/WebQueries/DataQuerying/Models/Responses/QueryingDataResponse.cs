@@ -18,7 +18,7 @@ namespace WebQueries.DataQuerying.Models.Responses
         /// <summary>
         /// The negated status of the <see cref="QueryingDataResponse"/>.
         /// </summary>
-        public bool IsFailure => !IsSuccess;
+        public bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The details about result of <see cref="QueryingDataResponse"/>.
@@ -38,9 +38,9 @@ namespace WebQueries.DataQuerying.Models.Responses
         /// </summary>
         private QueryingDataResponse(bool isSuccess, string message, IReadOnlyCollection<NotifyData> content)
         {
-            IsSuccess = isSuccess;
-            Message = message;
-            Content = content;
+            this.IsSuccess = isSuccess;
+            this.Message = message;
+            this.Content = content;
         }
 
         /// <summary>

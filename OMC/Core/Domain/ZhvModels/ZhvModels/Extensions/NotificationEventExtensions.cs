@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
@@ -37,7 +38,8 @@ namespace ZhvModels.Extensions
 
             // Validation: Wrong type of Channel in notification or the Organization ID is not initialized properly
             return organizationId
-                ?? throw new HttpRequestException(ZhvResources.HttpRequest_ERROR_NoSourceOrganization + $" [{notification.Channel}]");
+                ?? throw new HttpRequestException(
+                    string.Format(ZhvResources.HttpRequest_ERROR_NoSourceOrganization, notification.Channel.GetEnumName()));
         }
     }
 }

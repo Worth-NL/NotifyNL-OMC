@@ -27,7 +27,8 @@ namespace Common.Settings.Extensions
         /// The "SENTRY_DSN" environment variable.
         /// </summary>
         public static string SentryDsn => "SENTRY_DSN";
-            
+
+        // TODO: Most of these environment variable names can be objectified in WebApiConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
         /// </summary>

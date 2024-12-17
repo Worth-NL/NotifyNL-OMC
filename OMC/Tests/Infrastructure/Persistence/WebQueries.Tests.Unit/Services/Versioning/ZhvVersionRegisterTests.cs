@@ -12,6 +12,7 @@ using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.Tests.Unit.Services.Versioning
 {

@@ -3,7 +3,6 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using System.Text.Json;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
 {
@@ -18,7 +17,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
         /// <summary>
         /// Determines which scenario should be used based on the given <typeparamref name="TDeterminant"/>.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="model">The model which will be used to determine the <typeparamref name="TService"/>.</param>
         /// <returns>
         ///   The resolved <typeparamref name="TService"/> strategy.
         /// </returns>
@@ -40,6 +39,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
         /// <exception cref="NotImplementedException">
         ///   The processing strategy could not be determined.
         /// </exception>
-        internal Task<TService> DetermineScenarioAsync(TDeterminant notification);
+        internal Task<TService> DetermineScenarioAsync(TDeterminant model);
     }
 }

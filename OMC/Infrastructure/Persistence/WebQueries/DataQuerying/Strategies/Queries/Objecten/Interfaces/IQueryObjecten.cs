@@ -1,13 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
@@ -107,7 +107,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.Objecten();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.Objecten();
         #endregion
 
         #region Polymorphic (Health Check)

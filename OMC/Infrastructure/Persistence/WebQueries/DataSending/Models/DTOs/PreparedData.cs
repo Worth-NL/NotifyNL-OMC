@@ -21,8 +21,8 @@ namespace WebQueries.DataSending.Models.DTOs
         /// </summary>
         public PreparedData(CommonPartyData party, Uri? caseUri)
         {
-            Party = party;
-            CaseUri = caseUri;
+            this.Party = party;
+            this.CaseUri = caseUri;
         }
     }
 }

@@ -1451,6 +1451,7 @@ namespace Common.Settings.Configuration
             s_cachedGuids.Clear();
             s_cachedUris.Clear();
             s_cachedArrays.Clear();
+
             this.ZGW.Whitelist.Dispose();
         }
         #endregion

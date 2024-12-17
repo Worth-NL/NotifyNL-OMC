@@ -43,6 +43,7 @@ namespace ZhvModels.Serialization
         {
             try
             {
+                // TODO: Asynchronous serialization
                 return JsonSerializer.Deserialize<TModel>($"{json}", s_serializerOptions);
             }
             catch (JsonException exception)
@@ -54,6 +55,7 @@ namespace ZhvModels.Serialization
         /// <inheritdoc cref="ISerializationService.Serialize{TModel}(TModel)"/>
         string ISerializationService.Serialize<TModel>(TModel model)
         {
+            // TODO: Asynchronous serialization
             return JsonSerializer.Serialize(model, s_serializerOptions);
         }
 

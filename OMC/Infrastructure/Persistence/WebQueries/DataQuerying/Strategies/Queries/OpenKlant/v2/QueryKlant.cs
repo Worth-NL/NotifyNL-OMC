@@ -1,13 +1,13 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant.Converters;

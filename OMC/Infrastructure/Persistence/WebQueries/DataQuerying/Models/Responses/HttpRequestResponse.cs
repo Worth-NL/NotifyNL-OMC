@@ -16,7 +16,7 @@ namespace WebQueries.DataQuerying.Models.Responses
         /// <summary>
         /// The negated status of the HTTP Request.
         /// </summary>
-        public bool IsFailure => !IsSuccess;
+        public bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The JSON response from the Web API service.
@@ -28,8 +28,8 @@ namespace WebQueries.DataQuerying.Models.Responses
         /// </summary>
         private HttpRequestResponse(bool isSuccess, string jsonResponse)
         {
-            IsSuccess = isSuccess;
-            JsonResponse = jsonResponse;
+            this.IsSuccess = isSuccess;
+            this.JsonResponse = jsonResponse;
         }
 
         /// <summary>

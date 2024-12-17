@@ -18,7 +18,7 @@ namespace EventsHandler.Services.DataProcessing.Models.Responses
         /// <summary>
         /// The negated status of the <see cref="ProcessingDataResponse"/>.
         /// </summary>
-        internal bool IsFailure => !IsSuccess;
+        internal bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The message (e.g., error or confirmation) captured by the <see cref="ProcessingDataResponse"/>.
@@ -30,8 +30,8 @@ namespace EventsHandler.Services.DataProcessing.Models.Responses
         /// </summary>
         private ProcessingDataResponse(bool isSuccess, string message)
         {
-            IsSuccess = isSuccess;
-            Message = message;
+            this.IsSuccess = isSuccess;
+            this.Message = message;
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -35,16 +35,17 @@ namespace WebQueries.Register.v2
         /// </summary>
         public ContactRegistration(WebApiConfiguration configuration, IQueryContext queryContext)  // Dependency Injection (DI)
         {
-            _configuration = configuration;
-            QueryContext = queryContext;
+            this._configuration = configuration;
+            this.QueryContext = queryContext;
         }
 
+        #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
-            string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;
+            string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
 
             return $"{{" +
@@ -69,9 +70,9 @@ namespace WebQueries.Register.v2
                      $"}}," +
                      $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
                        $"\"objectId\":\"{reference.CaseId}\"," +
-                       $"\"codeObjecttype\":\"{_configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
-                       $"\"codeRegister\":\"{_configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
-                       $"\"codeSoortObjectId\":\"{_configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
+                       $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
+                       $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
+                       $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
                      $"}}" +
                    $"}}";
         }
@@ -90,5 +91,6 @@ namespace WebQueries.Register.v2
                      $"\"initiator\":true" +
                    $"}}";
         }
+        #endregion
     }
 }

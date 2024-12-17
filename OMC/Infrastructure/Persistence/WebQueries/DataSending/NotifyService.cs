@@ -31,35 +31,35 @@ namespace WebQueries.DataSending
         /// </summary>
         public NotifyService(IHttpClientFactory<INotifyClient, string> notifyClientFactory, ISerializationService serializer)  // Dependency Injection (DI)
         {
-            _notifyClientFactory = notifyClientFactory;
-            _serializer = serializer;
+            this._notifyClientFactory = notifyClientFactory;
+            this._serializer = serializer;
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.SendEmailAsync(TPackage)"/>
         async Task<NotifySendResponse> INotifyService<NotifyData>.SendEmailAsync(NotifyData package)
         {
             return await ResolveNotifyClient(package.Reference.Notification)
-                .SendEmailAsync(emailAddress: package.ContactDetails,
-                                templateId: package.TemplateId.ToString(),
+                .SendEmailAsync(emailAddress:    package.ContactDetails,
+                                templateId:      package.TemplateId.ToString(),
                                 personalization: package.Personalization,
-                                reference: await PrepareReferenceAsync(package.Reference));
+                                reference:       await PrepareReferenceAsync(package.Reference));
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.SendSmsAsync(TPackage)"/>
         async Task<NotifySendResponse> INotifyService<NotifyData>.SendSmsAsync(NotifyData package)
         {
             return await ResolveNotifyClient(package.Reference.Notification)
-                .SendSmsAsync(mobileNumber: GetDutchFallbackNumber(package.ContactDetails),
-                              templateId: package.TemplateId.ToString(),
+                .SendSmsAsync(mobileNumber:    GetDutchFallbackNumber(package.ContactDetails),
+                              templateId:      package.TemplateId.ToString(),
                               personalization: package.Personalization,
-                              reference: await PrepareReferenceAsync(package.Reference));
+                              reference:       await PrepareReferenceAsync(package.Reference));
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.GenerateTemplatePreviewAsync(TPackage)"/>
         async Task<NotifyTemplateResponse> INotifyService<NotifyData>.GenerateTemplatePreviewAsync(NotifyData package)
         {
             return await ResolveNotifyClient(package.Reference.Notification)
-                .GenerateTemplatePreviewAsync(templateId: package.TemplateId.ToString(),
+                .GenerateTemplatePreviewAsync(templateId:      package.TemplateId.ToString(),
                                               personalization: package.Personalization);
         }
 
@@ -82,7 +82,7 @@ namespace WebQueries.DataSending
             {
                 lock (s_padlock)
                 {
-                    s_httpClient ??= _notifyClientFactory.GetHttpClient(
+                    s_httpClient ??= this._notifyClientFactory.GetHttpClient(
                         notification.GetOrganizationId());  // NOTE: Used for logging purposes only
                 }
             }
@@ -108,7 +108,7 @@ namespace WebQueries.DataSending
         private async Task<string> PrepareReferenceAsync(NotifyReference reference)
         {
             // Serialize object to string
-            string serializedNotification = _serializer.Serialize(reference);
+            string serializedNotification = this._serializer.Serialize(reference);
 
             // Encode & compress the string
             return await serializedNotification.CompressGZipAsync(CancellationToken.None);
