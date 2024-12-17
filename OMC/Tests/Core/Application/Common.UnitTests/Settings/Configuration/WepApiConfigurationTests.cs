@@ -24,10 +24,10 @@ namespace Common.Tests.Unit.Settings.Configuration
 
         #region AppSettings
         [Test]
-        public void WebApiConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()  // NOTE: This test is checking two things: 1. Loading appsettings.json (from the test file) as expected
+        public void OmcConfiguration_Valid_AppSettings_ReturnsNotDefaultValues()  // NOTE: This test is checking two things: 1. Loading appsettings.json (from the test file) as expected
         {                                                                            //                                         2. Using second LoadingContext by FallbackContextWrapper logic
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -40,10 +40,10 @@ namespace Common.Tests.Unit.Settings.Configuration
         }
 
         [Test]
-        public void WebApiConfiguration_FallbackStrategy_EnvVars_OverloadsAppSettings()
+        public void OmcConfiguration_FallbackStrategy_EnvVars_OverloadsAppSettings()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.EnvVar_Overloading_AppSettings);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.EnvVar_Overloading_AppSettings);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -58,10 +58,10 @@ namespace Common.Tests.Unit.Settings.Configuration
         }
 
         [Test]
-        public void WebApiConfiguration_FallbackStrategy_IfEnvVariableNotPresent_KeepsAppSettings()
+        public void OmcConfiguration_FallbackStrategy_IfEnvVariableNotPresent_KeepsAppSettings()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -78,10 +78,10 @@ namespace Common.Tests.Unit.Settings.Configuration
 
         #region Environment variables
         [Test]
-        public void WebApiConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
+        public void OmcConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -94,11 +94,11 @@ namespace Common.Tests.Unit.Settings.Configuration
         }
 
         [TestCaseSource(nameof(GetTestCases))]
-        public void WebApiConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
+        public void OmcConfiguration_InEnvironmentMode_ForSelectedInvalidVariables_ThrowsExceptions(
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -147,7 +147,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
 
             // Act
             #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
@@ -167,7 +167,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
@@ -187,7 +187,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
         {
             // Arrange
-            using OmcConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
@@ -204,7 +204,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
         {
             // Arrange
-            using OmcConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>

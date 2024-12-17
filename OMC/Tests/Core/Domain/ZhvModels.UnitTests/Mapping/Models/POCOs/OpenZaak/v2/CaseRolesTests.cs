@@ -17,7 +17,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
+            this._testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
         }
 
         [OneTimeTearDown]
@@ -31,7 +31,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
         public void Citizen_Method_ForMissingResults_ThrowsHttpRequestException()
         {
             // Arrange
-            OmcConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
+            OmcConfiguration testConfiguration = ConfigurationHandler.GetOmcConfiguration();
 
             var caseRoles = new CaseRoles();  // Empty "Results" inside
 

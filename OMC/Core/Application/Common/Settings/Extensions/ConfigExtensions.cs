@@ -28,7 +28,7 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string SentryDsn => "SENTRY_DSN";
 
-        // TODO: Most of these environment variable names can be objectified in WebApiConfiguration
+        // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
         /// </summary>

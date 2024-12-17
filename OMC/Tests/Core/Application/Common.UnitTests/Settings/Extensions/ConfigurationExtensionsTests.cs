@@ -20,7 +20,7 @@ namespace Common.Tests.Unit.Settings.Extensions
         public void InitializeTests()
         {
             this._appSettingsConfiguration = ConfigurationHandler.GetConfiguration();
-            this._omcConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            this._omcConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
         }
 
         [OneTimeTearDown]
