@@ -90,7 +90,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Utilities
                 SigningCredentials = new SigningCredentials(securityKey, securityAlgorithm)
             };
 
-            // TODO: Audience should be skipped because "OpenKlant" is not yet ready to receive it
+            // TODO: Audience should be skipped because "OpenKlant" v1 is not yet ready to receive it
             if (!string.IsNullOrWhiteSpace(audience))
             {
                 tokenDescriptor.Audience = audience;  // "aud"
