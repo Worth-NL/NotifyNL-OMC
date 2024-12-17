@@ -40,12 +40,16 @@ namespace EventsHandler.Controllers
             this._responder = responder;
         }
 
-        #region ZHV endpoints
+        #region ZHV Test endpoints
+        private const string Test = nameof(Test);
+        private const string ZHV = nameof(ZHV);
+        private const string UrlStart = $"/{Test}/{ZHV}/";
+
         /// <summary>
         /// Checks the state of the "Open Zaak" Web API service health.
         /// </summary>
         [HttpGet]
-        [Route("OpenZaakHealthCheck")]
+        [Route($"{UrlStart}OpenZaakHealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -59,7 +63,7 @@ namespace EventsHandler.Controllers
         /// Checks the state of the "Open Klant" Web API service health.
         /// </summary>
         [HttpGet]
-        [Route("OpenKlantHealthCheck")]
+        [Route($"{UrlStart}OpenKlantHealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -73,7 +77,7 @@ namespace EventsHandler.Controllers
         /// Checks the state of the "Open Besluiten" Web API service health.
         /// </summary>
         [HttpGet]
-        [Route("OpenBesluitenHealthCheck")]
+        [Route($"{UrlStart}OpenBesluitenHealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -87,7 +91,7 @@ namespace EventsHandler.Controllers
         /// Checks the state of the "Open Objecten" Web API service health.
         /// </summary>
         [HttpGet]
-        [Route("OpenObjectenHealthCheck")]
+        [Route($"{UrlStart}OpenObjectenHealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -101,7 +105,7 @@ namespace EventsHandler.Controllers
         /// Checks the state of the "Open ObjectTypen" Web API service health.
         /// </summary>
         [HttpGet]
-        [Route("OpenObjectTypenHealthCheck")]
+        [Route($"{UrlStart}OpenObjectTypenHealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience

@@ -38,12 +38,16 @@ namespace EventsHandler.Controllers
             this._responder = responder;
         }
 
-        #region OMC endpoints
+        #region OMC Test endpoints
+        private const string Test = nameof(Test);
+        private const string OMC = nameof(OMC);
+        private const string UrlStart = $"/{Test}/{OMC}/";
+
         /// <summary>
         /// Tests if all the configurations (from "appsettings.json" and environment variables) are present and contains non-empty values (if required).
         /// </summary>
         [HttpGet]
-        [Route("TestConfigs")]
+        [Route($"{UrlStart}TestConfigs")]
         // Security
         [ApiAuthorization]
         // User experience
