@@ -260,19 +260,19 @@ namespace Common.Tests.Utilities._TestHelpers
         // NOTE: IServiceProvider => WebApiConfiguration
 
         #region Web API Configuration
-        public static WebApiConfiguration GetWebApiConfiguration()
+        public static OmcConfiguration GetWebApiConfiguration()
         {
             // Web API Configuration
             return GetWebApiConfiguration([]);
         }
 
-        private static WebApiConfiguration GetWebApiConfiguration(ServiceCollection serviceCollection)
+        private static OmcConfiguration GetWebApiConfiguration(ServiceCollection serviceCollection)
         {
             // Web API Configuration
-            return new WebApiConfiguration(GetServiceProvider(serviceCollection));
+            return new OmcConfiguration(GetServiceProvider(serviceCollection));
         }
 
-        public static WebApiConfiguration GetWebApiConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
+        public static OmcConfiguration GetWebApiConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
             => s_presetConfigurations[testLoaderTypes];
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace Common.Tests.Utilities._TestHelpers
             EnvVar_Overloading_AppSettings
         }
 
-        private static readonly Dictionary<TestLoaderTypesSetup, WebApiConfiguration> s_presetConfigurations = new()
+        private static readonly Dictionary<TestLoaderTypesSetup, OmcConfiguration> s_presetConfigurations = new()
         {
             { TestLoaderTypesSetup.ValidAppSettings,               GetWebApiConfiguration(TestLoaderTypesSetup.ValidAppSettings)               },
             { TestLoaderTypesSetup.InvalidAppSettings,             GetWebApiConfiguration(TestLoaderTypesSetup.InvalidAppSettings)             },
@@ -365,7 +365,7 @@ namespace Common.Tests.Utilities._TestHelpers
             { TestLoaderTypesSetup.EnvVar_Overloading_AppSettings, GetWebApiConfiguration(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings) }
         };
 
-        private static WebApiConfiguration GetWebApiConfiguration(TestLoaderTypesSetup loaderType)
+        private static OmcConfiguration GetWebApiConfiguration(TestLoaderTypesSetup loaderType)
         {
             // IServiceCollection
             var serviceCollection = new ServiceCollection();

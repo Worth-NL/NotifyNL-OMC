@@ -30,7 +30,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// Initializes a new instance of the <see cref="CaseClosedScenario"/> class.
         /// </summary>
         public CaseClosedScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)

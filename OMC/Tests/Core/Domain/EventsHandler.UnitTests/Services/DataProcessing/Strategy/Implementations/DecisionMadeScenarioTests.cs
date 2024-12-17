@@ -36,7 +36,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
         private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
-        private WebApiConfiguration _testConfiguration = null!;
+        private OmcConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()

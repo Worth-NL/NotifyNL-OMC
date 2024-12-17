@@ -46,7 +46,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// Initializes a new instance of the <see cref="DecisionMadeScenario"/> class.
         /// </summary>
         public DecisionMadeScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)

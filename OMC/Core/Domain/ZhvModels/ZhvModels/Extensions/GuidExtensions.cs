@@ -14,7 +14,7 @@ namespace ZhvModels.Extensions
     {
         /// <summary>
         /// Restores <see cref="Case.Uri"/> based on provided <see cref="Case"/> ID in <see cref="Guid"/> format
-        /// and the respective domain retrieved from <see cref="WebApiConfiguration"/>.
+        /// and the respective domain retrieved from <see cref="OmcConfiguration"/>.
         /// </summary>
         /// <param name="caseId">The <see cref="Case"/> ID.</param>
         /// <returns>
@@ -34,7 +34,7 @@ namespace ZhvModels.Extensions
         
         /// <summary>
         /// Restores <see cref="CommonPartyData.Uri"/> based on provided <see cref="CommonPartyData"/> ID in <see cref="Guid"/> format
-        /// and the respective domain retrieved from <see cref="WebApiConfiguration"/>.
+        /// and the respective domain retrieved from <see cref="OmcConfiguration"/>.
         /// </summary>
         /// <param name="partyId">The <see cref="CommonPartyData"/> ID.</param>
         /// <returns>

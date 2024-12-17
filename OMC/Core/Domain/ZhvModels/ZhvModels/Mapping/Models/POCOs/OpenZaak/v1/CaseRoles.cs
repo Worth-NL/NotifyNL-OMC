@@ -49,7 +49,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.v1
         /// </value>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="KeyNotFoundException"/>
-        public readonly CaseRole CaseRole(WebApiConfiguration configuration)
+        public readonly CaseRole CaseRole(OmcConfiguration configuration)
         {
             if (this.Results.IsEmpty())
             {

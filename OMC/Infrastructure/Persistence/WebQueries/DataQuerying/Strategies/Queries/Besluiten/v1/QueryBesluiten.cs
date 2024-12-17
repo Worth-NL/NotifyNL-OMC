@@ -14,7 +14,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.v1
     public sealed class QueryBesluiten : IQueryBesluiten
     {
         /// <inheritdoc cref="IQueryBesluiten.Configuration"/>
-        WebApiConfiguration IQueryBesluiten.Configuration { get; set; } = null!;
+        OmcConfiguration IQueryBesluiten.Configuration { get; set; } = null!;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Version => "1.1.0";
@@ -22,7 +22,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBesluiten"/> class.
         /// </summary>
-        public QueryBesluiten(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public QueryBesluiten(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryBesluiten)this).Configuration = configuration;
         }

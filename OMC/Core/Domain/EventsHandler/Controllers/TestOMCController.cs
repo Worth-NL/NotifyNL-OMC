@@ -22,7 +22,7 @@ namespace EventsHandler.Controllers
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestOMCController : OmcController  // Swagger UI requires this class to be public
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace EventsHandler.Controllers
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestOMCController(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             GeneralResponder responder)
         {
             this._configuration = configuration;
@@ -58,8 +58,8 @@ namespace EventsHandler.Controllers
             {
                 try
                 {
-                    _ = WebApiConfiguration.TestAppSettingsConfigs(this._configuration);
-                    _ = WebApiConfiguration.TestEnvVariablesConfigs(this._configuration);
+                    _ = OmcConfiguration.TestAppSettingsConfigs(this._configuration);
+                    _ = OmcConfiguration.TestEnvVariablesConfigs(this._configuration);
 
                     // HttpStatus Code: 202 Accepted
                     return LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(ApiResources.Endpoint_Test_OMC_TestConfigs_SUCCESS_ConfigurationsValid)));

@@ -28,7 +28,7 @@ namespace Common.Settings.Configuration
     ///   </list>
     /// </para>
     /// </summary>
-    public sealed record WebApiConfiguration : IDisposable
+    public sealed record OmcConfiguration : IDisposable
     {
         #region Dictionaries (cached values)
         private static readonly ConcurrentDictionary<
@@ -80,9 +80,9 @@ namespace Common.Settings.Configuration
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebApiConfiguration"/> class.
+        /// Initializes a new instance of the <see cref="OmcConfiguration"/> class.
         /// </summary>
-        public WebApiConfiguration(IServiceProvider serviceProvider)  // NOTE: The only constructor to be used with Dependency Injection
+        public OmcConfiguration(IServiceProvider serviceProvider)  // NOTE: The only constructor to be used with Dependency Injection
         {
             // Recreate the structure of settings from "appsettings.json" configuration file or from Environment Variables
             this.AppSettings = new AppSettingsComponent(serviceProvider, nameof(AppSettings));
@@ -519,7 +519,7 @@ namespace Common.Settings.Configuration
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
-            public ZgwComponent(IServiceProvider serviceProvider, string parentName, WebApiConfiguration configuration)
+            public ZgwComponent(IServiceProvider serviceProvider, string parentName, OmcConfiguration configuration)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
@@ -545,7 +545,7 @@ namespace Common.Settings.Configuration
                 /// <summary>
                 /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
                 /// </summary>
-                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath, OmcConfiguration configuration)
                 {
                     string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
 
@@ -608,12 +608,12 @@ namespace Common.Settings.Configuration
                 {
                     private readonly ILoadersContext _loadersContext;
                     private readonly string _currentPath;
-                    private readonly WebApiConfiguration _configuration;
+                    private readonly OmcConfiguration _configuration;
 
                     /// <summary>
                     /// Initializes a new instance of the <see cref="KeyComponent"/> class.
                     /// </summary>
-                    public KeyComponent(ILoadersContext loadersContext, string parentPath, WebApiConfiguration configuration)
+                    public KeyComponent(ILoadersContext loadersContext, string parentPath, OmcConfiguration configuration)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Key));
@@ -1323,12 +1323,12 @@ namespace Common.Settings.Configuration
         /// <summary>
         /// Test if all "appsettings.json" configurations are present.
         /// </summary>
-        public static string TestAppSettingsConfigs(WebApiConfiguration webApiConfiguration)
+        public static string TestAppSettingsConfigs(OmcConfiguration omcConfiguration)
         {
             int counter = 0;
             List<string> methodNames = [];
 
-            var appSettings = webApiConfiguration.AppSettings;
+            var appSettings = omcConfiguration.AppSettings;
 
             // AppSettings | Network
             TryGetConfigurations(ref counter, methodNames, appSettings.Network);
@@ -1336,7 +1336,7 @@ namespace Common.Settings.Configuration
             // AppSettings | Encryption
             TryGetConfigurations(ref counter, methodNames, appSettings.Encryption);
 
-            var variablesSettings = webApiConfiguration.AppSettings.Variables;
+            var variablesSettings = omcConfiguration.AppSettings.Variables;
 
             // AppSettings | Variables
             TryGetConfigurations(ref counter, methodNames, variablesSettings, isRecursionEnabled: false);  // NOTE: Variables contains properties and other nodes. Disabling recursion will display only those separate properties without nods
@@ -1358,12 +1358,12 @@ namespace Common.Settings.Configuration
         /// <summary>
         /// Test if all environment variables configurations are present.
         /// </summary>
-        public static string TestEnvVariablesConfigs(WebApiConfiguration webApiConfiguration)
+        public static string TestEnvVariablesConfigs(OmcConfiguration configuration)
         {
             int counter = 0;
             List<string> methodNames = [];
             
-            var omcConfiguration = webApiConfiguration.OMC;
+            var omcConfiguration = configuration.OMC;
 
             // OMC | Authorization | JWT
             TryGetConfigurations(ref counter, methodNames, omcConfiguration.Auth.JWT);
@@ -1371,7 +1371,7 @@ namespace Common.Settings.Configuration
             // OMC | Features
             TryGetConfigurations(ref counter, methodNames, omcConfiguration.Feature);
                 
-            var zgwConfiguration = webApiConfiguration.ZGW;
+            var zgwConfiguration = configuration.ZGW;
 
             // ZGW | Authorization | JWT
             TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Auth.JWT);
@@ -1388,7 +1388,7 @@ namespace Common.Settings.Configuration
             // ZGW | Variables | Objecten
             TryGetConfigurations(ref counter, methodNames, zgwConfiguration.Variable.ObjectType);
                 
-            var notifyConfiguration = webApiConfiguration.Notify;
+            var notifyConfiguration = configuration.Notify;
 
             // Notify | API
             TryGetConfigurations(ref counter, methodNames, notifyConfiguration.API);

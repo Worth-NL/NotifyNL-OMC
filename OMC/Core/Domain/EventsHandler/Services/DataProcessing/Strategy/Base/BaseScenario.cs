@@ -31,8 +31,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
     /// <seealso cref="INotifyScenario"/>
     internal abstract class BaseScenario : INotifyScenario
     {
-        /// <inheritdoc cref="WebApiConfiguration"/>
-        protected WebApiConfiguration Configuration { get; }
+        /// <inheritdoc cref="OmcConfiguration"/>
+        protected OmcConfiguration Configuration { get; }
 
         /// <inheritdoc cref="IDataQueryService{TModel}"/>
         protected IDataQueryService<NotificationEvent> DataQuery { get; }
@@ -44,7 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
         protected BaseScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
         {
@@ -84,7 +84,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
         #region Parent (Validation)
         /// <summary>
-        /// Validates whether the case identifier is whitelisted in <see cref="Common.Settings.Configuration.WebApiConfiguration"/> settings.
+        /// Validates whether the case identifier is whitelisted in <see cref="OmcConfiguration"/> settings.
         /// </summary>
         /// <param name="isCaseIdWhitelistedValidation">The scenario-specific validation delegate to be invoked.</param>
         /// <param name="caseId">The case identifier to be checked.</param>

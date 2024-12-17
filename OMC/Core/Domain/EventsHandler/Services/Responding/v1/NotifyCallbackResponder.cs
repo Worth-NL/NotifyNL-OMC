@@ -23,7 +23,7 @@ namespace EventsHandler.Services.Responding.v1
     /// <seealso cref="IRespondingService{TResult}"/>
     internal sealed class NotifyCallbackResponder : GeneralResponder
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
 
@@ -33,7 +33,7 @@ namespace EventsHandler.Services.Responding.v1
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        public NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
+        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
@@ -101,7 +101,7 @@ namespace EventsHandler.Services.Responding.v1
         }
 
         private static string DetermineUserMessageBody(
-            WebApiConfiguration configuration, FeedbackTypes feedbackType, NotifyMethods notificationMethod)
+            OmcConfiguration configuration, FeedbackTypes feedbackType, NotifyMethods notificationMethod)
         {
             return feedbackType switch
             {

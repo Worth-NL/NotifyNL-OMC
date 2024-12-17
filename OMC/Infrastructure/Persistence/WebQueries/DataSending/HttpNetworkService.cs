@@ -23,7 +23,7 @@ namespace WebQueries.DataSending
     {
         private static readonly object s_padlock = new();
 
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
         private readonly EncryptionContext _encryptionContext;
         private readonly SemaphoreSlim _semaphore;
 
@@ -38,7 +38,7 @@ namespace WebQueries.DataSending
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpNetworkService"/> class.
         /// </summary>
-        public HttpNetworkService(WebApiConfiguration configuration, EncryptionContext encryptionContext,
+        public HttpNetworkService(OmcConfiguration configuration, EncryptionContext encryptionContext,
                                   IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
@@ -173,7 +173,7 @@ namespace WebQueries.DataSending
         /// Gets static token for "Headers" part of the HTTP Request.
         /// </summary>
         /// <remarks>
-        /// The token will be got from a specific setting defined (per API service) in <see cref="WebApiConfiguration"/>.
+        /// The token will be got from a specific setting defined (per API service) in <see cref="OmcConfiguration"/>.
         /// </remarks>
         /// <returns>
         /// The Key and Value of the "Header" used for authorization purpose.

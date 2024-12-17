@@ -29,7 +29,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// Initializes a new instance of the <see cref="MessageReceivedScenario"/> class.
         /// </summary>
         public MessageReceivedScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)
