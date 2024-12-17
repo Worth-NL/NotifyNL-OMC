@@ -71,7 +71,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public async Task<IActionResult> HealthCheckAsync()
         {
             try
@@ -125,7 +125,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -165,7 +165,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -214,7 +214,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(

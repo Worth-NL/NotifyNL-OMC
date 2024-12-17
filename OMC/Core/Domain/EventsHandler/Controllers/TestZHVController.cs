@@ -53,7 +53,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public Task<IActionResult> OpenZaakHealthCheckAsync()
         {
             return ExecuteHealthCheckAsync(() => this._queryContext.GetZaakHealthCheckAsync());
@@ -67,7 +67,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public Task<IActionResult> OpenKlantHealthCheckAsync()
         {
             return ExecuteHealthCheckAsync(() => this._queryContext.GetKlantHealthCheckAsync());
@@ -81,7 +81,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public Task<IActionResult> OpenBesluitenHealthCheckAsync()
         {
             return ExecuteHealthCheckAsync(() => this._queryContext.GetBesluitenHealthCheckAsync());
@@ -95,7 +95,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public Task<IActionResult> OpenObjectenHealthCheckAsync()
         {
             return ExecuteHealthCheckAsync(() => this._queryContext.GetObjectenHealthCheckAsync());
@@ -109,7 +109,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public Task<IActionResult> OpenObjectTypenHealthCheckAsync()
         {
             return ExecuteHealthCheckAsync(() => this._queryContext.GetObjectTypenHealthCheckAsync());
