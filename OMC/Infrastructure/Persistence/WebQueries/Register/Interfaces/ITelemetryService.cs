@@ -5,6 +5,7 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Properties;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;

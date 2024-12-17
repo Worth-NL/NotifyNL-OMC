@@ -6,7 +6,7 @@ using EventsHandler.Services.Responding.Enums;
 namespace EventsHandler.Services.Responding.Results.Builder.Interface
 {
     /// <summary>
-    /// The builder to create specialized components:
+    /// The builder to create a specific details (enhanced or simple).
     /// </summary>
     public interface IDetailsBuilder
     {

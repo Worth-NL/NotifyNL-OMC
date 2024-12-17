@@ -8,6 +8,7 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;

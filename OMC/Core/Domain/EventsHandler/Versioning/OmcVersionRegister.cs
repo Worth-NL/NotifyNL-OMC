@@ -3,8 +3,8 @@
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using Common.Versioning.Interfaces;
+using Common.Versioning.Models;
 using EventsHandler.Properties;
-using OmcVersion = Common.Versioning.Models.OmcVersion;
 
 namespace EventsHandler.Versioning
 {
@@ -18,7 +18,7 @@ namespace EventsHandler.Versioning
         /// </summary>
         public OmcVersionRegister(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
-            _configuration = configuration;
+            this._configuration = configuration;
         }
 
         /// <inheritdoc cref="IVersionRegister.GetVersion(string)"/>
@@ -32,7 +32,7 @@ namespace EventsHandler.Versioning
                 /* {0} */ ApiResources.Application_Name,
                 /* {1} */ OmcVersion.GetExpandedVersion(),
                 /* {2} */ Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment),
-                /* {3} */ _configuration.OMC.Feature.Workflow_Version(),
+                /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
  
                 // ZHV (Open Services)
                 /* {4} */ componentsVersions);

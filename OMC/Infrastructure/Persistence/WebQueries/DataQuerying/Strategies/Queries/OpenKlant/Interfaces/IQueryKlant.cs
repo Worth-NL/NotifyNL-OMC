@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
