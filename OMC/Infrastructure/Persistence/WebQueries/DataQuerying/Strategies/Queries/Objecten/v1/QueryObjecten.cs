@@ -14,7 +14,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.v1
     public sealed class QueryObjecten : IQueryObjecten
     {
         /// <inheritdoc cref="IQueryObjecten.Configuration"/>
-        WebApiConfiguration IQueryObjecten.Configuration { get; set; } = null!;
+        OmcConfiguration IQueryObjecten.Configuration { get; set; } = null!;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Version => "2.3.1";
@@ -22,7 +22,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryObjecten"/> class.
         /// </summary>
-        public QueryObjecten(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public QueryObjecten(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryObjecten)this).Configuration = configuration;
         }

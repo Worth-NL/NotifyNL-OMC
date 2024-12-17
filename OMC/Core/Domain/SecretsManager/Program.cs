@@ -65,7 +65,7 @@ namespace SecretsManager
             return builder.ConfigureServices((builderContext, services) =>
             {
                 // Configurations
-                services.AddSingleton<WebApiConfiguration>();
+                services.AddSingleton<OmcConfiguration>();
                 services.RegisterLoadingStrategies();
 
                 // JWT generation
@@ -160,7 +160,7 @@ namespace SecretsManager
         private static void GenerateJwtToken(IHost host, DateTime validDateTime)
         {
             // Resolve dependencies
-            WebApiConfiguration configuration = host.Services.GetRequiredService<WebApiConfiguration>();
+            OmcConfiguration configuration = host.Services.GetRequiredService<OmcConfiguration>();
             EncryptionContext context = host.Services.GetRequiredService<EncryptionContext>();
 
             // Get security key

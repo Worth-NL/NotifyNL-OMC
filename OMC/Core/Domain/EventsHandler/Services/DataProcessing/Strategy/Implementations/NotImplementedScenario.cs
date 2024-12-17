@@ -23,7 +23,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// Initializes a new instance of the <see cref="BaseScenario"/> class.
         /// </summary>
         public NotImplementedScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)

@@ -47,7 +47,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// </returns>
         /// <exception cref="HttpRequestException"/>
         public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
-            Party(WebApiConfiguration configuration)
+            Party(OmcConfiguration configuration)
         {
             // Validation #1: Results
             if (this.Results.IsEmpty())
@@ -85,9 +85,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                 fallbackEmailAddress, fallbackPhoneNumber);
         }
 
-        /// <inheritdoc cref="Party(WebApiConfiguration)"/>
+        /// <inheritdoc cref="Party(OmcConfiguration)"/>
         public static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
-            Party(WebApiConfiguration configuration, PartyResult partyResult)
+            Party(OmcConfiguration configuration, PartyResult partyResult)
         {
             // Validation #1: Addresses
             if (partyResult.Expansion.DigitalAddresses.IsEmpty())
@@ -117,7 +117,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
 
         #region Helper methods
         // NOTE: Checks preferred contact address
-        private static bool IsPreferredFound(WebApiConfiguration configuration, PartyResult party,
+        private static bool IsPreferredFound(OmcConfiguration configuration, PartyResult party,
             ref PartyResult fallbackEmailOwningParty,
             ref PartyResult fallbackPhoneOwningParty,
             ref DistributionChannels distributionChannel,
@@ -215,7 +215,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// matching to the predefined names of digital address types.
         /// </summary>
         private static DistributionChannels DetermineDistributionChannel(
-            DigitalAddressLong digitalAddress, WebApiConfiguration configuration)
+            DigitalAddressLong digitalAddress, OmcConfiguration configuration)
         {
             return digitalAddress.Type == configuration.AppSettings.Variables.EmailGenericDescription()
                 ? DistributionChannels.Email

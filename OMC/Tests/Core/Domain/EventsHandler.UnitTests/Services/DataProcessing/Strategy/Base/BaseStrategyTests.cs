@@ -32,7 +32,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
         private readonly Mock<IDataQueryService<NotificationEvent>> _mockedQueryService = new(MockBehavior.Strict);
         private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
-        private WebApiConfiguration _testConfiguration = null!;
+        private OmcConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()
@@ -448,7 +448,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
         }
 
-        private static Guid DetermineTemplateId<TStrategy>(TStrategy strategy, NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        private static Guid DetermineTemplateId<TStrategy>(TStrategy strategy, NotifyMethods notifyMethod, OmcConfiguration configuration)
             where TStrategy : Type
         {
             return strategy.Name switch

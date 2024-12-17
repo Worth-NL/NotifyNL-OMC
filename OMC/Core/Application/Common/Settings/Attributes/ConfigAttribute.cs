@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Common.Settings.Attributes
 {
     /// <summary>
-    /// The attribute used to mark <see cref="WebApiConfiguration"/> configuration properties.
+    /// The attribute used to mark <see cref="OmcConfiguration"/> configuration properties.
     /// </summary>
     /// <seealso cref="Attribute" />
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]

@@ -14,7 +14,7 @@ namespace Common.Tests.Unit.Settings.Configuration
     [TestFixture]
     public sealed class WepApiConfigurationTests
     {
-        private static WebApiConfiguration? s_testConfiguration;
+        private static OmcConfiguration? s_testConfiguration;
 
         [TearDown]
         public void TestCleanup()
@@ -33,7 +33,7 @@ namespace Common.Tests.Unit.Settings.Configuration
             Assert.Multiple(() =>
             {
                 // NOTE: Exception would occur if the configurations are invalid
-                string result = WebApiConfiguration.TestAppSettingsConfigs(s_testConfiguration);
+                string result = OmcConfiguration.TestAppSettingsConfigs(s_testConfiguration);
                 
                 TestContext.Out.WriteLine(result);
             });
@@ -87,7 +87,7 @@ namespace Common.Tests.Unit.Settings.Configuration
             Assert.Multiple(() =>
             {
                 // NOTE: Exception would occur if the configurations are invalid
-                string result = WebApiConfiguration.TestEnvVariablesConfigs(s_testConfiguration);
+                string result = OmcConfiguration.TestEnvVariablesConfigs(s_testConfiguration);
                 
                 TestContext.Out.WriteLine(result);
             });
@@ -187,7 +187,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
         {
             // Arrange
-            using WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            using OmcConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
 
             // Act
             string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
@@ -204,7 +204,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
         {
             // Arrange
-            using WebApiConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
+            using OmcConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -229,7 +229,7 @@ namespace Common.Tests.Unit.Settings.Configuration
             ILoadersContext environmentContext = ConfigurationHandler.GetLoadersContext(LoaderTypes.Environment);
 
             // Act
-            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+            OmcConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
 
             // Assert
             Assert.Multiple(() =>
@@ -251,7 +251,7 @@ namespace Common.Tests.Unit.Settings.Configuration
 
             const string testExtensionNode = "Extra";
 
-            WebApiConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
+            OmcConfiguration.FallbackContextWrapper contextWrapper = new(appSettingsContext, environmentContext, TestParentNode, TestChildNode);
             
             // Act
             contextWrapper = contextWrapper.Update(testExtensionNode);

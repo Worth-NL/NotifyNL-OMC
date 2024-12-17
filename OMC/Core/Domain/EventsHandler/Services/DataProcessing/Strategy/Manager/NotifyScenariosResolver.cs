@@ -20,7 +20,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
     /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}"/>
     internal sealed class NotifyScenariosResolver : IScenariosResolver<INotifyScenario, NotificationEvent>
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
@@ -28,7 +28,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
         /// </summary>
         public NotifyScenariosResolver(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IServiceProvider serviceProvider,
             IDataQueryService<NotificationEvent> dataQuery)  // Dependency Injection (DI)
         {

@@ -19,7 +19,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
         /// </summary>
         protected BaseCaseScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)

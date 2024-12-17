@@ -16,8 +16,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
     /// <seealso cref="IDomain"/>
     public interface IQueryObjectTypen : IVersionDetails, IDomain
     {
-        /// <inheritdoc cref="WebApiConfiguration"/>
-        protected internal WebApiConfiguration Configuration { get; set; }
+        /// <inheritdoc cref="OmcConfiguration"/>
+        protected internal OmcConfiguration Configuration { get; set; }
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
         string IVersionDetails.Name => "ObjectTypen";

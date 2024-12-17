@@ -59,7 +59,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         public void TryGetDataAsync_NotAllowedMessages_ThrowsAbortedNotifyingException()
         {
             // Arrange
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: false);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: false);
             INotifyScenario scenario = ArrangeMessageScenario_TryGetData(configuration);
 
             // Act & Assert
@@ -85,7 +85,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             DistributionChannels invalidDistributionChannel)
         {
             // Arrange
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_TryGetData(configuration, invalidDistributionChannel);
 
             // Act
@@ -109,7 +109,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
         {
             // Arrange
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_TryGetData(configuration, testDistributionChannel);
 
             // Act
@@ -160,7 +160,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         public async Task ProcessDataAsync_EmptyNotifyData_ReturnsFailure()
         {
             // Arrange
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
                 configuration,
                 isSendingSuccessful: true,
@@ -186,7 +186,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             // Arrange
             NotifyData testData = new(invalidNotifyMethod);
 
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
                 configuration,
                 isSendingSuccessful: true,
@@ -213,7 +213,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             // Arrange
             NotifyData testData = new(testNotifyMethod);
             
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
                 configuration,
                 isSendingSuccessful: false,
@@ -241,7 +241,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             // Arrange
             NotifyData testData = new(testNotifyMethod);
             
-            using WebApiConfiguration configuration = GetConfiguration(isMessageAllowed: true);
+            using OmcConfiguration configuration = GetConfiguration(isMessageAllowed: true);
             INotifyScenario scenario = ArrangeMessageScenario_ProcessData(
                 configuration,
                 isSendingSuccessful: true,
@@ -263,7 +263,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         #endregion
 
         #region Setup
-        private static WebApiConfiguration GetConfiguration(bool isMessageAllowed)
+        private static OmcConfiguration GetConfiguration(bool isMessageAllowed)
         {
             return isMessageAllowed
                 ? ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1)
@@ -271,7 +271,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         }
 
         private MessageReceivedScenario ArrangeMessageScenario_TryGetData(
-            WebApiConfiguration configuration, DistributionChannels testDistributionChannel = DistributionChannels.Email)
+            OmcConfiguration configuration, DistributionChannels testDistributionChannel = DistributionChannels.Email)
         {
             // IQueryContext
             this._mockedQueryContext
@@ -304,7 +304,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
         private TaskAssignedScenario ArrangeMessageScenario_ProcessData(
-            WebApiConfiguration configuration, bool isSendingSuccessful,
+            OmcConfiguration configuration, bool isSendingSuccessful,
             NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
         {
             // IDataQueryService
@@ -324,7 +324,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             return new TaskAssignedScenario(configuration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
-        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, OmcConfiguration configuration)
         {
             return notifyMethod switch
             {

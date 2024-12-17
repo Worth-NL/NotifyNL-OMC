@@ -30,7 +30,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
         private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
         private Mock<INotifyService<NotifyData>> _mockedNotifyService = null!;
 
-        private WebApiConfiguration _webApiConfiguration = null!;
+        private OmcConfiguration _omcConfiguration = null!;
         private ServiceProvider _serviceProvider = null!;
 
         [OneTimeSetUp]
@@ -48,16 +48,16 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
 
-            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
+            this._omcConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
 
-            serviceCollection.AddSingleton(this._webApiConfiguration);
-            serviceCollection.AddSingleton(new CaseCreatedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new CaseClosedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new TaskAssignedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new DecisionMadeScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new MessageReceivedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
-            serviceCollection.AddSingleton(new NotImplementedScenario(this._webApiConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(this._omcConfiguration);
+            serviceCollection.AddSingleton(new CaseCreatedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseStatusUpdatedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new CaseClosedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new TaskAssignedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new DecisionMadeScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new MessageReceivedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new NotImplementedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
             this._serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -72,7 +72,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
         [OneTimeTearDown]
         public void TestsCleanup()
         {
-            this._webApiConfiguration.Dispose();
+            this._omcConfiguration.Dispose();
             this._serviceProvider.Dispose();
         }
 
@@ -266,7 +266,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
 
         private NotifyScenariosResolver GetScenariosResolver()
         {
-            return new NotifyScenariosResolver(this._webApiConfiguration, this._serviceProvider, this._mockedDataQuery.Object);
+            return new NotifyScenariosResolver(this._omcConfiguration, this._serviceProvider, this._mockedDataQuery.Object);
         }
         #endregion
     }

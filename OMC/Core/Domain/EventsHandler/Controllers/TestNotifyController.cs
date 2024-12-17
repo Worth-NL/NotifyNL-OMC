@@ -34,7 +34,7 @@ namespace EventsHandler.Controllers
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestNotifyController : OmcController  // Swagger UI requires this class to be public
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
         private readonly ISerializationService _serializer;
         private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult> _responder;
@@ -47,7 +47,7 @@ namespace EventsHandler.Controllers
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestNotifyController(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             ISerializationService serializer,
             ITelemetryService telemetry,
             GeneralResponder responder)

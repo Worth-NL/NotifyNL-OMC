@@ -14,19 +14,19 @@ namespace Common.Tests.Unit.Settings.Extensions
     internal sealed class ConfigurationExtensionsTests
     {
         private IConfiguration _appSettingsConfiguration = null!;
-        private WebApiConfiguration _webApiConfiguration = null!;
+        private OmcConfiguration _omcConfiguration = null!;
 
         [OneTimeSetUp]
         public void InitializeTests()
         {
             this._appSettingsConfiguration = ConfigurationHandler.GetConfiguration();
-            this._webApiConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            this._omcConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
         }
 
         [OneTimeTearDown]
         public void CleanupTests()
         {
-            this._webApiConfiguration.Dispose();
+            this._omcConfiguration.Dispose();
         }
 
         #region Specific GetValue methods
@@ -44,7 +44,7 @@ namespace Common.Tests.Unit.Settings.Extensions
         public void OpenZaakDomain_ReturnsExpectedValue()
         {
             // Act
-            string actualValue = ConfigExtensions.OpenZaakDomain(this._webApiConfiguration);
+            string actualValue = ConfigExtensions.OpenZaakDomain(this._omcConfiguration);
 
             // Assert
             Assert.That(actualValue, Is.Not.Empty);

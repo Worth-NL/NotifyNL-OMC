@@ -124,7 +124,7 @@ namespace EventsHandler
             .AddJwtBearer(setup =>
             {
                 EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
-                WebApiConfiguration configuration = builder.Services.GetRequiredService<WebApiConfiguration>();
+                OmcConfiguration configuration = builder.Services.GetRequiredService<OmcConfiguration>();
 
                 // Disable some default validations, preventing the JWT token to be recognized as valid
                 setup.TokenValidationParameters = new TokenValidationParameters
@@ -250,7 +250,7 @@ namespace EventsHandler
         private static WebApplicationBuilder AddInternalServices(this WebApplicationBuilder builder)
         {
             // Configurations
-            builder.Services.AddSingleton<WebApiConfiguration>();
+            builder.Services.AddSingleton<OmcConfiguration>();
             builder.Services.RegisterLoadingStrategies();
 
             // JWT generation
@@ -324,7 +324,7 @@ namespace EventsHandler
 
         private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
+            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
             
             // Common query methods
             services.AddSingleton<IQueryBase, QueryBase>();
@@ -407,7 +407,7 @@ namespace EventsHandler
 
         private static void RegisterResponders(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
+            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
 
             services.AddSingleton<NotificationEventResponder>();
             services.AddSingleton(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));

@@ -10,7 +10,7 @@ namespace Common.Settings.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="IConfiguration"/> used in other projects.
-    /// where the <see cref="WebApiConfiguration"/> service is not existing yet so, it could
+    /// where the <see cref="OmcConfiguration"/> service is not existing yet so, it could
     /// not be retrieved from <see cref="IServiceCollection"/>.
     /// </summary>
     public static class ConfigExtensions
@@ -40,9 +40,9 @@ namespace Common.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_openZaakDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenZaak)}")
+                return s_openZaakDomainEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                       $"{nameof(OmcConfiguration.ZGW.Endpoint)}_" +
+                                                       $"{nameof(OmcConfiguration.ZGW.Endpoint.OpenZaak)}")
                                                       .ToUpper();
             }
         }
@@ -53,9 +53,9 @@ namespace Common.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_openKlantDomainEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Endpoint.OpenKlant)}")
+                return s_openKlantDomainEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                        $"{nameof(OmcConfiguration.ZGW.Endpoint)}_" +
+                                                        $"{nameof(OmcConfiguration.ZGW.Endpoint.OpenKlant)}")
                                                        .ToUpper();
             }
         }
@@ -69,9 +69,9 @@ namespace Common.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_messageAllowedEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist)}_" +
-                                                       $"{nameof(WebApiConfiguration.ZGW.Whitelist.Message_Allowed)}")
+                return s_messageAllowedEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                       $"{nameof(OmcConfiguration.ZGW.Whitelist)}_" +
+                                                       $"{nameof(OmcConfiguration.ZGW.Whitelist.Message_Allowed)}")
                                                       .ToUpper();
             }
         }
@@ -85,9 +85,9 @@ namespace Common.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_genObjectTypeEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                      $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
-                                                      $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType)}_" +
+                return s_genObjectTypeEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                      $"{nameof(OmcConfiguration.ZGW.Variable)}_" +
+                                                      $"{nameof(OmcConfiguration.ZGW.Variable.ObjectType)}_" +
                                                       $"...OBJECTTYPE_UUID")
                                                      .ToUpper();
             }
@@ -102,10 +102,10 @@ namespace Common.Settings.Extensions
         {
             lock (s_padlock)
             {
-                return s_infoObjectTypesEnvVarName ??= ($"{nameof(WebApiConfiguration.ZGW)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variable)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType)}_" +
-                                                        $"{nameof(WebApiConfiguration.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids)}")
+                return s_infoObjectTypesEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                        $"{nameof(OmcConfiguration.ZGW.Variable)}_" +
+                                                        $"{nameof(OmcConfiguration.ZGW.Variable.ObjectType)}_" +
+                                                        $"{nameof(OmcConfiguration.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids)}")
                                                        .ToUpper();
             }
         }
@@ -118,8 +118,8 @@ namespace Common.Settings.Extensions
         /// <param name="configuration">The application configuration.</param>
         public static bool IsEncryptionAsymmetric(this IConfiguration configuration)
         {
-            const string key = $"{nameof(WebApiConfiguration.AppSettings.Encryption)}:" +
-                               $"{nameof(WebApiConfiguration.AppSettings.Encryption.IsAsymmetric)}";
+            const string key = $"{nameof(OmcConfiguration.AppSettings.Encryption)}:" +
+                               $"{nameof(OmcConfiguration.AppSettings.Encryption.IsAsymmetric)}";
 
             return configuration.GetValue<bool>(key);
         }
@@ -129,7 +129,7 @@ namespace Common.Settings.Extensions
         /// <summary>
         /// Gets the OpenZaak domain.
         /// </summary>
-        public static string OpenZaakDomain(WebApiConfiguration? configuration = null)
+        public static string OpenZaakDomain(OmcConfiguration? configuration = null)
         {
             // Case #1: Instance usage
             if (configuration != null)
@@ -147,7 +147,7 @@ namespace Common.Settings.Extensions
         /// <summary>
         /// Gets the OpenKlant domain.
         /// </summary>
-        public static string OpenKlantDomain(WebApiConfiguration? configuration = null)
+        public static string OpenKlantDomain(OmcConfiguration? configuration = null)
         {
             // Case #1: Instance usage
             if (configuration != null)

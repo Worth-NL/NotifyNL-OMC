@@ -34,7 +34,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private readonly Mock<IQueryContext> _mockedQueryContext = new(MockBehavior.Strict);
         private readonly Mock<INotifyService<NotifyData>> _mockedNotifyService = new(MockBehavior.Strict);
 
-        private WebApiConfiguration _testConfiguration = null!;
+        private OmcConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()
@@ -551,7 +551,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
 
-        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, WebApiConfiguration configuration)
+        private static Guid DetermineTemplateId(NotifyMethods notifyMethod, OmcConfiguration configuration)
         {
             return notifyMethod switch
             {

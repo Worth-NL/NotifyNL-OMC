@@ -24,7 +24,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
     public sealed class QueryKlant : IQueryKlant
     {
         /// <inheritdoc cref="IQueryKlant.Configuration"/>
-        WebApiConfiguration IQueryKlant.Configuration { get; set; } = null!;
+        OmcConfiguration IQueryKlant.Configuration { get; set; } = null!;
 
         /// <inheritdoc cref="IVersionDetails.Version"/>
         string IVersionDetails.Version => "2.0.0";
@@ -32,7 +32,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryKlant"/> class.
         /// </summary>
-        public QueryKlant(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public QueryKlant(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             ((IQueryKlant)this).Configuration = configuration;
         }
