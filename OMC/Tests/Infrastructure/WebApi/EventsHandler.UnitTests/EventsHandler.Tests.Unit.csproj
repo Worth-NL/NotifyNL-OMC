@@ -32,8 +32,8 @@
   
   <!-- Projects -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Core\Domain\EventsHandler\EventsHandler.csproj" />
-    <ProjectReference Include="..\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj" />
+    <ProjectReference Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\EventsHandler.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj" />
   </ItemGroup>
 
   <!-- Code coverage -->

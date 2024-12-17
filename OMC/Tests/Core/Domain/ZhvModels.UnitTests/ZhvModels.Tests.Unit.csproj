@@ -31,7 +31,7 @@
 
   <!-- Settings (copied from the main solution) -->
   <ItemGroup>
-    <Content Include="..\..\..\..\Core\Domain\EventsHandler\appsettings.Test.json">
+    <Content Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\appsettings.Test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
