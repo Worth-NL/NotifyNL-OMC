@@ -9,6 +9,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
 {
@@ -70,7 +71,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         internal Task<ContactMoment> CreateContactMomentAsync(IQueryBase queryBase, string jsonBody);
 
         /// <summary>
-        /// Links the <see cref="ContactMoment"/> with the <see cref="ZhvModels.Mapping.Models.POCOs.OpenZaak.Case"/>.
+        /// Links the <see cref="ContactMoment"/> with the <see cref="Case"/>.
         /// </summary>
         /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
         /// <param name="jsonBody">The JSON body to be passed.</param>
@@ -94,7 +95,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.OpenKlant();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.OpenKlant();
         #endregion
     }
 }

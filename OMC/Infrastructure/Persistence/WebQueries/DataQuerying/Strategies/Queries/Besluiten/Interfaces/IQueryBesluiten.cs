@@ -196,7 +196,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.Besluiten();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.Besluiten();
         #endregion
 
         #region Polymorphic (Health Check)

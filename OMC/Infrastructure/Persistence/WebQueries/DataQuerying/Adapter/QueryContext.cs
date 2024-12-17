@@ -47,13 +47,13 @@ namespace WebQueries.DataQuerying.Adapter
             IQueryObjectTypen queryObjectTypen)  // Dependency Injection (DI)
         {
             // Composition
-            _networkService = networkService;
-            _queryBase = queryBase;
-            _queryZaak = queryZaak;
-            _queryKlant = queryKlant;
-            _queryBesluiten = queryBesluiten;
-            _queryObjecten = queryObjecten;
-            _queryObjectTypen = queryObjectTypen;
+            this._networkService = networkService;
+            this._queryBase = queryBase;
+            this._queryZaak = queryZaak;
+            this._queryKlant = queryKlant;
+            this._queryBesluiten = queryBesluiten;
+            this._queryObjecten = queryObjecten;
+            this._queryObjectTypen = queryObjectTypen;
         }
 
         #region IQueryBase

@@ -39,20 +39,20 @@ namespace WebQueries.Register.v1
         /// </summary>
         public ContactRegistration(IQueryContext queryContext)  // Dependency Injection (DI)
         {
-            QueryContext = queryContext;
-            _taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
+            this.QueryContext = queryContext;
+            this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
-            #pragma warning disable VSTHRD1  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
-            CaseStatus caseStatus = _taskFactory
-                .RunAsync(() => QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
+            #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
+            CaseStatus caseStatus = this._taskFactory
+                .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
                 .Join()
                 .LastStatus();
-            #pragma warning restore VSTHRD1
+            #pragma warning restore VSTHRD104
 
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 

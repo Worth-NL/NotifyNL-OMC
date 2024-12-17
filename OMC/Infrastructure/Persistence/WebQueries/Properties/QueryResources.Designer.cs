@@ -70,6 +70,15 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The NotificationClient was resolved for organization ID: {0}..
+        /// </summary>
+        public static string Processing_GetHttpClient_WithOrganizationId {
+            get {
+                return ResourceManager.GetString("Processing_GetHttpClient_WithOrganizationId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: The BSN number is expected..
         /// </summary>
         public static string Querying_ERROR_Internal_MissingBsnNumber {

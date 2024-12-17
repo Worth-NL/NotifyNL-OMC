@@ -140,21 +140,21 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// </remarks>
         public Task<InfoObject> GetInfoObjectAsync(object? parameter = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionAsync(IQueryBase, DecisionResource?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         public Task<Decision> GetDecisionAsync(DecisionResource? decisionResource = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDocumentsAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.DecisionResource?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDocumentsAsync(IQueryBase, DecisionResource?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="DecisionResource"/>, but it produces an additional
         ///   overhead since the missing resource will be queried internally anyway from "OpenZaak" Web API service.
         /// </remarks>
         public Task<Documents> GetDocumentsAsync(DecisionResource? decisionResource = null);
 
-        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionTypeAsync(IQueryBase, ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision.Decision?)"/>
+        /// <inheritdoc cref="IQueryBesluiten.TryGetDecisionTypeAsync(IQueryBase, Decision?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="Decision"/>, but it produces an additional
         ///   overhead since the missing object will be re-queried internally anyway from "OpenZaak" Web API
