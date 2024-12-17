@@ -74,7 +74,7 @@ namespace Common.Tests.Utilities._TestHelpers
             const string testBool   = "true";
             const string testDomain = "test.domain/api/v1";
 
-            // NOTE: Update the keys manually if the structure of the WebApiConfiguration change
+            // NOTE: Update the keys manually if the structure of the OmcConfiguration change
             #region GetEnvironmentVariable<T>() mocking
             Dictionary<string /* Key */, string? /* Value */> keyValueMapping = new()
             {
@@ -257,22 +257,22 @@ namespace Common.Tests.Utilities._TestHelpers
         }
         #endregion
 
-        // NOTE: IServiceProvider => WebApiConfiguration
+        // NOTE: IServiceProvider => OmcConfiguration
 
         #region Web API Configuration
-        public static OmcConfiguration GetWebApiConfiguration()
+        public static OmcConfiguration GetOmcConfiguration()
         {
             // Web API Configuration
-            return GetWebApiConfiguration([]);
+            return GetOmcConfiguration([]);
         }
 
-        private static OmcConfiguration GetWebApiConfiguration(ServiceCollection serviceCollection)
+        private static OmcConfiguration GetOmcConfiguration(ServiceCollection serviceCollection)
         {
             // Web API Configuration
             return new OmcConfiguration(GetServiceProvider(serviceCollection));
         }
 
-        public static OmcConfiguration GetWebApiConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
+        public static OmcConfiguration GetOmcConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
             => s_presetConfigurations[testLoaderTypes];
 
         /// <summary>
@@ -350,22 +350,22 @@ namespace Common.Tests.Utilities._TestHelpers
 
         private static readonly Dictionary<TestLoaderTypesSetup, OmcConfiguration> s_presetConfigurations = new()
         {
-            { TestLoaderTypesSetup.ValidAppSettings,               GetWebApiConfiguration(TestLoaderTypesSetup.ValidAppSettings)               },
-            { TestLoaderTypesSetup.InvalidAppSettings,             GetWebApiConfiguration(TestLoaderTypesSetup.InvalidAppSettings)             },
-            { TestLoaderTypesSetup.ValidEnvironment_v1,            GetWebApiConfiguration(TestLoaderTypesSetup.ValidEnvironment_v1)            },
-            { TestLoaderTypesSetup.ValidEnvironment_v2,            GetWebApiConfiguration(TestLoaderTypesSetup.ValidEnvironment_v2)            },
-            { TestLoaderTypesSetup.InvalidEnvironment,             GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment)             },
-            { TestLoaderTypesSetup.InvalidEnvironment_v1,          GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v1)          },
-            { TestLoaderTypesSetup.InvalidEnvironment_v2,          GetWebApiConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v2)          },
-            { TestLoaderTypesSetup.BothValid_v1,                   GetWebApiConfiguration(TestLoaderTypesSetup.BothValid_v1)                   },
-            { TestLoaderTypesSetup.BothValid_v2,                   GetWebApiConfiguration(TestLoaderTypesSetup.BothValid_v2)                   },
-            { TestLoaderTypesSetup.BothInvalid,                    GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid)                    },
-            { TestLoaderTypesSetup.BothInvalid_v1,                 GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid_v1)                 },
-            { TestLoaderTypesSetup.BothInvalid_v2,                 GetWebApiConfiguration(TestLoaderTypesSetup.BothInvalid_v2)                 },
-            { TestLoaderTypesSetup.EnvVar_Overloading_AppSettings, GetWebApiConfiguration(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings) }
+            { TestLoaderTypesSetup.ValidAppSettings,               GetOmcConfiguration(TestLoaderTypesSetup.ValidAppSettings)               },
+            { TestLoaderTypesSetup.InvalidAppSettings,             GetOmcConfiguration(TestLoaderTypesSetup.InvalidAppSettings)             },
+            { TestLoaderTypesSetup.ValidEnvironment_v1,            GetOmcConfiguration(TestLoaderTypesSetup.ValidEnvironment_v1)            },
+            { TestLoaderTypesSetup.ValidEnvironment_v2,            GetOmcConfiguration(TestLoaderTypesSetup.ValidEnvironment_v2)            },
+            { TestLoaderTypesSetup.InvalidEnvironment,             GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment)             },
+            { TestLoaderTypesSetup.InvalidEnvironment_v1,          GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v1)          },
+            { TestLoaderTypesSetup.InvalidEnvironment_v2,          GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v2)          },
+            { TestLoaderTypesSetup.BothValid_v1,                   GetOmcConfiguration(TestLoaderTypesSetup.BothValid_v1)                   },
+            { TestLoaderTypesSetup.BothValid_v2,                   GetOmcConfiguration(TestLoaderTypesSetup.BothValid_v2)                   },
+            { TestLoaderTypesSetup.BothInvalid,                    GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid)                    },
+            { TestLoaderTypesSetup.BothInvalid_v1,                 GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid_v1)                 },
+            { TestLoaderTypesSetup.BothInvalid_v2,                 GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid_v2)                 },
+            { TestLoaderTypesSetup.EnvVar_Overloading_AppSettings, GetOmcConfiguration(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings) }
         };
 
-        private static OmcConfiguration GetWebApiConfiguration(TestLoaderTypesSetup loaderType)
+        private static OmcConfiguration GetOmcConfiguration(TestLoaderTypesSetup loaderType)
         {
             // IServiceCollection
             var serviceCollection = new ServiceCollection();
@@ -441,7 +441,7 @@ namespace Common.Tests.Utilities._TestHelpers
             }
 
             // Remaining components of Web API Configuration
-            return GetWebApiConfiguration(serviceCollection);
+            return GetOmcConfiguration(serviceCollection);
         }
         #endregion
     }

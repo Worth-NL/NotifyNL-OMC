@@ -48,7 +48,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             // Service Provider (does not require mocking)
             var serviceCollection = new ServiceCollection();
 
-            this._omcConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
+            this._omcConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.BothValid_v1);
 
             serviceCollection.AddSingleton(this._omcConfiguration);
             serviceCollection.AddSingleton(new CaseCreatedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
