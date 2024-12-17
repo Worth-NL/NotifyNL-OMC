@@ -3,7 +3,6 @@
 using EventsHandler.Exceptions;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using System.Text.Json;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces
 {

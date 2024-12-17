@@ -2,7 +2,6 @@
 
 using Common.Extensions;
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;

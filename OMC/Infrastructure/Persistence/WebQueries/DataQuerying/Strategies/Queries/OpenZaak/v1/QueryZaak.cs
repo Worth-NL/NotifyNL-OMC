@@ -1,7 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
