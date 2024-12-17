@@ -13,11 +13,11 @@ using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 namespace EventsHandler.Attributes.Validation
 {
     /// <summary>
-    /// The UX wrapper to handle and display ASP.NET Core MVC framework errors into a standardized human-friendly API responses.
+    /// The UX wrapper to handle and display ASP.NET Core MVC framework errors that cannot be handled in API controllers.
     /// </summary>
     /// <seealso cref="ActionFilterAttribute"/>
     [AttributeUsage(AttributeTargets.Method)]
-    internal sealed class StandardizeApiResponsesAttribute : ActionFilterAttribute
+    internal sealed class AspNetExceptionsHandlerAttribute : ActionFilterAttribute
     {
         /// <summary>
         /// Binding map of API Controllers to IRespondingService{T,...}.
@@ -25,16 +25,12 @@ namespace EventsHandler.Attributes.Validation
         private static readonly ConcurrentDictionary<Type, Type> s_mappedControllersToResponders = new();
 
         /// <summary>
-        /// Initializes the <see cref="StandardizeApiResponsesAttribute"/> class.
+        /// Initializes the <see cref="AspNetExceptionsHandlerAttribute"/> class.
         /// </summary>
-        static StandardizeApiResponsesAttribute()
+        static AspNetExceptionsHandlerAttribute()
         {
             // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
             s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(NotificationEventResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(GeneralResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestNotifyController), typeof(GeneralResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestZHVController), typeof(GeneralResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestOMCController), typeof(GeneralResponder));
         }
 
         /// <summary>
@@ -49,17 +45,20 @@ namespace EventsHandler.Attributes.Validation
                 try
                 {
                     // Check if responder service is registered
-                    Type serviceType = s_mappedControllersToResponders[context.Controller.GetType()];
+                    if (!s_mappedControllersToResponders.TryGetValue(context.Controller.GetType(), out Type? responderType))
+                    {
+                        // Set to default responder for general purposes
+                        responderType = typeof(GeneralResponder);
+                    }
 
                     // Resolving which responder service should be used (depends on API Controller)
-                    var responder = (IRespondingService)context.HttpContext.RequestServices.GetRequiredService(serviceType);
+                    var responder = (IRespondingService)context.HttpContext.RequestServices.GetRequiredService(responderType);
 
                     // Intercepting and replacing native error messages by user-friendly API responses
                     context = responder.GetExceptionResponse(context, details!.Errors);
                 }
                 catch (Exception exception) when (exception
-                    is KeyNotFoundException       // API Controller is not mapped to IRespondingService (in constructor of this class)
-                    or InvalidOperationException  // The looked-up responding service is not registered, or it's registered differently
+                    is InvalidOperationException  // The looked-up responding service is not registered, or it's registered differently
                     or InvalidCastException)      // The looked-up service was resolved, but it's not deriving from IRespondingService
                 {
                     throw new ArgumentException(ApiResources.Processing_ERROR_ExecutingContext_UnregisteredApiController);
