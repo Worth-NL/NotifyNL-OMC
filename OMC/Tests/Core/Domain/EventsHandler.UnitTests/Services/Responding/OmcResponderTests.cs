@@ -38,7 +38,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding
             (string Id, ProcessingResult Result, ProcessingStatus Status, HttpStatusCode Code, int ObjResultCode, string ObjResultName, string Description, string Content) test)
         {
             // Arrange
-            IRespondingService<ProcessingResult> omcResponder = new OmcResponder(this._mockedBuilder.Object);
+            IRespondingService<ProcessingResult> omcResponder = new NotificationEventResponder(this._mockedBuilder.Object);
 
             // Act
             ObjectResult actualResponse = omcResponder.GetResponse(test.Result);

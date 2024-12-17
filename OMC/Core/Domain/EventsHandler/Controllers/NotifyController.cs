@@ -21,13 +21,13 @@ namespace EventsHandler.Controllers
     [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
     public sealed class NotifyController : OmcController  // Swagger UI requires this class to be public
     {
-        private readonly NotifyResponder _responder;
+        private readonly GeneralResponder _responder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyController"/> class.
         /// </summary>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public NotifyController(NotifyResponder responder)
+        public NotifyController(GeneralResponder responder)
         {
             this._responder = responder;
         }
@@ -44,7 +44,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [AspNetExceptionsHandler]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
