@@ -12,8 +12,8 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
     [TestFixture]
     public sealed class PartyResultsTests
     {
-        private WebApiConfiguration _emptyConfiguration = null!;
-        private WebApiConfiguration _validAppSettingsConfiguration = null!;
+        private OmcConfiguration _emptyConfiguration = null!;
+        private OmcConfiguration _validAppSettingsConfiguration = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()
@@ -263,7 +263,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there are no phone numbers or e-mails.
         /// </summary>
-        private static PartyResult GetTestPartyResult_None(WebApiConfiguration testConfiguration)
+        private static PartyResult GetTestPartyResult_None(OmcConfiguration testConfiguration)
         {
             var partyId = Guid.NewGuid();
             Guid firstAddressId = GetUniqueId(partyId);
@@ -312,7 +312,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there are phone numbers and e-mails combined, so e-mail should be always prioritized.
         /// </summary>
-        private static PartyResult GetTestPartyResult_Email(WebApiConfiguration configuration, Guid partyId, Guid addressId)
+        private static PartyResult GetTestPartyResult_Email(OmcConfiguration configuration, Guid partyId, Guid addressId)
         {
             return new PartyResult
             {
@@ -384,7 +384,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there is no emails, so phone numbers will always be used.
         /// </summary>
-        private static PartyResult GetTestPartyResult_Phone(WebApiConfiguration configuration, Guid partyId, Guid addressId)
+        private static PartyResult GetTestPartyResult_Phone(OmcConfiguration configuration, Guid partyId, Guid addressId)
         {
             return new PartyResult
             {
@@ -468,7 +468,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             return partyResults;
         }
 
-        private static void AssertThrows<TException>(WebApiConfiguration configuration, PartyResults partyResults, string exceptionMessage)
+        private static void AssertThrows<TException>(OmcConfiguration configuration, PartyResults partyResults, string exceptionMessage)
             where TException : Exception
         {
             Assert.Multiple(() =>
@@ -480,7 +480,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             });
         }
 
-        private static void AssertThrows<TException>(WebApiConfiguration configuration, PartyResult partyResult, string exceptionMessage)
+        private static void AssertThrows<TException>(OmcConfiguration configuration, PartyResult partyResult, string exceptionMessage)
             where TException : Exception
         {
             Assert.Multiple(() =>

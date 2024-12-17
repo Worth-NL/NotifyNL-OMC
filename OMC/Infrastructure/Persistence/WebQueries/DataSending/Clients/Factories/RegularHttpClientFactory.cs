@@ -13,12 +13,12 @@ namespace WebQueries.DataSending.Clients.Factories
     /// </remarks>
     public sealed class RegularHttpClientFactory : IHttpClientFactory<HttpClient, (string Name, string Value)[]>
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegularHttpClientFactory"/> class.
         /// </summary>
-        public RegularHttpClientFactory(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public RegularHttpClientFactory(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
         }

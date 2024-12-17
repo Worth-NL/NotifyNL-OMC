@@ -11,12 +11,12 @@ namespace EventsHandler.Versioning
     /// <inheritdoc cref="IVersionRegister"/>
     public sealed class OmcVersionRegister : IVersionRegister
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OmcVersionRegister"/> class.
         /// </summary>
-        public OmcVersionRegister(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public OmcVersionRegister(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
         }

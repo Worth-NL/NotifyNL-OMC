@@ -15,12 +15,12 @@ namespace WebQueries.DataSending.Clients.Factories
     /// </remarks>
     public sealed class NotificationClientFactory : IHttpClientFactory<INotifyClient, string>
     {
-        private readonly WebApiConfiguration _configuration;
+        private readonly OmcConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationClientFactory"/> class.
         /// </summary>
-        public NotificationClientFactory(WebApiConfiguration configuration)  // Dependency Injection (DI)
+        public NotificationClientFactory(OmcConfiguration configuration)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
         }

@@ -12,7 +12,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
     [TestFixture]
     public sealed class CaseRolesTests
     {
-        private WebApiConfiguration _testConfiguration = null!;
+        private OmcConfiguration _testConfiguration = null!;
 
         [OneTimeSetUp]
         public void TestsInitialize()
@@ -31,7 +31,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
         public void Citizen_Method_ForMissingResults_ThrowsHttpRequestException()
         {
             // Arrange
-            WebApiConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
+            OmcConfiguration testConfiguration = ConfigurationHandler.GetWebApiConfiguration();
 
             var caseRoles = new CaseRoles();  // Empty "Results" inside
 
@@ -82,7 +82,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenZaak.v2
             return caseRoles;
         }
 
-        private static void AssertThrows<TException>(WebApiConfiguration configuration, CaseRoles caseRoles, string exceptionMessage)
+        private static void AssertThrows<TException>(OmcConfiguration configuration, CaseRoles caseRoles, string exceptionMessage)
             where TException : Exception
         {
             Assert.Multiple(() =>

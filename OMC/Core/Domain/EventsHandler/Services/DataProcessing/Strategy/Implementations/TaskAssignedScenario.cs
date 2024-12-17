@@ -34,7 +34,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// Initializes a new instance of the <see cref="TaskAssignedScenario"/> class.
         /// </summary>
         public TaskAssignedScenario(
-            WebApiConfiguration configuration,
+            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
             INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(configuration, dataQuery, notifyService)
