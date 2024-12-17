@@ -1,10 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
+using JetBrains.Annotations;
 using PostSharp.Aspects;
 using PostSharp.Serialization;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
 
 namespace Common.Utilities.Diagnostics
 {
