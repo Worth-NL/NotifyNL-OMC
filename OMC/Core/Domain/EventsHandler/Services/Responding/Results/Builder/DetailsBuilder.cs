@@ -11,7 +11,15 @@ namespace EventsHandler.Services.Responding.Results.Builder
 {
     /// <summary>
     /// <inheritdoc cref="IDetailsBuilder"/>
-    /// Building <see cref="ErrorDetails"/>.
+    /// <para>
+    ///   Building:
+    /// 
+    ///   <list type="bullet">
+    ///     <item><see cref="ErrorDetails"/></item>
+    ///     <item><see cref="InfoDetails"/></item>
+    ///     <item><see cref="UnknownDetails"/></item>
+    ///   </list>
+    /// </para>
     /// </summary>
     /// <seealso cref="IDetailsBuilder"/>
     internal sealed class DetailsBuilder : IDetailsBuilder

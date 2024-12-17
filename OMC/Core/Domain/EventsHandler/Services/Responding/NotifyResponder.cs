@@ -228,7 +228,7 @@ namespace EventsHandler.Services.Responding
         internal abstract Task<IActionResult> HandleNotifyCallbackAsync(object json);
         #endregion
 
-        #region Parent        
+        #region Parent
         /// <summary>
         /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback.
         /// </summary>

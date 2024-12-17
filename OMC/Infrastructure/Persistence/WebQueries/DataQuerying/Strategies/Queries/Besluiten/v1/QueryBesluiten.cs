@@ -3,6 +3,7 @@
 using Common.Settings.Configuration;
 using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.v1
 {
