@@ -1,4 +1,4 @@
-﻿// // © 2024, Worth Systems.
+﻿// © 2024, Worth Systems.
 
 namespace Common.Versioning.Models
 {
