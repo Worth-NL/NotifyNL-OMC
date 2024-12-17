@@ -39,13 +39,13 @@ namespace WebQueries.DataSending.Models.DTOs
         /// Initializes a new instance of the <see cref="NotifyData"/> struct.
         /// </summary>
         public NotifyData(NotifyMethods notificationMethod, string contactDetails, Guid templateId,
-            Dictionary<string, object> personalization, NotifyReference reference)
+                          Dictionary<string, object> personalization, NotifyReference reference)
             : this(notificationMethod)
         {
-            ContactDetails = contactDetails;
-            TemplateId = templateId;
-            Personalization = personalization;
-            Reference = reference;
+            this.ContactDetails = contactDetails;
+            this.TemplateId = templateId;
+            this.Personalization = personalization;
+            this.Reference = reference;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace WebQueries.DataSending.Models.DTOs
         /// </summary>
         public NotifyData(NotifyMethods notificationMethod)
         {
-            NotificationMethod = notificationMethod;
+            this.NotificationMethod = notificationMethod;
         }
     }
 }
