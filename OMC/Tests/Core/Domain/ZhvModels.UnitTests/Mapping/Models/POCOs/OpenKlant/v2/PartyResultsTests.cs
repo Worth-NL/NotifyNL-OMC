@@ -18,8 +18,8 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._emptyConfiguration = ConfigurationHandler.GetWebApiConfiguration();
-            this._validAppSettingsConfiguration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
+            this._emptyConfiguration = ConfigurationHandler.GetOmcConfiguration();
+            this._validAppSettingsConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidAppSettings);
         }
 
         [OneTimeTearDown]

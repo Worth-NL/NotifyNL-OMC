@@ -14,7 +14,7 @@ namespace EventsHandler.Tests.Unit.Services.Versioning
         public void GetVersion_ForExistingServices_ReturnsExpectedString()
         {
             // Arrange
-            using OmcConfiguration configuration = ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
 
             IVersionRegister register = new OmcVersionRegister(configuration);
 

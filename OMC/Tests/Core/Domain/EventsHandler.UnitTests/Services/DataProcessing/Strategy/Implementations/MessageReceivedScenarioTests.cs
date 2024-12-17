@@ -266,8 +266,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private static OmcConfiguration GetConfiguration(bool isMessageAllowed)
         {
             return isMessageAllowed
-                ? ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1)
-                : ConfigurationHandler.GetWebApiConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+                ? ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1)
+                : ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
         }
 
         private MessageReceivedScenario ArrangeMessageScenario_TryGetData(
