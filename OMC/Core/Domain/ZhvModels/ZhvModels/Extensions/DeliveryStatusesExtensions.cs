@@ -1,4 +1,4 @@
-﻿// // © 2024, Worth Systems.
+﻿// © 2024, Worth Systems.
 
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotifyNL;

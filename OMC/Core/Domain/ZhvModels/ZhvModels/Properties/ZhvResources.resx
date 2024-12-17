@@ -245,7 +245,8 @@
     <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
   </data>
   <data name="HttpRequest_ERROR_NoSourceOrganization" xml:space="preserve">
-    <value>HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization ('bronorganisatie').</value>
+    <value>HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization ('bronorganisatie'). [{0}]</value>
+    <comment>{0} = The channel from NotificationEvent</comment>
   </data>
   <data name="HttpRequest_ERROR_NoTask" xml:space="preserve">
     <value>HTTP Request: The task (object) could not be retrieved from Objecten Web API service.</value>
