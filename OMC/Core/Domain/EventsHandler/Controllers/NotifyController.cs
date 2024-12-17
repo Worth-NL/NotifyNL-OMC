@@ -44,7 +44,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
+        [AspNetExceptionsHandler]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
         [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid

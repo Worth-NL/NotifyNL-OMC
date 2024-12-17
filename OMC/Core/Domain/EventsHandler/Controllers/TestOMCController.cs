@@ -51,7 +51,7 @@ namespace EventsHandler.Controllers
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public async Task<IActionResult> TestConfigsAsync()
         {
             return await Task.Run(() =>
