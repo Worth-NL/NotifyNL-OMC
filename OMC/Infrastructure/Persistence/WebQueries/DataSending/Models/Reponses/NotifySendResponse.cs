@@ -17,7 +17,7 @@ namespace WebQueries.DataSending.Models.Reponses
         /// <summary>
         /// The negated status of the <see cref="NotifySendResponse"/>.
         /// </summary>
-        public bool IsFailure => !IsSuccess;
+        public bool IsFailure => !this.IsSuccess;
 
         /// <summary>
         /// The error which occurred during the communication with "Notify NL".
@@ -29,8 +29,8 @@ namespace WebQueries.DataSending.Models.Reponses
         /// </summary>
         private NotifySendResponse(bool isSuccess, string error)
         {
-            IsSuccess = isSuccess;
-            Error = error;
+            this.IsSuccess = isSuccess;
+            this.Error = error;
         }
 
         /// <summary>

@@ -184,7 +184,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.OpenZaak();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.OpenZaak();
         #endregion
         
         #region Polymorphic (Health Check)

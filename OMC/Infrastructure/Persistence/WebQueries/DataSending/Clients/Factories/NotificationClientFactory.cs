@@ -5,6 +5,7 @@ using Notify.Client;
 using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Clients.Proxy;
+using WebQueries.Properties;
 
 namespace WebQueries.DataSending.Clients.Factories
 {
@@ -21,16 +22,18 @@ namespace WebQueries.DataSending.Clients.Factories
         /// </summary>
         public NotificationClientFactory(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
-            _configuration = configuration;
+            this._configuration = configuration;
         }
 
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
-        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string _)  // NOTE: This parameter is not used anymore
+        INotifyClient IHttpClientFactory<INotifyClient, string>.GetHttpClient(string organizationId)
         {
+            Console.Out.Write(QueryResources.Processing_GetHttpClient_WithOrganizationId, organizationId);
+
             return new NotifyClientProxy(
                 new NotificationClient(
-                    baseUrl: _configuration.Notify.API.BaseUrl().AbsoluteUri,  // The base URL to "Notify NL" API Service
-                    apiKey: _configuration.Notify.API.Key()));                // 3rd party-specific "Notify NL" API Key
+                    baseUrl: this._configuration.Notify.API.BaseUrl().AbsoluteUri,  // The base URL to "Notify NL" API Service
+                    apiKey:  this._configuration.Notify.API.Key()));                // 3rd party-specific "Notify NL" API Key
         }
     }
 }

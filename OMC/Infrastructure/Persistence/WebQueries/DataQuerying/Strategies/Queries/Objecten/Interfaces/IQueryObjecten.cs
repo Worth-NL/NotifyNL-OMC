@@ -108,7 +108,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.Objecten();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.Objecten();
         #endregion
 
         #region Polymorphic (Health Check)

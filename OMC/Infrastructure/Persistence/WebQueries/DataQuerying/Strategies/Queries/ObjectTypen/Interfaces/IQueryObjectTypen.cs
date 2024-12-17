@@ -49,7 +49,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.ObjectTypen();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.ObjectTypen();
         #endregion
 
         #region Polymorphic (Health Check)

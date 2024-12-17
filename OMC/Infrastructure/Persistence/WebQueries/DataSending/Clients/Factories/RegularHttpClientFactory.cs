@@ -20,7 +20,7 @@ namespace WebQueries.DataSending.Clients.Factories
         /// </summary>
         public RegularHttpClientFactory(WebApiConfiguration configuration)  // Dependency Injection (DI)
         {
-            _configuration = configuration;
+            this._configuration = configuration;
         }
 
         /// <inheritdoc cref="IHttpClientFactory{THttpClient,TParameters}.GetHttpClient(TParameters)"/>
@@ -29,13 +29,13 @@ namespace WebQueries.DataSending.Clients.Factories
             var socketsHandler = new SocketsHttpHandler
             {
                 // Prevents DNS changes issue (changing IP address) and leading to stale connections, resource leaks, or timeouts
-                PooledConnectionLifetime = TimeSpan.FromSeconds(_configuration.AppSettings.Network.ConnectionLifetimeInSeconds())
+                PooledConnectionLifetime = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.ConnectionLifetimeInSeconds())
             };
 
             var httpClient = new HttpClient(socketsHandler)
             {
                 // Prevents issues with resource leaks and application performance in case of HTTP Requests taking too long
-                Timeout = TimeSpan.FromSeconds(_configuration.AppSettings.Network.HttpRequestTimeoutInSeconds())
+                Timeout = TimeSpan.FromSeconds(this._configuration.AppSettings.Network.HttpRequestTimeoutInSeconds())
             };
 
             // Set universal Request Headers

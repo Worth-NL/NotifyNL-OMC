@@ -16,16 +16,16 @@ namespace WebQueries.DataQuerying.Proxy
         /// </summary>
         public DataQueryService(IQueryContext queryContext)  // Dependency Injection (DI)
         {
-            _queryContext = queryContext;
+            this._queryContext = queryContext;
         }
 
         /// <inheritdoc cref="IDataQueryService{TModel}.From(TModel)"/>
         IQueryContext IDataQueryService<NotificationEvent>.From(NotificationEvent notification)
         {
             // Update only the current notification in cached builder
-            _queryContext.SetNotification(notification);
+            this._queryContext.SetNotification(notification);
 
-            return _queryContext;
+            return this._queryContext;
         }
     }
 }
