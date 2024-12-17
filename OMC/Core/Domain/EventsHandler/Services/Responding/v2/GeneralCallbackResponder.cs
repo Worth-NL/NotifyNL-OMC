@@ -14,24 +14,24 @@ using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v2
 {
-    /// <inheritdoc cref="NotifyResponder"/>
+    /// <inheritdoc cref="GeneralResponder"/>
     /// <remarks>
     ///   Version: "OpenKlant" (2.0) Web API service | "OMC workflow" v2.
     /// </remarks>
     /// <seealso cref="IRespondingService"/>
-    internal sealed class NotifyCallbackResponder : NotifyResponder
+    internal sealed class GeneralCallbackResponder : GeneralResponder
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyCallbackResponder"/> class.
+        /// Initializes a new instance of the <see cref="GeneralCallbackResponder"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        public NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
+        public GeneralCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
@@ -39,7 +39,7 @@ namespace EventsHandler.Services.Responding.v2
             this._telemetry = telemetry;
         }
 
-        /// <inheritdoc cref="NotifyResponder.HandleNotifyCallbackAsync(object)"/>
+        /// <inheritdoc cref="GeneralResponder.HandleNotifyCallbackAsync(object)"/>
         internal override async Task<IActionResult> HandleNotifyCallbackAsync(object json)
         {
             try

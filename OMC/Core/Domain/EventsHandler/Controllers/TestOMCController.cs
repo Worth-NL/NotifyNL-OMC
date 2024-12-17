@@ -32,7 +32,7 @@ namespace EventsHandler.Controllers
         /// <param name="responder">The output standardization service (UX/UI).</param>
         public TestOMCController(
             WebApiConfiguration configuration,
-            NotifyResponder responder)
+            GeneralResponder responder)
         {
             this._configuration = configuration;
             this._responder = responder;

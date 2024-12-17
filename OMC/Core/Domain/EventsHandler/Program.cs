@@ -410,7 +410,7 @@ namespace EventsHandler
             byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
 
             services.AddSingleton<OmcResponder>();
-            services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(omcWorkflowVersion));
+            services.AddSingleton(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
 
             return;
 
@@ -418,8 +418,8 @@ namespace EventsHandler
             {
                 return omvWorkflowVersion switch
                 {
-                    1 => typeof(Responder.v1.NotifyCallbackResponder),
-                    2 => typeof(Responder.v2.NotifyCallbackResponder),
+                    1 => typeof(Responder.v1.GeneralCallbackResponder),
+                    2 => typeof(Responder.v2.GeneralCallbackResponder),
                     _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionNotifyResponderUnknown)
                 };
             }

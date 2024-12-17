@@ -50,7 +50,7 @@ namespace EventsHandler.Controllers
             WebApiConfiguration configuration,
             ISerializationService serializer,
             ITelemetryService telemetry,
-            NotifyResponder responder)
+            GeneralResponder responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;

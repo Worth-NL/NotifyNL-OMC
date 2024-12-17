@@ -31,10 +31,10 @@ namespace EventsHandler.Attributes.Validation
         {
             // NOTE: Concept similar to strategy design pattern => decide how and which API Controllers are responding to the end-user
             s_mappedControllersToResponders.TryAdd(typeof(EventsController), typeof(OmcResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(NotifyResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestNotifyNLController), typeof(NotifyResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestZHVController), typeof(NotifyResponder));
-            s_mappedControllersToResponders.TryAdd(typeof(TestOMCController), typeof(NotifyResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(NotifyController), typeof(GeneralResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(TestNotifyNLController), typeof(GeneralResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(TestZHVController), typeof(GeneralResponder));
+            s_mappedControllersToResponders.TryAdd(typeof(TestOMCController), typeof(GeneralResponder));
         }
 
         /// <summary>
