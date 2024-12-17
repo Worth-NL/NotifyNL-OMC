@@ -25,15 +25,15 @@ namespace WebQueries.DataQuerying.Strategies.Base
         /// </summary>
         public QueryBase(ISerializationService serializer, IHttpNetworkService networkService)  // Dependency Injection (DI)
         {
-            _serializer = serializer;
-            _networkService = networkService;
+            this._serializer = serializer;
+            this._networkService = networkService;
         }
 
         #region Internal methods
         /// <inheritdoc cref="IQueryBase.ProcessGetAsync{TModel}(HttpClientTypes, Uri, string)"/>
         async Task<TModel> IQueryBase.ProcessGetAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
         {
-            HttpRequestResponse response = await _networkService.GetAsync(httpClientType, uri);
+            HttpRequestResponse response = await this._networkService.GetAsync(httpClientType, uri);
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
@@ -41,7 +41,7 @@ namespace WebQueries.DataQuerying.Strategies.Base
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, string, string)"/>
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
         {
-            HttpRequestResponse response = await _networkService.PostAsync(httpClientType, uri, jsonBody);
+            HttpRequestResponse response = await this._networkService.PostAsync(httpClientType, uri, jsonBody);
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
@@ -52,7 +52,7 @@ namespace WebQueries.DataQuerying.Strategies.Base
             where TModel : struct, IJsonSerializable
         {
             return isSuccess
-                ? _serializer.Deserialize<TModel>(jsonResult)
+                ? this._serializer.Deserialize<TModel>(jsonResult)
 
                 // Logging errors
                 : httpClientType is HttpClientTypes.Telemetry_Contactmomenten

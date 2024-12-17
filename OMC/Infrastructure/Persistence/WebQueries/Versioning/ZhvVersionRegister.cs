@@ -10,6 +10,7 @@ using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.Register.Interfaces;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.Versioning
 {
@@ -23,7 +24,7 @@ namespace WebQueries.Versioning
         /// </summary>
         public ZhvVersionRegister(IServiceProvider serviceProvider)  // Dependency Injection (DI)
         {
-            _serviceProvider = serviceProvider;
+            this._serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc cref="IVersionRegister.GetVersion(string)"/>
@@ -38,12 +39,12 @@ namespace WebQueries.Versioning
             {
                 services =
                 [
-                    _serviceProvider.GetRequiredService<IQueryZaak>(),
-                    _serviceProvider.GetRequiredService<IQueryKlant>(),
-                    _serviceProvider.GetRequiredService<IQueryBesluiten>(),
-                    _serviceProvider.GetRequiredService<IQueryObjecten>(),
-                    _serviceProvider.GetRequiredService<IQueryObjectTypen>(),
-                    _serviceProvider.GetRequiredService<ITelemetryService>()
+                    this._serviceProvider.GetRequiredService<IQueryZaak>(),
+                    this._serviceProvider.GetRequiredService<IQueryKlant>(),
+                    this._serviceProvider.GetRequiredService<IQueryBesluiten>(),
+                    this._serviceProvider.GetRequiredService<IQueryObjecten>(),
+                    this._serviceProvider.GetRequiredService<IQueryObjectTypen>(),
+                    this._serviceProvider.GetRequiredService<ITelemetryService>()
                 ];
             }
             catch (InvalidOperationException)

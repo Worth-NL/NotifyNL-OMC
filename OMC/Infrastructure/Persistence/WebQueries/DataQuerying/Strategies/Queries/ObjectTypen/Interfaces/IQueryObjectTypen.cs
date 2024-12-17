@@ -2,10 +2,10 @@
 
 using Common.Extensions;
 using Common.Settings.Configuration;
-using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
 {
@@ -48,7 +48,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
 
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
-        string IDomain.GetDomain() => Configuration.ZGW.Endpoint.ObjectTypen();
+        string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.ObjectTypen();
         #endregion
 
         #region Polymorphic (Health Check)

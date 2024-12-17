@@ -167,4 +167,8 @@
   <data name="Response_HealthCheck_SUCCESS_State" xml:space="preserve">
     <value>The service is reachable and the request was successful.</value>
   </data>
+  <data name="Processing_GetHttpClient_WithOrganizationId" xml:space="preserve">
+    <value>The NotificationClient was resolved for organization ID: {0}.</value>
+    <comment>{0} = The organization ID</comment>
+  </data>
 </root>

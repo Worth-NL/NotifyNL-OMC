@@ -439,7 +439,7 @@ namespace ZhvModels.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;)..
+        ///   Looks up a localized string similar to HTTP Request: The notification (from OpenNotificaties Web API service) does not contain source organization (&apos;bronorganisatie&apos;). [{0}].
         /// </summary>
         public static string HttpRequest_ERROR_NoSourceOrganization {
             get {
