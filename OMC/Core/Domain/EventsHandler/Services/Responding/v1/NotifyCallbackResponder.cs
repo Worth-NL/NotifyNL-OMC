@@ -21,19 +21,19 @@ namespace EventsHandler.Services.Responding.v1
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IRespondingService{TResult}"/>
-    internal sealed class GeneralCallbackResponder : GeneralResponder
+    internal sealed class NotifyCallbackResponder : GeneralResponder
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralCallbackResponder"/> class.
+        /// Initializes a new instance of the <see cref="NotifyCallbackResponder"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        public GeneralCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
+        public NotifyCallbackResponder(WebApiConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
