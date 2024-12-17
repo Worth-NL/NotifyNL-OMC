@@ -41,13 +41,13 @@ namespace WebQueries.DataSending
         public HttpNetworkService(WebApiConfiguration configuration, EncryptionContext encryptionContext,
                                   IHttpClientFactory<HttpClient, (string, string)[]> httpClientFactory)  // Dependency Injection (DI)
         {
-            _configuration = configuration;
-            _encryptionContext = encryptionContext;
-            _httpClientFactory = httpClientFactory;
+            this._configuration = configuration;
+            this._encryptionContext = encryptionContext;
+            this._httpClientFactory = httpClientFactory;
 
             // NOTE: Prevents "TaskCanceledException" in case there is a lot of simultaneous HTTP Requests being called
-            _semaphore = new SemaphoreSlim(
-                _configuration.AppSettings.Network.HttpRequestsSimultaneousNumber());
+            this._semaphore = new SemaphoreSlim(
+                this._configuration.AppSettings.Network.HttpRequestsSimultaneousNumber());
 
             // NOTE: This method is working like IHttpClientFactory: builder.Services.AddHttpClient("type_1", client => { });
             InitializeAvailableHttpClients();
@@ -86,25 +86,25 @@ namespace WebQueries.DataSending
             (string, string) contentCrs = (contentCrsHeader, crsValue);
 
             // Registration of clients => an equivalent of IHttpClientFactory "services.AddHttpClient()"
-            _httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.OpenZaak_v1, this._httpClientFactory
                 .GetHttpClient([acceptCrs, contentCrs]));  // JWT Token
 
-            _httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v1, this._httpClientFactory
                 .GetHttpClient([acceptCrs, contentCrs]));  // JWT Token
 
-            _httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.OpenKlant_v2, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenKlant_v2))]));  // API Key
 
-            _httpClients.TryAdd(HttpClientTypes.Objecten, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.Objecten, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Objecten)), contentCrs]));  // API Key
 
-            _httpClients.TryAdd(HttpClientTypes.ObjectTypen, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.ObjectTypen, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.ObjectTypen)), contentCrs]));  // API Key
 
-            _httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry_Contactmomenten, this._httpClientFactory
                 .GetHttpClient([("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty)]));  // JWT Token
 
-            _httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, _httpClientFactory
+            this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));  // API Key
         }
 
@@ -120,14 +120,14 @@ namespace WebQueries.DataSending
                 HttpClientTypes.OpenZaak_v1 or
                 HttpClientTypes.OpenKlant_v1 or
                 HttpClientTypes.Telemetry_Contactmomenten
-                    => AuthorizeWithGeneratedJwt(_httpClients[httpClientType]),
+                    => AuthorizeWithGeneratedJwt(this._httpClients[httpClientType]),
 
                 // Clients using static API keys from configuration
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Objecten or
                 HttpClientTypes.ObjectTypen or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => _httpClients[httpClientType],
+                    => this._httpClients[httpClientType],
 
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}"),
@@ -150,16 +150,16 @@ namespace WebQueries.DataSending
             lock (s_padlock)  // NOTE: Prevents multiple threads to update authorization token of an already used HttpClient
             {
                 // TODO: Caching the token until the expiration time doesn't elapse yet
-                SecurityKey securityKey = _encryptionContext.GetSecurityKey(
-                    _configuration.ZGW.Auth.JWT.Secret());
+                SecurityKey securityKey = this._encryptionContext.GetSecurityKey(
+                    this._configuration.ZGW.Auth.JWT.Secret());
 
                 // Preparing JWT token
-                string jwtToken = _encryptionContext.GetJwtToken(securityKey,
-                    _configuration.ZGW.Auth.JWT.Issuer(),
-                    _configuration.ZGW.Auth.JWT.Audience(),
-                    _configuration.ZGW.Auth.JWT.ExpiresInMin(),
-                    _configuration.ZGW.Auth.JWT.UserId(),
-                    _configuration.ZGW.Auth.JWT.UserName());
+                string jwtToken = this._encryptionContext.GetJwtToken(securityKey,
+                    this._configuration.ZGW.Auth.JWT.Issuer(),
+                    this._configuration.ZGW.Auth.JWT.Audience(),
+                    this._configuration.ZGW.Auth.JWT.ExpiresInMin(),
+                    this._configuration.ZGW.Auth.JWT.UserId(),
+                    this._configuration.ZGW.Auth.JWT.UserName());
 
                 // Set Authorization header
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
@@ -184,13 +184,13 @@ namespace WebQueries.DataSending
             {
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Telemetry_Klantinteracties
-                    => $"{CommonValues.Default.Authorization.Token} {_configuration.ZGW.Auth.Key.OpenKlant()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenKlant()}",
 
                 HttpClientTypes.Objecten
-                    => $"{CommonValues.Default.Authorization.Token} {_configuration.ZGW.Auth.Key.Objecten()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.Objecten()}",
 
                 HttpClientTypes.ObjectTypen
-                    => $"{CommonValues.Default.Authorization.Token} {_configuration.ZGW.Auth.Key.ObjectTypen()}",
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
 
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
@@ -218,7 +218,7 @@ namespace WebQueries.DataSending
                     // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
                     ? await ResolveClient(httpClientType).GetAsync(uri)
                     : await ResolveClient(httpClientType).PostAsync(uri, body);
-                _semaphore.Release();
+                this._semaphore.Release();
 
                 return result.IsSuccessStatusCode
                     ? HttpRequestResponse.Success(await result.Content.ReadAsStringAsync())
