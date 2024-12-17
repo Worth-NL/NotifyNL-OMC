@@ -16,7 +16,7 @@ using ZhvModels.Properties;
 namespace EventsHandler.Tests.Unit.Services.Responding
 {
     [TestFixture]
-    public sealed class OmcResponderTests
+    public sealed class NotificationEventResponderTests
     {
         private readonly Mock<IDetailsBuilder> _mockedBuilder = new(MockBehavior.Strict);
 
@@ -38,10 +38,10 @@ namespace EventsHandler.Tests.Unit.Services.Responding
             (string Id, ProcessingResult Result, ProcessingStatus Status, HttpStatusCode Code, int ObjResultCode, string ObjResultName, string Description, string Content) test)
         {
             // Arrange
-            IRespondingService<ProcessingResult> omcResponder = new NotificationEventResponder(this._mockedBuilder.Object);
+            IRespondingService<ProcessingResult> responder = new NotificationEventResponder(this._mockedBuilder.Object);
 
             // Act
-            ObjectResult actualResponse = omcResponder.GetResponse(test.Result);
+            ObjectResult actualResponse = responder.GetResponse(test.Result);
 
             // Assert
             Assert.Multiple(() =>
