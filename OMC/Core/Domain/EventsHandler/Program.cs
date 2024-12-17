@@ -409,8 +409,8 @@ namespace EventsHandler
         {
             byte omcWorkflowVersion = builder.Services.GetRequiredService<WebApiConfiguration>().OMC.Feature.Workflow_Version();
 
-            services.AddSingleton<OmcResponder>();
-            services.AddSingleton(typeof(NotifyResponder), DetermineResponderVersion(omcWorkflowVersion));
+            services.AddSingleton<NotificationEventResponder>();
+            services.AddSingleton(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
 
             return;
 

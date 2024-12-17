@@ -20,7 +20,7 @@ using System.Net;
 namespace EventsHandler.Services.Responding
 {
     /// <inheritdoc cref="IRespondingService{TModel}"/>
-    public sealed class OmcResponder : IRespondingService<ProcessingResult>
+    public sealed class NotificationEventResponder : IRespondingService<ProcessingResult>
     {
         private const string DeserializationMissingProperty = "JSON deserialization";
         private const string DeserializationInvalidValue = "The JSON value";
@@ -29,9 +29,9 @@ namespace EventsHandler.Services.Responding
         private readonly IDetailsBuilder _detailsBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OmcResponder"/> class.
+        /// Initializes a new instance of the <see cref="NotificationEventResponder"/> class.
         /// </summary>
-        public OmcResponder(IDetailsBuilder builder)  // Dependency Injection (DI)
+        public NotificationEventResponder(IDetailsBuilder builder)  // Dependency Injection (DI)
         {
             this._detailsBuilder = builder;
         }

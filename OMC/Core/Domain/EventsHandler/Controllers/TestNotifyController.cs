@@ -17,7 +17,6 @@ using Notify.Models.Responses;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
@@ -33,48 +32,46 @@ namespace EventsHandler.Controllers
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
-    public sealed class TestController : OmcController  // Swagger UI requires this class to be public
+    public sealed class TestNotifyController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
-        private readonly IQueryContext _queryContext;
         private readonly ITelemetryService _telemetry;
         private readonly IRespondingService<ProcessingResult> _responder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestController"/> class.
+        /// Initializes a new instance of the <see cref="TestNotifyController"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
-        /// <param name="queryContext">The adapter containing external Web API queries.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public TestController(
+        public TestNotifyController(
             WebApiConfiguration configuration,
             ISerializationService serializer,
-            IQueryContext queryContext,
             ITelemetryService telemetry,
-            NotifyResponder responder)
+            GeneralResponder responder)
         {
             this._configuration = configuration;
             this._serializer = serializer;
-            this._queryContext = queryContext;
             this._telemetry = telemetry;
             this._responder = responder;
         }
 
-        #region NotifyNL endpoints
-        private const string NotifyNL = nameof(NotifyNL);
+        #region Notify Test endpoints
+        private const string Test = nameof(Test);
+        private const string Notify = nameof(Notify);
+        private const string UrlStart = $"/{Test}/{Notify}/";
 
         /// <summary>
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route(NotifyNL + "/HealthCheck")]
+        [Route($"{UrlStart}HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         public async Task<IActionResult> HealthCheckAsync()
         {
             try
@@ -124,11 +121,11 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route(NotifyNL + "/SendEmail")]
+        [Route($"{UrlStart}SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -164,11 +161,11 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route(NotifyNL + "/SendSms")]
+        [Route($"{UrlStart}SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         // Swagger UI
         [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
@@ -182,208 +179,6 @@ namespace EventsHandler.Controllers
                 mobileNumber,
                 smsTemplateId,
                 personalization);
-        }
-        #endregion
-
-        #region ZHV endpoints
-        private const string ZHV = nameof(ZHV);
-
-        /// <summary>
-        /// Checks the state of the "Open Zaak" Web API service health.
-        /// </summary>
-        [HttpGet]
-        [Route(ZHV + "/OpenZaakHealthCheck")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> OpenZaakHealthCheckAsync()
-        {
-            try
-            {
-                // Request
-                HttpRequestResponse result = await this._queryContext.GetZaakHealthCheckAsync();
-
-                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
-
-                // Response
-                return result.IsSuccess
-                    // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
-                    // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
-            }
-            catch (Exception exception)
-            {
-                // HttpStatus Code: 500 Internal Server Error
-                return LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
-            }
-        }
-
-        /// <summary>
-        /// Checks the state of the "Open Klant" Web API service health.
-        /// </summary>
-        [HttpGet]
-        [Route(ZHV + "/OpenKlantHealthCheck")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> OpenKlantHealthCheckAsync()
-        {
-            try
-            {
-                // Request
-                HttpRequestResponse result = await this._queryContext.GetKlantHealthCheckAsync();
-
-                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
-
-                // Response
-                return result.IsSuccess
-                    // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
-                    // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
-            }
-            catch (Exception exception)
-            {
-                // HttpStatus Code: 500 Internal Server Error
-                return LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
-            }
-        }
-
-        /// <summary>
-        /// Checks the state of the "Open Besluiten" Web API service health.
-        /// </summary>
-        [HttpGet]
-        [Route(ZHV + "/OpenBesluitenHealthCheck")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> OpenBesluitenHealthCheckAsync()
-        {
-            try
-            {
-                // Request
-                HttpRequestResponse result = await this._queryContext.GetBesluitenHealthCheckAsync();
-
-                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
-
-                // Response
-                return result.IsSuccess
-                    // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
-                    // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
-            }
-            catch (Exception exception)
-            {
-                // HttpStatus Code: 500 Internal Server Error
-                return LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
-            }
-        }
-
-        /// <summary>
-        /// Checks the state of the "Open Objecten" Web API service health.
-        /// </summary>
-        [HttpGet]
-        [Route(ZHV + "/OpenObjectenHealthCheck")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> OpenObjectenHealthCheckAsync()
-        {
-            try
-            {
-                // Request
-                HttpRequestResponse result = await this._queryContext.GetObjectenHealthCheckAsync();
-
-                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
-
-                // Response
-                return result.IsSuccess
-                    // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
-                    // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
-            }
-            catch (Exception exception)
-            {
-                // HttpStatus Code: 500 Internal Server Error
-                return LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
-            }
-        }
-
-        /// <summary>
-        /// Checks the state of the "Open ObjectTypen" Web API service health.
-        /// </summary>
-        [HttpGet]
-        [Route(ZHV + "/OpenObjectTypenHealthCheck")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> OpenObjectTypenHealthCheckAsync()
-        {
-            try
-            {
-                // Request
-                HttpRequestResponse result = await this._queryContext.GetObjectTypenHealthCheckAsync();
-
-                string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
-
-                // Response
-                return result.IsSuccess
-                    // HttpStatus Code: 202 Accepted
-                    ? LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(healthCheckState)))
-                    // HttpStatus Code: 400 Bad Request
-                    : LogApiResponse(LogLevel.Error, this._responder.GetResponse(ProcessingResult.Failure(healthCheckState)));
-            }
-            catch (Exception exception)
-            {
-                // HttpStatus Code: 500 Internal Server Error
-                return LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
-            }
-        }
-        #endregion
-
-        #region OMC endpoints
-        private const string OMC = nameof(OMC);
-
-        /// <summary>
-        /// Tests if all the configurations (from "appsettings.json" and environment variables) are present and contains non-empty values (if required).
-        /// </summary>
-        [HttpGet]
-        [Route(OMC + "/TestConfigs")]
-        // Security
-        [ApiAuthorization]
-        // User experience
-        [StandardizeApiResponses]
-        public async Task<IActionResult> TestConfigsAsync()
-        {
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    _ = WebApiConfiguration.TestAppSettingsConfigs(this._configuration);
-                    _ = WebApiConfiguration.TestEnvVariablesConfigs(this._configuration);
-                    
-                    // HttpStatus Code: 202 Accepted
-                    return LogApiResponse(LogLevel.Information, this._responder.GetResponse(ProcessingResult.Success(ApiResources.Endpoint_Test_OMC_TestConfigs_SUCCESS_ConfigurationsValid)));
-                }
-                catch (Exception exception)
-                {
-                    // HttpStatus Code: 500 Internal Server Error
-                    return this._responder.GetExceptionResponse(exception);
-                }
-            });
         }
 
         /// <summary>
@@ -415,11 +210,11 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route(OMC + "/Confirm")]
+        [Route($"{UrlStart}Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
-        [StandardizeApiResponses]
+        [AspNetExceptionsHandler]
         [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(
@@ -431,7 +226,7 @@ namespace EventsHandler.Controllers
             {
                 // Deserialize received JSON payload
                 NotifyReference reference = this._serializer.Deserialize<NotifyReference>(json);
-             
+
                 // Processing reporting operation
                 HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
 

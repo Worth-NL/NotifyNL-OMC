@@ -16,12 +16,12 @@ using ZhvModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v1
 {
-    /// <inheritdoc cref="NotifyResponder"/>
+    /// <inheritdoc cref="GeneralResponder"/>
     /// <remarks>
     ///   Version: "OpenKlant" (1.0) Web API service | "OMC workflow" v1.
     /// </remarks>
     /// <seealso cref="IRespondingService{TResult}"/>
-    internal sealed class NotifyCallbackResponder : NotifyResponder
+    internal sealed class NotifyCallbackResponder : GeneralResponder
     {
         private readonly WebApiConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
@@ -41,7 +41,7 @@ namespace EventsHandler.Services.Responding.v1
             this._telemetry = telemetry;
         }
 
-        /// <inheritdoc cref="NotifyResponder.HandleNotifyCallbackAsync(object)"/>
+        /// <inheritdoc cref="GeneralResponder.HandleNotifyCallbackAsync(object)"/>
         internal override async Task<IActionResult> HandleNotifyCallbackAsync(object json)
         {
             DeliveryReceipt callback = DeliveryReceipt.Default;
