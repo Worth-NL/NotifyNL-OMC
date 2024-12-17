@@ -21,7 +21,9 @@
 
   <!-- Packages -->
   <ItemGroup>
+    <!-- Domain -->
     <PackageReference Include="GovukNotify" Version="6.1.0" />  <!-- NOTE: Do not upgrade yet. This is critical notification component, and we haven't tested v7.0+ before -->
+    <!-- Asynchronicity helpers -->
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
   </ItemGroup>
 
