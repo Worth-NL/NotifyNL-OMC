@@ -32,7 +32,7 @@ namespace EventsHandler.Controllers
     // Swagger UI
     [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
-    public sealed class TestNotifyNLController : OmcController  // Swagger UI requires this class to be public
+    public sealed class TestNotifyController : OmcController  // Swagger UI requires this class to be public
     {
         private readonly WebApiConfiguration _configuration;
         private readonly ISerializationService _serializer;
@@ -40,13 +40,13 @@ namespace EventsHandler.Controllers
         private readonly IRespondingService<ProcessingResult> _responder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestNotifyNLController"/> class.
+        /// Initializes a new instance of the <see cref="TestNotifyController"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
-        public TestNotifyNLController(
+        public TestNotifyController(
             WebApiConfiguration configuration,
             ISerializationService serializer,
             ITelemetryService telemetry,
@@ -58,12 +58,16 @@ namespace EventsHandler.Controllers
             this._responder = responder;
         }
 
-        #region NotifyNL endpoints
+        #region Notify Test endpoints
+        private const string Test = nameof(Test);
+        private const string Notify = nameof(Notify);
+        private const string UrlStart = $"/{Test}/{Notify}/";
+
         /// <summary>
         /// Checks the status of "Notify NL" Web API service.
         /// </summary>
         [HttpGet]
-        [Route("HealthCheck")]
+        [Route($"{UrlStart}HealthCheck")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -117,7 +121,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("SendEmail")]
+        [Route($"{UrlStart}SendEmail")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -157,7 +161,7 @@ namespace EventsHandler.Controllers
         ///   <inheritdoc cref="SendEmailAsync" path="/param[@name='personalization']"/>
         /// </param>
         [HttpPost]
-        [Route("SendSms")]
+        [Route($"{UrlStart}SendSms")]
         // Security
         [ApiAuthorization]
         // User experience
@@ -206,7 +210,7 @@ namespace EventsHandler.Controllers
         ///   </para>
         /// </param>
         [HttpPost]
-        [Route("Confirm")]
+        [Route($"{UrlStart}Confirm")]
         // Security
         [ApiAuthorization]
         // User experience
