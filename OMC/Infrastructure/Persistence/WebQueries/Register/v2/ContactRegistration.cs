@@ -39,6 +39,7 @@ namespace WebQueries.Register.v2
             this.QueryContext = queryContext;
         }
 
+        #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
@@ -90,5 +91,6 @@ namespace WebQueries.Register.v2
                      $"\"initiator\":true" +
                    $"}}";
         }
+        #endregion
     }
 }

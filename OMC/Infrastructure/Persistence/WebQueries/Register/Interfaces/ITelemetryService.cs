@@ -57,6 +57,7 @@ namespace WebQueries.Register.Interfaces
             }
         }
 
+        #region Abstract
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
@@ -92,5 +93,6 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
+        #endregion
     }
 }
