@@ -5,6 +5,7 @@ using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
+using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;

@@ -3,6 +3,7 @@
 using Common.Settings.Configuration;
 using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.v1
 {

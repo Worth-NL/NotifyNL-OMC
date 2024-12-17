@@ -6,6 +6,7 @@ using Common.Versioning.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
+using WebQueries.Versioning.Interfaces;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
 {

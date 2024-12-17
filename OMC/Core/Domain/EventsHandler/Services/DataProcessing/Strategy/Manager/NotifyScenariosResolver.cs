@@ -38,12 +38,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         }
 
         /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}.DetermineScenarioAsync(NotificationEvent)"/>
-        async Task<INotifyScenario> IScenariosResolver<INotifyScenario, NotificationEvent>.DetermineScenarioAsync(NotificationEvent notification)
+        async Task<INotifyScenario> IScenariosResolver<INotifyScenario, NotificationEvent>.DetermineScenarioAsync(NotificationEvent model)
         {
             // Case scenarios
-            if (IsCaseScenario(notification))
+            if (IsCaseScenario(model))
             {
-                IQueryContext queryContext = this._dataQuery.From(notification);
+                IQueryContext queryContext = this._dataQuery.From(model);
                 CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
 
                 // Scenario #1: "Case created"
@@ -60,9 +60,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             }
 
             // Object scenarios
-            if (IsObjectScenario(notification))
+            if (IsObjectScenario(model))
             {
-                Guid objectTypeId = notification.Attributes.ObjectTypeUri.GetGuid();
+                Guid objectTypeId = model.Attributes.ObjectTypeUri.GetGuid();
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.TaskObjectType_Uuid()))
                 {
@@ -83,7 +83,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             }
 
             // Scenario #5: "Decision made"
-            if (IsDecisionScenario(notification))
+            if (IsDecisionScenario(model))
             {
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
