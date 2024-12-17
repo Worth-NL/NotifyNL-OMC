@@ -31,6 +31,11 @@ namespace ZhvModels.Mapping.Helpers
         /// Gets the pair of names Dutch => (index, English).
         /// </summary>
         private Dictionary<string, (int Index, string EnglishName)> Dutch_To_English { get; }
+        
+        /// <summary>
+        /// Custom delegate to be used by public logic.
+        /// </summary>
+        private delegate bool TryGet(string key, out (int, string) value);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertiesMetadata"/> class.
@@ -154,20 +159,6 @@ namespace ZhvModels.Mapping.Helpers
             => this.Dutch_To_English[dutchName].EnglishName;
 
         /// <summary>
-        ///   Safe version.
-        ///   <inheritdoc cref="GetPropertyDutchName(PropertyInfo)"/>
-        /// </summary>
-        public bool TryGetPropertyDutchName(string englishName, out (int Index, string DutchName) record)
-            => this.English_To_Dutch.TryGetValue(englishName, out record);
-
-        /// <summary>
-        ///   Safe version.
-        ///   <inheritdoc cref="GetPropertyEnglishName(string)"/>
-        /// </summary>
-        public bool TryGetPropertyEnglishName(string dutchName, out (int Index, string EnglishName) record)
-            => this.Dutch_To_English.TryGetValue(dutchName, out record);
-
-        /// <summary>
         /// Gets the property (<see cref="PropertyInfo"/>) value by its C# (English) name.
         /// </summary>
         public bool TryGetPropertyValueByEnglishName<TInstance>(string englishName, TInstance instance, [MaybeNullWhen(false)] out object value)
@@ -182,6 +173,20 @@ namespace ZhvModels.Mapping.Helpers
         {
             return TryGetPropertyValueByKeyToIndex(TryGetPropertyEnglishName, dutchName, instance, out value);
         }
+
+        /// <summary>
+        ///   Safe version.
+        ///   <inheritdoc cref="GetPropertyDutchName(PropertyInfo)"/>
+        /// </summary>
+        private bool TryGetPropertyDutchName(string englishName, out (int Index, string DutchName) record)
+            => this.English_To_Dutch.TryGetValue(englishName, out record);
+
+        /// <summary>
+        ///   Safe version.
+        ///   <inheritdoc cref="GetPropertyEnglishName(string)"/>
+        /// </summary>
+        private bool TryGetPropertyEnglishName(string dutchName, out (int Index, string EnglishName) record)
+            => this.Dutch_To_English.TryGetValue(dutchName, out record);
 
         /// <summary>
         /// Invokes custom <see cref="TryGet"/> delegate to obtain value from a respective property (<see cref="PropertyInfo"/>).
@@ -200,11 +205,6 @@ namespace ZhvModels.Mapping.Helpers
 
             return false;
         }
-
-        /// <summary>
-        /// Custom delegate to be used by public logic.
-        /// </summary>
-        private delegate bool TryGet(string key, out (int, string) value);
         #endregion
     }
 }
