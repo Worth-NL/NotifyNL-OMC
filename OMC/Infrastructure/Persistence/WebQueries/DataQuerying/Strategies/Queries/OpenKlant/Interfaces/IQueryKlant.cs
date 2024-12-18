@@ -89,7 +89,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         ///   The response from an external Web API service.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
-        internal Task<HttpRequestResponse> LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
+        internal Task<HttpRequestResponse> LinkPartyToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
         #region Polymorphic (Domain)

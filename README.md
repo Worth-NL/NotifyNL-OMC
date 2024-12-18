@@ -13,4 +13,4 @@
 
 - [Events Listener](Documentation/OMC%20-%20Documentation.md)
 
-- [Secrets Manager](EventsHandler/Logic/SecretsManager/Readme.md)
+- [Secrets Manager](OMC/Core/Domain/SecretsManager/Readme.md)

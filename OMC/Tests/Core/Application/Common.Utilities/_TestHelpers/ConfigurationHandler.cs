@@ -259,16 +259,16 @@ namespace Common.Tests.Utilities._TestHelpers
 
         // NOTE: IServiceProvider => OmcConfiguration
 
-        #region Web API Configuration
+        #region OMC Configuration
         public static OmcConfiguration GetOmcConfiguration()
         {
-            // Web API Configuration
+            // OMC Configuration
             return GetOmcConfiguration([]);
         }
 
         private static OmcConfiguration GetOmcConfiguration(ServiceCollection serviceCollection)
         {
-            // Web API Configuration
+            // OMC Configuration
             return new OmcConfiguration(GetServiceProvider(serviceCollection));
         }
 
