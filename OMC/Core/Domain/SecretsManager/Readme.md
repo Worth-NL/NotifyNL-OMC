@@ -1,8 +1,8 @@
 # Secrets Manager
 
 The purpose of this application is to generate JWT tokens with:
-a) internal pre-defined parameters (claims): **NotifyNL.SecretsManager.exe**
-b) externally passed parameters (claims): **NotifyNL.SecretsManager.dll**
+a) internal pre-defined parameters (claims): **OMC.SecretsManager.exe**
+b) externally passed parameters (claims): **OMC.SecretsManager.dll**
 
 ### 1.1. JWT structure
 
@@ -72,7 +72,7 @@ To achieve this result the Strategy Design Pattern was implemented internally.
 ---
 ###### A) Default mode
 
-- Double click on **NotifyNL.SecretsManager.exe**
+- Double click on **OMC.SecretsManager.exe**
 
 **Result:** The produced JWT token will be valid for 60 minutes from now.
 
@@ -81,7 +81,7 @@ To achieve this result the Strategy Design Pattern was implemented internally.
 
 - Run executable with a single numeric parameter (should ba castable to *System.Double* type)
 
-> NotifyNL.SecretsManager.exe 75
+> OMC.SecretsManager.exe 75
 
 **Result:** The produced JWT token will be valid for the specified amount of minutes from now.
 In this example, token is going to be valid for 75 minutes.
@@ -91,7 +91,7 @@ In this example, token is going to be valid for 75 minutes.
 
 - Run executable with a single datetime parameter (should be castable to *System.DateTime* type)
 
-> NotifyNL.SecretsManager.exe 2023-12-31T23:59:59
+> OMC.SecretsManager.exe 2023-12-31T23:59:59
 
 **Result:** The produced JWT token will be valid until the specified date and time.
 In this example, token is going to be valid until 31st of December 2023, 23:59:59.

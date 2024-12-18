@@ -740,7 +740,7 @@ In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ 
 An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
 
 <code>
-"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net8.0\NotifyNL.SecretsManager.exe" 1440
+"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net8.0\OMC.SecretsManager.exe" 1440
 
 pause
 </code>
