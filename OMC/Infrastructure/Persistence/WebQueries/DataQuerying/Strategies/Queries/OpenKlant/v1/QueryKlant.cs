@@ -113,8 +113,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 jsonBody);
         }
 
-        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string)"/>
-        async Task<HttpRequestResponse> IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
+        /// <inheritdoc cref="IQueryKlant.LinkPartyToContactMomentAsync"/>
+        async Task<HttpRequestResponse> IQueryKlant.LinkPartyToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
             Uri customerContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.ContactMomenten()}/klantcontactmomenten");
