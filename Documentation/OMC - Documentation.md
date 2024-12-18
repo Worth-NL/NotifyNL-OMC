@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.12.4
+v.1.13.0
 
 © 2023-2024, Worth Systems.
 
@@ -51,21 +51,23 @@ v.1.12.4
 
    - 4.1. [JSON Web Tokens](#jwt_tokens)
 
-      - 4.1.1. [Required components](#jwt_required_components)
+      - 4.1.1. [Generating](#jwt_generating)
 
-         - 4.1.1.1. [Header (algorithm + type)](#jwt_header)
+      - 4.1.2. [Required components](#jwt_required_components)
 
-         - 4.1.1.2. [Payload (claims)](#jwt_claims)
+         - 4.1.2.1. [Header (algorithm + type)](#jwt_header)
 
-         - 4.1.1.3. [Signature (secret)](#jwt_secret)
+         - 4.1.2.2. [Payload (claims)](#jwt_claims)
 
-      - 4.1.2. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
+         - 4.1.2.3. [Signature (secret)](#jwt_secret)
 
-      - 4.1.3. [Using generated JSON Web Token (JWT)](#jwt_generating)
+      - 4.1.3. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
 
-         - 4.1.3.1. [Postman (authorization)](#postman_authorization)
+      - 4.1.4. [Using generated JSON Web Token (JWT)](#jwt_generating)
 
-         - 4.1.3.2. [Swagger UI (authorization)](#swagger_ui_authorization)
+         - 4.1.4.1. [Postman (authorization)](#postman_authorization)
+
+         - 4.1.4.2. [Swagger UI (authorization)](#swagger_ui_authorization)
 
 5. [OMC Workflow](#omc_workflow)
 
@@ -250,9 +252,9 @@ And all of them have **Swagger UI** specified as the default start option.
 
 <h4 id="custom_lanunchSettings_profile">1.1.2.1. Customizing profile</h4>
 
-> Full content of `launchSettings.json` file.
+> Full content of `launchSettings.json` file for **Events Handler** project.
 
-```json
+```JSON
 {
   "profiles": {
     "http": {
@@ -362,6 +364,28 @@ And all of them have **Swagger UI** specified as the default start option.
 }
 ```
 
+> Full content of `launchSettings.json` file for **Secrets Manager** project.
+
+```JSON
+{
+  "profiles": {
+    "SecretsManager": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+
+        "OMC_AUTH_JWT_SECRET": "",
+        "OMC_AUTH_JWT_ISSUER": "",
+        "OMC_AUTH_JWT_AUDIENCE": "",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "",
+        "OMC_AUTH_JWT_USERID": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+        "OMC_AUTH_JWT_USERNAME": "OMC (Development)",  // NOTE: Optional place to reflect application mode
+      }
+    }
+  }
+}
+```
+
 > **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
 The developer can create more than one launch profile:
@@ -400,6 +424,8 @@ in order to run an already created **docker container**.
 <h1 id="architecture">2. Architecture</h1>
 
 <sup>[Go back](#start)</sup>
+
+![OMC Onion Layer Architecture](images/omc_architecture.png)
 
 [Scenarios](#scenarios) implemented in **OMC** are following _Strategy Design Pattern_, and they are using JSON data deserialized into _POCO (Plain Old CLR Object)_ models, and passed as _DTO (Data Transfer Object)_ models to query services (reflecting the external micro-services architecture of third-party "Open Services"). Query services are aggregated under _IQueryContext_ and its implementation _QueryContext_ - following _Adapter Design Pattern_ thanks to which queries can be agnostic (dependencies resolved internally) and organized within a single testable abstraction, giving the developers access to all available API query methods.
 
@@ -692,45 +718,47 @@ All of the API services involved in the notifying process (**OpenServices**, **O
 
 In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ would be used internally (based on the provided credentials (_environment variables_). However, developers testing or maintaining the solution need to generate their own JWT tokens (e.g., to access the **OMC** API endpoints from **Swagger UI** or **Postman**) using one of the following approaches.
 
+<h3 id="jwt_generating">4.1.1. Generating</h3>
+
 **JSON Web Token (JWT)** can be generated using:
 
 - **SecretsManager.exe** from `CLI (Command Line Interface)` externally (e.g., `CMD.exe on Windows`, using valid credentials defined in _environment variables_)
 
-> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md)'s documentation.
+> The commands are defined in the [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Core/Domain/SecretsManager/Readme.md)'s documentation.
 > **NOTE:** Do not use `PowerShell`.
 
 An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
 
 <code>
-"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net7.0\NotifyNL.SecretsManager.exe" 1440
+"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net8.0\NotifyNL.SecretsManager.exe" 1440
 
 pause
 </code>
 
 Users can also execute their commands directly in the catalog where **SecretsManager.exe** is located.
 
-- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
+- **SecretsManager.dll** (after referencing and importing the library) from the code (using valid credentials defined in _environment variables_ `OR` overruled from launch profile in _launchSettings.json_ in the project consuming the **Secrets Manager** project)
 
-> To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Logic/SecretsManager/Readme.md).
+> To learn more, read the documentation dedicated to [Secrets Manager](https://github.com/Worth-NL/NotifyNL-OMC/blob/update/Documentation/EventsHandler/Core/Domain/SecretsManager/Readme.md).
 
-- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ or overruled from launch profile in _launchSettings.json_)
+- By running **Secrets Manager** project in _Visual Studio_ (after selecting "Set as Startup Project" option in Solution Explorer and using valid credentials defined in _environment variables_ `OR` overruled from launch profile in _launchSettings.json_ in the **Secrets Manager** project)
 
 ![Configuration in appsettings.json](images/launchProfiles_secrets_manager.png)
 
 - Through the external **https://jwt.io** webpage (using the same credentials as those defined in _environment variables_).
 
-<h3 id="jwt_required_components">4.1.1. Required components</h3>
+<h3 id="jwt_required_components">4.1.2. Required components</h3>
 
 > Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
-<h4 id="jwt_header">4.1.1.1. Header (algorithm + type)</h4>
+<h4 id="jwt_header">4.1.2.1. Header (algorithm + type)</h4>
 
 > {
   "alg": "HS256",
   "typ": "JWT"
 }
 
-<h4 id="jwt_claims">4.1.1.2. Payload (claims)</h4>
+<h4 id="jwt_claims">4.1.2.2. Payload (claims)</h4>
 
 > {
   "client_id": "",
@@ -742,13 +770,13 @@ Users can also execute their commands directly in the catalog where **SecretsMan
   "exp": 0000000000
 }
 
-<h4 id="jwt_secret">4.1.1.3. Signature (secret)</h4>
+<h4 id="jwt_secret">4.1.2.3. Signature (secret)</h4>
 
 ![JWT Signature](images/jwt_signature.png)
 
 > **NOTE:** To be filled in **https://jwt.io**.
 
-<h3 id="jwt_mapping_environment_variables">4.1.2. Mapping of JWT claims from environment variables</h3>
+<h3 id="jwt_mapping_environment_variables">4.1.3. Mapping of JWT claims from environment variables</h3>
 
 | JWT claims            | **OMC** Environment Variables            |
 | --------------------- | ---------------------------------------- |
@@ -764,16 +792,16 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
 The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
-<h3 id="jwt_generating">4.1.3. Using generated JSON Web Token (JWT)</h3>
+<h3 id="jwt_generating">4.1.4. Using generated JSON Web Token (JWT)</h3>
 
-<h4 id="postman_authorization">4.1.3.1. Postman (authorization)</h4>
+<h4 id="postman_authorization">4.1.4.1. Postman (authorization)</h4>
 
 > After generating the JWT token you can copy-paste it in **Postman** to authorize your HTTP requests.
 
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
-<h4 id="swagger_ui_authorization">4.1.3.2. Swagger UI (authorization)</h4>
+<h4 id="swagger_ui_authorization">4.1.4.2. Swagger UI (authorization)</h4>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
 
@@ -973,7 +1001,7 @@ Notifies the respective party (e.g., a citizen or an organization) about the cas
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1004,9 +1032,9 @@ Required to be set:
 <h4 id="case_created_requirements">5.2.2.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 1 _status_ (it was never updated) => this is a new _case_
 
@@ -1046,7 +1074,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the stat
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1077,9 +1105,9 @@ Required to be set:
 <h4 id="case_updated_requirements">5.2.3.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
@@ -1125,7 +1153,7 @@ Notifies the respective party (e.g., a citizen or an organization) that their ca
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "zaken",
@@ -1156,9 +1184,9 @@ Required to be set:
 <h4 id="case_closed_requirements">5.2.4.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Cases (`"zaken"`)
-  -- **Resource:** Status (`"status"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Cases (`"zaken"`)
+  - **Resource:** Status (`"status"`)
 
 - The _case_ has 2+ _statuses_ (it was updated at least once)
 
@@ -1204,7 +1232,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the new 
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "objecten",
@@ -1237,9 +1265,9 @@ Required to be set:
 <h4 id="task_assigned_requirements">5.2.5.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"objecten"`)
-  -- **Resource:** Object (`"object"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"objecten"`)
+  - **Resource:** Object (`"object"`)
 
 - The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
 
@@ -1293,7 +1321,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the deci
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "besluiten",
@@ -1329,9 +1357,9 @@ Required to be set:
 <h4 id="decision_made_requirements">5.2.6.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"besluiten"`)
-  -- **Resource:** Object (`"besluitinformatieobject"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"besluiten"`)
+  - **Resource:** Object (`"besluitinformatieobject"`)
 
 - The **GUID** from _info object type URI_ (`"informatieobjecttype"`) linked to the _decision_ has to be **whitelisted** or `"*"` wildcard used (to accept all info object types) in respective whitelist _environment variable_
 
@@ -1419,7 +1447,7 @@ Notifies the respective party (e.g., a citizen or an organization) that the mess
 
 Example of JSON schema:
 
-```json
+```JSON
 {
   "actie": "create",
   "kanaal": "objecten",
@@ -1452,9 +1480,9 @@ Required to be set:
 <h4 id="message_received_requirements">5.2.7.3. Requirements</h4>
 
 - The _initial notification_ has:
-  -- **Action:** Create (`"create"`)
-  -- **Channel:** Objects (`"objecten"`)
-  -- **Resource:** Object (`"object"`)
+  - **Action:** Create (`"create"`)
+  - **Channel:** Objects (`"objecten"`)
+  - **Resource:** Object (`"object"`)
 
 - The **GUID** from _object type URI_ (`"objectType"`) in the _initial notification_ has to be **whitelisted** or `"*"` wildcard used (to accept all object types) in respective whitelist _environment variable_. This step will distinguish for which object type the notification is desired (e.g., tasks, messages, etc.)
 
