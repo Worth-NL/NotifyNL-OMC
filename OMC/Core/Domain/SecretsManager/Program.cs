@@ -48,8 +48,10 @@ namespace SecretsManager
             {
                 const string appSettingsRootName = "manager.appsettings";
 
-                configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
-                             .AddJsonFile($"{appSettingsRootName}.{builderContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+                string appSettingsPath = Path.Combine(AppContext.BaseDirectory, appSettingsRootName);
+
+                configuration.AddJsonFile($"{appSettingsPath}.json", optional: false)
+                             .AddJsonFile($"{appSettingsPath}.{builderContext.HostingEnvironment.EnvironmentName}.json", optional: true);
             });
         }
         #endregion

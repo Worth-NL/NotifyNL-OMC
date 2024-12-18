@@ -43,9 +43,9 @@ namespace WebQueries.Register.v1
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
             CaseStatus caseStatus = this._taskFactory
@@ -57,7 +57,7 @@ namespace WebQueries.Register.v1
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
             return $"{{" +
-                     $"\"bronorganisatie\":{notification.GetOrganizationId()}," +             // ENG: Source organization
+                     $"\"bronorganisatie\":{reference.Notification.GetOrganizationId()}," +   // ENG: Source organization
                      $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
                      $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
                      $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)

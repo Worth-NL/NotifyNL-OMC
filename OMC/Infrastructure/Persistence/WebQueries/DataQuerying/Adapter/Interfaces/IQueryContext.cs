@@ -114,8 +114,8 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> LinkCaseToContactMomentAsync(string jsonBody);
 
-        /// <inheritdoc cref="IQueryKlant.LinkCustomerToContactMomentAsync(IHttpNetworkService, string)"/>
-        public Task<HttpRequestResponse> LinkCustomerToContactMomentAsync(string jsonBody);
+        /// <inheritdoc cref="IQueryKlant.LinkPartyToContactMomentAsync"/>
+        public Task<HttpRequestResponse> LinkPartyToContactMomentAsync(string jsonBody);
         #endregion
 
         #region IQueryBesluiten

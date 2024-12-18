@@ -38,13 +38,13 @@ namespace WebQueries.Register.Interfaces
 
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(reference.Notification, reference, notificationMethod, messages));
+                    GetCreateContactMomentJsonBody(reference, notificationMethod, messages));
 
                 HttpRequestResponse requestResponse;
 
                 // Linking to the case and the customer
                 if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure ||
-                    (requestResponse = await this.QueryContext.LinkCustomerToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
+                    (requestResponse = await this.QueryContext.LinkPartyToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
                 {
                     return HttpRequestResponse.Failure(requestResponse.JsonResponse);
                 }
@@ -69,7 +69,7 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetCreateContactMomentJsonBody(
-            [UsedImplicitly] NotificationEvent notification,
+            //[UsedImplicitly] NotificationEvent notification,
             [UsedImplicitly] NotifyReference reference,
             NotifyMethods notificationMethod,
             IReadOnlyList<string> messages);
