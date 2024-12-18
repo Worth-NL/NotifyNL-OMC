@@ -67,7 +67,7 @@ To achieve this result the Strategy Design Pattern was implemented internally.
 
 #### 2.1. Internally
 
-- Navigate to `cd [...] \NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net7.0`
+- Navigate to `cd [...] \NotifyNL-OMC\OMC\Core\Domain\SecretsManager\bin\Debug\net8.0`
 
 ---
 ###### A) Default mode
