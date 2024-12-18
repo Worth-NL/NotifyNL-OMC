@@ -408,7 +408,7 @@ The developer can create more than one launch profile:
 > .../NotifyNL-OMC
 
 - And run the following **docker** command:
-> docker build -f EventsHandler/Api/EventsHandler/Dockerfile --force-rm -t `omc` .
+> docker build -f OMC/Infrastructure/WebApi/EventsHandler/Dockerfile --force-rm -t `omc` .
 >
 > **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want.
 
@@ -459,7 +459,7 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
 
 <h4 id="appsettings_example">3.1.1.1. Example</h4>
 
-> Full content of `appsettings.json` file.
+> Full content of `appsettings.json` file for **Events Handler** project.
 
 ```JSON
 {
@@ -515,6 +515,16 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
     }
   },
   "AllowedHosts": "*"
+}
+```
+
+> Full content of `manager.appsettings.json` file for **Secrets Manager** project.
+
+```JSON
+{
+  "Encryption": {
+    "IsAsymmetric": false
+  }
 }
 ```
 
@@ -730,7 +740,7 @@ In the normal business workflow **OMC** API will ensure that valid _JWT tokens_ 
 An example of a simple `.cmd` script using one of the commands responsible for creating _JWT token_ valid for 24 hours:
 
 <code>
-"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net8.0\NotifyNL.SecretsManager.exe" 1440
+"C:\[...]\NotifyNL-OMC\EventsHandler\Logic\SecretsManager\bin\Debug\net8.0\OMC.SecretsManager.exe" 1440
 
 pause
 </code>
