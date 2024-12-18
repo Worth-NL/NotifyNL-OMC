@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "SecretsManager": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+
+        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
+        "OMC_AUTH_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "60",
+        "OMC_AUTH_JWT_USERID": "OMC (Production) | Workflow v1",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Production) | Workflow v1"
+      }
+    }
+  }
+}

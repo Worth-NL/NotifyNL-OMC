@@ -1,0 +1,47 @@
+﻿<!-- © 2024, Worth Systems. -->
+
+<!-- The library project defining domain (DDD) enums, models, converters, and extensions -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>OMC.ZhvModels</AssemblyName>
+    
+    <TargetFramework>net8.0</TargetFramework>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Documentation (.xml) -->
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <!-- Resources -->
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <!-- Projects -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Application\Common\Common.csproj" />
+  </ItemGroup>
+
+  <!-- Exposition to internal members -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- Resources (text / localization) -->
+  <ItemGroup>
+    <Compile Update="Properties\ZhvResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ZhvResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\ZhvResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ZhvResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

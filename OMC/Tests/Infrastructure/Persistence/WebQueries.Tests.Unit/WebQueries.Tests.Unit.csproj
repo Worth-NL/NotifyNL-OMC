@@ -1,0 +1,34 @@
+<!-- © 2024, Worth Systems. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>OMC.ZhvModels.Tests.Unit</AssemblyName>
+
+    <TargetFramework>net8.0</TargetFramework>
+    
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Packages -->
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MoqExt" Version="1.0.2" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+  </ItemGroup>
+  
+  <!-- Projects -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Infrastructure\Persistence\WebQueries\WebQueries.csproj" />
+    <ProjectReference Include="..\..\..\Core\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
+  </ItemGroup>
+
+</Project>
