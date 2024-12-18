@@ -22,7 +22,7 @@ namespace Common.Settings.Extensions
         /// The "ASPNETCORE_ENVIRONMENT" environment variable.
         /// </summary>
         public static string AspNetCoreEnvironment => "ASPNETCORE_ENVIRONMENT";
-            
+
         /// <summary>
         /// The "SENTRY_DSN" environment variable.
         /// </summary>
