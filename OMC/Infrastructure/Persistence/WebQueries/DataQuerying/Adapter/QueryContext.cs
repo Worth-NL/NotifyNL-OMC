@@ -145,9 +145,9 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.LinkCaseToContactMomentAsync(string jsonBody)
             => await _queryKlant.LinkCaseToContactMomentAsync(_networkService, jsonBody);
 
-        /// <inheritdoc cref="IQueryContext.LinkCustomerToContactMomentAsync(string)"/>
-        async Task<HttpRequestResponse> IQueryContext.LinkCustomerToContactMomentAsync(string jsonBody)
-            => await _queryKlant.LinkCustomerToContactMomentAsync(_networkService, jsonBody);
+        /// <inheritdoc cref="IQueryContext.LinkPartyToContactMomentAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.LinkPartyToContactMomentAsync(string jsonBody)
+            => await _queryKlant.LinkPartyToContactMomentAsync(_networkService, jsonBody);
         #endregion
 
         #region IQueryBesluiten

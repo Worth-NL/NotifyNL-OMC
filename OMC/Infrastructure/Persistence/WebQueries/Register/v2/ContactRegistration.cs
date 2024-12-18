@@ -40,9 +40,9 @@ namespace WebQueries.Register.v2
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotificationEvent, NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotificationEvent notification, NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
