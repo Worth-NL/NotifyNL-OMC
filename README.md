@@ -11,6 +11,6 @@
 
 # NotifyNL Output Management Component (OMC)
 
-- [Events Listener](Documentation/OMC%20-%20Documentation.md)
+- [Events Handler](Documentation/OMC%20-%20Documentation.md)
 
 - [Secrets Manager](OMC/Core/Domain/SecretsManager/Readme.md)
