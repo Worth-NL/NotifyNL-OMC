@@ -8,16 +8,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-<<<<<<< HEAD:EventsHandler/Api/EventsHandler/EventsHandler.csproj
     <!-- Project -->
-    <AssemblyName>NotifyNL.EventsHandler</AssemblyName>
-    <VersionPrefix>1.12.4</VersionPrefix>
-||||||| 665838ee:EventsHandler/Api/EventsHandler/EventsHandler.csproj
-    <!-- Project -->
-    <AssemblyName>NotifyNL.EventsHandler</AssemblyName>
-=======
     <AssemblyName>OMC.EventsHandler</AssemblyName>
->>>>>>> 3a6ff552faf9e9565104f6fb58cf9dd45856238a:OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj
+    <VersionPrefix>1.13.1</VersionPrefix>
 
     <TargetFramework>net8.0</TargetFramework>
 
