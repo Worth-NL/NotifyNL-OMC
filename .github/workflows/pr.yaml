@@ -33,7 +33,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
           cache: true
-          cache-dependency-path: "EventsHandler/Api/EventsHandler/packages.lock.json"
+          cache-dependency-path: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests/packages.lock.json"
         name: Install dotnet [${{ matrix.dotnet-version }}] and setup cache
 
       - run: dotnet restore --locked-mode
@@ -44,7 +44,7 @@ jobs:
 
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
-          project: 'EventsHandler/Tests/UnitTests/EventsHandler.Tests'
+          project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests"
           threshold: 50
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
@@ -57,7 +57,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: file
-          thresholds: '50'
+          thresholds: "50"
         name: Generate coverage report in markdown
 
       - run: cat **code-coverage-results.md** >> $GITHUB_STEP_SUMMARY
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: |
-          TAG=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" EventsHandler/Api/EventsHandler/EventsHandler.csproj)-dev${{ github.run_number }}
+          TAG=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)-dev${{ github.run_number }}
           echo "TAG=$TAG" >> $GITHUB_ENV
           echo "tag=$TAG" >> $GITHUB_OUTPUT
         name: Set tag
