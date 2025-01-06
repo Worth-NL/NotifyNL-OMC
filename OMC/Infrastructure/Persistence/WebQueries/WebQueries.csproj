@@ -1,0 +1,56 @@
+﻿<!-- © 2024, Worth Systems. -->
+
+<!-- The library project handling HTTP communication with external Web API services -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>OMC.WebQueries</AssemblyName>
+
+    <TargetFramework>net8.0</TargetFramework>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Documentation (.xml) -->
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <!-- Resources -->
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <!-- Packages -->
+  <ItemGroup>
+    <!-- Domain -->
+    <PackageReference Include="GovukNotify" Version="6.1.0" />  <!-- NOTE: Do not upgrade yet. This is critical notification component, and we haven't tested v7.0+ before -->
+    <!-- Asynchronicity helpers -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
+  </ItemGroup>
+
+  <!-- Projects -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\Domain\SecretsManager\SecretsManager.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels\ZhvModels\ZhvModels.csproj" />
+  </ItemGroup>
+
+  <!-- Exposition to internal members -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- Resources (text / localization) -->
+  <ItemGroup>
+    <Compile Update="Properties\QueryResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>QueryResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\QueryResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>QueryResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
