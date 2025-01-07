@@ -16,6 +16,14 @@ jobs:
     strategy:
       matrix:
         dotnet-version: ["8.0"]
+        test-project:
+          [
+            "OMC/Tests/Core/Application/Common.UnitTests",
+            "OMC/Tests/Core/Domain/ZhvModels.UnitTests",
+            "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit",
+            "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests",
+            "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests",
+          ]
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
@@ -33,7 +41,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
           cache: true
-          cache-dependency-path: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests/packages.lock.json"
+          cache-dependency-path: "${{ matrix.test-project }}/packages.lock.json"
         name: Install dotnet [${{ matrix.dotnet-version }}] and setup cache
 
       - run: dotnet restore --locked-mode --force-evaluate
@@ -44,7 +52,7 @@ jobs:
 
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
-          project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests"
+          project: ${{ matrix.test-project }}
           threshold: 50
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
@@ -57,7 +65,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: file
-          thresholds: "50"
+          thresholds: "50 80"
         name: Generate coverage report in markdown
 
       - run: cat **code-coverage-results.md** >> $GITHUB_STEP_SUMMARY
@@ -125,10 +133,10 @@ jobs:
 
       - run: |
           helm version
-          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait
+          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait --timeout 300s
         name: Deploy v1 chart
 
       - run: |
           helm version
-          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait
+          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait --timeout 300s
         name: Deploy v2 chart
