@@ -110,14 +110,6 @@
         "resolved": "3.0.0",
         "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
-      "Microsoft.ApplicationInsights": {
-        "type": "Transitive",
-        "resolved": "2.22.0",
-        "contentHash": "3AOM9bZtku7RQwHyMEY3tQMrHIgjcfRDa6YQpd/QG2LDGvMydSlL9Di+8LLMt7J2RDdfJ7/2jdYv6yHcMJAnNw==",
-        "dependencies": {
-          "System.Diagnostics.DiagnosticSource": "5.0.0"
-        }
-      },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "Transitive",
         "resolved": "8.0.10",
@@ -171,8 +163,8 @@
       },
       "Microsoft.Extensions.Configuration.Binder": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "mBMoXLsr5s1y2zOHWmKsE9veDcx8h1x/c3rz4baEdQKTeDcmQAPNbB54Pi/lhFO3K431eEq6PFbMgLaa6PHFfA==",
+        "resolved": "8.0.2",
+        "contentHash": "7IQhGK+wjyGrNsPBjJcZwWAr+Wf6D4+TwOptUt77bWtgNkiV8tDEbhFS+dDamtQFZ2X7kWG9m71iZQRj2x3zgQ==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
         }
@@ -202,16 +194,16 @@
       },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "V8S3bsm50ig6JSyrbcJJ8bW2b9QLGouz+G1miK3UTaOWmMtFwNNNzUf4AleyDWUmTrWMLNnFSLEQtxmxgNQnNQ==",
+        "resolved": "8.0.1",
+        "contentHash": "BmANAnR5Xd4Oqw7yQ75xOAYODybZQRzdeNucg7kS5wWKd2PNnMdYtJ2Vciy0QLylRmv42DGl5+AFL9izA6F1Rw==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2"
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "cjWrLkJXK0rs4zofsK4bSdg+jhDLTaxrkXu4gS6Y7MAlCvRyNNgwY/lJi5RDlQOnSZweHqoyvgvbdvQsRIW+hg=="
+        "resolved": "8.0.2",
+        "contentHash": "3iE7UF7MQkCv1cxzCahz+Y/guQbTqieyxyaWKhrRO91itI9cOKO76OHeQDahqG4MmW5umr3CcCvGmK92lWNlbg=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
@@ -293,15 +285,6 @@
         "contentHash": "arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
-        }
-      },
-      "Microsoft.Extensions.Logging.ApplicationInsights": {
-        "type": "Transitive",
-        "resolved": "2.22.0",
-        "contentHash": "5OmXub+9MyX8FbqgO+hBJRHk1iJ+UZUU20oIU3wo+RbmH6Jtsja79rriHLlzlrkMzWbpCkCzF6f4Yb6iGbsDag==",
-        "dependencies": {
-          "Microsoft.ApplicationInsights": "2.22.0",
-          "Microsoft.Extensions.Logging": "2.1.1"
         }
       },
       "Microsoft.Extensions.Logging.Configuration": {
@@ -1005,41 +988,72 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "NotifyNL.EventsHandler": {
+      "OMC.Common": {
         "type": "Project",
         "dependencies": {
-          "Asp.Versioning.Mvc": "[8.1.0, )",
-          "GovukNotify": "[6.1.0, )",
           "JetBrains.Annotations": "[2024.3.0, )",
           "Macross.Json.Extensions": "[3.0.0, )",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.10, )",
-          "Microsoft.AspNetCore.OpenApi": "[8.0.10, )",
-          "Microsoft.Extensions.Logging.ApplicationInsights": "[2.22.0, )",
-          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
-          "Microsoft.VisualStudio.Threading": "[17.12.19, )",
-          "NUnit": "[4.2.2, )",
-          "NotifyNL.SecretsManager": "[1.0.0, )",
-          "PostSharp": "[2024.1.6, )",
-          "Sentry.AspNetCore": "[4.13.0, )",
-          "Sentry.Profiling": "[4.13.0, )",
-          "Swashbuckle.AspNetCore": "[7.0.0, )",
-          "Swashbuckle.AspNetCore.Filters": "[8.0.2, )"
+          "Microsoft.Extensions.Configuration.Binder": "[8.0.2, )",
+          "Microsoft.Extensions.DependencyInjection": "[8.0.1, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[2.1.1, )",
+          "PostSharp": "[2024.1.6, )"
         }
       },
-      "NotifyNL.SecretsManager": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.10, )"
-        }
-      },
-      "NotifyNL.Utilities": {
+      "OMC.Common.Tests.Utilities": {
         "type": "Project",
         "dependencies": {
           "Macross.Json.Extensions": "[3.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[8.0.1, )",
           "Moq": "[4.20.72, )",
           "MoqExt": "[1.0.2, )",
-          "NotifyNL.EventsHandler": "[1.12.4, )"
+          "OMC.Common": "[1.0.0, )"
+        }
+      },
+      "OMC.EventsHandler": {
+        "type": "Project",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "[8.1.0, )",
+          "Microsoft.AspNetCore.OpenApi": "[8.0.10, )",
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
+          "OMC.WebQueries": "[1.0.0, )",
+          "Sentry.AspNetCore": "[4.13.0, )",
+          "Sentry.Profiling": "[4.13.0, )",
+          "Swashbuckle.AspNetCore": "[7.0.0, )",
+          "Swashbuckle.AspNetCore.Filters": "[8.0.2, )"
+        }
+      },
+      "OMC.SecretsManager": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.10, )",
+          "OMC.Common": "[1.0.0, )"
+        }
+      },
+      "OMC.WebQueries": {
+        "type": "Project",
+        "dependencies": {
+          "GovukNotify": "[6.1.0, )",
+          "Microsoft.VisualStudio.Threading": "[17.12.19, )",
+          "OMC.SecretsManager": "[1.0.0, )",
+          "OMC.ZhvModels": "[1.0.0, )"
+        }
+      },
+      "OMC.ZhvModels": {
+        "type": "Project",
+        "dependencies": {
+          "OMC.Common": "[1.0.0, )"
+        }
+      },
+      "OMC.ZhvModels.Tests.Unit": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.NET.Test.Sdk": "[17.8.0, )",
+          "NUnit": "[3.14.0, )",
+          "NUnit.Analyzers": "[3.9.0, )",
+          "NUnit3TestAdapter": "[4.5.0, )",
+          "OMC.Common.Tests.Utilities": "[1.0.0, )",
+          "OMC.ZhvModels": "[1.0.0, )",
+          "coverlet.collector": "[6.0.0, )"
         }
       }
     }
