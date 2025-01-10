@@ -75,8 +75,7 @@ jobs:
         name: Check if project version is in CHANGELOG.md
 
       - run: |
-          VERSION=$(git describe --tags --abbrev=0)
-          awk "/## $VERSION/,/^## /{if (\$0 !~ /^## $VERSION/) print}" CHANGELOG.md > release-notes.md
+          awk "/## ${{ steps.project.outputs.version_project }}/,/^## /{if (\$0 !~ /^## ${{ steps.project.outputs.version_project }}/) print}" CHANGELOG.md > release-notes.md
           echo "notes=$(cat release-notes.md)" >> $GITHUB_OUTPUT
         name: Extract Changelog Section
         id: changelog
