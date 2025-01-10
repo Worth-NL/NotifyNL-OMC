@@ -76,6 +76,7 @@ jobs:
 
       - run: |
           CHANGELOG_SECTION=$(awk "/## ${{ steps.project.outputs.version_project }}/,/^## /{if (\$0 !~ /^## ${{ steps.project.outputs.version_project }}/) print}" CHANGELOG.md)
+          echo $CHANGELOG_SECTION
           echo "notes=$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
         name: Extract Changelog Section
         id: changelog
@@ -85,4 +86,5 @@ jobs:
           tag: ${{ steps.project.outputs.version_project }}-dev
           body: ${{ steps.changelog.outputs.notes }}
           draft: true
+          generateReleaseNotes: true
           token: ${{ secrets.WORTHNL_PAT }}
