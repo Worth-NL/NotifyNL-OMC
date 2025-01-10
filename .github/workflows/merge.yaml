@@ -24,17 +24,21 @@ jobs:
 
       - run: |
           LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name' | sed 's/^v\.//')
+          version_release=$LATEST_RELEASE >> $GITHUB_OUTPUT
         name: Get latest release and strip prefix
+        id: release
 
       - run: |
-          PROJECT_VERSION=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)-dev${{ github.run_number }}
+          PROJECT_VERSION=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)
+          version_project=$PROJECT_VERSION >> $GITHUB_OUTPUT
         name: Get project version
+        id: project
 
       - run: |
           set -e
 
-          echo "Latest Github release tag: $LATEST_RELEASE"
-          echo "Project version [EventsHandler.csproj]: $PROJECT_VERSION"
+          echo "Latest Github release tag: ${{ steps.release.outputs.version_release }}"
+          echo "Project version [EventsHandler.csproj]: ${{ steps.project.outputs.version_project }}"
 
           compare_versions() {
             local v1=(${1//./ })  # Split LATEST_RELEASE into array
@@ -57,5 +61,5 @@ jobs:
             return 1
           }
 
-          compare_versions "$LATEST_RELEASE" "$PROJECT_VERSION"
+          compare_versions "${{ steps.release.outputs.version_release }}" "${{ steps.project.outputs.version_project }}"
         name: Check project and latest release versions
