@@ -85,4 +85,4 @@ jobs:
           tag: ${{ steps.project.outputs.version_project }}-dev
           body: ${{ steps.changelog.outputs.notes }}
           draft: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WORTHNL_PAT }}
