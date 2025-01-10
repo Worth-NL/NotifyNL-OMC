@@ -75,8 +75,19 @@ jobs:
         name: Check if project version is in CHANGELOG.md
 
       - run: |
-          CHANGELOG_SECTION=$(awk "/## ${{ steps.project.outputs.version_project }}/,/^## /{if (\$0 !~ /^## ${{ steps.project.outputs.version_project }}/) print}" CHANGELOG.md)
-          echo $CHANGELOG_SECTION
+          project_version="${{ steps.project.outputs.version_project }}"
+          CHANGELOG_SECTION=$(python3 -c "
+          import re
+          with open('CHANGELOG.md', 'r') as f:
+            content = f.read()
+            match = re.search(r'## $project_version\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
+            if match:
+                print(match.group(1).strip())
+            else:
+                raise ValueError(f'No changelog entry found for version {project_version}')
+          ")
+          echo "Changelog for version $project_version:"
+          echo "$CHANGELOG_SECTION"
           echo "notes=$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
         name: Extract Changelog Section
         id: changelog
