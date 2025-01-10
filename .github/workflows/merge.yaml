@@ -67,9 +67,22 @@ jobs:
           echo "Checking if the project version is listed in CHANGELOG.md"
 
           if ! grep -q "## ${{ steps.project.outputs.version_project }}" CHANGELOG.md; then
-            echo "⛔  Version ${{ steps.project.outputs.version_project }} not found in CHANGELOG.md"
+            echo "⛔  Version ${{ steps.project.outputs.version_project }} not found in CHANGELOG.md" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "✅ Version ${{ steps.project.outputs.version_project }} found in CHANGELOG.md"
           fi
         name: Check if project version is in CHANGELOG.md
+
+      - run: |
+          VERSION=$(git describe --tags --abbrev=0)
+          awk "/## $VERSION/,/^## /{if (\$0 !~ /^## $VERSION/) print}" CHANGELOG.md > release-notes.md
+          echo "notes=$(cat release-notes.md)" >> $GITHUB_OUTPUT
+        name: Extract Changelog Section
+        id: changelog
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.project.outputs.version_project }}-dev
+          body: ${{ steps.changelog.outputs.notes }}
+          draft: true
