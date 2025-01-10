@@ -24,13 +24,13 @@ jobs:
 
       - run: |
           LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name' | sed 's/^v\.//')
-          version_release=$LATEST_RELEASE >> $GITHUB_OUTPUT
+          echo "version_release=$LATEST_RELEASE" >> $GITHUB_OUTPUT
         name: Get latest release and strip prefix
         id: release
 
       - run: |
           PROJECT_VERSION=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)
-          version_project=$PROJECT_VERSION >> $GITHUB_OUTPUT
+          echo "version_project=$PROJECT_VERSION" >> $GITHUB_OUTPUT
         name: Get project version
         id: project
 
