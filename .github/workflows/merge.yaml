@@ -1,0 +1,56 @@
+name: Post-merge actions
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Don't want the tests running in parallel
+  cancel-in-progress: true
+
+jobs:
+  validate-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          LATEST_RELEASE=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/latest \
+            | jq -r '.tag_name | sed 's/^v\.//')
+        name: Get latest release and strip prefix
+
+      - run: |
+          PROJECT_VERSION=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)-dev${{ github.run_number }}
+        name: Get project version
+
+      - run: |
+          set -e
+
+          echo "Latest Github release tag: $LATEST_RELEASE"
+          echo "Project version [EventsHandler.csproj]: $PROJECT_VERSION"
+
+          compare_versions() {
+            local v1=(${1//./ })  # Split LATEST_RELEASE into array
+            local v2=(${2//./ })  # Split PROJECT_VERSION into array
+
+            for i in {0..2}; do
+              if [[ ${v1[i]:-0} -lt ${v2[i]:-0} ]]; then
+                echo "PROJECT_VERSION is higher :: [$1 < $2]"
+                echo "✅"
+                return 0
+              elif [[ ${v1[i]:-0} -gt ${v2[i]:-0} ]]; then
+                echo "LATEST_RELEASE is higher :: [$1 > $2]"
+                echo "⚠️  Double-check that you've pulled/merged the latest version before continuing." | tee -a $GITHUB_STEP_SUMMARY
+                echo "⛔  Project version [$2] needs to be higher than latest release [$1], please adjust the version in [OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj]" | tee -a $GITHUB_STEP_SUMMARY
+                return 2
+              fi
+            done
+            echo "Versions are equal :: [$1 == $2]"
+            echo "⛔  Project version [$2] needs to be higher than latest release [$1], please adjust the version in [OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj]" | tee -a $GITHUB_STEP_SUMMARY
+            return 1
+          }
+
+          compare_versions "$LATEST_RELEASE" "$PROJECT_VERSION"
+        name: Check project and latest release versions
