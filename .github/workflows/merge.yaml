@@ -15,10 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          LATEST_RELEASE=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/releases/latest \
-            | jq -r '.tag_name | sed 's/^v\.//')
+          LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name' | sed 's/^v\.//')
         name: Get latest release and strip prefix
 
       - run: |
