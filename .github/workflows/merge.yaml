@@ -1,9 +1,9 @@
 name: Post-merge actions
 
 on:
-  pull_request:
-    branches: ["main"]
-    types: [opened, synchronize]
+  push:
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -94,8 +94,114 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.project.outputs.version_project }}-dev
+          tag: v.${{ steps.project.outputs.version_project }}
           body: ${{ steps.changelog.outputs.notes }}
-          draft: true
           generateReleaseNotes: true
           token: ${{ secrets.WORTHNL_PAT }}
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: validate-versions
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          TAG=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        name: Set tag
+        id: set-tag
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        name: Login at dockerhub
+
+      - uses: docker/setup-qemu-action@v3
+        name: Setup QEMU
+
+      - uses: docker/setup-buildx-action@v3
+        name: Setup buildx
+
+      - uses: docker/build-push-action@v6
+        with:
+          file: OMC/Infrastructure/WebApi/EventsHandler/Dockerfile
+          push: true
+          tags: worthnl/notifynl-omc:${{ env.TAG }},worthnl/notifynl-omc:latest
+        name: Docker build and push ${{ env.TAG }}
+
+    outputs:
+      tag: ${{ steps.set-tag.outputs.tag }}
+
+  helm-chart-bump:
+    runs-on: ubuntu-latest
+    needs: docker-build-and-push
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Worth-NL/helm-charts
+          ref: main
+          token: ${{ secrets.WORTHNL_PAT }}
+        name: Checkout Worth-NL/helm-charts
+
+      - uses: pietrobolcato/action-read-yaml@1.0.0
+        with:
+          config: notifynl-omc/Chart.yaml
+        name: Read Chart.yaml
+        id: yaml-read
+
+      - uses: olegsu/semver-action@v1
+        with:
+          version: ${{ steps.yaml-read.outputs['version'] }}
+        name: Chart version bump
+        id: version-bump
+
+      - uses: rmeneely/update-yaml@v1
+        with:
+          infile: notifynl-omc/Chart.yaml
+          varlist: version=${{ steps.version-bump.outputs.version }},appVersion=${{ needs.docker-build-and-push.outputs.tag }}
+        name: Update Chart.yaml
+
+      - uses: offensive-vk/auto-commit-push@v7
+        with:
+          message: 🤖 notifynl-omc chart bump
+          github-token: ${{ secrets.WORTHNL_PAT }}
+
+  helm-release:
+    runs-on: ubuntu-latest
+    needs: helm-chart-bump
+    environment: Test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Worth-NL/helm-charts
+          ref: main
+          token: ${{ secrets.WORTHNL_PAT }}
+        name: Checkout Worth-NL/helm-charts
+
+      - uses: bwvolleyball/k8s-toolkit@v1.0.0
+        with:
+          config: ${{ secrets.K8S_CONFIG }}
+
+      - run: helm repo add denhaag https://gemeente-denhaag.github.io/helm-charts/
+        name: Install helm chart dependency repository
+
+      - run: helm dependency build
+        working-directory: ${{ github.workspace }}/notifynl-omc
+        name: Helm chart dependency build
+
+      - run: |
+          base64 -d "${{ secrets.OMC_V1_VALUES }}" > v1.values.yaml
+          helm version
+          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reset-values -f v1.values.yaml --wait --timeout 300s
+        name: Deploy v1 chart
+
+      - run: |
+          base64 -d "${{ secrets.OMC_V2_VALUES }}" > v2.values.yaml
+          helm version
+          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reset-values -f v2.values.yaml --wait --timeout 300s
+        name: Deploy v2 chart
