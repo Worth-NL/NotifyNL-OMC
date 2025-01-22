@@ -511,6 +511,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(
                     It.IsAny<Uri?>(),
+                    It.IsAny<string?>(),
                     It.IsAny<string?>()))
                 .ReturnsAsync(new CommonPartyData
                 {
@@ -677,6 +678,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             this._mockedQueryContext
                 .Verify(mock => mock.GetPartyDataAsync(
                     It.IsAny<Uri?>(),
+                    It.IsAny<string?>(), 
                     It.IsAny<string?>()),
                 Times.Exactly(getCitizenDetailsInvokeCount));
 
