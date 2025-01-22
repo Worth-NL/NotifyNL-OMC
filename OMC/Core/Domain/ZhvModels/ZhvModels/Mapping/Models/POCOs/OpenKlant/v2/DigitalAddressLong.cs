@@ -39,6 +39,14 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         public string Type { get; set; } = string.Empty;
 
         /// <summary>
+        /// The type of the digital address.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("omschrijving")]
+        [JsonPropertyOrder(3)]
+        public string Reference { get; set; } = string.Empty;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DigitalAddressLong"/> struct.
         /// </summary>
         public DigitalAddressLong()

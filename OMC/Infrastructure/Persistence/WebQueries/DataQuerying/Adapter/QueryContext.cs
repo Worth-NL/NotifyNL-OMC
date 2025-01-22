@@ -110,8 +110,8 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.GetKlantHealthCheckAsync()
             => await this._queryKlant.GetHealthCheckAsync(this._networkService);
 
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier)
         {
             // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
             if (caseUri.IsNullOrDefault())
@@ -134,7 +134,7 @@ namespace WebQueries.DataQuerying.Adapter
             }
 
             // Case #3: Since Involved Party URI is present => getting organization data will be attempted
-            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri);
+            return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri, caseIdentifier);
         }
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>

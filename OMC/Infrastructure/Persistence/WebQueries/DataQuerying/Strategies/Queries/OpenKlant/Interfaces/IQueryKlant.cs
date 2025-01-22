@@ -53,6 +53,21 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri);
+
+        /// <summary>
+        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// </summary>
+        /// <remarks>
+        ///   The method used to obtain company data.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="involvedPartyUri">The <see cref="Uri"/> to get the involved organization party.</param>
+        /// <param name="caseIdentifier">The identifier of the case.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier);
         #endregion
 
         #region Abstract (Telemetry)

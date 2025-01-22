@@ -78,6 +78,28 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 .ConvertToUnified();
         }
 
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier)  // NOTE: This URI is the same as partijen from above
+        {
+            // The provided URI is invalid
+            if (involvedPartyUri.IsNotParty())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotPartyUri);
+            }
+
+            // Predefined URL components
+            const string expandParameter = "?expand=digitaleAdressen";
+
+            // Request URL
+            Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
+
+            return PartyResults.Party(  // Single determined party result
+                    partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
+                    configuration: ((IQueryKlant)this).Configuration,
+                    caseIdentifier: caseIdentifier)
+                .ConvertToUnified();
+        }
+
         // NOTE: Multiple results
         private static async Task<PartyResults> GetPartyResultsV2Async(IQueryBase queryBase, Uri citizenUri)
         {
