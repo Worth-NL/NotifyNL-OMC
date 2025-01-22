@@ -66,6 +66,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 .ConvertToUnified();
         }
 
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier)
+        {
+            // The provided URI is invalid
+            if (involvedPartyUri.IsNotParty())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotPartyUri);
+            }
+
+            // Single determined party result
+            return (await GetPartyResultV1Async(queryBase, involvedPartyUri))  // Request URL
+                .ConvertToUnified();
+        }
+
         // NOTE: Multiple results
         private static async Task<PartyResults> GetPartyResultsV1Async(IQueryBase queryBase, Uri citizenUri)
         {
