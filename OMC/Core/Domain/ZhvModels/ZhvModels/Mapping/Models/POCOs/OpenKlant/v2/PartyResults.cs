@@ -47,7 +47,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// </returns>
         /// <exception cref="HttpRequestException"/>
         public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
-            Party(OmcConfiguration configuration)
+            Party(OmcConfiguration configuration,
+                string? caseIdentifier = null)
         {
             // Validation #1: Results
             if (this.Results.IsEmpty())
@@ -67,13 +68,13 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                 // Validation #2: Addresses
                 if (partyResult.Expansion.DigitalAddresses.IsEmpty())
                 {
-                    continue;  // Do not waste time on processing party data which would be for 100% invalid
+                    continue; // Do not waste time on processing party data which would be for 100% invalid
                 }
 
                 // Determine which address is preferred
                 if (IsPreferredFound(configuration, partyResult,
                         ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
-                        ref fallbackEmailAddress, ref fallbackPhoneNumber))
+                        ref fallbackEmailAddress, ref fallbackPhoneNumber, caseIdentifier))
                 {
                     return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
                 }
@@ -85,12 +86,14 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                 fallbackEmailAddress, fallbackPhoneNumber);
         }
 
-        /// <inheritdoc cref="Party(OmcConfiguration)"/>
+        /// <inheritdoc>
+        ///     <cref>Party(OmcConfiguration)</cref>
+        /// </inheritdoc>
         public static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
             Party(
-            OmcConfiguration configuration,
-            PartyResult partyResult,
-            string? caseIdentifier = null)
+                OmcConfiguration configuration,
+                PartyResult partyResult,
+                string? caseIdentifier = null)
         {
             // Validation #1: Addresses
             if (partyResult.Expansion.DigitalAddresses.IsEmpty())
@@ -119,30 +122,25 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         #region Helper methods
+
         // NOTE: Checks preferred contact address
         private static bool IsPreferredFound(
-        OmcConfiguration configuration,
-        PartyResult party,
-        ref PartyResult fallbackEmailOwningParty,
-        ref PartyResult fallbackPhoneOwningParty,
-        ref DistributionChannels distributionChannel,
-        ref string fallbackEmailAddress,
-        ref string fallbackPhoneNumber,
-        string? caseIdentifier = null)
+            OmcConfiguration configuration,
+            PartyResult party,
+            ref PartyResult fallbackEmailOwningParty,
+            ref PartyResult fallbackPhoneOwningParty,
+            ref DistributionChannels distributionChannel,
+            ref string fallbackEmailAddress,
+            ref string fallbackPhoneNumber,
+            string? caseIdentifier = null)
         {
             Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
-            
+            bool
+                prefDigitalAddressFoundFlag =
+                    false; //Flag to indicate that in case no match was made on case identifier a preferred digital address was found
+
             foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
             {
-                // Check if digital address matches case identifier
-                if (caseIdentifier != null &&
-                    digitalAddress.Reference == caseIdentifier)
-                {
-                    // Set fallback values when case identifier matches, and mark the flag
-                    SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
-                    return true;
-                }
-
                 // Determine distribution channel
                 distributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
 
@@ -152,7 +150,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                     continue;
                 }
 
-                (string emailAddress, string phoneNumber) = DetermineDigitalAddresses(digitalAddress, distributionChannel);
+                (string emailAddress, string phoneNumber) =
+                    DetermineDigitalAddresses(digitalAddress, distributionChannel);
 
                 // Skip if both email and phone number are empty
                 if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
@@ -160,11 +159,24 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                     continue;
                 }
 
+                // Check if digital address matches case identifier
+                if (caseIdentifier != null &&
+                    digitalAddress.Reference == caseIdentifier)
+                {
+                    // Set fallback values when case identifier matches, and mark the flag
+                    SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
+                    return true;
+                }
+
                 // Check for preferred digital address after case identifier match
                 if (prefDigitalAddressId != Guid.Empty && prefDigitalAddressId == digitalAddress.Id)
                 {
                     // Update fallback values with the preferred address
-                    SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
+                    SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
+                    // Set flag that a preferred address is found. This can still be overridden by case identification match
+                    prefDigitalAddressFoundFlag = true;
                 }
                 else if (emailAddress.IsNotNullOrEmpty() && fallbackEmailAddress.IsNullOrEmpty())
                 {
@@ -179,9 +191,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                     fallbackPhoneOwningParty = party;
                 }
             }
-
             // If nothing found return false
-            return false;
+            return prefDigitalAddressFoundFlag;
         }
 
         private static void SetPreferredAddress(
@@ -194,7 +205,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             ref string fallbackPhoneNumber)
         {
             // Determine email and phone for this address
-            (string emailAddress, string phoneNumber) = DetermineDigitalAddresses(digitalAddress, DetermineDistributionChannel(digitalAddress, configuration));
+            (string emailAddress, string phoneNumber) = DetermineDigitalAddresses(digitalAddress,
+                DetermineDistributionChannel(digitalAddress, configuration));
 
             // Update the fallback values
             fallbackEmailOwningParty = party;
@@ -204,16 +216,17 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         // NOTE: Checks alternative contact addresses
-        private static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber) GetMatchingContactDetails(
-            PartyResult fallbackEmailOwningParty, PartyResult fallbackPhoneOwningParty,
-            string fallbackEmailAddress, string fallbackPhoneNumber)
+        private static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+            GetMatchingContactDetails(
+                PartyResult fallbackEmailOwningParty, PartyResult fallbackPhoneOwningParty,
+                string fallbackEmailAddress, string fallbackPhoneNumber)
         {
             // 3a. FALLBACK APPROACH: If the party's preferred address couldn't be determined
             //     the email address has priority and the first encountered one should be returned
             if (fallbackEmailAddress.IsNotNullOrEmpty())
             {
                 return (fallbackEmailOwningParty, DistributionChannels.Email,
-                        EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
+                    EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
             }
 
             // 3b. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
@@ -221,7 +234,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             if (fallbackPhoneNumber.IsNotNullOrEmpty())
             {
                 return (fallbackPhoneOwningParty, DistributionChannels.Sms,
-                        EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
+                    EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
             }
 
             // 3c. In the case of worst possible scenario, that preferred address couldn't be determined
@@ -238,7 +251,6 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         {
             return digitalAddress.Type == configuration.AppSettings.Variables.EmailGenericDescription()
                 ? DistributionChannels.Email
-
                 : digitalAddress.Type == configuration.AppSettings.Variables.PhoneGenericDescription()
                     ? DistributionChannels.Sms
 
@@ -254,12 +266,13 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         {
             return distributionChannel switch
             {
-                DistributionChannels.Email  => (digitalAddress.Value, string.Empty),
-                DistributionChannels.Sms    => (string.Empty, digitalAddress.Value),
+                DistributionChannels.Email => (digitalAddress.Value, string.Empty),
+                DistributionChannels.Sms => (string.Empty, digitalAddress.Value),
 
                 _ => (string.Empty, string.Empty)
             };
         }
+
         #endregion
     }
 }
