@@ -39,7 +39,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         public string Type { get; set; } = string.Empty;
 
         /// <summary>
-        /// The type of the digital address.
+        /// The reference of the digital address.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("omschrijving")]
