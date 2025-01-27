@@ -84,7 +84,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return new PreparedData(
                 party: await this._queryContext.GetPartyDataAsync(
                     caseUri: this._case.Uri,
-                    bsnNumber),
+                    bsnNumber: bsnNumber, 
+                    caseIdentifier: this._case.Identification),
                 caseUri: this._case.Uri);
         }
         #endregion
