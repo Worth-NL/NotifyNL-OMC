@@ -34,28 +34,15 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// </remarks>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="bsnNumber">The BSN (Citizen Service Number) to get citizen party.</param>
+        /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber);
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier = null);
 
         /// <summary>
-        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string)"/>
-        /// </summary>
-        /// <remarks>
-        ///   The method used to obtain company data.
-        /// </remarks>
-        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="involvedPartyUri">The <see cref="Uri"/> to get the involved organization party.</param>
-        /// <exception cref="ArgumentException"/>
-        /// <exception cref="KeyNotFoundException"/>
-        /// <exception cref="HttpRequestException"/>
-        /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri);
-
-        /// <summary>
-        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string, string?)"/>
         /// </summary>
         /// <remarks>
         ///   The method used to obtain company data.
@@ -67,7 +54,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier);
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier = null);
         #endregion
 
         #region Abstract (Telemetry)
