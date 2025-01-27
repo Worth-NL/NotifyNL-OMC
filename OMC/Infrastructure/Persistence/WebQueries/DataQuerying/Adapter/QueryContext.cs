@@ -118,7 +118,7 @@ namespace WebQueries.DataQuerying.Adapter
             {
                 return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
                     ? throw new ArgumentException(QueryResources.Querying_ERROR_Internal_MissingBsnNumber)
-                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier);
             }
 
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
@@ -130,7 +130,7 @@ namespace WebQueries.DataQuerying.Adapter
                 bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(caseUri);
 
                 // 2. Fetch citizen data using "OpenKlant" Web API service
-                return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber);
+                return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier);
             }
 
             // Case #3: Since Involved Party URI is present => getting organization data will be attempted

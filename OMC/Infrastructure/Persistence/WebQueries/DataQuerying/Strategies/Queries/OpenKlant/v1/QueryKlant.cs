@@ -38,8 +38,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
         }
 
         #region Polymorphic (Party data)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
         {
             // Predefined URL components
             string citizensEndpoint = $"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/klanten";
@@ -52,21 +52,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 .ConvertToUnified();
         }
 
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri)
-        {
-            // The provided URI is invalid
-            if (involvedPartyUri.IsNotParty())
-            {
-                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotPartyUri);
-            }
-
-            // Single determined party result
-            return (await GetPartyResultV1Async(queryBase, involvedPartyUri))  // Request URL
-                .ConvertToUnified();
-        }
-
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri, string?)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier)
         {
             // The provided URI is invalid
