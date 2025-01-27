@@ -1000,7 +1000,9 @@ To process certain notification the specific internal criteria must be met. Usua
 
 When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by the specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
 
----
+<h4 id="scenarios_general_template_placeholders">5.2.1.5. Parties and preferred addresses</h4>
+
+Once the parties have been identified, the next step is to select a method and address for contacting them. The first selection is based on the case identifier (**V2 CaseDetails Identification**). If an address exists that matches the case identifier, it will be used. If no match is found, the system will check for a preferred address. If neither a preferred address nor a case identifier match is found, the fallback address will be used.
 
 <h1 id="scenarios_examples">Examples</h1>
 
