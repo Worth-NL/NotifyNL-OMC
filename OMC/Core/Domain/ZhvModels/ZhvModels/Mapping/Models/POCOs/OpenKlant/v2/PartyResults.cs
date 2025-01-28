@@ -159,14 +159,20 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                     continue;
                 }
 
-                // Check if digital address matches case identifier
+                // Check if digital address matches case identifier. Proceeds preferred digital address
                 if (caseIdentifier != null &&
                     digitalAddress.Reference == caseIdentifier)
                 {
-                    // Set fallback values when case identifier matches, and mark the flag
+                    // Set fallback values when case identifier matches, and return true
                     SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
                         ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
                     return true;
+                }
+
+                // Skip when preferred digital address has already been found
+                if (prefDigitalAddressFoundFlag)
+                {
+                    continue;
                 }
 
                 // Check for preferred digital address after case identifier match
