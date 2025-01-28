@@ -89,7 +89,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         public Task<HttpRequestResponse> GetKlantHealthCheckAsync();
 
         /// <summary>
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
         /// </summary>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
