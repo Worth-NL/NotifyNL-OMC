@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.13.2
+v.1.14.0
 
 © 2023-2024, Worth Systems.
 
@@ -720,8 +720,7 @@ Let's say the following "SMS_Success_Subject" configuration from `appsettings.js
 
 All of the API services involved in the notifying process (**OpenServices**, **OMC**, **Notify**) requires some type of authorization and authentication procedure.
 
-> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using pred
-efined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using predefined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
 
 > The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" [workflow](#workflow_versions) is used.
 
