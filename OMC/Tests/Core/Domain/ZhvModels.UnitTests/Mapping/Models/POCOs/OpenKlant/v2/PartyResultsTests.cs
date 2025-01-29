@@ -131,6 +131,30 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         }
 
         [Test]
+        public void Party_ForMany_ExistingResults_With_MatchingCaseIdentifier_ReturnsExpectedResult_Phone()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Email_CaseMatch(this._validAppSettingsConfiguration, testId, addressId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = testPartyResults.Party(this._validAppSettingsConfiguration, CaseIdentification);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // The preferred address was found
+                Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+            });
+        }
+
+        [Test]
         public void Party_ForMany_ExistingResults_Without_MatchingPreferredAddress_ReturnsExpectedResult_Phone_FirstEncountered()
         {
             // Arrange
@@ -192,6 +216,29 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualParty, Is.EqualTo(testPartyEmail));
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));  // The preferred address was found
+                Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+            });
+        }
+
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingCaseIdentifier_ReturnsExpectedResult_Email()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testPartyEmail = GetTestPartyResult_Email_CaseMatch(this._validAppSettingsConfiguration, testId, addressId);  // Email should have priority over phone
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail, CaseIdentification);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testPartyEmail));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // The preferred address was found
                 Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
             });
         }
@@ -308,6 +355,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
 
         private const string TestEmail = "john.doe@gmail.com";
         private const string TestPhone = "+44 7911 123456";
+        private const string? CaseIdentification = "caseIdentification";
 
         /// <summary>
         /// In this set of test data there are phone numbers and e-mails combined, so e-mail should be always prioritized.
@@ -368,6 +416,79 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                             Id = GetUniqueId(addressId),
                             Value = $"first_{TestEmail}",
                             Type = configuration.AppSettings.Variables.EmailGenericDescription()
+                        },
+
+                        new DigitalAddressLong()  // Can be preferred address with valid e-mail (not first encountered, should be returned if preferred)
+                        {
+                            Id = addressId,
+                            Value = $"second_{TestEmail}",
+                            Type = configuration.AppSettings.Variables.EmailGenericDescription()
+                        }
+                    ]
+                }
+            };
+        }
+
+        /// <summary>
+        /// In this set of test data there are phone numbers and e-mails combined, so e-mail should be always prioritized.
+        /// </summary>
+        private static PartyResult GetTestPartyResult_Email_CaseMatch(OmcConfiguration configuration, Guid partyId, Guid addressId)
+        {
+            return new PartyResult
+            {
+                PreferredDigitalAddress = new DigitalAddressShort
+                {
+                    Id = partyId
+                },
+                Identification = new PartyIdentification
+                {
+                    Details = new PartyDetails
+                    {
+                        Name = "John",
+                        SurnamePrefix = string.Empty,
+                        Surname = "Doe"
+                    }
+                },
+                Expansion = new Expansion
+                {
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong(), // Just empty address (might be not fully initialized)
+
+                        new DigitalAddressLong()  // Preferred address and valid type but empty e-mail (cannot be used)
+                        {
+                            Id = partyId,
+                            Value = string.Empty,
+                            Type = configuration.AppSettings.Variables.EmailGenericDescription()
+                        },
+
+                        new DigitalAddressLong()  // Preferred address and valid email but empty type (cannot be used)
+                        {
+                            Id = partyId,
+                            Value = $"emptyType_{TestEmail}",
+                            Type = string.Empty
+                        },
+
+                        new DigitalAddressLong()  // Preferred address but unsupported type (only e-mail and phone numbers)
+                        {
+                            Id = partyId,
+                            Value = "https://www.facebook.com/john.doe",
+                            Type = "Facebook"
+                        },
+
+                        new DigitalAddressLong()  // Not preferred address but valid phone (e-mails have priority => keep processing)
+                        {
+                            Id = GetUniqueId(partyId),
+                            Value = TestPhone,
+                            Type = configuration.AppSettings.Variables.PhoneGenericDescription()
+                        },
+
+                        new DigitalAddressLong()  // Not preferred address but valid e-mail (should be used if the preferred e-mail is not found => until then keep processing)
+                        {
+                            Id = GetUniqueId(partyId),
+                            Value = $"first_{TestEmail}",
+                            Type = configuration.AppSettings.Variables.EmailGenericDescription(),
+                            Reference = CaseIdentification!
                         },
 
                         new DigitalAddressLong()  // Can be preferred address with valid e-mail (not first encountered, should be returned if preferred)

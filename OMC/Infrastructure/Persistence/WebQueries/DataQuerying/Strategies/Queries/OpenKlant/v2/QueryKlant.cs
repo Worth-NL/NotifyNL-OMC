@@ -38,8 +38,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         }
 
         #region Polymorphic (Party data)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
         {
             // Predefined URL components
             string partiesEndpoint = $"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
@@ -53,12 +53,13 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand))  // Many party results
-                .Party(((IQueryKlant)this).Configuration)  // Single determined party result
+                .Party(((IQueryKlant)this).Configuration, 
+                    caseIdentifier)  // Single determined party result
                 .ConvertToUnified();
         }
 
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri)  // NOTE: This URI is the same as partijen from above
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri, string?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier)  // NOTE: This URI is the same as partijen from above
         {
             // The provided URI is invalid
             if (involvedPartyUri.IsNotParty())
@@ -74,7 +75,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
 
             return PartyResults.Party(  // Single determined party result
                     partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
-                    configuration: ((IQueryKlant)this).Configuration)
+                    configuration: ((IQueryKlant)this).Configuration,
+                    caseIdentifier: caseIdentifier)
                 .ConvertToUnified();
         }
 

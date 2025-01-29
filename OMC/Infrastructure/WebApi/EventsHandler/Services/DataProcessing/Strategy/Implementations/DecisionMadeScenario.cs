@@ -108,7 +108,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             return new PreparedData(
                 party: await this._queryContext.GetPartyDataAsync(
                     this._case.Uri,
-                    this._bsnNumber),
+                    this._bsnNumber, 
+                    this._case.Identification),
                 caseUri: this._case.Uri);
         }
 
