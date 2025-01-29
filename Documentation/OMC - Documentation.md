@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.13.1
+v.1.14.0
 
 © 2023-2024, Worth Systems.
 
@@ -720,7 +720,7 @@ Let's say the following "SMS_Success_Subject" configuration from `appsettings.js
 
 All of the API services involved in the notifying process (**OpenServices**, **OMC**, **Notify**) requires some type of authorization and authentication procedure.
 
-> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using prefedined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
+> **NOTE:** some external Web API services (e.g. **Open Klant** v2.0 or **Objecten** APIs) are using predefined _API keys_ to authenticate users and authorize them to access the service. In other cases, JWT have to be generated (and refreshed if needed).
 
 > The user of **OMC** doesn't have to worry which authorization method will be used behind the hood, as long as you provide valid credentials and specify which version of "OpenServices" [workflow](#workflow_versions) is used.
 
@@ -999,7 +999,9 @@ To process certain notification the specific internal criteria must be met. Usua
 
 When everything is already validated, prepared, and processed, the **Notify NL** Web API service needs to receive instruction how to format the upcoming notification. The way how to achieve this is to set up so called "template" (using **Notify NL Admin portal** webpage), define `((placeholders))` in the text (_subject_ and/or _body_) - matching to the ones defined by the specific **OMC** scenario, and then use the `ID` of this freshly generated "template" in respective _environment variable_ for **OMC**.
 
----
+<h4 id="scenarios_general_template_placeholders">5.2.1.5. Parties and preferred addresses</h4>
+
+Once the parties have been identified, the next step is to select a method and address for contacting them. The first selection is based on the case identifier (**V2 CaseDetails Identification**). If an address exists that matches the case identifier, it will be used. If no match is found, the system will check for a preferred address. If neither a preferred address nor a case identifier match is found, the fallback address will be used.
 
 <h1 id="scenarios_examples">Examples</h1>
 
