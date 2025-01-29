@@ -1,0 +1,207 @@
+name: Post-merge actions
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Don't want the tests running in parallel
+  cancel-in-progress: true
+
+jobs:
+  validate-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Europe/Amsterdam"
+        name: Set Timezone to Europe/Amsterdam
+
+      - uses: actions/checkout@v4
+        name: Checkout repository
+
+      - run: |
+          LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name' | sed 's/^v\.//')
+          echo "version_release=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+        name: Get latest release and strip prefix
+        id: release
+
+      - run: |
+          PROJECT_VERSION=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)
+          echo "version_project=$PROJECT_VERSION" >> $GITHUB_OUTPUT
+        name: Get project version
+        id: project
+
+      - run: |
+          set -e
+
+          echo "Latest Github release tag: ${{ steps.release.outputs.version_release }}"
+          echo "Project version [EventsHandler.csproj]: ${{ steps.project.outputs.version_project }}"
+
+          compare_versions() {
+            local v1=(${1//./ })  # Split LATEST_RELEASE into array
+            local v2=(${2//./ })  # Split PROJECT_VERSION into array
+
+            for i in {0..2}; do
+              if [[ ${v1[i]:-0} -lt ${v2[i]:-0} ]]; then
+                echo "✅  PROJECT_VERSION is higher :: [$1 < $2]"
+                return 0
+              elif [[ ${v1[i]:-0} -gt ${v2[i]:-0} ]]; then
+                echo "⛔  LATEST_RELEASE is higher :: [$1 > $2]"
+                echo "⚠️  Double-check that you've pulled/merged the latest version before continuing." | tee -a $GITHUB_STEP_SUMMARY
+                echo "⛔  Project version [$2] needs to be higher than latest release [$1], please adjust the version in [OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj]" | tee -a $GITHUB_STEP_SUMMARY
+                return 2
+              fi
+            done
+            echo "⚠️  Versions are equal :: [$1 == $2]"
+            echo "⛔  Project version [$2] needs to be higher than latest release [$1], please adjust the version in [OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj]" | tee -a $GITHUB_STEP_SUMMARY
+            return 1
+          }
+
+          compare_versions "${{ steps.release.outputs.version_release }}" "${{ steps.project.outputs.version_project }}"
+        name: Check project and latest release versions
+        
+      - run: |
+          echo "Checking if the project version is listed in CHANGELOG.md"
+
+          if ! grep -q "## ${{ steps.project.outputs.version_project }}" CHANGELOG.md; then
+            echo "⛔  Version ${{ steps.project.outputs.version_project }} not found in CHANGELOG.md" | tee -a $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ Version ${{ steps.project.outputs.version_project }} found in CHANGELOG.md"
+          fi
+        name: Check if project version is in CHANGELOG.md
+
+      - run: |
+          project_version="${{ steps.project.outputs.version_project }}"
+          CHANGELOG_SECTION=$(python3 -c "
+          import re
+          with open('CHANGELOG.md', 'r') as f:
+            content = f.read()
+            match = re.search(r'## $project_version\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
+            if match:
+                print(match.group(1).strip())
+            else:
+                raise ValueError(f'No changelog entry found for version {project_version}')
+          ")
+          echo "Changelog for version $project_version:"
+          echo "$CHANGELOG_SECTION"
+          echo "notes=$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
+        name: Extract Changelog Section
+        id: changelog
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: v.${{ steps.project.outputs.version_project }}
+          body: ${{ steps.changelog.outputs.notes }}
+          generateReleaseNotes: true
+          token: ${{ secrets.WORTHNL_PAT }}
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: validate-versions
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          TAG=$(grep -oPm1 "(?<=<VersionPrefix>)[^<]+" OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        name: Set tag
+        id: set-tag
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        name: Login at dockerhub
+
+      - uses: docker/setup-qemu-action@v3
+        name: Setup QEMU
+
+      - uses: docker/setup-buildx-action@v3
+        name: Setup buildx
+
+      - uses: docker/build-push-action@v6
+        with:
+          file: OMC/Infrastructure/WebApi/EventsHandler/Dockerfile
+          push: true
+          tags: worthnl/notifynl-omc:${{ env.TAG }},worthnl/notifynl-omc:latest
+        name: Docker build and push ${{ env.TAG }}
+
+    outputs:
+      tag: ${{ steps.set-tag.outputs.tag }}
+
+  helm-chart-bump:
+    runs-on: ubuntu-latest
+    needs: docker-build-and-push
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Worth-NL/helm-charts
+          ref: main
+          token: ${{ secrets.WORTHNL_PAT }}
+        name: Checkout Worth-NL/helm-charts
+
+      - uses: pietrobolcato/action-read-yaml@1.0.0
+        with:
+          config: notifynl-omc/Chart.yaml
+        name: Read Chart.yaml
+        id: yaml-read
+
+      - uses: olegsu/semver-action@v1
+        with:
+          version: ${{ steps.yaml-read.outputs['version'] }}
+        name: Chart version bump
+        id: version-bump
+
+      - uses: rmeneely/update-yaml@v1
+        with:
+          infile: notifynl-omc/Chart.yaml
+          varlist: version=${{ steps.version-bump.outputs.version }},appVersion=${{ needs.docker-build-and-push.outputs.tag }}
+        name: Update Chart.yaml
+
+      - uses: offensive-vk/auto-commit-push@v7
+        with:
+          message: 🤖 notifynl-omc chart bump
+          github-token: ${{ secrets.WORTHNL_PAT }}
+
+  helm-release:
+    runs-on: ubuntu-latest
+    needs: helm-chart-bump
+    environment: Test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Worth-NL/helm-charts
+          ref: main
+          token: ${{ secrets.WORTHNL_PAT }}
+        name: Checkout Worth-NL/helm-charts
+
+      - uses: bwvolleyball/k8s-toolkit@v1.0.0
+        with:
+          config: ${{ secrets.K8S_CONFIG }}
+
+      - run: helm repo add denhaag https://gemeente-denhaag.github.io/helm-charts/
+        name: Install helm chart dependency repository
+
+      - run: helm dependency build
+        working-directory: ${{ github.workspace }}/notifynl-omc
+        name: Helm chart dependency build
+
+      - run: |
+          base64 -d "${{ secrets.OMC_V1_VALUES }}" > v1.values.yaml
+          helm version
+          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reset-values -f v1.values.yaml --wait --timeout 300s
+        name: Deploy v1 chart
+
+      - run: |
+          base64 -d "${{ secrets.OMC_V2_VALUES }}" > v2.values.yaml
+          helm version
+          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reset-values -f v2.values.yaml --wait --timeout 300s
+        name: Deploy v2 chart

@@ -8,12 +8,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <!-- Project -->
     <AssemblyName>OMC.EventsHandler</AssemblyName>
+    <VersionPrefix>1.13.2</VersionPrefix>
 
     <TargetFramework>net8.0</TargetFramework>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
     <!-- Documentation (.xml) -->
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
