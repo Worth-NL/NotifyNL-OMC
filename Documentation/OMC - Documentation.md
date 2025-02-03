@@ -2,7 +2,7 @@
 
 v.1.14.1
 
-© 2023-2024, Worth Systems.
+© 2023-2025, Worth Systems.
 
 ---
 
