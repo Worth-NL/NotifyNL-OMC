@@ -95,13 +95,6 @@ namespace EventsHandler
 
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
                                  .AddJsonFile($"{appSettingsRootName}.{builder.Environment.EnvironmentName}.json", optional: true);
-
-            var assembly = Assembly.GetEntryAssembly();
-            AssemblyName? assemblyName = assembly?.GetName();
-            Version? version = assemblyName?.Version;
-
-            if (version is not null)
-                OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
             
             return builder;
         }
@@ -236,6 +229,14 @@ namespace EventsHandler
 
             // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
+
+            // Fetch version from EventsHandler.Csproj and set OmcVersion.
+            var assembly = Assembly.GetEntryAssembly();
+            AssemblyName? assemblyName = assembly?.GetName();
+            Version? version = assemblyName?.Version;
+
+            if (version is not null)
+                OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
 
             // Version of the application ("OMC Web API" in this case)
             options.Release = OmcVersion.GetExpandedVersion();
