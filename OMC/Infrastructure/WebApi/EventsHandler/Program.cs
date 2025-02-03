@@ -231,9 +231,7 @@ namespace EventsHandler
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
             // Fetch version from EventsHandler.Csproj and set OmcVersion.
-            var assembly = Assembly.GetEntryAssembly();
-            AssemblyName? assemblyName = assembly?.GetName();
-            Version? version = assemblyName?.Version;
+            Version? version = Assembly.GetEntryAssembly()?.GetName().Version;
 
             if (version is not null)
                 OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
