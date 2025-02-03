@@ -11,7 +11,7 @@ namespace Common.Versioning.Models
 
         private static int Minor => 14;
 
-        private static int Patch => 0;
+        private static int Patch => 1;
         /// <summary>
         /// Gets the .NET version of the software, accepted by API Controllers, e.g.:
         /// <code>1.101</code>
