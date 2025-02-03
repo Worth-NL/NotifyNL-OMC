@@ -96,6 +96,13 @@ namespace EventsHandler
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
                                  .AddJsonFile($"{appSettingsRootName}.{builder.Environment.EnvironmentName}.json", optional: true);
 
+            var assembly = Assembly.GetEntryAssembly();
+            AssemblyName? assemblyName = assembly?.GetName();
+            Version? version = assemblyName?.Version;
+
+            if (version is not null)
+                OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
+            
             return builder;
         }
         #endregion
