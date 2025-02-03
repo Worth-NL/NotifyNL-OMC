@@ -1,7 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using PostSharp.Aspects.Advices;
-
 namespace Common.Versioning.Models
 {
     /// <summary>
@@ -12,6 +10,7 @@ namespace Common.Versioning.Models
         private static int s_major;
         private static int s_minor;
         private static int s_patch;
+
         /// <summary>
         /// Gets the .NET version of the software, accepted by API Controllers, e.g.:
         /// <code>1.101</code>
@@ -27,6 +26,12 @@ namespace Common.Versioning.Models
         /// </summary>
         public static string GetExpandedVersion() => $"{s_major}.{s_minor}.{s_patch}";
 
+        /// <summary>
+        /// Sets Version by Event-handler version-prefix in Program.
+        /// </summary>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="patch"></param>
         public static void SetVersion(int major, int minor, int patch)
         {
             s_major = major;
