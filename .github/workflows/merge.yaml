@@ -194,13 +194,13 @@ jobs:
         name: Helm chart dependency build
 
       - run: |
-          base64 -d "${{ secrets.OMC_V1_VALUES }}" > v1.values.yaml
+          echo "${{ secrets.OMC_V1_VALUES }}" | base64 -d > v1.values.yaml
           helm version
           helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reset-values -f v1.values.yaml --wait --timeout 300s
         name: Deploy v1 chart
 
       - run: |
-          base64 -d "${{ secrets.OMC_V2_VALUES }}" > v2.values.yaml
+          echo "${{ secrets.OMC_V2_VALUES }}" | base64 -d > v2.values.yaml
           helm version
           helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reset-values -f v2.values.yaml --wait --timeout 300s
         name: Deploy v2 chart
