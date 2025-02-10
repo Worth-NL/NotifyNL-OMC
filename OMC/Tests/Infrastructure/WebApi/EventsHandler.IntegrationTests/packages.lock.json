@@ -950,6 +950,7 @@
           "Asp.Versioning.Mvc": "[8.1.0, )",
           "Microsoft.AspNetCore.OpenApi": "[8.0.10, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
+          "Newtonsoft.Json": "[13.0.1, )",
           "OMC.WebQueries": "[1.0.0, )",
           "Sentry.AspNetCore": "[4.13.0, )",
           "Sentry.Profiling": "[4.13.0, )",
@@ -969,6 +970,7 @@
         "dependencies": {
           "GovukNotify": "[6.1.0, )",
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
+          "Newtonsoft.Json": "[13.0.1, )",
           "OMC.SecretsManager": "[1.0.0, )",
           "OMC.ZhvModels": "[1.0.0, )"
         }

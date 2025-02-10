@@ -1015,6 +1015,7 @@
           "Asp.Versioning.Mvc": "[8.1.0, )",
           "Microsoft.AspNetCore.OpenApi": "[8.0.10, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
+          "Newtonsoft.Json": "[13.0.1, )",
           "OMC.WebQueries": "[1.0.0, )",
           "Sentry.AspNetCore": "[4.13.0, )",
           "Sentry.Profiling": "[4.13.0, )",
@@ -1034,6 +1035,7 @@
         "dependencies": {
           "GovukNotify": "[6.1.0, )",
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
+          "Newtonsoft.Json": "[13.0.1, )",
           "OMC.SecretsManager": "[1.0.0, )",
           "OMC.ZhvModels": "[1.0.0, )"
         }
@@ -1047,13 +1049,11 @@
       "OMC.ZhvModels.Tests.Unit": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.NET.Test.Sdk": "[17.8.0, )",
-          "NUnit": "[3.14.0, )",
-          "NUnit.Analyzers": "[3.9.0, )",
-          "NUnit3TestAdapter": "[4.5.0, )",
+          "Microsoft.NET.Test.Sdk": "[17.11.1, )",
+          "NUnit": "[4.2.2, )",
+          "NUnit3TestAdapter": "[4.6.0, )",
           "OMC.Common.Tests.Utilities": "[1.0.0, )",
-          "OMC.ZhvModels": "[1.0.0, )",
-          "coverlet.collector": "[6.0.0, )"
+          "OMC.ZhvModels": "[1.0.0, )"
         }
       }
     }
