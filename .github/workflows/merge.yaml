@@ -164,6 +164,11 @@ jobs:
           cmd: yq -i '.version = "${{ steps.version-bump.outputs.version }}" | .appVersion = "${{ needs.docker-build-and-push.outputs.tag }}"' notifynl-omc/Chart.yaml
         name: Update Chart.yaml
 
+      - uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.image.tag = "${{ needs.docker-build-and-push.outputs.tag }}"' notifynl-omc/values.yaml
+        name: Update values.yaml
+
       - uses: offensive-vk/auto-commit-push@v7
         with:
           message: 🤖 notifynl-omc chart ${{ steps.version-bump.outputs.version }}
