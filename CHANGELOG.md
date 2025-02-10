@@ -1,3 +1,7 @@
+## 1.14.5
+
+- Missing .image.tag update on chart added.
+
 ## 1.14.4
 
 - Base64 decoding corrected for post-merge deployment.
