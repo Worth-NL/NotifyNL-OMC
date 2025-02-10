@@ -147,27 +147,26 @@ jobs:
           token: ${{ secrets.WORTHNL_PAT }}
         name: Checkout Worth-NL/helm-charts
 
-      - uses: pietrobolcato/action-read-yaml@1.0.0
+      - uses: mikefarah/yq@master
         with:
-          config: notifynl-omc/Chart.yaml
+          cmd: yq '.version' notifynl-omc/Chart.yaml
         name: Read Chart.yaml
         id: yaml-read
 
       - uses: olegsu/semver-action@v1
         with:
-          version: ${{ steps.yaml-read.outputs['version'] }}
+          version: ${{ steps.yaml-read.outputs.result }}
         name: Chart version bump
         id: version-bump
 
-      - uses: rmeneely/update-yaml@v1
+      - uses: mikefarah/yq@master
         with:
-          infile: notifynl-omc/Chart.yaml
-          varlist: version=${{ steps.version-bump.outputs.version }},appVersion=${{ needs.docker-build-and-push.outputs.tag }}
+          cmd: yq -i '.version = "${{ steps.version-bump.outputs.version }}" | .appVersion = "${{ needs.docker-build-and-push.outputs.tag }}"' notifynl-omc/Chart.yaml
         name: Update Chart.yaml
 
       - uses: offensive-vk/auto-commit-push@v7
         with:
-          message: 🤖 notifynl-omc chart bump
+          message: 🤖 notifynl-omc chart ${{ steps.version-bump.outputs.version }}
           github-token: ${{ secrets.WORTHNL_PAT }}
 
   helm-release:
