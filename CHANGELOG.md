@@ -1,3 +1,7 @@
+## 1.14.4
+
+- Base64 decoding corrected for post-merge deployment.
+
 ## 1.14.3
 
 - Further updates to test and build automation.
