@@ -1,3 +1,7 @@
+## 1.14.3
+
+- Further updates to test and build automation.
+
 ## 1.14.2
 
 - Patches CVE-2024-21907 and consolidates dependencies
