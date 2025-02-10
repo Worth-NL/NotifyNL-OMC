@@ -40,6 +40,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <!-- Logging -->
     <PackageReference Include="Sentry.AspNetCore" Version="4.13.0" />
     <PackageReference Include="Sentry.Profiling" Version="4.13.0" />
