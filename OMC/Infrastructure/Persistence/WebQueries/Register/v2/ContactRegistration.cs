@@ -7,8 +7,8 @@ using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v2
 {
@@ -40,9 +40,9 @@ namespace WebQueries.Register.v2
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;

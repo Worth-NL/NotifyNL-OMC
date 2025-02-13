@@ -107,6 +107,12 @@ namespace Common.Extensions
                 return string.Empty;
             }
 
+            if (compressedTextValue.Length % 4 != 0)
+            {
+                compressedTextValue = compressedTextValue.PadRight(
+                    compressedTextValue.Length + (4 - compressedTextValue.Length % 4), '=');
+            }
+
             byte[] buffer = compressedTextValue.Base64Decode();
 
             using var memoryStream = new MemoryStream(buffer);

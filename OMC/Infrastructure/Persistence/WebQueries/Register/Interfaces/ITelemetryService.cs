@@ -7,8 +7,9 @@ using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.Interfaces
 {
@@ -36,9 +37,20 @@ namespace WebQueries.Register.Interfaces
             {
                 this.QueryContext.SetNotification(reference.Notification);
 
+                CaseStatuses caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
+
+                if ((await this.QueryContext.GetLastCaseTypeAsync(caseStatuses)).IsFinalStatus)
+                {
+                    // TODO: Check if party/parties involved have not had KTO yet
+                    // if(!ktoSend)
+                    // {
+                    // TODO: Send call to KTO api initiating procedure
+                    // }
+                }
+
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(reference, notificationMethod, messages));
+                    GetCreateContactMomentJsonBody(reference, notificationMethod, messages, caseStatuses.LastStatus()));
 
                 HttpRequestResponse requestResponse;
 
@@ -61,18 +73,18 @@ namespace WebQueries.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="messages">The messages.</param>
+        /// <param name="caseStatus">The last case status. Is only used for v1 implementation.</param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetCreateContactMomentJsonBody(
-            //[UsedImplicitly] NotificationEvent notification,
             [UsedImplicitly] NotifyReference reference,
             NotifyMethods notificationMethod,
-            IReadOnlyList<string> messages);
+            IReadOnlyList<string> messages,
+            CaseStatus? caseStatus = null);
 
         /// <summary>
         /// Prepares a dedicated JSON body.
