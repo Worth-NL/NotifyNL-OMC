@@ -7,7 +7,6 @@ using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -43,12 +42,12 @@ namespace WebQueries.Register.v1
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
         {
             #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
-            CaseStatus caseStatus = this._taskFactory
+            caseStatus ??= this._taskFactory
                 .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
                 .Join()
                 .LastStatus();
@@ -58,7 +57,7 @@ namespace WebQueries.Register.v1
 
             return $"{{" +
                      $"\"bronorganisatie\":{reference.Notification.GetOrganizationId()}," +   // ENG: Source organization
-                     $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
+                     $"\"registratiedatum\":\"{caseStatus.Value.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
                      $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
                      $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
                      $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
