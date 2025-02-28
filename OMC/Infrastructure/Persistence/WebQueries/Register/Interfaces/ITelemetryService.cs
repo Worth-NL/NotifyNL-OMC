@@ -8,6 +8,7 @@ using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -31,21 +32,33 @@ namespace WebQueries.Register.Interfaces
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
-        public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference, NotifyMethods notificationMethod, params string[] messages)
+        public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
+            NotifyMethods notificationMethod, params string[] messages)
         {
             try
             {
                 this.QueryContext.SetNotification(reference.Notification);
 
-                CaseStatuses caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
+                CaseStatuses caseStatuses =
+                    await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
 
-                if ((await this.QueryContext.GetLastCaseTypeAsync(caseStatuses)).IsFinalStatus)
+                Case referenceCase = await this.QueryContext.GetCaseAsync(reference.CaseId.RecreateCaseUri());
+
+                CommonPartyData partyData = await this.QueryContext.GetPartyDataAsync(referenceCase.Uri,
+                    caseIdentifier: referenceCase.Identification);
+
+                CaseType lastCaseType = await this.QueryContext.GetLastCaseTypeAsync(caseStatuses);
+
+                if (lastCaseType.IsFinalStatus)
                 {
-                    // TODO: Check if party/parties involved have not had KTO yet
-                    // if(!ktoSend)
-                    // {
-                    // TODO: Send call to KTO api initiating procedure
-                    // }
+                    if (partyData.DistributionChannel == DistributionChannels.Email)
+                    {
+                        // TODO: Check in LaunchSettings if CaseTypeIdentification matches and contains KTOSettings 
+                        // if(!ktoSend)
+                        // {
+                        // TODO: Send call to KTO api initiating procedure
+                        // }
+                    }
                 }
 
                 // Register processed notification
@@ -55,8 +68,12 @@ namespace WebQueries.Register.Interfaces
                 HttpRequestResponse requestResponse;
 
                 // Linking to the case and the customer
-                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure ||
-                    (requestResponse = await this.QueryContext.LinkPartyToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
+                if ((requestResponse =
+                        await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment,
+                            reference))).IsFailure ||
+                    (requestResponse =
+                        await this.QueryContext.LinkPartyToContactMomentAsync(
+                            GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
                 {
                     return HttpRequestResponse.Failure(requestResponse.JsonResponse);
                 }
@@ -70,6 +87,7 @@ namespace WebQueries.Register.Interfaces
         }
 
         #region Abstract
+
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
@@ -105,6 +123,7 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
+
         #endregion
     }
 }
