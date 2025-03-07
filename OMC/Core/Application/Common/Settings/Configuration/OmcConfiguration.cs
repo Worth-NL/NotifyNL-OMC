@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Reflection;
+using static Common.Settings.Configuration.OmcConfiguration.ZgwComponent.AuthenticationComponent;
 
 namespace Common.Settings.Configuration
 {
@@ -80,6 +81,12 @@ namespace Common.Settings.Configuration
         #endregion
 
         /// <summary>
+        /// Gets the settings for KTO (Customer Satisfaction System).
+        /// </summary>
+        [Config]
+        public KtoComponent KTO { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="OmcConfiguration"/> class.
         /// </summary>
         public OmcConfiguration(IServiceProvider serviceProvider)  // NOTE: The only constructor to be used with Dependency Injection
@@ -89,6 +96,7 @@ namespace Common.Settings.Configuration
             this.OMC = new OmcComponent(serviceProvider, nameof(OMC));
             this.ZGW = new ZgwComponent(serviceProvider, nameof(ZGW), this);
             this.Notify = new NotifyComponent(serviceProvider, nameof(Notify));
+            this.KTO = new KtoComponent(serviceProvider, nameof(KTO));  // Added KTO Component
         }
 
         #region AppSettings.json
@@ -376,6 +384,44 @@ namespace Common.Settings.Configuration
 
         #region Environment Variables
         // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
+
+        /// <summary>
+        /// The "KTO" part of the settings.
+        /// </summary>
+        public sealed record KtoComponent
+        {
+            private readonly ILoadersContext _loadersContext;
+            private readonly string _currentPath;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="KtoComponent"/> class.
+            /// </summary>
+            public KtoComponent(ILoadersContext loadersContext, string parentPath)
+            {
+                this._loadersContext = loadersContext;
+                this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(KTO));
+            }
+
+            /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+            [Config]
+            public Uri Url()
+                => GetCachedUri(this._loadersContext, this._currentPath, nameof(Url));
+
+            /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+            [Config]
+            public string CaseTypeSettings()
+                => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="KtoComponent"/> class.
+            /// </summary>
+            public KtoComponent(IServiceProvider serviceProvider, string parentName)
+            {
+                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+                this._loadersContext = loadersContext;
+                this._currentPath = loadersContext.GetPathWithNode(parentName, nameof(KTO));
+            }
+        }
 
         /// <summary>
         /// The "OMC" part of the settings.
