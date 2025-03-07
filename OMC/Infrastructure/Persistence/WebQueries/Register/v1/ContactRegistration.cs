@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Settings.Configuration;
 using Microsoft.VisualStudio.Threading;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
@@ -24,6 +25,11 @@ namespace WebQueries.Register.v1
         /// <inheritdoc cref="ITelemetryService.QueryContext"/>
         public IQueryContext QueryContext { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public OmcConfiguration Omc { get; }
+
         private readonly JoinableTaskFactory _taskFactory;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
@@ -35,9 +41,10 @@ namespace WebQueries.Register.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(IQueryContext queryContext)  // Dependency Injection (DI)
+        public ContactRegistration(IQueryContext queryContext, OmcConfiguration omc)  // Dependency Injection (DI)
         {
             this.QueryContext = queryContext;
+            Omc = omc;
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 

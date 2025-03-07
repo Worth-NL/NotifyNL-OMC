@@ -36,6 +36,35 @@ namespace Common.Settings.Extensions
 
         private static string? s_openZaakDomainEnvVarName;
 
+        #region Environment variable names
+
+        private static string? s_ktoUrlEnvVarName;
+        private static string? s_ktoCaseTypeSettingsEnvVarName;
+
+        /// <summary>
+        /// Gets the environment variable name for "KTO_URL".
+        /// </summary>
+        private static string GetKtoUrlEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_ktoUrlEnvVarName ??= nameof(OmcConfiguration.KTO) + "_" + nameof(OmcConfiguration.KTO.Url);
+            }
+        }
+
+        /// <summary>
+        /// Gets the environment variable name for "KTO_CASETYPESETTINGS".
+        /// </summary>
+        private static string GetKtoCaseTypeSettingsEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_ktoCaseTypeSettingsEnvVarName ??= nameof(OmcConfiguration.KTO) + "_" + nameof(OmcConfiguration.KTO.CaseTypeSettings);
+            }
+        }
+
+        #endregion
+
         private static string GetEndpointOpenZaakEnvVarName()
         {
             lock (s_padlock)
@@ -109,6 +138,47 @@ namespace Common.Settings.Extensions
                                                        .ToUpper();
             }
         }
+        #endregion
+
+        #region Get KTO Settings
+
+        private static Uri? s_ktoUrlValue;
+        private static string? s_ktoCaseTypeSettingsValue;
+
+        /// <summary>
+        /// Gets the KTO API URL.
+        /// </summary>
+        public static Uri KtoUrl(OmcConfiguration? configuration = null)
+        {
+            if (configuration != null)
+            {
+                return configuration.KTO.Url();
+            }
+
+            if (s_ktoUrlValue != null)
+            {
+                return s_ktoUrlValue;
+            }
+
+            string? urlFromEnv = Environment.GetEnvironmentVariable(GetKtoUrlEnvVarName());
+            s_ktoUrlValue = urlFromEnv != null ? urlFromEnv.GetValidUri() : new Uri("https://default-kto-url.com");
+
+            return s_ktoUrlValue;
+        }
+
+        /// <summary>
+        /// Gets the KTO Case Type Settings JSON as a string.
+        /// </summary>
+        public static string KtoCaseTypeSettings(OmcConfiguration? configuration = null)
+        {
+            if (configuration != null)
+            {
+                return configuration.KTO.CaseTypeSettings();
+            }
+
+            return s_ktoCaseTypeSettingsValue ??= Environment.GetEnvironmentVariable(GetKtoCaseTypeSettingsEnvVarName()) ?? "{}";
+        }
+
         #endregion
 
         #region GetValue<T>

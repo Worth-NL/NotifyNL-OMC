@@ -22,6 +22,11 @@ namespace WebQueries.Register.v2
         /// <inheritdoc cref="ITelemetryService.QueryContext"/>
         public IQueryContext QueryContext { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public OmcConfiguration Omc { get; }
+
         private readonly OmcConfiguration _configuration;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
@@ -33,10 +38,11 @@ namespace WebQueries.Register.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(OmcConfiguration configuration, IQueryContext queryContext)  // Dependency Injection (DI)
+        public ContactRegistration(OmcConfiguration configuration, IQueryContext queryContext, OmcConfiguration omc)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
             this.QueryContext = queryContext;
+            Omc = omc;
         }
 
         #region Polymorphic
