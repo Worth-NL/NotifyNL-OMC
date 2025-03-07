@@ -1,14 +1,17 @@
 ﻿// © 2023, Worth Systems.
 
+using System;
+using System.Text.Json;
+using Common.Settings.Configuration;
 using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -23,17 +26,20 @@ namespace WebQueries.Register.Interfaces
         /// <inheritdoc cref="IQueryContext"/>
         internal IQueryContext QueryContext { get; }
 
+        internal OmcConfiguration Omc { get; }
+
         /// <summary>
         /// Reports to external API service that notification of type <see cref="NotifyMethods"/> was sent to "Notify NL" service.
         /// </summary>
         /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="referenceAddress">Address like email or telephone number.</param>
         /// <param name="messages">The messages to be used during registration of this event.</param>
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
         public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
-            NotifyMethods notificationMethod, params string[] messages)
+            NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
         {
             try
             {
@@ -42,22 +48,17 @@ namespace WebQueries.Register.Interfaces
                 CaseStatuses caseStatuses =
                     await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
 
-                Case referenceCase = await this.QueryContext.GetCaseAsync(reference.CaseId.RecreateCaseUri());
-
-                CommonPartyData partyData = await this.QueryContext.GetPartyDataAsync(referenceCase.Uri,
-                    caseIdentifier: referenceCase.Identification);
-
                 CaseType lastCaseType = await this.QueryContext.GetLastCaseTypeAsync(caseStatuses);
+
+                CaseTypeSettingsResponse caseTypeSettingsResponse = JsonSerializer.Deserialize<CaseTypeSettingsResponse>(this.Omc.KTO.CaseTypeSettings());
 
                 if (lastCaseType.IsFinalStatus)
                 {
-                    if (partyData.DistributionChannel == DistributionChannels.Email)
+                    if (notificationMethod == NotifyMethods.Email && referenceAddress != string.Empty)
                     {
-                        // TODO: Check in LaunchSettings if CaseTypeIdentification matches and contains KTOSettings 
-                        // if(!ktoSend)
-                        // {
-                        // TODO: Send call to KTO api initiating procedure
-                        // }
+                        if (caseTypeSettingsResponse.CaseTypeSettings.Select(x => x.CaseTypeId).ToArray().Contains(lastCaseType.Identification))
+                        {
+                        }
                     }
                 }
 

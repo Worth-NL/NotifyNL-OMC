@@ -82,7 +82,8 @@ namespace EventsHandler.Services.Responding.v1
             try
             {
                 (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
-                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
+
+                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, callback.Recipient, messages:
                 [
                     // User message body
                     DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod)
