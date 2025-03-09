@@ -1,3 +1,7 @@
+## 1.14.6
+
+- Make digital address type comparison to case insensitive. To i.e. accept "Email" and "email" alike.
+
 ## 1.14.5
 
 - Missing .image.tag update on chart added.
