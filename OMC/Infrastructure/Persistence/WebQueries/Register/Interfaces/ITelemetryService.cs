@@ -2,8 +2,10 @@
 
 using System.Globalization;
 using System.Text.Json;
+using Common.Extensions;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
@@ -70,8 +72,10 @@ namespace WebQueries.Register.Interfaces
             }
             finally
             {
-                //if (requestResponse.IsSuccess)
+                // Only if ContactMoment is successfully created send KTO 
+                if (requestResponse.IsSuccess)
                 {
+                    // Start Customer Satisfaction Service
                     await SendKtoAsync(notificationMethod, referenceAddress,
                         await this.QueryContext.GetLastCaseTypeAsync(caseStatuses));
                 }
@@ -119,7 +123,7 @@ namespace WebQueries.Register.Interfaces
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
 
         /// <summary>
-        /// Prepares a dedicated JSON body.
+        /// Checks if there are KTO settings, if so tries to send a request to KTO Service.
         /// </summary>
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="referenceAddress">The phone number or email address.</param>
@@ -129,29 +133,59 @@ namespace WebQueries.Register.Interfaces
         /// </returns>
         private async Task SendKtoAsync(NotifyMethods notificationMethod, string referenceAddress, CaseType lastCaseType)
         {
-            // TODO: Handle if no KTO Settings Provided. This is a valid situation.
-            CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(this.Omc.KTO.CaseTypeSettings());
+            if (!ShouldSendKto(notificationMethod, referenceAddress, lastCaseType))
+                return;
 
-            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings.FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
+            KtoCustomerObject ktoCustomer = CreateKtoCustomer(referenceAddress, lastCaseType);
+            HttpRequestResponse result = await SendKtoRequestAsync(ktoCustomer);
 
-            if (caseTypeSetting != null)
-            {
-                if (notificationMethod == NotifyMethods.Email && referenceAddress != string.Empty)
-                {
-                    await this.QueryContext.SendKtoAsync(JsonSerializer.Serialize(new KtoCustomerObject
-                    {
-                        Emailadres = referenceAddress,
-                        TransactionDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
-                        SendTime = DateTime.Today.AddHours(9).ToString(CultureInfo.CurrentCulture),
-                        Columns = new CustomerDataColumns
-                        {
-                            //SurveyName = caseTypeSetting.SurveyName
-                        }
-                    }));
-                }
-            }
+            if (result.IsFailure)
+                throw new HttpRequestException("Failed to send KTO request.");
         }
 
+        private bool ShouldSendKto(NotifyMethods notificationMethod, string referenceAddress, CaseType lastCaseType)
+        {
+            if (this.Omc.KTO.CaseTypeSettings() == "-")
+                return false;
+
+            string caseTypeSettingsJson = this.Omc.KTO.CaseTypeSettings();
+            CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(caseTypeSettingsJson);
+
+            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings
+                .FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
+
+            return caseTypeSetting != null
+                   && notificationMethod == NotifyMethods.Email
+                   && !string.IsNullOrWhiteSpace(referenceAddress);
+        }
+
+        private KtoCustomerObject CreateKtoCustomer(string referenceAddress, CaseType lastCaseType)
+        {
+            string caseTypeSettingsJson = this.Omc.KTO.CaseTypeSettings();
+            CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(caseTypeSettingsJson);
+
+            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings
+                .FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
+
+            return new KtoCustomerObject
+            {
+                Emailadres = referenceAddress,
+                TransactionDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+                SendTime = DateTime.Today.AddHours(9).ToString(CultureInfo.CurrentCulture),
+                Columns = new CustomerDataColumns
+                {
+                    SurveyName = caseTypeSetting.Value.SurveyName,
+                    ServiceName = caseTypeSetting.Value.ServiceName,
+                    SurveyType = caseTypeSetting.Value.SurveyType
+                }
+            };
+        }
+
+        private async Task<HttpRequestResponse> SendKtoRequestAsync(KtoCustomerObject ktoCustomer)
+        {
+            string serializedKtoCustomer = JsonSerializer.Serialize(ktoCustomer);
+            return await this.QueryContext.SendKtoAsync(serializedKtoCustomer);
+        }
         #endregion
     }
 }
