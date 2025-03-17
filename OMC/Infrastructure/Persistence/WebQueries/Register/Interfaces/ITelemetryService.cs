@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using System;
+using System.Globalization;
 using System.Text.Json;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
@@ -41,40 +41,23 @@ namespace WebQueries.Register.Interfaces
         public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
             NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
         {
+            HttpRequestResponse requestResponse = default;
+            CaseStatuses caseStatuses = default;
+
             try
             {
                 this.QueryContext.SetNotification(reference.Notification);
 
-                CaseStatuses caseStatuses =
+                caseStatuses =
                     await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
-
-                CaseType lastCaseType = await this.QueryContext.GetLastCaseTypeAsync(caseStatuses);
-
-                CaseTypeSettingsResponse caseTypeSettingsResponse = JsonSerializer.Deserialize<CaseTypeSettingsResponse>(this.Omc.KTO.CaseTypeSettings());
-
-                if (lastCaseType.IsFinalStatus)
-                {
-                    if (notificationMethod == NotifyMethods.Email && referenceAddress != string.Empty)
-                    {
-                        if (caseTypeSettingsResponse.CaseTypeSettings.Select(x => x.CaseTypeId).ToArray().Contains(lastCaseType.Identification))
-                        {
-                        }
-                    }
-                }
 
                 // Register processed notification
                 ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
                     GetCreateContactMomentJsonBody(reference, notificationMethod, messages, caseStatuses.LastStatus()));
 
-                HttpRequestResponse requestResponse;
-
                 // Linking to the case and the customer
-                if ((requestResponse =
-                        await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment,
-                            reference))).IsFailure ||
-                    (requestResponse =
-                        await this.QueryContext.LinkPartyToContactMomentAsync(
-                            GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
+                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure ||
+                    (requestResponse = await this.QueryContext.LinkPartyToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
                 {
                     return HttpRequestResponse.Failure(requestResponse.JsonResponse);
                 }
@@ -85,7 +68,17 @@ namespace WebQueries.Register.Interfaces
             {
                 return HttpRequestResponse.Failure(exception.Message);
             }
+            finally
+            {
+                //if (requestResponse.IsSuccess)
+                {
+                    await SendKtoAsync(notificationMethod, referenceAddress,
+                        await this.QueryContext.GetLastCaseTypeAsync(caseStatuses));
+                }
+            }
         }
+
+        
 
         #region Abstract
 
@@ -124,6 +117,40 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body.
+        /// </summary>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="referenceAddress">The phone number or email address.</param>
+        /// <param name="lastCaseType">The last case status and type.</param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        private async Task SendKtoAsync(NotifyMethods notificationMethod, string referenceAddress, CaseType lastCaseType)
+        {
+            // TODO: Handle if no KTO Settings Provided. This is a valid situation.
+            CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(this.Omc.KTO.CaseTypeSettings());
+
+            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings.FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
+
+            if (caseTypeSetting != null)
+            {
+                if (notificationMethod == NotifyMethods.Email && referenceAddress != string.Empty)
+                {
+                    await this.QueryContext.SendKtoAsync(JsonSerializer.Serialize(new KtoCustomerObject
+                    {
+                        Emailadres = referenceAddress,
+                        TransactionDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+                        SendTime = DateTime.Today.AddHours(9).ToString(CultureInfo.CurrentCulture),
+                        Columns = new CustomerDataColumns
+                        {
+                            //SurveyName = caseTypeSetting.SurveyName
+                        }
+                    }));
+                }
+            }
+        }
 
         #endregion
     }
