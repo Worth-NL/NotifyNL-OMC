@@ -21,8 +21,6 @@ namespace WebQueries.DataSending
     /// <inheritdoc cref="IHttpNetworkService"/>
     public sealed class HttpNetworkService : IHttpNetworkService
     {
-        //TODO: Include KTO
-
         private static readonly object s_padlock = new();
 
         private readonly OmcConfiguration _configuration;
@@ -108,9 +106,6 @@ namespace WebQueries.DataSending
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));  // API Key
-
-            this._httpClients.TryAdd(HttpClientTypes.CustomerSatisfaction_Survey, this._httpClientFactory
-                .GetHttpClient([("X-NLX-Logrecord-ID", string.Empty), ("X-Audit-Toelichting", string.Empty)]));  // JWT Token
         }
 
         /// <summary>

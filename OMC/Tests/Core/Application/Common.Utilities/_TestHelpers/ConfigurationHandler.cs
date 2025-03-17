@@ -52,7 +52,7 @@ namespace Common.Tests.Utilities._TestHelpers
 
         // Add test values for KTO
 
-        private const string TestKtoUrl = "https://example.com/kto-api";
+        private const string S_TestKtoUrl = "https://example.com/kto-api";
         private const string TestKtoCaseTypeSettings = "{\"endPointUrl\":\"string\",\"caseTypeSettings\":[{\"caseTypeId\":\"zaaktype.Identificiatie\",\"vragenlijstNaam\":\"string\",\"dienstNaam\":\"string\",\"typeMeting\":\"string\"}]}";
 
 
@@ -127,8 +127,8 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
 
                 // KTO environment variables
-                { "KTO_URL", GetTestValue(isValid, TestKtoUrl) },
-                { "KTO_CASETYPESETTINGS", GetTestValue(isValid, TestKtoCaseTypeSettings) },
+                { "KTO_URL",                                              GetTestValue(isValid, S_TestKtoUrl) },
+                { "KTO_CASETYPESETTINGS",                                 GetTestValue(isValid, TestKtoCaseTypeSettings) },
 
                 // NOTIFY environment variables
                 { "NOTIFY_API_BASEURL",                                   GetTestValue(isValid, "https://www.test.notify.nl/", CommonValues.Default.Models.EmptyUri.ToString()) },
