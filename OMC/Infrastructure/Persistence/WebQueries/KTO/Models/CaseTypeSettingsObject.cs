@@ -5,35 +5,37 @@ using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 namespace WebQueries.KTO.Models
 {
     /// <summary>
-    /// Represents the root object containing case type settings.
+    /// Represents the root object containing a list of case type settings.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseTypeSettingsObject : IJsonSerializable
     {
         /// <summary>
-        /// 
+        /// A list of settings for different case types.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("caseTypeSettings")]
         [JsonPropertyOrder(1)]
-        public List<CaseTypeSetting> CaseTypeSettings { get; init; } = new();
+        public List<CaseTypeSetting> CaseTypeSettings { get; init; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CaseType"/> struct.
+        /// Initializes a new instance of the <see cref="CaseTypeSettingsObject"/> struct.
         /// </summary>
-        public CaseTypeSettingsObject()
+        /// <param name="caseTypeSettings">The list of case type settings.</param>
+        public CaseTypeSettingsObject(List<CaseTypeSetting> caseTypeSettings)
         {
+            CaseTypeSettings = caseTypeSettings;
         }
     }
 
     /// <summary>
-    /// Represents settings for case types in the OpenZaak API.
+    /// Represents settings for a specific case type in the OpenZaak API.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseTypeSetting : IJsonSerializable
     {
         /// <summary>
-        /// 
+        /// The unique identifier for the case type.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("caseTypeId")]
@@ -41,7 +43,7 @@ namespace WebQueries.KTO.Models
         public string CaseTypeId { get; init; } = string.Empty;
 
         /// <summary>
-        /// 
+        /// The name of the associated survey for the case type.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("vragenlijstNaam")]
@@ -49,7 +51,7 @@ namespace WebQueries.KTO.Models
         public string SurveyName { get; init; } = string.Empty;
 
         /// <summary>
-        /// 
+        /// The name of the service associated with the case type.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("dienstNaam")]
@@ -57,7 +59,7 @@ namespace WebQueries.KTO.Models
         public string ServiceName { get; init; } = string.Empty;
 
         /// <summary>
-        /// 
+        /// The type of survey used for the case type.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("typeMeting")]
@@ -65,7 +67,7 @@ namespace WebQueries.KTO.Models
         public string SurveyType { get; init; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CaseType"/> struct.
+        /// Initializes a new instance of the <see cref="CaseTypeSetting"/> struct.
         /// </summary>
         public CaseTypeSetting()
         {
