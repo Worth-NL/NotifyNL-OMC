@@ -8,7 +8,7 @@ namespace WebQueries.KTO.Models
     /// Represents the root object containing case type settings.
     /// </summary>
     /// <seealso cref="IJsonSerializable"/>
-    public struct CaseTypeSettingsResponse : IJsonSerializable
+    public struct CaseTypeSettingsObject : IJsonSerializable
     {
         /// <summary>
         /// 
@@ -21,7 +21,7 @@ namespace WebQueries.KTO.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseType"/> struct.
         /// </summary>
-        public CaseTypeSettingsResponse()
+        public CaseTypeSettingsObject()
         {
         }
     }

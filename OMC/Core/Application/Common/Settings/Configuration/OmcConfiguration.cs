@@ -78,13 +78,13 @@ namespace Common.Settings.Configuration
         /// </summary>
         [Config]
         public NotifyComponent Notify { get; }
-        #endregion
 
         /// <summary>
         /// Gets the settings for KTO (Customer Satisfaction System).
         /// </summary>
         [Config]
         public KtoComponent KTO { get; }
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OmcConfiguration"/> class.
@@ -388,38 +388,102 @@ namespace Common.Settings.Configuration
         /// <summary>
         /// The "KTO" part of the settings.
         /// </summary>
+        [UsedImplicitly]
         public sealed record KtoComponent
         {
             private readonly ILoadersContext _loadersContext;
             private readonly string _currentPath;
 
+            /// <inheritdoc cref="AuthenticationComponent"/>
+            [Config]
+            public AuthenticationComponent Auth { get; }
+
             /// <summary>
-            /// Initializes a new instance of the <see cref="KtoComponent"/> class.
+            /// 
             /// </summary>
-            public KtoComponent(ILoadersContext loadersContext, string parentPath)
+            /// <param name="serviceProvider"></param>
+            /// <param name="parentPath"></param>
+            public KtoComponent(IServiceProvider serviceProvider, string parentPath)
             {
-                this._loadersContext = loadersContext;
-                this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(KTO));
+                this._loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
+                this.Auth = new AuthenticationComponent(_loadersContext, parentPath);
+
+                this._currentPath = parentPath;
             }
 
-            /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-            [Config]
-            public Uri Url()
-                => GetCachedUri(this._loadersContext, this._currentPath, nameof(Url));
-
-            /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             [Config]
             public string CaseTypeSettings()
                 => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="KtoComponent"/> class.
+            /// 
             /// </summary>
-            public KtoComponent(IServiceProvider serviceProvider, string parentName)
+            /// <returns></returns>
+            [Config]
+            public string Url()
+                => GetCachedValue(this._loadersContext, this._currentPath, nameof(Url));
+
+            /// <summary>
+            /// The "Authentication" part of the settings.
+            /// </summary>
+            public sealed record AuthenticationComponent
             {
-                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
-                this._loadersContext = loadersContext;
-                this._currentPath = loadersContext.GetPathWithNode(parentName, nameof(KTO));
+                /// <inheritdoc cref="JwtComponent"/>
+                [Config]
+                public JwtComponent JWT { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
+                /// </summary>
+                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
+
+                    this.JWT = new JwtComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "JWT" part of the settings.
+                /// </summary>
+                public sealed record JwtComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="JwtComponent"/> class.
+                    /// </summary>
+                    public JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Secret()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Issuer()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Scope()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Scope));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config, UsedImplicitly]
+                    public string ClientId()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(ClientId));
+                }
             }
         }
 
