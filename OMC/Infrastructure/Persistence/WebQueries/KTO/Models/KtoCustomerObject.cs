@@ -26,7 +26,7 @@ namespace WebQueries.KTO.Models
         public string TransactionDate { get; init; }
 
         /// <summary>
-        /// The date/time when the request is sent to Expoints.
+        /// The earliest date/time when the request is sent by Expoints.
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("sendTime")]
@@ -42,7 +42,7 @@ namespace WebQueries.KTO.Models
         public CustomerDataColumns Columns { get; init; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomerDataResponse"/> struct.
+        /// Initializes a new instance of the <see cref="KtoCustomerObject"/> struct.
         /// </summary>
         public KtoCustomerObject()
         {
