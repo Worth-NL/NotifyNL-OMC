@@ -12,6 +12,7 @@ v.1.15.0
 
    - [Open services](#openServices_list)
    - [Notify](#notify_list)
+   - [Expoints](#expoints_list)
 
    * 1.1. [Swagger UI](#swagger_ui)
 
@@ -181,6 +182,9 @@ v.1.15.0
 
        - 6.3.2.1. [Possible errors](#errors_test_controller_open_possible_errors)
 
+7. [KTO](#kto)
+
+   - 7.1. [KTO Implementation](#kto_info)
 ---
 
 <h1 id="introduction">1. Introduction</h1>
@@ -212,6 +216,11 @@ v.1.15.0
   \- Webpage: admin portal
 
 > **NOTE:** Different versions of these external API services are handled by, so-called "[OMC Workflows](#workflow_versions)".
+
+<h4 id="expoints_list">Expoints / Customer Satisfaction Survey</h4>
+
+- [**KTO | Expoints**](https://expoints.nl/) (Web API service)
+- [**KTO | Implementation**](#kto_info)
 
 <h2 id="swagger_ui">1.1. Swagger UI</h2>
 
@@ -1855,5 +1864,32 @@ Endpoints:
 - `POST` .../Test/Open/ContactRegistration
 
 <h4 id="errors_test_controller_open_possible_errors">6.3.2.1. Possible errors</h4>
+
+---
+
+<h1 id="kto">7. KTO</h1>
+
+<h2 id="kto_info_">7.1. KTO Implementation</h2>
+
+The KTO service, known as Expoints, is an external API designed to facilitate case creation for municipal services. It offers a range of functionalities, including API methods, Single Sign-On (SSO) integration, review site widgets, and survey pop-ups. Detailed documentation is available to guide users through these features.
+
+To integrate the KTO service within OMC, the following environment variables must be configured:
+
+KTO_AUTH_JWT_CLIENTID: The client ID for JWT authentication with the KTO service.
+
+KTO_AUTH_JWT_SECRET: The secret key used for signing JWT tokens.
+
+KTO_AUTH_JWT_SCOPE: The scope defining the permissions for the issued token.
+
+KTO_AUTH_JWT_ISSUER: The token issuer. For Microsoft authentication, this is typically a URL like https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token.
+
+KTO_URL: The endpoint for submitting case data to the KTO service (e.g., https://{subdomain}.expoints.nl/external/Help/Api/POST-api-v3-customer-add).
+
+KTO_CASETYPESETTINGS: A JSON structure defining the mapping of case types to the respective KTO service configuration.
+
+i.e. 
+
+![Example Settings KTO EXPOINTS](images/example_kto_settings.png)
+
 
 > To be finished...
