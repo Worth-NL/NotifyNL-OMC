@@ -83,19 +83,5 @@ namespace WebQueries.DataSending.Clients.Enums
         /// </remarks>
         Telemetry_Klantinteracties = 42,
         #endregion
-
-        #region CustomerSatisfactionServices (values: 51-60)
-        // NOTE: When handling certain case-types a customer satisfaction survey can be sent.
-        // Both "OMC workflow" v1 and v2 will make use of this client.
-        // For more details check "OMC - Documentation.md".
-
-        /// <summary>
-        /// The <see cref="HttpClient"/> used for feedback and customer satisfaction purposes in "OMC workflow" v1 and 2.
-        /// </summary>
-        /// <remarks>
-        /// Authorization: JSON Web Token.
-        /// </remarks>
-        CustomerSatisfaction_Survey = 51
-        #endregion
     }
 }

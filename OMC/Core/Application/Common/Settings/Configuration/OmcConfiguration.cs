@@ -399,10 +399,10 @@ namespace Common.Settings.Configuration
             public AuthenticationComponent Auth { get; }
 
             /// <summary>
-            /// 
+            /// Represents the KTO component responsible for authentication and configuration loading.
             /// </summary>
-            /// <param name="serviceProvider"></param>
-            /// <param name="parentPath"></param>
+            /// <param name="serviceProvider">The service provider for dependency injection.</param>
+            /// <param name="parentPath">The base configuration path.</param>
             public KtoComponent(IServiceProvider serviceProvider, string parentPath)
             {
                 this._loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
@@ -413,17 +413,17 @@ namespace Common.Settings.Configuration
             }
 
             /// <summary>
-            /// 
+            /// Retrieves the case type settings configuration from the environment.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>A JSON string containing case type settings.</returns>
             [Config]
             public string CaseTypeSettings()
                 => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
 
             /// <summary>
-            /// 
+            /// Retrieves the configured KTO service URL.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>The URL as a string.</returns>
             [Config]
             public string Url()
                 => GetCachedValue(this._loadersContext, this._currentPath, nameof(Url));
