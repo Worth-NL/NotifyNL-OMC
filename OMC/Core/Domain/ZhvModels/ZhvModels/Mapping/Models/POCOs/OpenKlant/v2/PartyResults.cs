@@ -205,9 +205,13 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult party,
             DigitalAddressLong digitalAddress,
             OmcConfiguration configuration,
+            // ReSharper disable once RedundantAssignment
             ref PartyResult fallbackEmailOwningParty,
+            // ReSharper disable once RedundantAssignment
             ref PartyResult fallbackPhoneOwningParty,
+            // ReSharper disable once RedundantAssignment
             ref string fallbackEmailAddress,
+            // ReSharper disable once RedundantAssignment
             ref string fallbackPhoneNumber)
         {
             // Determine email and phone for this address
@@ -255,9 +259,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         private static DistributionChannels DetermineDistributionChannel(
             DigitalAddressLong digitalAddress, OmcConfiguration configuration)
         {
-            return digitalAddress.Type == configuration.AppSettings.Variables.EmailGenericDescription()
+            return string.Equals(digitalAddress.Type, configuration.AppSettings.Variables.EmailGenericDescription(), StringComparison.CurrentCultureIgnoreCase)
                 ? DistributionChannels.Email
-                : digitalAddress.Type == configuration.AppSettings.Variables.PhoneGenericDescription()
+                : string.Equals(digitalAddress.Type, configuration.AppSettings.Variables.PhoneGenericDescription(), StringComparison.CurrentCultureIgnoreCase)
                     ? DistributionChannels.Sms
 
                     // NOTE: Any address type doesn't match the generic address types defined in the app settings
