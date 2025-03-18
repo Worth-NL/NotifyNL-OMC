@@ -10,20 +10,20 @@ v.1.15.0
 
 1. [Introduction](#introduction)
 
-   * [Open services](#openServices_list)
-   * [Notify](#notify_list)
+   - [Open services](#openServices_list)
+   - [Notify](#notify_list)
 
-   - 1.1. [Swagger UI](#swagger_ui)
+   * 1.1. [Swagger UI](#swagger_ui)
 
-      - 1.1.1. [Using web browser](#web_browser)
+     - 1.1.1. [Using web browser](#web_browser)
 
-      - 1.1.2. [Using IDE (Visual Studio)](#visual_studio)
+     - 1.1.2. [Using IDE (Visual Studio)](#visual_studio)
 
-         - 1.1.2.1. [Customizing profile](#custom_lanunchSettings_profile)
-    
-         - 1.1.2.2. [Running profile](#running_profile)
+       - 1.1.2.1. [Customizing profile](#custom_lanunchSettings_profile)
 
-    - 1.2. [Docker](#docker)
+       - 1.1.2.2. [Running profile](#running_profile)
+
+   * 1.2. [Docker](#docker)
 
 2. [Architecture](#architecture)
 
@@ -31,157 +31,158 @@ v.1.15.0
 
    - 3.1. [Configurations](#configurations)
 
-      - 3.1.1. [appsettings.json](#appsettings)
+     - 3.1.1. [appsettings.json](#appsettings)
 
-         - 3.1.1.1. [Example](#appsettings_example)
+       - 3.1.1.1. [Example](#appsettings_example)
 
-      - 3.1.2. [Environment variables](#environment_variables)
+     - 3.1.2. [Environment variables](#environment_variables)
 
-         - 3.1.2.1. [Example](#environment_variables_example)
+       - 3.1.2.1. [Example](#environment_variables_example)
 
-         - 3.1.2.2. [Get environment variables](#get_environment_variables)
+       - 3.1.2.2. [Get environment variables](#get_environment_variables)
 
-         - 3.1.2.3. [Set environment variables](#set_environment_variables)
+       - 3.1.2.3. [Set environment variables](#set_environment_variables)
 
-         - 3.1.2.4. [Overriding appsettings.json](#overriding_appsettings)
-         
-         - 3.1.2.5. [Using HELM Charts](#helm_charts)
+       - 3.1.2.4. [Overriding appsettings.json](#overriding_appsettings)
+
+       - 3.1.2.5. [Using HELM Charts](#helm_charts)
 
 4. [Authorization and authentication](#authorization)
 
    - 4.1. [JSON Web Tokens](#jwt_tokens)
 
-      - 4.1.1. [Generating](#jwt_generating)
+     - 4.1.1. [Generating](#jwt_generating)
 
-      - 4.1.2. [Required components](#jwt_required_components)
+     - 4.1.2. [Required components](#jwt_required_components)
 
-         - 4.1.2.1. [Header (algorithm + type)](#jwt_header)
+       - 4.1.2.1. [Header (algorithm + type)](#jwt_header)
 
-         - 4.1.2.2. [Payload (claims)](#jwt_claims)
+       - 4.1.2.2. [Payload (claims)](#jwt_claims)
 
-         - 4.1.2.3. [Signature (secret)](#jwt_secret)
+       - 4.1.2.3. [Signature (secret)](#jwt_secret)
 
-      - 4.1.3. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
+     - 4.1.3. [Mapping of JWT claims from environment variables](#jwt_mapping_environment_variables)
 
-      - 4.1.4. [Using generated JSON Web Token (JWT)](#jwt_generating)
+     - 4.1.4. [Using generated JSON Web Token (JWT)](#jwt_generating)
 
-         - 4.1.4.1. [Postman (authorization)](#postman_authorization)
+       - 4.1.4.1. [Postman (authorization)](#postman_authorization)
 
-         - 4.1.4.2. [Swagger UI (authorization)](#swagger_ui_authorization)
+       - 4.1.4.2. [Swagger UI (authorization)](#swagger_ui_authorization)
 
 5. [OMC Workflow](#omc_workflow)
 
    - 5.1. [Versions](#workflow_versions)
 
-      - 5.1.1. [Dependencies](#workflow_dependencies)
+     - 5.1.1. [Dependencies](#workflow_dependencies)
 
-         - 5.1.1.1. [OMC workflow v1 `(default)`](#omc_workflow_v1)
+       - 5.1.1.1. [OMC workflow v1 `(default)`](#omc_workflow_v1)
 
-         - 5.1.1.1. [OMC workflow v2](#omc_workflow_v2)
+       - 5.1.1.1. [OMC workflow v2](#omc_workflow_v2)
 
    - 5.2. [Scenarios](#scenarios)
 
-      - 5.2.1. [General introduction](#scenarios_general_introduction)
+     - 5.2.1. [General introduction](#scenarios_general_introduction)
 
-         - 5.2.1.1. [Notification](#scenarios_general_notification)
+       - 5.2.1.1. [Notification](#scenarios_general_notification)
 
-         - 5.2.1.2. [Environment variables](#scenarios_general_environment_variables)
+       - 5.2.1.2. [Environment variables](#scenarios_general_environment_variables)
 
-         - 5.2.1.3. [Requirements](#scenarios_general_requirements)
+       - 5.2.1.3. [Requirements](#scenarios_general_requirements)
 
-         - 5.2.1.4. [Template placeholders](#scenarios_general_template_placeholders)
+       - 5.2.1.4. [Template placeholders](#scenarios_general_template_placeholders)
 
-      - [Examples](#scenarios_examples)
+     - [Examples](#scenarios_examples)
 
-      - 5.2.2. [Case Created](#case_created)
+     - 5.2.2. [Case Created](#case_created)
 
-         - 5.2.2.1. [Notification](#case_created_notification)
+       - 5.2.2.1. [Notification](#case_created_notification)
 
-         - 5.2.2.2. [Environment variables](#case_created_environment_variables)
+       - 5.2.2.2. [Environment variables](#case_created_environment_variables)
 
-         - 5.2.2.3. [Requirements](#case_created_requirements)
+       - 5.2.2.3. [Requirements](#case_created_requirements)
 
-         - 5.2.2.4. [Template placeholders](#case_created_template_placeholders)
+       - 5.2.2.4. [Template placeholders](#case_created_template_placeholders)
 
-      - 5.2.3. [Case Updated](#case_updated)
+     - 5.2.3. [Case Updated](#case_updated)
 
-         - 5.2.3.1. [Notification](#case_updated_notification)
+       - 5.2.3.1. [Notification](#case_updated_notification)
 
-         - 5.2.3.2. [Environment variables](#case_updated_environment_variables)
+       - 5.2.3.2. [Environment variables](#case_updated_environment_variables)
 
-         - 5.2.3.3. [Requirements](#case_updated_requirements)
+       - 5.2.3.3. [Requirements](#case_updated_requirements)
 
-         - 5.2.3.4. [Template placeholders](#case_updated_template_placeholders)
+       - 5.2.3.4. [Template placeholders](#case_updated_template_placeholders)
 
-      - 5.2.4. [Case Closed](#case_closed)
+     - 5.2.4. [Case Closed](#case_closed)
 
-         - 5.2.4.1. [Notification](#case_closed_notification)
+       - 5.2.4.1. [Notification](#case_closed_notification)
 
-         - 5.2.4.2. [Environment variables](#case_closed_environment_variables)
+       - 5.2.4.2. [Environment variables](#case_closed_environment_variables)
 
-         - 5.2.4.3. [Requirements](#case_closed_requirements)
+       - 5.2.4.3. [Requirements](#case_closed_requirements)
 
-         - 5.2.4.4. [Template placeholders](#case_closed_template_placeholders)
+       - 5.2.4.4. [Template placeholders](#case_closed_template_placeholders)
 
-      - 5.2.5. [Task Assigned](#task_assigned)
+     - 5.2.5. [Task Assigned](#task_assigned)
 
-         - 5.2.5.1. [Notification](#task_assigned_notification)
+       - 5.2.5.1. [Notification](#task_assigned_notification)
 
-         - 5.2.5.2. [Environment variables](#task_assigned_environment_variables)
+       - 5.2.5.2. [Environment variables](#task_assigned_environment_variables)
 
-         - 5.2.5.3. [Requirements](#task_assigned_requirements)
+       - 5.2.5.3. [Requirements](#task_assigned_requirements)
 
-         - 5.2.5.4. [Template placeholders](#task_assigned_template_placeholders)
+       - 5.2.5.4. [Template placeholders](#task_assigned_template_placeholders)
 
-      - 5.2.6. [Decision Made](#decision_made)
+     - 5.2.6. [Decision Made](#decision_made)
 
-         - 5.2.6.1. [Notification](#decision_made_notification)
+       - 5.2.6.1. [Notification](#decision_made_notification)
 
-         - 5.2.6.2. [Environment variables](#decision_made_environment_variables)
+       - 5.2.6.2. [Environment variables](#decision_made_environment_variables)
 
-         - 5.2.6.3. [Requirements](#decision_made_requirements)
+       - 5.2.6.3. [Requirements](#decision_made_requirements)
 
-         - 5.2.6.4. [Template placeholders](#decision_made_template_placeholders)
+       - 5.2.6.4. [Template placeholders](#decision_made_template_placeholders)
 
-      - 5.2.7. [Message Received](#message_received)
+     - 5.2.7. [Message Received](#message_received)
 
-         - 5.2.7.1. [Notification](#message_received_notification)
+       - 5.2.7.1. [Notification](#message_received_notification)
 
-         - 5.2.7.2. [Environment variables](#message_received_environment_variables)
+       - 5.2.7.2. [Environment variables](#message_received_environment_variables)
 
-         - 5.2.7.3. [Requirements](#message_received_requirements)
+       - 5.2.7.3. [Requirements](#message_received_requirements)
 
-         - 5.2.7.4. [Template placeholders](#message_received_template_placeholders)
+       - 5.2.7.4. [Template placeholders](#message_received_template_placeholders)
 
-      - 5.2.99. [Not Implemented](#not_implemented_scenario)
+     - 5.2.99. [Not Implemented](#not_implemented_scenario)
 
 6. [Errors](#errors)
 
    - 6.1. [Events Controller](#errors_events_controller)
 
-      - 6.1.1. [Possible errors](#errors_events_controller_possible_errors)
+     - 6.1.1. [Possible errors](#errors_events_controller_possible_errors)
 
    - 6.2. [Notify Controller](#errors_notify_controller)
 
-      - 6.2.1. [Possible errors](#errors_notify_controller_possible_errors)
+     - 6.2.1. [Possible errors](#errors_notify_controller_possible_errors)
 
    - 6.3. [Test Controller](#errors_test_controller)
 
-      - 6.3.1. [Testing Notify](#errors_test_controller_notify)
+     - 6.3.1. [Testing Notify](#errors_test_controller_notify)
 
-         - 6.3.1.1. [Possible errors](#errors_test_controller_notify_possible_errors)
-         
-            a) [Common for SendEmail + SendSms](#errors_test_controller_notify_common)
+       - 6.3.1.1. [Possible errors](#errors_test_controller_notify_possible_errors)
 
-            b) [SendEmail](#errors_test_controller_notify_common_sendEmail)
+         a) [Common for SendEmail + SendSms](#errors_test_controller_notify_common)
 
-            c) [SendSms](#errors_test_controller_notify_common_sendSms)
+         b) [SendEmail](#errors_test_controller_notify_common_sendEmail)
 
-      - 6.3.2. [Testing Open services](#errors_test_controller_open)
+         c) [SendSms](#errors_test_controller_notify_common_sendSms)
 
-         - 6.3.2.1. [Possible errors](#errors_test_controller_open_possible_errors)
+     - 6.3.2. [Testing Open services](#errors_test_controller_open)
+
+       - 6.3.2.1. [Possible errors](#errors_test_controller_open_possible_errors)
 
 ---
+
 <h1 id="introduction">1. Introduction</h1>
 
 <sup>[Go back](#start)</sup>
@@ -193,7 +194,7 @@ v.1.15.0
 - [**ZGW | Open Notificaties**](https://github.com/open-zaak/open-notificaties) (Web API service)
 - [**ZGW | Open Zaak**](https://github.com/open-zaak/open-zaak) (Web API service) `NOTE: Older version of Open Zaak contains also "Contact Momenten v1"`
 - [**ZGW | Open Klant**](https://github.com/maykinmedia/open-klant) (Web API service)
-- [**ZGW | Besluiten**](https://github.com/open-zaak/open-zaak) (Web API service)  `NOTE: It's part of Open Zaak repository`
+- [**ZGW | Besluiten**](https://github.com/open-zaak/open-zaak) (Web API service) `NOTE: It's part of Open Zaak repository`
 - [**ZGW | Objecten**](https://github.com/maykinmedia/objects-api) (Web API service)
 - [**ZGW | ObjectTypen**](https://github.com/maykinmedia/objecttypes-api) (Web API service)
 - [**ZGW | Klantinteracties**](https://vng-realisatie.github.io/klantinteracties/) (Web API service) `NOTE: "Contact Momenten v2" (extracted from Open Zaak)`
@@ -201,13 +202,14 @@ v.1.15.0
 <h4 id="notify_list">Notify</h4>
 
 - [**Notify NL**](https://github.com/Worth-NL/notifications-api) (Web API service) => based on [**Notify UK**](https://www.notifications.service.gov.uk/)
-    
-    \- Web API service (Python)
 
-    \- Language-specific clients (e.g., C#, JavaScript, PHP)
-    > **OMC** is written in C# and using .NET Client for Notify.
+  \- Web API service (Python)
 
-    \- Webpage: admin portal
+  \- Language-specific clients (e.g., C#, JavaScript, PHP)
+
+  > **OMC** is written in C# and using .NET Client for Notify.
+
+  \- Webpage: admin portal
 
 > **NOTE:** Different versions of these external API services are handled by, so-called "[OMC Workflows](#workflow_versions)".
 
@@ -232,7 +234,7 @@ The URL to **Swagger UI** can be recreated in the following way:
 For example: https://omc.acc.notifynl.nl/swagger/index.html
 
 \* Usually https
-\** Where your **OMC** Web API application is deployed
+\*\* Where your **OMC** Web API application is deployed
 
 <h3 id="visual_studio">1.1.2. Using IDE (Visual Studio)</h3>
 
@@ -283,7 +285,7 @@ And all of them have **Swagger UI** specified as the default start option.
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",  // NOTE: Application mode can be changed
-		 
+
         "OMC_AUTH_JWT_SECRET": "",
         "OMC_AUTH_JWT_ISSUER": "",
         "OMC_AUTH_JWT_AUDIENCE": "",
@@ -292,18 +294,18 @@ And all of them have **Swagger UI** specified as the default start option.
         "OMC_AUTH_JWT_USERNAME": "OMC (Development)",  // NOTE: Optional place to reflect application mode
 
         "OMC_FEATURE_WORKFLOW_VERSION": "",
-        
+
         "ZGW_AUTH_JWT_SECRET": "",
         "ZGW_AUTH_JWT_ISSUER": "",
         "ZGW_AUTH_JWT_AUDIENCE": "",
         "ZGW_AUTH_JWT_EXPIRESINMIN": "",
         "ZGW_AUTH_JWT_USERID": "",
         "ZGW_AUTH_JWT_USERNAME": "",
-        
+
         "ZGW_AUTH_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
         "ZGW_AUTH_KEY_OBJECTEN": "",
         "ZGW_AUTH_KEY_OBJECTTYPEN": "",
-        
+
         "ZGW_ENDPOINT_OPENNOTIFICATIES": "",
         "ZGW_ENDPOINT_OPENZAAK": "",
         "ZGW_ENDPOINT_OPENKLANT": "",
@@ -322,10 +324,10 @@ And all of them have **Swagger UI** specified as the default start option.
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "",
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION" : "",
         "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",
-        
+
         "NOTIFY_API_BASEURL": "",
         "NOTIFY_API_KEY": "",
-        
+
         "NOTIFY_TEMPLATEID_DECISIONMADE": "",
 
         "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",
@@ -339,7 +341,7 @@ And all of them have **Swagger UI** specified as the default start option.
         "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",
-        
+
         "SENTRY_DSN": "",
         "SENTRY_ENVIRONMENT": "Worth Systems (Development)"  // NOTE: Optional place to reflect application instance and mode
       }
@@ -389,6 +391,7 @@ And all of them have **Swagger UI** specified as the default start option.
 > **NOTE:** An example of customized "IIS Express (Development)" profile (with environment variables overruling those defined directly in Windows OS).
 
 The developer can create more than one launch profile:
+
 > e.g., for testing **OMC Workflow v1** (pointing to older domains) and **OMC Workflow vXYZ** (pointing to newer domains). Both using different credentials, template IDs, application modes (_Production_, _Development_, _Test_), names, logging identifiers (Sentry.io), etc.
 
 ![Multiple custom launch profiles - Visual Studio](images/launchProfiles_many_custom.png)
@@ -402,15 +405,17 @@ The developer can create more than one launch profile:
 <h2 id="docker">1.2. Docker</h2>
 
 - After cloning **OMC** Git repository:
-> git@github.com:Worth-NL/NotifyNL-OMC.git
+
+  > git@github.com:Worth-NL/NotifyNL-OMC.git
 
 - Go to the root catalog:
-> .../NotifyNL-OMC
+
+  > .../NotifyNL-OMC
 
 - And run the following **docker** command:
-> docker build -f OMC/Infrastructure/WebApi/EventsHandler/Dockerfile --force-rm -t `omc` .
->
-> **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want.
+  > docker build -f OMC/Infrastructure/WebApi/EventsHandler/Dockerfile --force-rm -t `omc` .
+  >
+  > **NOTE:** `omc` is just a name of your **docker image** and it can be anything you want.
 
 The command from above is addressing the issue with building **docker image** from the `Dockerfile` location:
 `ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref`
@@ -418,9 +423,10 @@ The command from above is addressing the issue with building **docker image** fr
 ![Docker - Failed to compute cache key](images/docker_error_failed_to_compute_cache_key.png)
 
 - From this moment follow the **HELM Chart** documentation to set up _environment variables_
-in order to run an already created **docker container**.
- 
+  in order to run an already created **docker container**.
+
 ---
+
 <h1 id="architecture">2. Architecture</h1>
 
 <sup>[Go back](#start)</sup>
@@ -430,6 +436,7 @@ in order to run an already created **docker container**.
 [Scenarios](#scenarios) implemented in **OMC** are following _Strategy Design Pattern_, and they are using JSON data deserialized into _POCO (Plain Old CLR Object)_ models, and passed as _DTO (Data Transfer Object)_ models to query services (reflecting the external micro-services architecture of third-party "Open Services"). Query services are aggregated under _IQueryContext_ and its implementation _QueryContext_ - following _Adapter Design Pattern_ thanks to which queries can be agnostic (dependencies resolved internally) and organized within a single testable abstraction, giving the developers access to all available API query methods.
 
 ---
+
 <h1 id="setup">3. Setup</h1>
 
 <sup>[Go back](#start)</sup>
@@ -566,6 +573,7 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | KTO_AUTH_JWT_SECRET                                  | string    | "abcd123t2gw3r8192dewEg%wdlsa3e!"             | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The secret key used for signing JWT tokens for authentication.                                                                                                                                               |
 | KTO_AUTH_JWT_SCOPE                                   | string    | "api://some/scope"                            | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | Defines the scope of permissions for the generated JWT token.                                                                                                                                                |
 | KTO_AUTH_JWT_ISSUER                                  | string    | "https://where/can/I/get/my/token"            | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The URL of the authentication provider issuing JWT tokens.                                                                                                                                                   |
+| ---                                                  | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
 | KTO_URL                                              | string    | "https://{subdomain}.expoints.nl"             | false        | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The API endpoint for submitting case data to KTO.                                                                                                                                                            |
 | KTO_CASETYPESETTINGS                                 | string    | "A Json list of settings"                     | false        | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | Defines the mapping of case types to KTO service configuration: "{"caseTypeSettings":[{"caseTypeId":"zaaktype.Identificiatie","vragenlijstNaam":"string","dienstNaam":"string","typeMeting":"string"},{"caseTypeId":"zaaktype.Identificiatie","vragenlijstNaam":"string","dienstNaam":"string","typeMeting":"string"}]}" |
 | ---                                                  | ---       | ---                                           | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
@@ -625,12 +633,93 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 
 \* Copy-paste the *environment variable* name and set the value of respective type like showed in the **Example** column from the above.
 \** GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
+=======
+| Name\*                                               | .NET Type | Example                                      | Is sensitive | Validation                                                                                                                             | Notes                                                                                                                                                                                                        |
+| ---------------------------------------------------- | --------- | -------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **.NET settings**                                    |           |                                              |              |                                                                                                                                        | ---                                                                                                                                                                                                          |
+| ASPNETCORE_ENVIRONMENT                               | string    | "Development", "Production", "Test"          | false        | Cannot be missing and have null or empty value                                                                                         | Defines in which mode (environment) the OMC applicatio is running                                                                                                                                            |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **OMC settings**                                     |           |                                              |              |                                                                                                                                        |                                                                                                                                                                                                              |
+| OMC_AUTH_JWT_SECRET                                  | string    | "abcd123t2gw3r8192dewEg%wdlsa3e!"            | true         | Cannot be missing and have null or empty value                                                                                         | For security reasons it should be at least 64 bytes long                                                                                                                                                     |
+| OMC_AUTH_JWT_ISSUER                                  | string    | "OMC"                                        | true         | Cannot be missing and have null or empty value                                                                                         | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the issuer                                                                                                   |
+| OMC_AUTH_JWT_AUDIENCE                                | string    | "OMC"                                        | true         | Cannot be missing                                                                                                                      | Something identifying Notify NL (OMC Web API) service (it will be used internally) - The OMC is the audience                                                                                                 |
+| OMC_AUTH_JWT_EXPIRESINMIN                            | ushort    | "60"                                         | true         | Cannot be missing and have null or empty value                                                                                         | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes) |
+| OMC_AUTH_JWT_USERID                                  | string    | "tester"                                     | false        | Cannot be missing and have null or empty value                                                                                         | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes) |
+| OMC_AUTH_JWT_USERNAME                                | string    | "Charlotte Sanders"                          | false        | Cannot be missing and have null or empty value                                                                                         | The OMC JWT tokens are generated by OMC and authorized by Open services. New JWT token has to be generated manually, using OMC dedicated library, if the token validity expire (by default it is 60 minutes) |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| OMC_FEATURE_WORKFLOW_VERSION                         | byte      | "1"                                          | false        | Cannot be missing and have null or empty value. It also needs to correspond to already supported [OMC Workflows](#workflow_versions)   | The list of supported OMC workflows can be found [here](#workflow_dependencies)                                                                                                                              |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **KTO settings (Expoint Services)**                  |           |                                              |              |                                                                                                                                            | These settings are required for authentication and communication with the KTO service. When not implementing KTO leave settings filled with "-"                                                              |
+| KTO_AUTH_JWT_CLIENTID                                | string    | "00000000-0000-0000-0000-000000000000"       | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The client identifier used for authentication with the KTO service.                                                                                                                                          |
+| KTO_AUTH_JWT_SECRET                                  | string    | "abcd123t2gw3r8192dewEg%wdlsa3e!"            | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The secret key used for signing JWT tokens for authentication.                                                                                                                                               |
+| KTO_AUTH_JWT_SCOPE                                   | string    | "api://some/scope"                           | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | Defines the scope of permissions for the generated JWT token.                                                                                                                                                |
+| KTO_AUTH_JWT_ISSUER                                  | string    | "https://where/can/I/get/my/token"           | true         | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The URL of the authentication provider issuing JWT tokens.                                                                                                                                                   |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                        | ---                                                                                                                                                                                                          |
+| KTO_URL                                              | string    | "https://{subdomain}.expoints.nl"            | false        | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | The API endpoint for submitting case data to KTO.                                                                                                                                                            |
+| KTO_CASETYPESETTINGS                                 | string    | "A Json list of settings"                    | false        | Cannot be missing and have null or empty value. When not implemented fill with "-".                                                        | Defines the mapping of case types to KTO service configuration: "{"caseTypeSettings":[{"caseTypeId":"zaaktype.Identificiatie","vragenlijstNaam":"string","dienstNaam":"string","typeMeting":"string"},{"caseTypeId":"zaaktype.Identificiatie","vragenlijstNaam":"string","dienstNaam":"string","typeMeting":"string"}]}" |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **ZGW settings (Open Services)**                     |           |                                              |              |                                                                                                                                        |                                                                                                                                                                                                              |
+| ZGW_AUTH_JWT_SECRET                                  | string    | "abcd123t2gw3r8192dewEg%wdlsa3e!"            | true         | Cannot be missing and have null or empty value                                                                                         | Internal implementation of Open services is regulating this, however it's better to use something longer as well                                                                                             |
+| ZGW_AUTH_JWT_ISSUER                                  | string    | "Open Services"                              | true         | Cannot be missing and have null or empty value                                                                                         | Something identifying "OpenZaak" / "OpenKlant" / "OpenNotificatie" Web API services (token is shared between of them)                                                                                        |
+| ZGW_AUTH_JWT_AUDIENCE                                | string    | "OMC"                                        | true         | Cannot be missing                                                                                                                      | Something identifying OMC Web API service (it will be used internally) - The OMC is the audience                                                                                                             |
+| ZGW_AUTH_JWT_EXPIRESINMIN                            | ushort    | "60"                                         | true         | Cannot be missing and have null or empty value                                                                                         | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
+| ZGW_AUTH_JWT_USERID                                  | string    | "admin"                                      | false        | Cannot be missing and have null or empty value                                                                                         | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
+| ZGW_AUTH_JWT_USERNAME                                | string    | "Municipality of Rotterdam"                  | false        | Cannot be missing and have null or empty value                                                                                         | This JWT token will be generated from secret, and other JWT claims, configured from UI of OpenZaak Web API service. Identical details (secret, iss, aud, exp, etc) as in Open services needs to be used here |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| ZGW_AUTH_KEY_OPENKLANT                               | string    | "43dcba52d312d1e00bc..."                     | true         | Cannot be missing and have null or empty value (if you are using OMC Workflow v2 and above; otherwise, it's not mandatory)             | It needs to be generated for OMC Workflow v2 and above from "OpenKlant" 2.0 Web API service UI                                                                                                               |
+| ZGW_AUTH_KEY_OBJECTEN                                | string    | "56abcd24e75c02d44ee..."                     | true         | Cannot be missing and have null or empty value                                                                                         | It needs to be generated from "Objecten" Web API service UI                                                                                                                                                  |
+| ZGW_AUTH_KEY_OBJECTTYPEN                             | string    | "647c4eg120f98ed5f5a..."                     | true         | Cannot be missing and have null or empty value                                                                                         | It needs to be generated from "ObjectTypen" Web API service UI                                                                                                                                               |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| ZGW_ENDPOINT_OPENNOTIFICATIES                        | string    | "opennotificaties.mycity.nl/api/v1"          | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OPENZAAK                                | string    | "openzaak.mycity.nl/zaken/api/v1"            | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OPENKLANT                               | string    | "openklant.mycity.nl/klanten/api/v1"         | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_BESLUITEN                               | string    | "besluiten.mycity.nl/besluiten/api/v1"       | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OBJECTEN                                | string    | "objecten.mycity.nl/api/v2"                  | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_OBJECTTYPEN                             | string    | "objecttypen.mycity.nl/api/v2"               | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ZGW_ENDPOINT_CONTACTMOMENTEN                         | string    | "openklant.mycity.nl/contactmomenten/api/v1" | false        | Cannot be missing and have null or empty value + only domain should be used: without protocol (http / https). Without slash at the end | You have to use the domain part from URLs where you are hosting the dedicated Open services                                                                                                                  |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| ZGW_WHITELIST_ZAAKCREATE_IDS                         | string[]  | "1, 2, 3, 4" or "\*" (allow everything)      | false        |                                                                                                                                        | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
+| ZGW_WHITELIST_ZAAKUPDATE_IDS                         | string[]  | "1, 2, 3, 4" or "\*" (allow everything)      | false        |                                                                                                                                        | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
+| ZGW_WHITELIST_ZAAKCLOSE_IDS                          | string[]  | "1, 2, 3, 4" or "\*" (allow everything)      | false        |                                                                                                                                        | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
+| ZGW_WHITELIST_TASKASSIGNED_IDS                       | string[]  | "1, 2, 3, 4" or "\*" (allow everything)      | false        |                                                                                                                                        | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
+| ZGW_WHITELIST_DECISIONMADE_IDS                       | string[]  | "1, 2, 3, 4" or "\*" (allow everything)      | false        |                                                                                                                                        | Is provided by the user based on "Identificatie" property of case type retrieved from case URI ("zaak") from "OpenZaak" Web API service                                                                      |
+| ZGW_WHITELIST_MESSAGE_ALLOWED                        | bool      | "true" or "false"                            | false        | Cannot be missing and have null or empty value                                                                                         | Is provided by the user                                                                                                                                                                                      |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID          | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
+| ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID       | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Is provided by the user based on "objectType" from "kenmerken" from the initial notification received from "Notificaties" Web API service                                                                    |
+| ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION    | ushort    | "1"                                          | false        | Cannot be missing and have null or empty value                                                                                         | It can be taken from "version" value set in "ObjectTypen" Web API service                                                                                                                                    |
+| ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS | GUID[]    | "00000000-0000-..., 00000000-0000-..."       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Is provided by the user based on "informatieobjecttype" from "informatieobject" retrieved from "OpenZaak" Web API service when querying "besluiten"                                                          |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **Notify settings**                                  |           |                                              |              |                                                                                                                                        |                                                                                                                                                                                                              |
+| NOTIFY_API_BASEURL                                   | URI       | "https://api.notify.nl"                      | false        | Cannot be missing and have null or empty value                                                                                         | The domain where your Notify API instance is listening (e.g.: "https://api.notifynl.nl")                                                                                                                     |
+| NOTIFY_API_KEY                                       | string    | "name-8-4-4-4-12-8-4-4-4-12" (ID + UUID x2)  | true         | Cannot be missing and have null or empty value + must be in name-UUID-UUID format + must pass Notify NL validation                     | It needs to be generated from "Notify NL" Admin Portal                                                                                                                                                       |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| NOTIFY_TEMPLATEID_DECISIONMADE                       | GUID\*\*  | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE                   | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE                   | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE                    | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED                 | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_EMAIL_MESSAGE                      | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| NOTIFY_TEMPLATEID_SMS_ZAAKCREATE                     | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE                     | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE                      | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_TASKASSIGNED                   | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| NOTIFY_TEMPLATEID_SMS_MESSAGE                        | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **Monitoring settings**                              |           |                                              |              |                                                                                                                                        |                                                                                                                                                                                                              |
+| SENTRY_DSN                                           | URI       | "https://1abxxx@o1xxx.sentry.io/xxx"         | false        | Validated internally by Sentry.SDK                                                                                                     | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                  |
+| SENTRY_ENVIRONMENT                                   | string    | "MyCompany-prod"                             | false        | Validated internally by Sentry.SDK                                                                                                     | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)       |
+
+\* Copy-paste the _environment variable_ name and set the value of respective type like showed in the **Example** column from the above.
+\*\* GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
 
 <h4 id="get_environment_variables">3.1.2.2. Get environment variables</h4>
 
-`OMC_AUTH_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC_AUTH_[...]** configurations it's meant to be set by the user.
+`OMC_AUTH_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC*AUTH*[...]** configurations it's meant to be set by the user.
 
-`ZGW_AUTH_JWT_SECRET` - Like other **ZGW_AUTH_[...]** configurations to be configured and set by the user after logging to **OpenZaak** Web API service.
+`ZGW_AUTH_JWT_SECRET` - Like other **ZGW*AUTH*[...]** configurations to be configured and set by the user after logging to **OpenZaak** Web API service.
 
 `NOTIFY_API_KEY` - To be generated from **NotifyNL** Admin Portal => **API Integration** section.
 
@@ -665,10 +754,12 @@ To achieve this, the specific configuration needs to be set as _environment vari
 When **OMC** will attempt to read a configuration for the first time (before caching them), and about which it's internally known that it's present in _appsettings.json_, then a special "loader context" fallback strategy will prioritize checking if the _environment variable_ overriden `key` is already existing in the system.
 
 If it is existing:
+
 - then the `value` of this _environment variable_ will be used;
 - otherwise, configuration will be taken from `appsettings.json`.
 
 ---
+
 **EXAMPLE:**
 
 1. You can check which configurations are present in `appsettings.json` file [here](#appsettings).
@@ -689,19 +780,19 @@ Let's say the following "SMS_Success_Subject" configuration from `appsettings.js
 
 3. Determine name of the new _environment variable_ by translating _JSON schema convention_ into _environment variables naming convention_:
 
-    3.1. **Flattening** the _JSON schema structure_ to reduce the nesting:
+   3.1. **Flattening** the _JSON schema structure_ to reduce the nesting:
 
-    > Variables:UxMessages:SMS_Success_Subject
+   > Variables:UxMessages:SMS_Success_Subject
 
-    3.2. **Replacing** all special characters (`:`, `.`) by `_` underscore:
+   3.2. **Replacing** all special characters (`:`, `.`) by `_` underscore:
 
-    > Variables_UxMessages_SMS_Success_Subject
+   > Variables_UxMessages_SMS_Success_Subject
 
-    3.3. **Capitalizing** all remaining characters, using "upper case" convention:
+   3.3. **Capitalizing** all remaining characters, using "upper case" convention:
 
-    > VARIABLES_UXMESSAGES_SMS_SUCCESS_SUBJECT
+   > VARIABLES_UXMESSAGES_SMS_SUCCESS_SUBJECT
 
-    > **NOTE:** You can also use text editor such as **Notepad++** for this task. There are even online converters available (e.g., https://convertcase.net/).
+   > **NOTE:** You can also use text editor such as **Notepad++** for this task. There are even online converters available (e.g., https://convertcase.net/).
 
 4. Adding new _environment variable_ `key` to the system, and assigning a `value` to it.
 
@@ -722,6 +813,7 @@ Let's say the following "SMS_Success_Subject" configuration from `appsettings.js
 - [OMC HELM Charts (GitHub)](https://github.com/Worth-NL/helm_charts/tree/main/notifynl-omc)
 
 ---
+
 <h1 id="authorization">4. Authorization and authentication</h1>
 
 <sup>[Go back](#start)</sup>
@@ -767,26 +859,26 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 
 <h3 id="jwt_required_components">4.1.2. Required components</h3>
 
-> Knowing all required *environment variables* you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
+> Knowing all required _environment variables_ you can fill these claims manually and generate your own JWT tokens without using **Secrets Manager**. This approach might be helpful if you are using **OMC** Web API service only as a Web API service (**Swagger UI**), during testing its functionality from **Postman**, or when using only the **Docker Image**.
 
 <h4 id="jwt_header">4.1.2.1. Header (algorithm + type)</h4>
 
 > {
-  "alg": "HS256",
-  "typ": "JWT"
-}
+> "alg": "HS256",
+> "typ": "JWT"
+> }
 
 <h4 id="jwt_claims">4.1.2.2. Payload (claims)</h4>
 
 > {
-  "client_id": "",
-  "user_id": "",
-  "user_representation": "",
-  "iss": "",
-  "aud": "",
-  "iat": 0000000000,
-  "exp": 0000000000
-}
+> "client_id": "",
+> "user_id": "",
+> "user_representation": "",
+> "iss": "",
+> "aud": "",
+> "iat": 0000000000,
+> "exp": 0000000000
+> }
 
 <h4 id="jwt_secret">4.1.2.3. Signature (secret)</h4>
 
@@ -808,7 +900,7 @@ Users can also execute their commands directly in the catalog where **SecretsMan
 | `secret`              | `OMC_AUTH_JWT_SECRET`                    |
 
 > **NOTE:** "iat" and "exp" times requires Unix formats of timestamps.
-The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
+> The Unix timestamp can be generated using [Unix converter](https://www.unixtimestamp.com/).
 
 <h3 id="jwt_generating">4.1.4. Using generated JSON Web Token (JWT)</h3>
 
@@ -819,6 +911,7 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 ![Postman - Authorization](images/postman_authorization.png)
 
 ---
+
 <h4 id="swagger_ui_authorization">4.1.4.2. Swagger UI (authorization)</h4>
 
 > If you are using **OMC** **Swagger UI** from browser (graphic interface for **OMC** Web API service) then you need to copy the generated token in the following way:
@@ -828,6 +921,7 @@ The Unix timestamp can be generated using [Unix converter](https://www.unixtimes
 And then click "Authorize".
 
 ---
+
 <h1 id="omc_workflow">5. OMC Workflow</h1>
 
 <sup>[Go back](#start)</sup>
@@ -879,6 +973,7 @@ List of scenarios and the details how to use them with **OMC** (configurations, 
 **OMC** "Scenarios" are specific processing workflows, set up in the code to handle certain business requirements: _what_, _when_, _how_, and _which_ to process the "initial notification" received from a subscribed channel from a _message queue_ implemented by **Open Notificaties** Web API service.
 
 Using _environment variables_ such as "Domains", "Whitelists", "TemplateIds", and most importantly "OMC Workflow version", the user of **OMC** can have some control:
+
 - _what_ external third-party Web API services will be used (domains)
 - _when_ the specific notification will be processed (whitelists)
 - _how_ the recipient will see the notification (template IDs), and
@@ -894,7 +989,7 @@ Currently, the following business **scenarios** are implemented:
 - Assignment of a _task_
 - Receiving a _decision_
 - Receiving a _message_
- 
+
 <h4 id="scenarios_general_notification">5.2.1.1. Notification</h4>
 
 Any **OMC** workflow relies on receiving the (initial) notification event from **Open Notificaties** Web API service to trigger the processing business logic.
@@ -957,7 +1052,7 @@ To work properly **OMC** always requires these mandatory _environment variables_
 
 </br>
 
-`ZGW_AUTH_KEY_OPENKLANT`  => Required only in certain [OMC Workflow](#workflow_versions) versions
+`ZGW_AUTH_KEY_OPENKLANT` => Required only in certain [OMC Workflow](#workflow_versions) versions
 
 `ZGW_AUTH_KEY_OBJECTEN`
 
@@ -1052,6 +1147,7 @@ Required to be set:
 <h4 id="case_created_requirements">5.2.2.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Cases (`"zaken"`)
   - **Resource:** Status (`"status"`)
@@ -1125,6 +1221,7 @@ Required to be set:
 <h4 id="case_updated_requirements">5.2.3.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Cases (`"zaken"`)
   - **Resource:** Status (`"status"`)
@@ -1204,6 +1301,7 @@ Required to be set:
 <h4 id="case_closed_requirements">5.2.4.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Cases (`"zaken"`)
   - **Resource:** Status (`"status"`)
@@ -1285,6 +1383,7 @@ Required to be set:
 <h4 id="task_assigned_requirements">5.2.5.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Objects (`"objecten"`)
   - **Resource:** Object (`"object"`)
@@ -1377,6 +1476,7 @@ Required to be set:
 <h4 id="decision_made_requirements">5.2.6.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Objects (`"besluiten"`)
   - **Resource:** Object (`"besluitinformatieobject"`)
@@ -1500,6 +1600,7 @@ Required to be set:
 <h4 id="message_received_requirements">5.2.7.3. Requirements</h4>
 
 - The _initial notification_ has:
+
   - **Action:** Create (`"create"`)
   - **Channel:** Objects (`"objecten"`)
   - **Resource:** Object (`"object"`)
@@ -1539,6 +1640,7 @@ A special fallback scenario which only role is to report that the provided "init
 User can expect meaningful API response from **OMC**. This response will have _HTTP Status Code_ (206) that will not trigger **Open Notificaties** Web API service to retry sending the same type of "initial notification" again (which would be pointless and fail again since the **OMC** scenario or new condition are not yet implemented).
 
 ---
+
 <h1 id="errors">6. Errors</h1>
 
 <sup>[Go back](#start)</sup>
@@ -1608,6 +1710,7 @@ Other cases (than not implemented business case scenarios) may raise 501 errors.
 This is however highly unlikely and might occur mainly in the development phase.
 
 ---
+
 <h2 id="errors_notify_controller">6.2. Notify Controller</h2>
 
 Endpoints:
@@ -1625,15 +1728,16 @@ Endpoints:
 Something went wrong when calling external API services: OpenZaak, OpenKlant, contactmomenten...
 
 You woull get the following outcome (separated by pipes):
-`OMC` | `Log severity (Error / Warning / Info / Debug)` | `The first possible error message`* | `Full URL to which request was tried to be send` | `The original JSON response from the called service`** | `Notification: The initial notification`
+`OMC` | `Log severity (Error / Warning / Info / Debug)` | `The first possible error message`\* | `Full URL to which request was tried to be send` | `The original JSON response from the called service`\*\* | `Notification: The initial notification`
 
-\*  That interrupted the happy path workflow due to connectivity issues, invalid configuration values, or service being down. Unfortunately, due to complexity of the system, the variety of potential errors is quite broad.
+\* That interrupted the happy path workflow due to connectivity issues, invalid configuration values, or service being down. Unfortunately, due to complexity of the system, the variety of potential errors is quite broad.
 
-\** **WARNING**: For some mysterious reasons, authors of the third-party software (used in **OMC-NotifyNL** workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
+\*\* **WARNING**: For some mysterious reasons, authors of the third-party software (used in **OMC-NotifyNL** workflow) decided to communicate back with the user of their API (Application **Public** Interface - through **publicly** accessible **World Wide Web** network) by using one of the local languages. You might need to translate those received _JSON Response_ messages into English.
 
 > **NOTE**: Unfortunately, **OMC** Development Team cannot provide meaningful guidance how the external services were developed or configured.
 
 ---
+
 <h2 id="errors_test_controller">6.3. Test Controller</h2>
 
 <h3 id="errors_test_controller_notify">6.3.1. Testing Notify</h3>
