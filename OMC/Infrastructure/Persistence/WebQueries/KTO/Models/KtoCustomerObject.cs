@@ -1,96 +1,123 @@
 ﻿using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Models.Interfaces;
 
 namespace WebQueries.KTO.Models
 {
     /// <summary>
-    /// Represents the root object containing customer data.
+    /// Represents the root object containing customer data, and the request to be sent.
     /// </summary>
-    /// <seealso cref="IJsonSerializable"/>
     public struct KtoCustomerObject : IJsonSerializable
     {
         /// <summary>
-        /// The email address retrieved from the KlantAPI.
+        /// Indicates whether to approve automatically.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("emailadres")]
+        [JsonPropertyName("ApproveAutomatically")]
         [JsonPropertyOrder(1)]
-        public string Emailadres { get; init; }
+        public bool ApproveAutomatically { get; init; }
 
         /// <summary>
-        /// The transaction date when the final status was created in the ZaakAPI.
+        /// Indicates whether this is a test.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("transactiedatum")]
+        [JsonPropertyName("IsTest")]
         [JsonPropertyOrder(2)]
-        public string TransactionDate { get; init; }
+        public bool IsTest { get; init; }
 
         /// <summary>
-        /// The earliest date/time when the request is sent by Expoints.
+        /// The list of customers.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("sendTime")]
-        [JsonPropertyOrder(3)]
-        public string SendTime { get; init; }
-
-        /// <summary>
-        /// The customer data columns containing survey and service information.
-        /// </summary>
-        [JsonRequired]
-        [JsonPropertyName("customerDataColumns")]
-        [JsonPropertyOrder(5)]
-        public CustomerDataColumns Columns { get; init; }
+        [JsonPropertyName("Customers")]
+        [JsonPropertyOrder(4)]
+        public required Customer[] Customers { get; init; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KtoCustomerObject"/> struct.
         /// </summary>
         public KtoCustomerObject()
         {
-            Emailadres = string.Empty;
-            TransactionDate = string.Empty;
-            SendTime = string.Empty;
-            Columns = new CustomerDataColumns();
         }
     }
 
     /// <summary>
-    /// Represents the customer data columns for surveys and services.
+    /// Represents a customer object.
     /// </summary>
-    /// <seealso cref="IJsonSerializable"/>
-    public struct CustomerDataColumns : IJsonSerializable
+    public struct Customer : IJsonSerializable
     {
         /// <summary>
-        /// The name of the survey.
+        /// The email address of the customer.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("vragenlijstnaam")]
-        [JsonPropertyOrder(0)]
-        public string SurveyName { get; init; }
-
-        /// <summary>
-        /// The name of the service.
-        /// </summary>
-        [JsonRequired]
-        [JsonPropertyName("dienstnaam")]
+        [JsonPropertyName("email")]
         [JsonPropertyOrder(1)]
-        public string ServiceName { get; init; }
+        public required string Email { get; init; }
 
         /// <summary>
-        /// The type of measurement.
+        /// The date when the request is sent.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("typemeting")]
+        [JsonPropertyName("sendDate")]
         [JsonPropertyOrder(2)]
-        public string SurveyType { get; init; }
+        public required DateOnly SendDate { get; init; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomerDataColumns"/> struct.
+        /// The transaction date.
         /// </summary>
-        public CustomerDataColumns()
+        [JsonRequired]
+        [JsonPropertyName("transactionDate")]
+        [JsonPropertyOrder(3)]
+        public required DateOnly TransactionDate { get; init; }
+
+        /// <summary>
+        /// The list of customer data columns.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("data")]
+        [JsonPropertyOrder(4)]
+        public required CustomerData[] Data { get; init; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Customer"/> struct.
+        /// </summary>
+        public Customer()
         {
-            SurveyName = string.Empty;
-            ServiceName = string.Empty;
-            SurveyType = string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Represents a customer data column.
+    /// </summary>
+    public struct CustomerData : IJsonSerializable
+    {
+        /// <summary>
+        /// The ID of the customer data column.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("customerDataColumnId")]
+        [JsonPropertyOrder(1)]
+        public int CustomerDataColumnId { get; init; }
+
+        /// <summary>
+        /// The name of the data column.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("name")]
+        [JsonPropertyOrder(2)]
+        public required string Name { get; init; }
+
+        /// <summary>
+        /// The value of the data column.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("value")]
+        [JsonPropertyOrder(3)]
+        public required string Value { get; init; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomerData"/> struct.
+        /// </summary>
+        public CustomerData()
+        {
         }
     }
 }
