@@ -1,7 +1,9 @@
 ﻿// © 2023, Worth Systems.
 
 using System.Globalization;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Common.Extensions;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
@@ -82,10 +84,7 @@ namespace WebQueries.Register.Interfaces
             }
         }
 
-        
-
         #region Abstract
-
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
@@ -149,7 +148,9 @@ namespace WebQueries.Register.Interfaces
                 return false;
 
             string caseTypeSettingsJson = this.Omc.KTO.CaseTypeSettings();
-            CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(caseTypeSettingsJson);
+
+            CaseTypeSettingsObject caseTypeSettingsObject =
+                JsonSerializer.Deserialize<CaseTypeSettingsObject>(caseTypeSettingsJson);
 
             CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings
                 .FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
@@ -169,15 +170,47 @@ namespace WebQueries.Register.Interfaces
 
             return new KtoCustomerObject
             {
-                Emailadres = referenceAddress,
-                TransactionDate = DateTime.Now.ToString(CultureInfo.CurrentCulture),
-                SendTime = DateTime.Today.AddHours(9).ToString(CultureInfo.CurrentCulture),
-                Columns = new CustomerDataColumns
-                {
-                    SurveyName = caseTypeSetting.Value.SurveyName,
-                    ServiceName = caseTypeSetting.Value.ServiceName,
-                    SurveyType = caseTypeSetting.Value.SurveyType
-                }
+                ApproveAutomatically = caseTypeSettingsObject.ApproveAutomatically,
+                IsTest = caseTypeSettingsObject.IsTest,
+                Customers =
+                [
+                    new Customer
+                    {
+                        Email = referenceAddress,
+                        TransactionDate = DateOnly.FromDateTime(DateTime.Now),
+                        SendDate = DateOnly.FromDateTime(DateTime.Now),
+                        Data =
+                        [
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 2,
+                                Name = typeof(CaseTypeSetting)
+                                    .GetProperty(nameof(CaseTypeSetting.SurveyName))
+                                    ?.GetCustomAttribute<JsonPropertyNameAttribute>()
+                                    ?.Name ?? string.Empty,
+                                Value = caseTypeSetting.Value.SurveyName
+                            },
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 7,
+                                Name = typeof(CaseTypeSetting)
+                                    .GetProperty(nameof(CaseTypeSetting.ServiceName))
+                                    ?.GetCustomAttribute<JsonPropertyNameAttribute>()
+                                    ?.Name ?? string.Empty,
+                                Value = caseTypeSetting.Value.ServiceName
+                            },
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 6,
+                                Name = typeof(CaseTypeSetting)
+                                    .GetProperty(nameof(CaseTypeSetting.SurveyType))
+                                    ?.GetCustomAttribute<JsonPropertyNameAttribute>()
+                                    ?.Name ?? string.Empty,
+                                Value = caseTypeSetting.Value.SurveyType
+                            }
+                        ]
+                    }
+                ]
             };
         }
 
