@@ -14,15 +14,31 @@ namespace WebQueries.KTO.Models
         /// A list of settings for different case types.
         /// </summary>
         [JsonRequired]
+        [JsonPropertyName("ApproveAutomatically")]
+        [JsonPropertyOrder(1)]
+        public bool ApproveAutomatically { get; init; }
+
+        /// <summary>
+        /// A list of settings for different case types.
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("IsTest")]
+        [JsonPropertyOrder(1)]
+        public bool IsTest { get; init; }
+
+        /// <summary>
+        /// A list of settings for different case types.
+        /// </summary>
+        [JsonRequired]
         [JsonPropertyName("caseTypeSettings")]
         [JsonPropertyOrder(1)]
-        public List<CaseTypeSetting> CaseTypeSettings { get; init; }
+        public CaseTypeSetting[] CaseTypeSettings { get; init; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseTypeSettingsObject"/> struct.
         /// </summary>
         /// <param name="caseTypeSettings">The list of case type settings.</param>
-        public CaseTypeSettingsObject(List<CaseTypeSetting> caseTypeSettings)
+        public CaseTypeSettingsObject(CaseTypeSetting[] caseTypeSettings)
         {
             CaseTypeSettings = caseTypeSettings;
         }
@@ -46,7 +62,7 @@ namespace WebQueries.KTO.Models
         /// The name of the associated survey for the case type.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("vragenlijstNaam")]
+        [JsonPropertyName("Vragenlijst_naam")]
         [JsonPropertyOrder(1)]
         public string SurveyName { get; init; } = string.Empty;
 
@@ -54,7 +70,7 @@ namespace WebQueries.KTO.Models
         /// The name of the service associated with the case type.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("dienstNaam")]
+        [JsonPropertyName("Dienst_naam")]
         [JsonPropertyOrder(2)]
         public string ServiceName { get; init; } = string.Empty;
 
@@ -62,7 +78,7 @@ namespace WebQueries.KTO.Models
         /// The type of survey used for the case type.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("typeMeting")]
+        [JsonPropertyName("Type_meting")]
         [JsonPropertyOrder(3)]
         public string SurveyType { get; init; } = string.Empty;
 
