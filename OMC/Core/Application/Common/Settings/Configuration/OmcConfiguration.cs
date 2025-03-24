@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Reflection;
+using static Common.Settings.Configuration.OmcConfiguration.ZgwComponent.AuthenticationComponent;
 
 namespace Common.Settings.Configuration
 {
@@ -77,6 +78,12 @@ namespace Common.Settings.Configuration
         /// </summary>
         [Config]
         public NotifyComponent Notify { get; }
+
+        /// <summary>
+        /// Gets the settings for KTO (Customer Satisfaction System).
+        /// </summary>
+        [Config]
+        public KtoComponent KTO { get; }
         #endregion
 
         /// <summary>
@@ -89,6 +96,7 @@ namespace Common.Settings.Configuration
             this.OMC = new OmcComponent(serviceProvider, nameof(OMC));
             this.ZGW = new ZgwComponent(serviceProvider, nameof(ZGW), this);
             this.Notify = new NotifyComponent(serviceProvider, nameof(Notify));
+            this.KTO = new KtoComponent(serviceProvider, nameof(KTO));  // Added KTO Component
         }
 
         #region AppSettings.json
@@ -376,6 +384,108 @@ namespace Common.Settings.Configuration
 
         #region Environment Variables
         // NOTE: Environment variable "ASPNETCORE_ENVIRONMENT" is skipped because it is optional one and not used by the business logic
+
+        /// <summary>
+        /// The "KTO" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        public sealed record KtoComponent
+        {
+            private readonly ILoadersContext _loadersContext;
+            private readonly string _currentPath;
+
+            /// <inheritdoc cref="AuthenticationComponent"/>
+            [Config]
+            public AuthenticationComponent Auth { get; }
+
+            /// <summary>
+            /// Represents the KTO component responsible for authentication and configuration loading.
+            /// </summary>
+            /// <param name="serviceProvider">The service provider for dependency injection.</param>
+            /// <param name="parentPath">The base configuration path.</param>
+            public KtoComponent(IServiceProvider serviceProvider, string parentPath)
+            {
+                this._loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
+                this.Auth = new AuthenticationComponent(_loadersContext, parentPath);
+
+                this._currentPath = parentPath;
+            }
+
+            /// <summary>
+            /// Retrieves the case type settings configuration from the environment.
+            /// </summary>
+            /// <returns>A JSON string containing case type settings.</returns>
+            [Config]
+            public string CaseTypeSettings()
+                => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
+
+            /// <summary>
+            /// Retrieves the configured KTO service URL.
+            /// </summary>
+            /// <returns>The URL as a string.</returns>
+            [Config]
+            public string Url()
+                => GetCachedValue(this._loadersContext, this._currentPath, nameof(Url));
+
+            /// <summary>
+            /// The "Authentication" part of the settings.
+            /// </summary>
+            public sealed record AuthenticationComponent
+            {
+                /// <inheritdoc cref="JwtComponent"/>
+                [Config]
+                public JwtComponent JWT { get; }
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="AuthenticationComponent"/> class.
+                /// </summary>
+                public AuthenticationComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    string currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Auth));
+
+                    this.JWT = new JwtComponent(loadersContext, currentPath);
+                }
+
+                /// <summary>
+                /// The "JWT" part of the settings.
+                /// </summary>
+                public sealed record JwtComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="JwtComponent"/> class.
+                    /// </summary>
+                    public JwtComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(JWT));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Secret()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Secret));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Issuer()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Issuer));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Scope()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(Scope));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config, UsedImplicitly]
+                    public string ClientId()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(ClientId));
+                }
+            }
+        }
 
         /// <summary>
         /// The "OMC" part of the settings.

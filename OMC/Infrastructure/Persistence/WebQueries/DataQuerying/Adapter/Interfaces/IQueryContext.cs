@@ -187,5 +187,10 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string)"/>
         public string PrepareObjectJsonBody(string dataJson);
         #endregion
+
+        #region IQueryCustomerSatisfactionSurvey
+        /// <inheritdoc cref="IDomain"/>
+        public Task<HttpRequestResponse> SendKtoAsync(string body);
+        #endregion
     }
 }
