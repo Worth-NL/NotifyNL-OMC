@@ -81,7 +81,7 @@ namespace WebQueries.DataSending.Clients.Enums
         /// <remarks>
         /// Authorization: Static API key.
         /// </remarks>
-        Telemetry_Klantinteracties = 42
+        Telemetry_Klantinteracties = 42,
         #endregion
     }
 }

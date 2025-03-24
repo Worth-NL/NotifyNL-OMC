@@ -50,6 +50,12 @@ namespace Common.Tests.Utilities._TestHelpers
         public const string TestInfoObjectTypeUuid1   = "38327774-7023-4f25-9386-acb0c6f10636";
         public const string TestInfoObjectTypeUuid2   = "6468cfd4-d827-473a-8f24-114af046ce7f";
 
+        // Add test values for KTO
+
+        private const string S_TestKtoUrl = "https://example.com/kto-api";
+        private const string TestKtoCaseTypeSettings = "{\"endPointUrl\":\"string\",\"caseTypeSettings\":[{\"caseTypeId\":\"zaaktype.Identificiatie\",\"vragenlijstNaam\":\"string\",\"dienstNaam\":\"string\",\"typeMeting\":\"string\"}]}";
+
+
         /// <summary>
         /// Gets the mocked <see cref="AppSettingsLoader"/>.
         /// </summary>
@@ -119,6 +125,10 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION",    GetTestValue(isValid, "1") },
                 { "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
+
+                // KTO environment variables
+                { "KTO_URL",                                              GetTestValue(isValid, S_TestKtoUrl) },
+                { "KTO_CASETYPESETTINGS",                                 GetTestValue(isValid, TestKtoCaseTypeSettings) },
 
                 // NOTIFY environment variables
                 { "NOTIFY_API_BASEURL",                                   GetTestValue(isValid, "https://www.test.notify.nl/", CommonValues.Default.Models.EmptyUri.ToString()) },

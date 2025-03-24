@@ -47,6 +47,8 @@ using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.KTO;
+using WebQueries.KTO.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -277,6 +279,8 @@ namespace EventsHandler
 
             // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
+            builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
+            builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.RegisterClientFactories();
 
             // Versioning

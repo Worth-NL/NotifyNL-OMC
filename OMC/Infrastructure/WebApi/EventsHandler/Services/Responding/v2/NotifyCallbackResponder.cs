@@ -74,7 +74,7 @@ namespace EventsHandler.Services.Responding.v2
             (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
             // Registering new status of the notification (for user)
-            await this._telemetry.ReportCompletionAsync(reference, notificationMethod, messages:
+            await this._telemetry.ReportCompletionAsync(reference, notificationMethod, callback.Recipient, messages:
             [
                 // User message subject
                 DetermineUserMessageSubject(this._configuration, feedbackType, notificationMethod),

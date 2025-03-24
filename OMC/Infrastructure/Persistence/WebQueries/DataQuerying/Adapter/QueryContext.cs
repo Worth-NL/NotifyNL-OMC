@@ -9,7 +9,9 @@ using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
+using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
+using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -25,6 +27,7 @@ namespace WebQueries.DataQuerying.Adapter
     public sealed class QueryContext : IQueryContext
     {
         private readonly IHttpNetworkService _networkService;  // Universal raw HTTP methods
+        private readonly IHttpNetworkServiceKto _networkServiceKto;  // Universal raw HTTP methods
 
         private readonly IQueryBase _queryBase;                // Common class for API microservices
 
@@ -39,6 +42,7 @@ namespace WebQueries.DataQuerying.Adapter
         /// </summary>
         public QueryContext(
             IHttpNetworkService networkService,
+            IHttpNetworkServiceKto networkServiceKto,
             IQueryBase queryBase,
             IQueryZaak queryZaak,
             IQueryKlant queryKlant,
@@ -48,6 +52,7 @@ namespace WebQueries.DataQuerying.Adapter
         {
             // Composition
             this._networkService = networkService;
+            this._networkServiceKto = networkServiceKto;
             this._queryBase = queryBase;
             this._queryZaak = queryZaak;
             this._queryKlant = queryKlant;
@@ -202,6 +207,12 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string)"/>
         string IQueryContext.PrepareObjectJsonBody(string dataJson)
             => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
+        #endregion
+
+        #region IQueryObjectTypen
+        /// <inheritdoc cref="IQueryContext.SendKtoAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.SendKtoAsync(string body)
+            => await this._networkServiceKto.PostAsync(body);
         #endregion
     }
 }

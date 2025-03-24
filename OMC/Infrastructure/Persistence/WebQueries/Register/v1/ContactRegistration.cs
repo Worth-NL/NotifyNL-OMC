@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Settings.Configuration;
 using Microsoft.VisualStudio.Threading;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
@@ -7,7 +8,6 @@ using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -25,6 +25,11 @@ namespace WebQueries.Register.v1
         /// <inheritdoc cref="ITelemetryService.QueryContext"/>
         public IQueryContext QueryContext { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public OmcConfiguration Omc { get; }
+
         private readonly JoinableTaskFactory _taskFactory;
 
         /// <inheritdoc cref="IVersionDetails.Name"/>
@@ -36,19 +41,20 @@ namespace WebQueries.Register.v1
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactRegistration"/> class.
         /// </summary>
-        public ContactRegistration(IQueryContext queryContext)  // Dependency Injection (DI)
+        public ContactRegistration(IQueryContext queryContext, OmcConfiguration omc)  // Dependency Injection (DI)
         {
             this.QueryContext = queryContext;
+            Omc = omc;
             this._taskFactory = new JoinableTaskFactory(new JoinableTaskContext());
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus)
         {
             #pragma warning disable VSTHRD104  // This method doesn't have to be marked as async (only v1 implementation is making HTTP calls, nothing else)
-            CaseStatus caseStatus = this._taskFactory
+            caseStatus ??= this._taskFactory
                 .RunAsync(() => this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri()))
                 .Join()
                 .LastStatus();
@@ -57,12 +63,12 @@ namespace WebQueries.Register.v1
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
             return $"{{" +
-                     $"\"bronorganisatie\":{reference.Notification.GetOrganizationId()}," +   // ENG: Source organization
-                     $"\"registratiedatum\":\"{caseStatus.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
-                     $"\"kanaal\":\"{notificationMethod}\"," +                                // ENG: Channel (of communication / notification)
-                     $"\"tekst\":\"{logMessage}\"," +                                         // ENG: Text (to be logged)
-                     $"\"initiatief\":\"gemeente\"," +                                        // ENG: Initiator (of the case)
-                     $"\"medewerkerIdentificatie\":{{" +                                      // ENG: Worker / collaborator / contributor
+                     $"\"bronorganisatie\":{reference.Notification.GetOrganizationId()}," +         // ENG: Source organization
+                     $"\"registratiedatum\":\"{caseStatus.Value.Created:yyyy-MM-ddThh:mm:ss}\"," +  // ENG: Date of registration (of the case)
+                     $"\"kanaal\":\"{notificationMethod}\"," +                                      // ENG: Channel (of communication / notification)
+                     $"\"tekst\":\"{logMessage}\"," +                                               // ENG: Text (to be logged)
+                     $"\"initiatief\":\"gemeente\"," +                                              // ENG: Initiator (of the case)
+                     $"\"medewerkerIdentificatie\":{{" +                                            // ENG: Worker / collaborator / contributor
                        $"\"identificatie\":\"omc\"," +
                        $"\"achternaam\":\"omc\"," +
                        $"\"voorletters\":\"omc\"," +
