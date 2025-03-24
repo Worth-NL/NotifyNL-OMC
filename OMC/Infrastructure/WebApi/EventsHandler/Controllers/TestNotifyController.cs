@@ -189,6 +189,7 @@ namespace EventsHandler.Controllers
         /// </remarks>
         /// <param name="json">The content of 'reference' sent back from NotifyNL Web API service.</param>
         /// <param name="notifyMethod">The notification method to be used during this test.</param>
+        /// <param name="referenceAddress">The address like an email or a telephone number.</param>
         /// <param name="messages">
         ///   The messages required by specific contact registration implementation.
         ///   <para>
@@ -220,6 +221,7 @@ namespace EventsHandler.Controllers
         public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,
             [Required, FromQuery] NotifyMethods notifyMethod,
+            [Required, FromQuery] string referenceAddress,
             [Required, FromQuery] string[] messages)
         {
             try
@@ -228,7 +230,7 @@ namespace EventsHandler.Controllers
                 NotifyReference reference = this._serializer.Deserialize<NotifyReference>(json);
 
                 // Processing reporting operation
-                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, messages);
+                HttpRequestResponse response = await this._telemetry.ReportCompletionAsync(reference, notifyMethod, referenceAddress, messages);
 
                 return response.IsSuccess
                     // HttpStatus Code: 202 Accepted
