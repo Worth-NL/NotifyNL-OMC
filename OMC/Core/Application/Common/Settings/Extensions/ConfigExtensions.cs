@@ -36,6 +36,43 @@ namespace Common.Settings.Extensions
 
         private static string? s_openZaakDomainEnvVarName;
 
+        private static string? s_ktoUrlValue;
+        private static string? s_ktoCaseTypeSettingsValue;
+
+        /// <summary>
+        /// Gets the KTO API URL.
+        /// </summary>
+        public static string KtoUrl(OmcConfiguration? configuration = null)
+        {
+            if (configuration != null)
+            {
+                return configuration.KTO.Url();
+            }
+
+            if (s_ktoUrlValue != null)
+            {
+                return s_ktoUrlValue;
+            }
+
+            string? urlFromEnv = Environment.GetEnvironmentVariable("KTO_URL");
+            s_ktoUrlValue = urlFromEnv ?? "https://default-kto-url.com";
+
+            return s_ktoUrlValue;
+        }
+
+        /// <summary>
+        /// Gets the KTO Case Type Settings JSON as a string.
+        /// </summary>
+        public static string KtoCaseTypeSettings(OmcConfiguration? configuration = null)
+        {
+            if (configuration != null)
+            {
+                return configuration.KTO.CaseTypeSettings();
+            }
+
+            return s_ktoCaseTypeSettingsValue ??= Environment.GetEnvironmentVariable("KTO_CASETYPESETTINGS") ?? "{}";
+        }
+
         private static string GetEndpointOpenZaakEnvVarName()
         {
             lock (s_padlock)
