@@ -44,10 +44,48 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         public Expansion Expansion { get; set; }
 
         /// <summary>
+        /// The identification details of the subject.
+        /// </summary>
+        [JsonPropertyName("subjectIdentificatie")]
+        [JsonPropertyOrder(15)]
+        public SubjectIdentification SubjectIdentification { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PartyResult"/> struct.
         /// </summary>
         public PartyResult()
         {
         }
+    }
+
+    /// <summary>
+    /// Represents the identification details of a subject (person or organization) in the "OpenKlant" system.
+    /// </summary>
+    public struct SubjectIdentification
+    {
+        /// <summary>
+        /// Gets or sets the Burger Service Nummer (BSN), which is a unique personal number for Dutch citizens.
+        /// </summary>
+        [JsonPropertyName("inpBsn")]
+        public string Bsn { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Administrative Number Plate (ANP) identification, used for administrative purposes.
+        /// </summary>
+        [JsonPropertyName("anpIdentificatie")]
+        public string AnpIdentification { get; set; }
+
+        /// <summary>
+        /// Gets or sets the A-number, which is an identification number for foreign nationals in the Netherlands.
+        /// </summary>
+        [JsonPropertyName("inpANummer")]
+        public string ANumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gender indication of the subject.
+        /// Possible values might include: "m" (male), "v" (female), "o" (other), or empty.
+        /// </summary>
+        [JsonPropertyName("geslachtsaanduiding")]
+        public string Gender { get; set; }
     }
 }
