@@ -1,3 +1,7 @@
+## 1.15.1
+
+- Add more personal data to KTO call to Expoint.
+
 ## 1.15.0
 
 - Introduce Customer Satisfaction Survey by Expoint. When configured sends survey on callback.
