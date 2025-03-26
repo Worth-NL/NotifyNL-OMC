@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Text.Json.Serialization;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -54,5 +55,15 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
         /// The telephone number of the party (e.g., citizen or organization).
         /// </summary>
         public string TelephoneNumber { get; init; }
+
+        /// <summary>
+        /// Customer identification number
+        /// </summary>
+        public string CustomerNumber { get; init; }
+
+        /// <summary>
+        /// Gender of the customer for eventual pronouns
+        /// </summary>
+        public string Gender { get; init; }
     }
 }
