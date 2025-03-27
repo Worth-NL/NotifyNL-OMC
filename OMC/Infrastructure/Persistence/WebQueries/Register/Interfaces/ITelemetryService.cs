@@ -1,13 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Common.Extensions;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
@@ -79,7 +76,7 @@ namespace WebQueries.Register.Interfaces
                 {
                     // Start Customer Satisfaction Service
                     await SendKtoAsync(notificationMethod, referenceAddress,
-                        await this.QueryContext.GetLastCaseTypeAsync(caseStatuses));
+                        await this.QueryContext.GetLastCaseTypeAsync(caseStatuses), reference.CaseId);
                 }
             }
         }
@@ -127,15 +124,16 @@ namespace WebQueries.Register.Interfaces
         /// <param name="notificationMethod">The notification method.</param>
         /// <param name="referenceAddress">The phone number or email address.</param>
         /// <param name="lastCaseType">The last case status and type.</param>
+        /// <param name="caseId">CaseId used to fetch party data</param>
         /// <returns>
         ///   The JSON content for HTTP Request Body.
         /// </returns>
-        private async Task SendKtoAsync(NotifyMethods notificationMethod, string referenceAddress, CaseType lastCaseType)
+        private async Task SendKtoAsync(NotifyMethods notificationMethod, string referenceAddress, CaseType lastCaseType, Guid? caseId)
         {
             if (!ShouldSendKto(notificationMethod, referenceAddress, lastCaseType))
                 return;
 
-            KtoCustomerObject ktoCustomer = CreateKtoCustomer(referenceAddress, lastCaseType);
+            KtoCustomerObject ktoCustomer = await CreateKtoCustomerAsync(referenceAddress, lastCaseType, caseId);
             HttpRequestResponse result = await SendKtoRequestAsync(ktoCustomer);
 
             if (result.IsFailure)
@@ -160,13 +158,17 @@ namespace WebQueries.Register.Interfaces
                    && !string.IsNullOrWhiteSpace(referenceAddress);
         }
 
-        private KtoCustomerObject CreateKtoCustomer(string referenceAddress, CaseType lastCaseType)
+        private async Task<KtoCustomerObject> CreateKtoCustomerAsync(string referenceAddress, CaseType lastCaseType, Guid? caseId)
         {
-            string caseTypeSettingsJson = this.Omc.KTO.CaseTypeSettings();
+            string caseTypeSettingsJson = Omc.KTO.CaseTypeSettings();
             CaseTypeSettingsObject caseTypeSettingsObject = JsonSerializer.Deserialize<CaseTypeSettingsObject>(caseTypeSettingsJson);
+            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings.FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
 
-            CaseTypeSetting? caseTypeSetting = caseTypeSettingsObject.CaseTypeSettings
-                .FirstOrDefault(x => x.CaseTypeId == lastCaseType.Identification);
+            CommonPartyData? partyData = await QueryContext.GetPartyDataAsync(caseId?.RecreateCaseUri());
+            if (partyData == null)
+            {
+                throw new InvalidOperationException("Failed to retrieve party data.");
+            }
 
             return new KtoCustomerObject
             {
@@ -181,6 +183,30 @@ namespace WebQueries.Register.Interfaces
                         SendDate = DateOnly.FromDateTime(DateTime.Now),
                         Data =
                         [
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 8,
+                                Name = "Voornaam",
+                                Value = partyData.Value.Name
+                            },
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 11,
+                                Name = "Achternaam",
+                                Value = partyData.Value.Surname
+                            },
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 10,
+                                Name = "Tussenvoegsel",
+                                Value = partyData.Value.SurnamePrefix
+                            },
+                            new CustomerData
+                            {
+                                CustomerDataColumnId = 9,
+                                Name = "Geslacht",
+                                Value = partyData.Value.Gender
+                            },
                             new CustomerData
                             {
                                 CustomerDataColumnId = 2,

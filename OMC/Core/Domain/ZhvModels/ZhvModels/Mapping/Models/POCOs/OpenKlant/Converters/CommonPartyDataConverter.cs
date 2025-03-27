@@ -25,7 +25,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.Converters
                 Surname             = party.Surname,
                 DistributionChannel = party.DistributionChannel,
                 EmailAddress        = party.EmailAddress,
-                TelephoneNumber     = party.TelephoneNumber
+                TelephoneNumber     = party.TelephoneNumber,
+                Gender              = party.SubjectIdentification.Gender
             };
         }
 
@@ -45,7 +46,8 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.Converters
                 Surname             = data.Party.Identification.Details.Surname,
                 DistributionChannel = data.DistributionChannel,
                 EmailAddress        = data.EmailAddress,
-                TelephoneNumber     = data.PhoneNumber
+                TelephoneNumber     = data.PhoneNumber,
+                Gender              = data.Party.SubjectIdentification.Gender
             };
         }
     }
