@@ -77,6 +77,14 @@
           "System.Diagnostics.EventLog": "6.0.0"
         }
       },
+      "DynamicExpresso.Core": {
+        "type": "Transitive",
+        "resolved": "2.12.0",
+        "contentHash": "kcapXLYymUP+a4d1NhdySqxE0eZ/5k7KMQczxvqdl1f1gnCUOCGtshrCU5H+Dh+dx5Y1QcHaTaoNdytXI87Vrw==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
       "GovukNotify": {
         "type": "Transitive",
         "resolved": "6.1.0",
@@ -130,6 +138,11 @@
         "type": "Transitive",
         "resolved": "17.11.1",
         "contentHash": "nPJqrcA5iX+Y0kqoT3a+pD/8lrW/V7ayqnEJQsTonSoPz59J8bmoQhcSN4G8+UJ64Hkuf0zuxnfuj2lkHOq4cA=="
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.Diagnostics.NETCore.Client": {
         "type": "Transitive",
@@ -380,10 +393,25 @@
         "resolved": "17.8.8",
         "contentHash": "rWXThIpyQd4YIXghNkiv2+VLvzS+MCMKVRDR0GAMlflsdo+YcAN2g2r5U1Ah98OFjQMRexTFtXQQ2LkajxZi3g=="
       },
+      "net.adamec.lib.common.dmn.engine": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "nd78WOyWaYsnfIpaw8WsS3SfyEh9trs08M10YI1hPzxGSfhfoUNp2tchaHI4xt5knNPO3ol0fZsfI6XaqU5tag==",
+        "dependencies": {
+          "DynamicExpresso.Core": "2.12.0",
+          "NLog": "4.7.15",
+          "RadCommons.core": "2.0.1"
+        }
+      },
       "Newtonsoft.Json": {
         "type": "Transitive",
         "resolved": "13.0.1",
         "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+      },
+      "NLog": {
+        "type": "Transitive",
+        "resolved": "4.7.15",
+        "contentHash": "vXMmsK17hXnMsKd8BdCrJzvb8JMT0+cPgBGRfnqcXIb6y8b6RMIZexO4hMhQgifcTHgU7dbubvCR5A5wX6Ne+A=="
       },
       "PostSharp": {
         "type": "Transitive",
@@ -397,6 +425,15 @@
         "type": "Transitive",
         "resolved": "2024.1.6",
         "contentHash": "SdDPPIEkgxNOhACU7mu6ehWORYpVo9OALY9xKONlC6Ao08oSiXKUAI4EYb7nQUzCv2TatK1zSny98eyKs6w75A=="
+      },
+      "RadCommons.core": {
+        "type": "Transitive",
+        "resolved": "2.0.1",
+        "contentHash": "TDFF8e+nEBu3hwlPJwCvR1N2y8UDu2W+F4OhvBgJoXNj46JMIrEqlaa2EEr8BVgdXPS88GJSPEmWhdcbn2rXoQ==",
+        "dependencies": {
+          "NLog": "4.6.5",
+          "Newtonsoft.Json": "12.0.2"
+        }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
@@ -955,7 +992,8 @@
           "Sentry.AspNetCore": "[4.13.0, )",
           "Sentry.Profiling": "[4.13.0, )",
           "Swashbuckle.AspNetCore": "[7.0.0, )",
-          "Swashbuckle.AspNetCore.Filters": "[8.0.2, )"
+          "Swashbuckle.AspNetCore.Filters": "[8.0.2, )",
+          "net.adamec.lib.common.dmn.engine": "[1.1.1, )"
         }
       },
       "OMC.SecretsManager": {

@@ -8,12 +8,19 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using net.adamec.lib.common.dmn.engine.engine.decisions;
+using net.adamec.lib.common.dmn.engine.engine.definition;
+using net.adamec.lib.common.dmn.engine.engine.execution.context;
+using net.adamec.lib.common.dmn.engine.engine.execution.result;
+using net.adamec.lib.common.dmn.engine.parser;
+using net.adamec.lib.common.dmn.engine.parser.dto;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using static net.adamec.lib.common.dmn.engine.parser.DmnParser;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
@@ -23,6 +30,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         private readonly OmcConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
+
+        private const string DmnPath = @".\Dmn\dmn_test.xml";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
@@ -40,6 +49,54 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}.DetermineScenarioAsync(NotificationEvent)"/>
         async Task<INotifyScenario> IScenariosResolver<INotifyScenario, NotificationEvent>.DetermineScenarioAsync(NotificationEvent model)
         {
+            DmnExecutionContext? ctx = null;
+            try
+            {
+                // ✅ Explicitly specify DMN version
+                DmnModel? dmnModel = DmnParser.Parse(DmnPath, DmnVersionEnum.V1_1);
+
+                // ✅ Validate DMN model (from README)
+                if (dmnModel == null)
+                {
+                    throw new Exception("Failed to parse DMN model.");
+                }
+
+                DmnDefinition? definition = DmnDefinitionFactory.CreateDmnDefinition(dmnModel);
+                ctx = DmnExecutionContextFactory.CreateExecutionContext(definition);
+
+                Console.WriteLine("DMN successfully loaded and parsed.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Parsing DMN: {ex.Message}\n{ex.StackTrace}");
+
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}\n{ex.InnerException.StackTrace}");
+                }
+
+                throw;
+            }
+
+            if (ctx == null)
+            {
+                throw new InvalidOperationException("DMN execution context could not be created.");
+            }
+
+            // ✅ Ensure input variables match DMN definitions
+            var variables = new Dictionary<string, object>
+            {
+                { "Action", "Create" },
+                { "Channel", "Cases" },
+                { "Resource", "Status" }
+            };
+
+            // ✅ Validate if decision exists before executing
+            if (!ctx.Definition.Decisions.ContainsKey("scenarioPicker"))
+            {
+                throw new Exception("Decision 'scenarioPicker' not found in the DMN definition.");
+            }
+
             // Case scenarios
             if (IsCaseScenario(model))
             {

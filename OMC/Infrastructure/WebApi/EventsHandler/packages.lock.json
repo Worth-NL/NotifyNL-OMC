@@ -32,6 +32,17 @@
         "resolved": "17.12.19",
         "contentHash": "v3IYeedjoktvZ+GqYmLudxZJngmf/YWIxNT2Uy6QMMN19cvw+nkWoip1Gr1RtnFkUo1MPUVMis4C8Kj8d8DpSQ=="
       },
+      "net.adamec.lib.common.dmn.engine": {
+        "type": "Direct",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "nd78WOyWaYsnfIpaw8WsS3SfyEh9trs08M10YI1hPzxGSfhfoUNp2tchaHI4xt5knNPO3ol0fZsfI6XaqU5tag==",
+        "dependencies": {
+          "DynamicExpresso.Core": "2.12.0",
+          "NLog": "4.7.15",
+          "RadCommons.core": "2.0.1"
+        }
+      },
       "Newtonsoft.Json": {
         "type": "Direct",
         "requested": "[13.0.1, )",
@@ -99,6 +110,14 @@
           "Asp.Versioning.Abstractions": "8.1.0"
         }
       },
+      "DynamicExpresso.Core": {
+        "type": "Transitive",
+        "resolved": "2.12.0",
+        "contentHash": "kcapXLYymUP+a4d1NhdySqxE0eZ/5k7KMQczxvqdl1f1gnCUOCGtshrCU5H+Dh+dx5Y1QcHaTaoNdytXI87Vrw==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
       "GovukNotify": {
         "type": "Transitive",
         "resolved": "6.1.0",
@@ -139,6 +158,11 @@
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "7.1.2"
         }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.Diagnostics.NETCore.Client": {
         "type": "Transitive",
@@ -367,6 +391,11 @@
         "resolved": "17.8.8",
         "contentHash": "rWXThIpyQd4YIXghNkiv2+VLvzS+MCMKVRDR0GAMlflsdo+YcAN2g2r5U1Ah98OFjQMRexTFtXQQ2LkajxZi3g=="
       },
+      "NLog": {
+        "type": "Transitive",
+        "resolved": "4.7.15",
+        "contentHash": "vXMmsK17hXnMsKd8BdCrJzvb8JMT0+cPgBGRfnqcXIb6y8b6RMIZexO4hMhQgifcTHgU7dbubvCR5A5wX6Ne+A=="
+      },
       "PostSharp": {
         "type": "Transitive",
         "resolved": "2024.1.6",
@@ -379,6 +408,15 @@
         "type": "Transitive",
         "resolved": "2024.1.6",
         "contentHash": "SdDPPIEkgxNOhACU7mu6ehWORYpVo9OALY9xKONlC6Ao08oSiXKUAI4EYb7nQUzCv2TatK1zSny98eyKs6w75A=="
+      },
+      "RadCommons.core": {
+        "type": "Transitive",
+        "resolved": "2.0.1",
+        "contentHash": "TDFF8e+nEBu3hwlPJwCvR1N2y8UDu2W+F4OhvBgJoXNj46JMIrEqlaa2EEr8BVgdXPS88GJSPEmWhdcbn2rXoQ==",
+        "dependencies": {
+          "NLog": "4.6.5",
+          "Newtonsoft.Json": "12.0.2"
+        }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",

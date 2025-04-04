@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions1"
+             name="Decision Model"
+             namespace="http://example.com">
+
+    <decision id="scenarioPicker" name="Scenario Picker">
+        <decisionTable hitPolicy="FIRST">
+            <input id="input1">
+                <inputExpression id="inputExpression1" typeRef="text">
+                    <text>Action</text>
+                </inputExpression>
+            </input>
+            <input id="input2">
+                <inputExpression id="inputExpression2" typeRef="text">
+                    <text>Channel</text>
+                </inputExpression>
+            </input>
+            <input id="input3">
+                <inputExpression id="inputExpression3" typeRef="text">
+                    <text>Resource</text>
+                </inputExpression>
+            </input>
+            <output id="output1" name="scenario" typeRef="text" />
+
+            <rule>
+                <inputEntry>
+                    <text>Create</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Cases</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Status</text>
+                </inputEntry>
+                <outputEntry>
+                    <text>Case</text>
+                </outputEntry>
+            </rule>
+
+            <rule>
+                <inputEntry>
+                    <text>Create</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Objects</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Object</text>
+                </inputEntry>
+                <outputEntry>
+                    <text>Object</text>
+                </outputEntry>
+            </rule>
+
+            <rule>
+                <inputEntry>
+                    <text>Create</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Decisions</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>Decision</text>
+                </inputEntry>
+                <outputEntry>
+                    <text>Decision</text>
+                </outputEntry>
+            </rule>
+        </decisionTable>
+    </decision>
+</definitions>
