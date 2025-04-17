@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Xml;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
@@ -52,6 +53,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             DmnExecutionContext? ctx = null;
             try
             {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(DmnPath);
+
                 // ✅ Explicitly specify DMN version
                 DmnModel? dmnModel = DmnParser.Parse(DmnPath, DmnVersionEnum.V1_1);
 
