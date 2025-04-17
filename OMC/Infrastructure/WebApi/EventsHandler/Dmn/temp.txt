@@ -1,0 +1,685 @@
+#region Assembly net.adamec.lib.common.dmn.engine, Version=1.1.1.1385, Culture=neutral, PublicKeyToken=null
+// C:\Users\ThomasEelvelt\.nuget\packages\net.adamec.lib.common.dmn.engine\1.1.1\lib\netstandard2.0\net.adamec.lib.common.dmn.engine.dll
+// Decompiled with ICSharpCode.Decompiler 8.1.1.7464
+#endregion
+
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using DynamicExpresso;
+using net.adamec.lib.common.core.logging;
+using net.adamec.lib.common.dmn.engine.engine.decisions;
+using net.adamec.lib.common.dmn.engine.engine.definition;
+using net.adamec.lib.common.dmn.engine.engine.execution.result;
+using net.adamec.lib.common.dmn.engine.parser;
+
+namespace net.adamec.lib.common.dmn.engine.engine.execution.context;
+
+public class DmnExecutionContext
+{
+    protected static ILogger Logger = CommonLogging.CreateLogger<DmnExecutionContext>();
+
+    protected static readonly ConcurrentDictionary<string, Lambda> ParsedExpressionsCache = new ConcurrentDictionary<string, Lambda>();
+
+    protected readonly ConcurrentDictionary<string, Lambda> ParsedExpressionsInstanceCache = new ConcurrentDictionary<string, Lambda>();
+
+    private readonly DmnExecutionContextOptions options = new DmnExecutionContextOptions();
+
+    public string Id { get; }
+
+    public DmnDefinition Definition { get; }
+
+    public IReadOnlyDictionary<string, DmnExecutionVariable> Variables { get; }
+
+    public IReadOnlyDictionary<string, IDmnDecision> Decisions { get; }
+
+    public DmnExecutionSnapshots Snapshots { get; } = new DmnExecutionSnapshots();
+
+
+    public IDmnExecutionContextOptions Options => options;
+
+    public DmnExecutionContext(DmnDefinition definition, IReadOnlyDictionary<string, DmnExecutionVariable> variables, IReadOnlyDictionary<string, IDmnDecision> decisions, Action<DmnExecutionContextOptions> configure = null)
+    {
+        Id = Guid.NewGuid().ToString();
+        Definition = definition ?? throw Logger.Fatal<ArgumentNullException>("definition is null");
+        Variables = variables ?? throw Logger.Fatal<ArgumentNullException>("variables is null");
+        Decisions = decisions ?? throw Logger.Fatal<ArgumentNullException>("decisions is null");
+        configure?.Invoke(options);
+    }
+
+    public virtual DmnExecutionContext Reset()
+    {
+        if (Variables == null)
+        {
+            return this;
+        }
+
+        foreach (DmnExecutionVariable item in Variables.Values.Where((DmnExecutionVariable i) => !i.IsInputParameter))
+        {
+            item.Value = null;
+        }
+
+        Snapshots.Reset();
+        return this;
+    }
+
+    public virtual DmnExecutionContext WithInputParameter(string name, object value)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw Logger.Fatal<ArgumentException>("name is null or empty");
+        }
+
+        name = DmnVariableDefinition.NormalizeVariableName(name);
+        (Variables?.Values.FirstOrDefault((DmnExecutionVariable i) => i.IsInputParameter && i.Name == name) ?? throw Logger.Fatal<DmnExecutorException>("WithInputParameter: " + name + " is not an input parameter")).SetInputParameterValue(value);
+        Logger.Info($"Execution context input parameter {name} set to {value}");
+        return this;
+    }
+
+    public virtual DmnExecutionContext WithInputParameters(IReadOnlyCollection<KeyValuePair<string, object>> parameters)
+    {
+        if (parameters == null)
+        {
+            throw Logger.Fatal<ArgumentNullException>("parameters is null");
+        }
+
+        foreach (KeyValuePair<string, object> parameter in parameters)
+        {
+            WithInputParameter(parameter.Key, parameter.Value);
+        }
+
+        return this;
+    }
+
+    public DmnDecisionResult ExecuteDecision(string decisionName)
+    {
+        if (string.IsNullOrWhiteSpace(decisionName))
+        {
+            throw Logger.Fatal<ArgumentException>("decisionName is null or empty");
+        }
+
+        if (!Decisions.ContainsKey(decisionName))
+        {
+            throw Logger.Fatal<DmnExecutorException>("ExecuteDecision: - decision " + decisionName + " not found");
+        }
+
+        IDmnDecision decision = Decisions[decisionName];
+        return ExecuteDecision(decision);
+    }
+
+    public virtual DmnDecisionResult ExecuteDecision(IDmnDecision decision)
+    {
+        if (decision == null)
+        {
+            throw Logger.Fatal<ArgumentNullException>("decision is null");
+        }
+
+        if (Options.RecordSnapshots)
+        {
+            Snapshots.Reset();
+            Snapshots.CreateSnapshot(this);
+        }
+
+        string executionId = Guid.NewGuid().ToString();
+        DmnDecisionResult result = decision.Execute(this, executionId);
+        PurgeExpressionCacheExecutionScope(executionId);
+        return result;
+    }
+
+    internal virtual void CreateSnapshot(IDmnDecision decision, DmnDecisionResult result)
+    {
+        if (Options.RecordSnapshots)
+        {
+            Snapshots.CreateSnapshot(this, decision, result);
+        }
+    }
+
+    public virtual object EvalExpression(string expression, Type outputType, string executionId)
+    {
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            throw Logger.Fatal<ArgumentException>("expression is null or empty");
+        }
+
+        if (outputType == null)
+        {
+            throw Logger.Fatal<ArgumentNullException>("outputType is null");
+        }
+
+        Interpreter interpreter = new Interpreter();
+        ConfigureInterpreter(interpreter);
+        List<Parameter> list = new List<Parameter>();
+        SetInterpreterParameters(list);
+        string parsedExpressionCacheKey = GetParsedExpressionCacheKey(executionId, expression, outputType);
+        if (Options.ParsedExpressionCacheScope == ParsedExpressionCacheScopeEnum.None || !GetParsedExpressionsFromCache(parsedExpressionCacheKey, out var parsedExpression))
+        {
+            try
+            {
+                parsedExpression = interpreter.Parse(expression, outputType, list.ToArray());
+            }
+            catch (Exception innerException)
+            {
+                throw Logger.Fatal<DmnExecutorException>("Exception while parsing the expression " + expression, innerException);
+            }
+
+            if (Options.ParsedExpressionCacheScope != 0)
+            {
+                CacheParsedExpression(parsedExpressionCacheKey, parsedExpression);
+            }
+        }
+
+        object value;
+        try
+        {
+            value = parsedExpression.Invoke(list.ToArray());
+        }
+        catch (Exception innerException2)
+        {
+            throw Logger.Fatal<DmnExecutorException>("Exception while invoking the expression " + expression, innerException2);
+        }
+
+        try
+        {
+            return Convert.ChangeType(value, outputType);
+        }
+        catch (Exception innerException3)
+        {
+            throw Logger.Fatal<DmnExecutorException>("Can't convert the expression result to " + outputType.Name, innerException3);
+        }
+    }
+
+    protected virtual void SetInterpreterParameters(List<Parameter> parameters)
+    {
+        foreach (DmnExecutionVariable value in Variables.Values)
+        {
+            object obj = value.Value;
+            if (obj == null)
+            {
+                Type type = value.Type;
+                obj = (((object)type != null && type.IsValueType) ? Activator.CreateInstance(value.Type) : null);
+            }
+
+            object obj2 = obj;
+            Parameter item = new Parameter(value.Name, value.Type ?? obj2?.GetType() ?? typeof(object), obj2);
+            parameters.Add(item);
+        }
+    }
+
+    protected virtual void ConfigureInterpreter(Interpreter interpreter)
+    {
+        interpreter.Reference(typeof(Array));
+        interpreter.Reference(typeof(Enum));
+        interpreter.Reference(typeof(DateTimeOffset));
+        interpreter.Reference(typeof(CultureInfo));
+        foreach (KeyValuePair<string, Delegate> customFunction in SfeelParser.CustomFunctions)
+        {
+            interpreter.SetFunction(customFunction.Key, customFunction.Value);
+        }
+    }
+
+    protected virtual bool GetParsedExpressionsFromCache(string cacheKey, out Lambda parsedExpression)
+    {
+        if (Options.ParsedExpressionCacheScope == ParsedExpressionCacheScopeEnum.Global || Options.ParsedExpressionCacheScope == ParsedExpressionCacheScopeEnum.Definition)
+        {
+            return ParsedExpressionsCache.TryGetValue(cacheKey, out parsedExpression);
+        }
+
+        return ParsedExpressionsInstanceCache.TryGetValue(cacheKey, out parsedExpression);
+    }
+
+    protected virtual void CacheParsedExpression(string cacheKey, Lambda parsedExpression)
+    {
+        if (Options.ParsedExpressionCacheScope == ParsedExpressionCacheScopeEnum.Global || Options.ParsedExpressionCacheScope == ParsedExpressionCacheScopeEnum.Definition)
+        {
+            ParsedExpressionsCache[cacheKey] = parsedExpression;
+        }
+        else
+        {
+            ParsedExpressionsInstanceCache[cacheKey] = parsedExpression;
+        }
+    }
+
+    protected virtual string GetParsedExpressionCacheKey(string executionId, string expression, Type outputType)
+    {
+        string text = Options.ParsedExpressionCacheScope switch
+        {
+            ParsedExpressionCacheScopeEnum.None => Guid.NewGuid().ToString(),
+            ParsedExpressionCacheScopeEnum.Execution => executionId,
+            ParsedExpressionCacheScopeEnum.Context => Id,
+            ParsedExpressionCacheScopeEnum.Definition => Definition.Id,
+            ParsedExpressionCacheScopeEnum.Global => "",
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+        return text + "||" + expression + "||" + outputType.AssemblyQualifiedName;
+    }
+
+    public virtual void PurgeExpressionCacheExecutionScope(string executionId)
+    {
+        foreach (string item in ParsedExpressionsInstanceCache.Keys.Where((string k) => k.StartsWith(executionId + "||")))
+        {
+            ParsedExpressionsInstanceCache.TryRemove(item, out var _);
+        }
+    }
+
+    public virtual void PurgeExpressionCacheExecutionScopeAll()
+    {
+        foreach (string item in ParsedExpressionsInstanceCache.Keys.Where((string k) => !k.StartsWith(Id + "||")))
+        {
+            ParsedExpressionsInstanceCache.TryRemove(item, out var _);
+        }
+    }
+
+    public virtual void PurgeExpressionCacheContextScope()
+    {
+        foreach (string item in ParsedExpressionsInstanceCache.Keys.Where((string k) => k.StartsWith(Id + "||")))
+        {
+            ParsedExpressionsInstanceCache.TryRemove(item, out var _);
+        }
+    }
+
+    public static void PurgeExpressionCacheDefinitionScope(string definitionId)
+    {
+        foreach (string item in ParsedExpressionsCache.Keys.Where((string k) => k.StartsWith(definitionId + "||")))
+        {
+            ParsedExpressionsCache.TryRemove(item, out var _);
+        }
+    }
+
+    public static void PurgeExpressionCacheDefinitionScopeAll()
+    {
+        foreach (string item in ParsedExpressionsCache.Keys.Where((string k) => !k.StartsWith("||")))
+        {
+            ParsedExpressionsCache.TryRemove(item, out var _);
+        }
+    }
+
+    public static void PurgeExpressionCacheGlobalScope()
+    {
+        foreach (string item in ParsedExpressionsCache.Keys.Where((string k) => k.StartsWith("||")))
+        {
+            ParsedExpressionsCache.TryRemove(item, out var _);
+        }
+    }
+
+    public TOutputType EvalExpression<TOutputType>(string expression, string executionId)
+    {
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            throw Logger.Fatal<ArgumentNullException>("EvalExpression: - expression is null or empty");
+        }
+
+        return (TOutputType)EvalExpression(expression, typeof(TOutputType), executionId);
+    }
+
+    public virtual DmnExecutionVariable GetVariable(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw Logger.Fatal<ArgumentException>("name is null or empty");
+        }
+
+        if (!Variables.ContainsKey(name))
+        {
+            throw Logger.Fatal<DmnExecutorException>("GetVariable: - variable " + name + " not found");
+        }
+
+        return Variables[name];
+    }
+
+    public DmnExecutionVariable GetVariable(IDmnVariable definition)
+    {
+        if (definition == null)
+        {
+            throw Logger.Fatal<ArgumentNullException>("definition is null");
+        }
+
+        return GetVariable(definition.Name);
+    }
+}
+#if false // Decompilation log
+'344' items in cache
+------------------
+Resolve: 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'netstandard, Version=2.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+WARN: Version mismatch. Expected: '2.0.0.0', Got: '2.1.0.0'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\netstandard.dll'
+------------------
+Resolve: 'net.adamec.lib.common.core, Version=2.0.1.551, Culture=neutral, PublicKeyToken=null'
+Found single assembly: 'net.adamec.lib.common.core, Version=2.0.1.551, Culture=neutral, PublicKeyToken=null'
+Load from: 'C:\Users\ThomasEelvelt\.nuget\packages\radcommons.core\2.0.1\lib\netstandard2.0\net.adamec.lib.common.core.dll'
+------------------
+Resolve: 'DynamicExpresso.Core, Version=2.12.0.0, Culture=neutral, PublicKeyToken=null'
+Found single assembly: 'DynamicExpresso.Core, Version=2.12.0.0, Culture=neutral, PublicKeyToken=null'
+Load from: 'C:\Users\ThomasEelvelt\.nuget\packages\dynamicexpresso.core\2.12.0\lib\netstandard2.0\DynamicExpresso.Core.dll'
+------------------
+Resolve: 'NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c'
+Found single assembly: 'NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c'
+Load from: 'C:\Users\ThomasEelvelt\.nuget\packages\nlog\4.7.15\lib\netstandard2.0\NLog.dll'
+------------------
+Resolve: 'System.Runtime, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.dll'
+------------------
+Resolve: 'System.IO.MemoryMappedFiles, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.IO.MemoryMappedFiles, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.MemoryMappedFiles.dll'
+------------------
+Resolve: 'System.IO.Pipes, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.IO.Pipes, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.Pipes.dll'
+------------------
+Resolve: 'System.Diagnostics.Process, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.Process, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.Process.dll'
+------------------
+Resolve: 'System.Security.Cryptography, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Security.Cryptography, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Security.Cryptography.dll'
+------------------
+Resolve: 'System.Memory, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Memory, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Memory.dll'
+------------------
+Resolve: 'System.Collections, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Collections, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Collections.dll'
+------------------
+Resolve: 'System.Collections.NonGeneric, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Collections.NonGeneric, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Collections.NonGeneric.dll'
+------------------
+Resolve: 'System.Collections.Concurrent, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Collections.Concurrent, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Collections.Concurrent.dll'
+------------------
+Resolve: 'System.ObjectModel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.ObjectModel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.ObjectModel.dll'
+------------------
+Resolve: 'System.Collections.Specialized, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Collections.Specialized, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Collections.Specialized.dll'
+------------------
+Resolve: 'System.ComponentModel.TypeConverter, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.ComponentModel.TypeConverter, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.ComponentModel.TypeConverter.dll'
+------------------
+Resolve: 'System.ComponentModel.EventBasedAsync, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.ComponentModel.EventBasedAsync, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.ComponentModel.EventBasedAsync.dll'
+------------------
+Resolve: 'System.ComponentModel.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.ComponentModel.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.ComponentModel.Primitives.dll'
+------------------
+Resolve: 'System.ComponentModel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.ComponentModel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.ComponentModel.dll'
+------------------
+Resolve: 'Microsoft.Win32.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'Microsoft.Win32.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\Microsoft.Win32.Primitives.dll'
+------------------
+Resolve: 'System.Console, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Console, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Console.dll'
+------------------
+Resolve: 'System.Data.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Data.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Data.Common.dll'
+------------------
+Resolve: 'System.Runtime.InteropServices, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.InteropServices, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.InteropServices.dll'
+------------------
+Resolve: 'System.Diagnostics.TraceSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.TraceSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.TraceSource.dll'
+------------------
+Resolve: 'System.Diagnostics.Contracts, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.Contracts, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.Contracts.dll'
+------------------
+Resolve: 'System.Diagnostics.TextWriterTraceListener, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.TextWriterTraceListener, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.TextWriterTraceListener.dll'
+------------------
+Resolve: 'System.Diagnostics.FileVersionInfo, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.FileVersionInfo, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.FileVersionInfo.dll'
+------------------
+Resolve: 'System.Diagnostics.StackTrace, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.StackTrace, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.StackTrace.dll'
+------------------
+Resolve: 'System.Diagnostics.Tracing, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Diagnostics.Tracing, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Diagnostics.Tracing.dll'
+------------------
+Resolve: 'System.Drawing.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Drawing.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Drawing.Primitives.dll'
+------------------
+Resolve: 'System.Linq.Expressions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Linq.Expressions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Linq.Expressions.dll'
+------------------
+Resolve: 'System.IO.Compression.Brotli, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Found single assembly: 'System.IO.Compression.Brotli, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.Compression.Brotli.dll'
+------------------
+Resolve: 'System.IO.Compression, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Found single assembly: 'System.IO.Compression, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.Compression.dll'
+------------------
+Resolve: 'System.IO.Compression.ZipFile, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Found single assembly: 'System.IO.Compression.ZipFile, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.Compression.ZipFile.dll'
+------------------
+Resolve: 'System.IO.FileSystem.DriveInfo, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.IO.FileSystem.DriveInfo, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.FileSystem.DriveInfo.dll'
+------------------
+Resolve: 'System.IO.FileSystem.Watcher, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.IO.FileSystem.Watcher, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.FileSystem.Watcher.dll'
+------------------
+Resolve: 'System.IO.IsolatedStorage, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.IO.IsolatedStorage, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.IO.IsolatedStorage.dll'
+------------------
+Resolve: 'System.Linq, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Linq, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Linq.dll'
+------------------
+Resolve: 'System.Linq.Queryable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Linq.Queryable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Linq.Queryable.dll'
+------------------
+Resolve: 'System.Linq.Parallel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Linq.Parallel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Linq.Parallel.dll'
+------------------
+Resolve: 'System.Threading.Thread, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Threading.Thread, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Threading.Thread.dll'
+------------------
+Resolve: 'System.Net.Requests, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Requests, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Requests.dll'
+------------------
+Resolve: 'System.Net.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Primitives.dll'
+------------------
+Resolve: 'System.Net.HttpListener, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Net.HttpListener, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.HttpListener.dll'
+------------------
+Resolve: 'System.Net.ServicePoint, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Net.ServicePoint, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.ServicePoint.dll'
+------------------
+Resolve: 'System.Net.NameResolution, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.NameResolution, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.NameResolution.dll'
+------------------
+Resolve: 'System.Net.WebClient, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Net.WebClient, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.WebClient.dll'
+------------------
+Resolve: 'System.Net.Http, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Http, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Http.dll'
+------------------
+Resolve: 'System.Net.WebHeaderCollection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.WebHeaderCollection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.WebHeaderCollection.dll'
+------------------
+Resolve: 'System.Net.WebProxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Net.WebProxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.WebProxy.dll'
+------------------
+Resolve: 'System.Net.Mail, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Net.Mail, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Mail.dll'
+------------------
+Resolve: 'System.Net.NetworkInformation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.NetworkInformation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.NetworkInformation.dll'
+------------------
+Resolve: 'System.Net.Ping, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Ping, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Ping.dll'
+------------------
+Resolve: 'System.Net.Security, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Security, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Security.dll'
+------------------
+Resolve: 'System.Net.Sockets, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.Sockets, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.Sockets.dll'
+------------------
+Resolve: 'System.Net.WebSockets.Client, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.WebSockets.Client, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.WebSockets.Client.dll'
+------------------
+Resolve: 'System.Net.WebSockets, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Net.WebSockets, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Net.WebSockets.dll'
+------------------
+Resolve: 'System.Runtime.Numerics, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.Numerics, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.Numerics.dll'
+------------------
+Resolve: 'System.Numerics.Vectors, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Numerics.Vectors, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Numerics.Vectors.dll'
+------------------
+Resolve: 'System.Reflection.DispatchProxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Reflection.DispatchProxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Reflection.DispatchProxy.dll'
+------------------
+Resolve: 'System.Reflection.Emit, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Reflection.Emit, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Reflection.Emit.dll'
+------------------
+Resolve: 'System.Reflection.Emit.ILGeneration, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Reflection.Emit.ILGeneration, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Reflection.Emit.ILGeneration.dll'
+------------------
+Resolve: 'System.Reflection.Emit.Lightweight, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Reflection.Emit.Lightweight, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Reflection.Emit.Lightweight.dll'
+------------------
+Resolve: 'System.Reflection.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Reflection.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Reflection.Primitives.dll'
+------------------
+Resolve: 'System.Resources.Writer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Resources.Writer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Resources.Writer.dll'
+------------------
+Resolve: 'System.Runtime.CompilerServices.VisualC, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.CompilerServices.VisualC, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.CompilerServices.VisualC.dll'
+------------------
+Resolve: 'System.Runtime.Serialization.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.Serialization.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.Serialization.Primitives.dll'
+------------------
+Resolve: 'System.Runtime.Serialization.Xml, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.Serialization.Xml, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.Serialization.Xml.dll'
+------------------
+Resolve: 'System.Runtime.Serialization.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.Serialization.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.Serialization.Json.dll'
+------------------
+Resolve: 'System.Runtime.Serialization.Formatters, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Runtime.Serialization.Formatters, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.Serialization.Formatters.dll'
+------------------
+Resolve: 'System.Security.Claims, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Security.Claims, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Security.Claims.dll'
+------------------
+Resolve: 'System.Text.Encoding.Extensions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Text.Encoding.Extensions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Text.Encoding.Extensions.dll'
+------------------
+Resolve: 'System.Text.RegularExpressions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Text.RegularExpressions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Text.RegularExpressions.dll'
+------------------
+Resolve: 'System.Threading, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Threading, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Threading.dll'
+------------------
+Resolve: 'System.Threading.Overlapped, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Threading.Overlapped, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Threading.Overlapped.dll'
+------------------
+Resolve: 'System.Threading.ThreadPool, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Threading.ThreadPool, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Threading.ThreadPool.dll'
+------------------
+Resolve: 'System.Threading.Tasks.Parallel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Threading.Tasks.Parallel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Threading.Tasks.Parallel.dll'
+------------------
+Resolve: 'System.Transactions.Local, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Transactions.Local, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Transactions.Local.dll'
+------------------
+Resolve: 'System.Web.HttpUtility, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Found single assembly: 'System.Web.HttpUtility, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Web.HttpUtility.dll'
+------------------
+Resolve: 'System.Xml.ReaderWriter, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Xml.ReaderWriter, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Xml.ReaderWriter.dll'
+------------------
+Resolve: 'System.Xml.XDocument, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Xml.XDocument, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Xml.XDocument.dll'
+------------------
+Resolve: 'System.Xml.XmlSerializer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Xml.XmlSerializer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Xml.XmlSerializer.dll'
+------------------
+Resolve: 'System.Xml.XPath.XDocument, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Xml.XPath.XDocument, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Xml.XPath.XDocument.dll'
+------------------
+Resolve: 'System.Xml.XPath, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Found single assembly: 'System.Xml.XPath, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Xml.XPath.dll'
+------------------
+Resolve: 'System.Runtime.CompilerServices.Unsafe, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null'
+Found single assembly: 'System.Runtime.CompilerServices.Unsafe, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+WARN: Version mismatch. Expected: '2.0.0.0', Got: '8.0.0.0'
+Load from: 'C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.14\ref\net8.0\System.Runtime.CompilerServices.Unsafe.dll'
+#endif

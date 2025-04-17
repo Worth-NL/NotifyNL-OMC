@@ -1,69 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions id="definitions1"
-             name="Decision Model"
-             namespace="http://example.com">
+<definitions
+    xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd"
+    id="expandedExample"
+    name="Expanded Example"
+    namespace="http://example.com">
 
     <decision id="scenarioPicker" name="Scenario Picker">
         <decisionTable hitPolicy="FIRST">
-            <input id="input1">
-                <inputExpression id="inputExpression1" typeRef="text">
-                    <text>Action</text>
+            <!-- Define inputs -->
+            <input id="Action" label="Action">
+                <inputExpression id="Action" typeRef="string">
+                    <text>Actie</text>
                 </inputExpression>
             </input>
-            <input id="input2">
-                <inputExpression id="inputExpression2" typeRef="text">
+            <input id="Channel" label="Channel">
+                <inputExpression id="inputExpression2" typeRef="string">
                     <text>Channel</text>
                 </inputExpression>
             </input>
-            <input id="input3">
-                <inputExpression id="inputExpression3" typeRef="text">
+            <input id="Resource" label="Resource">
+                <inputExpression id="inputExpression3" typeRef="string">
                     <text>Resource</text>
                 </inputExpression>
             </input>
-            <output id="output1" name="scenario" typeRef="text" />
 
+            <!-- Define output -->
+            <output id="output1" name="Scenario" typeRef="string" />
+
+            <!-- Define rules -->
+            <!-- Case Scenario -->
             <rule>
                 <inputEntry>
-                    <text>Create</text>
+                    <text>"Create"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Cases</text>
+                    <text>"Cases"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Status</text>
+                    <text>"Status"</text>
                 </inputEntry>
                 <outputEntry>
-                    <text>Case</text>
+                    <text>"CaseScenario"</text>
                 </outputEntry>
             </rule>
 
+            <!-- Object Scenario -->
             <rule>
                 <inputEntry>
-                    <text>Create</text>
+                    <text>"Create"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Objects</text>
+                    <text>"Objects"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Object</text>
+                    <text>"Object"</text>
                 </inputEntry>
                 <outputEntry>
-                    <text>Object</text>
+                    <text>"ObjectScenario"</text>
                 </outputEntry>
             </rule>
 
+            <!-- Decision Scenario -->
             <rule>
                 <inputEntry>
-                    <text>Create</text>
+                    <text>"Create"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Decisions</text>
+                    <text>"Decisions"</text>
                 </inputEntry>
                 <inputEntry>
-                    <text>Decision</text>
+                    <text>"Decision"</text>
                 </inputEntry>
                 <outputEntry>
-                    <text>Decision</text>
+                    <text>"DecisionScenario"</text>
+                </outputEntry>
+            </rule>
+
+            <!-- Default fallback -->
+            <rule>
+                <inputEntry>
+                    <text>-</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>-</text>
+                </inputEntry>
+                <inputEntry>
+                    <text>-</text>
+                </inputEntry>
+                <outputEntry>
+                    <text>"NotImplementedScenario"</text>
                 </outputEntry>
             </rule>
         </decisionTable>

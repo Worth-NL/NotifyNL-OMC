@@ -35,6 +35,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EventsHandler.Dmn;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy;
@@ -291,6 +292,9 @@ namespace EventsHandler
             builder.Services.RegisterResponders(builder);
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
+            // DMN
+            builder.Services.AddSingleton<IDmnDecisionService>(provider =>
+                new DmnDecisionService(".\\Dmn\\dmn_test.xml"));
             return builder;
         }
 
