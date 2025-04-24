@@ -10,6 +10,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.Pingen;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -23,6 +24,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         private readonly OmcConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
+        private readonly IPostbodeHttpNetworkService _postService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
@@ -30,11 +32,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         public NotifyScenariosResolver(
             OmcConfiguration configuration,
             IServiceProvider serviceProvider,
-            IDataQueryService<NotificationEvent> dataQuery)  // Dependency Injection (DI)
+            IDataQueryService<NotificationEvent> dataQuery, IPostbodeHttpNetworkService postService)  // Dependency Injection (DI)
         {
             this._configuration = configuration;
             this._serviceProvider = serviceProvider;
             this._dataQuery = dataQuery;
+            this._postService = postService;
         }
 
         /// <inheritdoc cref="IScenariosResolver{INotifyScenario, NotificationEvent}.DetermineScenarioAsync(NotificationEvent)"/>
@@ -45,6 +48,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             {
                 IQueryContext queryContext = this._dataQuery.From(model);
                 CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
+
+                int envelopeId = 2; // Pick a valid envelope ID from Postbode
+                string country = "NL"; // Netherlands
+                bool registered = false;
+                bool sendDirect = true;
+
+                HttpResponseMessage test = await this._postService.SendLetterAsync(
+                    mailboxId: "RRCO",
+                    filePath: "C:\\Users\\ThomasEelvelt\\Desktop\\desk\\Repos\\NotifyNL-OMC\\OMC\\Infrastructure\\Persistence\\WebQueries\\Pingen\\test_brief.pdf",
+                    envelopeId: envelopeId,
+                    countryCode: country,
+                    registered: registered,
+                    sendDirect: sendDirect
+                );
 
                 // Scenario #1: "Case created"
                 if (caseStatuses.WereNeverUpdated())
