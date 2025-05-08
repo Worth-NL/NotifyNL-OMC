@@ -8,6 +8,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
+using PingenApiNet.Abstractions.Models.Letters.Embedded;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Extensions;
@@ -43,6 +44,62 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Case scenarios
             if (IsCaseScenario(model))
             {
+
+                var httpClient = new HttpClient();
+                var pingenService = new PingenService(httpClient, "ZMGKFP0UZ946AKBL3CP5", "H8cmJEZoURuvFUkdlJgjyNc6XxXrTy1OC66PgB1b+CBIG67kUnUA13Sv7xQkv3eiamM8qpALWaXfliz5");
+
+                try
+                {
+                    // Step 1: Authenticate
+                    await pingenService.AuthenticateAsync();
+
+                    // Step 2: Request file upload URL
+                    var fileUploadResponse = await pingenService.RequestFileUploadUrlAsync();
+
+                    // Step 3: Upload file
+                    string filePath = "C:\\Users\\ThomasEelvelt\\Desktop\\desk\\Repos\\NotifyNL-OMC\\OMC\\Infrastructure\\Persistence\\WebQueries\\PingenPost\\test-address.pdf";
+                    var responseupload = await pingenService.UploadFileAsync(fileUploadResponse.Data.Attributes.Url, filePath);
+
+                    // Step 4: Submit letter
+                    string organisationId = "17466aee-d419-4ebe-ba60-a32e3abb4965";
+
+                    var letterMetaData = new LetterMetaData
+                    {
+                        Recipient = new()
+                        {
+                            Name = "Ernout van der Waard",
+                            Street = "Laan van Vredenoord",
+                            Number = "11",
+                            Zip = "2289 DA",
+                            City = "Rijswijk",
+                            Country = "NL"
+                        },
+                        Sender = new()
+                        {
+                            Name = "Thomas Eelvelt",
+                            Street = "Laan van Vredenoord ",
+                            Number = "11",
+                            Zip = "2289 DA",
+                            City = "Rijswijk",
+                            Country = "NL"
+                        }
+                    };
+
+                    await pingenService.SubmitLetterAsync(
+                        organisationId,
+                        letterMetaData,
+                        fileUploadResponse.Data.Attributes.Url,
+                        fileUploadResponse.Data.Attributes.UrlSignature,
+                        "test-address.pdf"
+                    );
+
+                    Console.WriteLine("Letter submitted successfully!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+
                 IQueryContext queryContext = this._dataQuery.From(model);
                 CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
 
