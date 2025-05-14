@@ -45,13 +45,13 @@ public sealed record LetterCreate
     /// File URL [ 1 .. 1000 ] characters
     /// </summary>
     [JsonPropertyName("file_url")]
-    public required string FileUrl { get; init; }
+    public required string? FileUrl { get; init; }
 
     /// <summary>
     /// File URL signature [ 1 .. 60 ] characters
     /// </summary>
     [JsonPropertyName("file_url_signature")]
-    public required string FileUrlSignature { get; init; }
+    public required string? FileUrlSignature { get; init; }
 
     /// <summary>
     /// Address position

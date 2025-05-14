@@ -11,6 +11,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.PingenPost;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -46,7 +47,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             {
 
                 var httpClient = new HttpClient();
-                var pingenService = new PingenService(httpClient, "ZMGKFP0UZ946AKBL3CP5", "H8cmJEZoURuvFUkdlJgjyNc6XxXrTy1OC66PgB1b+CBIG67kUnUA13Sv7xQkv3eiamM8qpALWaXfliz5");
+                var pingenService = new PingenService(httpClient, "A3SLYSW9RRUK7J69UIUA", "f3/mYhIG1D71NiZMG14dbHtqMstkHi+WCifzPFooZIoSq2vhzqjSVwfXZq5Vlh2dK/V7M0mMA477blOQ");
 
                 try
                 {
@@ -57,8 +58,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     var fileUploadResponse = await pingenService.RequestFileUploadUrlAsync();
 
                     // Step 3: Upload file
-                    string filePath = "C:\\Users\\ThomasEelvelt\\Desktop\\desk\\Repos\\NotifyNL-OMC\\OMC\\Infrastructure\\Persistence\\WebQueries\\PingenPost\\test-address.pdf";
-                    var responseupload = await pingenService.UploadFileAsync(fileUploadResponse.Data.Attributes.Url, filePath);
+                    string filePath = "C:\\Users\\ThomasEelvelt\\Desktop\\desk\\Repos\\NotifyNL-OMC\\OMC\\Infrastructure\\Persistence\\WebQueries\\PingenPost\\prime-letter-worth.pdf";
+                    var responseupload = await PingenService.UploadFileAsync(fileUploadResponse.Data.Attributes.Url, filePath);
 
                     // Step 4: Submit letter
                     string organisationId = "17466aee-d419-4ebe-ba60-a32e3abb4965";
@@ -76,7 +77,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                         },
                         Sender = new()
                         {
-                            Name = "Thomas Eelvelt",
+                            Name = "Dev-Team",
                             Street = "Laan van Vredenoord ",
                             Number = "11",
                             Zip = "2289 DA",
