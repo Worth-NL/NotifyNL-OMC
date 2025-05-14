@@ -1,11 +1,4 @@
-﻿/* Copyright (C) AMANDA Technology - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Manuel Gysin <manuel.gysin@amanda-technology.ch>
- * Written by Philip Näf <philip.naef@amanda-technology.ch>
- */
-
-namespace PingenApiNet.Abstractions.Enums.Letters;
+﻿namespace WebQueries.PingenPost.Enums.Letters;
 
 /// <summary>
 /// Letter delivery product to be used at Letters/Create endpoint. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>

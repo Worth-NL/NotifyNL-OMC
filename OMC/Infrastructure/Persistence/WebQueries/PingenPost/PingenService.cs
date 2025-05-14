@@ -3,8 +3,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
-using PingenApiNet.Abstractions.Models.Letters.Embedded;
-using PingenApiNet.Abstractions.Models.Letters.Views;
+using WebQueries.PingenPost.Enums.Letters;
+using WebQueries.PingenPost.Views;
 
 namespace WebQueries.PingenPost
 {
@@ -120,7 +120,7 @@ namespace WebQueries.PingenPost
                         AutoSend = false,
                         DeliveryProduct = LetterCreateDeliveryProduct.Cheap,
                         PrintMode = LetterPrintMode.simplex,
-                        PrintSpectrum = LetterPrintSpectrum.grayscale,
+                        PrintSpectrum = LetterPrintSpectrum.color,
                         MetaData = letterMetaData
                     }
                 }
