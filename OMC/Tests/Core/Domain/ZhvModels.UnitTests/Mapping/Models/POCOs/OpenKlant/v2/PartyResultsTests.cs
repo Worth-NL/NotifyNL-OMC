@@ -304,6 +304,29 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));  // First encountered phone is returned because the preferred address couldn't be determined
             });
         }
+
+        // Checks with new digitalAddress Type telefoonnummer instead of Telefoon
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone_V2()
+        {
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Phone_V2(this._validAppSettingsConfiguration, testId, testId);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
+                Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+            });
+        }
         #endregion
 
         #region Helper methods
@@ -561,6 +584,71 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                             Id = addressId,
                             Value = $"second_{TestPhone}",
                             Type = configuration.AppSettings.Variables.PhoneGenericDescription()
+                        }
+                    ]
+                }
+            };
+        }
+
+        /// <summary>
+        /// In this set of test data there is no emails, so phone numbers will always be used.
+        /// </summary>
+        private static PartyResult GetTestPartyResult_Phone_V2(OmcConfiguration configuration, Guid partyId, Guid addressId)
+        {
+            return new PartyResult
+            {
+                PreferredDigitalAddress = new DigitalAddressShort
+                {
+                    Id = partyId
+                },
+                Identification = new PartyIdentification
+                {
+                    Details = new PartyDetails
+                    {
+                        Name = "Jane",
+                        SurnamePrefix = string.Empty,
+                        Surname = "Doe"
+                    }
+                },
+                Expansion = new Expansion
+                {
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong(), // Just empty address (might be not fully initialized)
+
+                        new DigitalAddressLong()  // Preferred address and valid type but empty phone (cannot be used)
+                        {
+                            Id = partyId,
+                            Value = string.Empty,
+                            Type = "telefoonnummer"
+                        },
+
+                        new DigitalAddressLong()  // Preferred address and valid phone but empty type (cannot be used)
+                        {
+                            Id = partyId,
+                            Value = $"emptyType_{TestPhone}",
+                            Type = string.Empty
+                        },
+
+                        new DigitalAddressLong()  // Preferred address but unsupported type (only e-mail and phone numbers)
+                        {
+                            Id = partyId,
+                            Value = "https://www.facebook.com/john.doe",
+                            Type = "Facebook"
+                        },
+
+                        new DigitalAddressLong()  // Not preferred address but valid phone (should be used if the preferred phone is not found => until then keep processing)
+                        {
+                            Id = GetUniqueId(addressId),
+                            Value = $"first_{TestPhone}",
+                            Type = "telefoonnummer"
+                        },
+
+                        new DigitalAddressLong()  // Can be preferred address with valid phone (not first encountered, should be returned if preferred)
+                        {
+                            Id = addressId,
+                            Value = $"second_{TestPhone}",
+                            Type = "telefoonnummer"
                         }
                     ]
                 }

@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.15.2
+v.1.15.3
 
 © 2023-2025, Worth Systems.
 
@@ -542,6 +542,8 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
   "AllowedHosts": "*"
 }
 ```
+
+> **NOTE:** In "OppenKlant v 2.4.0 " the compared value of "TelefoonOmschrijvingGeneriek" has changed to "telefoonnummer" But this is handled in the code for now.
 
 > Full content of `manager.appsettings.json` file for **Secrets Manager** project.
 
