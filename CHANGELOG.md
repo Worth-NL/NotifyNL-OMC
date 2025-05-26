@@ -1,3 +1,11 @@
+## 1.15.3
+
+- Update DetermineDistributionChannel to check against "Telefoon" and "telefoonnummer" as digitalAddressType since OpenKlant v2.4.0.
+
+## 1.15.2
+
+- Update some documentation. 
+
 ## 1.15.1
 
 - Add more personal data to KTO call to Expoint.
