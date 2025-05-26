@@ -144,7 +144,7 @@ jobs:
         with:
           repository: Worth-NL/helm-charts
           ref: main
-          token: ${{ secrets.WORTHNL_PAT }}
+          token: ${{ secrets.RELEASE_TOKEN }}
         name: Checkout Worth-NL/helm-charts
 
       - uses: mikefarah/yq@master
