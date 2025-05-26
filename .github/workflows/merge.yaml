@@ -97,7 +97,7 @@ jobs:
           tag: v.${{ steps.project.outputs.version_project }}
           body: ${{ steps.changelog.outputs.notes }}
           generateReleaseNotes: true
-          token: ${{ secrets.WORTHNL_PAT }}
+          token: ${{ secrets.RELEASE_TOKEN }}
 
   docker-build-and-push:
     runs-on: ubuntu-latest
