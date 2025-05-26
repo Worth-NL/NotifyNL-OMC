@@ -8,11 +8,13 @@
 
 ## 1.15.1
 
-- Add more personal data to KTO call to Expoint.
+- Add more personal data to KTO call to Expoint. Makes breaking changes to Launchsettings. 
+  See OMC - Documentation 1.1.2.1. Customizing profile. And mind the KTO_ section.
 
 ## 1.15.0
 
-- Introduce Customer Satisfaction Survey by Expoint. When configured sends survey on callback.
+- Introduce Customer Satisfaction Survey by Expoint. When configured sends survey on callback. Makes breaking changes to Launchsettings. 
+  See OMC - Documentation 1.1.2.1. Customizing profile. And mind the KTO_ section. 
 
 ## 1.14.6
 
