@@ -334,6 +334,15 @@ And all of them have **Swagger UI** specified as the default start option.
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION" : "",
         "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",
 
+        // Note: KTO settings, if not used must contain "-". Are used specifically voor Expoint customer satisfaction surveys
+        "KTO_AUTH_JWT_CLIENTID": "-",
+        "KTO_AUTH_JWT_SECRET": "-",
+        "KTO_AUTH_JWT_SCOPE": "-",
+        "KTO_AUTH_JWT_ISSUER": "-",
+
+        "KTO_URL": "-",
+        "KTO_CASETYPESETTINGS": "-",
+
         "NOTIFY_API_BASEURL": "",
         "NOTIFY_API_KEY": "",
 
