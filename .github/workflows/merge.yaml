@@ -172,7 +172,7 @@ jobs:
       - uses: offensive-vk/auto-commit-push@v7
         with:
           message: 🤖 notifynl-omc chart ${{ steps.version-bump.outputs.version }}
-          github-token: ${{ secrets.WORTHNL_PAT }}
+          github-token: ${{ secrets.RELEASE_TOKEN }}
 
   helm-release:
     runs-on: ubuntu-latest
@@ -184,7 +184,7 @@ jobs:
         with:
           repository: Worth-NL/helm-charts
           ref: main
-          token: ${{ secrets.WORTHNL_PAT }}
+          token: ${{ secrets.RELEASE_TOKEN }}
         name: Checkout Worth-NL/helm-charts
 
       - uses: bwvolleyball/k8s-toolkit@v1.0.0
