@@ -261,9 +261,9 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         {
             return string.Equals(digitalAddress.Type, configuration.AppSettings.Variables.EmailGenericDescription(), StringComparison.CurrentCultureIgnoreCase)
                 ? DistributionChannels.Email
-                : string.Equals(digitalAddress.Type, configuration.AppSettings.Variables.PhoneGenericDescription(), StringComparison.CurrentCultureIgnoreCase)
+                : digitalAddress.Type.Contains(configuration.AppSettings.Variables.PhoneGenericDescription(), StringComparison.CurrentCultureIgnoreCase)
                     ? DistributionChannels.Sms
-
+                    // NOTE: We use Contains because there is a difference between v1 "Telefoon" and v2 (v2.4.0 +) "telefoonnummer".
                     // NOTE: Any address type doesn't match the generic address types defined in the app settings
                     : DistributionChannels.Unknown;
         }
