@@ -142,16 +142,16 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             foreach (DigitalAddressLong digitalAddress in party.Expansion.DigitalAddresses)
             {
                 // Determine distribution channel
-                distributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
+                DistributionChannels tempDistributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
 
                 // Skip invalid distribution channels
-                if (distributionChannel == DistributionChannels.Unknown)
+                if (tempDistributionChannel == DistributionChannels.Unknown)
                 {
                     continue;
                 }
 
                 (string emailAddress, string phoneNumber) =
-                    DetermineDigitalAddresses(digitalAddress, distributionChannel);
+                    DetermineDigitalAddresses(digitalAddress, tempDistributionChannel);
 
                 // Skip if both email and phone number are empty
                 if (emailAddress.IsNullOrEmpty() && phoneNumber.IsNullOrEmpty())
@@ -165,7 +165,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     // Set fallback values when case identifier matches, and return true
                     SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
-                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel);
                     return true;
                 }
 
@@ -180,7 +180,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     // Update fallback values with the preferred address
                     SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
-                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber);
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel);
                     // Set flag that a preferred address is found. This can still be overridden by case identification match
                     prefDigitalAddressFoundFlag = true;
                 }
@@ -212,17 +212,22 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             // ReSharper disable once RedundantAssignment
             ref string fallbackEmailAddress,
             // ReSharper disable once RedundantAssignment
-            ref string fallbackPhoneNumber)
+            ref string fallbackPhoneNumber,
+            // ReSharper disable once RedundantAssignment
+            ref DistributionChannels distributionChannel)
         {
+            DistributionChannels preferredDistributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
+
             // Determine email and phone for this address
             (string emailAddress, string phoneNumber) = DetermineDigitalAddresses(digitalAddress,
-                DetermineDistributionChannel(digitalAddress, configuration));
+                preferredDistributionChannel);
 
             // Update the fallback values
             fallbackEmailOwningParty = party;
             fallbackEmailAddress = emailAddress;
             fallbackPhoneOwningParty = party;
             fallbackPhoneNumber = phoneNumber;
+            distributionChannel = preferredDistributionChannel;
         }
 
         // NOTE: Checks alternative contact addresses
