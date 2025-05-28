@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Net;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using NUnit.Framework;
@@ -327,6 +328,54 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
             });
         }
+
+        // Tests the correct setting of Digital Address Type. Should Return "Email"
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Phone_Email()
+        {
+            // Arrange
+            var partyId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Phone_Email(this._validAppSettingsConfiguration, partyId, addressId);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}")); 
+                Assert.That(actualPhoneNumber, Is.Empty);  // The preferred address was found
+            });
+        }
+
+        // Tests the correct setting of Digital Address Type.Should Return "SMS"
+        [Test]
+        public void Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Email_Phone()
+        {
+            // Arrange
+            var partyId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Email_Phone(this._validAppSettingsConfiguration, partyId, addressId);
+
+            // Act
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+                = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualParty, Is.EqualTo(testParty));
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);
+                Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+            });
+        }
         #endregion
 
         #region Helper methods
@@ -649,6 +698,90 @@ namespace ZhvModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                             Id = addressId,
                             Value = $"second_{TestPhone}",
                             Type = "telefoonnummer"
+                        }
+                    ]
+                }
+            };
+        }
+
+        /// <summary>
+        /// In this set of test data there is one email, and one phone number. Tests the correct setting of Digital Address Type. Should Return "Email".
+        /// </summary>
+        private static PartyResult GetTestPartyResult_Phone_Email(OmcConfiguration configuration, Guid partyId, Guid addressId)
+        {
+            return new PartyResult
+            {
+                PreferredDigitalAddress = new DigitalAddressShort
+                {
+                    Id = partyId
+                },
+                Identification = new PartyIdentification
+                {
+                    Details = new PartyDetails
+                    {
+                        Name = "Jane",
+                        SurnamePrefix = string.Empty,
+                        Surname = "Doe"
+                    }
+                },
+                Expansion = new Expansion
+                {
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong()  // Preferred address with valid e-mail should be returned
+                        {
+                            Id = partyId,
+                            Value = $"second_{TestEmail}",
+                            Type = configuration.AppSettings.Variables.EmailGenericDescription()
+                        },
+
+                        new DigitalAddressLong()  // valid phone number not preferred address should not be returned
+                        {
+                            Id = addressId,
+                            Value = $"second_{TestPhone}",
+                            Type = "telefoonnummer"
+                        }
+                    ]
+                }
+            };
+        }
+
+        /// <summary>
+        /// In this set of test data there is one email, and one phone number. Tests the correct setting of Digital Address Type. Should Return "SMS".
+        /// </summary>
+        private static PartyResult GetTestPartyResult_Email_Phone(OmcConfiguration configuration, Guid partyId, Guid addressId)
+        {
+            return new PartyResult
+            {
+                PreferredDigitalAddress = new DigitalAddressShort
+                {
+                    Id = partyId
+                },
+                Identification = new PartyIdentification
+                {
+                    Details = new PartyDetails
+                    {
+                        Name = "Jane",
+                        SurnamePrefix = string.Empty,
+                        Surname = "Doe"
+                    }
+                },
+                Expansion = new Expansion
+                {
+                    DigitalAddresses =
+                    [
+                        new DigitalAddressLong()  // Preferred address with valid phone should be returned
+                        {
+                            Id = partyId,
+                            Value = $"second_{TestPhone}",
+                            Type = "telefoonnummer"
+                        },
+
+                        new DigitalAddressLong()  // valid address with valid e-mail not preferred address should not be returned
+                        {
+                            Id = addressId,
+                            Value = $"second_{TestEmail}",
+                            Type = configuration.AppSettings.Variables.EmailGenericDescription()
                         }
                     ]
                 }
