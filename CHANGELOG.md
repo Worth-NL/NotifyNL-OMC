@@ -1,3 +1,7 @@
+## 1.15.4
+
+- Bugfix wrongful setting of Distribution Channel sometimes causing errors in Notify NL.
+
 ## 1.15.3
 
 - Update DetermineDistributionChannel to check against "Telefoon" and "telefoonnummer" as digitalAddressType since OpenKlant v2.4.0.
