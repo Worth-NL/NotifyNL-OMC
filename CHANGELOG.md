@@ -1,3 +1,7 @@
+## 1.15.5
+
+- Bugfix Handle multiple roles some without inpBsn.
+
 ## 1.15.4
 
 - Bugfix wrongful setting of Distribution Channel sometimes causing errors in Notify NL.
