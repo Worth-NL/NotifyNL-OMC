@@ -28,11 +28,11 @@
         "ASPNETCORE_ENVIRONMENT": "Production",
 
         "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
-        "OMC_AUTH_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTH_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
+        "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Production) | Workflow v1",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Production) | Workflow v1",
+        "OMC_AUTH_JWT_USERID": "OMC (Acc) | wv 1",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Acc) | wv 1",
 
         "OMC_FEATURE_WORKFLOW_VERSION": "1",
 
@@ -77,8 +77,8 @@
         "KTO_URL": "-",
         "KTO_CASETYPESETTINGS": "-",
 
-        "NOTIFY_API_BASEURL": "https://api.acc.notifynl.nl",
-        "NOTIFY_API_KEY": "omc_testdev__real_personalizations-f872ff87-26c9-46ad-9b99-b54cc5f85f75-86ff6134-d32a-4c2b-916a-99b9aa09553f",
+        "NOTIFY_API_BASEURL": "https://api.notifynl.nl",
+        "NOTIFY_API_KEY": "omcprod-83951586-5fb6-4dfc-ade7-e3335d20c733-7e188234-4faa-4481-b980-33fb73e62d27",
 
         "NOTIFY_TEMPLATEID_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
 
@@ -106,11 +106,11 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
 
         "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
-        "OMC_AUTH_JWT_ISSUER": "https://omc.acc.notifynl.nl/",
-        "OMC_AUTH_JWT_AUDIENCE": "https://omc.acc.notifynl.nl/",
+        "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
+        "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Development) | Workflow v2",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Development) | Workflow v2",
+        "OMC_AUTH_JWT_USERID": "OMC (Acc) | wv 2",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Acc) | wv 2",
 
         "OMC_FEATURE_WORKFLOW_VERSION": "2",
 
@@ -155,8 +155,8 @@
         "KTO_URL": "-",
         "KTO_CASETYPESETTINGS": "-",
 
-        "NOTIFY_API_BASEURL": "https://api.acc.notifynl.nl",
-        "NOTIFY_API_KEY": "omc_test_v2-f872ff87-26c9-46ad-9b99-b54cc5f85f75-2501a1db-8fa1-4854-85be-d28cd318a374",
+        "NOTIFY_API_BASEURL": "https://api.notifynl.nl",
+        "NOTIFY_API_KEY": "omcprod-83951586-5fb6-4dfc-ade7-e3335d20c733-7e188234-4faa-4481-b980-33fb73e62d27",
 
         "NOTIFY_TEMPLATEID_DECISIONMADE": "3d1b5c2e-f6f0-4de7-ade8-1b21d49a74c1",
 
