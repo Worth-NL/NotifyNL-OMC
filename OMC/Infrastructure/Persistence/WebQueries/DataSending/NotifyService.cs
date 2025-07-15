@@ -55,6 +55,15 @@ namespace WebQueries.DataSending
                               reference:       await PrepareReferenceAsync(package.Reference));
         }
 
+        /// <inheritdoc cref="INotifyService{TPackage}.SendLetterAsync(TPackage)"/>
+        async Task<NotifySendResponse> INotifyService<NotifyData>.SendLetterAsync(NotifyData package)
+        {
+            return await ResolveNotifyClient(package.Reference.Notification)
+                .SendLetterAsync(templateId: package.TemplateId.ToString(),
+                                 personalization: package.Personalization,
+                                 reference: await PrepareReferenceAsync(package.Reference));
+        }
+
         /// <inheritdoc cref="INotifyService{TPackage}.GenerateTemplatePreviewAsync(TPackage)"/>
         async Task<NotifyTemplateResponse> INotifyService<NotifyData>.GenerateTemplatePreviewAsync(NotifyData package)
         {

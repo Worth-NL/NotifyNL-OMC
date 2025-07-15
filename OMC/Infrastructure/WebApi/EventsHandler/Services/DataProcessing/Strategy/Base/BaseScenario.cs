@@ -68,6 +68,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 DistributionChannels.Sms
                     => QueryingDataResponse.Success([GetSmsNotifyData(notification, preparedData)]),
 
+                DistributionChannels.Letter
+                    => QueryingDataResponse.Success([GetLetterNotifyData(notification, preparedData)]),
+
                 // NOTE: Older version of "OpenKlant" was supporting option for sending many types of notifications
                 DistributionChannels.Both
                     => QueryingDataResponse.Success(
@@ -168,6 +171,33 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         }
         #endregion
 
+        #region Virtual (Letter logic)
+        /// <summary>
+        /// Gets the letter notify data to be used with "Notify NL" API Client.
+        /// </summary>
+        /// <param name="notification"><inheritdoc cref="NotificationEvent" path="/summary"/></param>
+        /// <param name="preparedData"><inheritdoc cref="PreparedData" path="/summary"/></param>
+        /// <returns>
+        ///   The letter data for "Notify NL" Web API service.
+        /// </returns>
+        protected virtual NotifyData GetLetterNotifyData(NotificationEvent notification, PreparedData preparedData)
+        {
+            return new NotifyData
+            (
+                notificationMethod: NotifyMethods.Letter,
+                contactDetails: preparedData.Party.EmailAddress,
+                templateId: GetLetterTemplateId(),
+                personalization: GetEmailPersonalization(preparedData.Party),
+                reference: new NotifyReference
+                {
+                    Notification = notification,
+                    CaseId = preparedData.CaseUri.GetGuid(),
+                    PartyId = preparedData.Party.Uri.GetGuid()
+                }
+            );
+        }
+        #endregion
+
         #region Virtual (ProcessData)
         /// <inheritdoc cref="INotifyScenario.ProcessDataAsync(NotificationEvent, IReadOnlyCollection{NotifyData})"/>
         async Task<ProcessingDataResponse> INotifyScenario.ProcessDataAsync(NotificationEvent notification, IReadOnlyCollection<NotifyData> notifyData)
@@ -188,6 +218,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                 {
                     NotifyMethods.Email => await this.NotifyService.SendEmailAsync(data),
                     NotifyMethods.Sms   => await this.NotifyService.SendSmsAsync(data),
+                    NotifyMethods.Letter => await this.NotifyService.SendLetterAsync(data),
                     _ => NotifySendResponse.Failure_Unknown()
                 };
 
@@ -252,6 +283,25 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
         /// </returns>
         protected abstract Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData);
+        #endregion
+
+        #region Abstract (Letter logic: template + personalization)
+        /// <summary>
+        /// Gets the letter template ID for this strategy.
+        /// </summary>
+        /// <returns>
+        ///   The template ID from "Notify NL" Web API service in format "00000000-0000-0000-0000-00000000" (UUID).
+        /// </returns>
+        protected abstract Guid GetLetterTemplateId();
+
+        /// <summary>
+        /// Gets the letter "personalization" for this strategy.
+        /// </summary>
+        /// <param name="partyData">The data associated to a specific party (e.g., citizen, organization).</param>
+        /// <returns>
+        ///   The dictionary of &lt;placeholder, value&gt; used for personalization of "Notify NL" Web API service notification.
+        /// </returns>
+        protected abstract Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData);
         #endregion
 
         #region Abstract (GetWhitelistEnvVarName)        

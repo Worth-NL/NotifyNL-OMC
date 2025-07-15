@@ -11,7 +11,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Reflection;
-using static Common.Settings.Configuration.OmcConfiguration.ZgwComponent.AuthenticationComponent;
 
 namespace Common.Settings.Configuration
 {
@@ -1093,6 +1092,10 @@ namespace Common.Settings.Configuration
                 [Config]
                 public SmsComponent Sms { get; }
 
+                /// <inheritdoc cref="LetterComponent"/>
+                [Config]
+                public LetterComponent Letter { get; }
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
                 /// </summary>
@@ -1103,6 +1106,7 @@ namespace Common.Settings.Configuration
 
                     this.Email = new EmailComponent(this._loadersContext, this._currentPath);
                     this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
+                    this.Letter = new LetterComponent(this._loadersContext, this._currentPath);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -1165,6 +1169,49 @@ namespace Common.Settings.Configuration
                     /// Initializes a new instance of the <see cref="SmsComponent"/> class.
                     /// </summary>
                     public SmsComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+                }
+
+                /// <summary>
+                /// The "Letter" part of the settings.
+                /// </summary>
+                public sealed record LetterComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="LetterComponent"/> class.
+                    /// </summary>
+                    public LetterComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));

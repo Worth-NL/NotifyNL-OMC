@@ -57,6 +57,11 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
         public string TelephoneNumber { get; init; }
 
         /// <summary>
+        /// The telephone number of the party (e.g., citizen or organization).
+        /// </summary>
+        public LetterAddress LetterAddress { get; init; }
+
+        /// <summary>
         /// Customer identification number
         /// </summary>
         public string CustomerNumber { get; init; }

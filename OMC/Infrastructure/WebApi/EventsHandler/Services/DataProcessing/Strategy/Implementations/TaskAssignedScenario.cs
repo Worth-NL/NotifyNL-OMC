@@ -152,6 +152,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
+        #region Polymorphic (Letter logic: template + personalization)
+        /// <inheritdoc cref="BaseScenario.GetSmsTemplateId"/>
+        protected override Guid GetLetterTemplateId()
+            => this.Configuration.Notify.TemplateId.Sms.ZaakClose();
+
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
+        {
+            return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+        }
+        #endregion
+
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         protected override string GetWhitelistEnvVarName() => this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().ToString();

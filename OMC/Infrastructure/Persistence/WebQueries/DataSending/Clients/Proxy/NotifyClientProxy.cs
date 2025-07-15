@@ -53,6 +53,21 @@ namespace WebQueries.DataSending.Clients.Proxy
             }
         }
 
+        /// <inheritdoc cref="INotifyClient.SendLetterAsync(string, Dictionary{string, object}, string)"/>
+        async Task<NotifySendResponse> INotifyClient.SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference)
+        {
+            try
+            {
+                _ = await _notificationClient.SendLetterAsync(templateId, personalization, reference);
+
+                return NotifySendResponse.Success();
+            }
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
+            {
+                return NotifySendResponse.Failure(exception.Message);
+            }
+        }
+
         /// <inheritdoc cref="INotifyClient.GenerateTemplatePreviewAsync(string, Dictionary{string, object})"/>
         async Task<NotifyTemplateResponse> INotifyClient.GenerateTemplatePreviewAsync(string templateId, Dictionary<string, object> personalization)
         {
