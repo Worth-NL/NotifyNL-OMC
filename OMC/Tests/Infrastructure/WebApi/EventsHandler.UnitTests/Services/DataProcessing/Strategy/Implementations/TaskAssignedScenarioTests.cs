@@ -264,10 +264,12 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         // Person
         [TestCase(DistributionChannels.Email, IdTypes.Bsn, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(DistributionChannels.Sms, IdTypes.Bsn, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Letter, IdTypes.Bsn, NotifyMethods.Letter, 1, "")]
         [TestCase(DistributionChannels.Both, IdTypes.Bsn, null, 2, TestEmailAddress + TestPhoneNumber)]
         // Organization
         [TestCase(DistributionChannels.Email, IdTypes.Kvk, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(DistributionChannels.Sms, IdTypes.Kvk, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Letter, IdTypes.Kvk, NotifyMethods.Letter, 1, "")]
         [TestCase(DistributionChannels.Both, IdTypes.Kvk, null, 2, TestEmailAddress + TestPhoneNumber)]
         public async Task TryGetDataAsync_ValidTaskType_Open_AssignedToEntity_Whitelisted_InformSetToTrue_WithValidDistChannels_ReturnsSuccess(
             DistributionChannels testDistributionChannel, IdTypes idType, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
@@ -328,11 +330,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         [TestCase(DistributionChannels.Email, IdTypes.Bsn, true, "24-07-2024", "yes")]
         [TestCase(DistributionChannels.Sms, IdTypes.Bsn, false, "-", "no")]
         [TestCase(DistributionChannels.Sms, IdTypes.Bsn, true, "24-07-2024", "yes")]
+        [TestCase(DistributionChannels.Letter, IdTypes.Bsn, false, "-", "no")]
+        [TestCase(DistributionChannels.Letter, IdTypes.Bsn, true, "24-07-2024", "yes")]
         // Organization
         [TestCase(DistributionChannels.Email, IdTypes.Kvk, false, "-", "no")]
         [TestCase(DistributionChannels.Email, IdTypes.Kvk, true, "24-07-2024", "yes")]
         [TestCase(DistributionChannels.Sms, IdTypes.Kvk, false, "-", "no")]
         [TestCase(DistributionChannels.Sms, IdTypes.Kvk, true, "24-07-2024", "yes")]
+        [TestCase(DistributionChannels.Letter, IdTypes.Kvk, false, "-", "no")]
+        [TestCase(DistributionChannels.Letter, IdTypes.Kvk, true, "24-07-2024", "yes")]
         public async Task GetPersonalizationAsync_SpecificDateTime_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, IdTypes idType, bool isExpirationDateGiven, string testExpirationDate, string isExpirationDateGivenText)
         {
@@ -361,7 +367,14 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                     $"{{" +
                       $"\"klant.voornaam\":\"Jackie\"," +
                       $"\"klant.voorvoegselAchternaam\":null," +
-                      $"\"klant.achternaam\":\"Chan\"," +
+                      $"\"klant.achternaam\":\"Chan\","+
+                      (testDistributionChannel == DistributionChannels.Letter ?
+                          $"\"klant.street\":null," +
+                          $"\"klant.number\":null," +
+                          $"\"klant.zip\":null," +
+                          $"\"klant.city\":null," +
+                          $"\"klant.country\":null,"
+                          : "") +
 
                       $"\"taak.verloopdatum\":\"{testExpirationDate}\"," +
                       $"\"taak.heeft_verloopdatum\":\"{isExpirationDateGivenText}\"," +
@@ -394,7 +407,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_ERROR_Scenario_MissingNotifyData));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -418,14 +431,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(QueryResources.Response_ProcessingData_ERROR_DeliveryMethodUnknown));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
-        [TestCase(NotifyMethods.Email, 1, 0)]
-        [TestCase(NotifyMethods.Sms, 0, 1)]
+        [TestCase(NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
-            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -433,7 +447,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
                 isSendingSuccessful: false,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null,
+                letterNotifyData:    testNotifyMethod == NotifyMethods.Letter? testData : null);
 
             // Act
             ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
@@ -444,14 +459,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
 
-        [TestCase(NotifyMethods.Email, 1, 0)]
-        [TestCase(NotifyMethods.Sms, 0, 1)]
+        [TestCase(NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
-            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -459,7 +475,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             INotifyScenario scenario = ArrangeTaskScenario_ProcessData(
                 isSendingSuccessful: true,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null,
+                letterNotifyData:    testNotifyMethod == NotifyMethods.Letter ? testData : null);
 
             // Act
             ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
@@ -470,7 +487,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsSuccess, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataProcessed));
                 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
         #endregion
@@ -533,7 +550,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
         private TaskAssignedScenario ArrangeTaskScenario_ProcessData(
-            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default, NotifyData? letterNotifyData = default)
         {
             // IDataQueryService
             this._mockedDataQuery
@@ -548,6 +565,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(smsNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
+            this._mockedNotifyService.Setup(mock => mock.SendLetterAsync(letterNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
+
             // Task Scenario
             return new TaskAssignedScenario(this._testConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
@@ -558,6 +578,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             {
                 NotifyMethods.Email => configuration.Notify.TemplateId.Email.TaskAssigned(),
                 NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.TaskAssigned(),
+                NotifyMethods.Letter => configuration.Notify.TemplateId.Letter.TaskAssigned(),
                 _ => Guid.Empty
             };
         }
@@ -609,10 +630,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             
             this._getDataVerified = true;
 
-            VerifyProcessDataMethodCalls(0, 0);
+            VerifyProcessDataMethodCalls(0, 0, 0);
         }
 
-        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             if (this._processDataVerified)
             {
@@ -629,6 +650,11 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 .Verify(mock => mock.SendSmsAsync(
                     It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
+
+            this._mockedNotifyService
+                .Verify(mock => mock.SendLetterAsync(
+                        It.IsAny<NotifyData>()),
+                    Times.Exactly(sendLetterInvokeCount));
 
             this._processDataVerified = true;
 

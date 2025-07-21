@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Security.AccessControl;
 using Common.Constants;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
@@ -228,6 +229,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
         [TestCase(DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Letter, NotifyMethods.Letter, 1, "")]
         [TestCase(DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
         public async Task TryGetDataAsync_ValidMessageType_ValidStatus_ValidConfidentiality_WhitelistedCaseId_InformSetToTrue_WithInvalidNotifyMethod_ReturnsSuccess(
             DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
@@ -280,6 +282,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         #region GetPersonalizationAsync()
         [TestCase(DistributionChannels.Email)]
         [TestCase(DistributionChannels.Sms)]
+        [TestCase(DistributionChannels.Letter)]
         public async Task GetPersonalizationAsync_ReturnsExpectedPersonalization(DistributionChannels testDistributionChannel)
         {
             INotifyScenario scenario = ArrangeDecisionScenario_TryGetData(
@@ -299,11 +302,18 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
                 string actualSerializedPersonalization = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
-                const string expectedSerializedPersonalization =
+                string expectedSerializedPersonalization =
                     $"{{" +
                       $"\"klant.voornaam\":\"Jackie\"," +
                       $"\"klant.voorvoegselAchternaam\":null," +
                       $"\"klant.achternaam\":\"Chan\"," +
+                        (testDistributionChannel == DistributionChannels.Letter ?
+                            $"\"klant.street\":null," +
+                            $"\"klant.number\":null," +
+                            $"\"klant.zip\":null," +
+                            $"\"klant.city\":null," +
+                            $"\"klant.country\":null,"
+                            : "") +
                       $"\"besluit.identificatie\":\"\"," +
                       $"\"besluit.datum\":\"01-01-0001\"," +
                       $"\"besluit.toelichting\":\"\"," +

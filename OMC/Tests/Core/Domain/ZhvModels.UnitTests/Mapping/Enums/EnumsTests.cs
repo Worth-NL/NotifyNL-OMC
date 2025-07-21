@@ -35,6 +35,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Enums
         [TestCase(typeof(DistributionChannels), DistributionChannels.None, "geen")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Email, "email")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Sms, "sms")]
+        [TestCase(typeof(DistributionChannels), DistributionChannels.Letter, "letter")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Both, "beiden")]
         // OpenZaak: MessageStatus
         [TestCase(typeof(MessageStatus), MessageStatus.Definitive, "definitief")]
@@ -95,6 +96,7 @@ namespace ZhvModels.Tests.Unit.Mapping.Enums
         [TestCase("geen", typeof(DistributionChannels), DistributionChannels.None)]
         [TestCase("email", typeof(DistributionChannels), DistributionChannels.Email)]
         [TestCase("sms", typeof(DistributionChannels), DistributionChannels.Sms)]
+        [TestCase("letter", typeof(DistributionChannels), DistributionChannels.Letter)]
         [TestCase("beiden", typeof(DistributionChannels), DistributionChannels.Both)]
         // OpenZaak: MessageStatus
         [TestCase("definitief", typeof(MessageStatus), MessageStatus.Definitive)]

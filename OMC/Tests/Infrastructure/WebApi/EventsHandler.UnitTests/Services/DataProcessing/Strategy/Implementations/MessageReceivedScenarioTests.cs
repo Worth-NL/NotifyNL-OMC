@@ -104,6 +104,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         
         [TestCase(DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(DistributionChannels.Letter, NotifyMethods.Letter, 1, "")]
         [TestCase(DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
         public async Task TryGetDataAsync_AllowedMessages_WithValidDistChannels_ReturnsSuccess(
             DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
@@ -175,7 +176,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_ERROR_Scenario_MissingNotifyData));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -201,14 +202,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(QueryResources.Response_ProcessingData_ERROR_DeliveryMethodUnknown));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
-        [TestCase(NotifyMethods.Email, 1, 0)]
-        [TestCase(NotifyMethods.Sms, 0, 1)]
+        [TestCase(NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
-            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -218,7 +220,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 configuration,
                 isSendingSuccessful: false,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null,
+                letterNotifyData:    testNotifyMethod == NotifyMethods.Letter ? testData : null);
 
             // Act
             ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
@@ -229,14 +232,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
 
-        [TestCase(NotifyMethods.Email, 1, 0)]
-        [TestCase(NotifyMethods.Sms, 0, 1)]
+        [TestCase(NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
-            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -246,7 +250,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 configuration,
                 isSendingSuccessful: true,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null,
+                letterNotifyData:    testNotifyMethod == NotifyMethods.Letter ? testData : null);
 
             // Act
             ProcessingDataResponse actualResponse = await scenario.ProcessDataAsync(default, [testData]);
@@ -257,7 +262,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResponse.IsSuccess, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataProcessed));
                 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
         #endregion
@@ -306,7 +311,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
         private TaskAssignedScenario ArrangeMessageScenario_ProcessData(
             OmcConfiguration configuration, bool isSendingSuccessful,
-            NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+            NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default, NotifyData? letterNotifyData = default)
         {
             // IDataQueryService
             this._mockedDataQuery
@@ -321,6 +326,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(smsNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
+            this._mockedNotifyService.Setup(mock => mock.SendLetterAsync(letterNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
+
             // Task Scenario
             return new TaskAssignedScenario(configuration, this._mockedDataQuery.Object, this._mockedNotifyService.Object);
         }
@@ -331,6 +339,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             {
                 NotifyMethods.Email => configuration.Notify.TemplateId.Email.MessageReceived(),
                 NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.MessageReceived(),
+                NotifyMethods.Letter => configuration.Notify.TemplateId.Letter.MessageReceived(),
                 _ => Guid.Empty
             };
         }
@@ -367,10 +376,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
             this._getDataVerified = true;
 
-            VerifyProcessDataMethodCalls(0, 0);
+            VerifyProcessDataMethodCalls(0, 0, 0);
         }
 
-        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             if (this._processDataVerified)
             {
@@ -387,6 +396,11 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 .Verify(mock => mock.SendSmsAsync(
                     It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
+
+            this._mockedNotifyService
+                .Verify(mock => mock.SendLetterAsync(
+                        It.IsAny<NotifyData>()),
+                    Times.Exactly(sendLetterInvokeCount));
 
             this._processDataVerified = true;
 
