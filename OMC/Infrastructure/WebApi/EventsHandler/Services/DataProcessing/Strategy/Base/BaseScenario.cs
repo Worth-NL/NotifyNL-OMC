@@ -185,9 +185,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             return new NotifyData
             (
                 notificationMethod: NotifyMethods.Letter,
-                contactDetails: preparedData.Party.EmailAddress,
+                contactDetails: "",
                 templateId: GetLetterTemplateId(),
-                personalization: GetEmailPersonalization(preparedData.Party),
+                personalization: GetLetterPersonalization(preparedData.Party),
                 reference: new NotifyReference
                 {
                     Notification = notification,

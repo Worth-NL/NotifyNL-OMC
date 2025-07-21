@@ -376,6 +376,28 @@ namespace Common.Settings.Configuration
                     public string Email_Failure_Body()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Failure_Body));
                     #endregion
+
+                    #region Letter
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Success_Subject()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Success_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Success_Body()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Success_Body));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Failure_Subject()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Failure_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Failure_Body()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Failure_Body));
+                    #endregion
                 }
             }
         }
