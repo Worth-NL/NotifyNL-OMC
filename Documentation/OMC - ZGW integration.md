@@ -101,9 +101,21 @@ sequenceDiagram
     OMC->>OMC: Check if Klant.DigitaleAddressen <br /> contains a case override
     alt Klant.DigitaleAddressen contains override
     OMC->>NotifyNL: Send Email to override address
+    activate NotifyNL
     else Klant.DigitaleAddressen does not contain override
     OMC->>NotifyNL: Send Email to preferred address
     end
+    
+    NotifyNL->>NotifyNL: Send email/sms. <br /> 5 retries over max 72 hrs
+    NotifyNL-->>OMC: POST to CallbackUrl with result
+    deactivate NotifyNL
+
+    OMC->>KlantAPI: Register Contactmoment (success=result) 
+
+    ZAC->>KlantAPI: Request conversation history
+    activate KlantAPI
+    KlantAPI-->>ZAC: List<ContactMoment>
+
 ```
 
 *: Zac: Zaak Afhandel Comonent (some piece of software that can register, change, etc. cases for clients) <br/>
