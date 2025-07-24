@@ -1,4 +1,5 @@
-## 1.15.6 
+## 1.15.6
+
 - Adds documentation for Case Created scenario
 
 ## 1.15.5
