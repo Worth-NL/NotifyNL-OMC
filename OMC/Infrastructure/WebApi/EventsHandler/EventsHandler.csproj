@@ -10,7 +10,7 @@
   <PropertyGroup>
     <!-- Project -->
     <AssemblyName>OMC.EventsHandler</AssemblyName>
-    <VersionPrefix>1.15.5</VersionPrefix>
+    <VersionPrefix>1.15.6</VersionPrefix>
 
     <TargetFramework>net8.0</TargetFramework>
 
