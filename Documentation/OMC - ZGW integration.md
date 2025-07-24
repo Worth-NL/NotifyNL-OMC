@@ -40,7 +40,7 @@ Clients:
 sequenceDiagram
     autonumber
 
-    participant ZAC
+    participant ZAC *
     participant ZaakAPI
     participant KlantAPI
     participant NotificatieAPI
