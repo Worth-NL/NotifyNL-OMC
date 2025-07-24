@@ -1,4 +1,9 @@
+## 1.15.7
+
+- Adds contactmoment callback to documentation
+
 ## 1.15.6 
+
 - Adds documentation for Case Created scenario
 
 ## 1.15.5
