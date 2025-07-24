@@ -40,7 +40,7 @@ Clients:
 sequenceDiagram
     autonumber
 
-    participant ZAC *
+    participant ZAC as ZAC *
     participant ZaakAPI
     participant KlantAPI
     participant NotificatieAPI
@@ -51,7 +51,7 @@ sequenceDiagram
 
     activate ZaakAPI
     ZaakAPI->>NotificatieAPI: Event: {<br />Kanaal: "zaak", Actie: "create", Resource: "zaak", <br /> ZaakType: url, URL: url, Klant: url } 
-    NotificatieAPI--xOMC: No subscription *
+    NotificatieAPI--xOMC: No subscription **
     ZaakAPI->>NotificatieAPI: Event: {<br />"Kanaal": "status" "actie": "create", <br /> "URL": url, "Zaak": url }
     deactivate ZaakAPI
 
