@@ -40,6 +40,12 @@ namespace ZhvModels.Mapping.Enums.OpenKlant
         /// Communication method: SMS and e-mail.
         /// </summary>
         [JsonPropertyName("beiden")]
-        Both = 4
+        Both = 4,
+
+        /// <summary>
+        /// Communication method: Customer Satisfaction Survey.
+        /// </summary>
+        [JsonPropertyName("kto")]
+        Kto = 6
     }
 }

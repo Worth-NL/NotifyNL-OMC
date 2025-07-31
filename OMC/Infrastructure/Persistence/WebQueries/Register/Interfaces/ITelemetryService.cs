@@ -69,16 +69,6 @@ namespace WebQueries.Register.Interfaces
             {
                 return HttpRequestResponse.Failure(exception.Message);
             }
-            finally
-            {
-                // Only if ContactMoment is successfully created send KTO 
-                if (requestResponse.IsSuccess)
-                {
-                    // Start Customer Satisfaction Service
-                    await SendKtoAsync(notificationMethod, referenceAddress,
-                        await this.QueryContext.GetLastCaseTypeAsync(caseStatuses), reference.CaseId);
-                }
-            }
         }
 
         #region Abstract
