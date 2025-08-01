@@ -1,3 +1,7 @@
+## 1.15.8
+
+- Adds environment variable OMC_CONTEXT_PATH to set a context path. Default empty string "".
+
 ## 1.15.7
 
 - Adds contactmoment callback to documentation
