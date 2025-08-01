@@ -11,7 +11,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Reflection;
-using static Common.Settings.Configuration.OmcConfiguration.ZgwComponent.AuthenticationComponent;
 
 namespace Common.Settings.Configuration
 {
@@ -81,8 +80,10 @@ namespace Common.Settings.Configuration
 
         /// <summary>
         /// Gets the settings for KTO (Customer Satisfaction System).
+        /// KTO (Klant Tevredenheidsonderzoek) / "Expoints" 
         /// </summary>
         [Config]
+        // ReSharper disable once InconsistentNaming
         public KtoComponent KTO { get; }
         #endregion
 
@@ -501,6 +502,10 @@ namespace Common.Settings.Configuration
             [Config]
             public FeatureComponent Feature { get; }
 
+            /// <inheritdoc cref="FeatureComponent"/>
+            [Config]
+            public ContextComponent Context { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -510,6 +515,7 @@ namespace Common.Settings.Configuration
 
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
                 this.Feature = new FeatureComponent(loadersContext, parentName);
+                this.Context = new ContextComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -601,6 +607,29 @@ namespace Common.Settings.Configuration
                 [Config]
                 public byte Workflow_Version()
                     => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
+            }
+
+            /// <summary>
+            /// The "Context" part of the settings.
+            /// </summary>
+            public sealed record ContextComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ContextComponent"/> class.
+                /// </summary>
+                public ContextComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Context));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string Path()
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(Path), disableValidation: true);
             }
         }
 
