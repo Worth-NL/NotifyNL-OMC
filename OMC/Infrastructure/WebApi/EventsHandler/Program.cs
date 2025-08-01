@@ -447,6 +447,28 @@ namespace EventsHandler
         {
             WebApplication app = builder.Build();
 
+            // Get configuration
+            OmcConfiguration configuration = app.Services.GetRequiredService<OmcConfiguration>();
+            string pathBase = configuration.OMC.Context.Path();
+
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                app.Use((context, next) =>
+                {
+                    // If the request does not start with the path base, redirect
+                    if (context.Request.Path.StartsWithSegments(pathBase, out PathString remaining))
+                    {
+                        return next();
+                    }
+
+                    string newPath = pathBase + context.Request.Path + context.Request.QueryString;
+                    context.Response.Redirect(newPath);
+                    return Task.CompletedTask;
+                });
+
+                app.UsePathBase(pathBase);
+            }
+
             // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {

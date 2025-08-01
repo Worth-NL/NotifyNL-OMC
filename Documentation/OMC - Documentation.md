@@ -1,6 +1,6 @@
 <h1 id="start">OMC Documentation</h1>
 
-v.1.15.7
+v.1.15.8
 
 © 2023-2025, Worth Systems.
 
@@ -1031,6 +1031,12 @@ To work properly **OMC** always requires these mandatory _environment variables_
 `ASPNETCORE_ENVIRONMENT`
 
 > Used by `[OMC]/events/version` endpoint and to determine which `appsettings[.xxx].json` will be used.
+
+</br>
+
+`OMC_CONTEXT_PATH`
+
+> Defines the base path under which the OMC API is hosted (e.g., `/omc`). This is useful when the application is served behind a reverse proxy or gateway that requires a specific route prefix. By default empty string "".
 
 </br>
 
