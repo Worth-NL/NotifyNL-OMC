@@ -209,7 +209,7 @@ namespace WebQueries.DataQuerying.Adapter
             => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
         #endregion
 
-        #region IQueryObjectTypen
+        #region IQueryKto
         /// <inheritdoc cref="IQueryContext.SendKtoAsync"/>
         async Task<HttpRequestResponse> IQueryContext.SendKtoAsync(string body)
             => await this._networkServiceKto.PostAsync(body);

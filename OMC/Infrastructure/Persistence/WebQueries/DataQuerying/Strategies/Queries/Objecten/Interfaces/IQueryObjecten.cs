@@ -105,6 +105,29 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         }
         #endregion
 
+        #region Parent (Patch object)        
+        /// <summary>
+        /// Patches an object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The answer whether the object was patched successfully.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed async Task<HttpRequestResponse> PatchObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
+        {
+            // Predefined URL components
+            string createObjectEndpoint = $"https://{GetDomain()}/objects";
+
+            // Request URL
+            Uri createObjectUri = new(createObjectEndpoint);
+
+            return await networkService.PatchAsync(
+                httpClientType: HttpClientTypes.Objecten,
+                uri: createObjectUri,
+                objectJsonBody);
+        }
+        #endregion
+
         #region Polymorphic (Domain)
         /// <inheritdoc cref="IDomain.GetDomain"/>
         string IDomain.GetDomain() => this.Configuration.ZGW.Endpoint.Objecten();

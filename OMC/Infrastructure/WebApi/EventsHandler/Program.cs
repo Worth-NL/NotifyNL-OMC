@@ -35,6 +35,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy;
@@ -329,6 +330,7 @@ namespace EventsHandler
             services.AddSingleton<TaskAssignedScenario>();
             services.AddSingleton<DecisionMadeScenario>();
             services.AddSingleton<MessageReceivedScenario>();
+            services.AddSingleton<KtoScenario>();
             services.AddSingleton<NotImplementedScenario>();
         }
 

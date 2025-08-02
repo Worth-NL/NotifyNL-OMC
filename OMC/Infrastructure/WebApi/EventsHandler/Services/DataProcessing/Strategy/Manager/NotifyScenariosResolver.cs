@@ -89,12 +89,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
-            // Scenario #5: "Decision made"
-            if (IsKtoScenario(model))
-            {
-                return this._serviceProvider.GetRequiredService<KtoScenario>();
-            }
-
             // No matching scenario. There is no clear instruction what to do with the received Notification
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
@@ -145,22 +139,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Action:   Actions.Create,
                 Channel:  Channels.Decisions,
                 Resource: Resources.Decision
-            };
-        }
-
-        /// <summary>
-        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
-        /// </summary>
-        /// <remarks>
-        ///   This check is verifying whether case scenarios would be processed.
-        /// </remarks>
-        private static bool IsKtoScenario(NotificationEvent notification)
-        {
-            return notification is
-            {
-                Action: Actions.Create,
-                Channel: Channels.Kto,
-                Resource: Resources.Object
             };
         }
         #endregion

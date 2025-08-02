@@ -1,72 +1,59 @@
-﻿using Common.Settings.Configuration;
-using EventsHandler.Services.DataProcessing.Strategy.Base;
-using WebQueries.DataQuerying.Adapter;
-using WebQueries.DataQuerying.Adapter.Interfaces;
+﻿using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
-using WebQueries.DataSending.Interfaces;
-using WebQueries.DataSending.Models.DTOs;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto
 {
-    internal sealed partial class KtoScenario : BaseScenario
+    internal sealed class KtoScenario
     {
-        private IQueryContext _queryContext = null!;
-        private string ktoPayload = string.Empty;
-        private Data _messageData;
+        /// <inheritdoc cref="IQueryContext"/>
+        private IQueryContext QueryContext { get; set; }
+
+        /// <inheritdoc cref="IDataQueryService{TModel}"/>
+        private IDataQueryService<NotificationEvent> DataQuery { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KtoScenario"/> class.
         /// </summary>
         public KtoScenario(
-            OmcConfiguration configuration,
             IDataQueryService<NotificationEvent> dataQuery,
-            INotifyService<NotifyData> notifyService)
-            : base(configuration, dataQuery, notifyService)
+            IQueryContext queryContext)
         {
-
+            DataQuery = dataQuery;
+            QueryContext = queryContext;
         }
 
-        #region Polymorphic (PrepareDataAsync)
-        protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
+        /// <summary>
+        /// Checks if there are KTO settings, if so tries to send a request to KTO Service.
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        public async Task<HttpRequestResponse> SendKtoAsync(NotificationEvent notification)
         {
-            this._queryContext = this.DataQuery.From(notification);
-            this._messageData = (await _queryContext.GetMessageAsync()).Record.Data;
-            throw new NotImplementedException();
-        }
-        #endregion
+            this.QueryContext = this.DataQuery.From(notification);
 
-        #region Polymorphic (Email logic: template + personalization)
-        protected override Guid GetEmailTemplateId()
-        {
-            throw new NotImplementedException();
+            string ktoObject = (await QueryContext.GetMessageAsync()).Record.Data.KtoObject;
+
+            if (string.IsNullOrEmpty(ktoObject))
+            {
+                throw new ArgumentException(@"KTO object cannot be null or empty.", nameof(ktoObject)); 
+            }
+
+            HttpRequestResponse result = await SendKtoRequestAsync(ktoObject);
+
+            if (result.IsFailure)
+                throw new HttpRequestException("Failed to send KTO request.");
+
+            return result;
         }
 
-        protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
+        private async Task<HttpRequestResponse> SendKtoRequestAsync(string ktoObject)
         {
-            throw new NotImplementedException();
+            return await this.QueryContext.SendKtoAsync(ktoObject);
         }
-        #endregion
-
-        #region Polymorphic (SMS logic: template + personalization)
-        protected override Guid GetSmsTemplateId()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-        #region Polymorphic (GetWhitelistEnvVarName)
-        protected override string GetWhitelistEnvVarName()
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
     }
 }

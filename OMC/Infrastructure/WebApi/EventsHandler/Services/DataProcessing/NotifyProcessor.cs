@@ -12,6 +12,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Models.Responses;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotificatieApi;
@@ -72,11 +73,31 @@ namespace EventsHandler.Services.DataProcessing
                 // Choose an adequate business-scenario (strategy) to process the notification
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
 
+                
+
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 QueryingDataResponse queryDataResponse;
 
                 if ((queryDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
+                    if (IsKtoScenario(notification))
+                    {
+                        try
+                        {
+                            //HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
+                            //return ktoResponse.IsFailure
+                            //    // RETRY: The KTO notification COULD not be sent
+                            //    ? ProcessingResult.Failure(string.Format(ktoResponse.JsonResponse), json, details)
+                            //    : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                        }
+                        catch (Exception ex)
+                        {
+                            ProcessingResult.Failure(
+                                string.Format(ex.Message), json,
+                                details);
+                        }
+                    }
+
                     string message = string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent, queryDataResponse.Message);
 
                     // RETRY: The notification COULD not be sent due to missing or inconsistent data
@@ -138,6 +159,22 @@ namespace EventsHandler.Services.DataProcessing
                 // RETRY: The notification COULD not be sent
                 _ => ProcessingResult.Failure(
                     string.Format(ApiResources.Processing_ERROR_Exception_Unhandled, exception.GetType().Name, exception.Message), json, details)
+            };
+        }
+
+        /// <summary>
+        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
+        /// </summary>
+        /// <remarks>
+        ///   This check is verifying whether case scenarios would be processed.
+        /// </remarks>
+        private static bool IsKtoScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action: Actions.Create,
+                Channel: Channels.Kto,
+                Resource: Resources.Object
             };
         }
         #endregion

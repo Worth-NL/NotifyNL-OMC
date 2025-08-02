@@ -57,7 +57,7 @@ namespace WebQueries.DataSending
         /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
         async Task<HttpRequestResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
-            return await ExecuteCallAsync(httpClientType, uri);
+            return await ExecuteCallAsync(httpClientType, uri, method: HttpMethod.Get);
         }
 
         /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
@@ -66,7 +66,16 @@ namespace WebQueries.DataSending
             // Prepare HTTP Request Body
             StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType);
 
-            return await ExecuteCallAsync(httpClientType, uri, requestBody);
+            return await ExecuteCallAsync(httpClientType, uri, requestBody, HttpMethod.Post);
+        }
+
+        /// <inheritdoc cref="IHttpNetworkService.PatchAsync(HttpClientTypes, Uri, string)"/>
+        async Task<HttpRequestResponse> IHttpNetworkService.PatchAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
+        {
+            // Prepare HTTP Request Body
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType);
+
+            return await ExecuteCallAsync(httpClientType, uri, requestBody, HttpMethod.Patch);
         }
         #endregion
 
@@ -202,7 +211,7 @@ namespace WebQueries.DataSending
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
-        private async Task<HttpRequestResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
+        private async Task<HttpRequestResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default, HttpMethod? method = null)
         {
             try
             {
@@ -214,10 +223,23 @@ namespace WebQueries.DataSending
 
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await _semaphore.WaitAsync();
-                HttpResponseMessage result = body is null
-                    // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
-                    ? await ResolveClient(httpClientType).GetAsync(uri)
-                    : await ResolveClient(httpClientType).PostAsync(uri, body);
+                var result = new HttpResponseMessage();
+                // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
+                result = method switch
+                {
+                    not null when method == HttpMethod.Get =>
+                        await ResolveClient(httpClientType).GetAsync(uri),
+
+                    not null when method == HttpMethod.Post =>
+                        await ResolveClient(httpClientType).PostAsync(uri, body),
+
+                    not null when method == HttpMethod.Patch =>
+                        await ResolveClient(httpClientType).PatchAsync(uri, body),
+
+                    _ =>
+                        throw new NotSupportedException($"HTTP method '{method?.Method}' is not supported.")
+                };
+                
                 this._semaphore.Release();
 
                 return result.IsSuccessStatusCode
