@@ -38,7 +38,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
         /// <summary>
         /// The identification details of the <see cref="MessageObject"/>.
         /// </summary>
-        [JsonRequired]
         [JsonPropertyName("ktoobject")]
         [JsonPropertyOrder(3)]
         public string KtoObject { get; set; } = string.Empty;

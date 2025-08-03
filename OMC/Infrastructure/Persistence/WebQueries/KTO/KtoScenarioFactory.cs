@@ -6,7 +6,7 @@ using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace WebQueries.KTO
 {
-    internal sealed class KtoScenarioFactory : IKtoScenarioFactory
+    public sealed class KtoScenarioFactory : IKtoScenarioFactory
     {
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly IQueryContext _queryContext;

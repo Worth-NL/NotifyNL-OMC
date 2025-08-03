@@ -197,6 +197,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.CreateObjectAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.CreateObjectAsync(string objectJsonBody)
             => await this._queryObjecten.CreateObjectAsync(this._networkService, objectJsonBody);
+
+        /// <inheritdoc cref="IQueryContext.PatchObjectAsync(string)"/>
+        async Task<HttpRequestResponse> IQueryContext.PatchObjectAsync(string objectJsonBody)
+            => await this._queryObjecten.PatchObjectAsync(this._networkService, objectJsonBody);
         #endregion
 
         #region IQueryObjectTypen

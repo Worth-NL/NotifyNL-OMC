@@ -276,6 +276,7 @@ namespace EventsHandler
             // Domain queries and resources
             builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddSingleton<IQueryContext, QueryContext>();
+            builder.Services.AddSingleton<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.RegisterOpenServices(builder);
 
             // HTTP communication

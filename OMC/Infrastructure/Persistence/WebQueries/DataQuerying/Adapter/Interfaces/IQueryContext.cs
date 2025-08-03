@@ -191,6 +191,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #region IQueryCustomerSatisfactionSurvey
         /// <inheritdoc cref="IDomain"/>
         public Task<HttpRequestResponse> SendKtoAsync(string body);
+        Task<HttpRequestResponse> PatchObjectAsync(string objectJsonBody);
         #endregion
     }
 }
