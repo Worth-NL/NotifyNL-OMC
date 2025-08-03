@@ -3,9 +3,12 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 
-namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto
+namespace WebQueries.KTO.Models
 {
-    internal sealed class KtoScenario
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class KtoScenario
     {
         /// <inheritdoc cref="IQueryContext"/>
         private IQueryContext QueryContext { get; set; }
@@ -34,7 +37,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto
         /// </returns>
         public async Task<HttpRequestResponse> SendKtoAsync(NotificationEvent notification)
         {
-            this.QueryContext = this.DataQuery.From(notification);
+            QueryContext = DataQuery.From(notification);
 
             string ktoObject = (await QueryContext.GetMessageAsync()).Record.Data.KtoObject;
 
@@ -53,7 +56,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto
 
         private async Task<HttpRequestResponse> SendKtoRequestAsync(string ktoObject)
         {
-            return await this.QueryContext.SendKtoAsync(ktoObject);
+            return await QueryContext.SendKtoAsync(ktoObject);
         }
     }
 }

@@ -223,9 +223,9 @@ namespace WebQueries.DataSending
 
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await _semaphore.WaitAsync();
-                var result = new HttpResponseMessage();
-                // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
-                result = method switch
+                HttpResponseMessage result =
+                    // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
+                    method switch
                 {
                     not null when method == HttpMethod.Get =>
                         await ResolveClient(httpClientType).GetAsync(uri),

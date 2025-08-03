@@ -19,6 +19,8 @@ using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
 using ZhvModels.Serialization.Interfaces;
+using WebQueries.KTO.Interfaces;
+using KtoScenario = WebQueries.KTO.Models.KtoScenario;
 
 namespace EventsHandler.Services.DataProcessing
 {
@@ -28,6 +30,7 @@ namespace EventsHandler.Services.DataProcessing
         private readonly ISerializationService _serializer;
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
+        private readonly IKtoScenarioFactory _ktoScenarioFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
@@ -35,14 +38,17 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="resolver">The strategies resolving service.</param>
+        /// <param name="ktoScenarioFactory"></param>
         public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
-            IScenariosResolver<INotifyScenario, NotificationEvent> resolver)  // Dependency Injection (DI)
+            IScenariosResolver<INotifyScenario, NotificationEvent> resolver, 
+            IKtoScenarioFactory ktoScenarioFactory)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
             this._validator = validator;
             this._resolver = resolver;
+            _ktoScenarioFactory = ktoScenarioFactory;
         }
 
         /// <inheritdoc cref="IProcessingService.ProcessAsync(object)"/>
@@ -84,11 +90,12 @@ namespace EventsHandler.Services.DataProcessing
                     {
                         try
                         {
-                            //HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
-                            //return ktoResponse.IsFailure
-                            //    // RETRY: The KTO notification COULD not be sent
-                            //    ? ProcessingResult.Failure(string.Format(ktoResponse.JsonResponse), json, details)
-                            //    : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                            KtoScenario ktoScenario = _ktoScenarioFactory.Create();
+                            HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
+
+                            return ktoResponse.IsFailure
+                                ? ProcessingResult.Failure(ktoResponse.JsonResponse, json, details)
+                                : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
                         }
                         catch (Exception ex)
                         {
