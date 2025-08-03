@@ -12,15 +12,14 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.KTO.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
 using ZhvModels.Serialization.Interfaces;
-using WebQueries.KTO.Interfaces;
-using KtoScenario = WebQueries.KTO.Models.KtoScenario;
+using KtoScenario = EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto.KtoScenario;
 
 namespace EventsHandler.Services.DataProcessing
 {
@@ -90,7 +89,7 @@ namespace EventsHandler.Services.DataProcessing
                     {
                         try
                         {
-                            KtoScenario ktoScenario = _ktoScenarioFactory.Create();
+                            WebQueries.KTO.Models.KtoScenario ktoScenario = _ktoScenarioFactory.Create();
                             HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
 
                             return ktoResponse.IsFailure

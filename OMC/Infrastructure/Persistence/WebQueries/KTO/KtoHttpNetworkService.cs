@@ -1,10 +1,10 @@
 ﻿// © 2025, Worth Systems.
 
-using Common.Settings.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
-using WebQueries.DataQuerying.Models.Responses;
 using System.Text.Json;
+using Common.Settings.Configuration;
+using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
 using WebQueries.KTO.Models;
 
@@ -26,8 +26,8 @@ namespace WebQueries.KTO
         /// </summary>
         public KtoHttpNetworkService(OmcConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            this._configuration = configuration;
-            this._httpClient = httpClientFactory.CreateClient(); // Create an instance from the factory
+            _configuration = configuration;
+            _httpClient = httpClientFactory.CreateClient(); // Create an instance from the factory
         }
 
         /// <summary>
@@ -47,12 +47,12 @@ namespace WebQueries.KTO
                 var requestBody = new Dictionary<string, string>
                 {
                     { "grant_type", "client_credentials" },
-                    { "client_id", this._configuration.KTO.Auth.JWT.ClientId() },
-                    { "client_secret", this._configuration.KTO.Auth.JWT.Secret() },
-                    { "scope", this._configuration.KTO.Auth.JWT.Scope() }
+                    { "client_id", _configuration.KTO.Auth.JWT.ClientId() },
+                    { "client_secret", _configuration.KTO.Auth.JWT.Secret() },
+                    { "scope", _configuration.KTO.Auth.JWT.Scope() }
                 };
 
-                using var request = new HttpRequestMessage(HttpMethod.Post, this._configuration.KTO.Auth.JWT.Issuer());
+                using var request = new HttpRequestMessage(HttpMethod.Post, _configuration.KTO.Auth.JWT.Issuer());
                 request.Content = new FormUrlEncodedContent(requestBody);
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

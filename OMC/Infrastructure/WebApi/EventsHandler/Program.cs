@@ -48,8 +48,6 @@ using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using WebQueries.KTO;
-using WebQueries.KTO.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -62,6 +60,8 @@ using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
+using WebQueries.KTO;
+using WebQueries.KTO.Interfaces;
 
 namespace EventsHandler
 {

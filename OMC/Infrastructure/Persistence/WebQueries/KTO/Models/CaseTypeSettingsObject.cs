@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using IJsonSerializable = WebQueries.KTO.Models.IJsonSerializable;
 
 namespace WebQueries.KTO.Models
 {
