@@ -182,7 +182,7 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
-        /// Sending Email messages to the "Notify NL" Web API service.
+        /// Sending Letter messages to the "Notify NL" Web API service.
         /// </summary>
         /// <remarks>
         ///   NOTE: This endpoint will send real letter to the given address.
