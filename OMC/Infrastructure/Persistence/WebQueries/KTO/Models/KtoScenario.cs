@@ -1,4 +1,5 @@
-﻿using WebQueries.DataQuerying.Adapter.Interfaces;
+﻿using System.Text.Json.Nodes;
+using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -41,8 +42,11 @@ namespace WebQueries.KTO.Models
             QueryContext = DataQuery.From(notification);
 
             MessageObject messageObject = await QueryContext.GetMessageAsync();
-            string ktoObject = messageObject.Record.Data.KtoObject;
-
+            HttpRequestResponse response = await QueryContext.GetObjectJsonAsync();
+            //string ktoObject = messageObject.Record.Data.KtoObject;
+            string ktoObject = messageObject.Record.Data.ActionsPerspective;
+            HttpRequestResponse listObjectTypen = await QueryContext.GetObjectTypenHealthCheckAsync();
+            HttpRequestResponse messageObjectResponse = await RemoveKtoObjectAsync(response.JsonResponse);
             if (string.IsNullOrEmpty(ktoObject))
             {
 #pragma warning disable CA2208
@@ -57,7 +61,7 @@ namespace WebQueries.KTO.Models
                 throw new HttpRequestException("Failed to send KTO request. JSonMessage: " + ktoResult.JsonResponse);
             }
 
-            HttpRequestResponse messageObjectResponse = await RemoveKtoObjectAsync();
+            //HttpRequestResponse messageObjectResponse = await RemoveKtoObjectAsync();
 
             if (messageObjectResponse.IsFailure)
             {
@@ -74,11 +78,28 @@ namespace WebQueries.KTO.Models
             return await QueryContext.SendKtoAsync(ktoObject);
         }
 
-        private async Task<HttpRequestResponse> RemoveKtoObjectAsync()
+        private async Task<HttpRequestResponse> RemoveKtoObjectAsync(string originalJson)
         {
-            const string patchPayload = "{\"record\":{\"data\":{\"ktoobject\":null}}}";
+            JsonNode jsonNode = JsonNode.Parse(originalJson)!;
 
-            return await QueryContext.PatchObjectAsync(patchPayload);
+            // Replace "TODO" → "TADA"
+            JsonNode? node = jsonNode["record"]?["data"];
+            if (node != null)
+            {
+                node["handelingsperspectief"] = "TADA";
+            }
+
+            // Replace null correctionFor → "kto"
+            JsonNode? node1 = jsonNode["record"];
+            if (node1 != null)
+            {
+                node1["correctionFor"] = "kto";
+            }
+
+            // Serialize back to string (pretty or compact)
+            string updatedJson = jsonNode.ToJsonString(new() { WriteIndented = true }); ;
+
+            return await QueryContext.PatchObjectAsync(updatedJson);
         }
         #endregion
     }

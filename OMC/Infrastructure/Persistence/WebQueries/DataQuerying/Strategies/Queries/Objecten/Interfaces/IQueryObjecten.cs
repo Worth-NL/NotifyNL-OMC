@@ -1,8 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
+using System.Linq;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Strategies.Base;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
@@ -105,6 +107,22 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         }
         #endregion
 
+        #region Polymorphic (Object Json)
+        /// <summary>
+        /// Creates an object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The answer whether the object was created successfully.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed async Task<HttpRequestResponse> GetObjectJsonAsync(IHttpNetworkService networkService, IQueryBase queryBase)
+        {
+            Uri objectJsonEndpointUri = queryBase.Notification.MainObjectUri;  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+
+            return await networkService.GetAsync(HttpClientTypes.Objecten, objectJsonEndpointUri);
+        }
+        #endregion
+
         #region Parent (Patch object)        
         /// <summary>
         /// Patches an object in "Objecten" Web API service.
@@ -113,17 +131,14 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         ///   The answer whether the object was patched successfully.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
-        internal sealed async Task<HttpRequestResponse> PatchObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
+        internal sealed async Task<HttpRequestResponse> PatchObjectAsync(IHttpNetworkService networkService, string objectJsonBody, IQueryBase queryBase)
         {
             // Predefined URL components
-            string createObjectEndpoint = $"https://{GetDomain()}/objects";
-
-            // Request URL
-            Uri createObjectUri = new(createObjectEndpoint);
+            Uri patchObjectEndpoint = queryBase.Notification.MainObjectUri;
 
             return await networkService.PatchAsync(
                 httpClientType: HttpClientTypes.Objecten,
-                uri: createObjectUri,
+                uri: patchObjectEndpoint,
                 objectJsonBody);
         }
         #endregion

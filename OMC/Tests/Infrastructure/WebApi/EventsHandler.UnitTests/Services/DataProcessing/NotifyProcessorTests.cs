@@ -13,11 +13,16 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Moq;
 using System.Text.Json;
+using Common.Settings.Configuration;
+using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Enums;
+using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Properties;
 using ZhvModels.Serialization.Interfaces;
@@ -317,6 +322,54 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                     .Replace("{1}", s_validNotification)));
             });
         }
+
+        //[Test]
+        //public async Task ProcessAsync_KtoScenario_Success_ReturnsProcessingResult_Success()
+        //{
+        //    // Arrange
+        //    NotificationEvent ktoNotification = GetNotification_Kto_Create_Object();
+
+        //    var scenario = new EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto.KtoScenario(
+        //        Mock.Of<OmcConfiguration>(),
+        //        Mock.Of<IDataQueryService<NotificationEvent>>(),
+        //        Mock.Of<INotifyService<NotifyData>>());
+
+        //    var mockedKtoScenario = new Mock<WebQueries.KTO.Models.KtoScenario>();
+        //    mockedKtoScenario
+        //        .Setup(mock => mock.SendKtoAsync(It.IsAny<NotificationEvent>()))
+        //        .ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+        //    _mockedSerializer
+        //        .Setup(mock => mock.Deserialize<NotificationEvent>(It.IsAny<object>()))
+        //        .Returns(ktoNotification);
+
+        //    _mockedValidator
+        //        .Setup(mock => mock.Validate(ref It.Ref<NotificationEvent>.IsAny))
+        //        .Returns(HealthCheck.OK_Valid);
+
+        //    _mockedResolver
+        //        .Setup(mock => mock.DetermineScenarioAsync(It.IsAny<NotificationEvent>()))
+        //        .ReturnsAsync(scenario);
+
+        //    _mockedKtoScenarioFactory
+        //        .Setup(mock => mock.Create())
+        //        .Returns(mockedKtoScenario.Object);
+
+        //    // Act
+        //    ProcessingResult result = await _processor.ProcessAsync(ktoNotification.Serialized());
+
+        //    // Assert
+        //    Assert.Multiple(() =>
+        //    {
+        //        Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Success));
+        //        Assert.That(result.Description, Is.EqualTo(CommonResources.Response_Processing_STATUS_NotificationOperation
+        //            .Replace("{0}", ApiResources.Processing_SUCCESS_Scenario_NotificationSent)
+        //            .Replace("{1}", ktoNotification.Serialized())));
+        //    });
+
+        //    // Verify SendKtoAsync was called
+        //    mockedKtoScenario.Verify(mock => mock.SendKtoAsync(It.IsAny<NotificationEvent>()), Times.Once);
+        //}
         #endregion
 
         #region Verify
@@ -338,5 +391,18 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                 Times.Exactly(determineScenarioInvokeCount));
         }
         #endregion
+
+        public static NotificationEvent GetNotification_Kto_Create_Object()
+        {
+            return new NotificationEvent
+            {
+                Action = Actions.Create,
+                Channel = Channels.Kto,
+                Resource = Resources.Object,
+                Details = InfoDetails.Empty,
+                MainObjectUri = new Uri("http://some.hoofdobject.nl/"),
+                ResourceUri = new Uri("http://some.hoofdobject.nl/")
+            };
+        }
     }
 }

@@ -178,6 +178,12 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> CreateObjectAsync(string objectJsonBody);
+
+        /// <inheritdoc cref="IQueryObjecten.PatchObjectAsync(IHttpNetworkService,string,IQueryBase)"/>
+        public Task<HttpRequestResponse> PatchObjectAsync(string objectJsonBody);
+
+        /// <inheritdoc cref="IQueryObjecten.GetObjectJsonAsync(IHttpNetworkService,IQueryBase)"/>
+        public Task<HttpRequestResponse> GetObjectJsonAsync();
         #endregion
 
         #region IQueryObjectTypen
@@ -191,7 +197,6 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #region IQueryCustomerSatisfactionSurvey
         /// <inheritdoc cref="IDomain"/>
         public Task<HttpRequestResponse> SendKtoAsync(string body);
-        Task<HttpRequestResponse> PatchObjectAsync(string objectJsonBody);
         #endregion
     }
 }
