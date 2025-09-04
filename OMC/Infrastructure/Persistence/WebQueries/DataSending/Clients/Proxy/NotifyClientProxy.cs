@@ -2,6 +2,7 @@
 
 using Notify.Client;
 using Notify.Exceptions;
+using Notify.Models;
 using Notify.Models.Responses;
 using System.Diagnostics.CodeAnalysis;
 using WebQueries.DataSending.Clients.Interfaces;
@@ -66,6 +67,22 @@ namespace WebQueries.DataSending.Clients.Proxy
             catch (NotifyClientException exception)  // On failure this method is throwing exception
             {
                 return NotifyTemplateResponse.Failure(exception.Message);
+            }
+        }
+
+        /// <inheritdoc cref="INotifyClient.GetNotificationDataAsync(Guid)"/>
+        async Task<NotificationData> INotifyClient.GetNotificationDataAsync(Guid notificationId)
+        {
+            try
+            {
+                Notification notification =
+                    await _notificationClient.GetNotificationByIdAsync(notificationId.ToString());
+
+                return NotificationData.Success(notification);
+            }
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
+            {
+                return NotificationData.Failure(exception.Message);
             }
         }
     }

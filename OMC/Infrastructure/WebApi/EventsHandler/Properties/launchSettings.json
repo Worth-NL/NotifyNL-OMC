@@ -130,7 +130,7 @@
 
         "ZGW_ENDPOINT_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
         "ZGW_ENDPOINT_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
-        "ZGW_ENDPOINT_OPENKLANT": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_OPENKLANT": "openzaak.test.notifynl.nl/zaken/api/v1", //"openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
         "ZGW_ENDPOINT_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
         "ZGW_ENDPOINT_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
         "ZGW_ENDPOINT_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",

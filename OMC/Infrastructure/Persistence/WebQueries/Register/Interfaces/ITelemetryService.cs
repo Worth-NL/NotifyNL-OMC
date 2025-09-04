@@ -7,7 +7,9 @@ using Common.Settings.Configuration;
 using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.DataSending.Models.Reponses;
 using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
@@ -26,6 +28,8 @@ namespace WebQueries.Register.Interfaces
     {
         /// <inheritdoc cref="IQueryContext"/>
         internal IQueryContext QueryContext { get; }
+
+        //internal INotifyService<NotifyData> NotifyService { get; }
 
         internal OmcConfiguration Omc { get; }
 
@@ -47,6 +51,8 @@ namespace WebQueries.Register.Interfaces
 
             try
             {
+                //NotificationData notificationData =  await this.NotifyService.GetNotificationDataAsync(
+                //    new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], reference), "");
                 this.QueryContext.SetNotification(reference.Notification);
 
                 caseStatuses =
@@ -245,6 +251,7 @@ namespace WebQueries.Register.Interfaces
             string serializedKtoCustomer = JsonSerializer.Serialize(ktoCustomer);
             return await this.QueryContext.SendKtoAsync(serializedKtoCustomer);
         }
+
         #endregion
     }
 }

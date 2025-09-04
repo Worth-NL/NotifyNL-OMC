@@ -97,7 +97,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         internal sealed async Task<CaseType> GetLastCaseTypeAsync(IQueryBase queryBase, CaseStatuses caseStatuses)
         {
             // Request URL
-            Uri lastStatusTypeUri = caseStatuses.LastStatus().TypeUri;
+            Uri lastStatusTypeUri = new Uri("https://thomaseelvelt.com"); //caseStatuses.LastStatus().TypeUri;
 
             return await queryBase.ProcessGetAsync<CaseType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
