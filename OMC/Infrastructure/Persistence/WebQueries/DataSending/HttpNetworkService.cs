@@ -14,7 +14,6 @@ using WebQueries.DataSending.Clients.Factories;
 using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
-using ZhvModels.Properties;
 
 namespace WebQueries.DataSending
 {
@@ -207,10 +206,10 @@ namespace WebQueries.DataSending
             try
             {
                 // HTTPS protocol validation
-                if (uri.Scheme != CommonValues.Default.Network.HttpsProtocol)
-                {
-                    return HttpRequestResponse.Failure(ZhvResources.HttpRequest_ERROR_HttpsProtocolExpected);
-                }
+                //if (uri.Scheme != CommonValues.Default.Network.HttpsProtocol)
+                //{
+                //    return HttpRequestResponse.Failure(ZhvResources.HttpRequest_ERROR_HttpsProtocolExpected);
+                //}
 
                 // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await _semaphore.WaitAsync();

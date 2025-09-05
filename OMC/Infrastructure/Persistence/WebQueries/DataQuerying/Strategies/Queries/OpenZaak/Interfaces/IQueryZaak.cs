@@ -76,7 +76,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             }
 
             // Predefined URL components
-            string statusesEndpoint = $"https://{GetDomain()}/statussen";
+            string statusesEndpoint = $"{GetDomain()}/statussen";
 
             // Request URL
             Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");
@@ -190,7 +190,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
         }

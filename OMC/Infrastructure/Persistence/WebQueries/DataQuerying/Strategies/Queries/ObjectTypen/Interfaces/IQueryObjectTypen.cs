@@ -34,7 +34,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         internal string PrepareObjectJsonBody(string dataJson)
         {
             return $"{{" +
-                     $"\"type\":\"https://{GetDomain()}/objecttypes/{Configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()}\"," +
+                     $"\"type\":\"{GetDomain()}/objecttypes/{Configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{Configuration.ZGW.Variable.ObjectType.MessageObjectType_Version()}\"," +
                        $"\"data\":{{" +
@@ -55,7 +55,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objecttypes");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{GetDomain()}/objecttypes");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.ObjectTypen, healthCheckEndpointUri);
         }

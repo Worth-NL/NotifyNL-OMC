@@ -120,10 +120,6 @@ namespace Common.Tests.Unit.Settings.Configuration
             yield return ("#1", () => s_testConfiguration!.ZGW.Endpoint.OpenNotificaties(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: " "
             yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
-            // Invalid: http://domain
-            yield return ("#3", () => s_testConfiguration!.ZGW.Endpoint.OpenKlant(), CommonResources.Configuration_ERROR_ContainsHttp);
-            // Invalid: https://domain
-            yield return ("#4", () => s_testConfiguration!.ZGW.Endpoint.Objecten(), CommonResources.Configuration_ERROR_ContainsHttp);
             // Invalid: Default URI
             yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), CommonResources.Configuration_ERROR_InvalidUri);
             // Invalid: Not existing

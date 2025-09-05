@@ -128,6 +128,13 @@ namespace EventsHandler.Controllers
             {
                 // Execute the health check
                 HttpRequestResponse result = await healthCheckFunc();
+                
+                LogApiResponse(
+                    LogLevel.Information,
+                    $"Health check raw response: Success={result.IsSuccess}, " +
+                    $"Body={result.JsonResponse}"
+                );
+
                 return DetermineHealthCheckResponse(result);
             }
             catch (Exception exception)
@@ -147,11 +154,12 @@ namespace EventsHandler.Controllers
             string healthCheckState = HealthCheckResponse.Get(result.IsSuccess);
 
             // Determine response based on the success of the result
-            return result.IsSuccess
+            ObjectResult answer = result.IsSuccess
                 ? LogApiResponse(LogLevel.Information,
                     this._responder.GetResponse(ProcessingResult.Success(healthCheckState))) // 202 Accepted
                 : LogApiResponse(LogLevel.Error,
                     this._responder.GetResponse(ProcessingResult.Failure(healthCheckState))); // 400 Bad Request
+             return answer;
         }
         #endregion
     }

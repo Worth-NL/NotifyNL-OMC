@@ -139,7 +139,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
         internal async Task<Documents> TryGetDocumentsAsync(IQueryBase queryBase, DecisionResource? decisionResource)
         {
             // Predefined request URL components
-            string documentsEndpoint = $"https://{GetDomain()}/besluitinformatieobjecten";
+            string documentsEndpoint = $"{GetDomain()}/besluitinformatieobjecten";
 
             Uri decisionUri =
                 // Case #1: The Decision URI can be extracted directly from DecisionResource
@@ -202,7 +202,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/besluiten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{GetDomain()}/besluiten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
         }
