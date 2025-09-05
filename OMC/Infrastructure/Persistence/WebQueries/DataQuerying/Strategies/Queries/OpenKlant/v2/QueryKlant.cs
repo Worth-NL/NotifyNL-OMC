@@ -145,7 +145,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"{((IQueryKlant)this).GetDomain()}/klanten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{((IQueryKlant)this).GetDomain()}/klantcontacten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.OpenKlant_v2, healthCheckEndpointUri);
         }
