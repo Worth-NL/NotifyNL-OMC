@@ -1,3 +1,7 @@
+## 1.16.0
+
+- BREAKING CHANGE. ZGW_ENDPOINTS_ need to include Http protocol. E.g. "https://openzaak.test.nl/zaken/api/v1" 
+
 ## 1.15.8
 
 - Adds environment variable OMC_CONTEXT_PATH to set a context path. Default empty string "".

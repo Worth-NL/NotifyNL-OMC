@@ -93,7 +93,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         internal sealed async Task<HttpRequestResponse> CreateObjectAsync(IHttpNetworkService networkService, string objectJsonBody)
         {
             // Predefined URL components
-            string createObjectEndpoint = $"https://{GetDomain()}/objects";
+            string createObjectEndpoint = $"{GetDomain()}/objects";
 
             // Request URL
             Uri createObjectUri = new(createObjectEndpoint);
@@ -114,7 +114,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/objects");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{GetDomain()}/objects");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.Objecten, healthCheckEndpointUri);
         }
