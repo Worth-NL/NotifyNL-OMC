@@ -1321,8 +1321,7 @@ namespace Common.Settings.Configuration
             return s_cachedStrings.GetOrAdd(
                 currentPath + nodeName,
                 // Validation happens once during initial loading, before caching the value
-                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
-                    .GetWithoutProtocol());
+                GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false));  // Validate not empty (if validation is enabled) Remove check on http protocol inclusion
         }
 
         /// <summary>
