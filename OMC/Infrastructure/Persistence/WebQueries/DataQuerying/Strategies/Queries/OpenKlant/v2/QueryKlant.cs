@@ -42,7 +42,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
         {
             // Predefined URL components
-            string partiesEndpoint = $"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
+            string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
 
             string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
             string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
@@ -104,7 +104,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase, string jsonBody)
         {
             // Predefined URL components
-            Uri klantContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/klantcontacten");
+            Uri klantContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/klantcontacten");
 
             // Sending the request
             return await queryBase.ProcessPostAsync<ContactMoment>(
@@ -118,7 +118,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         async Task<HttpRequestResponse> IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
-            Uri objectContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/onderwerpobjecten");
+            Uri objectContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/onderwerpobjecten");
 
             // Sending the request
             return await networkService.PostAsync(
@@ -131,7 +131,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         async Task<HttpRequestResponse> IQueryKlant.LinkPartyToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
         {
             // Predefined URL components
-            Uri customerContactMomentUri = new($"https://{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/betrokkenen");
+            Uri customerContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/betrokkenen");
 
             // Sending the request
             return await networkService.PostAsync(
@@ -145,7 +145,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{((IQueryKlant)this).GetDomain()}/klanten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{((IQueryKlant)this).GetDomain()}/klantcontacten");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.OpenKlant_v2, healthCheckEndpointUri);
         }
