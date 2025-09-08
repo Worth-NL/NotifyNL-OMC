@@ -1,3 +1,7 @@
+## 1.17.1
+
+- Changes Bsn to bsn because the queryparam doesnt allow for capitals
+
 ## 1.17.0
 
 - BREAKING CHANGE. Appsettings have changed because of unannounced change in open klant changing PartijIdentificator from a string to an Enum. This version will require openklant v2.12.0 or higher.  
