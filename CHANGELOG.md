@@ -1,3 +1,7 @@
+## 1.17.0
+
+- BREAKING CHANGE. Appsettings have changed because of unannounced change in open klant changing PartijIdentificator from a string to an Enum. This version will require openklant v2.12.0 or higher.  
+
 ## 1.16.0
 
 - BREAKING CHANGE. ZGW_ENDPOINTS_ need to include Http protocol. E.g. "https://openzaak.test.nl/zaken/api/v1" 
