@@ -44,13 +44,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             if (IsCaseScenario(model))
             {
                 IQueryContext queryContext = this._dataQuery.From(model);
-                CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
+                CaseStatus caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
+                CaseStatusType currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
 
                 // Scenario #1: "Case created"
-                if (caseStatuses.WereNeverUpdated())
+                if (currentCaseStatusType.SerialNumber == 1)
                 {
                     return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
                 }
+                
+                CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
 
                 return !(await queryContext.GetLastCaseTypeAsync(caseStatuses)).IsFinalStatus
                     // Scenario #2: "Case status updated"
