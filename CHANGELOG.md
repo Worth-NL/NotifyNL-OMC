@@ -1,6 +1,10 @@
+## 1.17.2
+
+- Makes preffered address ("voorkeursAdres") optional - if not filled this will require a digital reference to the zaak to allow notifications being sent.
+
 ## 1.17.1
 
-- Changes Bsn to bsn because the queryparam doesnt allow for capitals
+- Changes Bsn to bsn because the queryparam doesnt allow for capitals.
 
 ## 1.17.0
 
