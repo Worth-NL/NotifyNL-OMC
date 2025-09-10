@@ -68,7 +68,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseStatus> TryGetCaseStatusAsync(IQueryBase queryBase, Uri statusUri)
         {
-            if (!statusUri.IsNotStatus())
+            if (statusUri.IsNotStatus())
             {
                 throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotStatusUri);
             }
@@ -90,7 +90,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// <exception cref="JsonException"/>
         internal sealed async Task<CaseStatusType> TryGetCaseStatusTypeAsync(IQueryBase queryBase, Uri statusTypeUri)
         {
-            if (!statusTypeUri.IsNotStatusType())
+            if (statusTypeUri.IsNotStatusType())
             {
                 throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotStatusTypeUri);
             }
