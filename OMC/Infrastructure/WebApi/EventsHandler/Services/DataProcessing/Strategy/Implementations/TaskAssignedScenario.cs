@@ -62,6 +62,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
             }
 
+            // TODO: Will be aggregated with CaseStatusType in future
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI

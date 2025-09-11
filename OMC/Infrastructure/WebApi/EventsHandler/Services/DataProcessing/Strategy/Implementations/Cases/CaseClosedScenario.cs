@@ -23,7 +23,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     internal sealed class CaseClosedScenario : BaseCaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private CaseType _caseType;
+        private CaseStatusType _caseStatusType;
         private Case _case;
 
         /// <summary>
@@ -43,17 +43,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
-            
-            this._caseType = await this._queryContext.GetLastCaseTypeAsync(     // 2. Case type
-                             await this._queryContext.GetCaseStatusesAsync());  // 1. Case statuses
-            
+
+            // TODO: This is the second time we fetch this object. Maybe we can optimize it? Also aggregate with CaseType
+            CaseStatus caseStatus = await this._queryContext.GetCaseStatusAsync(notification.ResourceUri);
+            this._caseStatusType = await this._queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+
             // Validation #1: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.ZGW.Whitelist.ZaakClose_IDs().IsAllowed,
-                this._caseType.Identification, GetWhitelistEnvVarName());
+                this._caseStatusType.Identification, GetWhitelistEnvVarName());
 
             // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this._caseType.IsNotificationExpected);
+            ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
 
             this._case = await this._queryContext.GetCaseAsync();
 
@@ -84,7 +85,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
-                s_emailPersonalization["status.omschrijving"] = this._caseType.Name;
+                s_emailPersonalization["status.omschrijving"] = this._caseStatusType.Name;
 
                 return s_emailPersonalization;
             }
