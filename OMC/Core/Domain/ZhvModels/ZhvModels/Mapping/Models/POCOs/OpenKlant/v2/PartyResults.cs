@@ -134,7 +134,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
             ref string fallbackPhoneNumber,
             string? caseIdentifier = null)
         {
-            Guid prefDigitalAddressId = party.PreferredDigitalAddress.Id;
+            Guid? prefDigitalAddressId = party.PreferredDigitalAddress?.Id;
             bool
                 prefDigitalAddressFoundFlag =
                     false; //Flag to indicate that in case no match was made on case identifier a preferred digital address was found
