@@ -29,7 +29,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         [JsonRequired]
         [JsonPropertyName("voorkeursDigitaalAdres")]
         [JsonPropertyOrder(1)]
-        public DigitalAddressShort PreferredDigitalAddress { get; set; }
+        public DigitalAddressShort? PreferredDigitalAddress { get; set; }
 
         /// <inheritdoc cref="PartyIdentification"/>
         [JsonRequired]

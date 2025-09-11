@@ -1,6 +1,14 @@
+## 1.17.3
+
+- Fixes the functionality for the Case Created scenario to look at the triggering status's type for serialnumber (volgnummer) to be 1. If it is, the scenario "case created" will be triggered
+
+## 1.17.2
+
+- Makes preffered address ("voorkeursAdres") optional - if not filled this will require a digital reference to the zaak to allow notifications being sent.
+
 ## 1.17.1
 
-- Changes Bsn to bsn because the queryparam doesnt allow for capitals
+- Changes Bsn to bsn because the queryparam doesnt allow for capitals.
 
 ## 1.17.0
 

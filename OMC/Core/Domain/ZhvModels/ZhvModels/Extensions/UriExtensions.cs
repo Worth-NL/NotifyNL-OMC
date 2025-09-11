@@ -77,6 +77,30 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="CaseStatus"/> <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        public static bool IsNotStatus(this Uri? uri)
+        {
+            return uri.DoesNotContain("/statussen");
+        }
+
+        /// <summary>
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="CaseStatusType"/> <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        public static bool IsNotStatusType(this Uri? uri)
+        {
+            return uri.DoesNotContain("/statustypen");
+        }
+
+        /// <summary>
         /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="CaseType"/> <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>

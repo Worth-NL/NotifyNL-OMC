@@ -4,6 +4,7 @@ using Common.Settings.Configuration;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
+using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
@@ -23,7 +24,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     internal sealed class CaseCreatedScenario : BaseCaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private CaseType _caseType;
+        private CaseStatusType _caseStatusType;
         private Case _case;
 
         /// <summary>
@@ -43,17 +44,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
-            
-            this._caseType = await this._queryContext.GetLastCaseTypeAsync(     // 2. Case type (might be already cached)
-                             await this._queryContext.GetCaseStatusesAsync());  // 1. Case statuses
+
+            // TODO: This is the second time we fetch this object. Maybe we can optimize it?
+            CaseStatus caseStatus = await this._queryContext.GetCaseStatusAsync(notification.ResourceUri);
+            this._caseStatusType = await this._queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
 
             // Validation #1: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.ZGW.Whitelist.ZaakCreate_IDs().IsAllowed,
-                this._caseType.Identification, GetWhitelistEnvVarName());
+                this._caseStatusType.Identification, GetWhitelistEnvVarName());
 
             // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this._caseType.IsNotificationExpected);
+            ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
             
             this._case = await this._queryContext.GetCaseAsync();
 

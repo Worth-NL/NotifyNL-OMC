@@ -142,6 +142,24 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not a statustype..
+        /// </summary>
+        public static string Querying_ERROR_Internal_NotStatusTypeUri {
+            get {
+                return ResourceManager.GetString("Querying_ERROR_Internal_NotStatusTypeUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not a status..
+        /// </summary>
+        public static string Querying_ERROR_Internal_NotStatusUri {
+            get {
+                return ResourceManager.GetString("Querying_ERROR_Internal_NotStatusUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
         /// </summary>
         public static string Registering_SUCCESS_NotificationSentToNotifyNL {
