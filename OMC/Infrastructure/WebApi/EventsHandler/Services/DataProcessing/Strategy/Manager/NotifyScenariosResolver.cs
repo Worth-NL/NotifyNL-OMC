@@ -52,10 +52,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 {
                     return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
                 }
-                
-                CaseStatuses caseStatuses = await queryContext.GetCaseStatusesAsync();
 
-                return !(await queryContext.GetLastCaseTypeAsync(caseStatuses)).IsFinalStatus
+                return !currentCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"
                     ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
                     // Scenario #3: "Case finished"
