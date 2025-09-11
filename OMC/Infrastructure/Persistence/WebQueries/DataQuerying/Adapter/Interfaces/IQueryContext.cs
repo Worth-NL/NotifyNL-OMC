@@ -50,6 +50,21 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// </remarks>
         public Task<Case> GetCaseAsync(Uri? caseUri = null);
 
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusAsync(IQueryBase, Uri)"/>
+        /// <remarks>
+        ///   The <see cref="CaseStatus"/> can be queried directly from the uri retrieved from the <see cref="NotificationEvent"/>
+        ///   and is used to retrieve the <see cref="CaseStatusType"/> in order to retrieve the <see cref="CaseStatusType.SerialNumber"/>
+        ///   in order to determine if the Case Created scenario should be triggered or not.
+        /// </remarks>
+        public Task<CaseStatus> GetCaseStatusAsync(Uri caseUri);
+
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusTypeAsync(IQueryBase, Uri)"/>
+        /// <remarks>
+        ///   The <see cref="CaseStatusType.SerialNumber"/> is the only part of the Statustype we are currently interested in
+        ///   as it helps determine whether the Case Created sceario should trigger.
+        /// </remarks>
+        Task<CaseStatusType> GetCaseStatusTypeAsync(Uri typeUri);
+
         /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusesAsync(IQueryBase, Uri?)"/>
         /// <remarks>
         ///   Simpler usage doesn't require providing <see cref="Case"/> <see cref="Uri"/>.
