@@ -38,5 +38,8 @@ namespace WebQueries.DataSending.Interfaces
         ///   Standardized response from the Web API service.
         /// </returns>
         public Task<NotifyTemplateResponse> GenerateTemplatePreviewAsync(TPackage package);
+
+        /// <inheritdoc cref="INotifyService{TPackage}.GetNotificationDataAsync(TPackage, Guid)"/>
+        public Task<NotificationData> GetNotificationDataAsync(TPackage package, Guid notificationId);
     }
 }

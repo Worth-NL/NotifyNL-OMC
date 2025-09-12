@@ -1,8 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Text.Json.Nodes;
 using Common.Extensions;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Strategies.Base;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
@@ -149,6 +151,9 @@ namespace WebQueries.DataQuerying.Adapter
             // Case #3: Since Involved Party URI is present => getting organization data will be attempted
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri, caseIdentifier);
         }
+        /// <inheritdoc cref="IQueryContext.CreateNewContactMomentAsync(string)"/>
+        public async Task<ContactMoment> CreateNewContactMomentAsync(string jsonBody)
+            => await this._queryKlant.CreateNewContactMomentAsync(this._queryBase, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)
@@ -161,6 +166,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.LinkPartyToContactMomentAsync"/>
         async Task<HttpRequestResponse> IQueryContext.LinkPartyToContactMomentAsync(string jsonBody)
             => await this._queryKlant.LinkPartyToContactMomentAsync(this._networkService, jsonBody);
+
+        /// <inheritdoc cref="IQueryContext.LinkActorToContactMomentAsync"/>
+        async Task<HttpRequestResponse> IQueryContext.LinkActorToContactMomentAsync(string jsonBody)
+            => await this._queryKlant.LinkActorToContactMomentAsync(this._networkService, jsonBody);
         #endregion
 
         #region IQueryBesluiten

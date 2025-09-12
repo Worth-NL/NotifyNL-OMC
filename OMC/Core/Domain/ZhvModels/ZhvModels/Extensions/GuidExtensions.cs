@@ -26,7 +26,7 @@ namespace ZhvModels.Extensions
         /// <inheritdoc cref="RecreateCaseUri(Guid?)"/>
         public static Uri RecreateCaseUri(this Guid caseId)
         {
-            const string caseUri = "https://{0}/zaken/{1}";
+            const string caseUri = "{0}/zaken/{1}";
             
             return string.Format(caseUri, ConfigExtensions.OpenZaakDomain(), caseId)
                          .GetValidUri();
@@ -42,7 +42,7 @@ namespace ZhvModels.Extensions
         /// </returns>
         public static Uri RecreatePartyUri(this Guid partyId)
         {
-            const string partyUri = "https://{0}/klanten/{1}";
+            const string partyUri = "{0}/klanten/{1}";
             
             return string.Format(partyUri, ConfigExtensions.OpenKlantDomain(), partyId)
                 .GetValidUri();
