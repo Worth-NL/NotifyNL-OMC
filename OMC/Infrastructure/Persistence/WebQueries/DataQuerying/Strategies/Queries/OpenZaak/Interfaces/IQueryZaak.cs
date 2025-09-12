@@ -61,6 +61,50 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// Gets the <see cref="CaseStatuses"/> of the specific <see cref="Case"/> from "OpenZaak" Web API service.
         /// </summary>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="statusUri">The reference to the <see cref="CaseStatus"/> in <seealso cref="Uri"/> format.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal sealed async Task<CaseStatus> TryGetCaseStatusAsync(IQueryBase queryBase, Uri statusUri)
+        {
+            if (statusUri.IsNotStatus())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotStatusUri);
+            }
+
+            return await queryBase.ProcessGetAsync<CaseStatus>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: statusUri,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatuses);
+        }
+
+        /// <summary>
+        /// Gets the serial number off of the <see cref="CaseStatus.TypeUri"/> of the specific <see cref="CaseStatus"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="statusTypeUri">The reference to the serial number off of the <see cref="CaseStatus.TypeUri"/> in <seealso cref="Uri"/> format.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal sealed async Task<CaseStatusType> TryGetCaseStatusTypeAsync(IQueryBase queryBase, Uri statusTypeUri)
+        {
+            if (statusTypeUri.IsNotStatusType())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotStatusTypeUri);
+            }
+
+            return await queryBase.ProcessGetAsync<CaseStatusType>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: statusTypeUri,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="CaseStatuses"/> of the specific <see cref="Case"/> from "OpenZaak" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="caseUri">The reference to the <see cref="Case"/> in <seealso cref="Uri"/> format.</param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
@@ -76,7 +120,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             }
 
             // Predefined URL components
-            string statusesEndpoint = $"https://{GetDomain()}/statussen";
+            string statusesEndpoint = $"{GetDomain()}/statussen";
 
             // Request URL
             Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");
@@ -190,7 +234,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         async Task<HttpRequestResponse> IDomain.GetHealthCheckAsync(IHttpNetworkService networkService)
         {
-            Uri healthCheckEndpointUri = new($"https://{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
+            Uri healthCheckEndpointUri = new($"{GetDomain()}/rollen");  // NOTE: There is no dedicated health check endpoint, calling anything should be fine
 
             return await networkService.GetAsync(HttpClientTypes.OpenZaak_v1, healthCheckEndpointUri);
         }

@@ -97,6 +97,22 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatus
+                {
+                    TypeUri = new Uri("https://example.com/status-type/1") 
+                });
+
+            // Mock the CaseStatusType with SerialNumber = 1
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatusType
+                {
+                    SerialNumber = 1
+                });
+
             mockedQueryContext
                 .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 1 });
@@ -104,7 +120,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
@@ -121,9 +137,25 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatus
+                {
+                    TypeUri = new Uri("https://example.com/status-type/2")
+                });
+
+            mockedQueryContext
+                .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatusType
+                {
+                    SerialNumber = 2
+                });
+
             mockedQueryContext
                 .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
                 .ReturnsAsync(new CaseStatuses { Count = 2 });
+
             mockedQueryContext
                 .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
                 .ReturnsAsync(new CaseType { IsFinalStatus = false });
@@ -131,7 +163,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act
@@ -148,17 +180,26 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             NotificationEvent testNotification = GetCaseNotification();
 
             var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+
             mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
-                .ReturnsAsync(new CaseStatuses { Count = 2 });
+                .Setup(mock => mock.GetCaseStatusAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatus
+                {
+                    TypeUri = new Uri("https://example.com/status-type/3")
+                });
+
             mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
-                .ReturnsAsync(new CaseType { IsFinalStatus = true });
+                .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(new CaseStatusType
+                {
+                    SerialNumber = 3,
+                    IsFinalStatus = true
+                });
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
                 .Returns(mockedQueryContext.Object);
-            
+
             IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
 
             // Act

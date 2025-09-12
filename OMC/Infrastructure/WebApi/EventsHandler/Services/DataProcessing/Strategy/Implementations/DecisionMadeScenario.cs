@@ -87,6 +87,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                         infoObject.Confidentiality));
             }
 
+            // TODO: Will be aggregated with CaseStatusType in future
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
             this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                              await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses

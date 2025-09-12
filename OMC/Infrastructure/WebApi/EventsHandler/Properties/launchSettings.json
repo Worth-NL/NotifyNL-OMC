@@ -26,7 +26,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production",
-        
+
         "OMC_CONTEXT_PATH": "",
 
         "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
@@ -50,13 +50,13 @@
         "ZGW_AUTH_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
         "ZGW_AUTH_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
-        "ZGW_ENDPOINT_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
-        "ZGW_ENDPOINT_OPENKLANT": "openklant.test.notifynl.nl/klanten/api/v1", // NOTE: In OMC Workflow v1 this path is for clients
-        "ZGW_ENDPOINT_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
-        "ZGW_ENDPOINT_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
-        "ZGW_ENDPOINT_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register v1
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "https://opennotificaties.test.notifynl.nl/api/v1",
+        "ZGW_ENDPOINT_OPENZAAK": "https://openzaak.test.notifynl.nl/zaken/api/v1",
+        "ZGW_ENDPOINT_OPENKLANT": "https://openklant.test.notifynl.nl/klanten/api/v1", // NOTE: In OMC Workflow v1 this path is for clients
+        "ZGW_ENDPOINT_BESLUITEN": "https://openzaak.test.notifynl.nl/besluiten/api/v1",
+        "ZGW_ENDPOINT_OBJECTEN": "https://objecten.test.notifynl.nl/api/v2",
+        "ZGW_ENDPOINT_OBJECTTYPEN": "https://objecttypen.test.notifynl.nl/api/v1",
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "https://openklant.test.notifynl.nl/contactmomenten/api/v1", // NOTE: In OMC Workflow v1 this path is for register v1
 
         "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
         "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
@@ -128,13 +128,13 @@
         "ZGW_AUTH_KEY_OBJECTEN": "d459d947dce4a248c4d0314d1bc65367dda7a246",
         "ZGW_AUTH_KEY_OBJECTTYPEN": "09cf17741a29574e3afe8fbc462662d2f2e50696",
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "opennotificaties.test.notifynl.nl/api/v1",
-        "ZGW_ENDPOINT_OPENZAAK": "openzaak.test.notifynl.nl/zaken/api/v1",
-        "ZGW_ENDPOINT_OPENKLANT": "openzaak.test.notifynl.nl/zaken/api/v1", //"openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
-        "ZGW_ENDPOINT_BESLUITEN": "openzaak.test.notifynl.nl/besluiten/api/v1",
-        "ZGW_ENDPOINT_OBJECTEN": "objecten.test.notifynl.nl/api/v2",
-        "ZGW_ENDPOINT_OBJECTTYPEN": "objecttypen.test.notifynl.nl/api/v1",
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "https://opennotificaties.test.notifynl.nl/api/v1",
+        "ZGW_ENDPOINT_OPENZAAK": "https://openzaak.test.notifynl.nl/zaken/api/v1",
+        "ZGW_ENDPOINT_OPENKLANT": "https://openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_BESLUITEN": "https://openzaak.test.notifynl.nl/besluiten/api/v1",
+        "ZGW_ENDPOINT_OBJECTEN": "https://objecten.test.notifynl.nl/api/v2",
+        "ZGW_ENDPOINT_OBJECTTYPEN": "https://objecttypen.test.notifynl.nl/api/v1",
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "https://openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
 
         "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
         "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",

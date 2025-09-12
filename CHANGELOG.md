@@ -1,3 +1,23 @@
+## 1.17.3
+
+- Fixes the functionality for the Case Created scenario to look at the triggering status's type for serialnumber (volgnummer) to be 1. If it is, the scenario "case created" will be triggered
+
+## 1.17.2
+
+- Makes preffered address ("voorkeursAdres") optional - if not filled this will require a digital reference to the zaak to allow notifications being sent.
+
+## 1.17.1
+
+- Changes Bsn to bsn because the queryparam doesnt allow for capitals.
+
+## 1.17.0
+
+- BREAKING CHANGE. Appsettings have changed because of unannounced change in open klant changing PartijIdentificator from a string to an Enum. This version will require openklant v2.12.0 or higher.  
+
+## 1.16.0
+
+- BREAKING CHANGE. ZGW_ENDPOINTS_ need to include Http protocol. E.g. "https://openzaak.test.nl/zaken/api/v1" 
+
 ## 1.15.8
 
 - Adds environment variable OMC_CONTEXT_PATH to set a context path. Default empty string "".

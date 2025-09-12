@@ -9,7 +9,6 @@ using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
-using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
@@ -77,6 +76,15 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetCaseAsync(Uri?)"/>
         async Task<Case> IQueryContext.GetCaseAsync(Uri? caseUri)
             => await this._queryZaak.TryGetCaseAsync(this._queryBase, caseUri);
+
+
+        /// <inheritdoc cref="IQueryContext.GetCaseStatusAsync(Uri)"/>
+        async Task<CaseStatus> IQueryContext.GetCaseStatusAsync(Uri caseStatusUri) 
+            => await this._queryZaak.TryGetCaseStatusAsync(this._queryBase, caseStatusUri);
+
+        /// <inheritdoc cref="IQueryContext.GetCaseStatusTypeAsync(Uri)"/>
+        async Task<CaseStatusType> IQueryContext.GetCaseStatusTypeAsync(Uri caseStatusTypeUri)
+            => await this._queryZaak.TryGetCaseStatusTypeAsync(this._queryBase, caseStatusTypeUri);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync(Uri?)"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
