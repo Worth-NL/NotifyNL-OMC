@@ -27,6 +27,8 @@ namespace WebQueries.Register.Interfaces
         /// <inheritdoc cref="IQueryContext"/>
         internal IQueryContext QueryContext { get; }
 
+        //internal INotifyService<NotifyData> NotifyService { get; }
+
         internal OmcConfiguration Omc { get; }
 
         /// <summary>
@@ -47,23 +49,25 @@ namespace WebQueries.Register.Interfaces
 
             try
             {
+                //NotificationData notificationData =  await this.NotifyService.GetNotificationDataAsync(
+                //    new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], reference), "");
                 this.QueryContext.SetNotification(reference.Notification);
 
-                caseStatuses =
-                    await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
+                caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
 
+                string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
+                    caseStatuses.LastStatus());
                 // Register processed notification
-                ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(reference, notificationMethod, messages, caseStatuses.LastStatus()));
+                ContactMoment contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
+                    json);
 
                 // Linking to the case and the customer
-                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure ||
-                    (requestResponse = await this.QueryContext.LinkPartyToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
-                {
-                    return HttpRequestResponse.Failure(requestResponse.JsonResponse);
-                }
-
-                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(
+                        this.Omc.OMC.Actor.Id(), contactMoment.ReferenceUri.GetGuid()))
+                    ).IsFailure 
+                    ? HttpRequestResponse.Failure(requestResponse.JsonResponse) 
+                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
             }
             catch (Exception exception)
             {
@@ -117,6 +121,16 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body.
+        /// </summary>
+        /// <param name="actor"><inheritdoc cref="ContactMoment" path="/summary"/></param>
+        /// <param name="customerContactMoment"><inheritdoc cref="NotifyReference" path="/summary"/></param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment);
 
         /// <summary>
         /// Checks if there are KTO settings, if so tries to send a request to KTO Service.
@@ -245,6 +259,13 @@ namespace WebQueries.Register.Interfaces
             string serializedKtoCustomer = JsonSerializer.Serialize(ktoCustomer);
             return await this.QueryContext.SendKtoAsync(serializedKtoCustomer);
         }
+
         #endregion
+
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        string GetNewCreateContactMomentJsonBody(
+                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages,
+                CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+            ;
     }
 }

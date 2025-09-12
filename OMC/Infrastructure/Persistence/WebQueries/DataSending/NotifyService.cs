@@ -63,6 +63,13 @@ namespace WebQueries.DataSending
                                               personalization: package.Personalization);
         }
 
+        /// <inheritdoc cref="INotifyService{TPackage}.GetNotificationDataAsync(TPackage, Guid)"/>
+        async Task<NotificationData> INotifyService<NotifyData>.GetNotificationDataAsync(NotifyData package, Guid notificationId)
+        {
+            return await ResolveNotifyClient(package.Reference.Notification)
+                .GetNotificationDataAsync(notificationId: notificationId);
+        }
+
         #region IDisposable
         /// <inheritdoc cref="IDisposable.Dispose"/>>
         void IDisposable.Dispose()
