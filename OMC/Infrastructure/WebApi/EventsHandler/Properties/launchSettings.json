@@ -27,14 +27,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production",
 
+        "OMC_ACTOR_ID": "014ba48a-05d2-4762-b106-44154b8015d7",
         "OMC_CONTEXT_PATH": "",
 
-        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
+        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#oduQoTYxK37ZF$7x4qQgmea$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
         "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Acc) | wv 1",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Acc) | wv 1",
+        "OMC_AUTH_JWT_USERID": "OMC (Acc)",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Acc)",
 
         "OMC_FEATURE_WORKFLOW_VERSION": "1",
 
@@ -107,12 +108,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
 
-        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#odu*QoTYxK37ZF$7x4qQgmea*$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
+        "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#oduQoTYxK37ZF$7x4qQgmea$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
         "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Acc) | wv 2",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Acc) | wv 2",
+        "OMC_AUTH_JWT_USERID": "OMC (Acc)",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Acc)",
 
         "OMC_FEATURE_WORKFLOW_VERSION": "2",
 

@@ -57,5 +57,11 @@ namespace WebQueries.DataSending.Clients.Interfaces
         ///   </para>
         /// </param>
         public Task<NotifyTemplateResponse> GenerateTemplatePreviewAsync(string templateId, Dictionary<string, object> personalization);
+
+        /// <summary>
+        /// Fetches the notification by id from NotifyNL.
+        /// </summary>
+        /// <param name="notificationId">The notification identifier.</param>
+        public Task<NotificationData> GetNotificationDataAsync(Guid notificationId);
     }
 }
