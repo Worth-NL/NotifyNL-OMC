@@ -506,6 +506,9 @@ namespace Common.Settings.Configuration
             [Config]
             public ContextComponent Context { get; }
 
+            /// <inheritdoc cref="FeatureComponent"/>
+            [Config]
+            public ActorComponent Actor { get; }
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -516,6 +519,7 @@ namespace Common.Settings.Configuration
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
                 this.Feature = new FeatureComponent(loadersContext, parentName);
                 this.Context = new ContextComponent(loadersContext, parentName);
+                this.Actor = new ActorComponent(loadersContext, parentName);
             }
 
             /// <summary>
@@ -630,6 +634,29 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string Path()
                     => GetCachedValue(this._loadersContext, this._currentPath, nameof(Path), disableValidation: true);
+            }
+
+            /// <summary>
+            /// The "Actor" part of the settings.
+            /// </summary>
+            public sealed record ActorComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ContextComponent"/> class.
+                /// </summary>
+                public ActorComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Context));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public Guid Id()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(Id));
             }
         }
 

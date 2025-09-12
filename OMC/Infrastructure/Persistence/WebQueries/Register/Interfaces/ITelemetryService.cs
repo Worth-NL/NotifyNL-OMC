@@ -7,9 +7,7 @@ using Common.Settings.Configuration;
 using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
-using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using WebQueries.DataSending.Models.Reponses;
 using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
@@ -55,21 +53,21 @@ namespace WebQueries.Register.Interfaces
                 //    new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], reference), "");
                 this.QueryContext.SetNotification(reference.Notification);
 
-                caseStatuses =
-                    await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
+                caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
 
+                string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
+                    caseStatuses.LastStatus());
                 // Register processed notification
-                ContactMoment contactMoment = await this.QueryContext.CreateContactMomentAsync(
-                    GetCreateContactMomentJsonBody(reference, notificationMethod, messages, caseStatuses.LastStatus()));
+                ContactMoment contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
+                    json);
 
                 // Linking to the case and the customer
-                if ((requestResponse = await this.QueryContext.LinkCaseToContactMomentAsync(GetLinkCaseJsonBody(contactMoment, reference))).IsFailure ||
-                    (requestResponse = await this.QueryContext.LinkPartyToContactMomentAsync(GetLinkCustomerJsonBody(contactMoment, reference))).IsFailure)
-                {
-                    return HttpRequestResponse.Failure(requestResponse.JsonResponse);
-                }
-
-                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(
+                        this.Omc.OMC.Actor.Id(), contactMoment.ReferenceUri.GetGuid()))
+                    ).IsFailure 
+                    ? HttpRequestResponse.Failure(requestResponse.JsonResponse) 
+                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
             }
             catch (Exception exception)
             {
@@ -123,6 +121,16 @@ namespace WebQueries.Register.Interfaces
         ///   The JSON content for HTTP Request Body.
         /// </returns>
         protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body.
+        /// </summary>
+        /// <param name="actor"><inheritdoc cref="ContactMoment" path="/summary"/></param>
+        /// <param name="customerContactMoment"><inheritdoc cref="NotifyReference" path="/summary"/></param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment);
 
         /// <summary>
         /// Checks if there are KTO settings, if so tries to send a request to KTO Service.
@@ -253,5 +261,11 @@ namespace WebQueries.Register.Interfaces
         }
 
         #endregion
+
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        string GetNewCreateContactMomentJsonBody(
+                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages,
+                CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+            ;
     }
 }

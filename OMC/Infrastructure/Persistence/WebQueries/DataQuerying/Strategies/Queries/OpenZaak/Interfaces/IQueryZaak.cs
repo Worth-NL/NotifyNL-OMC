@@ -125,10 +125,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             // Request URL
             Uri caseStatusesUri = new($"{statusesEndpoint}?zaak={caseUri}");
 
-            return await queryBase.ProcessGetAsync<CaseStatuses>(
-                httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseStatusesUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatuses);
+            try
+            {
+                var a = await queryBase.ProcessGetAsync<CaseStatuses>(
+                    httpClientType: HttpClientTypes.OpenZaak_v1,
+                    uri: caseStatusesUri,
+                    fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatuses);
+
+                return a;
+            }
+            catch(Exception ex)
+            {
+                // The JSON is invalid or cannot be deserialized into the target model
+                throw new JsonException(ZhvResources.HttpRequest_ERROR_NoCaseStatuses, ex);
+            }
         }
 
         /// <summary>

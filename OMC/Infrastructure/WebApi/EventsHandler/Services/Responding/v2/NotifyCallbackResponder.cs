@@ -88,10 +88,13 @@ namespace EventsHandler.Services.Responding.v2
                 DetermineUserMessageSubject(this._configuration, feedbackType, notificationMethod, notificationData.IsSuccess ? notificationData.Subject : string.Empty),
 
                 // User message body
-                DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod, notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                DetermineUserMessageBody(this._configuration, feedbackType, notificationMethod, notificationData.IsSuccess ? notificationData.Body : string.Empty),
 
                 // Is successfully sent
-                feedbackType == FeedbackTypes.Success ? True : False
+                feedbackType == FeedbackTypes.Success ? True : False,
+
+                // Sent Timestamp
+                notificationData.IsSuccess ? notificationData.SentAt : String.Empty
             ]);
         }
 

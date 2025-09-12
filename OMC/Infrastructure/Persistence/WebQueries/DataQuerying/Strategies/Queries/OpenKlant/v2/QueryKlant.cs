@@ -100,6 +100,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         #endregion
 
         #region Polymorphic (Telemetry)
+        /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
+        async Task<ContactMoment> IQueryKlant.CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
+        {
+            // Predefined URL components
+            Uri klantContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/maak-klantcontact");
+
+            // Sending the request
+            return await queryBase.ProcessPostAsync<ContactMoment>(
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: klantContactMomentUri,  // Request URL
+                jsonBody,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoFeedbackKlant);
+        }
+
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase, string jsonBody)
         {
@@ -136,6 +150,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             // Sending the request
             return await networkService.PostAsync(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: customerContactMomentUri,  // Request URL
+                jsonBody);
+        }
+
+        /// <inheritdoc cref="IQueryKlant.LinkActorToContactMomentAsync"/>
+        async Task<HttpRequestResponse> IQueryKlant.LinkActorToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
+        {
+            Uri customerContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.ContactMomenten()}/actorklantcontacten");
+
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: customerContactMomentUri,  // Request URL
                 jsonBody);
         }

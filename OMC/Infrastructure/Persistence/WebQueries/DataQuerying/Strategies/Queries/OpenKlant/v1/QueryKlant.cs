@@ -66,6 +66,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 .ConvertToUnified();
         }
 
+        /// <summary>
+        /// Only implemented in v2
+        /// </summary>
+        /// <param name="queryBase"></param>
+        /// <param name="jsonBody"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task<ContactMoment> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
+        {
+            throw new NotImplementedException();
+        }
+
         // NOTE: Multiple results
         private static async Task<PartyResults> GetPartyResultsV1Async(IQueryBase queryBase, Uri citizenUri)
         {
@@ -125,6 +137,19 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 uri: customerContactMomentUri,  // Request URL
                 jsonBody);
         }
+
+        /// <inheritdoc cref="IQueryKlant.LinkActorToContactMomentAsync"/>
+        async Task<HttpRequestResponse> IQueryKlant.LinkActorToContactMomentAsync(IHttpNetworkService networkService, string jsonBody)
+        {
+            Uri customerContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.ContactMomenten()}/actorklantcontacten");
+
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
+                uri: customerContactMomentUri,  // Request URL
+                jsonBody);
+        }
+
         #endregion
 
         #region Polymorphic (Health Check)

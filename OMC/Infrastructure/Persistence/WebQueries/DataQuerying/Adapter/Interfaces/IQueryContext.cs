@@ -123,6 +123,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// </remarks>
         public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null);
 
+        /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
+        public Task<ContactMoment> CreateNewContactMomentAsync(string jsonBody);
+
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         public Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
 
@@ -131,6 +134,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryKlant.LinkPartyToContactMomentAsync"/>
         public Task<HttpRequestResponse> LinkPartyToContactMomentAsync(string jsonBody);
+
+        /// <inheritdoc cref="IQueryContext.LinkActorToContactMomentAsync"/>
+        public Task<HttpRequestResponse> LinkActorToContactMomentAsync(string jsonBody);
         #endregion
 
         #region IQueryBesluiten

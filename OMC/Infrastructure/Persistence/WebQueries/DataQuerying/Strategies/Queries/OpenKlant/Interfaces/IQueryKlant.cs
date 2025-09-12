@@ -69,6 +69,19 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>
+        internal Task<ContactMoment> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody);
+
+        /// <summary>
+        /// Creates the <see cref="ContactMoment"/> in the register from "OpenKlant" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="jsonBody">The JSON body to be passed.</param>
+        /// <returns>
+        ///   The response from "OpenZaak" Web API service mapped into a <see cref="ContactMoment"/> object.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="TelemetryException"/>
+        /// <exception cref="JsonException"/>
         internal Task<ContactMoment> CreateContactMomentAsync(IQueryBase queryBase, string jsonBody);
 
         /// <summary>
@@ -92,6 +105,17 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
         internal Task<HttpRequestResponse> LinkPartyToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
+
+        /// <summary>
+        /// Links the <see cref="ContactMoment"/> with the OMC Actor UUID.
+        /// </summary>
+        /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>
+        /// <param name="jsonBody">The JSON body to be passed.</param>
+        /// <returns>
+        ///   The response from an external Web API service.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        Task<HttpRequestResponse> LinkActorToContactMomentAsync(IHttpNetworkService networkService, string jsonBody);
         #endregion
 
         #region Polymorphic (Domain)

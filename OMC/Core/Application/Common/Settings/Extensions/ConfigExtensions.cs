@@ -176,7 +176,7 @@ namespace Common.Settings.Extensions
 
             // Case #2: Static usage
             return s_openZaakDomainValue ??=
-                Environment.GetEnvironmentVariable(GetEndpointOpenZaakEnvVarName()) ?? "x";
+                Environment.GetEnvironmentVariable(GetEndpointOpenZaakEnvVarName()) ?? "https:/";
         }
 
         private static string? s_openKlantDomainValue;
@@ -194,7 +194,7 @@ namespace Common.Settings.Extensions
 
             // Case #2: Static usage
             return s_openKlantDomainValue ??=
-                Environment.GetEnvironmentVariable(GetEndpointOpenKlantEnvVarName()) ?? "x";
+                Environment.GetEnvironmentVariable(GetEndpointOpenKlantEnvVarName()) ?? "https:/";
         }
         #endregion
 
