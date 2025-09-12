@@ -46,6 +46,40 @@ namespace WebQueries.Register.v2
         }
 
         #region Polymorphic
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        string ITelemetryService.GetNewCreateContactMomentJsonBody(
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+        {
+            string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
+            string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;
+            string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
+            DateTime sentAt = messages.Count > 3 && DateTime.TryParse(messages[3], out DateTime parsedDate) ? parsedDate : DateTime.Now;
+
+            return $"{{\"klantcontact\":{{" +
+                       $"\"kanaal\":\"{notificationMethod}\"," +              // ENG: Channel of communication (notification)
+                       $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
+                       $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user) 
+                       $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
+                       $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
+                       $"\"vertrouwelijk\":true," +                           // Fixed: added comma
+                       $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +               // Fixed: interpolated variable with ISO 8601 format
+                   $"}}," +
+                   $"\"betrokkene\":{{" +
+                       $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
+                       $"\"rol\":\"klant\"," +
+                       $"\"initiator\":true" +
+                       $"}}," +
+                   $"\"onderwerpobject\":{{" +
+                       $"\"onderwerpobjectidentificator\":{{" +
+                       $"\"objectId\":\"{reference.CaseId}\"," +
+                       $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
+                       $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
+                       $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
+                       $"}}" +
+                   $"}}" +
+               $"}}";
+        }
+
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
@@ -76,9 +110,9 @@ namespace WebQueries.Register.v2
                      $"}}," +
                      $"\"onderwerpobjectidentificator\":{{" +  // ENG: Subject Object Identifier
                        $"\"objectId\":\"{reference.CaseId}\"," +
-                       $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
-                       $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
-                       $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
+                       $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," + //Zaak
+                       $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," + //Open-Zaak
+                       $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" + //uuid
                      $"}}" +
                    $"}}";
         }
@@ -94,7 +128,20 @@ namespace WebQueries.Register.v2
                        $"\"uuid\":\"{contactMoment.ReferenceUri.GetGuid()}\"" +  // GUID
                      $"}}," +
                      $"\"rol\":\"klant\"," +
-                     $"\"initiator\":true" +
+                     $"\"initiator\":true" + //false?
+                   $"}}";
+        }
+
+        /// <inheritdoc cref="ITelemetryService.GetActorCustomerContactMomentJsonBody(Guid, Guid)"/>
+        string ITelemetryService.GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment)
+        {
+            return $"{{" +
+                   $"\"actor\":{{" +
+                   $"\"uuid\":\"{actor}\"" +
+                   $"}}," +
+                   $"\"klantcontact\":{{" +
+                   $"\"uuid\":\"{customerContactMoment}\"" +
+                   $"}}" +
                    $"}}";
         }
         #endregion
