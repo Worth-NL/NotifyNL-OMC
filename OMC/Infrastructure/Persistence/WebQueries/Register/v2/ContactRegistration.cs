@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Text.Json;
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
@@ -55,30 +56,36 @@ namespace WebQueries.Register.v2
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
             DateTime sentAt = messages.Count > 3 && DateTime.TryParse(messages[3], out DateTime parsedDate) ? parsedDate : DateTime.Now;
 
+            // Escape string values safely
+            string safeSubject = JsonSerializer.Serialize(userMessageSubject);
+            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToString());
+
             return $"{{\"klantcontact\":{{" +
-                       $"\"kanaal\":\"{notificationMethod}\"," +              // ENG: Channel of communication (notification)
-                       $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
-                       $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user) 
-                       $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
-                       $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
-                       $"\"vertrouwelijk\":true," +                           // Fixed: added comma
-                       $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +               // Fixed: interpolated variable with ISO 8601 format
+                   $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification) 
+                   $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
+                   $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user) 
+                   $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
+                   $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +                                  // Fixed: interpolated variable with ISO 8601 format
                    $"}}," +
                    $"\"betrokkene\":{{" +
-                       $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
-                       $"\"rol\":\"klant\"," +
-                       $"\"initiator\":true" +
-                       $"}}," +
+                   $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
+                   $"\"rol\":\"klant\"," +
+                   $"\"initiator\":true" +
+                   $"}}," +
                    $"\"onderwerpobject\":{{" +
-                       $"\"onderwerpobjectidentificator\":{{" +
-                       $"\"objectId\":\"{reference.CaseId}\"," +
-                       $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
-                       $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
-                       $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
-                       $"}}" +
+                   $"\"onderwerpobjectidentificator\":{{" +
+                   $"\"objectId\":\"{reference.CaseId}\"," +
+                   $"\"codeObjecttype\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType()}\"," +
+                   $"\"codeRegister\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeRegister()}\"," +
+                   $"\"codeSoortObjectId\":\"{this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId()}\"" +
                    $"}}" +
-               $"}}";
+                   $"}}" +
+                   $"}}";
         }
+            
 
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
