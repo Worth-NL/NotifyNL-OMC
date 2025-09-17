@@ -1,3 +1,7 @@
+## 1.17.5
+
+* BUGFIX. Adds Escape Json Logic to building ContactMomentenJsonBody.
+
 ## 1.17.4
 
 * Adds the body and subject of the notification to the ContactMoment.
