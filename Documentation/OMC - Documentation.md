@@ -519,9 +519,9 @@ but `environment variables` are easier to be adjusted by the end users of **OMC*
     "TelefoonOmschrijvingGeneriek": "Telefoon",
 
     "OpenKlant": {
-      "CodeObjectType": "Zaak",
-      "CodeRegister": "ZRC",
-      "CodeObjectTypeId": "identificatie"
+      "CodeObjectType": "zaak",
+      "CodeRegister": "open-zaak",
+      "CodeObjectTypeId": "uuid"
     },
 
     // User communication: Messages to be put into register exposed to citizens
