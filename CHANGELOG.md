@@ -1,3 +1,7 @@
+## 1.17.6
+
+* Changes OpenKlant Variables in AppSettings to: "CodeObjectType": "zaak","CodeRegister": "open-zaak","CodeObjectTypeId": "uuid". According to ZGW standards.
+
 ## 1.17.5
 
 * BUGFIX. Adds Escape Json Logic to building ContactMomentenJsonBody.
