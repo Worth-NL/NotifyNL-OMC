@@ -1,3 +1,7 @@
+## 1.17.8
+
+* Bugfix Remove KTO Execution from ITelemetryService
+
 ## 1.17.7
 
 * Bugfix Comparison was happening on Description instead of Reference, ActorId added
