@@ -1,3 +1,7 @@
+## 1.17.7
+
+* Bugfix Comparison was happening on Description instead of Reference, ActorId added
+
 ## 1.17.6
 
 * Changes OpenKlant Variables in AppSettings to: "CodeObjectType": "zaak","CodeRegister": "open-zaak","CodeObjectTypeId": "uuid". According to ZGW standards.
