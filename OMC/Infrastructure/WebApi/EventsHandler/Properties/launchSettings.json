@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production",
 
-        "OMC_ACTOR_ID": "014ba48a-05d2-4762-b106-44154b8015d7",
+        "OMC_ACTOR_ID": "",
         "OMC_CONTEXT_PATH": "",
 
         "OMC_AUTH_JWT_SECRET": "",
@@ -107,6 +107,9 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+
+        "OMC_ACTOR_ID": "",
+        "OMC_CONTEXT_PATH": "",
 
         "OMC_AUTH_JWT_SECRET": "",
         "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
