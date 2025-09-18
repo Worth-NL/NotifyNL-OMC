@@ -42,7 +42,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// The reference of the digital address.
         /// </summary>
         [JsonRequired]
-        [JsonPropertyName("omschrijving")]
+        [JsonPropertyName("referentie")]
         [JsonPropertyOrder(3)]
         public string Reference { get; set; } = string.Empty;
 

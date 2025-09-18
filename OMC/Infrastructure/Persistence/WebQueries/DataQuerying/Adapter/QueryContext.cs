@@ -152,7 +152,7 @@ namespace WebQueries.DataQuerying.Adapter
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri, caseIdentifier);
         }
         /// <inheritdoc cref="IQueryContext.CreateNewContactMomentAsync(string)"/>
-        public async Task<ContactMoment> CreateNewContactMomentAsync(string jsonBody)
+        public async Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody)
             => await this._queryKlant.CreateNewContactMomentAsync(this._queryBase, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>

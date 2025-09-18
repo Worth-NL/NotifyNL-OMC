@@ -650,7 +650,7 @@ namespace Common.Settings.Configuration
                 public ActorComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Context));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Actor));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>

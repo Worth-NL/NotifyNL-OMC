@@ -69,7 +69,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>
-        internal Task<ContactMoment> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody);
+        internal Task<MaakKlantContact> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody);
 
         /// <summary>
         /// Creates the <see cref="ContactMoment"/> in the register from "OpenKlant" Web API service.

@@ -51,18 +51,18 @@ namespace WebQueries.DataQuerying.Strategies.Base
         private TModel GetApiResult<TModel>(HttpClientTypes httpClientType, bool isSuccess, string jsonResult, Uri uri, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable
         {
-            return isSuccess
-                ? this._serializer.Deserialize<TModel>(jsonResult)
+                return isSuccess
+                    ? this._serializer.Deserialize<TModel>(jsonResult)
 
-                // Logging errors
-                : httpClientType is HttpClientTypes.Telemetry_Contactmomenten
-                                 or HttpClientTypes.Telemetry_Klantinteracties
+                    // Logging errors
+                    : httpClientType is HttpClientTypes.Telemetry_Contactmomenten
+                        or HttpClientTypes.Telemetry_Klantinteracties
 
-                    // Soft error: HTTP Status Code 206
-                    ? throw new TelemetryException(GetMessage(jsonResult, uri, fallbackErrorMessage))
+                        // Soft error: HTTP Status Code 206
+                        ? throw new TelemetryException(GetMessage(jsonResult, uri, fallbackErrorMessage))
 
-                    // Hard error: HTTP Status Code 400
-                    : throw new HttpRequestException(GetMessage(jsonResult, uri, fallbackErrorMessage));
+                        // Hard error: HTTP Status Code 400
+                        : throw new HttpRequestException(GetMessage(jsonResult, uri, fallbackErrorMessage));
         }
 
         private static string GetMessage(string jsonResult, Uri uri, string fallbackErrorMessage)
