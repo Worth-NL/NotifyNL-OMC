@@ -58,13 +58,13 @@ namespace WebQueries.Register.Interfaces
                 string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
                     caseStatuses.LastStatus());
                 // Register processed notification
-                ContactMoment contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
                     json);
 
                 // Linking to the case and the customer
                 return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
                     GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ReferenceUri.GetGuid()))
+                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()))
                     ).IsFailure 
                     ? HttpRequestResponse.Failure(requestResponse.JsonResponse) 
                     : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
