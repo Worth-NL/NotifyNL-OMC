@@ -73,7 +73,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
         /// <param name="jsonBody"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<ContactMoment> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
+        public Task<MaakKlantContact> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
         {
             throw new NotImplementedException();
         }

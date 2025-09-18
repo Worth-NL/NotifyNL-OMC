@@ -124,7 +124,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null);
 
         /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
-        public Task<ContactMoment> CreateNewContactMomentAsync(string jsonBody);
+        public Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody);
 
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         public Task<ContactMoment> CreateContactMomentAsync(string jsonBody);

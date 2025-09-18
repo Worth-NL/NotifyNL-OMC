@@ -101,13 +101,13 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
 
         #region Polymorphic (Telemetry)
         /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
-        async Task<ContactMoment> IQueryKlant.CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
+        async Task<MaakKlantContact> IQueryKlant.CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody)
         {
             // Predefined URL components
             Uri klantContactMomentUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/maak-klantcontact");
 
             // Sending the request
-            return await queryBase.ProcessPostAsync<ContactMoment>(
+            return await queryBase.ProcessPostAsync<MaakKlantContact>(
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
@@ -161,7 +161,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
 
             // Sending the request
             return await networkService.PostAsync(
-                httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: customerContactMomentUri,  // Request URL
                 jsonBody);
         }
