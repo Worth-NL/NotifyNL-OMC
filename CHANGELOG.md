@@ -1,5 +1,9 @@
 ## 1.17.8
 
+* Bugfix if the initiator role has no BSN, dont try to query the parties because openklant returns a list for some reason
+
+## 1.17.8
+
 * Bugfix Remove KTO Execution from ITelemetryService
 
 ## 1.17.7

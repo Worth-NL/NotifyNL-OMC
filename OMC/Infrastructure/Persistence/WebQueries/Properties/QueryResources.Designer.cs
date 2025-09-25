@@ -160,6 +160,15 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The BSN number is expected..
+        /// </summary>
+        public static string Querying_ERROR_MissingBsnNumber_FromInitiatorRole {
+            get {
+                return ResourceManager.GetString("Querying_ERROR_MissingBsnNumber_FromInitiatorRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
         /// </summary>
         public static string Registering_SUCCESS_NotificationSentToNotifyNL {
