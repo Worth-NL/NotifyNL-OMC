@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Extensions;
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
@@ -41,6 +42,11 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
         {
+            if (string.IsNullOrEmpty(bsnNumber))
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_MissingBsnNumber_FromInitiatorRole);
+            }
+            
             // Predefined URL components
             string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
 
