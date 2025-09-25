@@ -1,4 +1,4 @@
-## 1.17.8
+## 1.17.9
 
 * Bugfix if the initiator role has no BSN, dont try to query the parties because openklant returns a list for some reason
 
