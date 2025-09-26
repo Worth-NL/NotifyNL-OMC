@@ -313,6 +313,15 @@ namespace ZhvModels.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: Case result type could not be retrieved from OpenZaak Web API service..
+        /// </summary>
+        public static string HttpRequest_ERROR_NoCaseResultType {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoCaseResultType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Case role could not be retrieved from OpenZaak Web API service..
         /// </summary>
         public static string HttpRequest_ERROR_NoCaseRole {
