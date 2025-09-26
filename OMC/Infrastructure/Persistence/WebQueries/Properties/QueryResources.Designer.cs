@@ -142,6 +142,15 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: The given URI is not a resulttype..
+        /// </summary>
+        public static string Querying_ERROR_Internal_NotResultTypeUri {
+            get {
+                return ResourceManager.GetString("Querying_ERROR_Internal_NotResultTypeUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error: The given URI is not a statustype..
         /// </summary>
         public static string Querying_ERROR_Internal_NotStatusTypeUri {

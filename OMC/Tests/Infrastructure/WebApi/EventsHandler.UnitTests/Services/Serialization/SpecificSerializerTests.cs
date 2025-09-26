@@ -483,19 +483,21 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
 
             // Assert
             string expectedResult =
-                $"{{" +
-                  $"\"url\":\"{CommonValues.Default.Models.EmptyUri}\"," +
-                  $"\"identificatie\":\"\"," +
-                  $"\"omschrijving\":\"\"," +
-                  $"\"zaaktype\":\"{CommonValues.Default.Models.EmptyUri}\"," +
-                  $"\"registratiedatum\":\"0001-01-01\"" +
-                $"}}";
+                "{" +
+                $"\"url\":\"{CommonValues.Default.Models.EmptyUri}\"," +
+                "\"identificatie\":\"\"," +
+                "\"omschrijving\":\"\"," +
+                $"\"zaaktype\":\"{CommonValues.Default.Models.EmptyUri}\"," +
+                "\"registratiedatum\":\"0001-01-01\"," +
+                $"\"resultaat\":\"{CommonValues.Default.Models.EmptyUri}\"," +
+                "\"_expand\":null" +
+                "}";
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [Test]
-        public void Serialize_Case_ValidModel_ReturnsExpectedJson()
+        public void Serialize_Case_ValidModelWithExpandedResult_ReturnsExpectedJson()
         {
             // Arrange
             var testModel = new Case
@@ -504,24 +506,39 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                 Identification = TestString,
                 Name = TestString,
                 CaseTypeUri = new Uri(TestUrl),
-                RegistrationDate = new DateOnly(2024, 09, 05)
+                RegistrationDate = new DateOnly(2024, 09, 05),
+                ResultUri = new Uri(TestUrl),
+                Expanded = new Case.ExpandedResult
+                {
+                    Result = new Case.Result
+                    {
+                        ResultType = new Uri(TestUrl)
+                    }
+                }
             };
 
             // Act
             string actualResult = this._serializer.Serialize(testModel);
 
             // Assert
-            const string expectedResult =
-                $"{{" +
-                  $"\"url\":\"{TestUrl}\"," +
-                  $"\"identificatie\":\"{TestString}\"," +
-                  $"\"omschrijving\":\"{TestString}\"," +
-                  $"\"zaaktype\":\"{TestUrl}\"," +
-                  $"\"registratiedatum\":\"2024-09-05\"" +
-                $"}}";
-            
+            string expectedResult =
+                "{" +
+                $"\"url\":\"{TestUrl}\"," +
+                $"\"identificatie\":\"{TestString}\"," +
+                $"\"omschrijving\":\"{TestString}\"," +
+                $"\"zaaktype\":\"{TestUrl}\"," +
+                $"\"registratiedatum\":\"2024-09-05\"," +
+                $"\"resultaat\":\"{TestUrl}\"," +
+                "\"_expand\":{" +
+                "\"resultaat\":{" +
+                $"\"resultaattype\":\"{TestUrl}\"" +
+                "}" +
+                "}" +
+                "}";
+
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
+
 
         [TestCase(true)]
         [TestCase(false)]
