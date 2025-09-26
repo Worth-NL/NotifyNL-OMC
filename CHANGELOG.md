@@ -1,3 +1,7 @@
+## 1.17.10
+
+* Adds CaseResultType, And adds it to NotifyData in CaseClosedScenario
+
 ## 1.17.9
 
 * Bugfix if the initiator role has no BSN, dont try to query the parties because openklant returns a list for some reason

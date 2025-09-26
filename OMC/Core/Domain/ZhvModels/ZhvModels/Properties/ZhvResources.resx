@@ -211,6 +211,9 @@
   <data name="HttpRequest_ERROR_NoCaseStatusType" xml:space="preserve">
     <value>HTTP Request: Case status type could not be retrieved from OpenZaak Web API service.</value>
   </data>
+  <data name="HttpRequest_ERROR_NoCaseResultType" xml:space="preserve">
+    <value>HTTP Request: Case result type could not be retrieved from OpenZaak Web API service.</value>
+  </data>
   <data name="HttpRequest_ERROR_NoDecision" xml:space="preserve">
     <value>HTTP Request: The decision could not be retrieved from OpenZaak Web API service.</value>
   </data>

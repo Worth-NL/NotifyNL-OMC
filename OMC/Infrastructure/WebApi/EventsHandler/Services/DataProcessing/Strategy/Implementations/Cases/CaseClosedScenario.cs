@@ -25,6 +25,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         private IQueryContext _queryContext = null!;
         private CaseStatusType _caseStatusType;
         private Case _case;
+        private CaseResultType? _resultType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseClosedScenario"/> class.
@@ -43,6 +44,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
+            this._resultType = null;
 
             // TODO: This is the second time we fetch this object. Maybe we can optimize it? Also aggregate with CaseType
             CaseStatus caseStatus = await this._queryContext.GetCaseStatusAsync(notification.ResourceUri);
@@ -57,6 +59,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
 
             this._case = await this._queryContext.GetCaseAsync();
+
+            if (this._case.Expanded?.Result.ResultType != null)
+            {
+                this._resultType =
+                    await this._queryContext.GetCaseResultTypeAsync(this._case.Expanded?.Result.ResultType!);
+            }
 
             // Preparing party details
             return new PreparedData(
@@ -87,6 +95,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
                 s_emailPersonalization["status.omschrijving"] = this._caseStatusType.Name;
 
+                s_emailPersonalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
                 return s_emailPersonalization;
             }
         }
