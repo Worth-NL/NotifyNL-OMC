@@ -1,6 +1,6 @@
 ## 1.17.10
 
-* Adds CareResultType, And adds it to NotifyData in CaseClosedScenario
+* Adds CaseResultType, And adds it to NotifyData in CaseClosedScenario
 
 ## 1.17.9
 
