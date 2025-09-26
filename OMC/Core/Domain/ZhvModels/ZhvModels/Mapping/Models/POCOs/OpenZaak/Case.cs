@@ -62,10 +62,58 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         public DateOnly RegistrationDate { get; set; }
 
         /// <summary>
+        /// The result of the <see cref="Case"/> in <see cref="System.Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
+        /// </summary>
+        [JsonPropertyName("resultaat")]
+        [JsonPropertyOrder(5)]
+        public Uri ResultUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+
+        /// <summary>
+        /// Contains expanded objects requested via the `expand` query parameter.
+        /// </summary>
+        [JsonPropertyName("_expand")]
+        [JsonPropertyOrder(6)]
+        public ExpandedResult? Expanded { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Case"/> struct.
         /// </summary>
         public Case()
         {
+        }
+
+        /// <summary>
+        /// Represents the `_expand` section of the API response.
+        /// </summary>
+        public struct ExpandedResult
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            [JsonPropertyName("resultaat")]
+            public Result Result { get; set; }
+        }
+
+        /// <summary>
+        /// Represents the expanded `result` object.
+        /// </summary>
+        public struct Result
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            [JsonPropertyName("resultaattype")]
+            public Uri ResultType { get; set; } = CommonValues.Default.Models.EmptyUri;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public Result()
+            {
+            }
         }
     }
 }

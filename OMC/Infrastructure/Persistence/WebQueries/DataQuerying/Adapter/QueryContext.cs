@@ -1,10 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Text.Json.Nodes;
 using Common.Extensions;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
-using WebQueries.DataQuerying.Strategies.Base;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
@@ -87,6 +85,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetCaseStatusTypeAsync(Uri)"/>
         async Task<CaseStatusType> IQueryContext.GetCaseStatusTypeAsync(Uri caseStatusTypeUri)
             => await this._queryZaak.TryGetCaseStatusTypeAsync(this._queryBase, caseStatusTypeUri);
+
+        /// <inheritdoc cref="IQueryContext.GetCaseResultTypeAsync(Uri)"/>
+        async Task<CaseResultType> IQueryContext.GetCaseResultTypeAsync(Uri? caseStatusTypeUri)
+            => await this._queryZaak.TryGetCaseResultTypeAsync(this._queryBase, caseStatusTypeUri);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusesAsync(Uri?)"/>
         async Task<CaseStatuses> IQueryContext.GetCaseStatusesAsync(Uri? caseUri)
