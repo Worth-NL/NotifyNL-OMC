@@ -51,9 +51,11 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
                 throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotCaseUri);
             }
 
+            const string expandParameter = "expand=resultaat";
+
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseUri,  // Request URL
+                uri: new Uri($"{caseUri}?{expandParameter}"), // Request URL with expand parameter
                 fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCase);
         }
 
@@ -139,6 +141,28 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
                 // The JSON is invalid or cannot be deserialized into the target model
                 throw new JsonException(ZhvResources.HttpRequest_ERROR_NoCaseStatuses, ex);
             }
+        }
+
+        /// <summary>
+        ///  Gets the result type off of the <see cref="CaseResultType"/> of the specific <see cref="Case"/> from "OpenZaak" Web API service.
+        ///  </summary>
+        ///  <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="resultTypeUri">The reference to the serial number off of the <see cref="CaseResultType"/> in <seealso cref="Uri"/> format.</param>
+        /// <exception cref="ArgumentException"/>
+        ///  <exception cref="KeyNotFoundException"/>
+        ///  <exception cref="HttpRequestException"/>
+        ///  <exception cref="JsonException"/>
+        internal sealed async Task<CaseResultType> TryGetCaseResultTypeAsync(IQueryBase queryBase, Uri? resultTypeUri)
+        {
+            if (resultTypeUri == null || resultTypeUri.IsNotResultType())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotResultTypeUri);
+            }
+
+            return await queryBase.ProcessGetAsync<CaseResultType>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: resultTypeUri!,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
         }
 
         /// <summary>

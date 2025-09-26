@@ -113,6 +113,18 @@ namespace ZhvModels.Extensions
         }
 
         /// <summary>
+        /// Determines whether the given <see cref="Uri"/> doesn't contain <see cref="CaseResultType"/> <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="uri">The source URI.</param>
+        /// <returns>
+        ///   <see langword="true"/> if the provided <see cref="Uri"/> is NOT valid; otherwise, <see langword="false"/>.
+        /// </returns>
+        public static bool IsNotResultType(this Uri? uri)
+        {
+            return uri.DoesNotContain("/resultaattypen");
+        }
+
+        /// <summary>
         /// Determines whether the given <see cref="Uri"/> doesn't contain party result <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The source URI.</param>

@@ -61,9 +61,15 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusTypeAsync(IQueryBase, Uri)"/>
         /// <remarks>
         ///   The <see cref="CaseStatusType.SerialNumber"/> is the only part of the Statustype we are currently interested in
-        ///   as it helps determine whether the Case Created sceario should trigger.
+        ///   as it helps determine whether the Case Created scenario should trigger.
         /// </remarks>
         Task<CaseStatusType> GetCaseStatusTypeAsync(Uri typeUri);
+
+        /// <inheritdoc cref="IQueryZaak.TryGetCaseResultTypeAsync(IQueryBase, Uri)"/>
+        /// <remarks>
+        ///   The <see cref="CaseResultType.Name"/> is the only part of the Resulttype we are currently interested in to use in notification
+        /// </remarks>
+        Task<CaseResultType> GetCaseResultTypeAsync(Uri resultTypeUri);
 
         /// <inheritdoc cref="IQueryZaak.TryGetCaseStatusesAsync(IQueryBase, Uri?)"/>
         /// <remarks>
