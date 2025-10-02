@@ -1366,9 +1366,8 @@ namespace Common.Settings.Configuration
                 {
                     // Validation #1: Checking if the string value is not null or empty
                     string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
-                                                                                                            // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
-                        .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                        .ToArray();
+                        // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
+                        .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                     // Validation #2: Checking if the comma-separated string was properly split into array
                     return disableValidation

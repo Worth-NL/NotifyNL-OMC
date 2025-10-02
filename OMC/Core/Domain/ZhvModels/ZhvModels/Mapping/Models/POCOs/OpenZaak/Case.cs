@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
@@ -51,7 +52,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonPropertyName("zaaktype")]
         [JsonPropertyOrder(3)]
-        public Uri CaseTypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri CaseTypeUri { [UsedImplicitly] get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// The date when the <see cref="Case"/> was registered.
@@ -69,7 +70,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonPropertyName("resultaat")]
         [JsonPropertyOrder(5)]
-        public Uri ResultUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+        public Uri ResultUri { [UsedImplicitly] get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Contains expanded objects requested via the `expand` query parameter.
