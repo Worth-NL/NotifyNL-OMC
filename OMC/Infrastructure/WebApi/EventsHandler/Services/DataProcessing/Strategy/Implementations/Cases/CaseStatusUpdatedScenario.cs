@@ -23,7 +23,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
     internal sealed class CaseStatusUpdatedScenario : BaseCaseScenario
     {
         private IQueryContext _queryContext = null!;
-        private CaseStatusType _caseStatusType;
         private Case _case;
 
         /// <summary>
@@ -44,17 +43,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
-            // TODO: This is the second time we fetch this object. Maybe we can optimize it?
-            CaseStatus caseStatus = await this._queryContext.GetCaseStatusAsync(notification.ResourceUri);
-            this._caseStatusType = await this._queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
-
             // Validation #1: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.ZGW.Whitelist.ZaakUpdate_IDs().IsAllowed,
                 this._caseStatusType.Identification, GetWhitelistEnvVarName());
-
-            // Validation #2: The notifications must be enabled
-            ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
 
             this._case = await this._queryContext.GetCaseAsync();
 
