@@ -456,7 +456,7 @@ namespace EventsHandler
                 app.Use((context, next) =>
                 {
                     // If the request does not start with the path base, redirect
-                    if (context.Request.Path.StartsWithSegments(pathBase, out PathString remaining))
+                    if (context.Request.Path.StartsWithSegments(pathBase))
                     {
                         return next();
                     }

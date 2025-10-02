@@ -1,15 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
-using WebQueries.DataSending.Models.Reponses;
-using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
@@ -45,14 +40,13 @@ namespace WebQueries.Register.Interfaces
         public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
             NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
         {
-            HttpRequestResponse requestResponse = default;
+            HttpRequestResponse requestResponse;
             CaseStatuses caseStatuses = default;
 
             try
             { 
                 this.QueryContext.SetNotification(reference.Notification);
 
-                caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
 
                 string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
                     caseStatuses.LastStatus());
