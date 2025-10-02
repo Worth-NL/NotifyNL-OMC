@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
@@ -17,6 +18,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
         [JsonRequired]
         [JsonPropertyName("data")]
         [JsonPropertyOrder(0)]
-        public Data Data { get; set; }
+        public Data Data { get; [UsedImplicitly] set; }
     }
 }

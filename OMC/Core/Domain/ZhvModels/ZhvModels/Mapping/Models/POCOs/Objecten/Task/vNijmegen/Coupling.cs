@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Enums.Objecten.vNijmegen;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -29,7 +30,7 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Task.vNijmegen
         [JsonRequired]
         [JsonPropertyName("registratie")]
         [JsonPropertyOrder(1)]
-        public Registrations Type { get; set; }
+        public Registrations Type { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Coupling"/> struct.
