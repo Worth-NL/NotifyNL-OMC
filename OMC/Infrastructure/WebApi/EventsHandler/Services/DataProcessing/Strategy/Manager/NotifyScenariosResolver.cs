@@ -47,17 +47,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 CaseStatus caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
                 CaseStatusType currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
 
+                if (!currentCaseStatusType.IsNotificationExpected)
+                {
+                    throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren);
+                }
+
                 // Scenario #1: "Case created"
                 if (currentCaseStatusType.SerialNumber == 1)
                 {
-                    return this._serviceProvider.GetRequiredService<CaseCreatedScenario>();
+                    return (this._serviceProvider.GetRequiredService<CaseCreatedScenario>()).SetCaseStatusType(currentCaseStatusType);
                 }
 
                 return !currentCaseStatusType.IsFinalStatus
                     // Scenario #2: "Case status updated"
-                    ? this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()
+                    ? (this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()).SetCaseStatusType(currentCaseStatusType)
                     // Scenario #3: "Case finished"
-                    : this._serviceProvider.GetRequiredService<CaseClosedScenario>();
+                    : (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
             }
 
             // Object scenarios
