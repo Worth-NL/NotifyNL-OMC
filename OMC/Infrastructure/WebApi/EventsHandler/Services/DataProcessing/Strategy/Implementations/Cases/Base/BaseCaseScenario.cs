@@ -6,6 +6,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base
 {
@@ -15,6 +16,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
     /// <seealso cref="BaseScenario"/>
     internal abstract class BaseCaseScenario : BaseScenario
     {
+        protected CaseStatusType _caseStatusType;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseCaseScenario"/> class.
         /// </summary>
@@ -24,6 +27,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.B
             INotifyService<NotifyData> notifyService)
             : base(configuration, dataQuery, notifyService)
         {
+        }
+
+        public BaseCaseScenario SetCaseStatusType(CaseStatusType caseStatusType)
+        {
+            _caseStatusType = caseStatusType;
+            return this;
         }
     }
 }
