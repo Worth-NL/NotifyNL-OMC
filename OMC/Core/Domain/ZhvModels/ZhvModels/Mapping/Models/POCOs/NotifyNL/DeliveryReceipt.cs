@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Enums.NotifyNL;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -72,7 +73,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("created_at")]
         [JsonPropertyOrder(4)]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// The last time when the status of the notification was updated.
@@ -81,7 +82,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("completed_at")]
         [JsonPropertyOrder(5)]
-        public DateTime CompletedAt { get; set; }
+        public DateTime CompletedAt { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// The time when the notification was sent.
@@ -90,7 +91,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("sent_at")]
         [JsonPropertyOrder(6)]
-        public DateTime SentAt { get; set; }
+        public DateTime SentAt { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// The notification type.
@@ -108,7 +109,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("template_id")]
         [JsonPropertyOrder(8)]
-        public Guid TemplateId { get; set; }
+        public Guid TemplateId { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// The version number of the template that was used.
@@ -117,7 +118,7 @@ namespace ZhvModels.Mapping.Models.POCOs.NotifyNL
         [JsonRequired]
         [JsonPropertyName("template_version")]
         [JsonPropertyOrder(9)]
-        public int TemplateVersion { get; set; }
+        public int TemplateVersion { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeliveryReceipt"/> struct.
