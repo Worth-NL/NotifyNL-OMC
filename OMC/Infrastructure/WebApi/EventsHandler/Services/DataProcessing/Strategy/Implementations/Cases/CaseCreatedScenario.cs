@@ -42,7 +42,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
-            // Setup
+            // Setup set on Notification but base not used suspected thread issue
             this._queryContext = this.DataQuery.From(notification);
 
             // TODO: This is the second time we fetch this object. Maybe we can optimize it?
@@ -57,7 +57,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
             
-            this._case = await this._queryContext.GetCaseAsync();
+            this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             // Preparing party details
             return new PreparedData(
