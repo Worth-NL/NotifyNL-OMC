@@ -35,6 +35,9 @@ namespace WebQueries.DataQuerying.Strategies.Base
         {
             HttpRequestResponse response = await this._networkService.GetAsync(httpClientType, uri);
 
+            LogToSentry($"GET {uri} | Success: {response.IsSuccess} | Response: {response.JsonResponse}",
+                response.IsSuccess ? SentryLevel.Info : SentryLevel.Error);
+
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
 
@@ -42,6 +45,9 @@ namespace WebQueries.DataQuerying.Strategies.Base
         async Task<TModel> IQueryBase.ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
         {
             HttpRequestResponse response = await this._networkService.PostAsync(httpClientType, uri, jsonBody);
+
+            LogToSentry($"POST {uri} | Success: {response.IsSuccess} | Response: {response.JsonResponse}",
+                response.IsSuccess ? SentryLevel.Info : SentryLevel.Error);
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
@@ -68,6 +74,11 @@ namespace WebQueries.DataQuerying.Strategies.Base
         private static string GetMessage(string jsonResult, Uri uri, string fallbackErrorMessage)
         {
             return $"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}";
+        }
+
+        private static void LogToSentry(string message, SentryLevel level = SentryLevel.Info)
+        {
+            SentrySdk.CaptureMessage(message, level);
         }
         #endregion
     }
