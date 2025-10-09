@@ -889,7 +889,8 @@
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "OMC.SecretsManager": "[1.0.0, )",
-          "OMC.ZhvModels": "[1.0.0, )"
+          "OMC.ZhvModels": "[1.0.0, )",
+          "Sentry.AspNetCore": "[4.13.0, )"
         }
       },
       "OMC.ZhvModels": {

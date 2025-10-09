@@ -48,7 +48,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 this.Configuration.ZGW.Whitelist.ZaakUpdate_IDs().IsAllowed,
                 this._caseStatusType.Identification, GetWhitelistEnvVarName());
 
-            this._case = await this._queryContext.GetCaseAsync();
+            this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             // Preparing party details
             return new PreparedData(

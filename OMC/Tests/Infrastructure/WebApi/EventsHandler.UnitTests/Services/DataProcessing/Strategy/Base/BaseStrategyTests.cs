@@ -91,7 +91,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(exception?.Message.StartsWith(expectedErrorMessage), Is.True);
                 Assert.That(exception?.Message.EndsWith(ApiResources.Processing_ABORT), Is.True);
                 
-                VerifyNewGetDataMethodCalls(1, 1, 0, 0);
+                VerifyNewGetDataMethodCalls(1, 0, 0, 0);
             });
         }
 
@@ -114,7 +114,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_SUCCESS_DataRetrieved));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(1));
 
-                VerifyNewGetDataMethodCalls(1, 1, 1, 1);
+                VerifyNewGetDataMethodCalls(1, 0, 1, 1);
             });
         }
 
@@ -172,7 +172,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResult.Message, Is.EqualTo(QueryResources.Response_QueryingData_ERROR_NotificationMethodMissing));
                 Assert.That(actualResult.Content, Has.Count.EqualTo(0));
 
-                VerifyNewGetDataMethodCalls(1, 1, 1, 1);
+                VerifyNewGetDataMethodCalls(1, 0, 1, 1);
             });
         }
         
@@ -232,7 +232,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
 
                 Assert.That(contactDetails, Is.EqualTo(expectedContactDetails));
 
-                VerifyNewGetDataMethodCalls(1, 1, 1, 1);
+                VerifyNewGetDataMethodCalls(1, 0, 1, 1);
             });
         }
 
