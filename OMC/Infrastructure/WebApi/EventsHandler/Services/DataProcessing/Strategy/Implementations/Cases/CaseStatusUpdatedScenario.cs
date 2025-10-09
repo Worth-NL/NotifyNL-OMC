@@ -56,7 +56,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
 
-            this._case = await this._queryContext.GetCaseAsync();
+            this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             // Preparing party details
             return new PreparedData(
