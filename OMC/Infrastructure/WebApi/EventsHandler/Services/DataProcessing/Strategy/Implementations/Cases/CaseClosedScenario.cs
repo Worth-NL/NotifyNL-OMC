@@ -50,7 +50,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 this.Configuration.ZGW.Whitelist.ZaakClose_IDs().IsAllowed,
                 this._caseStatusType.Identification, GetWhitelistEnvVarName());
 
-            this._case = await this._queryContext.GetCaseAsync();
+            this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             if (this._case.Expanded?.Result.ResultType != null)
             {
