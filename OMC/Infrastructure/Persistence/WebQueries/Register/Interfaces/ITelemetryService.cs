@@ -1,15 +1,11 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
+using Notify.Models;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
-using WebQueries.DataSending.Models.Reponses;
-using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
@@ -45,22 +41,16 @@ namespace WebQueries.Register.Interfaces
         public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
             NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
         {
-            HttpRequestResponse requestResponse = default;
-            CaseStatuses caseStatuses = default;
-
             try
             { 
                 this.QueryContext.SetNotification(reference.Notification);
 
-                caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
-
-                string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
-                    caseStatuses.LastStatus());
                 // Register processed notification
                 MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
-                    json);
+                    GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages));
 
                 // Linking to the case and the customer
+                HttpRequestResponse requestResponse;
                 return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
                     GetActorCustomerContactMomentJsonBody(
                         this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()))
@@ -121,10 +111,9 @@ namespace WebQueries.Register.Interfaces
         /// </returns>
         string GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment);
 
-        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string GetNewCreateContactMomentJsonBody(
-                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages,
-                CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
             ;
         #endregion
 

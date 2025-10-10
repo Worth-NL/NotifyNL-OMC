@@ -1,7 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Diagnostics;
-using Common.Extensions;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
@@ -36,6 +34,7 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
+        /// <param name="notifyService"></param>
         public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
             : base(serializer)
         {

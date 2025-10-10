@@ -47,9 +47,9 @@ namespace WebQueries.Register.v2
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetNewCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;

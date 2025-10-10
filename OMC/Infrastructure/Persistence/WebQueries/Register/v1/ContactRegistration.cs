@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using System.Threading.Tasks;
 using Common.Settings.Configuration;
 using Microsoft.VisualStudio.Threading;
 using WebQueries.DataQuerying.Adapter.Interfaces;
@@ -61,7 +62,6 @@ namespace WebQueries.Register.v1
                 .Join()
                 .LastStatus();
 #pragma warning restore VSTHRD104
-
             string logMessage = messages.Count > 0 ? messages[0] : string.Empty;
 
             return $"{{" +
@@ -124,7 +124,7 @@ namespace WebQueries.Register.v1
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public string GetNewCreateContactMomentJsonBody(NotifyReference reference, NotifyMethods notificationMethod,
-            IReadOnlyList<string> messages, CaseStatus? caseStatus)
+            IReadOnlyList<string> messages)
         {
             throw new NotImplementedException();
         }
