@@ -1,3 +1,7 @@
+## 1.17.12
+
+* Bugfix. Set relevant services to scoped to prevent race conditions
+
 ## 1.17.11
 
 * Prevent possible race conditions by not using QueryBase
