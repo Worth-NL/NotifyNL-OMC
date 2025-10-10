@@ -4,7 +4,6 @@ using Common.Settings.Configuration;
 using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
-using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
@@ -56,8 +55,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 
             // Validation #2: The notifications must be enabled
             ValidateNotifyPermit(this._caseStatusType.IsNotificationExpected);
-            
-            this._case = await this._queryContext.GetCaseAsync();
+
+            this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             // Preparing party details
             return new PreparedData(
