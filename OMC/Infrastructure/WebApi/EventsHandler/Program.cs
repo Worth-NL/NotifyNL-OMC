@@ -97,7 +97,7 @@ namespace EventsHandler
 
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
                                  .AddJsonFile($"{appSettingsRootName}.{builder.Environment.EnvironmentName}.json", optional: true);
-            
+
             return builder;
         }
         #endregion
@@ -267,14 +267,14 @@ namespace EventsHandler
             // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
-            builder.Services.AddSingleton<IProcessingService, NotifyProcessor>();
+            builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
-            builder.Services.AddSingleton<IDataQueryService<NotificationEvent>, DataQueryService>();
-            builder.Services.AddSingleton<IQueryContext, QueryContext>();
+            builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
+            builder.Services.AddScoped<IQueryContext, QueryContext>();
             builder.Services.RegisterOpenServices(builder);
 
             // HTTP communication
@@ -320,22 +320,22 @@ namespace EventsHandler
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
             // Strategy Resolver (returning dedicated scenarios' strategy)
-            services.AddSingleton<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
+            services.AddScoped<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
             // Strategies
-            services.AddSingleton<CaseCreatedScenario>();
-            services.AddSingleton<CaseStatusUpdatedScenario>();
-            services.AddSingleton<CaseClosedScenario>();
-            services.AddSingleton<TaskAssignedScenario>();
-            services.AddSingleton<DecisionMadeScenario>();
-            services.AddSingleton<MessageReceivedScenario>();
-            services.AddSingleton<NotImplementedScenario>();
+            services.AddScoped<CaseCreatedScenario>();
+            services.AddScoped<CaseStatusUpdatedScenario>();
+            services.AddScoped<CaseClosedScenario>();
+            services.AddScoped<TaskAssignedScenario>();
+            services.AddScoped<DecisionMadeScenario>();
+            services.AddScoped<MessageReceivedScenario>();
+            services.AddScoped<NotImplementedScenario>();
         }
 
         private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
         {
             byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
-            
+
             // Common query methods
             services.AddSingleton<IQueryBase, QueryBase>();
 
@@ -347,7 +347,7 @@ namespace EventsHandler
             services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
 
             // Feedback and telemetry
-            services.AddSingleton(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
+            services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
 
             return;
 
@@ -420,7 +420,7 @@ namespace EventsHandler
             byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
 
             services.AddSingleton<NotificationEventResponder>();
-            services.AddSingleton(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
+            services.AddScoped(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
 
             return;
 
