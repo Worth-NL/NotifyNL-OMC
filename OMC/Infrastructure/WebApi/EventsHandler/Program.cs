@@ -269,7 +269,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
-            builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
+            builder.Services.AddScoped<INotifyService<NotifyData>, NotifyService>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -419,7 +419,7 @@ namespace EventsHandler
         {
             byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
 
-            services.AddSingleton<NotificationEventResponder>();
+            services.AddScoped<NotificationEventResponder>();
             services.AddScoped(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
 
             return;

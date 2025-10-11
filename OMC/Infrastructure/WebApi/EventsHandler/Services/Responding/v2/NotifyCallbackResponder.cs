@@ -78,8 +78,11 @@ namespace EventsHandler.Services.Responding.v2
         {
             (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
-            NotificationData notificationData = await GetNotificationDataAsync(reference, notificationMethod, callback.Id);
+            const int delay = 100;
+            Thread.Sleep(delay);
 
+            NotificationData notificationData = await GetNotificationDataAsync(reference, notificationMethod, callback.Id);
+       
             // Registering new status of the notification (for user)
             await this._telemetry.ReportCompletionAsync(reference, notificationMethod, callback.Recipient, messages:
             [

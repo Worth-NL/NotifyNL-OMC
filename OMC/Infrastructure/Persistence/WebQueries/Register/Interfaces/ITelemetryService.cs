@@ -2,7 +2,6 @@
 
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
-using Notify.Models;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
@@ -42,21 +41,17 @@ namespace WebQueries.Register.Interfaces
             NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
         {
             try
-            { 
-                this.QueryContext.SetNotification(reference.Notification);
-
-                // Register processed notification
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
-                    GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages));
-
+            {
                 // Linking to the case and the customer
                 HttpRequestResponse requestResponse;
                 return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
-                    GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()))
-                    ).IsFailure 
-                    ? HttpRequestResponse.Failure(requestResponse.JsonResponse) 
-                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                        GetActorCustomerContactMomentJsonBody(
+                            this.Omc.OMC.Actor.Id(), (await this.QueryContext.CreateNewContactMomentAsync(  // Create new contact moment
+                                GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages)))
+                            .ContactMoment.ReferenceUri.GetGuid()))
+                    ).IsFailure
+                        ? HttpRequestResponse.Failure(requestResponse.JsonResponse)
+                        : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
             }
             catch (Exception exception)
             {
@@ -65,6 +60,7 @@ namespace WebQueries.Register.Interfaces
         }
 
         #region Abstract
+
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
@@ -113,10 +109,9 @@ namespace WebQueries.Register.Interfaces
 
         /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string GetNewCreateContactMomentJsonBody(
-                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
-            ;
+                NotifyReference reference, NotifyMethods notificationMethod,
+                IReadOnlyList<string> messages);
+
         #endregion
-
-
     }
 }
