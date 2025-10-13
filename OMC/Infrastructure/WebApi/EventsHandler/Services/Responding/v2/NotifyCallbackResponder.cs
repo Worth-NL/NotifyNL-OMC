@@ -129,7 +129,7 @@ namespace EventsHandler.Services.Responding.v2
             try
             {
                 var response = this._responder.GetResponse(
-                    feedbackType is FeedbackTypes.Success or FeedbackTypes.Info
+                    feedbackType is FeedbackTypes.Success or FeedbackTypes.Info or FeedbackTypes.Failure
                         ? ProcessingResult.Success(GetDeliveryStatusLogMessage(callback))
                         : ProcessingResult.Failure(GetDeliveryStatusLogMessage(callback))
                 );

@@ -60,7 +60,6 @@ namespace WebQueries.Register.Interfaces
                 {
                     // Throw to trigger HTTP 500 in controller and let caller retry
                     return HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API");
-                    throw new InvalidOperationException(ex.Message, ex);
                 }
 
                 var linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
