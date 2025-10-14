@@ -1,12 +1,14 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Diagnostics;
 using Common.Extensions;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
@@ -48,26 +50,44 @@ namespace EventsHandler.Services.Responding.v2
         /// <inheritdoc cref="GeneralResponder.HandleNotifyCallbackAsync(object)"/>
         internal override async Task<IActionResult> HandleNotifyCallbackAsync(object json)
         {
+            DeliveryReceipt callback;
+            FeedbackTypes status;
+
             try
             {
-                DeliveryReceipt callback = this.Serializer.Deserialize<DeliveryReceipt>(json);
-                FeedbackTypes status = callback.Status.ConvertToFeedbackStatus();
+                callback = this.Serializer.Deserialize<DeliveryReceipt>(json);
+                status = callback.Status.ConvertToFeedbackStatus();
 
-                if (status is FeedbackTypes.Success
-                           or FeedbackTypes.Failure)  // NOTE: Do not spam user with "intermediate" state messages => FeedbackTypes.Info
+                if (status is FeedbackTypes.Success or FeedbackTypes.Failure)
                 {
-                    // Inform users about the progress of their notification
-                    await InformUserAboutStatusAsync(callback, status);
+                    // Register contactmoment
+                    try
+                    {
+                        await InformUserAboutStatusAsync(callback, status);
+                    }
+                    catch (Exception ex)
+                    {
+                        // You could also log this internally if you want to track partial failures
+                        throw new Exception($"Failed to inform user about status for callback ID {callback.Id}: {ex.Message}", ex);
+                    }
                 }
 
-                // Log event in the system
+                // Log the contact registration / response
                 return LogContactRegistration(callback, status);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                // NOTE: If callback.IdUri == Guid.Empty then it might be suspected that exception occurred during DeliveryReceipt deserialization
-                return OmcController.LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(exception));
+                var errorResponse = new
+                {
+                    statusCode = 500,
+                    statusDescription = $"[ERROR] Failed to process Notify callback",
+                    details = new { message = ex.Message }
+                };
+
+                return new ObjectResult(errorResponse)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
             }
         }
 
@@ -80,9 +100,10 @@ namespace EventsHandler.Services.Responding.v2
             (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
             NotificationData notificationData = await GetNotificationDataAsync(reference, notificationMethod, callback.Id);
+            //_ = LogToFileAsync($"[DEBUG] Entering LogContactRegistration for Id={notificationData.Id}, Status={notificationData.Body}");
 
             // Registering new status of the notification (for user)
-            await this._telemetry.ReportCompletionAsync(reference, notificationMethod, callback.Recipient, messages:
+            var result = await this._telemetry.ReportCompletionAsync(reference, notificationMethod, callback.Recipient, messages:
             [
                 // User message subject
                 DetermineUserMessageSubject(this._configuration, feedbackType, notificationMethod, notificationData.IsSuccess ? notificationData.Subject : string.Empty),
@@ -96,31 +117,43 @@ namespace EventsHandler.Services.Responding.v2
                 // Sent Timestamp
                 notificationData.IsSuccess ? notificationData.SentAt : String.Empty
             ]);
+
+            if (result.IsFailure)
+            {
+                throw new Exception(result.JsonResponse);
+            }
         }
 
         private ObjectResult LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
             try
             {
+                var response = this._responder.GetResponse(
+                    feedbackType is FeedbackTypes.Success or FeedbackTypes.Info or FeedbackTypes.Failure
+                        ? ProcessingResult.Success(GetDeliveryStatusLogMessage(callback))
+                        : ProcessingResult.Failure(GetDeliveryStatusLogMessage(callback))
+                );
+
+                // Extract HttpRequestResponse if wrapped
+                if (response is ObjectResult objResult && objResult.Value is HttpRequestResponse r && r.IsFailure)
+                {
+                    return new ObjectResult(r.JsonResponse)
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError
+                    };
+                }
+
                 return OmcController.LogApiResponse(
-                    // Log level
                     feedbackType == FeedbackTypes.Failure ? LogLevel.Error : LogLevel.Information,
-                    // IActionResult
-                    this._responder.GetResponse(
-                        feedbackType is FeedbackTypes.Success
-                                     or FeedbackTypes.Info
-                            // NOTE: Everything is good (either final or intermediate state)
-                            ? ProcessingResult.Success(GetDeliveryStatusLogMessage(callback))
-                            // NOTE: The notification couldn't be delivered as planned
-                            : ProcessingResult.Failure(GetDeliveryStatusLogMessage(callback))
-                        ));
+                    response
+                );
             }
             catch (Exception exception)
             {
-                // It wasn't possible to report completion because of issue with Telemetry Service
-                return OmcController.LogApiResponse(exception,
-                    this._responder.GetExceptionResponse(
-                        GetDeliveryErrorLogMessage(callback, exception)));
+                return new ObjectResult(GetDeliveryErrorLogMessage(callback, exception))
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
             }
         }
 

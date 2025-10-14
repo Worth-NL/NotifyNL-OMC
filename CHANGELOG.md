@@ -1,3 +1,7 @@
+## 1.17.13
+
+* Bugfix. Catches bugs in openklant and throws them
+
 ## 1.17.12
 
 * Bugfix. Set relevant services to scoped to prevent race conditions
