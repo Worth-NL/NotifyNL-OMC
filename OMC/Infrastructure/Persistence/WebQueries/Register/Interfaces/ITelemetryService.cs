@@ -1,15 +1,10 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Common.Settings.Configuration;
 using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
-using WebQueries.DataSending.Models.Reponses;
-using WebQueries.KTO.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
@@ -42,35 +37,44 @@ namespace WebQueries.Register.Interfaces
         /// <returns>
         ///   The response from an external Web API service.
         /// </returns>
-        public async Task<HttpRequestResponse> ReportCompletionAsync(NotifyReference reference,
-            NotifyMethods notificationMethod, string referenceAddress, params string[] messages)
+        public async Task<HttpRequestResponse> ReportCompletionAsync(
+            NotifyReference reference,
+            NotifyMethods notificationMethod,
+            string referenceAddress,
+            params string[] messages)
         {
-            HttpRequestResponse requestResponse = default;
-            CaseStatuses caseStatuses = default;
-
             try
-            { 
+            {
                 this.QueryContext.SetNotification(reference.Notification);
 
-                caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
-
+                var caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
                 string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
                     caseStatuses.LastStatus());
-                // Register processed notification
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(
-                    json);
 
-                // Linking to the case and the customer
-                return (requestResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                MaakKlantContact contactMoment;
+                try
+                {
+                    contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+                }
+                catch (Exception ex) when (ex.Message.Contains("duplicate key value"))
+                {
+                    // Throw to trigger HTTP 500 in controller and let caller retry
+                    return HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API");
+                }
+
+                var linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
                     GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()))
-                    ).IsFailure 
-                    ? HttpRequestResponse.Failure(requestResponse.JsonResponse) 
-                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
+
+                if (linkResponse.IsFailure)
+                    return HttpRequestResponse.Failure(linkResponse.JsonResponse);
+
+                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                return HttpRequestResponse.Failure(exception.Message);
+                // For all other exceptions, just return failure
+                return HttpRequestResponse.Failure(ex.Message);
             }
         }
 
