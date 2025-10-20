@@ -40,7 +40,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.PrepareDataAsync(NotificationEvent)"/>
         protected override async Task<PreparedData> PrepareDataAsync(NotificationEvent notification)
         {
-            // Setup
+            // Setup set on Notification but base not used suspected thread issue
             this._queryContext = this.DataQuery.From(notification);
 
             // Validation #1: The case type identifier must be whitelisted
