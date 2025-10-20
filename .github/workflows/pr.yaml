@@ -197,10 +197,5 @@ jobs:
 
       - run: |
           helm version
-          helm upgrade --install omc notifynl-omc/ -n notifynl-gzac --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait --timeout 300s
-        name: Deploy v1 chart
-
-      - run: |
-          helm version
           helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait --timeout 300s
         name: Deploy v2 chart
