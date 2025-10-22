@@ -110,7 +110,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
                 .ReturnsAsync(new CaseStatusType
                 {
-                    SerialNumber = 1
+                    SerialNumber = 1,
+                    IsNotificationExpected = true
                 });
 
             mockedQueryContext
@@ -149,16 +150,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
                 .ReturnsAsync(new CaseStatusType
                 {
-                    SerialNumber = 2
+                    SerialNumber = 2,
+                    IsFinalStatus = false,
+                    IsNotificationExpected = true
                 });
-
-            mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync(It.IsAny<Uri?>()))
-                .ReturnsAsync(new CaseStatuses { Count = 2 });
-
-            mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(It.IsAny<CaseStatuses>()))
-                .ReturnsAsync(new CaseType { IsFinalStatus = false });
 
             this._mockedDataQuery
                 .Setup(mock => mock.From(testNotification))
@@ -192,6 +187,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
                 .Setup(mock => mock.GetCaseStatusTypeAsync(It.IsAny<Uri>()))
                 .ReturnsAsync(new CaseStatusType
                 {
+                    IsNotificationExpected = true,
                     SerialNumber = 3,
                     IsFinalStatus = true
                 });
