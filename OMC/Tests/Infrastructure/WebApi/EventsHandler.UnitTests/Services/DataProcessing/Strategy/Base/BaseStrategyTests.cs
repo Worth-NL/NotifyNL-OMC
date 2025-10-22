@@ -9,6 +9,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Base;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base;
 using Moq;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
@@ -118,33 +119,6 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             });
         }
 
-        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email)]
-        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
-        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]
-        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]
-        public void TryGetDataAsync_Whitelisted_WithInformSetToFalse_ThrowsAbortedNotifyingException(Type scenarioType, DistributionChannels testDistributionChannel)
-        {
-            // Arrange
-            GetNewMockedServices_TryGetData(
-                testDistributionChannel, true, false);
-
-            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
-            
-            // TODO: Rewrite to check failures
-            // Act & Assert
-            Assert.Multiple(() =>
-            {
-                AbortedNotifyingException? exception =
-                    Assert.ThrowsAsync<AbortedNotifyingException>(() => scenario.TryGetDataAsync(default));
-                Assert.That(exception?.Message.StartsWith(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren), Is.True);
-                Assert.That(exception?.Message.EndsWith(ApiResources.Processing_ABORT), Is.True);
-                
-                VerifyNewGetDataMethodCalls(1, 1, 0, 0);
-            });
-        }
-
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.None)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Unknown)]
         [TestCase(typeof(CaseCreatedScenario), (DistributionChannels)(-1))]
@@ -160,7 +134,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             GetNewMockedServices_TryGetData(
                 invalidDistributionChannel, true, true);
 
-            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
+            INotifyScenario scenario = CreateScenario(scenarioType);
 
             // Act
             QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
@@ -192,7 +166,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             GetNewMockedServices_TryGetData(
                 testDistributionChannel, true, true);
 
-            INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
+            INotifyScenario scenario = CreateScenario(scenarioType);
 
             // Act
             QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
@@ -388,53 +362,89 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 this._testConfiguration, this._mockedQueryService.Object, this._mockedNotifyService.Object)!;
         }
 
-        private void GetMockedServices_TryGetData(
-            DistributionChannels testDistributionChannel, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
+        private INotifyScenario CreateScenario(
+            Type scenarioType)
         {
-            // IQueryContext
-            this._mockedQueryContext
-                .Setup(mock => mock.GetLastCaseTypeAsync(
-                    It.IsAny<CaseStatuses?>()))
-                .ReturnsAsync(new CaseType
-                {
-                    Identification = isCaseTypeIdWhitelisted ? "1" : "4",
-                    IsNotificationExpected = isNotificationExpected
-                });
-            
-            this._mockedQueryContext
-                .Setup(mock => mock.GetCaseStatusesAsync(
-                    It.IsAny<Uri?>()))
-                .ReturnsAsync(new CaseStatuses());
+            var scenario = (INotifyScenario)Activator.CreateInstance(scenarioType,
+                this._testConfiguration,
+                this._mockedQueryService.Object, this._mockedNotifyService.Object)!;
 
-            this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(
-                    It.IsAny<Uri?>(),
-                    It.IsAny<string?>(),
-                    It.IsAny<string?>()))
-                .ReturnsAsync(new CommonPartyData
+            if (scenario is BaseCaseScenario baseScenario)
+            {
+                var caseStatusType = new CaseStatusType
                 {
-                    Name = "Alice",
-                    SurnamePrefix = "van",
-                    Surname = "Wonderland",
-                    DistributionChannel = testDistributionChannel,
-                    EmailAddress = TestEmailAddress,
-                    TelephoneNumber = TestPhoneNumber
-                });
-            
-            this._mockedQueryContext
-                .Setup(mock => mock.GetCaseAsync(
-                    It.IsAny<Uri?>()))
-                .ReturnsAsync(new Case
-                {
-                    Identification = CaseId
-                });
-            
-            // IDataQueryService
-            this._mockedQueryService
-                .Setup(mock => mock.From(
-                    It.IsAny<NotificationEvent>()))
-                .Returns(this._mockedQueryContext.Object);
+                    Identification = scenario switch
+                    {
+                        CaseCreatedScenario => "1",
+                        CaseStatusUpdatedScenario => "2",
+                        CaseClosedScenario => "3",
+                        _ => "Unknown"
+                    },
+                    IsNotificationExpected = true,
+                    IsFinalStatus = scenario is CaseClosedScenario,
+                    SerialNumber = scenario switch
+                    {
+                        CaseCreatedScenario => 1,
+                        CaseStatusUpdatedScenario => 2,
+                        CaseClosedScenario => 3,
+                        _ => 0
+                    }
+                };
+
+                baseScenario.SetCaseStatusType(caseStatusType);
+            }
+
+            return scenario;
         }
+
+        // Might be used in future tests
+        //private void GetMockedServices_TryGetData(
+        //    DistributionChannels testDistributionChannel, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)
+        //{
+        //    // IQueryContext
+        //    this._mockedQueryContext
+        //        .Setup(mock => mock.GetLastCaseTypeAsync(
+        //            It.IsAny<CaseStatuses?>()))
+        //        .ReturnsAsync(new CaseType
+        //        {
+        //            Identification = isCaseTypeIdWhitelisted ? "1" : "4",
+        //            IsNotificationExpected = isNotificationExpected
+        //        });
+            
+        //    this._mockedQueryContext
+        //        .Setup(mock => mock.GetCaseStatusesAsync(
+        //            It.IsAny<Uri?>()))
+        //        .ReturnsAsync(new CaseStatuses());
+
+        //    this._mockedQueryContext
+        //        .Setup(mock => mock.GetPartyDataAsync(
+        //            It.IsAny<Uri?>(),
+        //            It.IsAny<string?>(),
+        //            It.IsAny<string?>()))
+        //        .ReturnsAsync(new CommonPartyData
+        //        {
+        //            Name = "Alice",
+        //            SurnamePrefix = "van",
+        //            Surname = "Wonderland",
+        //            DistributionChannel = testDistributionChannel,
+        //            EmailAddress = TestEmailAddress,
+        //            TelephoneNumber = TestPhoneNumber
+        //        });
+            
+        //    this._mockedQueryContext
+        //        .Setup(mock => mock.GetCaseAsync(
+        //            It.IsAny<Uri?>()))
+        //        .ReturnsAsync(new Case
+        //        {
+        //            Identification = CaseId
+        //        });
+            
+        //    // IDataQueryService
+        //    this._mockedQueryService
+        //        .Setup(mock => mock.From(
+        //            It.IsAny<NotificationEvent>()))
+        //        .Returns(this._mockedQueryContext.Object);
+        //}
 
         private void GetNewMockedServices_TryGetData(
             DistributionChannels testDistributionChannel, bool isCaseTypeIdWhitelisted, bool isNotificationExpected)

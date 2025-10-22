@@ -79,26 +79,6 @@ namespace WebQueries.Register.v1
                    $"}}";
         }
 
-        /// <inheritdoc cref="ITelemetryService.GetLinkCaseJsonBody(ContactMoment, NotifyReference)"/>
-        string ITelemetryService.GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference)
-        {
-            return $"{{" +
-                   $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," + // URI
-                   $"\"zaak\":\"{reference.CaseId}\"" + // URI
-                   $"}}";
-        }
-
-        /// <inheritdoc cref="ITelemetryService.GetLinkCustomerJsonBody(ContactMoment, NotifyReference)"/>
-        string ITelemetryService.GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference)
-        {
-            return $"{{" +
-                   $"\"contactmoment\":\"{contactMoment.ReferenceUri}\"," + // URI
-                   $"\"klant\":\"{reference.PartyId.RecreatePartyUri()}\"," + // URI
-                   $"\"rol\":\"belanghebbende\"," +
-                   $"\"gelezen\":false" +
-                   $"}}";
-        }
-
         /// <inheritdoc cref="ITelemetryService.GetActorCustomerContactMomentJsonBody(Guid, Guid)"/>
         string ITelemetryService.GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment)
         {
@@ -124,7 +104,7 @@ namespace WebQueries.Register.v1
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public string GetNewCreateContactMomentJsonBody(NotifyReference reference, NotifyMethods notificationMethod,
-            IReadOnlyList<string> messages, CaseStatus? caseStatus)
+            IReadOnlyList<string> messages)
         {
             throw new NotImplementedException();
         }
