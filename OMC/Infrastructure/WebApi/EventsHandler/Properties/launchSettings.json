@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production",
 
-        "OMC_ACTOR_ID": "e03c92b4-78e1-4bbd-b872-a1f8b7f7abb8",
+        "OMC_ACTOR_ID": "e03c92b4-78e1-4bbd-b872-a1f8b7f7abb8", //check and throw error
         "OMC_CONTEXT_PATH": "",
 
         "OMC_AUTH_JWT_SECRET": "5lkLJ%5z$%KQ^^94VsLn6cENql7c%V19Yl3MLv7#oduQoTYxK37ZF$7x4qQgmea$S^s!kS0o2Ddaqo&7j3o4e2*Kx&2AXBG7Nu",
