@@ -502,11 +502,11 @@ namespace Common.Settings.Configuration
             [Config]
             public FeatureComponent Feature { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
+            /// <inheritdoc cref="ContextComponent"/>
             [Config]
             public ContextComponent Context { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
+            /// <inheritdoc cref="ActorComponent"/>
             [Config]
             public ActorComponent Actor { get; }
             /// <summary>
@@ -645,7 +645,7 @@ namespace Common.Settings.Configuration
                 private readonly string _currentPath;
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="ContextComponent"/> class.
+                /// Initializes a new instance of the <see cref="ActorComponent"/> class.
                 /// </summary>
                 public ActorComponent(ILoadersContext loadersContext, string parentPath)
                 {
