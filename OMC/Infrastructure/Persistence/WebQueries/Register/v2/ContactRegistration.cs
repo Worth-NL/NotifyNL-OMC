@@ -7,8 +7,6 @@ using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v2
@@ -47,7 +45,7 @@ namespace WebQueries.Register.v2
         }
 
         #region Polymorphic
-        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetNewCreateContactMomentJsonBody(
             NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
         {
