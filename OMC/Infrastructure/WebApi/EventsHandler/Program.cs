@@ -451,6 +451,8 @@ namespace EventsHandler
             OmcConfiguration configuration = app.Services.GetRequiredService<OmcConfiguration>();
             string pathBase = configuration.OMC.Context.Path();
 
+            configuration.OMC.Actor.Id();
+
             if (!string.IsNullOrEmpty(pathBase))
             {
                 app.Use((context, next) =>
