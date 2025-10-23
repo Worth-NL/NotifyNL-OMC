@@ -67,7 +67,7 @@ namespace EventsHandler.Services.Responding.v2
                 {
                     return new ObjectResult(new
                     {
-                        success = informResult.Value.IsFailure,
+                        success = informResult.Value.IsSuccess,
                         message = informResult.Value.JsonResponse
                     })
                     {
