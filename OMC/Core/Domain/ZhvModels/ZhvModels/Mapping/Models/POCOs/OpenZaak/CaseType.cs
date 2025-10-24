@@ -1,6 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
@@ -44,7 +45,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonPropertyName("isEindstatus")]
         [JsonPropertyOrder(3)]
-        public bool IsFinalStatus { get; set; }
+        public bool IsFinalStatus { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// Determines whether the party (e.g., user or organization) wants to be notified about this certain <see cref="CaseStatus"/> update.

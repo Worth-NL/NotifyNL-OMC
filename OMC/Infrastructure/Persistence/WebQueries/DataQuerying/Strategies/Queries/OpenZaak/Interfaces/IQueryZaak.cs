@@ -161,7 +161,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
 
             return await queryBase.ProcessGetAsync<CaseResultType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: resultTypeUri!,
+                uri: resultTypeUri,
                 fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
         }
 

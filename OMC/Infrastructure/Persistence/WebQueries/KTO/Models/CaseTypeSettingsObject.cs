@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using JetBrains.Annotations;
 
 namespace WebQueries.KTO.Models
 {
@@ -32,7 +31,7 @@ namespace WebQueries.KTO.Models
         [JsonRequired]
         [JsonPropertyName("caseTypeSettings")]
         [JsonPropertyOrder(1)]
-        public CaseTypeSetting[] CaseTypeSettings { get; init; }
+        public CaseTypeSetting[] CaseTypeSettings { [UsedImplicitly] get; init; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseTypeSettingsObject"/> struct.

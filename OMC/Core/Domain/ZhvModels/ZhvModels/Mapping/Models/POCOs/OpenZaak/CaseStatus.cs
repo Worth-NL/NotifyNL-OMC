@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
@@ -29,7 +30,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         [JsonRequired]
         [JsonPropertyName("datumStatusGezet")]
         [JsonPropertyOrder(1)]
-        public DateTime Created { get; set; }
+        public DateTime Created { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CaseStatus"/> struct.
