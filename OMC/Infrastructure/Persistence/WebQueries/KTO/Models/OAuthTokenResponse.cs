@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 
 namespace WebQueries.KTO.Models
 {
@@ -14,7 +15,7 @@ namespace WebQueries.KTO.Models
         [JsonRequired]
         [JsonPropertyName("token_type")]
         [JsonPropertyOrder(1)]
-        public string TokenType { get; init; }
+        public string TokenType { [UsedImplicitly] get; init; }
 
         /// <summary>
         /// The number of seconds until the token expires.
@@ -22,7 +23,7 @@ namespace WebQueries.KTO.Models
         [JsonRequired]
         [JsonPropertyName("expires_in")]
         [JsonPropertyOrder(2)]
-        public int ExpiresIn { get; init; }
+        public int ExpiresIn { [UsedImplicitly] get; init; }
 
         /// <summary>
         /// The number of seconds until the extended expiration time.
@@ -30,7 +31,7 @@ namespace WebQueries.KTO.Models
         [JsonRequired]
         [JsonPropertyName("ext_expires_in")]
         [JsonPropertyOrder(3)]
-        public int ExtExpiresIn { get; init; }
+        public int ExtExpiresIn { [UsedImplicitly] get; init; }
 
         /// <summary>
         /// The access token used for authentication.

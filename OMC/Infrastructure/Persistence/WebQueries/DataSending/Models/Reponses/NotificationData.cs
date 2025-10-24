@@ -1,5 +1,6 @@
 ﻿// © 2025, Worth Systems.
 
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Notify.Models;
 
@@ -13,7 +14,7 @@ namespace WebQueries.DataSending.Models.Reponses
         /// <summary>
         /// 
         /// </summary>
-        public string Id { get; set; }
+        public string Id { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// 
@@ -88,17 +89,17 @@ namespace WebQueries.DataSending.Models.Reponses
         /// <summary>
         /// 
         /// </summary>
-        public string Postcode { get; set; }    
+        public string Postcode { [UsedImplicitly] get; set; }    
 
         /// <summary>
         /// 
         /// </summary>
-        public string Postage { get; set; }
+        public string Postage { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Reference { get; set; }
+        public string Reference { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// 
@@ -109,12 +110,12 @@ namespace WebQueries.DataSending.Models.Reponses
         /// <summary>
         /// 
         /// </summary>
-        public string Status { get; set; }
+        public string Status { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string? Type { get; set; }
+        public string? Type { [UsedImplicitly] get; set; }
 
         /// <summary>
         /// 
@@ -130,7 +131,7 @@ namespace WebQueries.DataSending.Models.Reponses
         /// <summary>
         /// 
         /// </summary>
-        public string Error { get; }
+        public string Error { [UsedImplicitly] get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyTemplateResponse"/> struct.

@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
@@ -51,7 +52,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("datum")]
         [JsonPropertyOrder(3)]
-        public DateOnly Date { get; set; }
+        public DateOnly Date { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// The explanation of the <see cref="Decision"/>.
@@ -75,7 +76,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("ingangsdatum")]
         [JsonPropertyOrder(6)]
-        public DateOnly EffectiveDate { get; set; }
+        public DateOnly EffectiveDate { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// The date after which the <see cref="Decision"/> will expire (ends).
@@ -83,7 +84,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("vervaldatum")]
         [JsonPropertyOrder(7)]
-        public DateOnly ExpirationDate { get; set; }
+        public DateOnly ExpirationDate { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// The reason explaining the <see cref="Decision"/> expiration.
@@ -99,7 +100,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("publicatiedatum")]
         [JsonPropertyOrder(9)]
-        public DateOnly PublicationDate { get; set; }
+        public DateOnly PublicationDate { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// The date when the <see cref="Decision"/> is meant to be shipped.
@@ -107,7 +108,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("verzenddatum")]
         [JsonPropertyOrder(10)]
-        public DateOnly ShippingDate { get; set; }
+        public DateOnly ShippingDate { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// The date up to which party (e.g., citizen, or organization) can appeal the <see cref="Decision"/>.
@@ -115,7 +116,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision
         [JsonRequired]
         [JsonPropertyName("uiterlijkeReactiedatum")]
         [JsonPropertyOrder(11)]
-        public DateOnly ResponseDate { get; set; }
+        public DateOnly ResponseDate { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Decision"/> struct.

@@ -1,7 +1,7 @@
 ﻿// © 2025, Worth Systems.
 
-using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
@@ -20,7 +20,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
         [JsonRequired]
         [JsonPropertyName("klantcontact")]
         [JsonPropertyOrder(0)]
-        public ContactMoment ContactMoment { get; set; }
+        public ContactMoment ContactMoment { get; [UsedImplicitly] set; }
 
     }
 }

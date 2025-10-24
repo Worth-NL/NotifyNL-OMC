@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
@@ -48,7 +49,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// </summary>
         [JsonPropertyName("subjectIdentificatie")]
         [JsonPropertyOrder(15)]
-        public SubjectIdentification SubjectIdentification { get; set; }
+        public SubjectIdentification SubjectIdentification { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResult"/> struct.
@@ -86,6 +87,6 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v2
         /// Possible values might include: "m" (male), "v" (female), "o" (other), or empty.
         /// </summary>
         [JsonPropertyName("geslachtsaanduiding")]
-        public string Gender { get; set; }
+        public string Gender { get; [UsedImplicitly] set; }
     }
 }
