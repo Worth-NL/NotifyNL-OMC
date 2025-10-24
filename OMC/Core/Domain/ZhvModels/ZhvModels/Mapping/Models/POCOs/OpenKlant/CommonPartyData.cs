@@ -1,6 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -64,6 +64,6 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant
         /// <summary>
         /// Gender of the customer for eventual pronouns
         /// </summary>
-        public string Gender { get; init; }
+        public string Gender { [UsedImplicitly] get; init; }
     }
 }

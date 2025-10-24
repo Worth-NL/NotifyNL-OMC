@@ -47,38 +47,30 @@ namespace WebQueries.Register.Interfaces
             {
                 this.QueryContext.SetNotification(reference.Notification);
 
-                var caseStatuses = await this.QueryContext.GetCaseStatusesAsync(reference.CaseId.RecreateCaseUri());
-                string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages,
-                    caseStatuses.LastStatus());
 
-                MaakKlantContact contactMoment;
-                try
-                {
-                    contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
-                }
-                catch (Exception ex) when (ex.Message.Contains("duplicate key value"))
-                {
-                    // Throw to trigger HTTP 500 in controller and let caller retry
-                    return HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API");
-                }
+                string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages);
 
-                var linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+
+                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
                     GetActorCustomerContactMomentJsonBody(
                         this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
 
-                if (linkResponse.IsFailure)
-                    return HttpRequestResponse.Failure(linkResponse.JsonResponse);
-
-                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return linkResponse.IsFailure
+                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse) // Throw soft error to prevent retries
+                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
             }
             catch (Exception ex)
             {
-                // For all other exceptions, just return failure
-                return HttpRequestResponse.Failure(ex.Message);
+                return ex.Message.Contains("duplicate key value")
+                    ? HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API")
+                    : // For all other exceptions, just return failure
+                    HttpRequestResponse.Failure(ex.Message);
             }
         }
 
         #region Abstract
+
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
@@ -98,26 +90,6 @@ namespace WebQueries.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
-        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
-        /// <returns>
-        ///   The JSON content for HTTP Request Body.
-        /// </returns>
-        protected string GetLinkCaseJsonBody(ContactMoment contactMoment, NotifyReference reference);
-
-        /// <summary>
-        /// Prepares a dedicated JSON body.
-        /// </summary>
-        /// <param name="contactMoment"><inheritdoc cref="ContactMoment" path="/summary"/></param>
-        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
-        /// <returns>
-        ///   The JSON content for HTTP Request Body.
-        /// </returns>
-        protected string GetLinkCustomerJsonBody(ContactMoment contactMoment, NotifyReference reference);
-
-        /// <summary>
-        /// Prepares a dedicated JSON body.
-        /// </summary>
         /// <param name="actor"><inheritdoc cref="ContactMoment" path="/summary"/></param>
         /// <param name="customerContactMoment"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
@@ -125,13 +97,12 @@ namespace WebQueries.Register.Interfaces
         /// </returns>
         string GetActorCustomerContactMomentJsonBody(Guid actor, Guid customerContactMoment);
 
-        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
+        /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string GetNewCreateContactMomentJsonBody(
-                NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages,
-                CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
+                NotifyReference reference, NotifyMethods notificationMethod,
+                IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
             ;
+
         #endregion
-
-
     }
 }

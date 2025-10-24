@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Extensions;
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;

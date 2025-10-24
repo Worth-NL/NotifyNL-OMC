@@ -502,11 +502,11 @@ namespace Common.Settings.Configuration
             [Config]
             public FeatureComponent Feature { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
+            /// <inheritdoc cref="ContextComponent"/>
             [Config]
             public ContextComponent Context { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
+            /// <inheritdoc cref="ActorComponent"/>
             [Config]
             public ActorComponent Actor { get; }
             /// <summary>
@@ -645,7 +645,7 @@ namespace Common.Settings.Configuration
                 private readonly string _currentPath;
 
                 /// <summary>
-                /// Initializes a new instance of the <see cref="ContextComponent"/> class.
+                /// Initializes a new instance of the <see cref="ActorComponent"/> class.
                 /// </summary>
                 public ActorComponent(ILoadersContext loadersContext, string parentPath)
                 {
@@ -1366,9 +1366,8 @@ namespace Common.Settings.Configuration
                 {
                     // Validation #1: Checking if the string value is not null or empty
                     string[] values = GetValue<string>(loadersContext, finalPath, disableValidation: true)  // Allow empty values
-                                                                                                            // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
-                        .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                        .ToArray();
+                        // Handles the cases: "1,2,3" and "1, 2, 3", or " 1, 2,  3, "
+                        .Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                     // Validation #2: Checking if the comma-separated string was properly split into array
                     return disableValidation
