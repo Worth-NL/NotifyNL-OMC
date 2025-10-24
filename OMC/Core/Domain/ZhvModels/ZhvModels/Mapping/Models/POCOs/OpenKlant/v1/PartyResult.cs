@@ -2,6 +2,7 @@
 
 using Common.Constants;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Enums.OpenKlant;
 using ZhvModels.Mapping.Models.Interfaces;
 
@@ -44,7 +45,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
         [JsonRequired]
         [JsonPropertyName("aanmaakkanaal")]
         [JsonPropertyOrder(4)]
-        public DistributionChannels DistributionChannel { get; set; }
+        public DistributionChannels DistributionChannel { get; [UsedImplicitly] set; }
 
         /// <inheritdoc cref="CommonPartyData.TelephoneNumber"/>
         [JsonRequired]
@@ -63,7 +64,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
         /// </summary>
         [JsonPropertyName("subjectIdentificatie")]
         [JsonPropertyOrder(15)]
-        public SubjectIdentification SubjectIdentification { get; set; }
+        public SubjectIdentification SubjectIdentification { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyResult"/> struct.
@@ -101,6 +102,6 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenKlant.v1
         /// Possible values might include: "m" (male), "v" (female), "o" (other), or empty.
         /// </summary>
         [JsonPropertyName("geslachtsaanduiding")]
-        public string Gender { get; set; }
+        public string Gender { get; [UsedImplicitly] set; }
     }
 }

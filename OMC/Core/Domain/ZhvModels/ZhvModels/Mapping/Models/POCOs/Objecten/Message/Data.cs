@@ -1,6 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
 
 namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
@@ -33,7 +34,7 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.Message
         [JsonRequired]
         [JsonPropertyName("identificatie")]
         [JsonPropertyOrder(2)]
-        public Identification Identification { get; set; }
+        public Identification Identification { get; [UsedImplicitly] set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Data"/> struct.
