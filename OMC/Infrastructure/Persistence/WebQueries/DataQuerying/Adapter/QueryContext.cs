@@ -14,6 +14,7 @@ using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
@@ -216,6 +217,14 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.CreateObjectAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.CreateObjectAsync(string objectJsonBody)
             => await this._queryObjecten.CreateObjectAsync(this._networkService, objectJsonBody);
+
+        /// <inheritdoc cref="IQueryContext.DeleteObjectAsync(Guid)"/>
+        async Task<HttpRequestResponse> IQueryContext.DeleteObjectAsync(Guid objectUuid)
+            => await this._queryObjecten.DeleteObjectAsync(this._networkService, objectUuid);
+
+        /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
+        Task<KtoObject> IQueryContext.GetKtoObjectAsync(Guid objectUuid)
+            => this._queryObjecten.GetKtoObjectAsync(this._queryBase, objectUuid);
         #endregion
 
         #region IQueryObjectTypen
@@ -228,7 +237,7 @@ namespace WebQueries.DataQuerying.Adapter
             => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
         #endregion
 
-        #region IQueryObjectTypen
+        #region Kto
         /// <inheritdoc cref="IQueryContext.SendKtoAsync"/>
         async Task<HttpRequestResponse> IQueryContext.SendKtoAsync(string body)
             => await this._networkServiceKto.PostAsync(body);
