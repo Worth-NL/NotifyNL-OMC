@@ -54,6 +54,13 @@ namespace ZhvModels.Mapping.Models.POCOs.NotificatieApi
                     nameof(ObjectTypeUri),
                     // Exclude orphans
                     nameof(this.Orphans)));
+
+                // Kto
+                s_properties.TryAdd(Channels.Kto, new PropertiesMetadata(this,
+                    // Exclude properties not relevant for Kto
+                    nameof(CaseTypeUri), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    nameof(ObjectTypeUri), nameof(DecisionTypeUri), nameof(ResponsibleOrganization),
+                    nameof(this.Orphans)));
             }
 
             return s_properties[channel];

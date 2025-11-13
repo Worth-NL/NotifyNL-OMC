@@ -9,6 +9,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 using ZhvModels.Properties;
@@ -102,6 +103,51 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
                 httpClientType: HttpClientTypes.Objecten,
                 uri: createObjectUri,
                 objectJsonBody);
+        }
+        #endregion
+
+        #region Parent (Get object)        
+        /// <summary>
+        /// Retrieves an object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The data inside the Object.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed async Task<KtoObject> GetKtoObjectAsync(IQueryBase queryBase, Guid objectUuid)
+        {
+            // Predefined URL components
+            string getObjectEndpoint = $"{GetDomain()}/objects/{objectUuid}";
+
+            // Request URL
+            Uri getObjectUri = new(getObjectEndpoint);
+
+            return await queryBase.ProcessGetAsync<KtoObject>(
+                httpClientType: HttpClientTypes.Objecten,
+                uri: getObjectUri,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoMessage);
+        }
+        #endregion
+
+        #region Parent (Delete object)        
+        /// <summary>
+        /// Creates an object in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   The answer whether the object was created successfully.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed async Task<HttpRequestResponse> DeleteObjectAsync(IHttpNetworkService networkService, Guid objectUuid)
+        {
+            // Predefined URL components
+            string deleteObjectEndpoint = $"{GetDomain()}/objects/{objectUuid}";
+
+            // Request URL
+            Uri deleteObjectUri = new(deleteObjectEndpoint);
+
+            return await networkService.DeleteAsync(
+                httpClientType: HttpClientTypes.Objecten,
+                uri: deleteObjectUri);
         }
         #endregion
 

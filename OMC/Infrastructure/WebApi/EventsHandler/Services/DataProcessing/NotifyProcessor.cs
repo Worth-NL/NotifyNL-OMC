@@ -12,7 +12,9 @@ using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.KTO.Interfaces;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -27,6 +29,7 @@ namespace EventsHandler.Services.DataProcessing
         private readonly ISerializationService _serializer;
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
+        private readonly IKtoScenarioFactory _ktoScenarioFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
@@ -34,14 +37,16 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="validator">The input validating service.</param>
         /// <param name="resolver">The strategies resolving service.</param>
+        /// <param name="ktoScenarioFactory">The strategy to send Kto</param>
         public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
-            IScenariosResolver<INotifyScenario, NotificationEvent> resolver)  // Dependency Injection (DI)
+            IScenariosResolver<INotifyScenario, NotificationEvent> resolver, IKtoScenarioFactory ktoScenarioFactory)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
             this._validator = validator;
             this._resolver = resolver;
+            this._ktoScenarioFactory = ktoScenarioFactory;
         }
 
         /// <inheritdoc cref="IProcessingService.ProcessAsync(object)"/>
@@ -71,6 +76,26 @@ namespace EventsHandler.Services.DataProcessing
 
                 // Choose an adequate business-scenario (strategy) to process the notification
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
+
+                // Determine if the received notification is "Kto" (Customer satisfaction survey) event => In this case, Send Kto request
+                if (scenario is KtoScenario)
+                {
+                    try
+                    {
+                        WebQueries.KTO.Models.KtoScenario ktoScenario = _ktoScenarioFactory.Create();
+                        HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
+
+                        return ktoResponse.IsFailure
+                            ? ProcessingResult.Failure(ktoResponse.JsonResponse, json, details)
+                            : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                    }
+                    catch (Exception ex)
+                    {
+                        return ProcessingResult.Failure(
+                            string.Format(ex.Message), json,
+                            details);
+                    }
+                }
 
                 // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
                 QueryingDataResponse queryDataResponse;
