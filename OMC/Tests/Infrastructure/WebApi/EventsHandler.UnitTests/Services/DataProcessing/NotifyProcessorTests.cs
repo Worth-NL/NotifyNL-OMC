@@ -15,6 +15,7 @@ using Moq;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Enums;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -30,6 +31,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
         private Mock<ISerializationService> _mockedSerializer = null!;
         private Mock<IValidationService<NotificationEvent>> _mockedValidator = null!;
         private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedResolver = null!;
+        private Mock<IKtoScenarioFactory> _mockedKtoScenarioFactory = null!;
 
         private IProcessingService _processor = null!;
 
@@ -39,8 +41,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             this._mockedSerializer = new Mock<ISerializationService>(MockBehavior.Strict);
             this._mockedValidator = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
             this._mockedResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
-            
-            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object);
+            this._mockedKtoScenarioFactory = new Mock<IKtoScenarioFactory>(MockBehavior.Strict);
+
+            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object);
         }
 
         [SetUp]

@@ -10,6 +10,7 @@ using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
 using ZhvModels.Mapping.Models.POCOs.OpenKlant;
@@ -205,6 +206,12 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> CreateObjectAsync(string objectJsonBody);
+
+        /// <inheritdoc cref="IQueryObjecten.DeleteObjectAsync(IHttpNetworkService, Guid)"/>
+        public Task<HttpRequestResponse> DeleteObjectAsync(Guid objectUuid);
+
+        /// <inheritdoc cref="IQueryObjecten.GetKtoObjectAsync(IQueryBase, Guid)"/>
+        public Task<KtoObject> GetKtoObjectAsync(Guid objectUuid);
         #endregion
 
         #region IQueryObjectTypen
