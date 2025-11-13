@@ -56,16 +56,22 @@ namespace WebQueries.DataSending
         /// <inheritdoc cref="IHttpNetworkService.GetAsync(HttpClientTypes, Uri)"/>
         async Task<HttpRequestResponse> IHttpNetworkService.GetAsync(HttpClientTypes httpClientType, Uri uri)
         {
-            return await ExecuteCallAsync(httpClientType, uri);
+            return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Get);
         }
 
         /// <inheritdoc cref="IHttpNetworkService.PostAsync(HttpClientTypes, Uri, string)"/>
         async Task<HttpRequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType);
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType); 
 
-            return await ExecuteCallAsync(httpClientType, uri, requestBody);
+            return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Post, body: requestBody);
+        }
+
+        /// <inheritdoc cref="IHttpNetworkService.DeleteAsync(HttpClientTypes, Uri)"/>
+        async Task<HttpRequestResponse> IHttpNetworkService.DeleteAsync(HttpClientTypes httpClientType, Uri uri)
+        {
+            return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Delete);
         }
         #endregion
 
@@ -201,27 +207,34 @@ namespace WebQueries.DataSending
         /// <summary>
         /// Executes the standard safety procedure before and after making the HTTP Request.
         /// </summary>
-        private async Task<HttpRequestResponse> ExecuteCallAsync(HttpClientTypes httpClientType, Uri uri, HttpContent? body = default)
+        private async Task<HttpRequestResponse> ExecuteCallAsync(
+            HttpClientTypes httpClientType, Uri uri, HttpMethod httpMethod, HttpContent? body = default)
         {
             try
             {
-                // HTTPS protocol validation
-                //if (uri.Scheme != CommonValues.Default.Network.HttpsProtocol)
-                //{
-                //    return HttpRequestResponse.Failure(ZhvResources.HttpRequest_ERROR_HttpsProtocolExpected);
-                //}
-
-                // Determine whether GET or POST call should be sent (depends on if HTTP body is required)
                 await _semaphore.WaitAsync();
-                HttpResponseMessage result = body is null
-                    // NOTE: This method is working as IHttpClientFactory: _httpClientFactory.CreateClient("type_1");
-                    ? await ResolveClient(httpClientType).GetAsync(uri)
-                    : await ResolveClient(httpClientType).PostAsync(uri, body);
-                this._semaphore.Release();
+                HttpClient client = ResolveClient(httpClientType);
 
+                HttpResponseMessage result = httpMethod switch
+                {
+                    { } m when m == HttpMethod.Get
+                        => await client.GetAsync(uri),
+
+                    { } m when m == HttpMethod.Post
+                        => await client.PostAsync(uri, body ?? new StringContent(string.Empty)),
+
+                    { } m when m == HttpMethod.Delete
+                        => await client.DeleteAsync(uri),
+
+                    _ => throw new NotSupportedException($"HTTP method '{httpMethod}' is not supported.")
+                };
+
+                _semaphore.Release();
+
+                string responseContent = await result.Content.ReadAsStringAsync();
                 return result.IsSuccessStatusCode
-                    ? HttpRequestResponse.Success(await result.Content.ReadAsStringAsync())
-                    : HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
+                    ? HttpRequestResponse.Success(responseContent)
+                    : HttpRequestResponse.Failure(responseContent);
             }
             catch (Exception exception)
             {

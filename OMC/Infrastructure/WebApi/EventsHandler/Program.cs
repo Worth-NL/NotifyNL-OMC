@@ -35,6 +35,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy;
@@ -270,6 +271,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
+            builder.Services.AddSingleton<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -330,6 +332,7 @@ namespace EventsHandler
             services.AddScoped<DecisionMadeScenario>();
             services.AddScoped<MessageReceivedScenario>();
             services.AddScoped<NotImplementedScenario>();
+            services.AddScoped<KtoScenario>();
         }
 
         private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
