@@ -271,7 +271,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
-            builder.Services.AddSingleton<IKtoScenarioFactory, KtoScenarioFactory>();
+            builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
