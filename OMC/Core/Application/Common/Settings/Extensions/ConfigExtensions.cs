@@ -60,19 +60,6 @@ namespace Common.Settings.Extensions
             return s_ktoUrlValue;
         }
 
-        /// <summary>
-        /// Gets the KTO Case Type Settings JSON as a string.
-        /// </summary>
-        public static string KtoCaseTypeSettings(OmcConfiguration? configuration = null)
-        {
-            if (configuration != null)
-            {
-                return configuration.KTO.CaseTypeSettings();
-            }
-
-            return s_ktoCaseTypeSettingsValue ??= Environment.GetEnvironmentVariable("KTO_CASETYPESETTINGS") ?? "{}";
-        }
-
         private static string GetEndpointOpenZaakEnvVarName()
         {
             lock (s_padlock)

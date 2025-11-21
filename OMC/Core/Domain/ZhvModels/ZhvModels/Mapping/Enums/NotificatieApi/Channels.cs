@@ -35,11 +35,5 @@ namespace ZhvModels.Mapping.Enums.NotificatieApi
         /// </summary>
         [JsonPropertyName("besluiten")]
         Decisions = 3,
-
-        /// <summary>
-        /// Kto channel.
-        /// </summary>
-        [JsonPropertyName("kto")]
-        Kto = 4
     }
 }
