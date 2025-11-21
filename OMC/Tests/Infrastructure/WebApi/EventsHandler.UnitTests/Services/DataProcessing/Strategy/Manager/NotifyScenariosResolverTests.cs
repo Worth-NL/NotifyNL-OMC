@@ -7,6 +7,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +58,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             serviceCollection.AddSingleton(new TaskAssignedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new DecisionMadeScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new MessageReceivedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new KtoScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new NotImplementedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
             this._serviceProvider = serviceCollection.BuildServiceProvider();
@@ -247,6 +249,38 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
                 Assert.That(exception?.Message.StartsWith(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid
                                               .Replace("{0}", $"{testNotification.Attributes.ObjectTypeUri.GetGuid()}")
                                               .Replace("{1}", "ZGW_VARIABLE_OBJECTTYPE_...OBJECTTYPE_UUID")), Is.True);
+                Assert.That(exception?.Message.EndsWith(ApiResources.Processing_ABORT), Is.True);
+            });
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_KtoScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetObjectNotification(_omcConfiguration.ZGW.Variable.ObjectType.KtoObjectType_Uuid().ToString());
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<KtoScenario>());
+        }
+
+        [Test]
+        public void DetermineScenarioAsync_KtoScenario_ThrowsAbortedNotifyingException()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetObjectNotification(Guid.Empty.ToString());
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                AbortedNotifyingException? exception = Assert.ThrowsAsync<AbortedNotifyingException>(() => scenariosResolver.DetermineScenarioAsync(testNotification));
+                Assert.That(exception?.Message.StartsWith(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid
+                    .Replace("{0}", $"{testNotification.Attributes.ObjectTypeUri.GetGuid()}")
+                    .Replace("{1}", "ZGW_VARIABLE_OBJECTTYPE_...OBJECTTYPE_UUID")), Is.True);
                 Assert.That(exception?.Message.EndsWith(ApiResources.Processing_ABORT), Is.True);
             });
         }
