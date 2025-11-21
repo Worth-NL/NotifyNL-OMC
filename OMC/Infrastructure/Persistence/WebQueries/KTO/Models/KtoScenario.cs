@@ -1,12 +1,9 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
-using WebQueries.DataQuerying.Adapter.Interfaces;
+﻿using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Extensions;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
 
 namespace WebQueries.KTO.Models
 {
@@ -44,7 +41,6 @@ namespace WebQueries.KTO.Models
         {
             QueryContext = DataQuery.From(notification);
 
-            MessageObject messageObject = await QueryContext.GetMessageAsync();
             KtoObject response = await QueryContext.GetKtoObjectAsync(notification.MainObjectUri.GetGuid());
             string ktoMessage = response.Record.Data.KtoMessage;
 
@@ -55,8 +51,7 @@ namespace WebQueries.KTO.Models
 #pragma warning restore CA2208
             }
 
-            string ktoPayload = JsonSerializer.Serialize(ktoMessage);
-            HttpRequestResponse ktoResult = await SendKtoRequestAsync(ktoPayload);
+            HttpRequestResponse ktoResult = await SendKtoRequestAsync(ktoMessage);
 
             if (ktoResult.IsFailure)
             {
@@ -67,7 +62,7 @@ namespace WebQueries.KTO.Models
 
             if (resultRemoveObjectResponse.IsFailure)
             {
-                throw new HttpRequestException("Failed to set kto object to null. Kto has been sent successfully." +
+                throw new HttpRequestException("Failed to delete kto object. Kto has been sent successfully." +
                                                " JSonMessage: " + resultRemoveObjectResponse.JsonResponse);
             }
 

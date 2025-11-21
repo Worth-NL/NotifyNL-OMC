@@ -1,3 +1,7 @@
+## 1.17.15
+
+* Add New KTO implementation treating Kto as a notification
+
 ## 1.17.14
 
 * First Clean-Up, Logs outgoing api calls to ZGW and there responses in Sentry, No longer fetches CaseStatus and it's Type twice, For Case Scenarios it checks if notification is expected earlier in the process

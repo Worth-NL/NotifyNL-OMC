@@ -70,6 +70,7 @@
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "2",
         "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "f482b7a3-22b7-40e2-a187-52f737d4ef44",
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "cf1c99df-0cdd-40cd-9a29-d1642708670d",
 
         // Note: KTO settings, if not used must contain "-". Are used specifically voor Expoint customer satisfaction surveys
         "KTO_AUTH_JWT_CLIENTID": "-",
@@ -78,7 +79,6 @@
         "KTO_AUTH_JWT_ISSUER": "-",
 
         "KTO_URL": "-",
-        "KTO_CASETYPESETTINGS": "-",
 
         "NOTIFY_API_BASEURL": "https://api.notifynl.nl",
         "NOTIFY_API_KEY": "omcprod-83951586-5fb6-4dfc-ade7-e3335d20c733-7e188234-4faa-4481-b980-33fb73e62d27",
@@ -151,6 +151,7 @@
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "38327774-7023-4f25-9386-acb0c6f10636",
         "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "2",
         "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "eac88aa0-388e-4e52-8662-72f8b99b3f9a",
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "cf1c99df-0cdd-40cd-9a29-d1642708670d",
 
         // Note: KTO settings, if not used must contain "-". Are used specifically voor Expoint customer satisfaction surveys
         "KTO_AUTH_JWT_CLIENTID": "-",
@@ -159,7 +160,6 @@
         "KTO_AUTH_JWT_ISSUER": "-",
 
         "KTO_URL": "-",
-        "KTO_CASETYPESETTINGS": "-",
 
         "NOTIFY_API_BASEURL": "https://api.test.notifynl.nl",
         "NOTIFY_API_KEY": "testautomation-e7aaf2e0-fa9c-4c7b-a4d7-278ee4f15e3e-1e55a031-5082-4f5a-9558-d7b4b0868aa5",

@@ -83,6 +83,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
                 }
 
+                if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
+                {
+                    // Scenario #7: "Message received"
+                    return this._serviceProvider.GetRequiredService<KtoScenario>();
+                }
+
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_GenObjectTypeGuid,
                         /* {0} */ $"{objectTypeId}",
@@ -95,10 +101,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
-            // Scenario #6: "Send KTO"
-            return IsKtoScenario(model) ? this._serviceProvider.GetRequiredService<KtoScenario>() :
-                // No matching scenario. There is no clear instruction what to do with the received Notification
-                this._serviceProvider.GetRequiredService<NotImplementedScenario>();
+            // No matching scenario. There is no clear instruction what to do with the received Notification
+            return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
         #region Filters
@@ -147,22 +151,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Action:   Actions.Create,
                 Channel:  Channels.Decisions,
                 Resource: Resources.Decision
-            };
-        }
-
-        /// <summary>
-        ///   <inheritdoc cref="IsKtoScenario(NotificationEvent)"/>
-        /// </summary>
-        /// <remarks>
-        ///   This check is verifying whether decision scenarios would be processed.
-        /// </remarks>
-        private static bool IsKtoScenario(NotificationEvent notification)
-        {
-            return notification is
-            {
-                Action: Actions.Create,
-                Channel: Channels.Kto,
-                Resource: Resources.Object
             };
         }
         #endregion

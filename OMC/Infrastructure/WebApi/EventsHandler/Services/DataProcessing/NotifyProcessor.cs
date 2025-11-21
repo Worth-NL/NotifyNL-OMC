@@ -87,7 +87,7 @@ namespace EventsHandler.Services.DataProcessing
 
                         return ktoResponse.IsFailure
                             ? ProcessingResult.Failure(ktoResponse.JsonResponse, json, details)
-                            : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                            : ProcessingResult.Success("Successfully sent KTO to KTO provider", json, details);
                     }
                     catch (Exception ex)
                     {
