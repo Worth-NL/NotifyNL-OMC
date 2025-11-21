@@ -414,14 +414,6 @@ namespace Common.Settings.Configuration
             }
 
             /// <summary>
-            /// Retrieves the case type settings configuration from the environment.
-            /// </summary>
-            /// <returns>A JSON string containing case type settings.</returns>
-            [Config]
-            public string CaseTypeSettings()
-                => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
-
-            /// <summary>
             /// Retrieves the configured KTO service URL.
             /// </summary>
             /// <returns>The URL as a string.</returns>
@@ -1076,6 +1068,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public HashSet<Guid> DecisionInfoObjectType_Uuids()
                         => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid KtoObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(KtoObjectType_Uuid));
                 }
             }
         }
