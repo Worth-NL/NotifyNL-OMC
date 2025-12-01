@@ -55,6 +55,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto
             throw new NotImplementedException();
         }
 
+        protected override Guid GetLetterTemplateId()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override string GetWhitelistEnvVarName()
         {
             throw new NotImplementedException();
