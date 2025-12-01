@@ -1,3 +1,7 @@
+## 1.17.16
+
+* Add Test Endpoint for sending Letters through NotifyNL
+
 ## 1.17.15
 
 * Add New KTO implementation treating Kto as a notification

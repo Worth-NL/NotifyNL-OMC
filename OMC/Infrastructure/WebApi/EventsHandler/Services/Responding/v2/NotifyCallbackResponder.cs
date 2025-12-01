@@ -166,6 +166,7 @@ namespace EventsHandler.Services.Responding.v2
                         {
                             NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Success_Subject(),
                             NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Success_Subject(),
+                            NotifyMethods.Letter => configuration.AppSettings.Variables.UxMessages.Letter_Success_Body(),
                             _ => string.Empty
                         }
                         : subject  // Use the subject from the original notification if available
@@ -176,6 +177,7 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Failure_Subject(),
                         NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Failure_Subject(),
+                        NotifyMethods.Letter => configuration.AppSettings.Variables.UxMessages.Letter_Failure_Body(),
                         _ => string.Empty
                     },
 

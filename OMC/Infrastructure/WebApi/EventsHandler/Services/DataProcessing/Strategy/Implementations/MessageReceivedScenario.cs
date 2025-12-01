@@ -68,6 +68,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
@@ -95,6 +96,33 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
             return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+        }
+        #endregion
+
+        #region Polymorphic (Letter logic: template + personalization)
+        /// <inheritdoc cref="BaseScenario.GetLetterTemplateId"/>
+        protected override Guid GetLetterTemplateId()
+            => this.Configuration.Notify.TemplateId.Letter.MessageReceived();
+
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
+        {
+            lock (s_padlock)
+            {
+                s_letterPersonalization["klant.voornaam"] = partyData.Name;
+                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
+                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
+                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
+                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
+                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
+                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+
+                s_letterPersonalization["message.onderwerp"] = this._messageData.Subject;
+                s_letterPersonalization["message.handelingsperspectief"] = this._messageData.ActionsPerspective;
+
+                return s_letterPersonalization;
+            }
         }
         #endregion
 
