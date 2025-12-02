@@ -18,6 +18,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.KTO
         [JsonRequired]
         [JsonPropertyName("data")]
         [JsonPropertyOrder(0)]
-        public Data Data { get; [UsedImplicitly] set; }
+        public object Data { get; [UsedImplicitly] set; }
     }
 }

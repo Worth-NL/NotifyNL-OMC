@@ -1,4 +1,5 @@
-﻿using WebQueries.DataQuerying.Adapter.Interfaces;
+﻿using System.Text.Json;
+using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using ZhvModels.Extensions;
@@ -42,16 +43,20 @@ namespace WebQueries.KTO.Models
             QueryContext = DataQuery.From(notification);
 
             KtoObject response = await QueryContext.GetKtoObjectAsync(notification.MainObjectUri.GetGuid());
-            string ktoMessage = response.Record.Data.KtoMessage;
+            object ktoMessage = response.Record.Data;
 
-            if (string.IsNullOrEmpty(ktoMessage))
+            if (ktoMessage == null)
             {
 #pragma warning disable CA2208
                 throw new ArgumentException(@"KTO object cannot be null or empty.", nameof(ktoMessage));
 #pragma warning restore CA2208
             }
 
-            HttpRequestResponse ktoResult = await SendKtoRequestAsync(ktoMessage);
+            string ktoMessageJsonContent = ktoMessage is string str
+                ? JsonDocument.Parse(str).RootElement.GetRawText()
+                : JsonSerializer.Serialize(ktoMessage);
+
+            HttpRequestResponse ktoResult = await SendKtoRequestAsync(ktoMessageJsonContent);
 
             if (ktoResult.IsFailure)
             {
