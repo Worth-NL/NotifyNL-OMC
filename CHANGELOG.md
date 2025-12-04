@@ -1,3 +1,7 @@
+## 1.17.16
+
+* Remap Object to Expoints specific Payload
+
 ## 1.17.15
 
 * Add New KTO implementation treating Kto as a notification
