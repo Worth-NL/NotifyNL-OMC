@@ -91,9 +91,7 @@ namespace EventsHandler.Services.DataProcessing
                     }
                     catch (Exception ex)
                     {
-                        return ProcessingResult.Failure(
-                            string.Format(ex.Message), json,
-                            details);
+                        throw new Exception(ex.Message);
                     }
                 }
 
