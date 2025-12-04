@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Models.Responses;
 using System.Text.Json;
 using WebQueries.KTO.Interfaces;
 using WebQueries.KTO.Models;
+using Microsoft.Extensions.Logging;
 
 namespace WebQueries.KTO
 {
@@ -20,13 +21,15 @@ namespace WebQueries.KTO
         private readonly HttpClient _httpClient;
         private string? _cachedKtoToken;
         private DateTime _tokenExpiration = DateTime.MinValue;
+        private readonly ILogger<KtoHttpNetworkService> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KtoHttpNetworkService"/> class.
         /// </summary>
-        public KtoHttpNetworkService(OmcConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public KtoHttpNetworkService(OmcConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<KtoHttpNetworkService> logger)
         {
             this._configuration = configuration;
+            _logger = logger;
             this._httpClient = httpClientFactory.CreateClient(); // Create an instance from the factory
         }
 
@@ -93,11 +96,25 @@ namespace WebQueries.KTO
             string? token = await GetKtoAccessTokenAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            StringContent content = new(jsonBody, Encoding.UTF8, "application/json");
+            // Log outgoing JSON
+            _logger.LogInformation("Sending JSON to KTO endpoint: {JsonBody}", jsonBody);
+
+            using var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PostAsync(_configuration.KTO.Url(), content);
-            return response.IsSuccessStatusCode
-                ? HttpRequestResponse.Success(await response.Content.ReadAsStringAsync())
-                : HttpRequestResponse.Failure(await response.Content.ReadAsStringAsync());
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("KTO request succeeded: {ResponseBody}", responseBody);
+                return HttpRequestResponse.Success(responseBody);
+            }
+            else
+            {
+                _logger.LogError("KTO request failed (Status {StatusCode}): {ResponseBody}",
+                    (int)response.StatusCode, responseBody);
+                return HttpRequestResponse.Failure(responseBody);
+            }
         }
     }
 }

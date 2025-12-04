@@ -1,16 +1,16 @@
 {
   "profiles": {
     "SecretsManager": {
-      "commandName": "Project",
+      "commandName": "",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production",
+        "ASPNETCORE_ENVIRONMENT": "",
 
         "OMC_AUTH_JWT_SECRET": "",
-        "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
-        "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
-        "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Acc)",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Acc)"
+        "OMC_AUTH_JWT_ISSUER": "",
+        "OMC_AUTH_JWT_AUDIENCE": "",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "",
+        "OMC_AUTH_JWT_USERID": "",
+        "OMC_AUTH_JWT_USERNAME": ""
       }
     }
   }
