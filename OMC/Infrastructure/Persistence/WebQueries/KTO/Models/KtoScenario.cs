@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
@@ -43,7 +44,7 @@ namespace WebQueries.KTO.Models
             QueryContext = DataQuery.From(notification);
 
             KtoObject response = await QueryContext.GetKtoObjectAsync(notification.MainObjectUri.GetGuid());
-            object ktoMessage = response.Record.Data;
+            JsonObject ktoMessage = response.Record.Data;
 
             if (ktoMessage == null)
             {
@@ -52,9 +53,7 @@ namespace WebQueries.KTO.Models
 #pragma warning restore CA2208
             }
 
-            string ktoMessageJsonContent = ktoMessage is string str
-                ? JsonDocument.Parse(str).RootElement.GetRawText()
-                : JsonSerializer.Serialize(ktoMessage);
+            string ktoMessageJsonContent = BuildKtoApiBody(ktoMessage);
 
             HttpRequestResponse ktoResult = await SendKtoRequestAsync(ktoMessageJsonContent);
 
@@ -83,6 +82,48 @@ namespace WebQueries.KTO.Models
         private async Task<HttpRequestResponse> RemoveKtoObjectAsync(Guid ktoObject)
         {
             return await QueryContext.DeleteObjectAsync(ktoObject);
+        }
+
+        private string BuildKtoApiBody(JsonObject input)
+        {
+            string email = input["email"]?.ToString() ?? throw new Exception("email missing");
+            bool isTest = input["istest"]?.GetValue<bool>() ?? false;
+            string transactionDate = input["transactiedatum"]?.ToString() ?? throw new Exception("transactiedatum missing");
+
+            // extradata → data
+            JsonArray dataArray = input["extradata"]?.AsArray()
+                                  ?? throw new Exception("extradata missing");
+
+            string sendDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+            // Build target structure
+            var newDataArray = new JsonArray();
+            foreach (JsonNode? item in dataArray)
+            {
+                newDataArray.Add(item?.DeepClone()); // or manually recreate each JsonObject
+            }
+
+            var root = new JsonObject
+            {
+                ["ApproveAutomatically"] = true,
+                ["IsTest"] = isTest,
+                ["Customers"] = new JsonArray
+                {
+                    new JsonObject
+                    {
+                        ["email"] = email,
+                        ["sendDate"] = sendDate,
+                        ["transactionDate"] = transactionDate,
+                        ["data"] = newDataArray
+                    }
+                }
+            };
+
+            return root.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = false,
+                PropertyNamingPolicy = null
+            });
         }
         #endregion
     }

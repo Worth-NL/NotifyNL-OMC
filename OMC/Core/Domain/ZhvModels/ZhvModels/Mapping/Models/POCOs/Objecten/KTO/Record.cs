@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using ZhvModels.Mapping.Models.Interfaces;
@@ -18,6 +19,6 @@ namespace ZhvModels.Mapping.Models.POCOs.Objecten.KTO
         [JsonRequired]
         [JsonPropertyName("data")]
         [JsonPropertyOrder(0)]
-        public object Data { get; [UsedImplicitly] set; }
+        public JsonObject Data { get; [UsedImplicitly] set; }
     }
 }
