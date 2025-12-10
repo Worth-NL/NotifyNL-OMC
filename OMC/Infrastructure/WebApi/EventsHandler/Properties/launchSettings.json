@@ -95,14 +95,14 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
-        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
+        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
 
-        "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632",
-        "SENTRY_ENVIRONMENT": "Worth Production | Workflow v1"
+        "SENTRY_DSN": "",                                                               // string (url)
+        "SENTRY_ENVIRONMENT": ""                                                        // string    
       }
     },
     "IIS Express (Workflow v2)": { 
@@ -180,14 +180,14 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "46c8fe56-e1cd-467c-b762-29af892237f6",
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "5af94a07-2bff-4546-9439-aa2018b7a4d3",
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "771e7561-a059-4888-acc3-3a3fbcd5c6e3",
-        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "6354b855-83c7-4cda-aa33-9a6a8f52eebe",
-        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "b5963a58-6f99-43ef-a2cd-148e9c6b9a54",
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
+        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
 
-        "SENTRY_DSN": "https://1db70f552fb2bdcab8571661a3db6d70@o4507152178741248.ingest.de.sentry.io/4507152289431632",
-        "SENTRY_ENVIRONMENT": "Worth Development | Workflow v2"
+        "SENTRY_DSN": "",                                                               // string (url)
+        "SENTRY_ENVIRONMENT": ""                                                        // string    
       }
     },
     "Docker": { 
