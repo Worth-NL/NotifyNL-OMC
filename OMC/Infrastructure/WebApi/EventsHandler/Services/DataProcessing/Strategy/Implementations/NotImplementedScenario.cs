@@ -67,6 +67,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
 
+        /// <inheritdoc cref="BaseScenario.GetLetterTemplateId()"/>
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
+        protected override Guid GetLetterTemplateId()
+            => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
+
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
+        protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
+            => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
+
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override string GetWhitelistEnvVarName()

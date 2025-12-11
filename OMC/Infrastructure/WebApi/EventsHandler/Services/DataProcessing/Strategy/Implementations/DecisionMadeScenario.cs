@@ -135,6 +135,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
         private static readonly object s_padlock = new();
         private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
@@ -184,6 +185,55 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
             return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
+        }
+        #endregion
+
+        #region Polymorphic (Letter logic: template + personalization)
+        /// <inheritdoc cref="BaseScenario.GetLetterTemplateId"/>
+        protected override Guid GetLetterTemplateId()
+            => this.Configuration.Notify.TemplateId.DecisionMade();
+
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
+        {
+            lock (s_padlock)
+            {
+                s_letterPersonalization["klant.voornaam"] = partyData.Name;
+                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
+                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
+                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
+                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
+                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
+                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+
+                s_letterPersonalization["besluit.identificatie"] = this._decision.Identification;
+                s_letterPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
+                s_letterPersonalization["besluit.toelichting"] = this._decision.Explanation;
+                s_letterPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+                s_letterPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+                s_letterPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
+                s_letterPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+                s_letterPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+                s_letterPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+                s_letterPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
+
+                s_letterPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
+                s_letterPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+                s_letterPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+                s_letterPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+                s_letterPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+                s_letterPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+
+                s_letterPersonalization["zaak.identificatie"] = this._case.Identification;
+                s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
+                s_letterPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
+
+                s_letterPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
+                s_letterPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+
+                return s_letterPersonalization;
+            }
         }
         #endregion
 

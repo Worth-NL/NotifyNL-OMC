@@ -27,6 +27,12 @@ namespace ZhvModels.Enums
         /// Communication method: SMS.
         /// </summary>
         [JsonPropertyName("sms")]
-        Sms = 3
+        Sms = 3,
+
+        /// <summary>
+        /// Communication method: Letter.
+        /// </summary>
+        [JsonPropertyName("letter")]
+        Letter = 4
     }
 }
