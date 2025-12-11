@@ -1,3 +1,7 @@
+## 1.17.17
+
+* Add Test Endpoint for sending Letters through NotifyNL
+
 ## 1.17.16
 
 * Remap Object to Expoints specific Payload

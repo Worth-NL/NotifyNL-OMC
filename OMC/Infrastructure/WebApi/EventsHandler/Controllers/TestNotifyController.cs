@@ -182,6 +182,47 @@ namespace EventsHandler.Controllers
         }
 
         /// <summary>
+        /// Sending Letter messages to the "Notify NL" Web API service.
+        /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will send real letter to the given address.
+        /// </remarks>
+        ///   <para>
+        ///     NOTE: If empty the ID of a very first looked up letter template will be used.
+        ///   </para>
+        /// <param name="letterTemplateId"></param>
+        /// <param name="personalization">The map (optional) of keys and values to be used as message personalization.
+        ///   <para>
+        ///     Example of personalization in template from "Notify NL" Admin Portal: "This is ((placeholderText)) information".
+        ///   </para>
+        ///   <para>
+        ///     Example of personalization values to be provided: { "placeholderText": "good" }
+        ///   </para>
+        ///   <para>
+        ///     Resulting message would be: "This is good information" (or exception, if personalization is required but not provided).
+        ///   </para>
+        /// </param>
+        [HttpPost]
+        [Route($"{UrlStart}SendLetter")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [AspNetExceptionsHandler]
+        // Swagger UI
+        [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
+        public async Task<IActionResult> SendLetterAsync(
+            [Optional, FromQuery] string? letterTemplateId,
+            [Optional, FromBody] Dictionary<string, object> personalization)
+        {
+            return await SendAsync(
+                NotifyMethods.Letter,
+                "",
+                letterTemplateId,
+                personalization);
+        }
+
+        /// <summary>
         /// Simulates behavior of Notify/Confirm endpoint, mocking (with better control) the response from "Notify NL" Web API service.
         /// </summary>
         /// <remarks>
@@ -285,6 +326,10 @@ namespace EventsHandler.Controllers
                             _ = await notifyClient.SendSmsAsync(contactDetails, templateId);
                             break;
 
+                        case NotifyMethods.Letter:
+                            _ = await notifyClient.SendLetterAsync(templateId, null);
+                            break;
+
                         default:
                             return LogApiResponse(LogLevel.Error,
                                 this._responder.GetResponse(ProcessingResult.Failure(ApiResources.Endpoint_Test_Notify_SendEmailSms_ERROR_NotSupportedMethod)));
@@ -309,6 +354,10 @@ namespace EventsHandler.Controllers
 
                         case NotifyMethods.Sms:
                             _ = await notifyClient.SendSmsAsync(contactDetails, templateId, personalization);
+                            break;
+
+                        case NotifyMethods.Letter:
+                            _ = await notifyClient.SendLetterAsync(templateId, personalization);
                             break;
 
                         default:

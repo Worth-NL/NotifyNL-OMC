@@ -67,8 +67,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
         #region TryGetDataAsync()
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms)]
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Letter)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Letter)]
         public void TryGetDataAsync_NotWhitelisted_ThrowsAbortedNotifyingException(Type scenarioType, DistributionChannels testNotifyMethod)
         {
             // Arrange
@@ -98,6 +100,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
 
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email)]  // NOTE: USER_WHITELIST_ZAAKCLOSE_IDS has set wildcard "*" in mocked settings
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms)]    // NOTE: USER_WHITELIST_ZAAKCLOSE_IDS has set wildcard "*" in mocked settings
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Letter)] // NOTE: USER_WHITELIST_ZAAKCLOSE_IDS has set wildcard "*" in mocked settings
+
         public async Task TryGetDataAsync_EverythingIsAllowed_ReturnsSuccess(Type scenarioType, DistributionChannels testNotifyMethod)
         {
             // Arrange
@@ -152,12 +156,15 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
         
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Letter, NotifyMethods.Letter, 1, "")]
         [TestCase(typeof(CaseCreatedScenario), DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Letter, NotifyMethods.Letter, 1, "")]
         [TestCase(typeof(CaseStatusUpdatedScenario), DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Email, NotifyMethods.Email, 1, TestEmailAddress)]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Sms, NotifyMethods.Sms, 1, TestPhoneNumber)]
+        [TestCase(typeof(CaseClosedScenario), DistributionChannels.Letter, NotifyMethods.Letter, 1, "")]
         [TestCase(typeof(CaseClosedScenario), DistributionChannels.Both, null, 2, TestEmailAddress + TestPhoneNumber)]
         public async Task TryGetDataAsync_Whitelisted_InformSetToTrue_WithValidNotifyMethod_Single_ReturnsSuccess(
             Type scenarioType, DistributionChannels testDistributionChannel, NotifyMethods? expectedNotificationMethod, int notifyDataCount, string expectedContactDetails)
@@ -197,9 +204,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 else
                 {
                     NotifyData onlyResult = actualResult.Content.First();
+                    Guid fetchedTemplateId = DetermineTemplateId(scenarioType, onlyResult.NotificationMethod,
+                        this._testConfiguration);
                     Assert.That(onlyResult.NotificationMethod, Is.EqualTo(expectedNotificationMethod!.Value));
-                    Assert.That(onlyResult.TemplateId, Is.EqualTo(
-                        DetermineTemplateId(scenarioType, onlyResult.NotificationMethod, this._testConfiguration)));
+                    Assert.That(onlyResult.TemplateId, Is.EqualTo(fetchedTemplateId));
 
                     contactDetails = onlyResult.ContactDetails;
                 }
@@ -249,7 +257,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResponse.IsSuccess, Is.False);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_ERROR_Scenario_MissingNotifyData));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
@@ -280,18 +288,21 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(QueryResources.Response_ProcessingData_ERROR_DeliveryMethodUnknown));
 
-                VerifyProcessDataMethodCalls(0, 0);
+                VerifyProcessDataMethodCalls(0, 0, 0);
             });
         }
 
-        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1)]
-        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Letter, 0, 0, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Letter, 0, 0, 1)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingFailed_ReturnsFailure(
-            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -299,7 +310,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             GetMockedServices_ProcessData(
                 isSendingSuccessful: false,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData: testNotifyMethod == NotifyMethods.Sms ? testData : null,
+                letterNotifyData: testNotifyMethod == NotifyMethods.Letter ? testData : null);
 
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
@@ -312,18 +324,21 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResponse.IsFailure, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(SimulatedNotifyExceptionMessage));
 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
 
-        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1)]
-        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0)]
-        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseCreatedScenario), NotifyMethods.Letter, 0, 0, 1)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseStatusUpdatedScenario), NotifyMethods.Letter, 0, 0, 1)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Email, 1, 0, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Sms, 0, 1, 0)]
+        [TestCase(typeof(CaseClosedScenario), NotifyMethods.Letter, 0, 0, 1)]
         public async Task ProcessDataAsync_ValidNotifyData_ValidNotifyMethod_SendingSuccessful_ReturnsSuccess(
-            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount)
+            Type scenarioType, NotifyMethods testNotifyMethod, int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             // Arrange
             NotifyData testData = new(testNotifyMethod);
@@ -331,7 +346,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
             GetMockedServices_ProcessData(
                 isSendingSuccessful: true,
                 emailNotifyData:     testNotifyMethod == NotifyMethods.Email ? testData : null,
-                smsNotifyData:       testNotifyMethod == NotifyMethods.Sms   ? testData : null);
+                smsNotifyData: testNotifyMethod == NotifyMethods.Sms ? testData : null,
+                letterNotifyData: testNotifyMethod == NotifyMethods.Letter ? testData : null);
 
             INotifyScenario scenario = ArrangeSpecificScenario(scenarioType);
 
@@ -344,7 +360,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 Assert.That(actualResponse.IsSuccess, Is.True);
                 Assert.That(actualResponse.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataProcessed));
 
-                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount);
+                VerifyProcessDataMethodCalls(sendEmailInvokeCount, sendSmsInvokeCount, sendLetterInvokeCount);
             });
         }
         #endregion
@@ -497,13 +513,16 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
         private const string SimulatedNotifyExceptionMessage = "Some NotifyClientException";
 
         private void GetMockedServices_ProcessData(
-            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default)
+            bool isSendingSuccessful, NotifyData? emailNotifyData = default, NotifyData? smsNotifyData = default, NotifyData? letterNotifyData = default)
         {
             // INotifyService
             this._mockedNotifyService.Setup(mock => mock.SendEmailAsync(emailNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
 
             this._mockedNotifyService.Setup(mock => mock.SendSmsAsync(smsNotifyData ?? It.IsAny<NotifyData>()))
+                .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
+
+            this._mockedNotifyService.Setup(mock => mock.SendLetterAsync(letterNotifyData ?? It.IsAny<NotifyData>()))
                 .ReturnsAsync(isSendingSuccessful ? NotifySendResponse.Success() : NotifySendResponse.Failure(SimulatedNotifyExceptionMessage));
         }
 
@@ -517,6 +536,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakCreate(),
                         NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakCreate(),
+                        NotifyMethods.Letter => configuration.Notify.TemplateId.Letter.ZaakCreate(),
                         _ => Guid.Empty
                     },
 
@@ -525,6 +545,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakUpdate(),
                         NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakUpdate(),
+                        NotifyMethods.Letter => configuration.Notify.TemplateId.Letter.ZaakUpdate(),
                         _ => Guid.Empty
                     },
 
@@ -533,6 +554,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                     {
                         NotifyMethods.Email => configuration.Notify.TemplateId.Email.ZaakClose(),
                         NotifyMethods.Sms => configuration.Notify.TemplateId.Sms.ZaakClose(),
+                        NotifyMethods.Letter => configuration.Notify.TemplateId.Letter.ZaakClose(),
                         _ => Guid.Empty
                     },
 
@@ -582,7 +604,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
 
             this._getDataVerified = true;
 
-            VerifyProcessDataMethodCalls(0, 0);
+            VerifyProcessDataMethodCalls(0, 0, 0);
         }
 
         private void VerifyNewGetDataMethodCalls(int fromInvokeCount, int getCaseTypeInvokeCount, int getPartyInvokeCount, int getCaseInvokeCount)
@@ -622,10 +644,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
 
             this._getDataVerified = true;
 
-            VerifyProcessDataMethodCalls(0, 0);
+            VerifyProcessDataMethodCalls(0, 0, 0);
         }
 
-        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount)
+        private void VerifyProcessDataMethodCalls(int sendEmailInvokeCount, int sendSmsInvokeCount, int sendLetterInvokeCount)
         {
             if (this._processDataVerified)
             {
@@ -642,6 +664,11 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Base
                 .Verify(mock => mock.SendSmsAsync(
                     It.IsAny<NotifyData>()),
                 Times.Exactly(sendSmsInvokeCount));
+
+            this._mockedNotifyService
+                .Verify(mock => mock.SendLetterAsync(
+                        It.IsAny<NotifyData>()),
+                    Times.Exactly(sendLetterInvokeCount));
 
             this._processDataVerified = true;
 

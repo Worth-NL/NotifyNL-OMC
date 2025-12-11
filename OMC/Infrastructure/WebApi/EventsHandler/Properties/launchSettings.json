@@ -95,8 +95,14 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "SENTRY_DSN": "",                                                               // string (dsn)
-        "SENTRY_ENVIRONMENT": ""                                                        // string
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
+        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
+
+        "SENTRY_DSN": "",                                                               // string (url)
+        "SENTRY_ENVIRONMENT": ""                                                        // string    
       }
     },
     "IIS Express (Workflow v2)": { 
@@ -174,8 +180,14 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "SENTRY_DSN": "",                                                               // string (dsn)
-        "SENTRY_ENVIRONMENT": ""                                                        // string
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
+        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
+        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
+
+        "SENTRY_DSN": "",                                                               // string (url)
+        "SENTRY_ENVIRONMENT": ""                                                        // string    
       }
     },
     "Docker": { 
