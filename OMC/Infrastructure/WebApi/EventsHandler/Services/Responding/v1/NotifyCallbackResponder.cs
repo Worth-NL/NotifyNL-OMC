@@ -111,6 +111,7 @@ namespace EventsHandler.Services.Responding.v1
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Success_Body(),
                         NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Success_Body(),
+                        NotifyMethods.Letter => configuration.AppSettings.Variables.UxMessages.Letter_Success_Body(),
                         _ => string.Empty
                     },
 
@@ -119,6 +120,7 @@ namespace EventsHandler.Services.Responding.v1
                     {
                         NotifyMethods.Email => configuration.AppSettings.Variables.UxMessages.Email_Failure_Body(),
                         NotifyMethods.Sms => configuration.AppSettings.Variables.UxMessages.SMS_Failure_Body(),
+                        NotifyMethods.Letter => configuration.AppSettings.Variables.UxMessages.Letter_Failure_Body(),
                         _ => string.Empty
                     },
 
