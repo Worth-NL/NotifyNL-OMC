@@ -62,6 +62,7 @@ using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
+using WebQueries.BRP;
 
 namespace EventsHandler
 {
@@ -283,6 +284,8 @@ namespace EventsHandler
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
+            builder.Services.AddHttpClient<KeycloakTokenService>();
+            builder.Services.AddHttpClient<BrpClient>();
             builder.Services.RegisterClientFactories();
 
             // Versioning

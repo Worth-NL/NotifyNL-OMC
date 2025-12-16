@@ -95,14 +95,16 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
-        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
+        "SENTRY_DSN": "",                                                               // string (dsn)
+        "SENTRY_ENVIRONMENT": "",                                                       // string
 
-        "SENTRY_DSN": "",                                                               // string (url)
-        "SENTRY_ENVIRONMENT": ""                                                        // string    
+        "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
+        "KEYCLOAK_CLIENTID": "",                                                        // string
+        "KEYCLOAK_CLIENTSECRET": "",                                                    // string
+        "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
+
+        "BRP_BASEURL": ""                                                               // string
       }
     },
     "IIS Express (Workflow v2)": { 
@@ -180,14 +182,17 @@
         "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
         "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
 
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE": "",                                      // guid
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE": "",                                      // guid
-        "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED": "",                                    // guid
-        "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED": "",                                 // guid
+        "SENTRY_DSN": "",                                                               // string (dsn)
+        "SENTRY_ENVIRONMENT": "",                                                       // string
 
-        "SENTRY_DSN": "",                                                               // string (url)
-        "SENTRY_ENVIRONMENT": ""                                                        // string    
+        "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
+        "KEYCLOAK_CLIENTID": "",                                                        // string
+        "KEYCLOAK_CLIENTSECRET": "",                                                    // string
+        "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
+
+        "BRP_BASEURL": ""                                                               // string
+      }
       }
     },
     "Docker": { 

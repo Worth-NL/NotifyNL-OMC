@@ -28,6 +28,36 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string SentryDsn => "SENTRY_DSN";
 
+        /// <summary>
+        /// The Keycloak authentication server base URL environment variable ("KEYCLOAK_AUTHSERVERURL").
+        /// </summary>
+        public static string KeyCloakAuthServerUrl => "KEYCLOAK_AUTHSERVERURL";
+
+        /// <summary>
+        /// The Keycloak client identifier environment variable ("KEYCLOAK_CLIENTID").
+        /// </summary>
+        public static string KeyCloakClientId => "KEYCLOAK_CLIENTID";
+
+        /// <summary>
+        /// The Keycloak client secret environment variable ("KEYCLOAK_CLIENTSECRET").
+        /// </summary>
+        public static string KeyCloakClientSecret => "KEYCLOAK_CLIENTSECRET";
+
+        /// <summary>
+        /// The Keycloak token exchange client environment variable ("KEYCLOAK_TOKENEXCHANGECLIENT").
+        /// </summary>
+        public static string KeyCloakTokenExchangeClient => "KEYCLOAK_TOKENEXCHANGECLIENT";
+
+        /// <summary>
+        /// The Keycloak token exchange audience environment variable ("KEYCLOAK_TOKENEXCHANGEAUDIENCE").
+        /// </summary>
+        public static string KeyCloakTokenExchangeAudience => "KEYCLOAK_TOKENEXCHANGEAUDIENCE";
+
+        /// <summary>
+        /// The base URL for the BRP service, provided via the "BRP_BASEURL" environment variable.
+        /// </summary>
+        public static string BrpBaseUrl => "BRP_BASEURL";
+
         // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
@@ -37,7 +67,6 @@ namespace Common.Settings.Extensions
         private static string? s_openZaakDomainEnvVarName;
 
         private static string? s_ktoUrlValue;
-        private static string? s_ktoCaseTypeSettingsValue;
 
         /// <summary>
         /// Gets the KTO API URL.
