@@ -104,7 +104,9 @@
         "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
         "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
 
-        "BRP_BASEURL": ""                                                               // string
+        "BRP_BASEURL": "",                                                              // string
+        "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
+        "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
       }
     },
     "IIS Express (Workflow v2)": { 
@@ -191,7 +193,9 @@
         "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
         "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
 
-        "BRP_BASEURL": ""                                                               // string
+        "BRP_BASEURL": "",                                                              // string
+        "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
+        "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
       }
       }
     },
