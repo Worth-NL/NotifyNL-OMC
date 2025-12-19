@@ -53,6 +53,16 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string BrpBaseUrl => "BRP_BASEURL";
 
+        /// <summary>
+        /// The certificate for the BRP service, provided via the "BRP_CLIENTCERT_PEM_PATH" environment variable.
+        /// </summary>
+        public static string BrpCertificatePem => "BRP_CLIENTCERT_PEM_PATH";
+
+        /// <summary>
+        /// The certificate key for the BRP service, provided via the ""BRP_CLIENTKEY_PEM_PATH" environment variable.
+        /// </summary>
+        public static string BrpCertificateKey => "BRP_CLIENTKEY_PEM_PATH";
+
         // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
