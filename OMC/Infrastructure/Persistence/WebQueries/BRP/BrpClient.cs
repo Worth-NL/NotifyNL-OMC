@@ -1,4 +1,6 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Common.Settings.Extensions;
 
 namespace WebQueries.BRP
@@ -24,21 +26,45 @@ namespace WebQueries.BRP
         }
 
         /// <summary>
-        /// Queries the BRP service for a person's data using their BSN (Burger Service Number).
+        /// Queries the BRP Personen API (v2.0) for a person's data using their BSN.
         /// </summary>
-        /// <param name="bsn">The BSN of the person to query.</param>
-        /// <returns>A <see cref="Task{String}"/> containing the raw JSON response from BRP.</returns>
+        /// <param name="bsn">The BSN (Burger Service Nummer) of the person to query.</param>
         public async Task<string> QueryPersonAsync(string bsn)
         {
-            // 1. service token → 2. exchange for BRP token
+            // Step 1: obtain service token from Keycloak
             string serviceToken = await _tokens.GetServiceTokenAsync();
+
+            // Step 2: exchange token for Haal Centraal / BRP audience
             string brpToken = await _tokens.ExchangeForBrpTokenAsync(serviceToken);
 
+            // Step 3: call BRP v2.0 via WS Gateway (POST with JSON body)
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", brpToken);
 
-            string url = $"{Environment.GetEnvironmentVariable(ConfigExtensions.BrpBaseUrl)!}/{bsn}";
-            HttpResponseMessage response = await _http.GetAsync(url);
+            var requestBody = new
+            {
+                type = "RaadpleegMetBurgerservicenummer",
+                burgerservicenummer = new[] { bsn },
+                fields = new[]
+                {
+                    "burgerservicenummer",
+                    "naam",
+                    "geboorte"
+                }
+            };
+
+            string json = JsonSerializer.Serialize(requestBody);
+
+            using var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            string url =
+                $"{Environment.GetEnvironmentVariable(ConfigExtensions.BrpBaseUrl)}/brp/personen";
+
+            HttpResponseMessage response = await _http.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsStringAsync();

@@ -32,13 +32,12 @@ namespace WebQueries.BRP
             {
                 ["grant_type"] = "client_credentials",
                 ["client_id"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakClientId)!,
-                ["client_secret"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakClientSecret)!,
-                ["audience"] = "haalcentraal"
+                ["client_secret"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakClientSecret)!
             };
 
             HttpResponseMessage response = await _http.PostAsync(url, new FormUrlEncodedContent(form));
             response.EnsureSuccessStatusCode();
-
+            string rawResponse = await response.Content.ReadAsStringAsync();
             JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
             return json.GetProperty("access_token").GetString()!;
         }
@@ -55,7 +54,7 @@ namespace WebQueries.BRP
             var form = new Dictionary<string, string>
             {
                 ["grant_type"] = "urn:ietf:params:oauth:grant-type:token-exchange",
-                ["client_id"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakTokenExchangeClient)!,
+                ["client_id"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakClientId)!,
                 ["client_secret"] = Environment.GetEnvironmentVariable(ConfigExtensions.KeyCloakClientSecret)!,
                 ["subject_token"] = subjectToken,
                 ["requested_token_type"] = "urn:ietf:params:oauth:token-type:access_token",

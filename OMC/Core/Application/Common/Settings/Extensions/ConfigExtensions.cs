@@ -44,11 +44,6 @@ namespace Common.Settings.Extensions
         public static string KeyCloakClientSecret => "KEYCLOAK_CLIENTSECRET";
 
         /// <summary>
-        /// The Keycloak token exchange client environment variable ("KEYCLOAK_TOKENEXCHANGECLIENT").
-        /// </summary>
-        public static string KeyCloakTokenExchangeClient => "KEYCLOAK_TOKENEXCHANGECLIENT";
-
-        /// <summary>
         /// The Keycloak token exchange audience environment variable ("KEYCLOAK_TOKENEXCHANGEAUDIENCE").
         /// </summary>
         public static string KeyCloakTokenExchangeAudience => "KEYCLOAK_TOKENEXCHANGEAUDIENCE";
