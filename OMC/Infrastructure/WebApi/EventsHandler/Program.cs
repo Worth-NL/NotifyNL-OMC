@@ -35,6 +35,7 @@ using SecretsManager.Services.Authentication.Encryptions.Strategy.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
@@ -285,7 +286,32 @@ namespace EventsHandler
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
-            builder.Services.AddHttpClient<BrpClient>();
+            builder.Services.AddHttpClient<BrpClient>()
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    string certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH")!;
+                    string keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH")!;
+                    var handler = new HttpClientHandler();
+                    if (!string.IsNullOrEmpty(certPath) || !string.IsNullOrEmpty(keyPath)) // invert after testing
+                    {
+                        var cert = X509Certificate2.CreateFromPemFile(certPath, keyPath);
+                        cert = new X509Certificate2(
+                            cert.Export(X509ContentType.Pfx),
+                            (string?)null,
+                            X509KeyStorageFlags.MachineKeySet |
+                            X509KeyStorageFlags.EphemeralKeySet
+                        );
+                        
+                        handler.ClientCertificates.Add(cert);
+
+#if DEBUG
+                        handler.ServerCertificateCustomValidationCallback =
+                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+#endif
+                    }
+                    return handler;
+                });
+
             builder.Services.RegisterClientFactories();
 
             // Versioning
