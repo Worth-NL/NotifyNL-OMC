@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿// © 2026, Worth Systems.
+
+using System.Text.Json;
 using Common.Settings.Extensions;
 using Microsoft.Extensions.Logging;
 
