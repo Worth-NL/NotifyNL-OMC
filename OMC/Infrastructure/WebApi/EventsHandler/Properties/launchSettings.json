@@ -101,7 +101,6 @@
         "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
         "KEYCLOAK_CLIENTID": "",                                                        // string
         "KEYCLOAK_CLIENTSECRET": "",                                                    // string
-        "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
         "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
 
         "BRP_BASEURL": "",                                                              // string
@@ -190,7 +189,6 @@
         "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
         "KEYCLOAK_CLIENTID": "",                                                        // string
         "KEYCLOAK_CLIENTSECRET": "",                                                    // string
-        "KEYCLOAK_TOKENEXCHANGECLIENT": "",                                             // string
         "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
 
         "BRP_BASEURL": "",                                                              // string
