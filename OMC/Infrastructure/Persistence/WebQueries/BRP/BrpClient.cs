@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Headers;
+﻿// © 2026, Worth Systems.
+
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Common.Settings.Extensions;
