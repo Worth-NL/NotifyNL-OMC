@@ -44,32 +44,150 @@ namespace WebQueries.BRP
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _keycloakTokenService = keycloakTokenService ?? throw new ArgumentNullException(nameof(keycloakTokenService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
             _brpBaseUrl = Environment.GetEnvironmentVariable(ConfigExtensions.BrpBaseUrl)
-                ?? "https://wsgateway.ot.denhaag.nl/haalcentral/api";
+                ?? "https://wsgateway.ot.denhaag.nl/haalcentraal/api";
 
             LogHttpClientConfiguration();
-            LogCertificateInfo();
+
+            // ONLY verify the certificate is present and valid - don't load it again
+            VerifyCertificateConfiguration();
+        }
+
+        /// <summary>
+        /// Verifies that the certificate configured in program.cs is present and valid.
+        /// </summary>
+        private void VerifyCertificateConfiguration()
+        {
+            try
+            {
+                _logger.LogInformation("=== Certificate Verification ===");
+
+                // 1. Check environment variables are set
+                string? certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH");
+                string? keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH");
+
+                if (string.IsNullOrEmpty(certPath) || string.IsNullOrEmpty(keyPath))
+                {
+                    _logger.LogError(
+                        "⚠️ BRP certificate environment variables not set! " +
+                        "BRP_CLIENTCERT_PEM_PATH: {CertPath}, BRP_CLIENTKEY_PEM_PATH: {KeyPath}",
+                        certPath ?? "NOT SET", keyPath ?? "NOT SET");
+
+                    // Don't throw here - program.cs might have loaded it differently
+                    _logger.LogWarning("Certificate may be loaded via different mechanism");
+                }
+                else
+                {
+                    // 2. Check if certificate files exist
+                    bool certExists = File.Exists(certPath);
+                    bool keyExists = File.Exists(keyPath);
+
+                    if (!certExists || !keyExists)
+                    {
+                        _logger.LogError(
+                            "⚠️ Certificate files not found! " +
+                            "Cert exists: {CertExists}, Key exists: {KeyExists}",
+                            certExists, keyExists);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("✓ Certificate environment variables and files are OK");
+                    }
+                }
+
+                // 3. Check HttpClientHandler for certificates
+                HttpClientHandler? handler = GetHttpClientHandler();
+                if (handler == null)
+                {
+                    _logger.LogWarning("Could not access HttpClientHandler for verification");
+                }
+                else if (handler.ClientCertificates.Count == 0)
+                {
+                    _logger.LogError("⚠️ NO CLIENT CERTIFICATES FOUND in HttpClientHandler!");
+                    _logger.LogError("This will cause mTLS authentication failures with WS Gateway");
+                }
+                else
+                {
+                    _logger.LogInformation("✓ Found {CertificateCount} certificate(s) in HttpClientHandler",
+                        handler.ClientCertificates.Count);
+
+                    // Log details of each certificate
+                    foreach (X509Certificate x509Certificate in handler.ClientCertificates)
+                    {
+                        if (x509Certificate is X509Certificate2 certificate)
+                        {
+                            LogCertificateVerification(certificate);
+                        }
+                    }
+                }
+
+                _logger.LogInformation("=== End Certificate Verification ===");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Error during certificate verification");
+                // Don't throw - we'll let the actual API call fail with meaningful error
+            }
+        }
+
+        /// <summary>
+        /// Logs verification details for a certificate.
+        /// </summary>
+        private void LogCertificateVerification(X509Certificate2 certificate)
+        {
+            try
+            {
+                _logger.LogInformation("Certificate Details:");
+                _logger.LogInformation("  Subject: {Subject}", certificate.Subject);
+                _logger.LogInformation("  Issuer: {Issuer}", certificate.Issuer);
+
+                // Critical checks
+                bool hasPrivateKey = certificate.HasPrivateKey;
+                bool isNotExpired = DateTime.Now <= certificate.NotAfter;
+                bool isNotBefore = DateTime.Now >= certificate.NotBefore;
+
+                _logger.LogInformation("  HasPrivateKey: {HasPrivateKey} {Status}",
+                    hasPrivateKey,
+                    hasPrivateKey ? "✓" : "⚠️ (mTLS will fail!)");
+
+                _logger.LogInformation("  Valid from: {NotBefore} {Status}",
+                    certificate.NotBefore.ToString("yyyy-MM-dd"),
+                    isNotBefore ? "✓" : "⚠️ (Not yet valid!)");
+
+                _logger.LogInformation("  Valid to: {NotAfter} {Status}",
+                    certificate.NotAfter.ToString("yyyy-MM-dd"),
+                    isNotExpired ? "✓" : "⚠️ (EXPIRED!)");
+
+                // Check for required CN/OU patterns
+                string subject = certificate.Subject;
+                if (subject.Contains("CN=zgw-klantp", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogInformation("  CN pattern: ✓ Contains 'zgw-klantp'");
+                }
+                else
+                {
+                    _logger.LogWarning("  CN pattern: ⚠️ Missing 'zgw-klantp' in CN");
+                }
+
+                // Overall status
+                if (hasPrivateKey && isNotExpired && isNotBefore)
+                {
+                    _logger.LogInformation("  Overall: ✓ Certificate appears valid for mTLS");
+                }
+                else
+                {
+                    _logger.LogError("  Overall: ⚠️ Certificate has issues that may cause mTLS failures");
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception, "Failed to log certificate verification details");
+            }
         }
 
         /// <summary>
         /// Queries the BRP Personen API (v2.0) for a person's data using their BSN.
         /// </summary>
-        /// <param name="bsn">
-        /// The BSN (Burger Service Nummer) of the person to query.
-        /// The BSN value itself is never logged; only its length is recorded.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous operation.
-        /// The task result contains the raw JSON response returned by the BRP API.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="bsn"/> is null or empty.
-        /// </exception>
-        /// <exception cref="HttpRequestException">
-        /// Thrown when any HTTP request (Keycloak or BRP) fails or returns
-        /// a non-success status code.
-        /// </exception>
         public async Task<string> QueryPersonAsync(string bsn)
         {
             if (string.IsNullOrWhiteSpace(bsn))
@@ -114,8 +232,8 @@ namespace WebQueries.BRP
                 // Debug the BRP token (most important!)
                 DebugToken(brpToken, "BRP Token");
 
-                // Step 3: Call BRP API with endpoint fallback
-                string result = await CallBrpApiWithFallbackAsync(brpToken, bsn);
+                // Step 3: Call BRP API with the single correct endpoint
+                string result = await CallBrpApiAsync(brpToken, bsn);
 
                 _logger.LogInformation(
                     "BrpClient.QueryPerson.Success ResponseLength={ResponseLength}",
@@ -123,6 +241,17 @@ namespace WebQueries.BRP
                 );
 
                 return result;
+            }
+            catch (HttpRequestException httpEx) when (httpEx.Message.Contains("certificate", StringComparison.OrdinalIgnoreCase) ||
+                                                     httpEx.Message.Contains("TLS", StringComparison.OrdinalIgnoreCase) ||
+                                                     httpEx.Message.Contains("SSL", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogCritical(httpEx,
+                    "CERTIFICATE/TLS ERROR: Likely mTLS authentication failure. " +
+                    "Check certificate configuration in program.cs. " +
+                    "Response status: {StatusCode}",
+                    httpEx.StatusCode);
+                throw;
             }
             catch (Exception exception)
             {
@@ -141,59 +270,14 @@ namespace WebQueries.BRP
             return await _keycloakTokenService.ExchangeForBrpTokenAsync(sourceToken);
         }
 
-        private async Task<string> CallBrpApiWithFallbackAsync(string brpToken, string bsn)
+        private async Task<string> CallBrpApiAsync(string brpToken, string bsn)
         {
-            // List of possible endpoints based on documentation
-            string[] endpoints =
-            [
-                // Documented endpoints from the PDF
-                "https://wsgateway.ot.denhaag.nl/haalcentral/api/bro/personen",     // v2.0
-                "https://wsgateway.ot.denhaag.nl/haalcentral/api/brpv2/personen",   // v2.0 with BRP Update API
-                
-                // Alternative patterns
-                $"{_brpBaseUrl}/bro/personen",
-                $"{_brpBaseUrl}/brpv2/personen",
-                $"{_brpBaseUrl}/brp/personen",
-                
-                // What you were originally trying
-                "https://wsgateway.ot.denhaag.nl/haalcentraal/api/brp/personen",
-                "https://wsgateway.ot.denhaag.nl/haalcentraal/api/bro/personen"
-            ];
+            // Use the single correct endpoint based on the working CURL example
+            string endpoint = $"{_brpBaseUrl}/brp/personen";
 
-            Exception? lastException = null;
+            _logger.LogInformation("Using BRP endpoint: {Endpoint}", endpoint);
 
-            foreach (string endpoint in endpoints)
-            {
-                try
-                {
-                    _logger.LogInformation("Trying BRP endpoint: {Endpoint}", endpoint);
-                    return await CallBrpApiAsync(endpoint, brpToken, bsn);
-                }
-                catch (HttpRequestException httpException) when (
-                    httpException.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
-                    httpException.StatusCode == System.Net.HttpStatusCode.Forbidden ||
-                    httpException.StatusCode == (System.Net.HttpStatusCode)470) // WS Gateway custom error
-                {
-                    lastException = httpException;
-                    _logger.LogWarning(
-                        "Endpoint failed with auth error {StatusCode}: {Endpoint}",
-                        httpException.StatusCode, endpoint
-                    );
-                }
-                catch (HttpRequestException httpException) when (httpException.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    lastException = httpException;
-                    _logger.LogWarning("Endpoint not found (404): {Endpoint}", endpoint);
-                }
-                catch (Exception exception)
-                {
-                    lastException = exception;
-                    _logger.LogWarning(exception, "Endpoint failed: {Endpoint}", endpoint);
-                }
-            }
-
-            _logger.LogError(lastException, "All BRP endpoints failed");
-            throw new HttpRequestException("All BRP API endpoints failed", lastException);
+            return await CallBrpApiAsync(endpoint, brpToken, bsn);
         }
 
         private async Task<string> CallBrpApiAsync(string url, string brpToken, string bsn)
@@ -201,14 +285,17 @@ namespace WebQueries.BRP
             try
             {
                 // Create new request to avoid header contamination
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
+                using var request = new HttpRequestMessage(HttpMethod.Post, url);
 
-                // Add Authorization header
+                // Add Authorization header (same as CURL example)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", brpToken);
 
                 // Add required headers for WS Gateway
                 request.Headers.Add("x-api-version", "2.0");
                 request.Headers.Add("Accept", "application/json");
+
+                // Note about certificate
+                _logger.LogDebug("Certificate-based mTLS should be configured via HttpClientHandler");
 
                 // Optional: Add correlation ID
                 request.Headers.Add("X-Correlation-ID", Guid.NewGuid().ToString());
@@ -216,7 +303,7 @@ namespace WebQueries.BRP
                 // Log request details
                 LogRequestDetails(request, bsn);
 
-                // Prepare request body according to BRP v2.0 spec
+                // Prepare request body EXACTLY like the CURL example
                 object requestBody = new
                 {
                     type = "RaadpleegMetBurgerservicenummer",
@@ -225,9 +312,7 @@ namespace WebQueries.BRP
                     {
                         "burgerservicenummer",
                         "naam",
-                        "geboorte",
-                        "verblijfplaats",
-                        "geslachtsaanduiding"
+                        "geboorte"
                     }
                 };
 
@@ -245,6 +330,8 @@ namespace WebQueries.BRP
                     "Sending request to {Url} with body length {BodyLength}",
                     url, json.Length
                 );
+
+                _logger.LogDebug("Request body: {RequestBody}", json);
 
                 // Send request
                 HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -293,51 +380,6 @@ namespace WebQueries.BRP
             }
         }
 
-        private void LogCertificateInfo()
-        {
-            try
-            {
-                _logger.LogInformation("Checking certificate configuration...");
-
-                HttpClientHandler? handler = GetHttpClientHandler();
-                if (handler == null)
-                {
-                    _logger.LogWarning("Could not access HttpClientHandler for certificate check");
-                    return;
-                }
-
-                _logger.LogDebug("HttpClientHandler type: {HandlerType}", handler.GetType().Name);
-
-                if (handler.ClientCertificates.Count > 0)
-                {
-                    _logger.LogInformation("Found {CertificateCount} client certificate(s)",
-                        handler.ClientCertificates.Count);
-
-                    foreach (X509Certificate x509Certificate in handler.ClientCertificates)
-                    {
-                        if (x509Certificate is X509Certificate2 certificate)
-                        {
-                            LogCertificateDetails(certificate);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Certificate is not X509Certificate2 type: {Type}",
-                                x509Certificate.GetType().Name);
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogError("NO CLIENT CERTIFICATES FOUND! WS Gateway requires mutual TLS (mTLS).");
-                    _logger.LogError("Check BRP_CLIENTCERT_PEM_PATH and BRP_CLIENTKEY_PEM_PATH environment variables.");
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Error while checking certificate configuration");
-            }
-        }
-
         private HttpClientHandler? GetHttpClientHandler()
         {
             try
@@ -351,119 +393,6 @@ namespace WebQueries.BRP
             catch
             {
                 return null;
-            }
-        }
-
-        private void LogCertificateDetails(X509Certificate2 certificate)
-        {
-            try
-            {
-                _logger.LogInformation("=== Certificate Details ===");
-
-                // Basic properties
-                if (!string.IsNullOrEmpty(certificate.Subject))
-                {
-                    _logger.LogInformation("Subject: {Subject}", certificate.Subject);
-                    ExtractAndLogSubjectDetails(certificate.Subject);
-                }
-
-                if (!string.IsNullOrEmpty(certificate.Issuer))
-                {
-                    _logger.LogInformation("Issuer: {Issuer}", certificate.Issuer);
-                }
-
-                // Thumbprint
-                try
-                {
-                    string thumbprint = certificate.Thumbprint;
-                    if (!string.IsNullOrEmpty(thumbprint))
-                    {
-                        _logger.LogInformation("Thumbprint: {Thumbprint}", thumbprint);
-                    }
-                }
-                catch
-                {
-                    _logger.LogInformation("Thumbprint: Not available");
-                }
-
-                // Validity dates
-                try
-                {
-                    _logger.LogInformation("Valid from: {NotBefore}", certificate.NotBefore.ToString("yyyy-MM-dd"));
-                    _logger.LogInformation("Valid to: {NotAfter}", certificate.NotAfter.ToString("yyyy-MM-dd"));
-                }
-                catch
-                {
-                    _logger.LogInformation("Validity dates: Not available");
-                }
-
-                // Key info
-                try
-                {
-                    _logger.LogInformation("HasPrivateKey: {HasPrivateKey}", certificate.HasPrivateKey);
-                    _logger.LogInformation("KeyAlgorithm: {KeyAlgorithm}", certificate.GetKeyAlgorithm());
-                }
-                catch
-                {
-                    // Ignore
-                }
-
-                // Extensions
-                try
-                {
-                    if (certificate.Extensions.Count > 0)
-                    {
-                        _logger.LogDebug("Extensions ({Count}):", certificate.Extensions.Count);
-                        foreach (X509Extension extension in certificate.Extensions)
-                        {
-                            _logger.LogTrace("  - {Oid}", extension.Oid?.FriendlyName ?? extension.Oid?.Value);
-                        }
-                    }
-                }
-                catch
-                {
-                    // Ignore extension errors
-                }
-
-                _logger.LogInformation("=== End Certificate Details ===");
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception, "Failed to log certificate details");
-            }
-        }
-
-        private void ExtractAndLogSubjectDetails(string subject)
-        {
-            try
-            {
-                List<string> parts = subject.Split(',')
-                    .Select(part => part.Trim())
-                    .ToList();
-
-                foreach (string part in parts)
-                {
-                    if (part.StartsWith("CN=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        _logger.LogInformation("Common Name (CN): {Value}", part.Substring(3));
-                    }
-                    else if (part.StartsWith("OU=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        _logger.LogInformation("Organizational Unit (OU): {Value}", part.Substring(3));
-                    }
-                    else if (part.StartsWith("O=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        _logger.LogDebug("Organization (O): {Value}", part.Substring(2));
-                    }
-                    else if (part.StartsWith("C=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        _logger.LogDebug("Country (C): {Value}", part.Substring(2));
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogDebug(exception, "Error parsing subject details");
             }
         }
 
@@ -554,15 +483,28 @@ namespace WebQueries.BRP
                 errorBody.Length > 500 ? errorBody.Substring(0, 500) + "..." : errorBody
             );
 
-            // Try to parse JSON error
+            // Special handling for certificate/TLS errors
             string errorMessage = $"BRP API returned error {statusText}";
+
+            // Check for common certificate/TLS errors in response
+            if (errorBody.Contains("certificate", StringComparison.OrdinalIgnoreCase) ||
+                errorBody.Contains("TLS", StringComparison.OrdinalIgnoreCase) ||
+                errorBody.Contains("SSL", StringComparison.OrdinalIgnoreCase) ||
+                errorBody.Contains("handshake", StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage += " (Possible certificate/TLS issue)";
+                _logger.LogCritical(
+                    "Detected possible certificate/TLS error in response. " +
+                    "Check mTLS configuration in program.cs.");
+            }
+
             if (!string.IsNullOrEmpty(errorBody))
             {
                 if (errorBody.TrimStart().StartsWith("{"))
                 {
                     try
                     {
-                        using JsonDocument errorJson = JsonDocument.Parse(errorBody);
+                        using var errorJson = JsonDocument.Parse(errorBody);
                         errorMessage += $": {errorJson.RootElement}";
                     }
                     catch (JsonException)
@@ -611,11 +553,11 @@ namespace WebQueries.BRP
                     byte[] payloadBytes = Convert.FromBase64String(payload);
                     string payloadJson = Encoding.UTF8.GetString(payloadBytes);
 
-                    using JsonDocument document = JsonDocument.Parse(payloadJson);
+                    using var document = JsonDocument.Parse(payloadJson);
 
                     _logger.LogDebug("=== {TokenName} Payload ===", tokenName);
 
-                    Dictionary<string, string> claims = new Dictionary<string, string>();
+                    var claims = new Dictionary<string, string>();
 
                     // Extract important claims
                     string[] importantClaims = ["aud", "iss", "sub", "exp", "iat", "azp", "scope", "client_id"];
@@ -630,11 +572,11 @@ namespace WebQueries.BRP
 
                     foreach (KeyValuePair<string, string> claim in claims)
                     {
-                        if (claim.Key == "exp" || claim.Key == "iat")
+                        if (claim.Key is "exp" or "iat")
                         {
                             if (long.TryParse(claim.Value, out long timestamp))
                             {
-                                DateTimeOffset dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+                                var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
                                 _logger.LogDebug("  {Claim}: {Value} ({DateTime})",
                                     claim.Key, claim.Value, dateTime.ToString("yyyy-MM-dd HH:mm:ss UTC"));
                             }
