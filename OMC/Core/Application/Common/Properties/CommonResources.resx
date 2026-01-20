@@ -166,4 +166,7 @@
     <value>{0} | Notification: {1}.</value>
     <comment>{0} = Description of the result, {1} = The initial notification JSON</comment>
   </data>
+  <data name="BrpClient_QueryPersonAsync_BSN_cannot_be_null_or_empty" xml:space="preserve">
+    <value>BSN cannot be null or empty</value>
+  </data>
 </root>
