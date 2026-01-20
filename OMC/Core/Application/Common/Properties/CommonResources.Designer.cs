@@ -61,6 +61,15 @@ namespace Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BSN cannot be null or empty.
+        /// </summary>
+        public static string BrpClient_QueryPersonAsync_BSN_cannot_be_null_or_empty {
+            get {
+                return ResourceManager.GetString("BrpClient_QueryPersonAsync_BSN_cannot_be_null_or_empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In the settings representing domain unnecessary protocol (http or https) was found: {0}..
         /// </summary>
         public static string Configuration_ERROR_ContainsHttp {
