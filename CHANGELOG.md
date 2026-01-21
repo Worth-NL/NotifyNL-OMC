@@ -1,3 +1,7 @@
+## 1.17.18
+
+* Add Keycloak logic and Brp/Haalcentraal logic with verbose logging for testing
+
 ## 1.17.17
 
 * Add Test Endpoint for sending Letters through NotifyNL
