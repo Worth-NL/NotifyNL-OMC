@@ -523,7 +523,11 @@ namespace WebQueries.BRP
                     }
                 }
 
-                if (importantClaims.Any())
+                if (!importantClaims.Any())
+                {
+                    return;
+                }
+
                 {
                     _logger.LogDebug("{TokenName} claims:", tokenName);
                     foreach (KeyValuePair<string, string> claim in importantClaims)
