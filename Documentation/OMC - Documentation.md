@@ -185,6 +185,12 @@ v.1.17.18
 7. [KTO](#kto)
 
    - 7.1. [KTO Implementation](#kto_info)
+
+8. [BRP](#brp)
+
+   - 8.1. [BRP integration (Haal Centraal)](#brp_integration)
+   - 8.2. [BRP Security model](#brp_sec)
+   - 8.3. [BRP Operational notes](#brp_ops)
 ---
 
 <h1 id="introduction">1. Introduction</h1>
@@ -728,6 +734,16 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 | NOTIFY_TEMPLATEID_SMS_TASKASSIGNED                   | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | NOTIFY_TEMPLATEID_SMS_MESSAGE                        | GUID      | "00000000-0000-0000-0000-000000000000"       | false        | Cannot be missing and have null or empty value + must be in UUID format                                                                | Should be generated per specific business use case from "Notify NL" Admin Portal                                                                                                                             |
 | ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| **Haalcentraal settings**                            | ---       | ---                                          | ---          | ---                                                                                                                                    | These settings are required for authentication and communication with the BRP (Basisregistratie Personen) via the Haal Centraal API                                                                          |
+| KEYCLOAK_AUTHSERVERURL                               | string    | https://kc.city.nl/r/protocol/openid-connect | false        | Cannot be missing and have null or empty value when using letter function                                                              | Base URL of the Keycloak authorization server used to obtain access tokens for BRP                                                                                                                           |
+| KEYCLOAK_CLIENTID                                    | string    | "omc-brp-client"                             | true         | Cannot be missing and have null or empty value when using letter function                                                              | Client identifier registered in Keycloak for OMC BRP access                                                                                                                                                  |
+| KEYCLOAK_CLIENTSECRET                                | string    | "abcd123t2gw3r8192dewEg%wdlsa3e!"            | true         | Cannot be missing and have null or empty value when using letter function                                                              | Client secret used for OAuth2 token exchange with Keycloak                                                                                                                                                   |
+| KEYCLOAK_TOKENEXCHANGEAUDIENCE                       | string    | "haalcentraal-brp"                           | false        | Cannot be missing and have null or empty value when using letter function                                                              | Audience value used during OAuth2 token exchange. Must match the audience expected by the BRP (Haal Centraal) API                                                                                            |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
+| BRP_BASEURL                                          | string    | https://wsgateway.city.nl/haalcentraal/api   | false        | Cannot be missing and have null or empty value when using letter function                                                              | Base URL of the BRP (Haal Centraal) API gateway                                                                                                                                                              |
+| BRP_CLIENTCERT_PEM_PATH                              | string    | "/certificates/brp-client-cert.pem"          | true         | Cannot be missing and have null or empty value when using letter function                                                              | Absolute path to the PEM-encoded client certificate used for mutual TLS (mTLS) authentication                                                                                                                |
+| BRP_CLIENTKEY_PEM_PATH                               | string    | "/certificates/brp-client-key.pem"           | true         | Cannot be missing and have null or empty value when using letter function                                                              | Absolute path to the PEM-encoded private key corresponding to the BRP client certificate                                                                                                                     |
+| ---                                                  | ---       | ---                                          | ---          | ---                                                                                                                                    | ---                                                                                                                                                                                                          |
 | **Monitoring settings**                              |           |                                              |              |                                                                                                                                        |                                                                                                                                                                                                              |
 | SENTRY_DSN                                           | URI       | "https://1abxxx@o1xxx.sentry.io/xxx"         | false        | Validated internally by Sentry.SDK                                                                                                     | It points out to the Sentry project configured to store captured events from the app (messages, exceptions)                                                                                                  |
 | SENTRY_ENVIRONMENT                                   | string    | "MyCompany-prod"                             | false        | Validated internally by Sentry.SDK                                                                                                     | It's the identifier used by Sentry external logging system to distinguish instance and mode of the application (it can contains name of the company, or specific environment: prod, acc, dev, test...)       |
@@ -735,6 +751,10 @@ During the start of the **OMC** application the content of `appsettings.[ASPNETC
 \* Copy-paste the _environment variable_ name and set the value of respective type like showed in the **Example** column from the above.
 \*\* GUID and UUID are representing the same data type in the following format: 8-4-4-4-12 and using Hexadecimal values (0-f). The difference is that UUID is used in cross-platform context, while GUID is the data type used in .NET
 
+\*\*\*NOTE:
+BRP access is secured using OAuth2 token exchange via Keycloak and mutual TLS (mTLS).
+The configured certificate and private key must be provided in PEM format and must be accessible by the running process.
+BRP data is considered highly sensitive; responses are not persisted and personal data is never logged.
 <h4 id="get_environment_variables">3.1.2.2. Get environment variables</h4>
 
 `OMC_AUTH_JWT_SECRET` - To be generated from any passwords manager. Like other **OMC*AUTH*[...]** configurations it's meant to be set by the user.
@@ -1908,5 +1928,59 @@ i.e.
 
 ![Example Settings KTO EXPOINTS](images/example_kto_settings.png)
 
+---
 
+<h1 id="brp">8. BRP</h1>
+
+<h2 id="brp_integration">8.1. BRP integration (Haal Centraal)</h2>
+
+OMC supports querying the Basisregistratie Personen (BRP) via the Haal Centraal API to enrich notification workflows with verified personal data.
+
+Supported data
+
+When properly authorized, OMC can retrieve:
+
+- Address information
+  - Street name
+  - House number and additions
+  - Postal code
+  - City / municipality
+- Personal information
+  - First name(s)
+  - Last name
+  - Gender
+- Administrative identifiers
+  - BSN (used internally for lookup, never logged)
+
+This data can be used to:
+
+- Determine the correct correspondence address
+- Enrich notification templates
+
+<h2 id="brp_sec">8.2. BRP Security model</h2>
+
+Security model
+
+BRP access is secured using two layers:
+
+- OAuth2 token exchange (Keycloak)
+  - OMC exchanges its service token for a BRP-scoped access token
+  - Audience restrictions ensure tokens are valid only for the BRP API
+
+- Mutual TLS (mTLS)
+  - Each request to the BRP API is authenticated using a client certificate
+  - Certificates are provided via PEM files configured through environment variables
+
+<h2>IMPORTANT:</h2>
+
+`BRP data is considered highly sensitive.
+OMC does not persist BRP responses and does not log personal data.`
+
+<h2 id="brp_ops">8.3. BRP Operational notes</h2>
+
+Operational notes
+
+- BRP endpoints are accessed only when explicitly required by a workflow
+- All BRP requests include correlation identifiers for auditability
+- Any authorization or gateway misconfiguration will fail
 > To be finished...
