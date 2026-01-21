@@ -1,7 +1,6 @@
 ﻿// © 2026, Worth Systems.
 
 using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using Common.Properties;
@@ -96,7 +95,7 @@ namespace WebQueries.BRP
         {
             try
             {
-                _logger.LogDebug("Verifying certificate configuration...");
+                _logger.LogDebug("Checking certificate configuration...");
 
                 // Check environment variables
                 string? certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH");
@@ -106,104 +105,53 @@ namespace WebQueries.BRP
 
                 if (!envVarsSet)
                 {
-                    _logger.LogWarning(
+                    _logger.LogInformation(
                         "BRP certificate environment variables not set. " +
-                        "Certificates may be loaded via alternative mechanism.");
+                        "BRP API functionality will be unavailable.");
+                    return; // Early exit - no need to check further
                 }
-                else
-                {
-                    // Check file existence
-                    bool certExists = File.Exists(certPath);
-                    bool keyExists = File.Exists(keyPath);
 
-                    if (!certExists || !keyExists)
-                    {
-                        _logger.LogError(
-                            "Certificate files not found. Cert: {CertExists}, Key: {KeyExists}",
-                            certExists, keyExists);
-                    }
-                    else
-                    {
-                        _logger.LogDebug("Certificate files exist at configured paths.");
-                    }
+                // Check file existence
+                bool certExists = File.Exists(certPath);
+                bool keyExists = File.Exists(keyPath);
+
+                if (!certExists || !keyExists)
+                {
+                    _logger.LogWarning(
+                        "Certificate files not found. Cert: {CertExists}, Key: {KeyExists}",
+                        certExists, keyExists);
+                    _logger.LogInformation("BRP API functionality will be unavailable.");
+                    return;
                 }
 
                 // Verify certificates in HttpClientHandler
                 VerifyHttpClientCertificates();
-
-                _logger.LogDebug("Certificate verification completed.");
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Certificate configuration verification failed");
-                // Don't throw - let actual API calls fail with meaningful errors
+                _logger.LogDebug(exception, "Certificate check completed with warnings");
+                // Don't throw - BRP is optional
             }
         }
 
-        /// <summary>
-        /// Verifies certificates are loaded in HttpClientHandler.
-        /// </summary>
         private void VerifyHttpClientCertificates()
         {
             HttpClientHandler? handler = GetHttpClientHandler();
             if (handler == null)
             {
-                _logger.LogWarning("Could not access HttpClientHandler for certificate verification");
+                _logger.LogDebug("Could not access HttpClientHandler");
                 return;
             }
 
             if (handler.ClientCertificates.Count == 0)
             {
-                _logger.LogError("No client certificates found in HttpClientHandler. WS Gateway mTLS will fail.");
+                _logger.LogInformation(
+                    "No client certificates found. " +
+                    "BRP API calls will fail with mTLS authentication errors.");
                 return;
             }
 
-            _logger.LogDebug("Found {Count} certificate(s) in HttpClientHandler", handler.ClientCertificates.Count);
-
-            // Log summary of each certificate
-            foreach (X509Certificate x509Certificate in handler.ClientCertificates)
-            {
-                if (x509Certificate is X509Certificate2 certificate)
-                {
-                    LogCertificateSummary(certificate);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Logs a summary of certificate details.
-        /// </summary>
-        private void LogCertificateSummary(X509Certificate2 certificate)
-        {
-            try
-            {
-                bool isValid = DateTime.Now >= certificate.NotBefore &&
-                              DateTime.Now <= certificate.NotAfter;
-                bool hasPrivateKey = certificate.HasPrivateKey;
-
-                string status = isValid && hasPrivateKey ? "✓ Valid" : "⚠️ Issues";
-
-                _logger.LogInformation(
-                    "Certificate: {Subject} (Valid: {NotBefore} to {NotAfter}) - {Status}",
-                    certificate.Subject,
-                    certificate.NotBefore.ToString("yyyy-MM-dd"),
-                    certificate.NotAfter.ToString("yyyy-MM-dd"),
-                    status);
-
-                if (!hasPrivateKey)
-                {
-                    _logger.LogError("Certificate missing private key - mTLS will fail!");
-                }
-
-                if (!isValid)
-                {
-                    _logger.LogError("Certificate validity issue - check dates!");
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogDebug(exception, "Failed to log certificate summary");
-            }
+            _logger.LogDebug("Found {Count} certificate(s) for BRP API", handler.ClientCertificates.Count);
         }
 
         /// <summary>
@@ -353,7 +301,7 @@ namespace WebQueries.BRP
             {
                 type = "RaadpleegMetBurgerservicenummer",
                 burgerservicenummer = new[] { bsn },
-                fields = new[] { "burgerservicenummer", "naam", "geboorte", "adressering", "geslacht", "adresseringBinnenland" }
+                fields = new[] { "burgerservicenummer", "naam", "adressering", "geslacht", "adresseringBinnenland" }
             };
 
             string json = JsonSerializer.Serialize(requestBody, new JsonSerializerOptions

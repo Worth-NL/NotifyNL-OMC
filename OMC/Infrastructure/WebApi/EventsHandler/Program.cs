@@ -358,24 +358,34 @@ namespace EventsHandler
                 }
                 else
                 {
-                    logger.LogError(
-                        "Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
+                    logger.LogWarning(
+                        "⚠️ Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
                         File.Exists(certPath), File.Exists(keyPath)
                     );
+                    logger.LogWarning(
+                        "The application will start without BRP functionality. " +
+                        "BRP API calls will fail with certificate errors.");
                 }
             }
             catch (Exception ex)
             {
+                // CHANGE: Log but don't throw - let app continue without BRP
                 logger.LogError(ex, "Failed to load BRP client certificate");
-                throw;
+                logger.LogWarning(
+                    "The application will start without BRP functionality. " +
+                    "BRP API calls will fail with certificate errors.");
             }
         }
         else
         {
-            logger.LogError(
-                "BRP certificate paths not configured. BRP_CLIENTCERT_PEM_PATH: {CertPathSet}, BRP_CLIENTKEY_PEM_PATH: {KeyPathSet}",
+            // CHANGE: Log warning instead of error, don't throw
+            logger.LogWarning(
+                "⚠️ BRP certificate paths not configured. BRP_CLIENTCERT_PEM_PATH: {CertPathSet}, BRP_CLIENTKEY_PEM_PATH: {KeyPathSet}",
                 !string.IsNullOrEmpty(certPath), !string.IsNullOrEmpty(keyPath)
             );
+            logger.LogInformation(
+                "The application will start without BRP functionality. " +
+                "Configure certificates to enable BRP API access.");
         }
 
         // Only disable SSL validation in DEBUG mode
