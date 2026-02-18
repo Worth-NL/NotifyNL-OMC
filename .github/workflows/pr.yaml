@@ -23,7 +23,7 @@ jobs:
         with:
           filters: |
             run:
-              - '!docs/**'
+              - '!Documentation/**'
               - '!.github/workflows/**'
               - '**'
 
