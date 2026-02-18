@@ -2,7 +2,7 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/worth-nl/notifynl-omc?style=for-the-badge&logo=github&label=version)
 ![Docker Image Version](https://img.shields.io/docker/v/worthnl/notifynl-omc?sort=date&arch=amd64&style=for-the-badge&logo=docker)
 
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/worth-nl/helm-charts/release.yaml?style=for-the-badge&logo=helm&label=helm%20build)](https://worth-nl.github.io/helm-charts/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/worth-nl/helm-charts/merge.yaml?style=for-the-badge&logo=helm&label=helm%20build)](https://worth-nl.github.io/helm-charts/)
 [![Artifact Hub](https://img.shields.io/endpoint?style=for-the-badge&url=https://artifacthub.io/badge/repository/notifynl)](https://artifacthub.io/packages/helm/notifynl/notifynl-omc)
 
 ---
