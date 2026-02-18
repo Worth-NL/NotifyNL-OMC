@@ -23,7 +23,11 @@ jobs:
         with:
           filters: |
             run:
+              - 'OMC.sln'
+              - 'OMC.sln.DotSettings'
+              - 'OMC/**'
               - '!Documentation/**'
+              - '!.vscode/**'
               - '!.github/workflows/**'
 
   validate-versions:
