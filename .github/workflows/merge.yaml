@@ -26,9 +26,6 @@ jobs:
               - 'OMC.sln'
               - 'OMC.sln.DotSettings'
               - 'OMC/**'
-              - '!Documentation/**'
-              - '!.vscode/**'
-              - '!.github/workflows/**'
 
   validate-versions:
     runs-on: ubuntu-latest
