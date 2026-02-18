@@ -1,9 +1,11 @@
-name: Post-merge actions
+name: Merge
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'docs/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

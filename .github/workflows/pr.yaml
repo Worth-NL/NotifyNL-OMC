@@ -1,9 +1,11 @@
-name: PR Validation
+name: PR
 
 on:
   pull_request:
     branches: ["main"]
     types: [opened, synchronize]
+    paths-ignore:
+      - 'docs/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -74,7 +76,7 @@ jobs:
           fi
         name: Check if project version is in CHANGELOG.md
 
-  app-build-and-test:
+  test:
     runs-on: ubuntu-latest
     needs: validate-versions
     strategy:
@@ -135,9 +137,9 @@ jobs:
       - run: cat **code-coverage-results.md** >> $GITHUB_STEP_SUMMARY
         name: Write coverage report to job summary
 
-  docker-build-and-push:
+  build:
     runs-on: ubuntu-latest
-    needs: app-build-and-test
+    needs: test
 
     steps:
       - uses: actions/checkout@v4
@@ -171,9 +173,9 @@ jobs:
     outputs:
       tag: ${{ steps.set-tag.outputs.tag }}
 
-  helm-release:
+  deploy:
     runs-on: ubuntu-latest
-    needs: docker-build-and-push
+    needs: build
     environment: Test
 
     steps:
