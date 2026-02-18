@@ -25,7 +25,6 @@ jobs:
             run:
               - '!Documentation/**'
               - '!.github/workflows/**'
-              - '**'
 
   validate-versions:
     runs-on: ubuntu-latest
