@@ -206,14 +206,7 @@ jobs:
         with:
           config: ${{ secrets.K8S_CONFIG }}
 
-      - run: helm repo add denhaag https://gemeente-denhaag.github.io/helm-charts/
-        name: Install helm chart dependency repository
-
-      - run: helm dependency build
-        working-directory: ${{ github.workspace }}/notifynl-omc
-        name: Helm chart dependency build
-
       - run: |
           helm version
-          helm upgrade --install omcv2 notifynl-omc/ -n notifynl-zgw --reuse-values --set image.tag=${{ needs.docker-build-and-push.outputs.tag }} --wait --timeout 300s
-        name: Deploy v2 chart
+          helm upgrade --install omc notifynl-omc-nodep/ -n ${{ env.NAMESPACE }} --reuse-values --set app.overrides.tag=${{ needs.build.outputs.tag }} --wait --timeout 300s
+        name: Deploy chart
