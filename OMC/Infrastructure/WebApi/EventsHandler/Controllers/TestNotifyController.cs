@@ -175,7 +175,7 @@ namespace EventsHandler.Controllers
             [Optional, FromBody] Dictionary<string, object> personalization)
         {
             return await SendAsync(
-            NotifyMethods.Sms,
+                NotifyMethods.Sms,
                 mobileNumber,
                 smsTemplateId,
                 personalization);
@@ -187,21 +187,12 @@ namespace EventsHandler.Controllers
         /// <remarks>
         ///   NOTE: This endpoint will send real letter to the given address.
         /// </remarks>
+        /// <param name="letterTemplateId">The letter template ID (optional) to be used from "Notify NL" API service.
         ///   <para>
         ///     NOTE: If empty the ID of a very first looked up letter template will be used.
         ///   </para>
-        /// <param name="letterTemplateId"></param>
-        /// <param name="personalization">The map (optional) of keys and values to be used as message personalization.
-        ///   <para>
-        ///     Example of personalization in template from "Notify NL" Admin Portal: "This is ((placeholderText)) information".
-        ///   </para>
-        ///   <para>
-        ///     Example of personalization values to be provided: { "placeholderText": "good" }
-        ///   </para>
-        ///   <para>
-        ///     Resulting message would be: "This is good information" (or exception, if personalization is required but not provided).
-        ///   </para>
         /// </param>
+        /// <param name="request">The request body containing personalization, extras, and client reference.</param>
         [HttpPost]
         [Route($"{UrlStart}SendLetter")]
         // Security
@@ -209,17 +200,19 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]
         // Swagger UI
-        [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
+        [SwaggerRequestExample(typeof(SendLetterRequest), typeof(SendLetterRequestExample))]  // You may need to create an example class for Swagger
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendLetterAsync(
             [Optional, FromQuery] string? letterTemplateId,
-            [Optional, FromBody] Dictionary<string, object> personalization)
+            [FromBody] SendLetterRequest request)
         {
             return await SendAsync(
                 NotifyMethods.Letter,
-                "",
+                contactDetails: "",  // Not used for letters
                 letterTemplateId,
-                personalization);
+                request.Personalization ?? new Dictionary<string, object>(),
+                request.Extras,
+                request.Reference);
         }
 
         /// <summary>
@@ -292,6 +285,12 @@ namespace EventsHandler.Controllers
         /// <summary>
         /// Generic method sending notification through <see cref="NotificationClient"/> and handling its responses in a standardized way.
         /// </summary>
+        /// <param name="notifyMethod">The notification channel (Email, Sms, Letter).</param>
+        /// <param name="contactDetails">The recipient's email address or phone number (ignored for letters).</param>
+        /// <param name="templateId">The GOV.UK Notify template ID. If null, the first available template for the channel is used.</param>
+        /// <param name="personalization">Dictionary of template placeholder values.</param>
+        /// <param name="extras">Optional dictionary of additional letter‑specific options (e.g., postage, letter type). Ignored for email/SMS.</param>
+        /// <param name="reference">Optional client reference for the letter (ignored for email/SMS).</param>
         /// <returns>
         ///   The standardized <see cref="ObjectResult"/> API response.
         /// </returns>
@@ -299,14 +298,16 @@ namespace EventsHandler.Controllers
             NotifyMethods notifyMethod,
             string contactDetails,
             string? templateId,
-            Dictionary<string, object> personalization)
+            Dictionary<string, object> personalization,
+            Dictionary<string, object>? extras = null,
+            string? reference = null)
         {
             try
             {
                 // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
                     baseUrl: this._configuration.Notify.API.BaseUrl().AbsoluteUri,
-                    apiKey:  this._configuration.Notify.API.Key());
+                    apiKey: this._configuration.Notify.API.Key());
 
                 // Determine first possible Email template ID if nothing was provided
                 List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates; // NOTE: Assign to variables for debug purposes
@@ -327,7 +328,8 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            _ = await notifyClient.SendLetterAsync(templateId, null);
+                            // Pass reference and extras only for letter (both may be null)
+                            _ = await notifyClient.SendLetterAsync(templateId, null, reference, extras);
                             break;
 
                         default:
@@ -357,7 +359,8 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            _ = await notifyClient.SendLetterAsync(templateId, personalization);
+                            // Pass reference and extras only for letter (both may be null)
+                            _ = await notifyClient.SendLetterAsync(templateId, personalization, reference, extras);
                             break;
 
                         default:
@@ -386,5 +389,26 @@ namespace EventsHandler.Controllers
                    Equals(value, PersonalizationExample.Value);
         }
         #endregion
+    }
+
+    /// <summary>
+    /// Request DTO for sending a letter via the GOV.UK Notify client.
+    /// </summary>
+    public class SendLetterRequest
+    {
+        /// <summary>
+        /// Optional dictionary of template placeholder values.
+        /// </summary>
+        public Dictionary<string, object>? Personalization { get; set; }
+
+        /// <summary>
+        /// Optional dictionary of additional letter‑specific options (e.g., postage, letter type).
+        /// </summary>
+        public Dictionary<string, object>? Extras { get; set; }
+
+        /// <summary>
+        /// Optional client reference for the letter.
+        /// </summary>
+        public string? Reference { get; set; }
     }
 }

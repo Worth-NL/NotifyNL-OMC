@@ -101,8 +101,8 @@
       },
       "GovukNotify": {
         "type": "Transitive",
-        "resolved": "6.1.0",
-        "contentHash": "gQxZtymzwlSruHdTaQL0ItberaBspk2K2WgoHja5wn8Kyzq++fapT/9/7bMEbLKKyJ5eOdR9VjZxF7V9AZETzQ==",
+        "resolved": "7.0.1-custom",
+        "contentHash": "NBWssc9j1VAsB2CkVrDDX1p4pTAuJedU6OxtbJyElCdzW+s1A7iNcCIA4goVVtBBl4WFuZlQzx9Tk4HK+8lofA==",
         "dependencies": {
           "JWT": "[7.1.0, 9.0.0)",
           "Newtonsoft.Json": "[10.0.3, 14.0.0)",
@@ -885,7 +885,7 @@
       "OMC.WebQueries": {
         "type": "Project",
         "dependencies": {
-          "GovukNotify": "[6.1.0, )",
+          "GovukNotify": "[7.0.1-custom, )",
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "OMC.SecretsManager": "[1.0.0, )",
