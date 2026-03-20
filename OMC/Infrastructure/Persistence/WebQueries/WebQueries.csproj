@@ -23,7 +23,7 @@
   <ItemGroup>
     <!-- Domain -->  <!-- NOTE: Do not upgrade yet. This is critical notification component, and we haven't tested v7.0+ before -->
     <!-- Asynchronicity helpers -->
-    <PackageReference Include="GovukNotify" Version="7.0.1-custom" />
+    <PackageReference Include="GovukNotify" Version="7.0.2-custom" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Sentry.AspNetCore" Version="4.13.0" />
