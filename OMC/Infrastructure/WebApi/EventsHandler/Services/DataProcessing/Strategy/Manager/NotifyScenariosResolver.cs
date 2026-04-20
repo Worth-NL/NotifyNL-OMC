@@ -85,7 +85,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
                 {
-                    // Scenario #7: "Message received"
+                    // Scenario #7: "KTO received"
                     return this._serviceProvider.GetRequiredService<KtoScenario>();
                 }
 
