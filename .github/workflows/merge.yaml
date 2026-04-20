@@ -216,25 +216,25 @@ jobs:
           message: 🤖 OMC charts updated to ${{ steps.version-bump.outputs.version }}
           github-token: ${{ secrets.RELEASE_TOKEN }}
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: bump
-    environment: Test
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: bump
+  #   environment: Test
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: Worth-NL/helm-charts
-          ref: main
-          token: ${{ secrets.RELEASE_TOKEN }}
-        name: Checkout Worth-NL/helm-charts
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         repository: Worth-NL/helm-charts
+  #         ref: main
+  #         token: ${{ secrets.RELEASE_TOKEN }}
+  #       name: Checkout Worth-NL/helm-charts
 
-      - uses: bwvolleyball/k8s-toolkit@v1.0.0
-        with:
-          config: ${{ secrets.K8S_CONFIG }}
+  #     - uses: bwvolleyball/k8s-toolkit@v1.0.0
+  #       with:
+  #         config: ${{ secrets.K8S_CONFIG }}
 
-      - run: |
-          echo "${{ secrets.OMC_VALUES }}" | base64 -d > omc.values.yaml
-          helm version
-          helm upgrade --install omc notifynl-omc-nodep/ -n ${{ env.NAMESPACE }} --reset-values -f omc.values.yaml --wait --timeout 300s
-        name: Deploy chart
+  #     - run: |
+  #         echo "${{ secrets.OMC_VALUES }}" | base64 -d > omc.values.yaml
+  #         helm version
+  #         helm upgrade --install omc notifynl-omc-nodep/ -n ${{ env.NAMESPACE }} --reset-values -f omc.values.yaml --wait --timeout 300s
+  #       name: Deploy chart

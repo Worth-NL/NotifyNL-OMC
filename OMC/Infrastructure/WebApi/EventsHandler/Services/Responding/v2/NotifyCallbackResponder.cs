@@ -53,6 +53,14 @@ namespace EventsHandler.Services.Responding.v2
                 DeliveryReceipt callback = Serializer.Deserialize<DeliveryReceipt>(json);
                 FeedbackTypes status = callback.Status.ConvertToFeedbackStatus();
 
+                if (string.IsNullOrEmpty(callback.Reference))
+                {
+                    return new AcceptedResult
+                    {
+                        Value = new { message = "No reference found. Unable to send telemetry." }
+                    };
+                }
+
                 LogContactRegistration(callback, status);
 
                 HttpRequestResponse? informResult = null;
@@ -73,7 +81,7 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         StatusCode = informResult.Value.IsFailure
                             ? StatusCodes.Status500InternalServerError
-                            : StatusCodes.Status200OK
+                            : StatusCodes.Status201Created
                     };
                 }
 
@@ -84,7 +92,7 @@ namespace EventsHandler.Services.Responding.v2
                     message = "Callback processed successfully (no telemetry sent)."
                 })
                 {
-                    StatusCode = StatusCodes.Status200OK
+                    StatusCode = StatusCodes.Status202Accepted
                 };
             }
             catch (Exception ex)

@@ -1,3 +1,7 @@
+## 1.17.19
+
+Add custom GovUkNotify Client to accept extras when sending letters, and return 202 when confirm without reference.
+
 ## 1.17.18
 
 * Add Keycloak logic and Brp/Haalcentraal logic with verbose logging for testing
