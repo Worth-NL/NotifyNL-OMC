@@ -71,6 +71,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsHandler.Tests.Integra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsHandler.Tests.Unit", "OMC\Tests\Infrastructure\WebApi\EventsHandler.UnitTests\EventsHandler.Tests.Unit.csproj", "{CEA47812-9EF2-407D-ADEF-7073FB812416}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LocalPackages", "LocalPackages", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		LocalPackages\GovukNotify.7.0.1-custom.nupkg = LocalPackages\GovukNotify.7.0.1-custom.nupkg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
