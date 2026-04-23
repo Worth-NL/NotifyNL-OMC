@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Common.Models.Messages.Details;
 using Common.Models.Messages.Details.Base;
 using Common.Models.Responses;
 using System.Net;
@@ -31,13 +32,13 @@ namespace Common.Models.Messages.Base
         }
 
         /// <summary>
-        /// <inheritdoc cref="BaseEnhancedStandardResponseBody(HttpStatusCode, ProcessingResult)"/>
+        /// Initializes a new instance of the <see cref="BaseEnhancedStandardResponseBody"/> class.
         /// </summary>
         /// <param name="statusCode">The HTTP Status Code.</param>
         /// <param name="description">The status description.</param>
         /// <param name="result">The processing result.</param>
         /// <remarks>
-        ///   NOTE: <see langword="string"/> "description" is used to replace <see cref="ProcessingResult"/> "result.Description".
+        /// NOTE: <see langword="string"/> "description" replaces <see cref="ProcessingResult.Description"/>.
         /// </remarks>
         protected BaseEnhancedStandardResponseBody(HttpStatusCode statusCode, string description, ProcessingResult result)
             : base(statusCode, description, result)
@@ -48,7 +49,9 @@ namespace Common.Models.Messages.Base
         /// <inheritdoc cref="object.ToString()"/>
         public sealed override string ToString()
         {
-            return $"{base.ToString()} | {this.Details}";
+            string detailsText = this.Details?.ToString() ?? "No details provided";
+
+            return $"{base.ToString()} | {detailsText}";
         }
     }
 }

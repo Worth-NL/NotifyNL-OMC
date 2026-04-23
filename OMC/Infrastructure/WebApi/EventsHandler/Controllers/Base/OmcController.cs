@@ -6,6 +6,7 @@ using EventsHandler.Attributes.Versioning;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace EventsHandler.Controllers.Base
 {
@@ -17,48 +18,79 @@ namespace EventsHandler.Controllers.Base
     [Route(ApiValues.Default.ApiController.Route)]
     [Consumes(ApiValues.Default.ApiController.ContentType)]
     [Produces(ApiValues.Default.ApiController.ContentType)]
-    // Swagger UI
-    [ProducesResponseType(StatusCodes.Status400BadRequest,          Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The HTTP Request wasn't successful
-    [ProducesResponseType(StatusCodes.Status401Unauthorized,        Type = typeof(BaseStandardResponseBody))]          // REASON: JWT Token is invalid or expired
-    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]          // REASON: Unexpected internal error
-    [ProducesResponseType(StatusCodes.Status501NotImplemented,      Type = typeof(BaseStandardResponseBody))]          // REASON: Something is not implemented
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BaseEnhancedStandardResponseBody))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(BaseStandardResponseBody))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BaseStandardResponseBody))]
+    [ProducesResponseType(StatusCodes.Status501NotImplemented, Type = typeof(BaseStandardResponseBody))]
     public abstract class OmcController : Controller
     {
         /// <summary>
         /// Logs the message and returns the API response.
         /// </summary>
         /// <param name="logLevel">The severity of the log.</param>
-        /// <param name="objectResult">The result to be analyzed before logging it.</param>
-        protected internal static ObjectResult LogApiResponse(LogLevel logLevel, ObjectResult objectResult)
+        /// <param name="objectResult">The HTTP response object to be analyzed and logged.</param>
+        /// <returns>The same <see cref="ObjectResult"/> passed in, after logging.</returns>
+        protected internal static ObjectResult LogApiResponse(
+            LogLevel logLevel,
+            ObjectResult? objectResult)
         {
-            LogMessage(logLevel, DetermineResultMessage(objectResult));
+            if (objectResult == null)
+            {
+                LogMessage(logLevel, "Null ObjectResult returned from controller");
+
+                return new ObjectResult(null)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
+            }
+
+            var message = DetermineResultMessage(objectResult);
+
+            // Extract structured details for logging (focus on validation/missing fields)
+            var data = objectResult.Value switch
+            {
+                BaseEnhancedStandardResponseBody enhanced => enhanced.Details,
+                BaseSimpleStandardResponseBody simple => simple,
+                BaseStandardResponseBody baseResp => baseResp,
+                _ => objectResult.Value
+            };
+
+            LogMessage(logLevel, message, data);
 
             return objectResult;
         }
 
         /// <summary>
-        /// Logs the message.
+        /// Logs a simple message without an HTTP response object.
         /// </summary>
         /// <param name="logLevel">The severity of the log.</param>
-        /// <param name="logMessage">The message to be logged.</param>
+        /// <param name="logMessage">The message to log.</param>
         protected internal static void LogApiResponse(LogLevel logLevel, string logMessage)
         {
             LogMessage(logLevel, logMessage);
         }
 
         /// <summary>
-        /// Logs the exception and returns the API response.
+        /// Logs an exception and returns the HTTP response object.
         /// </summary>
-        /// <param name="exception">The exception to be passed.</param>
-        /// <param name="objectResult">The result to be analyzed before logging it.</param>
-        protected internal static ObjectResult LogApiResponse(Exception exception, ObjectResult objectResult)
+        /// <param name="exception">The exception that occurred.</param>
+        /// <param name="objectResult">The HTTP response object to return (if available).</param>
+        /// <returns>The same or fallback <see cref="ObjectResult"/>.</returns>
+        protected internal static ObjectResult LogApiResponse(Exception exception, ObjectResult? objectResult)
         {
             LogException(exception);
 
-            return objectResult;
+            return objectResult ?? new ObjectResult(null)
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
         }
 
         #region Sentry logging
+
+        /// <summary>
+        /// Maps application log levels to Sentry severity levels.
+        /// </summary>
         private static readonly Dictionary<LogLevel, SentryLevel> s_logMapping = new()
         {
             { LogLevel.Trace,       SentryLevel.Debug   },
@@ -69,46 +101,77 @@ namespace EventsHandler.Controllers.Base
             { LogLevel.Critical,    SentryLevel.Fatal   }
         };
 
-        /// <inheritdoc cref="SentrySdk.CaptureMessage(string, SentryLevel)"/>
-        internal static void LogMessage(LogLevel logLevel, string logMessage)
+        /// <summary>
+        /// Logs a message to Sentry with optional structured data.
+        /// </summary>
+        /// <param name="logLevel">Application log level.</param>
+        /// <param name="logMessage">Message to log.</param>
+        /// <param name="data">Optional structured payload (e.g. validation details).</param>
+        internal static void LogMessage(LogLevel logLevel, string logMessage, object? data = null)
         {
-            _ = SentrySdk.CaptureMessage(
-                    message: string.Format(ApiResources.API_Response_STATUS_Logging, ApiResources.Application_Name, logLevel.GetEnumName(), logMessage),
-                    level: s_logMapping[logLevel]);
+            using (SentrySdk.PushScope())
+            {
+                SentrySdk.ConfigureScope(scope =>
+                {
+                    scope.SetTag("log.level", logLevel.GetEnumName());
+
+                    if (data != null)
+                    {
+                        scope.SetExtra("response.details", data);
+                    }
+                });
+
+                SentrySdk.CaptureMessage(
+                    string.Format(
+                        ApiResources.API_Response_STATUS_Logging,
+                        ApiResources.Application_Name,
+                        logLevel.GetEnumName(),
+                        logMessage),
+                    s_logMapping[logLevel]);
+            }
         }
 
-        /// <inheritdoc cref="SentrySdk.CaptureException(Exception)"/>
+        /// <summary>
+        /// Logs an exception to Sentry.
+        /// </summary>
+        /// <param name="exception">The exception to log.</param>
         private static void LogException(Exception exception)
         {
-            _ = SentrySdk.CaptureException(exception);
+            using (SentrySdk.PushScope())
+            {
+                SentrySdk.CaptureException(exception);
+            }
         }
+
         #endregion
 
         #region Helper methods
+
         /// <summary>
         /// Determines the log message based on the received <see cref="ObjectResult"/>.
         /// <para>
-        ///   The format:
-        ///   <code>
-        ///     HTTP Status Code | Description | Message (optional) | Cases (optional)
-        ///   </code>
+        /// Format: HTTP Status Code | Description | Message (optional)
         /// </para>
         /// </summary>
+        /// <param name="objectResult">The response object to analyze.</param>
+        /// <returns>A formatted log message.</returns>
         private static string DetermineResultMessage(ObjectResult objectResult)
         {
+            var statusCode = objectResult.StatusCode?.ToString() ?? "unknown";
+
             return objectResult.Value switch
             {
-                // Description with message
                 BaseEnhancedStandardResponseBody enhancedResponse => enhancedResponse.ToString(),
                 BaseSimpleStandardResponseBody simpleResponse => simpleResponse.ToString(),
-
-                // Only description
                 BaseStandardResponseBody baseResponse => baseResponse.ToString(),
 
-                // Unknown object result
-                _ => string.Format(ApiResources.API_Response_ERROR_UnspecifiedResponse, objectResult.StatusCode, $"The response type {nameof(objectResult.Value)}")
+                _ => string.Format(
+                    ApiResources.API_Response_ERROR_UnspecifiedResponse,
+                    statusCode,
+                    $"The response type {nameof(objectResult.Value)}")
             };
         }
+
         #endregion
     }
 }
