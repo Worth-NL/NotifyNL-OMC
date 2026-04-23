@@ -378,6 +378,28 @@ namespace Common.Settings.Configuration
                     public string Email_Failure_Body()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(Email_Failure_Body));
                     #endregion
+
+                    #region Letter
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Success_Subject()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Success_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Success_Body()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Success_Body));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Failure_Subject()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Failure_Subject));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string Letter_Failure_Body()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(Letter_Failure_Body));
+                    #endregion
                 }
             }
         }
@@ -412,14 +434,6 @@ namespace Common.Settings.Configuration
 
                 this._currentPath = parentPath;
             }
-
-            /// <summary>
-            /// Retrieves the case type settings configuration from the environment.
-            /// </summary>
-            /// <returns>A JSON string containing case type settings.</returns>
-            [Config]
-            public string CaseTypeSettings()
-                => GetCachedValue(this._loadersContext, this._currentPath, nameof(CaseTypeSettings));
 
             /// <summary>
             /// Retrieves the configured KTO service URL.
@@ -1076,6 +1090,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public HashSet<Guid> DecisionInfoObjectType_Uuids()
                         => GetCachedUuidsValue(this._loadersContext, this._currentPath, nameof(DecisionInfoObjectType_Uuids));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid KtoObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(KtoObjectType_Uuid));
                 }
             }
         }
@@ -1149,6 +1168,10 @@ namespace Common.Settings.Configuration
                 [Config]
                 public SmsComponent Sms { get; }
 
+                /// <inheritdoc cref="LetterComponent"/>
+                [Config]
+                public LetterComponent Letter { get; }
+
                 /// <summary>
                 /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
                 /// </summary>
@@ -1159,6 +1182,7 @@ namespace Common.Settings.Configuration
 
                     this.Email = new EmailComponent(this._loadersContext, this._currentPath);
                     this.Sms = new SmsComponent(this._loadersContext, this._currentPath);
+                    this.Letter = new LetterComponent(this._loadersContext, this._currentPath);
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -1181,6 +1205,49 @@ namespace Common.Settings.Configuration
                     {
                         this._loadersContext = loadersContext;
                         this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Email));
+                    }
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakCreate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakCreate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakUpdate()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakUpdate));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ZaakClose()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ZaakClose));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid TaskAssigned()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(TaskAssigned));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageReceived()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+                }
+
+                /// <summary>
+                /// The "Letter" part of the settings.
+                /// </summary>
+                public sealed record LetterComponent
+                {
+                    private readonly ILoadersContext _loadersContext;
+                    private readonly string _currentPath;
+
+                    /// <summary>
+                    /// Initializes a new instance of the <see cref="LetterComponent"/> class.
+                    /// </summary>
+                    public LetterComponent(ILoadersContext loadersContext, string parentPath)
+                    {
+                        this._loadersContext = loadersContext;
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>

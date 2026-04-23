@@ -31,5 +31,15 @@ namespace WebQueries.DataSending.Interfaces
         ///   The <see langword="string"/> JSON response from the Web API service.
         /// </returns>
         internal Task<HttpRequestResponse> PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody);
+
+        /// <summary>
+        /// Delete request to the given Web API service using a specific <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="httpClientType">The type of the specialized <see cref="HttpClient"/>.</param>
+        /// <param name="uri">The URI to be used with <see cref="HttpMethod.Delete"/> request.</param>
+        /// <returns>
+        ///   The <see langword="string"/> Empty.
+        /// </returns>
+        internal Task<HttpRequestResponse> DeleteAsync(HttpClientTypes httpClientType, Uri uri);
     }
 }

@@ -10,6 +10,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebQueries.BRP;
 
 namespace EventsHandler.Controllers
 {
@@ -24,18 +25,21 @@ namespace EventsHandler.Controllers
     {
         private readonly OmcConfiguration _configuration;
         private readonly IRespondingService<ProcessingResult> _responder;
+        private readonly BrpClient _brpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestOMCController"/> class.
         /// </summary>
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
+        /// <param name="brpClient"></param>
         public TestOMCController(
             OmcConfiguration configuration,
-            GeneralResponder responder)
+            GeneralResponder responder, BrpClient brpClient)
         {
             this._configuration = configuration;
             this._responder = responder;
+            _brpClient = brpClient;
         }
 
         #region OMC Test endpoints
@@ -72,5 +76,33 @@ namespace EventsHandler.Controllers
             });
         }
         #endregion
+
+        /// <summary>
+        /// Tests connectivity with the BRP Personen API using a test BSN.
+        /// </summary>
+        [HttpGet]
+        [Route($"{UrlStart}TestBrp/{{bsn}}")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [AspNetExceptionsHandler]
+        public async Task<IActionResult> TestBrpAsync(string bsn)
+        {
+            if (string.IsNullOrWhiteSpace(bsn))
+            {
+                throw new ArgumentException(@"BSN is required.", nameof(bsn));
+            }
+
+            // Call BRP via typed client
+            string brpResponse = await this._brpClient.QueryPersonAsync(bsn);
+
+            // HttpStatus Code: 202 Accepted
+            return LogApiResponse(
+                LogLevel.Information,
+                this._responder.GetResponse(
+                    ProcessingResult.Success(brpResponse)
+                )
+            );
+        }
     }
 }

@@ -34,6 +34,6 @@ namespace ZhvModels.Mapping.Enums.NotificatieApi
         /// Decisions channel.
         /// </summary>
         [JsonPropertyName("besluiten")]
-        Decisions = 3
+        Decisions = 3,
     }
 }

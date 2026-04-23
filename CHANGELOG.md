@@ -1,3 +1,23 @@
+## 1.17.19
+
+Add custom GovUkNotify Client to accept extras when sending letters, and return 202 when confirm without reference.
+
+## 1.17.18
+
+* Add Keycloak logic and Brp/Haalcentraal logic with verbose logging for testing
+
+## 1.17.17
+
+* Add Test Endpoint for sending Letters through NotifyNL
+
+## 1.17.16
+
+* Remap Object to Expoints specific Payload
+
+## 1.17.15
+
+* Add New KTO implementation treating Kto as a notification
+
 ## 1.17.14
 
 * First Clean-Up, Logs outgoing api calls to ZGW and there responses in Sentry, No longer fetches CaseStatus and it's Type twice, For Case Scenarios it checks if notification is expected earlier in the process

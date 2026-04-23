@@ -125,10 +125,10 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION",    GetTestValue(isValid, "1") },
                 { "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
+                { "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID",           GetTestValue(isValid, testGuid) },
 
                 // KTO environment variables
                 { "KTO_URL",                                              GetTestValue(isValid, S_TestKtoUrl) },
-                { "KTO_CASETYPESETTINGS",                                 GetTestValue(isValid, TestKtoCaseTypeSettings) },
 
                 // NOTIFY environment variables
                 { "NOTIFY_API_BASEURL",                                   GetTestValue(isValid, "https://www.test.notify.nl/", CommonValues.Default.Models.EmptyUri.ToString()) },

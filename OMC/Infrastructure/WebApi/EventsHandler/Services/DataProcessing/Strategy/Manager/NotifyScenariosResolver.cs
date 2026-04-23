@@ -7,6 +7,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
@@ -80,6 +81,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 {
                     // Scenario #6: "Message received"
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
+                }
+
+                if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
+                {
+                    // Scenario #7: "KTO received"
+                    return this._serviceProvider.GetRequiredService<KtoScenario>();
                 }
 
                 throw new AbortedNotifyingException(
