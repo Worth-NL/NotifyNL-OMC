@@ -5,9 +5,8 @@ using System.Text.Json.Serialization;
 namespace Common.Models.Messages.Details.Base
 {
     /// <summary>
-    /// Standard format how to display details about processed notification (with additional details).
+    /// Standard format for detailed information about processed notifications.
     /// </summary>
-    /// <seealso cref="BaseSimpleDetails"/>
     public abstract record BaseEnhancedDetails : BaseSimpleDetails
     {
         /// <summary>
@@ -23,16 +22,19 @@ namespace Common.Models.Messages.Details.Base
         public string[] Reasons { get; set; } = [];
 
         /// <summary>
+        /// Structured field-level validation issues.
+        /// </summary>
+        [JsonPropertyOrder(3)]
+        public Dictionary<string, string>? FieldIssues { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BaseEnhancedDetails"/> class.
         /// </summary>
         protected BaseEnhancedDetails() { }
 
         /// <summary>
-        /// <inheritdoc cref="BaseEnhancedDetails()"/>
+        /// Initializes a new instance of the <see cref="BaseEnhancedDetails"/> class.
         /// </summary>
-        /// <param name="message">The details message.</param>
-        /// <param name="cases">The cases included in details.</param>
-        /// <param name="reasons">The reasons of occurred cases.</param>
         protected BaseEnhancedDetails(string message, string cases, string[] reasons)
             : base(message)
         {
@@ -42,15 +44,13 @@ namespace Common.Models.Messages.Details.Base
     }
 
     /// <summary>
-    /// Concrete implementation of <see cref="BaseEnhancedDetails"/> allowing to initialize all properties manually.
+    /// Concrete implementation of <see cref="BaseEnhancedDetails"/>.
     /// </summary>
-    /// <seealso cref="BaseEnhancedDetails"/>
     public sealed record EnhancedDetails : BaseEnhancedDetails
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleDetails"/> class.
+        /// Initializes a new instance of the <see cref="EnhancedDetails"/> class.
         /// </summary>
-        /// <param name="details">The details.</param>
         public EnhancedDetails(BaseSimpleDetails details)
             : base(details.Message, string.Empty, [])
         {

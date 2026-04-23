@@ -10,36 +10,12 @@ using ZhvModels.Properties;
 namespace EventsHandler.Services.Responding.Results.Builder
 {
     /// <summary>
-    /// <inheritdoc cref="IDetailsBuilder"/>
-    /// <para>
-    ///   Building:
-    /// 
-    ///   <list type="bullet">
-    ///     <item><see cref="ErrorDetails"/></item>
-    ///     <item><see cref="InfoDetails"/></item>
-    ///     <item><see cref="UnknownDetails"/></item>
-    ///   </list>
-    /// </para>
+    /// Builds structured details objects used in API responses.
     /// </summary>
-    /// <seealso cref="IDetailsBuilder"/>
     internal sealed class DetailsBuilder : IDetailsBuilder
     {
         private static readonly object s_lock = new();
 
-        #region Cached details (objects)
-        private static readonly Dictionary<Type, BaseEnhancedDetails> s_cachedEnhancedDetails = new()
-        {
-            { typeof(ErrorDetails), new ErrorDetails() },
-            { typeof(InfoDetails), new InfoDetails() }
-        };
-
-        private static readonly Dictionary<Type, BaseSimpleDetails> s_cachedSimpleDetails = new()
-        {
-            { typeof(UnknownDetails), new UnknownDetails() }
-        };
-        #endregion
-
-        #region Cached details (content)
         private static readonly Dictionary<Reasons, (string Message, string[] Reasons)> s_cachedDetailsContents = new()
         {
             {
@@ -104,29 +80,26 @@ namespace EventsHandler.Services.Responding.Results.Builder
                 (ApiResources.Operation_ERROR_Unknown_ValidationIssue_Message, [])
             }
         };
-        #endregion
 
-        /// <inheritdoc cref="IDetailsBuilder.Get{TDetails}(Reasons, string)"/>
         TDetails IDetailsBuilder.Get<TDetails>(Reasons reason, string cases)
         {
             lock (s_lock)
             {
-                var details = (TDetails)s_cachedEnhancedDetails[typeof(TDetails)];
+                var details = Activator.CreateInstance<TDetails>();
 
                 details.Message = s_cachedDetailsContents[reason].Message;
-                details.Cases   = cases;
+                details.Cases = cases;
                 details.Reasons = s_cachedDetailsContents[reason].Reasons;
 
                 return details;
             }
         }
 
-        /// <inheritdoc cref="IDetailsBuilder.Get{TDetails}(Reasons)"/>
         TDetails IDetailsBuilder.Get<TDetails>(Reasons reason)
         {
             lock (s_lock)
             {
-                var details = (TDetails)s_cachedSimpleDetails[typeof(TDetails)];
+                var details = Activator.CreateInstance<TDetails>();
 
                 details.Message = s_cachedDetailsContents[reason].Message;
 

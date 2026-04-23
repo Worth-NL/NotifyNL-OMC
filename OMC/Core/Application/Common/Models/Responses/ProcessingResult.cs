@@ -14,7 +14,7 @@ namespace Common.Models.Responses
     public readonly struct ProcessingResult
     {
         /// <summary>
-        /// The details of processing result.
+        /// The status of the processing result.
         /// </summary>
         public ProcessingStatus Status { get; }
 
@@ -39,50 +39,57 @@ namespace Common.Models.Responses
         }
 
         #region Responses
+
         /// <summary>
-        /// Success result.
+        /// Creates a success result.
         /// </summary>
         public static ProcessingResult Success(string description, object? json = null, BaseEnhancedDetails? details = null)
             => new(ProcessingStatus.Success, GetDescription(description, json), details ?? InfoDetails.Empty);
 
         /// <summary>
-        /// Skipped result.
+        /// Creates a skipped result.
         /// </summary>
         public static ProcessingResult Skipped(string description, object? json = null, BaseEnhancedDetails? details = null)
             => new(ProcessingStatus.Skipped, GetDescription(description, json), details ?? InfoDetails.Empty);
 
         /// <summary>
-        /// Aborted result.
+        /// Creates an aborted result.
         /// </summary>
         public static ProcessingResult Aborted(string description, object? json = null, BaseEnhancedDetails? details = null)
             => new(ProcessingStatus.Aborted, GetDescription(description, json), details ?? ErrorDetails.Empty);
 
         /// <summary>
-        /// NotPossible result.
+        /// Creates a not possible result.
         /// </summary>
         public static ProcessingResult NotPossible(string description, object? json = null, BaseEnhancedDetails? details = null)
             => new(ProcessingStatus.NotPossible, GetDescription(description, json), details ?? ErrorDetails.Empty);
 
         /// <summary>
-        /// Failure result.
+        /// Creates a failure result.
         /// </summary>
         public static ProcessingResult Failure(string description, object? json = null, BaseEnhancedDetails? details = null)
             => new(ProcessingStatus.Failure, GetDescription(description, json), details ?? ErrorDetails.Empty);
 
         /// <summary>
-        /// Failure result.
+        /// Creates an unknown failure result.
         /// </summary>
         public static ProcessingResult Unknown(string description, object? json = null, BaseSimpleDetails? details = null)
             => new(ProcessingStatus.Failure, GetDescription(description, json), (details ?? UnknownDetails.Empty).Expand());
+
         #endregion
 
         #region Helper methods
+
+        /// <summary>
+        /// Builds a standardized description message.
+        /// </summary>
         private static string GetDescription(string description, object? json = null)
         {
             return json == null
                 ? description
                 : string.Format(CommonResources.Response_Processing_STATUS_NotificationOperation, description, json);
         }
+
         #endregion
     }
 }
