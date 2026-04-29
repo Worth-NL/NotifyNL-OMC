@@ -22,7 +22,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
         OmcConfiguration IQueryZaak.Configuration { get; set; } = null!;
 
         /// <inheritdoc cref="IVersionDetails.Version"/>
-        string IVersionDetails.Version => "1.12.1";
+        string IVersionDetails.Version => "1.2.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryZaak"/> class.
