@@ -72,24 +72,32 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         }
 
         [Test]
-        public void Deserialize_Case_PartiallyValidJson_Nulls_ReturnsExpectedModel()  // Strings, Uri, and DateOnly should be properly deserialized from nulls
+        public void Deserialize_Case_PartiallyValidJson_Nulls_ReturnsExpectedModel()
         {
-            // Arrange
             const string testJson =
                 $"{{" +
-                  $"\"url\":\"{TestUrl}\"," +
-                  $"\"identificatie\":\"{TestString}\"," +
-                  $"\"omschrijving\":null," +              // Should be deserialized as default not null
-                  $"\"omschrijvingGeneriek\":\"Test\"," +  // Should be ignored
-                  $"\"zaaktype\":null," +                  // Should be deserialized as default not null
-                  $"\"registratiedatum\":null" +           // Should be deserialized as default not null
+                $"\"url\":\"{TestUrl}\"," +
+                $"\"identificatie\":\"{TestString}\"," +
+                $"\"omschrijving\":null," +
+                $"\"omschrijvingGeneriek\":\"Test\"," +
+                $"\"zaaktype\":null," +
+                $"\"registratiedatum\":null," +
+                $"\"laatstGemuteerd\":null," +
+                $"\"status\":null" +
                 $"}}";
 
-            // Act
             Case actualResult = this._serializer.Deserialize<Case>(testJson);
 
-            // Assert
-            AssertRequiredProperties(actualResult);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.Uri, Is.EqualTo(new Uri(TestUrl)));
+                Assert.That(actualResult.Identification, Is.EqualTo(TestString));
+                Assert.That(actualResult.Name, Is.EqualTo(string.Empty));
+                Assert.That(actualResult.CaseTypeUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
+                Assert.That(actualResult.RegistrationDate, Is.EqualTo(default(DateOnly)));
+                Assert.That(actualResult.LatestMutationDate, Is.Null);
+                Assert.That(actualResult.StatusUri, Is.EqualTo(CommonValues.Default.Models.EmptyUri));
+            });
         }
 
         [TestCase("omschrijvingGeneriek")]  // Original spelling
@@ -476,12 +484,12 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
         #region Serialize
         [TestCase(true)]
         [TestCase(false)]
-        public void Serialize_Case_Default_ReturnsExpectedJson(bool isDefault)  // NOTE: A bit more complex model: empty DateTime should be DateTime.Min, and Uri the default one
+        public void Serialize_Case_Default_ReturnsExpectedJson(bool isDefault)
         {
             // Act
             string actualResult = this._serializer.Serialize(isDefault ? default : new Case());
 
-            // Assert
+            // Expected JSON includes new required properties: laatstGemuteerd and status
             string expectedResult =
                 "{" +
                 $"\"url\":\"{CommonValues.Default.Models.EmptyUri}\"," +
@@ -489,6 +497,8 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                 "\"omschrijving\":\"\"," +
                 $"\"zaaktype\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                 "\"registratiedatum\":\"0001-01-01\"," +
+                "\"laatstGemuteerd\":null," +
+                $"\"status\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                 $"\"resultaat\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                 "\"_expand\":null" +
                 "}";
@@ -515,6 +525,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                         ResultType = new Uri(TestUrl)
                     }
                 }
+                // StatusUri and LatestMutationDate remain default (EmptyUri and null)
             };
 
             // Act
@@ -528,6 +539,8 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                 $"\"omschrijving\":\"{TestString}\"," +
                 $"\"zaaktype\":\"{TestUrl}\"," +
                 $"\"registratiedatum\":\"2024-09-05\"," +
+                $"\"laatstGemuteerd\":null," +
+                $"\"status\":\"{CommonValues.Default.Models.EmptyUri}\"," +
                 $"\"resultaat\":\"{TestUrl}\"," +
                 "\"_expand\":{" +
                 "\"resultaat\":{" +

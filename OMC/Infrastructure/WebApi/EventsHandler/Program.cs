@@ -64,6 +64,8 @@ using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
 using WebQueries.BRP;
+using WebQueries.MijnOverheid.Clients;
+using WebQueries.MijnOverheid.Interfaces;
 
 namespace EventsHandler
 {
@@ -286,6 +288,8 @@ namespace EventsHandler
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
+            builder.Services.AddHttpClient<IMijnOverheidClient, MijnOverheidClient>();
+            builder.Services.RegisterClientFactories();
             builder.Services.AddHttpClient<BrpClient>()
     .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
     {
