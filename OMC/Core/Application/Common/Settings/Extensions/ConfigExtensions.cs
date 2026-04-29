@@ -63,6 +63,11 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string BrpCertificateKey => "BRP_CLIENTKEY_PEM_PATH";
 
+        /// <summary>
+        /// The "MIJNOVERHEID_WEBHOOK_URL" environment variable.
+        /// </summary>
+        public static string MijnOverheidWebHookUrl => "MIJNOVERHEID_WEBHOOK_URL";
+
         // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
