@@ -100,7 +100,6 @@ namespace WebQueries.Register.v1
         /// <param name="reference"></param>
         /// <param name="notificationMethod"></param>
         /// <param name="messages"></param>
-        /// <param name="caseStatus"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public string GetNewCreateContactMomentJsonBody(NotifyReference reference, NotifyMethods notificationMethod,
