@@ -1,7 +1,13 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net10.0": {
+      "E4A.PostGuard": {
+        "type": "Direct",
+        "requested": "[0.2.1, )",
+        "resolved": "0.2.1",
+        "contentHash": "IF1dBVBTIKUwHHNP+kem+74y3JiAb71U48YFqKJCFAyC3fU5GR8wuJJfeqEriHo5+1Jn0RuiTc/L205pp704rQ=="
+      },
       "JetBrains.Annotations": {
         "type": "Direct",
         "requested": "[2024.3.0, )",
