@@ -267,7 +267,8 @@ namespace EventsHandler.Controllers
                 // Use the returned UUID as personalization in the Notify NL email
                 var personalization = new Dictionary<string, object>
                 {
-                    ["postguard_uuid"] = uploadResult.Uuid
+                    ["postguard_uuid"] = uploadResult.Uuid,
+                    ["download_link"] = $"https://postguard.eu/download?uuid={uploadResult.Uuid}&recipient={Uri.EscapeDataString(recipientEmail)}"
                 };
 
                 // Use template ID from configuration, falling back to first available template
