@@ -79,8 +79,8 @@
       },
       "E4A.PostGuard": {
         "type": "Transitive",
-        "resolved": "0.2.1",
-        "contentHash": "IF1dBVBTIKUwHHNP+kem+74y3JiAb71U48YFqKJCFAyC3fU5GR8wuJJfeqEriHo5+1Jn0RuiTc/L205pp704rQ=="
+        "resolved": "0.3.0",
+        "contentHash": "r/2HxFv2IlLKT82EZ+6KhvNFLJ4JLP9DukpdKWkck8RodXqJAVwe58zvJQ339zzTtWVXN7ELZQg3F2eKX1fKVQ=="
       },
       "GovukNotify": {
         "type": "Transitive",
@@ -508,7 +508,7 @@
         "type": "Project",
         "dependencies": {
           "Asp.Versioning.Mvc": "[8.1.0, )",
-          "E4A.PostGuard": "[0.2.1, )",
+          "E4A.PostGuard": "[0.3.0, )",
           "Microsoft.AspNetCore.OpenApi": "[9.0.0, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
           "Newtonsoft.Json": "[13.0.1, )",
