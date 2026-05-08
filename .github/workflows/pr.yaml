@@ -80,7 +80,7 @@ jobs:
 
           compare_versions "${{ steps.release.outputs.version_release }}" "${{ steps.project.outputs.version_project }}"
         name: Check project and latest release versions
-        
+
       - run: |
           echo "Checking if the project version is listed in CHANGELOG.md"
 
@@ -97,7 +97,7 @@ jobs:
     needs: validate-versions
     strategy:
       matrix:
-        dotnet-version: ["8.0"]
+        dotnet-version: ["10.0"]
         test-project:
           [
             "OMC/Tests/Core/Application/Common.UnitTests",
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
 
-    environment: 
+    environment:
       name: Test
       url: https://omc.test.notifynl.nl/swagger/index.html
 
