@@ -452,7 +452,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                     string expectedMessage =
                        $"The given JSON cannot be deserialized | " +
                        $"Target model: '{targetName}.cs' | " +
-                       $"Failed: '{failed}' | " +
+                       $"Failed: {failed} | " +
                        $"Reason: {ZhvResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
                        $"All required properties: {expectedResult} | " +
                        $"Source JSON: {{}}";
@@ -465,10 +465,9 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
 
             IEnumerable<(int Id, Action Deserialization, string TargetName, string Failed, string ExpectedResult)> GetSerializationTests(string testJson)
             {
-                yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "omschrijving, omschrijvingGeneriek, zaaktypeIdentificatie", "'omschrijving', 'omschrijvingGeneriek', 'zaaktypeIdentificatie', 'isEindstatus', 'informeren'");
-                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "url, voorkeursDigitaalAdres, partijIdentificatie, _expand", "'url', 'voorkeursDigitaalAdres', 'partijIdentificatie.contactnaam.voornaam', '_expand.digitaleAdressen.uuid', '_expand.digitaleAdressen.adres', '_expand.digitaleAdressen.soortDigitaalAdres', '_expand.digitaleAdressen.referentie'"
-                );
-                yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "record", "'CaseUri', 'CaseId', 'Title', 'Status', 'ExpirationDate', 'Identification.type', 'Identification.value'");
+                yield return (1, () => this._serializer.Deserialize<CaseType>(testJson), nameof(CaseType), "'omschrijving', 'omschrijvingGeneriek', 'zaaktypeIdentificatie'.", "'omschrijving', 'omschrijvingGeneriek', 'zaaktypeIdentificatie', 'isEindstatus', 'informeren'");
+                yield return (2, () => this._serializer.Deserialize<PartyResult>(testJson), nameof(PartyResult), "'url', 'voorkeursDigitaalAdres', 'partijIdentificatie', '_expand'.", "'url', 'voorkeursDigitaalAdres', 'partijIdentificatie.contactnaam.voornaam', '_expand.digitaleAdressen.uuid', '_expand.digitaleAdressen.adres', '_expand.digitaleAdressen.soortDigitaalAdres', '_expand.digitaleAdressen.referentie'");
+                yield return (3, () => this._serializer.Deserialize<CommonTaskData>(testJson), nameof(CommonTaskData), "'record'.", "'CaseUri', 'CaseId', 'Title', 'Status', 'ExpirationDate', 'Identification.type', 'Identification.value'");
             }
         }
         #endregion

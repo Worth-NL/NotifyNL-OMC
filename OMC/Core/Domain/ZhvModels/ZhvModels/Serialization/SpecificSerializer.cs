@@ -80,7 +80,7 @@ namespace ZhvModels.Serialization
             }
             else
             {
-                failed = $"{QuotationMark}{exception.Message[(exception.Message.IndexOf(':') + 2)..]}{QuotationMark}";
+                failed = exception.Message[(exception.Message.IndexOf(':') + 2)..];
                 reason = ZhvResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties;
             }
 
