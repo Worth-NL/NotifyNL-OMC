@@ -66,6 +66,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     : (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
             }
 
+            // Message scenarios
+            if (IsMessageScenario(model))
+            {
+                // Scenario #8: "Message"
+                return this._serviceProvider.GetRequiredService<MessageScenario>();
+            }
+
             // Object scenarios
             if (IsObjectScenario(model))
             {
@@ -151,6 +158,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Action:   Actions.Create,
                 Channel:  Channels.Decisions,
                 Resource: Resources.Decision
+            };
+        }
+
+        /// <summary>
+        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
+        /// </summary>
+        /// <remarks>
+        ///   This check is verifying whether Message scenarios would be processed.
+        /// </remarks>
+        private static bool IsMessageScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action: Actions.Create,
+                Channel: Channels.Messages,
+                Resource: Resources.Message
             };
         }
         #endregion

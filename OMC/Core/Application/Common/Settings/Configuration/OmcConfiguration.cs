@@ -867,6 +867,11 @@ namespace Common.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                public string Berichten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Berichten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 public string ContactMomenten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
             }
@@ -920,6 +925,12 @@ namespace Common.Settings.Configuration
                 [Config]
                 public IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public IDs Message_IDs()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(Message_IDs));
 
                 // --------------
                 // Flags (simple)
@@ -1107,7 +1118,7 @@ namespace Common.Settings.Configuration
         {
             /// <inheritdoc cref="ApiComponent"/>
             [Config]
-            public ApiComponent API { get; }
+            public ApiComponent Api { get; }
 
             /// <inheritdoc cref="TemplateIdComponent"/>
             [Config]
@@ -1120,7 +1131,7 @@ namespace Common.Settings.Configuration
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
-                this.API = new ApiComponent(loadersContext, parentName);
+                this.Api = new ApiComponent(loadersContext, parentName);
                 this.TemplateId = new TemplateIdComponent(loadersContext, parentName);
             }
 
@@ -1138,7 +1149,7 @@ namespace Common.Settings.Configuration
                 public ApiComponent(ILoadersContext loadersContext, string parentPath)
                 {
                     this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Api));
                 }
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -1622,7 +1633,7 @@ namespace Common.Settings.Configuration
             var notifyConfiguration = configuration.Notify;
 
             // Notify | API
-            TryGetConfigurations(ref counter, methodNames, notifyConfiguration.API);
+            TryGetConfigurations(ref counter, methodNames, notifyConfiguration.Api);
 
             // Notify | Templates (Email + SMS)
             TryGetConfigurations(ref counter, methodNames, notifyConfiguration.TemplateId.Email);

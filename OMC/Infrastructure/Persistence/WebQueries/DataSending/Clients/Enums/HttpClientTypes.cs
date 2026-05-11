@@ -83,5 +83,15 @@ namespace WebQueries.DataSending.Clients.Enums
         /// </remarks>
         Telemetry_Klantinteracties = 42,
         #endregion
+
+        #region Objecten (values: 51-60)
+        /// <summary>
+        /// The <see cref="HttpClient"/> used to obtain data from "Berichten" v2+ Web API service.
+        /// </summary>
+        /// <remarks>
+        /// Authorization: Static API key.
+        /// </remarks>
+        Berichten = 51,
+        #endregion
     }
 }

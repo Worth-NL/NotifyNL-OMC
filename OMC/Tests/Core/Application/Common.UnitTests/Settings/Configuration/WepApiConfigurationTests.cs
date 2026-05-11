@@ -121,9 +121,9 @@ namespace Common.Tests.Unit.Settings.Configuration
             // Invalid: " "
             yield return ("#2", () => s_testConfiguration!.ZGW.Endpoint.OpenZaak(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Default URI
-            yield return ("#5", () => s_testConfiguration!.Notify.API.BaseUrl(), CommonResources.Configuration_ERROR_InvalidUri);
+            yield return ("#5", () => s_testConfiguration!.Notify.Api.BaseUrl(), CommonResources.Configuration_ERROR_InvalidUri);
             // Invalid: Not existing
-            yield return ("#6", () => s_testConfiguration!.Notify.API.Key(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
+            yield return ("#6", () => s_testConfiguration!.Notify.Api.Key(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty
             yield return ("#7", () => s_testConfiguration!.Notify.TemplateId.Sms.ZaakCreate(), CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty);
             // Invalid: Empty

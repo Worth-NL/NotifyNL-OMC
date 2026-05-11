@@ -32,8 +32,8 @@ namespace WebQueries.DataSending.Clients.Factories
 
             return new NotifyClientProxy(
                 new NotificationClient(
-                    baseUrl: this._configuration.Notify.API.BaseUrl().AbsoluteUri,  // The base URL to "Notify NL" API Service
-                    apiKey:  this._configuration.Notify.API.Key()));                // 3rd party-specific "Notify NL" API Key
+                    baseUrl: this._configuration.Notify.Api.BaseUrl().AbsoluteUri,  // The base URL to "Notify NL" API Service
+                    apiKey:  this._configuration.Notify.Api.Key()));                // 3rd party-specific "Notify NL" API Key
         }
     }
 }

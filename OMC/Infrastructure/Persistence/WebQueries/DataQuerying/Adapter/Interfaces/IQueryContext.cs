@@ -9,6 +9,7 @@ using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
+using ZhvModels.Mapping.Models.POCOs.Berichten;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
@@ -225,6 +226,15 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #region IQueryCustomerSatisfactionSurvey
         /// <inheritdoc cref="IDomain"/>
         public Task<HttpRequestResponse> SendKtoAsync(string body);
+        #endregion
+
+        #region IQueryVtb
+        /// <summary>
+        /// Gets a message by its UUID from the OpenVTB Berichten API.
+        /// </summary>
+        /// <param name="messageUuid">The UUID of the message to retrieve.</param>
+        /// <returns>The deserialized message data.</returns>
+        Task<MessageData> GetMessageDataAsync(Guid messageUuid);
         #endregion
     }
 }

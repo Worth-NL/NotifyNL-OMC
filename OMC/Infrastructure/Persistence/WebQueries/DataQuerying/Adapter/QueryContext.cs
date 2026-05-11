@@ -9,10 +9,12 @@ using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
 using ZhvModels.Extensions;
+using ZhvModels.Mapping.Models.POCOs.Berichten;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
@@ -26,16 +28,17 @@ namespace WebQueries.DataQuerying.Adapter
     /// <inheritdoc cref="IQueryContext"/>
     public sealed class QueryContext : IQueryContext
     {
-        private readonly IHttpNetworkService _networkService;  // Universal raw HTTP methods
-        private readonly IHttpNetworkServiceKto _networkServiceKto;  // Universal raw HTTP methods
+        private readonly IHttpNetworkService _networkService;
+        private readonly IHttpNetworkServiceKto _networkServiceKto;
 
-        private readonly IQueryBase _queryBase;                // Common class for API microservices
+        private readonly IQueryBase _queryBase;
 
-        private readonly IQueryZaak _queryZaak;                // Case API microservice
-        private readonly IQueryKlant _queryKlant;              // Client API microservice
-        private readonly IQueryBesluiten _queryBesluiten;      // Decision API microservice
-        private readonly IQueryObjecten _queryObjecten;        // Object API microservice
-        private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
+        private readonly IQueryZaak _queryZaak;
+        private readonly IQueryKlant _queryKlant;
+        private readonly IQueryBesluiten _queryBesluiten;
+        private readonly IQueryObjecten _queryObjecten;
+        private readonly IQueryObjectTypen _queryObjectTypen;
+        private readonly IQueryVtb _queryVtb;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -48,9 +51,9 @@ namespace WebQueries.DataQuerying.Adapter
             IQueryKlant queryKlant,
             IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
-            IQueryObjectTypen queryObjectTypen)  // Dependency Injection (DI)
+            IQueryObjectTypen queryObjectTypen,
+            IQueryVtb queryVtb)
         {
-            // Composition
             this._networkService = networkService;
             this._networkServiceKto = networkServiceKto;
             this._queryBase = queryBase;
@@ -59,6 +62,7 @@ namespace WebQueries.DataQuerying.Adapter
             this._queryBesluiten = queryBesluiten;
             this._queryObjecten = queryObjecten;
             this._queryObjectTypen = queryObjectTypen;
+            this._queryVtb = queryVtb;
         }
 
         #region IQueryBase
@@ -78,9 +82,8 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<Case> IQueryContext.GetCaseAsync(Uri? caseUri)
             => await this._queryZaak.TryGetCaseAsync(this._queryBase, caseUri);
 
-
         /// <inheritdoc cref="IQueryContext.GetCaseStatusAsync(Uri)"/>
-        async Task<CaseStatus> IQueryContext.GetCaseStatusAsync(Uri caseStatusUri) 
+        async Task<CaseStatus> IQueryContext.GetCaseStatusAsync(Uri caseStatusUri)
             => await this._queryZaak.TryGetCaseStatusAsync(this._queryBase, caseStatusUri);
 
         /// <inheritdoc cref="IQueryContext.GetCaseStatusTypeAsync(Uri)"/>
@@ -98,27 +101,19 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetLastCaseTypeAsync(CaseStatuses?)"/>
         async Task<CaseType> IQueryContext.GetLastCaseTypeAsync(CaseStatuses? caseStatuses)
         {
-            // 1. Fetch case statuses (if they weren't provided already) from "OpenZaak" Web API service
             caseStatuses ??= await ((IQueryContext)this).GetCaseStatusesAsync();
-
-            // 2. Fetch the case status type from the last case status from "OpenZaak" Web API service
             return await this._queryZaak.GetLastCaseTypeAsync(this._queryBase, caseStatuses.Value);
         }
 
         /// <inheritdoc cref="IQueryContext.GetBsnNumberAsync(Uri)"/>
         async Task<string> IQueryContext.GetBsnNumberAsync(Uri caseUri)
         {
-            // 1. Fetch the case roles from "OpenZaak"
-            // 2. Determine the citizen data from the case roles
-            // 3. Return BSN from the citizen data
             return await this._queryZaak.GetBsnNumberAsync(this._queryBase, caseUri);
         }
 
         /// <inheritdoc cref="IQueryContext.GetCaseTypeUriAsync(Uri?)"/>
         async Task<Uri> IQueryContext.GetCaseTypeUriAsync(Uri? caseUri)
         {
-            // 1a. Gets the case type URI directly from the initial notification
-            // 1b. Use the provided case URI to retrieve the case type URI from CaseDetails
             return await this._queryZaak.TryGetCaseTypeUriAsync(this._queryBase, caseUri);
         }
         #endregion
@@ -131,29 +126,24 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?)"/>
         async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier)
         {
-            // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
             if (caseUri.IsNullOrDefault())
             {
-                return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
+                return bsnNumber.IsNullOrEmpty()
                     ? throw new ArgumentException(QueryResources.Querying_ERROR_Internal_MissingBsnNumber)
                     : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier);
             }
 
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
 
-            // Case #2: Involved Party URI is missing => getting citizen data by its BSN number will be attempted
             if (caseRole.InvolvedPartyUri.IsNullOrDefault())
             {
-                // 1. Fetch BSN using "OpenZaak" Web API service (if it wasn't provided already)
                 bsnNumber ??= await ((IQueryContext)this).GetBsnNumberAsync(caseUri);
-
-                // 2. Fetch citizen data using "OpenKlant" Web API service
                 return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier);
             }
 
-            // Case #3: Since Involved Party URI is present => getting organization data will be attempted
             return await this._queryKlant.TryGetPartyDataAsync(this._queryBase, caseRole.InvolvedPartyUri, caseIdentifier);
         }
+
         /// <inheritdoc cref="IQueryContext.CreateNewContactMomentAsync(string)"/>
         public async Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody)
             => await this._queryKlant.CreateNewContactMomentAsync(this._queryBase, jsonBody);
@@ -222,7 +212,7 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.DeleteObjectAsync(Guid objectUuid)
             => await this._queryObjecten.DeleteObjectAsync(this._networkService, objectUuid);
 
-        /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
+        /// <inheritdoc cref="IQueryContext.GetKtoObjectAsync(Guid)"/>
         Task<KtoObject> IQueryContext.GetKtoObjectAsync(Guid objectUuid)
             => this._queryObjecten.GetKtoObjectAsync(this._queryBase, objectUuid);
         #endregion
@@ -235,6 +225,12 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string)"/>
         string IQueryContext.PrepareObjectJsonBody(string dataJson)
             => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
+        #endregion
+
+        #region IQueryVtb
+        /// <inheritdoc cref="IQueryContext.GetMessageDataAsync(Guid)"/>
+        async Task<MessageData> IQueryContext.GetMessageDataAsync(Guid messageUuid)
+            => await this._queryVtb.GetMessageDataAsync(this._queryBase, messageUuid);
         #endregion
 
         #region Kto

@@ -77,7 +77,7 @@ namespace EventsHandler.Controllers
             try
             {
                 // Health Check URL
-                string healthCheckUrl = $"{this._configuration.Notify.API.BaseUrl()}/_status?simple=true";
+                string healthCheckUrl = $"{this._configuration.Notify.Api.BaseUrl()}/_status?simple=true";
 
                 // Request
                 using HttpResponseMessage result = await new HttpClient().GetAsync(healthCheckUrl);
@@ -305,8 +305,8 @@ namespace EventsHandler.Controllers
             {
                 // Initialize the .NET client of "Notify NL" API service
                 var notifyClient = new NotificationClient(  // TODO: Client to be resolved by IClientFactory (to be testable)
-                    baseUrl: this._configuration.Notify.API.BaseUrl().AbsoluteUri,
-                    apiKey:  this._configuration.Notify.API.Key());
+                    baseUrl: this._configuration.Notify.Api.BaseUrl().AbsoluteUri,
+                    apiKey:  this._configuration.Notify.Api.Key());
 
                 // Determine first possible Email template ID if nothing was provided
                 List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates; // NOTE: Assign to variables for debug purposes

@@ -35,5 +35,11 @@ namespace ZhvModels.Mapping.Enums.NotificatieApi
         /// </summary>
         [JsonPropertyName("besluiten")]
         Decisions = 3,
+
+        /// <summary>
+        /// Message channel.
+        /// </summary>
+        [JsonPropertyName("berichten")]
+        Messages = 4
     }
 }
