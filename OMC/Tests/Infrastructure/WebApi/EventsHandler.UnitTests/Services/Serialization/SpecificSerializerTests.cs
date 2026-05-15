@@ -5,22 +5,22 @@ using Common.Extensions;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Enums.Objecten;
-using ZhvModels.Mapping.Enums.Objecten.vNijmegen;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.Objecten;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant.v2;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
-using ZhvModels.Properties;
-using ZhvModels.Serialization;
-using ZhvModels.Serialization.Interfaces;
-using ZhvModels.Tests.Unit._TestHelpers;
-using Task = ZhvModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Enums.Objecten;
+using ZgwModels.Mapping.Enums.Objecten.vNijmegen;
+using ZgwModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.Objecten;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Properties;
+using ZgwModels.Serialization;
+using ZgwModels.Serialization.Interfaces;
+using ZgwModels.Tests.Unit._TestHelpers;
+using Task = ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 
 namespace EventsHandler.Tests.Unit.Services.Serialization
 {
@@ -453,7 +453,7 @@ namespace EventsHandler.Tests.Unit.Services.Serialization
                        $"The given JSON cannot be deserialized | " +
                        $"Target model: '{targetName}.cs' | " +
                        $"Failed: {failed} | " +
-                       $"Reason: {ZhvResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
+                       $"Reason: {ZgwResources.Deserialization_ERROR_CannotDeserialize_RequiredProperties} | " +
                        $"All required properties: {expectedResult} | " +
                        $"Source JSON: {{}}";
 

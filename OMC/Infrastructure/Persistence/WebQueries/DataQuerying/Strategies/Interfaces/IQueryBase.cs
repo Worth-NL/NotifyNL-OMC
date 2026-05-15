@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.Exceptions;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace WebQueries.DataQuerying.Strategies.Interfaces
 {
