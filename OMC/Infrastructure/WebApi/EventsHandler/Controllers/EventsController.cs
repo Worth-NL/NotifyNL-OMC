@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using WebQueries.Versioning;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Controllers
 {
@@ -31,7 +31,7 @@ namespace EventsHandler.Controllers
         private readonly IProcessingService _processor;
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly IVersionRegister _omcRegister;
-        private readonly IVersionRegister _zhvRegister;
+        private readonly IVersionRegister _zhwRegister;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
@@ -39,13 +39,13 @@ namespace EventsHandler.Controllers
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="omcRegister">The OMC version register.</param>
-        /// <param name="zhvRegister">The ZHV version register.</param>
-        public EventsController(IProcessingService processor, NotificationEventResponder responder, OmcVersionRegister omcRegister, ZhvVersionRegister zhvRegister)
+        /// <param name="zhwRegister">The ZGW version register.</param>
+        public EventsController(IProcessingService processor, NotificationEventResponder responder, OmcVersionRegister omcRegister, ZgwVersionRegister zhwRegister)
         {
             this._processor = processor;
             this._responder = responder;
             this._omcRegister = omcRegister;
-            this._zhvRegister = zhvRegister;
+            this._zhwRegister = zhwRegister;
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace EventsHandler.Controllers
             LogApiResponse(LogLevel.Trace, ApiResources.Endpoint_Events_Version_INFO_ApiVersionRequested);
 
             return Ok(this._omcRegister.GetVersion(
-                      this._zhvRegister.GetVersion()));
+                      this._zhwRegister.GetVersion()));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Services.Validation.Interfaces
 {

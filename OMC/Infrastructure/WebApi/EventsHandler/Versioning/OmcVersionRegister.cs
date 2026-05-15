@@ -34,7 +34,7 @@ namespace EventsHandler.Versioning
                 /* {2} */ Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment),
                 /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
  
-                // ZHV (Open Services)
+                // ZGW (Open Services)
                 /* {4} */ componentsVersions);
         }
     }

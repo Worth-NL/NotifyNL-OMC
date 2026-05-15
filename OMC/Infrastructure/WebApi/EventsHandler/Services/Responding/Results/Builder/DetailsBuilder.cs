@@ -5,7 +5,7 @@ using Common.Models.Messages.Details.Base;
 using EventsHandler.Properties;
 using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
-using ZhvModels.Properties;
+using ZgwModels.Properties;
 
 namespace EventsHandler.Services.Responding.Results.Builder
 {
@@ -44,59 +44,59 @@ namespace EventsHandler.Services.Responding.Results.Builder
         {
             {
                 Reasons.InvalidJson,
-                (ZhvResources.Deserialization_ERROR_InvalidJson_Message,
+                (ZgwResources.Deserialization_ERROR_InvalidJson_Message,
                 [
-                    ZhvResources.Deserialization_ERROR_InvalidJson_Reason1
+                    ZgwResources.Deserialization_ERROR_InvalidJson_Reason1
                 ])
             },
             {
                 Reasons.MissingProperties_Notification,
-                (ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
+                (ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
                 [
-                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
-                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
-                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
+                    ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason1,
+                    ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason2,
+                    ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Reason3
                 ])
             },
             {
                 Reasons.InvalidProperties_Notification,
-                (ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Message,
+                (ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Message,
                 [
-                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1,
-                    ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2
+                    ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason1,
+                    ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Value_Reason2
                 ])
             },
             {
                 Reasons.MissingProperties_Attributes,
-                (ZhvResources.Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message,
+                (ZgwResources.Deserialization_ERROR_NotDeserialized_Attributes_Properties_Message,
                 [
-                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1,
-                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2,
-                    ZhvResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3
+                    ZgwResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason1,
+                    ZgwResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason2,
+                    ZgwResources.Deserialization_INFO_NotDeserialized_Attributes_Properties_Reason3
                 ])
             },
             {
                 Reasons.UnexpectedProperties_Notification,
-                (ZhvResources.Deserialization_ERROR_UnexpectedData_Notification_Message,
+                (ZgwResources.Deserialization_ERROR_UnexpectedData_Notification_Message,
                 [
-                    ZhvResources.Deserialization_INFO_UnexpectedData_Notification_Reason1,
-                    ZhvResources.Deserialization_INFO_UnexpectedData_Notification_Reason2
+                    ZgwResources.Deserialization_INFO_UnexpectedData_Notification_Reason1,
+                    ZgwResources.Deserialization_INFO_UnexpectedData_Notification_Reason2
                 ])
             },
             {
                 Reasons.UnexpectedProperties_Attributes,
-                (ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Message,
+                (ZgwResources.Deserialization_INFO_UnexpectedData_Attributes_Message,
                 [
-                    ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Reason1,
-                    ZhvResources.Deserialization_INFO_UnexpectedData_Attributes_Reason2
+                    ZgwResources.Deserialization_INFO_UnexpectedData_Attributes_Reason1,
+                    ZgwResources.Deserialization_INFO_UnexpectedData_Attributes_Reason2
                 ])
             },
             {
                 Reasons.HttpRequestError,
-                (ZhvResources.HttpRequest_ERROR_Message,
+                (ZgwResources.HttpRequest_ERROR_Message,
                 [
-                    ZhvResources.HttpRequest_ERROR_Reason1,
-                    ZhvResources.HttpRequest_ERROR_Reason2
+                    ZgwResources.HttpRequest_ERROR_Reason1,
+                    ZgwResources.HttpRequest_ERROR_Reason2
                 ])
             },
             {

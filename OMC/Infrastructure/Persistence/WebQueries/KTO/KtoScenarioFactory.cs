@@ -2,7 +2,7 @@
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.KTO.Interfaces;
 using WebQueries.KTO.Models;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace WebQueries.KTO
 {

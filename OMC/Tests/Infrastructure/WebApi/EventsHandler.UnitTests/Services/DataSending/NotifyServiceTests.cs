@@ -7,10 +7,10 @@ using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Serialization.Interfaces;
-using ZhvModels.Tests.Unit._TestHelpers;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization.Interfaces;
+using ZgwModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.DataSending
 {

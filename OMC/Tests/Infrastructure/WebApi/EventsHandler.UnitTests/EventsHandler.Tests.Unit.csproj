@@ -5,7 +5,7 @@
   <PropertyGroup>
     <AssemblyName>OMC.EventsHandler.Tests.Unit</AssemblyName>
 
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
@@ -33,7 +33,7 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\EventsHandler.csproj" />
-    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZgwModels.UnitTests\ZgwModels.Tests.Unit.csproj" />
   </ItemGroup>
 
   <!-- Code coverage -->

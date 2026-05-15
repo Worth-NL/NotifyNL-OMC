@@ -9,13 +9,13 @@ using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace WebQueries.DataQuerying.Adapter.Interfaces
 {

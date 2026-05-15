@@ -15,11 +15,11 @@ using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Properties;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Properties;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.DataProcessing
 {
@@ -64,7 +64,7 @@ namespace EventsHandler.Services.DataProcessing
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
                     // STOP: The notification is not complete; any further processing of it would be pointless
-                    return ProcessingResult.NotPossible(ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
+                    return ProcessingResult.NotPossible(ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
                 }
 
                 // Determine if the received notification is "test" (ping) event => In this case, do nothing

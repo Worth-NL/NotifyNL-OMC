@@ -17,11 +17,11 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Properties;
-using ZhvModels.Serialization.Interfaces;
-using ZhvModels.Tests.Unit._TestHelpers;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Properties;
+using ZgwModels.Serialization.Interfaces;
+using ZgwModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing
 {
@@ -127,7 +127,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
 
                 Assert.That(result.Status, Is.EqualTo(ProcessingStatus.NotPossible));
                 Assert.That(result.Description, Is.EqualTo(CommonResources.Response_Processing_STATUS_NotificationOperation
-                    .Replace("{0}", ZhvResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message)
+                    .Replace("{0}", ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message)
                     .Replace("{1}", "System.Object")));
             });
         }

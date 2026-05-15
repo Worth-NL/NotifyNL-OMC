@@ -8,9 +8,9 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
-using ZhvModels.Properties;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
 {
@@ -48,7 +48,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
             return await queryBase.ProcessGetAsync<DecisionResource>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: resourceUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoDecisionResource);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoDecisionResource);
         }
         #endregion
 
@@ -97,7 +97,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
             return await queryBase.ProcessGetAsync<InfoObject>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: infoObjectUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoInfoObject);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoInfoObject);
         }
         #endregion
 
@@ -122,7 +122,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
             return await queryBase.ProcessGetAsync<Decision>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: decisionUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoDecision);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoDecision);
         }
         #endregion
 
@@ -153,7 +153,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
             return await queryBase.ProcessGetAsync<Documents>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: documentsUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoDocuments);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoDocuments);
         }
         #endregion
 
@@ -189,7 +189,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces
             return await queryBase.ProcessGetAsync<DecisionType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: decisionTypeUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoDecisionType);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoDecisionType);
         }
         #endregion)
 
