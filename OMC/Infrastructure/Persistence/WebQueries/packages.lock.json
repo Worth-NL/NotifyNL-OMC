@@ -318,7 +318,7 @@
           "OMC.Common": "[1.0.0, )"
         }
       },
-      "OMC.ZhvModels": {
+      "OMC.ZgwModels": {
         "type": "Project",
         "dependencies": {
           "OMC.Common": "[1.0.0, )"

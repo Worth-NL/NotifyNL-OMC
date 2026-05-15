@@ -8,11 +8,11 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Task;
-using ZhvModels.Properties;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
 {
@@ -52,7 +52,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
             return await queryBase.ProcessGetAsync<CommonTaskData>(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: taskObjectUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoTask);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoTask);
         }
         #endregion
 
@@ -78,7 +78,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
             return await queryBase.ProcessGetAsync<MessageObject>(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: taskObjectUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoMessage);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoMessage);
         }
         #endregion
         #pragma warning restore CA1822
@@ -125,7 +125,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
             return await queryBase.ProcessGetAsync<KtoObject>(
                 httpClientType: HttpClientTypes.Objecten,
                 uri: getObjectUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoMessage);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoMessage);
         }
         #endregion
 

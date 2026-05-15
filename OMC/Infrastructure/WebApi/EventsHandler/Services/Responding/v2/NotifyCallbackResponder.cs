@@ -10,10 +10,10 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.Register.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotifyNL;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.NotifyNL;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v2
 {

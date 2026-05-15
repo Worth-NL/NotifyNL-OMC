@@ -1,10 +1,12 @@
-## 1.18.0
+## 2.0.0
 
-Implements PostGuard endpoint to send encrypted pdfs unlockable with yivi wallets.
+- Upgrades .net8.0 => to .net10.0
+- Implements PostGuard endpoint to send encrypted pdfs unlockable with yivi wallets.
+- Renames all "Zhv" endpoints to "Zgw"
 
 ## 1.17.19
 
-Add custom GovUkNotify Client to accept extras when sending letters, and return 202 when confirm without reference.
+- Add custom GovUkNotify Client to accept extras when sending letters, and return 202 when confirm without reference.
 
 ## 1.17.18
 

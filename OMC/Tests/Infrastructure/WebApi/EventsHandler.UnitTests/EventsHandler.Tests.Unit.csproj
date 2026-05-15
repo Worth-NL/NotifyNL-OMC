@@ -33,7 +33,7 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\EventsHandler.csproj" />
-    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZgwModels.UnitTests\ZgwModels.Tests.Unit.csproj" />
   </ItemGroup>
 
   <!-- Code coverage -->

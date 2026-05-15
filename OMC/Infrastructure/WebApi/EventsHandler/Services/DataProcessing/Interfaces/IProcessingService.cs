@@ -2,7 +2,7 @@
 
 using Common.Models.Responses;
 using System.Text.Json;
-using ZhvModels.Mapping.Enums.OpenKlant;
+using ZgwModels.Mapping.Enums.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Interfaces
 {

@@ -5,9 +5,9 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.v2;
-using ZhvModels.Properties;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.v2;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
 {
@@ -53,7 +53,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
             return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v2
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseWithRoleUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseRole);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseRole);
         }
         #endregion
 
@@ -70,7 +70,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
             return await queryBase.ProcessGetAsync<CaseDetails>(  // NOTE: CaseDetails v2
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseDetails);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion
     }
