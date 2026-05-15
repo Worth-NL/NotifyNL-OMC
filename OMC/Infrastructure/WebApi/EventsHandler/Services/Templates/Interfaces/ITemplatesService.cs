@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using ZhvModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.Interfaces;
 
 namespace EventsHandler.Services.Templates.Interfaces
 {

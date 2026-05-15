@@ -533,11 +533,11 @@
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "OMC.SecretsManager": "[1.0.0, )",
-          "OMC.ZhvModels": "[1.0.0, )",
+          "OMC.ZgwModels": "[1.0.0, )",
           "Sentry.AspNetCore": "[4.13.0, )"
         }
       },
-      "OMC.ZhvModels": {
+      "OMC.ZgwModels": {
         "type": "Project",
         "dependencies": {
           "OMC.Common": "[1.0.0, )"

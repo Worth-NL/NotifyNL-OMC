@@ -15,11 +15,11 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.Properties;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Enums.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.Objecten.Message;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Enums.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementations
 {

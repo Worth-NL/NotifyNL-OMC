@@ -22,8 +22,8 @@ using System.Runtime.InteropServices;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Controllers
 {

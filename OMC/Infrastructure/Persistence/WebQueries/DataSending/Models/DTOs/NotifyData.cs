@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using Notify.Models.Responses;
-using ZhvModels.Enums;
+using ZgwModels.Enums;
 
 namespace WebQueries.DataSending.Models.DTOs
 {

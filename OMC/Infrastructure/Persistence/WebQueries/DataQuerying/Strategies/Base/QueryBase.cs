@@ -5,9 +5,9 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization.Interfaces;
 
 namespace WebQueries.DataQuerying.Strategies.Base
 {
