@@ -419,7 +419,7 @@ Usings.cs
  nunit/4.2.2/lib/net6.0/
   nunit.framework.dll
   nunit.framework.legacy.dll
- postsharp.redist/2024.1.6/lib/net8.0/PostSharp.dll
+ postsharp.redist/2026.0.9/lib/net10.0/PostSharp.dll
  scrutor/3.3.0/lib/netcoreapp3.1/Scrutor.dll
  sentry.aspnetcore/4.13.0/lib/net8.0/Sentry.AspNetCore.dll
  sentry.extensions.logging/4.13.0/lib/net8.0/Sentry.Extensions.Logging.dll
