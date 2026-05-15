@@ -382,7 +382,7 @@ Services/Versioning/ZgwVersionRegisterTests.cs
  WindowsBase.dll
 <NUGET>/
  castle.core/5.1.1/lib/net6.0/Castle.Core.dll
- e4a.postguard/0.2.1/lib/net10.0/E4A.PostGuard.dll
+ e4a.postguard/0.3.0/lib/net10.0/E4A.PostGuard.dll
  govuknotify/7.0.2-custom/lib/net6.0/GovukNotify.dll
  jetbrains.annotations/2024.3.0/lib/netstandard2.0/JetBrains.Annotations.dll
  jwt/7.1.0/lib/netstandard2.0/JWT.dll
@@ -412,7 +412,7 @@ Services/Versioning/ZgwVersionRegisterTests.cs
  nunit/4.2.2/lib/net6.0/
   nunit.framework.dll
   nunit.framework.legacy.dll
- postsharp.redist/2024.1.6/lib/net8.0/PostSharp.dll
+ postsharp.redist/2026.0.9/lib/net10.0/PostSharp.dll
  sentry.aspnetcore/4.13.0/lib/net8.0/Sentry.AspNetCore.dll
  sentry.extensions.logging/4.13.0/lib/net8.0/Sentry.Extensions.Logging.dll
  sentry/4.13.0/lib/net8.0/Sentry.dll

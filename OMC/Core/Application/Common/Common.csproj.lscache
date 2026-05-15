@@ -281,7 +281,7 @@ Versioning/
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
- e4a.postguard/0.2.1/lib/net10.0/E4A.PostGuard.dll
+ e4a.postguard/0.3.0/lib/net10.0/E4A.PostGuard.dll
  jetbrains.annotations/2024.3.0/lib/netstandard2.0/JetBrains.Annotations.dll
  macross.json.extensions/3.0.0/lib/net6.0/Macross.Json.Extensions.dll
  microsoft.extensions.configuration.abstractions/8.0.0/lib/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll
@@ -290,7 +290,7 @@ Versioning/
  microsoft.extensions.dependencyinjection/8.0.1/lib/net8.0/Microsoft.Extensions.DependencyInjection.dll
  microsoft.extensions.logging.abstractions/2.1.1/lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll
  microsoft.extensions.primitives/8.0.0/lib/net8.0/Microsoft.Extensions.Primitives.dll
- postsharp.redist/2024.1.6/lib/net8.0/PostSharp.dll
+ postsharp.redist/2026.0.9/lib/net10.0/PostSharp.dll
 
 [analyzerReferences]
 <DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.7/analyzers/dotnet/cs/
