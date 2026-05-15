@@ -249,7 +249,7 @@ _TestHelpers/NotificationEventHandler.cs
  WindowsBase.dll
 <NUGET>/
  castle.core/5.1.1/lib/net6.0/Castle.Core.dll
- e4a.postguard/0.2.1/lib/net10.0/E4A.PostGuard.dll
+ e4a.postguard/0.3.0/lib/net10.0/E4A.PostGuard.dll
  jetbrains.annotations/2024.3.0/lib/netstandard2.0/JetBrains.Annotations.dll
  macross.json.extensions/3.0.0/lib/net6.0/Macross.Json.Extensions.dll
  microsoft.codecoverage/17.11.1/lib/netcoreapp3.1/Microsoft.VisualStudio.CodeCoverage.Shim.dll
@@ -280,7 +280,7 @@ _TestHelpers/NotificationEventHandler.cs
  nunit/4.2.2/lib/net6.0/
   nunit.framework.dll
   nunit.framework.legacy.dll
- postsharp.redist/2024.1.6/lib/net8.0/PostSharp.dll
+ postsharp.redist/2026.0.9/lib/net10.0/PostSharp.dll
  system.diagnostics.eventlog/6.0.0/lib/net6.0/System.Diagnostics.EventLog.dll
 
 [analyzerReferences]
