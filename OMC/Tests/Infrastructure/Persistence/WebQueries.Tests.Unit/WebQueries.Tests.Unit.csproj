@@ -3,7 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>OMC.ZhvModels.Tests.Unit</AssemblyName>
+    <AssemblyName>OMC.ZgwModels.Tests.Unit</AssemblyName>
 
     <TargetFramework>net10.0</TargetFramework>
     

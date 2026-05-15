@@ -32,7 +32,7 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Domain\SecretsManager\SecretsManager.csproj" />
-    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels\ZhvModels\ZhvModels.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZgwModels\ZgwModels\ZgwModels.csproj" />
   </ItemGroup>
 
   <!-- Exposition to internal members -->

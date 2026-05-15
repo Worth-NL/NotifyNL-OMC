@@ -17,10 +17,10 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
 {

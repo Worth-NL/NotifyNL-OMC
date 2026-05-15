@@ -5,7 +5,7 @@ using EventsHandler.Services.DataProcessing.Models.Responses;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces
 {

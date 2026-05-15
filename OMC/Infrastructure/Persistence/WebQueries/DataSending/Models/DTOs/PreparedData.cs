@@ -1,7 +1,7 @@
 ﻿// © 2024, Worth Systems.
 
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.DataSending.Models.DTOs
 {

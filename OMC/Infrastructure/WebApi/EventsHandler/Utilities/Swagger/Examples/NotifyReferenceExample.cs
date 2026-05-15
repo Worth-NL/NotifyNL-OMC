@@ -3,7 +3,7 @@
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {

@@ -101,7 +101,7 @@ jobs:
         test-project:
           [
             "OMC/Tests/Core/Application/Common.UnitTests",
-            "OMC/Tests/Core/Domain/ZhvModels.UnitTests",
+            "OMC/Tests/Core/Domain/ZgwModels.UnitTests",
             "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit",
             "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests",
             "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests",

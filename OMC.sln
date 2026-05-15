@@ -51,9 +51,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Tests.Utilities", "O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Tests.Unit", "OMC\Tests\Core\Application\Common.UnitTests\Common.Tests.Unit.csproj", "{462601F4-A2C9-4378-A5D6-83DBDE0D4B69}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZhvModels", "OMC\Core\Domain\ZhvModels\ZhvModels\ZhvModels.csproj", "{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZgwModels", "OMC\Core\Domain\ZgwModels\ZgwModels\ZgwModels.csproj", "{ED8BB585-AE4F-4D47-BC09-48D8845ED98B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZhvModels.Tests.Unit", "OMC\Tests\Core\Domain\ZhvModels.UnitTests\ZhvModels.Tests.Unit.csproj", "{688B946C-CA0D-483B-AC05-EC88867B46D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZgwModels.Tests.Unit", "OMC\Tests\Core\Domain\ZgwModels.UnitTests\ZgwModels.Tests.Unit.csproj", "{688B946C-CA0D-483B-AC05-EC88867B46D9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{43053F9F-E67B-4410-8934-974A4FD7265A}"
 EndProject

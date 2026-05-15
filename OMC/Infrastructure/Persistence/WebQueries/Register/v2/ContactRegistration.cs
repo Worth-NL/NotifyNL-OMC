@@ -6,8 +6,8 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v2
 {

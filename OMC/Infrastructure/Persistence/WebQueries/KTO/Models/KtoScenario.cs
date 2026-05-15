@@ -3,9 +3,9 @@ using System.Text.Json.Nodes;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.Objecten.KTO;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 
 namespace WebQueries.KTO.Models
 {
