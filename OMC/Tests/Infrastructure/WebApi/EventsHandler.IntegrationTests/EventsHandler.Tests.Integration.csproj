@@ -5,7 +5,7 @@
   <PropertyGroup>
     <AssemblyName>OMC.EventsHandler.Tests.Integration</AssemblyName>
 
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
 
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>

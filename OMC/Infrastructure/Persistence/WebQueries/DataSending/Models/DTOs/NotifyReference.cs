@@ -1,10 +1,10 @@
 ﻿// © 2024, Worth Systems.
 
 using System.Text.Json.Serialization;
-using ZhvModels.Mapping.Models.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.DataSending.Models.DTOs
 {

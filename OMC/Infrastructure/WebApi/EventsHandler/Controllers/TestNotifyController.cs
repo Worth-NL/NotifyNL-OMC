@@ -4,6 +4,8 @@ using Common.Extensions;
 using Common.Models.Messages.Base;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
+using E4A.PostGuard;
+using E4A.PostGuard.Models;
 using EventsHandler.Attributes.Authorization;
 using EventsHandler.Attributes.Validation;
 using EventsHandler.Controllers.Base;
@@ -20,8 +22,8 @@ using System.Runtime.InteropServices;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Controllers
 {
@@ -30,7 +32,7 @@ namespace EventsHandler.Controllers
     /// </summary>
     /// <seealso cref="OmcController"/>
     // Swagger UI
-    [ProducesResponseType(StatusCodes.Status202Accepted,  Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
+    [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(BaseStandardResponseBody))]  // REASON: The API service is up and running
     [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(BaseStandardResponseBody))]  // REASON: Incorrect URL or API key to "Notify NL" API service
     public sealed class TestNotifyController : OmcController  // Swagger UI requires this class to be public
     {
@@ -200,7 +202,7 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]
         // Swagger UI
-        [SwaggerRequestExample(typeof(SendLetterRequest), typeof(SendLetterRequestExample))]  // You may need to create an example class for Swagger
+        [SwaggerRequestExample(typeof(SendLetterRequest), typeof(SendLetterRequestExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendLetterAsync(
             [Optional, FromQuery] string? letterTemplateId,
@@ -213,6 +215,86 @@ namespace EventsHandler.Controllers
                 request.Personalization ?? new Dictionary<string, object>(),
                 request.Extras,
                 request.Reference);
+        }
+
+        /// <summary>
+        /// Encrypts a PDF via PostGuard, uploads it to Cryptify, then sends a Notify NL
+        /// email to the recipient with a link to the encrypted file.
+        /// </summary>
+        /// <remarks>
+        ///   NOTE: This endpoint will encrypt the given PDF, upload it to PostGuard's Cryptify
+        ///   service, and send a real notification email via "Notify NL" to the given address.
+        ///   The PostGuard API key, PKG URL, Cryptify URL and email template ID are all read
+        ///   from configuration (POSTGUARD_API_* and POSTGUARD_TEMPLATEID_* environment variables).
+        /// </remarks>
+        /// <param name="recipientEmail">The email address of the recipient who should receive the encrypted PDF.</param>
+        /// <param name="request">The request body containing the PDF as a base64 string and an optional filename.</param>
+        [HttpPost]
+        [Route($"{UrlStart}SendPostGuardPdf")]
+        // Security
+        [ApiAuthorization]
+        // User experience
+        [AspNetExceptionsHandler]
+        // Swagger UI
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
+        public async Task<IActionResult> SendPostGuardPdfAsync(
+            [Required, FromQuery] string recipientEmail,
+            [Required, FromBody] SendPostGuardRequest request)
+        {
+            try
+            {
+                // Decode the base64 PDF into a stream
+                byte[] pdfBytes = Convert.FromBase64String(request.PdfBase64);
+                await using var pdfStream = new MemoryStream(pdfBytes);
+
+                // Initialize the PostGuard client from configuration
+                var pg = new PostGuard(new PostGuardConfig
+                {
+                    PkgUrl = this._configuration.PostGuard.API.PkgUrl(),
+                    CryptifyUrl = this._configuration.PostGuard.API.CryptifyUrl()
+                });
+
+                // Encrypt and upload the PDF to Cryptify
+                var sealedPdf = pg.Encrypt(new EncryptInput
+                {
+                    Files = [new PgFile(request.FileName, pdfStream)],
+                    Recipients = [pg.Recipient.Email(recipientEmail)],
+                    Sign = pg.Sign.ApiKey(this._configuration.PostGuard.API.Key())
+                });
+
+                UploadResult uploadResult = await sealedPdf.UploadAsync();
+
+                // Use the returned UUID as personalization in the Notify NL email
+                var personalization = new Dictionary<string, object>
+                {
+                    ["postguard_uuid"] = uploadResult.Uuid,
+                    ["download_link"] = $"https://postguard.eu/download?uuid={uploadResult.Uuid}&recipient={Uri.EscapeDataString(recipientEmail)}"
+                };
+
+                // Use template ID from configuration, falling back to first available template
+                string? templateId = this._configuration.PostGuard.TemplateId.SendPostGuardPdf() == Guid.Empty
+                    ? null
+                    : this._configuration.PostGuard.TemplateId.SendPostGuardPdf().ToString();
+
+                // Re-use the existing SendAsync helper to fire the Notify NL email
+                return await SendAsync(
+                    NotifyMethods.Email,
+                    recipientEmail,
+                    templateId,
+                    personalization);
+            }
+            catch (FormatException formatException)
+            {
+                // HttpStatus Code: 400 Bad Request — malformed base64
+                return LogApiResponse(LogLevel.Error,
+                    this._responder.GetResponse(ProcessingResult.Failure(formatException.Message)));
+            }
+            catch (Exception exception)
+            {
+                // HttpStatus Code: 500 Internal Server Error
+                return LogApiResponse(exception,
+                    this._responder.GetExceptionResponse(exception));
+            }
         }
 
         /// <summary>
@@ -250,7 +332,7 @@ namespace EventsHandler.Controllers
         [ApiAuthorization]
         // User experience
         [AspNetExceptionsHandler]
-        [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,
@@ -279,6 +361,7 @@ namespace EventsHandler.Controllers
                     this._responder.GetExceptionResponse(exception));
             }
         }
+
         #endregion
 
         #region Helper methods
@@ -289,7 +372,7 @@ namespace EventsHandler.Controllers
         /// <param name="contactDetails">The recipient's email address or phone number (ignored for letters).</param>
         /// <param name="templateId">The GOV.UK Notify template ID. If null, the first available template for the channel is used.</param>
         /// <param name="personalization">Dictionary of template placeholder values.</param>
-        /// <param name="extras">Optional dictionary of additional letter‑specific options (e.g., postage, letter type). Ignored for email/SMS.</param>
+        /// <param name="extras">Optional dictionary of additional letter-specific options (e.g., postage, letter type). Ignored for email/SMS.</param>
         /// <param name="reference">Optional client reference for the letter (ignored for email/SMS).</param>
         /// <returns>
         ///   The standardized <see cref="ObjectResult"/> API response.
@@ -310,7 +393,7 @@ namespace EventsHandler.Controllers
                     apiKey: this._configuration.Notify.API.Key());
 
                 // Determine first possible Email template ID if nothing was provided
-                List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates; // NOTE: Assign to variables for debug purposes
+                List<TemplateResponse>? allTemplates = (await notifyClient.GetAllTemplatesAsync(notifyMethod.GetEnumName())).templates;
                 templateId ??= allTemplates.First().id;
 
                 // TODO: To be extracted into a dedicated service
@@ -328,7 +411,6 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            // Pass reference and extras only for letter (both may be null)
                             _ = await notifyClient.SendLetterAsync(templateId, null, reference, extras);
                             break;
 
@@ -359,7 +441,6 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            // Pass reference and extras only for letter (both may be null)
                             _ = await notifyClient.SendLetterAsync(templateId, personalization, reference, extras);
                             break;
 
@@ -396,19 +477,25 @@ namespace EventsHandler.Controllers
     /// </summary>
     public class SendLetterRequest
     {
-        /// <summary>
-        /// Optional dictionary of template placeholder values.
-        /// </summary>
+        /// <summary>Optional dictionary of template placeholder values.</summary>
         public Dictionary<string, object>? Personalization { get; set; }
 
-        /// <summary>
-        /// Optional dictionary of additional letter‑specific options (e.g., postage, letter type).
-        /// </summary>
+        /// <summary>Optional dictionary of additional letter-specific options (e.g., postage, letter type).</summary>
         public Dictionary<string, object>? Extras { get; set; }
 
-        /// <summary>
-        /// Optional client reference for the letter.
-        /// </summary>
+        /// <summary>Optional client reference for the letter.</summary>
         public string? Reference { get; set; }
+    }
+
+    /// <summary>
+    /// Request DTO for encrypting and sending a PDF via PostGuard.
+    /// </summary>
+    public class SendPostGuardRequest
+    {
+        /// <summary>The PDF file contents as a base64-encoded string.</summary>
+        public required string PdfBase64 { get; set; }
+
+        /// <summary>The filename to use for the encrypted PDF (e.g. "document.pdf").</summary>
+        public string FileName { get; set; } = "document.pdf";
     }
 }
