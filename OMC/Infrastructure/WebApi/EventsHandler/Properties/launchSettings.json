@@ -1,210 +1,210 @@
 {
-  "profiles": { 
-    "http": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": ""                                                    // string
+  "profiles": {
+    "http": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "" // string
       },
-      "dotnetRunMessages": true,                                                        // bool
-      "applicationUrl": ""                                                              // string (url)
+      "dotnetRunMessages": true, // bool
+      "applicationUrl": "" // string (url)
     },
-    "https": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": ""                                                    // string
+    "https": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "" // string
       },
-      "dotnetRunMessages": true,                                                        // bool
-      "applicationUrl": ""                                                              // string (url)
+      "dotnetRunMessages": true, // bool
+      "applicationUrl": "" // string (url)
     },
-    "IIS Express (Workflow v1)": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": "",                                                   // string
+    "IIS Express (Workflow v1)": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "", // string
 
-        "OMC_ACTOR_ID": "",                                                             // guid
-        "OMC_CONTEXT_PATH": "",                                                         // string
+        "OMC_ACTOR_ID": "", // guid
+        "OMC_CONTEXT_PATH": "", // string
 
-        "OMC_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "OMC_AUTH_JWT_ISSUER": "",                                                      // string (url)
-        "OMC_AUTH_JWT_AUDIENCE": "",                                                    // string (url)
-        "OMC_AUTH_JWT_EXPIRESINMIN": "",                                                // number (minutes)
-        "OMC_AUTH_JWT_USERID": "",                                                      // string
-        "OMC_AUTH_JWT_USERNAME": "",                                                    // string
+        "OMC_AUTH_JWT_SECRET": "", // string (secret)
+        "OMC_AUTH_JWT_ISSUER": "", // string (url)
+        "OMC_AUTH_JWT_AUDIENCE": "", // string (url)
+        "OMC_AUTH_JWT_EXPIRESINMIN": "", // number (minutes)
+        "OMC_AUTH_JWT_USERID": "", // string
+        "OMC_AUTH_JWT_USERNAME": "", // string
 
-        "OMC_FEATURE_WORKFLOW_VERSION": "",                                             // number (version)
+        "OMC_FEATURE_WORKFLOW_VERSION": "", // number (version)
 
-        "ZGW_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "ZGW_AUTH_JWT_ISSUER": "",                                                      // string
-        "ZGW_AUTH_JWT_AUDIENCE": "",                                                    // string
-        "ZGW_AUTH_JWT_EXPIRESINMIN": "",                                                // number
-        "ZGW_AUTH_JWT_USERID": "",                                                      // string (email)
-        "ZGW_AUTH_JWT_USERNAME": "",                                                    // string (name)
+        "ZGW_AUTH_JWT_SECRET": "", // string (secret)
+        "ZGW_AUTH_JWT_ISSUER": "", // string
+        "ZGW_AUTH_JWT_AUDIENCE": "", // string
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "", // number
+        "ZGW_AUTH_JWT_USERID": "", // string (email)
+        "ZGW_AUTH_JWT_USERNAME": "", // string (name)
 
-        "ZGW_AUTH_KEY_OPENKLANT": "",                                                   // string (key)
-        "ZGW_AUTH_KEY_OBJECTEN": "",                                                    // string (key)
-        "ZGW_AUTH_KEY_OBJECTTYPEN": "",                                                 // string (key)
+        "ZGW_AUTH_KEY_OPENKLANT": "", // string (key)
+        "ZGW_AUTH_KEY_OBJECTEN": "", // string (key)
+        "ZGW_AUTH_KEY_OBJECTTYPEN": "", // string (key)
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "",                                            // string (url)
-        "ZGW_ENDPOINT_OPENZAAK": "",                                                    // string (url)
-        "ZGW_ENDPOINT_OPENKLANT": "",                                                   // string (url)
-        "ZGW_ENDPOINT_BESLUITEN": "",                                                   // string (url)
-        "ZGW_ENDPOINT_OBJECTEN": "",                                                    // string (url)
-        "ZGW_ENDPOINT_OBJECTTYPEN": "",                                                 // string (url)
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "",                                             // string (url)
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "", // string (url)
+        "ZGW_ENDPOINT_OPENZAAK": "", // string (url)
+        "ZGW_ENDPOINT_OPENKLANT": "", // string (url)
+        "ZGW_ENDPOINT_BESLUITEN": "", // string (url)
+        "ZGW_ENDPOINT_OBJECTEN": "", // string (url)
+        "ZGW_ENDPOINT_OBJECTTYPEN": "", // string (url)
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // string (url)
 
-        "ZGW_WHITELIST_ZAAKCREATE_IDS": "",                                             // string
-        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "",                                             // string
-        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "",                                              // string
-        "ZGW_WHITELIST_TASKASSIGNED_IDS": "",                                           // string
-        "ZGW_WHITELIST_DECISIONMADE_IDS": "",                                           // string
-        "ZGW_WHITELIST_MESSAGE_ALLOWED": "",                                            // string (bool-as-string)
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "", // string
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "", // string
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "", // string
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "", // string
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "", // string
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "", // string (bool-as-string)
 
-        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "",                              // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "",                           // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "",                        // number
-        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",                     // guid list
-        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "",                               // guid
+        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "", // number
+        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "", // guid list
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "", // guid
 
-        "KTO_AUTH_JWT_CLIENTID": "",                                                    // string
-        "KTO_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "KTO_AUTH_JWT_SCOPE": "",                                                       // string
-        "KTO_AUTH_JWT_ISSUER": "",                                                      // string (url)
+        "KTO_AUTH_JWT_CLIENTID": "", // string
+        "KTO_AUTH_JWT_SECRET": "", // string (secret)
+        "KTO_AUTH_JWT_SCOPE": "", // string
+        "KTO_AUTH_JWT_ISSUER": "", // string (url)
 
-        "KTO_URL": "",                                                                  // string (url)
+        "KTO_URL": "", // string (url)
 
-        "NOTIFY_API_BASEURL": "",                                                       // string (url)
-        "NOTIFY_API_KEY": "",                                                           // string (key)
-        
-        "NOTIFY_TEMPLATEID_DECISIONMADE": "",                                           // guid
+        "NOTIFY_API_BASEURL": "", // string (url)
+        "NOTIFY_API_KEY": "", // string (key)
 
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "",                                        // guid
-        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "",                                     // guid
-        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "",                                  // guid
+        "NOTIFY_TEMPLATEID_DECISIONMADE": "", // guid
 
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "",                                         // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "",                                         // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",                                          // guid
-        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
-        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "", // guid
 
-        "SENTRY_DSN": "",                                                               // string (dsn)
-        "SENTRY_ENVIRONMENT": "",                                                       // string
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "", // guid
 
-        "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
-        "KEYCLOAK_CLIENTID": "",                                                        // string
-        "KEYCLOAK_CLIENTSECRET": "",                                                    // string
-        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
+        "SENTRY_DSN": "", // string (dsn)
+        "SENTRY_ENVIRONMENT": "", // string
 
-        "BRP_BASEURL": "",                                                              // string
-        "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
-        "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
+        "KEYCLOAK_AUTHSERVERURL": "", // string
+        "KEYCLOAK_CLIENTID": "", // string
+        "KEYCLOAK_CLIENTSECRET": "", // string
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "", // string
+
+        "BRP_BASEURL": "", // string
+        "BRP_CLIENTCERT_PEM_PATH": "", // string
+        "BRP_CLIENTKEY_PEM_PATH": "" // string
       }
     },
-    "IIS Express (Workflow v2)": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": "",                                                   // string
+    "IIS Express (Workflow v2)": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "", // string
 
-        "OMC_ACTOR_ID": "",                                                             // guid
-        "OMC_CONTEXT_PATH": "",                                                         // string
+        "OMC_ACTOR_ID": "", // guid
+        "OMC_CONTEXT_PATH": "", // string
 
-        "OMC_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "OMC_AUTH_JWT_ISSUER": "",                                                      // string (url)
-        "OMC_AUTH_JWT_AUDIENCE": "",                                                    // string (url)
-        "OMC_AUTH_JWT_EXPIRESINMIN": "",                                                // number
-        "OMC_AUTH_JWT_USERID": "",                                                      // string
-        "OMC_AUTH_JWT_USERNAME": "",                                                    // string
+        "OMC_AUTH_JWT_SECRET": "", // string (secret)
+        "OMC_AUTH_JWT_ISSUER": "", // string (url)
+        "OMC_AUTH_JWT_AUDIENCE": "", // string (url)
+        "OMC_AUTH_JWT_EXPIRESINMIN": "", // number
+        "OMC_AUTH_JWT_USERID": "", // string
+        "OMC_AUTH_JWT_USERNAME": "", // string
 
-        "OMC_FEATURE_WORKFLOW_VERSION": "",                                             // number
+        "OMC_FEATURE_WORKFLOW_VERSION": "", // number
 
-        "ZGW_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "ZGW_AUTH_JWT_ISSUER": "",                                                      // string
-        "ZGW_AUTH_JWT_AUDIENCE": "",                                                    // string
-        "ZGW_AUTH_JWT_EXPIRESINMIN": "",                                                // number
-        "ZGW_AUTH_JWT_USERID": "",                                                      // string
-        "ZGW_AUTH_JWT_USERNAME": "",                                                    // string
+        "ZGW_AUTH_JWT_SECRET": "", // string (secret)
+        "ZGW_AUTH_JWT_ISSUER": "", // string
+        "ZGW_AUTH_JWT_AUDIENCE": "", // string
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "", // number
+        "ZGW_AUTH_JWT_USERID": "", // string
+        "ZGW_AUTH_JWT_USERNAME": "", // string
 
-        "ZGW_AUTH_KEY_OPENKLANT": "",                                                   // string (key)
-        "ZGW_AUTH_KEY_OBJECTEN": "",                                                    // string (key)
-        "ZGW_AUTH_KEY_OBJECTTYPEN": "",                                                 // string (key)
+        "ZGW_AUTH_KEY_OPENKLANT": "", // string (key)
+        "ZGW_AUTH_KEY_OBJECTEN": "", // string (key)
+        "ZGW_AUTH_KEY_OBJECTTYPEN": "", // string (key)
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "",                                            // string (url)
-        "ZGW_ENDPOINT_OPENZAAK": "",                                                    // string (url)
-        "ZGW_ENDPOINT_OPENKLANT": "",                                                   // string (url)
-        "ZGW_ENDPOINT_BESLUITEN": "",                                                   // string (url)
-        "ZGW_ENDPOINT_OBJECTEN": "",                                                    // string (url)
-        "ZGW_ENDPOINT_OBJECTTYPEN": "",                                                 // string (url)
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "",                                             // string (url)
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "", // string (url)
+        "ZGW_ENDPOINT_OPENZAAK": "", // string (url)
+        "ZGW_ENDPOINT_OPENKLANT": "", // string (url)
+        "ZGW_ENDPOINT_BESLUITEN": "", // string (url)
+        "ZGW_ENDPOINT_OBJECTEN": "", // string (url)
+        "ZGW_ENDPOINT_OBJECTTYPEN": "", // string (url)
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // string (url)
 
-        "ZGW_WHITELIST_ZAAKCREATE_IDS": "",                                             // string
-        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "",                                             // string
-        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "",                                              // string
-        "ZGW_WHITELIST_TASKASSIGNED_IDS": "",                                           // string
-        "ZGW_WHITELIST_DECISIONMADE_IDS": "",                                           // string
-        "ZGW_WHITELIST_MESSAGE_ALLOWED": "",                                            // string
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "", // string
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "", // string
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "", // string
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "", // string
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "", // string
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "", // string
 
-        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "",                              // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "",                           // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "",                        // number
-        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",                     // guid list
-        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "",                               // guid
+        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "", // number
+        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "", // guid list
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "", // guid
 
-        "KTO_AUTH_JWT_CLIENTID": "",                                                    // guid
-        "KTO_AUTH_JWT_SECRET": "",                                                      // string (secret)
-        "KTO_AUTH_JWT_SCOPE": "",                                                       // string
-        "KTO_AUTH_JWT_ISSUER": "",                                                      // string (url)
+        "KTO_AUTH_JWT_CLIENTID": "", // guid
+        "KTO_AUTH_JWT_SECRET": "", // string (secret)
+        "KTO_AUTH_JWT_SCOPE": "", // string
+        "KTO_AUTH_JWT_ISSUER": "", // string (url)
 
-        "KTO_URL": "",                                                                  // string (url)
+        "KTO_URL": "", // string (url)
 
-        "NOTIFY_API_BASEURL": "",                                                       // string (url)
-        "NOTIFY_API_KEY": "",                                                           // string (key)
+        "NOTIFY_API_BASEURL": "", // string (url)
+        "NOTIFY_API_KEY": "", // string (key)
 
-        "NOTIFY_TEMPLATEID_DECISIONMADE": "",                                           // guid
+        "NOTIFY_TEMPLATEID_DECISIONMADE": "", // guid
 
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "",                                       // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "",                                        // guid
-        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "",                                     // guid
-        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "",                                  // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "", // guid
 
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "",                                         // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "",                                         // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",                                          // guid
-        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",                                       // guid
-        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",                                    // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "", // guid
 
-        "SENTRY_DSN": "",                                                               // string (dsn)
-        "SENTRY_ENVIRONMENT": "",                                                       // string
+        "SENTRY_DSN": "", // string (dsn)
+        "SENTRY_ENVIRONMENT": "", // string
 
-        "KEYCLOAK_AUTHSERVERURL": "",                                                   // string
-        "KEYCLOAK_CLIENTID": "",                                                        // string
-        "KEYCLOAK_CLIENTSECRET": "",                                                    // string
-        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",                                           // string
+        "KEYCLOAK_AUTHSERVERURL": "", // string
+        "KEYCLOAK_CLIENTID": "", // string
+        "KEYCLOAK_CLIENTSECRET": "", // string
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "", // string
 
-        "BRP_BASEURL": "",                                                              // string
-        "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
-        "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
+        "BRP_BASEURL": "", // string
+        "BRP_CLIENTCERT_PEM_PATH": "", // string
+        "BRP_CLIENTKEY_PEM_PATH": "" // string
       }
-      }
-    },
-    "Docker": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "publishAllPorts": true,                                                          // bool
-      "useSSL": true                                                                    // bool
     }
   },
+  "Docker": {
+    "commandName": "", // string
+    "launchBrowser": true, // bool
+    "launchUrl": "", // string
+    "publishAllPorts": true, // bool
+    "useSSL": true // bool
+  }
+},
   "$schema": "",                                                                        // string (url)
   "iisSettings": { 
     "windowsAuthentication": true,                                                      // bool

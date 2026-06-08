@@ -8,11 +8,11 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant.Converters;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant.v2;
-using ZhvModels.Properties;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
 {
@@ -91,7 +91,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
                 uri: citizenUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoPartyResults);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);
         }
 
         // NOTE: Single result
@@ -100,7 +100,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             return await queryBase.ProcessGetAsync<PartyResult>(
                 httpClientType: HttpClientTypes.OpenKlant_v2,
                 uri: citizenUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoPartyResults);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoFeedbackKlant);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
@@ -130,7 +130,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoFeedbackKlant);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
         /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>

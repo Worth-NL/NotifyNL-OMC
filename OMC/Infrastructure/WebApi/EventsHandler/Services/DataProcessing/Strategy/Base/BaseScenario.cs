@@ -13,11 +13,11 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
 {

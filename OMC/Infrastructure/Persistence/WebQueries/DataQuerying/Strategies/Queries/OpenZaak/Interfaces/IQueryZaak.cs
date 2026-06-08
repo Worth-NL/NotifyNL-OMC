@@ -8,9 +8,9 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Properties;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
 {
@@ -56,7 +56,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             return await queryBase.ProcessGetAsync<Case>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: new Uri($"{caseUri}?{expandParameter}"), // Request URL with expand parameter
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCase);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCase);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             return await queryBase.ProcessGetAsync<CaseStatus>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: statusUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatuses);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseStatuses);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             return await queryBase.ProcessGetAsync<CaseStatusType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: statusTypeUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseStatusType);
         }
 
         /// <summary>
@@ -132,14 +132,14 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
                 var a = await queryBase.ProcessGetAsync<CaseStatuses>(
                     httpClientType: HttpClientTypes.OpenZaak_v1,
                     uri: caseStatusesUri,
-                    fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatuses);
+                    fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseStatuses);
 
                 return a;
             }
             catch(Exception ex)
             {
                 // The JSON is invalid or cannot be deserialized into the target model
-                throw new JsonException(ZhvResources.HttpRequest_ERROR_NoCaseStatuses, ex);
+                throw new JsonException(ZgwResources.HttpRequest_ERROR_NoCaseStatuses, ex);
             }
         }
 
@@ -162,7 +162,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             return await queryBase.ProcessGetAsync<CaseResultType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: resultTypeUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseStatusType);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
             return await queryBase.ProcessGetAsync<CaseType>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: lastStatusTypeUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseStatusType);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseStatusType);
         }
         #pragma warning restore CA1822
         #endregion

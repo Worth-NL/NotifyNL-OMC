@@ -53,9 +53,9 @@ using WebQueries.KTO;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Serialization;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization;
+using ZgwModels.Serialization.Interfaces;
 using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
@@ -287,122 +287,114 @@ namespace EventsHandler
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
             builder.Services.AddHttpClient<BrpClient>()
-    .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
-    {
-        ILogger<BrpClient> logger = serviceProvider.GetRequiredService<ILogger<BrpClient>>();
-
-        string certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH")!;
-        string keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH")!;
-
-        var handler = new HttpClientHandler();
-
-        if (!string.IsNullOrEmpty(certPath) && !string.IsNullOrEmpty(keyPath))
-        {
-            try
-            {
-                if (File.Exists(certPath) && File.Exists(keyPath))
+                .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
                 {
-                    logger.LogInformation("Loading certificate from PEM files: {CertPath}, {KeyPath}",
-                        certPath, keyPath);
+                    ILogger<BrpClient> logger = serviceProvider.GetRequiredService<ILogger<BrpClient>>();
 
-                    // Read the files
-                    string certPem = File.ReadAllText(certPath);
-                    string keyPem = File.ReadAllText(keyPath);
+                    string? certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH");
+                    string? keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH");
 
-                    // Create certificate from PEM
-                    var cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+                    var handler = new HttpClientHandler();
 
-                    // Convert to PFX to get full properties
-                    byte[] pfxBytes = cert.Export(X509ContentType.Pfx);
-                    var fullCert = new X509Certificate2(
-                        pfxBytes,
-                        (string?)null,
-                        X509KeyStorageFlags.MachineKeySet |
-                        X509KeyStorageFlags.EphemeralKeySet |
-                        X509KeyStorageFlags.Exportable
-                    );
-
-                    // Now we have all properties
-                    logger.LogInformation(
-                        "Certificate loaded successfully:\n" +
-                        "  Subject: {Subject}\n" +
-                        "  Issuer: {Issuer}\n" +
-                        "  Thumbprint: {Thumbprint}\n" +
-                        "  NotBefore: {NotBefore}\n" +
-                        "  NotAfter: {NotAfter}\n" +
-                        "  HasPrivateKey: {HasPrivateKey}\n" +
-                        "  KeyAlgorithm: {KeyAlgorithm}",
-                        fullCert.Subject,
-                        fullCert.Issuer,
-                        fullCert.Thumbprint,
-                        fullCert.NotBefore,
-                        fullCert.NotAfter,
-                        fullCert.HasPrivateKey,
-                        fullCert.GetKeyAlgorithm()
-                    );
-
-                    // Check CN and OU (important for WS Gateway)
-                    IEnumerable<string> subjectParts = fullCert.Subject
-                        .Split(',')
-                        .Select(p => p.Trim())
-                        .Where(p => p.StartsWith("CN=", StringComparison.OrdinalIgnoreCase) ||
-                                   p.StartsWith("OU=", StringComparison.OrdinalIgnoreCase));
-
-                    foreach (string part in subjectParts)
+                    if (!string.IsNullOrWhiteSpace(certPath) && !string.IsNullOrWhiteSpace(keyPath))
                     {
-                        logger.LogInformation("  Subject part: {Part}", part);
+                        try
+                        {
+                            if (File.Exists(certPath) && File.Exists(keyPath))
+                            {
+                                logger.LogInformation("Loading certificate from PEM files: {CertPath}, {KeyPath}",
+                                    certPath, keyPath);
+
+                                string certPem = File.ReadAllText(certPath);
+                                string keyPem = File.ReadAllText(keyPath);
+
+                                // ✅ Modern API (no obsolete constructors, no PFX roundtrip)
+                                using var cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+
+                                // ⚠️ IMPORTANT FIX:
+                                // Ensure private key is actually usable across platforms
+                                // CreateFromPem sometimes yields a cert that is not fully exportable depending on runtime
+                                var fullCert = cert.CopyWithPrivateKey(cert.GetRSAPrivateKey()!);
+
+                                logger.LogInformation(
+                                    "Certificate loaded successfully:\n" +
+                                    "  Subject: {Subject}\n" +
+                                    "  Issuer: {Issuer}\n" +
+                                    "  Thumbprint: {Thumbprint}\n" +
+                                    "  NotBefore: {NotBefore}\n" +
+                                    "  NotAfter: {NotAfter}\n" +
+                                    "  HasPrivateKey: {HasPrivateKey}\n" +
+                                    "  KeyAlgorithm: {KeyAlgorithm}",
+                                    fullCert.Subject,
+                                    fullCert.Issuer,
+                                    fullCert.Thumbprint,
+                                    fullCert.NotBefore,
+                                    fullCert.NotAfter,
+                                    fullCert.HasPrivateKey,
+                                    fullCert.GetKeyAlgorithm()
+                                );
+
+                                // Log CN/OU for debugging WS Gateway identity checks
+                                IEnumerable<string> subjectParts = fullCert.Subject
+                                    .Split(',')
+                                    .Select(p => p.Trim())
+                                    .Where(p =>
+                                        p.StartsWith("CN=", StringComparison.OrdinalIgnoreCase) ||
+                                        p.StartsWith("OU=", StringComparison.OrdinalIgnoreCase));
+
+                                foreach (string part in subjectParts)
+                                {
+                                    logger.LogInformation("  Subject part: {Part}", part);
+                                }
+
+                                handler.ClientCertificates.Add(fullCert);
+
+                                logger.LogInformation("Certificate added to HttpClientHandler");
+                            }
+                            else
+                            {
+                                logger.LogWarning(
+                                    "⚠️ Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
+                                    File.Exists(certPath), File.Exists(keyPath));
+
+                                logger.LogWarning(
+                                    "BRP functionality disabled due to missing certificate files.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Failed to load BRP client certificate");
+
+                            logger.LogWarning(
+                                "Application will continue without BRP functionality.");
+                        }
+                    }
+                    else
+                    {
+                        logger.LogWarning(
+                            "⚠️ BRP certificate paths not configured. CertPathSet: {CertSet}, KeyPathSet: {KeySet}",
+                            !string.IsNullOrWhiteSpace(certPath),
+                            !string.IsNullOrWhiteSpace(keyPath));
+
+                        logger.LogInformation(
+                            "BRP functionality disabled (no certificate configuration).");
                     }
 
-                    handler.ClientCertificates.Add(fullCert);
-                    logger.LogInformation("Certificate added to HttpClientHandler");
-                }
-                else
-                {
-                    logger.LogWarning(
-                        "⚠️ Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
-                        File.Exists(certPath), File.Exists(keyPath)
-                    );
-                    logger.LogWarning(
-                        "The application will start without BRP functionality. " +
-                        "BRP API calls will fail with certificate errors.");
-                }
-            }
-            catch (Exception ex)
-            {
-                // CHANGE: Log but don't throw - let app continue without BRP
-                logger.LogError(ex, "Failed to load BRP client certificate");
-                logger.LogWarning(
-                    "The application will start without BRP functionality. " +
-                    "BRP API calls will fail with certificate errors.");
-            }
-        }
-        else
-        {
-            // CHANGE: Log warning instead of error, don't throw
-            logger.LogWarning(
-                "⚠️ BRP certificate paths not configured. BRP_CLIENTCERT_PEM_PATH: {CertPathSet}, BRP_CLIENTKEY_PEM_PATH: {KeyPathSet}",
-                !string.IsNullOrEmpty(certPath), !string.IsNullOrEmpty(keyPath)
-            );
-            logger.LogInformation(
-                "The application will start without BRP functionality. " +
-                "Configure certificates to enable BRP API access.");
-        }
+                #if DEBUG
+                    handler.ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
-        // Only disable SSL validation in DEBUG mode
-#if DEBUG
-        handler.ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        logger.LogWarning("SSL certificate validation is DISABLED (DEBUG mode only!)");
-#endif
+                    logger.LogWarning("SSL certificate validation is DISABLED (DEBUG mode only)");
+                #endif
 
-        return handler;
-    });
+                    return handler;
+                });
 
             builder.Services.RegisterClientFactories();
 
             // Versioning
             builder.Services.AddSingleton<OmcVersionRegister>();
-            builder.Services.AddSingleton<ZhvVersionRegister>();
+            builder.Services.AddSingleton<ZgwVersionRegister>();
 
             // User Interaction
             builder.Services.RegisterResponders(builder);
