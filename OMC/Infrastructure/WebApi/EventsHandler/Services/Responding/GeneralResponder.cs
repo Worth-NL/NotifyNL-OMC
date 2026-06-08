@@ -15,10 +15,10 @@ using Notify.Exceptions;
 using System.Net;
 using System.Text.RegularExpressions;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotifyNL;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.NotifyNL;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding
 {

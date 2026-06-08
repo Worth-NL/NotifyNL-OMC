@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotifyNL;
-using ZhvModels.Mapping.Models.POCOs.NotifyNL;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotifyNL;
+using ZgwModels.Mapping.Models.POCOs.NotifyNL;
+using ZgwModels.Serialization.Interfaces;
 
 namespace EventsHandler.Services.Responding.v1
 {

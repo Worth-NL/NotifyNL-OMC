@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.Responding.Enums
 {

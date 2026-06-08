@@ -8,9 +8,9 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
 {
@@ -66,7 +66,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
         private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             lock (s_padlock)
@@ -90,7 +90,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetSmsTemplateId()
           => this.Configuration.Notify.TemplateId.Sms.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
         {
             return GetEmailPersonalization(partyData);  // NOTE: Both implementations are identical
@@ -102,7 +102,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetLetterTemplateId()
             => this.Configuration.Notify.TemplateId.Letter.ZaakUpdate();
 
-        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
         {
             lock (s_padlock)
