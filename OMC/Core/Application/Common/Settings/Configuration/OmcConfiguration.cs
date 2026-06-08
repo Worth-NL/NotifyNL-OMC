@@ -85,6 +85,12 @@ namespace Common.Settings.Configuration
         [Config]
         // ReSharper disable once InconsistentNaming
         public KtoComponent KTO { get; }
+
+        /// <summary>
+        /// Gets the settings used by PostGuard encryption service.
+        /// </summary>
+        [Config]
+        public PostGuardComponent PostGuard { get; }
         #endregion
 
         /// <summary>
@@ -98,6 +104,8 @@ namespace Common.Settings.Configuration
             this.ZGW = new ZgwComponent(serviceProvider, nameof(ZGW), this);
             this.Notify = new NotifyComponent(serviceProvider, nameof(Notify));
             this.KTO = new KtoComponent(serviceProvider, nameof(KTO));  // Added KTO Component
+            this.PostGuard = new PostGuardComponent(serviceProvider, nameof(PostGuard));
+
         }
 
         #region AppSettings.json
@@ -1318,6 +1326,88 @@ namespace Common.Settings.Configuration
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
                 }
+            }
+        }
+
+        /// <summary>
+        /// The "PostGuard" part of the settings.
+        /// </summary>
+        [UsedImplicitly]
+        public sealed record PostGuardComponent
+        {
+            /// <inheritdoc cref="ApiComponent"/>
+            [Config]
+            public ApiComponent API { get; }
+
+            /// <inheritdoc cref="TemplateIdComponent"/>
+            [Config]
+            public TemplateIdComponent TemplateId { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="PostGuardComponent"/> class.
+            /// </summary>
+            public PostGuardComponent(IServiceProvider serviceProvider, string parentName)
+            {
+                ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
+
+                this.API = new ApiComponent(loadersContext, parentName);
+                this.TemplateId = new TemplateIdComponent(loadersContext, parentName);
+            }
+
+            /// <summary>
+            /// The "API" part of the settings.
+            /// </summary>
+            public sealed record ApiComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="ApiComponent"/> class.
+                /// </summary>
+                public ApiComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(API));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string Key()
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(Key));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string PkgUrl()
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(PkgUrl));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string CryptifyUrl()
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(CryptifyUrl));
+            }
+
+            /// <summary>
+            /// The "TemplateId" part of the settings.
+            /// </summary>
+            public sealed record TemplateIdComponent
+            {
+                private readonly ILoadersContext _loadersContext;
+                private readonly string _currentPath;
+
+                /// <summary>
+                /// Initializes a new instance of the <see cref="TemplateIdComponent"/> class.
+                /// </summary>
+                public TemplateIdComponent(ILoadersContext loadersContext, string parentPath)
+                {
+                    this._loadersContext = loadersContext;
+                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(TemplateId));
+                }
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public Guid SendPostGuardPdf()
+                    => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(SendPostGuardPdf));
             }
         }
 

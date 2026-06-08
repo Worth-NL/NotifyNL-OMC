@@ -7,8 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 {
@@ -47,7 +47,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetSmsTemplateId()
             => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetSmsPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Dictionary<string, object> GetSmsPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
@@ -62,7 +62,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes
@@ -72,7 +72,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetLetterTemplateId()
             => NotImplemented<Guid>();  // NOTE: Only for compilation purposes
 
-        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZhvModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         [ExcludeFromCodeCoverage(Justification = ExclusionJustificationMessage)]
         protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
             => NotImplemented<Dictionary<string, object>>();  // NOTE: Only for compilation purposes

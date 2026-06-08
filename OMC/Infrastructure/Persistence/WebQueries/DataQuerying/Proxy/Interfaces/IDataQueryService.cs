@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
 using WebQueries.DataQuerying.Adapter.Interfaces;
-using ZhvModels.Mapping.Models.Interfaces;
+using ZgwModels.Mapping.Models.Interfaces;
 
 namespace WebQueries.DataQuerying.Proxy.Interfaces
 {

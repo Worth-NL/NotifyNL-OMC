@@ -17,15 +17,15 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.Properties;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Enums.OpenKlant;
-using ZhvModels.Mapping.Enums.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Enums.OpenKlant;
+using ZgwModels.Mapping.Enums.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
 
 namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementations
 {
