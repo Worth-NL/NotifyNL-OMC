@@ -114,7 +114,7 @@ namespace EventsHandler.Controllers
         /// </remarks>
         /// <param name="cloudEvent">The CloudEvent from ZGW API (application/cloudevents+json).</param>
         [HttpPost]
-        [Route("cloudevents")]
+        [Route("Cloudevents")]
         [ApiAuthorization]
         [AspNetExceptionsHandler]
         [ProducesResponseType(StatusCodes.Status200OK)]
