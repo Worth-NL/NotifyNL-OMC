@@ -1,4 +1,4 @@
-﻿// © 2023, Worth Systems.
+﻿// © 2023. Worth Systems.
 
 using Common.Constants;
 using Common.Extensions;
@@ -15,6 +15,7 @@ using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Responding;
@@ -36,7 +37,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using WebQueries.BRP;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy;
@@ -51,6 +52,9 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO;
 using WebQueries.KTO.Interfaces;
+using WebQueries.MijnOverheid;
+using WebQueries.MijnOverheid.Clients;
+using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
@@ -63,41 +67,25 @@ using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
-using WebQueries.BRP;
-using WebQueries.MijnOverheid.Clients;
-using WebQueries.MijnOverheid.Interfaces;
 
 namespace EventsHandler
 {
-    /// <summary>
-    /// The entry point to the Web API application, responsible for configuring and starting its instance.
-    /// </summary>
     [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
     {
-        /// <summary>
-        /// Custom simplified version of application configuration.
-        /// </summary>
-        /// <param name="args">The <see cref="Program"/> startup arguments.</param>
         internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
-                .AddConfiguration()       // 1. Configuration (appsettings.json)
-                .AddExternalServices()    // 2. Microsoft .NET services
-                .AddInternalServices()    // 3. Internal OMC services
-                .ConfigureHttpPipeline()  // 4. Configure pipeline (what should happen during HTTP request-response cycle)
-                .Run();                   // 5. Start the application
+                .AddConfiguration()
+                .AddExternalServices()
+                .AddInternalServices()
+                .ConfigureHttpPipeline()
+                .Run();
         }
 
         #region Configuration
-        /// <summary>
-        /// Adding application configurations from JSON files.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
         {
-            // Configuration appsettings.json files
             const string appSettingsRootName = "appsettings";
 
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
@@ -108,20 +96,11 @@ namespace EventsHandler
         #endregion
 
         #region Services: External (.NET)
-        /// <summary>
-        /// Registration of .NET services, used by the application.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
-            // API Controllers
             builder.Services.AddControllers();
-
-            // Navigate directly to the endpoints from API Controllers (instead of using explicit .Map() routing in config)
             builder.Services.AddEndpointsApiExplorer();
 
-            // Authentication using JWT (JSON Web Tokens) Bearer
             builder.Services.AddAuthentication(setup =>
             {
                 setup.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -133,29 +112,22 @@ namespace EventsHandler
                 EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
                 OmcConfiguration configuration = builder.Services.GetRequiredService<OmcConfiguration>();
 
-                // Disable some default validations, preventing the JWT token to be recognized as valid
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Validation parameters
                     ValidIssuer = configuration.OMC.Auth.JWT.Issuer(),
                     ValidAudience = configuration.OMC.Auth.JWT.Audience(),
                     IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Auth.JWT.Secret()),
-
-                    // Validation criteria
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true
                 };
 
-                // Skip repacking user Claims into Microsoft specific objects
                 setup.MapInboundClaims = false;
             });
 
-            // Swagger UI: Configuration
             builder.Services.AddSwaggerGen(setup =>
             {
-                // Enable API documentation in Swagger UI
                 setup.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = ApiResources.Swagger_UI_Version,
@@ -163,15 +135,12 @@ namespace EventsHandler
                     Description = ApiResources.Swagger_UI_Description
                 });
 
-                // Enable [SwaggerRequestExample] filter for parameters in Swagger UI
                 setup.ExampleFilters();
 
-                // Map XML documentation from API Controllers into Swagger UI
                 string xmlDocumentationFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlDocumentationPath = Path.Combine(AppContext.BaseDirectory, xmlDocumentationFile);
                 setup.IncludeXmlComments(xmlDocumentationPath);
 
-                // Enable required JWT authentication tokens from Headers in Swagger UI
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
@@ -187,17 +156,15 @@ namespace EventsHandler
                     }
                 };
 
-                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);  // Enable authentication input (button) to provide JWT in Swagger UI
-                setup.AddSecurityRequirement(new OpenApiSecurityRequirement                // Add authentications requirements for API methods in Swagger UI
+                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
                 });
             });
 
-            // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
-            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();  // NOTE: Any class which belongs to the solution
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();
 
-            // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
             {
                 options.ConfigureSentryOptions(isDebugEnabled: builder.Environment.IsDevelopment());
@@ -206,70 +173,37 @@ namespace EventsHandler
             return builder;
         }
 
-        #region Sentry configuration
-        /// <summary>
-        /// Configure logging options for Sentry.
-        /// <para>
-        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
-        /// </para>
-        /// </summary>
         private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
-            // Sentry Data Source Name (DSN) => where to log application events
             options.Dsn = Environment.GetEnvironmentVariable(ConfigExtensions.SentryDsn)
-                          ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
-                                            // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
-                                            // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
+                          ?? string.Empty;
 
-            // Informational messages are the most detailed to log
-            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
-                                                     : SentryLevel.Info;  // Less detailed (not affecting performance) settings for logs
-
-            // Detailed debugging logs in the console window
+            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug : SentryLevel.Info;
             options.Debug = isDebugEnabled;
-
-            // Enables Sentry's "Release Health" feature
             options.AutoSessionTracking = true;
-
-            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
             options.IsGlobalModeEnabled = false;
-
-            // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
-            // Fetch version from EventsHandler.Csproj and set OmcVersion.
             Version? version = Assembly.GetEntryAssembly()?.GetName().Version;
 
             if (version is not null)
                 OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
 
-            // Version of the application ("OMC Web API" in this case)
             options.Release = OmcVersion.GetExpandedVersion();
-
-            // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment) ??
                                   CommonValues.Default.Models.DefaultStringValue;
         }
         #endregion
-        #endregion
 
         #region Services: Internal (OMC)
-        /// <summary>
-        /// Registration of custom services, used for business logic and internal processes.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with custom services.</returns>
         private static WebApplicationBuilder AddInternalServices(this WebApplicationBuilder builder)
         {
-            // Configurations
             builder.Services.AddSingleton<OmcConfiguration>();
             builder.Services.RegisterLoadingStrategies();
 
-            // JWT generation
             builder.Services.RegisterEncryptionStrategy(builder);
 
-            // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
@@ -278,137 +212,126 @@ namespace EventsHandler
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.RegisterNotifyStrategies();
 
-            // Domain queries and resources
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
             builder.Services.RegisterOpenServices(builder);
 
-            // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
-            builder.Services.AddHttpClient<IMijnOverheidClient, MijnOverheidClient>();
+            builder.Services.AddScoped<IMijnOverheidClient, MijnOverheidClient>();
+            builder.Services.AddScoped<IMijnOverheidForwarder, MijnOverheidForwarder>();
             builder.Services.RegisterClientFactories();
             builder.Services.AddHttpClient<BrpClient>()
-    .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
-    {
-        ILogger<BrpClient> logger = serviceProvider.GetRequiredService<ILogger<BrpClient>>();
-
-        string certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH")!;
-        string keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH")!;
-
-        var handler = new HttpClientHandler();
-
-        if (!string.IsNullOrEmpty(certPath) && !string.IsNullOrEmpty(keyPath))
-        {
-            try
-            {
-                if (File.Exists(certPath) && File.Exists(keyPath))
+                .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
                 {
-                    logger.LogInformation("Loading certificate from PEM files: {CertPath}, {KeyPath}",
-                        certPath, keyPath);
+                    ILogger<BrpClient> logger = serviceProvider.GetRequiredService<ILogger<BrpClient>>();
 
-                    // Read the files
-                    string certPem = File.ReadAllText(certPath);
-                    string keyPem = File.ReadAllText(keyPath);
+                    string certPath = Environment.GetEnvironmentVariable("BRP_CLIENTCERT_PEM_PATH")!;
+                    string keyPath = Environment.GetEnvironmentVariable("BRP_CLIENTKEY_PEM_PATH")!;
 
-                    // Create certificate from PEM
-                    var cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+                    var handler = new HttpClientHandler();
 
-                    // Convert to PFX to get full properties
-                    byte[] pfxBytes = cert.Export(X509ContentType.Pfx);
-                    var fullCert = new X509Certificate2(
-                        pfxBytes,
-                        (string?)null,
-                        X509KeyStorageFlags.MachineKeySet |
-                        X509KeyStorageFlags.EphemeralKeySet |
-                        X509KeyStorageFlags.Exportable
-                    );
-
-                    // Now we have all properties
-                    logger.LogInformation(
-                        "Certificate loaded successfully:\n" +
-                        "  Subject: {Subject}\n" +
-                        "  Issuer: {Issuer}\n" +
-                        "  Thumbprint: {Thumbprint}\n" +
-                        "  NotBefore: {NotBefore}\n" +
-                        "  NotAfter: {NotAfter}\n" +
-                        "  HasPrivateKey: {HasPrivateKey}\n" +
-                        "  KeyAlgorithm: {KeyAlgorithm}",
-                        fullCert.Subject,
-                        fullCert.Issuer,
-                        fullCert.Thumbprint,
-                        fullCert.NotBefore,
-                        fullCert.NotAfter,
-                        fullCert.HasPrivateKey,
-                        fullCert.GetKeyAlgorithm()
-                    );
-
-                    // Check CN and OU (important for WS Gateway)
-                    IEnumerable<string> subjectParts = fullCert.Subject
-                        .Split(',')
-                        .Select(p => p.Trim())
-                        .Where(p => p.StartsWith("CN=", StringComparison.OrdinalIgnoreCase) ||
-                                   p.StartsWith("OU=", StringComparison.OrdinalIgnoreCase));
-
-                    foreach (string part in subjectParts)
+                    if (!string.IsNullOrEmpty(certPath) && !string.IsNullOrEmpty(keyPath))
                     {
-                        logger.LogInformation("  Subject part: {Part}", part);
+                        try
+                        {
+                            if (File.Exists(certPath) && File.Exists(keyPath))
+                            {
+                                logger.LogInformation("Loading certificate from PEM files: {CertPath}, {KeyPath}",
+                                    certPath, keyPath);
+
+                                string certPem = File.ReadAllText(certPath);
+                                string keyPem = File.ReadAllText(keyPath);
+
+                                var cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+
+                                byte[] pfxBytes = cert.Export(X509ContentType.Pfx);
+                                var fullCert = new X509Certificate2(
+                                    pfxBytes,
+                                    (string?)null,
+                                    X509KeyStorageFlags.MachineKeySet |
+                                    X509KeyStorageFlags.EphemeralKeySet |
+                                    X509KeyStorageFlags.Exportable
+                                );
+
+                                logger.LogInformation(
+                                    "Certificate loaded successfully:\n" +
+                                    "  Subject: {Subject}\n" +
+                                    "  Issuer: {Issuer}\n" +
+                                    "  Thumbprint: {Thumbprint}\n" +
+                                    "  NotBefore: {NotBefore}\n" +
+                                    "  NotAfter: {NotAfter}\n" +
+                                    "  HasPrivateKey: {HasPrivateKey}\n" +
+                                    "  KeyAlgorithm: {KeyAlgorithm}",
+                                    fullCert.Subject,
+                                    fullCert.Issuer,
+                                    fullCert.Thumbprint,
+                                    fullCert.NotBefore,
+                                    fullCert.NotAfter,
+                                    fullCert.HasPrivateKey,
+                                    fullCert.GetKeyAlgorithm()
+                                );
+
+                                IEnumerable<string> subjectParts = fullCert.Subject
+                                    .Split(',')
+                                    .Select(p => p.Trim())
+                                    .Where(p => p.StartsWith("CN=", StringComparison.OrdinalIgnoreCase) ||
+                                               p.StartsWith("OU=", StringComparison.OrdinalIgnoreCase));
+
+                                foreach (string part in subjectParts)
+                                {
+                                    logger.LogInformation("  Subject part: {Part}", part);
+                                }
+
+                                handler.ClientCertificates.Add(fullCert);
+                                logger.LogInformation("Certificate added to HttpClientHandler");
+                            }
+                            else
+                            {
+                                logger.LogWarning(
+                                    "⚠️ Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
+                                    File.Exists(certPath), File.Exists(keyPath)
+                                );
+                                logger.LogWarning(
+                                    "The application will start without BRP functionality. " +
+                                    "BRP API calls will fail with certificate errors.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Failed to load BRP client certificate");
+                            logger.LogWarning(
+                                "The application will start without BRP functionality. " +
+                                "BRP API calls will fail with certificate errors.");
+                        }
+                    }
+                    else
+                    {
+                        logger.LogWarning(
+                            "⚠️ BRP certificate paths not configured. BRP_CLIENTCERT_PEM_PATH: {CertPathSet}, BRP_CLIENTKEY_PEM_PATH: {KeyPathSet}",
+                            !string.IsNullOrEmpty(certPath), !string.IsNullOrEmpty(keyPath)
+                        );
+                        logger.LogInformation(
+                            "The application will start without BRP functionality. " +
+                            "Configure certificates to enable BRP API access.");
                     }
 
-                    handler.ClientCertificates.Add(fullCert);
-                    logger.LogInformation("Certificate added to HttpClientHandler");
-                }
-                else
-                {
-                    logger.LogWarning(
-                        "⚠️ Certificate files not found. Cert exists: {CertExists}, Key exists: {KeyExists}",
-                        File.Exists(certPath), File.Exists(keyPath)
-                    );
-                    logger.LogWarning(
-                        "The application will start without BRP functionality. " +
-                        "BRP API calls will fail with certificate errors.");
-                }
-            }
-            catch (Exception ex)
-            {
-                // CHANGE: Log but don't throw - let app continue without BRP
-                logger.LogError(ex, "Failed to load BRP client certificate");
-                logger.LogWarning(
-                    "The application will start without BRP functionality. " +
-                    "BRP API calls will fail with certificate errors.");
-            }
-        }
-        else
-        {
-            // CHANGE: Log warning instead of error, don't throw
-            logger.LogWarning(
-                "⚠️ BRP certificate paths not configured. BRP_CLIENTCERT_PEM_PATH: {CertPathSet}, BRP_CLIENTKEY_PEM_PATH: {KeyPathSet}",
-                !string.IsNullOrEmpty(certPath), !string.IsNullOrEmpty(keyPath)
-            );
-            logger.LogInformation(
-                "The application will start without BRP functionality. " +
-                "Configure certificates to enable BRP API access.");
-        }
-
-        // Only disable SSL validation in DEBUG mode
 #if DEBUG
-        handler.ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        logger.LogWarning("SSL certificate validation is DISABLED (DEBUG mode only!)");
+                    handler.ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    logger.LogWarning("SSL certificate validation is DISABLED (DEBUG mode only!)");
 #endif
 
-        return handler;
-    });
+                    return handler;
+                });
 
             builder.Services.RegisterClientFactories();
 
-            // Versioning
             builder.Services.AddSingleton<OmcVersionRegister>();
             builder.Services.AddSingleton<ZhvVersionRegister>();
 
-            // User Interaction
             builder.Services.RegisterResponders(builder);
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
@@ -418,32 +341,26 @@ namespace EventsHandler
         #region Aggregated registrations
         private static void RegisterEncryptionStrategy(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            // Strategies
             services.AddSingleton(typeof(IJwtEncryptionStrategy),
                 builder.Configuration.IsEncryptionAsymmetric()
                     ? typeof(AsymmetricEncryptionStrategy)
                     : typeof(SymmetricEncryptionStrategy));
 
-            // Context
             services.AddSingleton<EncryptionContext>();
         }
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
         {
-            // Strategy Context (acting like loader strategy facade)
             services.AddSingleton<ILoadersContext, LoadersContext>();
 
-            // Strategies
             services.AddSingleton<AppSettingsLoader>();
             services.AddSingleton<EnvironmentLoader>();
         }
 
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
-            // Strategy Resolver (returning dedicated scenarios' strategy)
             services.AddScoped<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
-            // Strategies
             services.AddScoped<CaseCreatedScenario>();
             services.AddScoped<CaseStatusUpdatedScenario>();
             services.AddScoped<CaseClosedScenario>();
@@ -458,17 +375,14 @@ namespace EventsHandler
         {
             byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
 
-            // Common query methods
             services.AddSingleton<IQueryBase, QueryBase>();
 
-            // Strategies
             services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
 
-            // Feedback and telemetry
             services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
 
             return;
@@ -560,16 +474,10 @@ namespace EventsHandler
         #endregion
 
         #region HTTP Pipeline
-        /// <summary>
-        /// Configures the HTTP pipeline with middlewares.
-        /// </summary>
-        /// <param name="builder">The pre-configured <see cref="WebApplicationBuilder"/>.</param>
-        /// <returns>Configured <see cref="WebApplication"/>.</returns>
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
 
-            // Get configuration
             OmcConfiguration configuration = app.Services.GetRequiredService<OmcConfiguration>();
             string pathBase = configuration.OMC.Context.Path();
 
@@ -579,7 +487,6 @@ namespace EventsHandler
             {
                 app.Use((context, next) =>
                 {
-                    // If the request does not start with the path base, redirect
                     if (context.Request.Path.StartsWithSegments(pathBase))
                     {
                         return next();
@@ -593,21 +500,20 @@ namespace EventsHandler
                 app.UsePathBase(pathBase);
             }
 
-            // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();  // Try to redirect from HTTP to HTTPS (after first HTTP call)
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();  // Mapping actions from API controllers
+            app.MapControllers();
 
-            app.UseSentryTracing();  // Enable Sentry to capture transactions
+            app.UseSentryTracing();
 
             return app;
         }
