@@ -193,7 +193,9 @@
 
         "BRP_BASEURL": "",                                                              // string
         "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
-        "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
+        "BRP_CLIENTKEY_PEM_PATH": "",                                                   // string
+        
+        "MIJNOVERHEID_WEBHOOK_URL": ""                                                  // string (url)
       }
       }
     },
