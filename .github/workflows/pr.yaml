@@ -111,13 +111,6 @@ jobs:
         name: Extract Changelog Section
         id: changelog
 
-      - uses: ncipollo/release-action@v1
-        with:
-          tag: v.${{ steps.project.outputs.version_project }}
-          body: ${{ steps.changelog.outputs.notes }}
-          generateReleaseNotes: true
-          token: ${{ secrets.RELEASE_TOKEN }}
-
   test:
     runs-on: ubuntu-latest
     needs: validate-versions
