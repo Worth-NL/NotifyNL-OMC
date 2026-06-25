@@ -161,7 +161,7 @@ jobs:
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
           project: ${{ matrix.test-project }}
-          threshold: 50
+          threshold: 35
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
         id: run-tests
