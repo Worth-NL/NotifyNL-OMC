@@ -106,11 +106,7 @@ jobs:
           ")
           echo "Changelog for version $project_version:"
           echo "$CHANGELOG_SECTION"
-          {
-            echo "notes<<EOF"
-            echo "$CHANGELOG_SECTION"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          echo "notes=$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
         name: Extract Changelog Section
         id: changelog
 
