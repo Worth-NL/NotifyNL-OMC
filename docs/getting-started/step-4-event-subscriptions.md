@@ -30,6 +30,8 @@ POST https://<your-omc-domain>/Events/Listen
 
 OMC must be externally reachable from Open Notificaties for this to work. If OMC is behind a reverse proxy, ensure the proxy forwards the correct headers.
 
+![Subscription setup in Open Notificaties](../images/step%204%20image%201.png)
+
 ---
 
 ## 4.3 Verify the subscription
@@ -39,3 +41,5 @@ After creating the subscription, Open Notificaties will send a test ping to the 
 You can confirm this in the Open Notificaties admin UI where the subscription status should show as active.
 
 Create a test case in your ZGW environment and verify that a notification event appears in Open Notificaties directed at OMC.
+
+![Subscription active in Open Notificaties](../images/step%204%20image%202.png)

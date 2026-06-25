@@ -47,9 +47,11 @@ The main ingress endpoint. Open Notificaties POSTs events here when a case, obje
 | `500 Internal Server Error` | Unhandled exception |
 | `501 Not Implemented` | Implementation gap — should not occur in production |
 
-<!-- image: Documentation/images/events_listen_testNotificationWarning.png -->
-<!-- image: Documentation/images/events_listen_jsonError.png -->
-<!-- image: Documentation/images/events_listen_modelMissingRequiredFields.png -->
+![Test notification warning](../images/events_listen_testNotificationWarning.png)
+
+![Invalid JSON payload error](../images/events_listen_jsonError.png)
+
+![Missing required fields error](../images/events_listen_modelMissingRequiredFields.png)
 
 ### GET `/Events/Version`
 
@@ -71,7 +73,7 @@ Callback endpoint for NotifyNL delivery receipts. NotifyNL POSTs here after each
 | `400 Bad Request` | HTTP error communicating with ZGW services (e.g. OpenKlant unavailable) |
 | `422 Unprocessable Entity` | Invalid JSON payload |
 
-<!-- image: Documentation/images/events_listen_httpRequestError.png -->
+![HTTP request error](../images/events_listen_httpRequestError.png)
 
 ---
 
@@ -94,8 +96,9 @@ Sends a test email via NotifyNL.
 | `403 Forbidden` | Invalid base URL, missing API key, or API key not registered in NotifyNL |
 | `400 Bad Request` | Invalid template UUID, template not found, missing personalisation |
 
-<!-- image: Documentation/images/test_notify_baseUrl.png -->
-<!-- image: Documentation/images/test_notify_apiKeyInvalid.png -->
+![Invalid base URL error](../images/test_notify_baseUrl.png)
+
+![Invalid API key error](../images/test_notify_apiKeyInvalid.png)
 
 ### POST `/Test/Notify/SendSms`
 
@@ -109,7 +112,7 @@ Sends a test SMS via NotifyNL.
 - Too many digits
 - Unsupported country code format
 
-<!-- image: Documentation/images/test_notify_phoneFormatError.png -->
+![Invalid phone format error](../images/test_notify_phoneFormatError.png)
 
 ### POST `/Test/OMC/Configuration`
 

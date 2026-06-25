@@ -61,7 +61,7 @@ Set the following environment variables. If KTO is not used, set all of them to 
 | `Dienst_naam` | Service name in Expoints |
 | `Type_meting` | Measurement type in Expoints |
 
-<!-- image: Documentation/images/example_kto_settings.png -->
+![KTO Expoints settings example](../images/example_kto_settings.png)
 
 ---
 

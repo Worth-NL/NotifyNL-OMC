@@ -2,7 +2,7 @@
 
 OMC is built on .NET 10 as an ASP.NET Core Web API, following Clean Architecture principles with a layered onion structure.
 
-<!-- image: Documentation/images/omc_architecture.png -->
+![OMC Onion Layer Architecture](../images/omc_architecture.png)
 
 ---
 
