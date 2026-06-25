@@ -1,59 +1,61 @@
-# Table of Contents
+# Inhoudsopgave
 
-## Introduction
+## Introductie
 
-* [What is OMC?](README.md)
+* [Output Management & NotifyNL](README.md)
+* [Introductie op NotifyNL](introductie-notifynl.md)
+* [Introductie op Output Management (OMC)](introductie-omc.md)
 
-## Getting Started
+## Aan de slag
 
-* [Deploying OMC](getting-started/deployment.md)
-  * [Step 1 — Configure your Notify environment](getting-started/step-1-notify-environment.md)
-  * [Step 2 — Configure ZGW API keys](getting-started/step-2-zgw-api-keys.md)
-  * [Step 3 — Deploy and test OMC](getting-started/step-3-deploy-and-test.md)
-  * [Step 4 — Subscribe to events](getting-started/step-4-event-subscriptions.md)
-  * [Step 5 — Configure the delivery callback](getting-started/step-5-callback-configuration.md)
+* [OMC uitrollen](aan-de-slag/uitrollen.md)
+  * [Stap 1 — Configureer je Notify omgeving](aan-de-slag/stap-1-notify-omgeving.md)
+  * [Stap 2 — Configureer ZGW API sleutels](aan-de-slag/stap-2-zgw-api-sleutels.md)
+  * [Stap 3 — Uitrollen en testen](aan-de-slag/stap-3-uitrollen-en-testen.md)
+  * [Stap 4 — Abonneren op events](aan-de-slag/stap-4-abonneren-op-events.md)
+  * [Stap 5 — Configureer de afleverstatus callback](aan-de-slag/stap-5-callback-configuratie.md)
 
-## Configuration
+## Configuratie
 
-* [appsettings.json](configuration/appsettings.md)
-* [Environment variables](configuration/environment-variables.md)
+* [appsettings.json](configuratie/appsettings.md)
+* [Omgevingsvariabelen](configuratie/omgevingsvariabelen.md)
 
-## Authentication
+## Authenticatie
 
-* [JWT tokens](authentication/jwt-tokens.md)
-* [Secrets Manager](authentication/secrets-manager.md)
+* [JWT tokens](authenticatie/jwt-tokens.md)
+* [Secrets Manager](authenticatie/secrets-manager.md)
 
-## Workflows
+## Werkwijzen
 
-* [Workflow versions](workflows/versions.md)
-* [Scenarios](workflows/scenarios/overview.md)
-  * [Case Created](workflows/scenarios/case-created.md)
-  * [Case Updated](workflows/scenarios/case-updated.md)
-  * [Case Closed](workflows/scenarios/case-closed.md)
-  * [Task Assigned](workflows/scenarios/task-assigned.md)
-  * [Decision Made](workflows/scenarios/decision-made.md)
-  * [Message Received](workflows/scenarios/message-received.md)
-  * [Products (in development)](workflows/scenarios/products.md)
+* [Werkwijze versies](werkwijzen/versies.md)
+* [Scenario's](werkwijzen/scenarios/overzicht.md)
+  * [Zaak aangemaakt](werkwijzen/scenarios/zaak-aangemaakt.md)
+  * [Zaak gewijzigd](werkwijzen/scenarios/zaak-gewijzigd.md)
+  * [Zaak afgesloten](werkwijzen/scenarios/zaak-afgesloten.md)
+  * [Taak toegewezen](werkwijzen/scenarios/taak-toegewezen.md)
+  * [Besluit genomen](werkwijzen/scenarios/besluit-genomen.md)
+  * [Bericht ontvangen](werkwijzen/scenarios/bericht-ontvangen.md)
+  * [Producten (in ontwikkeling)](werkwijzen/scenarios/producten.md)
 
-## Architecture
+## Architectuur
 
-* [Overview](architecture/overview.md)
-* [ZGW integration](architecture/zgw-integration.md)
-* [Privacy by design](architecture/privacy-by-design.md)
-* [Security by design](architecture/security-by-design.md)
-* [Scalability](architecture/scalability.md)
+* [Overzicht](architectuur/overzicht.md)
+* [ZGW integratie](architectuur/zgw-integratie.md)
+* [Privacy by design](architectuur/privacy-by-design.md)
+* [Security by design](architectuur/security-by-design.md)
+* [Schaalbaarheid](architectuur/schaalbaarheid.md)
 
-## Integrations
+## Integraties
 
-* [KTO / Expoints](integrations/kto-expoints.md)
-* [BRP / Haal Centraal](integrations/brp-haalcentraal.md)
-* [PostGuard](integrations/postguard.md)
+* [KTO / Expoints](integraties/kto-expoints.md)
+* [BRP / Haal Centraal](integraties/brp-haalcentraal.md)
+* [PostGuard](integraties/postguard.md)
 
-## API Reference
+## API Referentie
 
-* [Endpoints](api-reference/endpoints.md)
+* [Endpoints](api-referentie/endpoints.md)
 
 ## Project
 
 * [Changelog](project/changelog.md)
-* [Security policy](project/security.md)
+* [Beveiligingsbeleid](project/beveiliging.md)
