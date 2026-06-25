@@ -6,28 +6,58 @@ Dit scenario wordt geactiveerd wanneer een nieuw bericht beschikbaar is voor de 
 
 ## Triggercondities
 
+Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenmerken:
+
 | Veld | Vereiste waarde |
 |---|---|
 | `kanaal` | `objecten` |
 | `resource` | `object` |
 | `actie` | `create` |
-| Object `type` | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` |
+
+Het OMC haalt het objecttype-UUID uit de `objectType`-URL in het event en vergelijkt dit met de geconfigureerde waarde. Als het niet overeenkomt, wordt het event genegeerd.
 
 ---
 
-## Voorbeeldpayload
+## Verwerkingslogica
 
-```json
-{
-  "kanaal": "objecten",
-  "resource": "object",
-  "actie": "create",
-  "kenmerken": {
-    "objectType": "https://objecttypen.mijnstad.nl/api/v2/objecttypes/<bericht-uuid>"
-  },
-  "resourceUrl": "https://objecten.mijnstad.nl/api/v2/objects/..."
-}
+### Stap 1 — Berichten toegestaan check
+
 ```
+ZGW_WHITELIST_MESSAGE_ALLOWED == true
+```
+
+Dit scenario is standaard uitgeschakeld. Het OMC controleert als eerste of berichten zijn ingeschakeld via de configuratie. Als dit `false` is, wordt het event direct overgeslagen — ongeacht de inhoud.
+
+### Stap 2 — Berichtobject ophalen
+
+Het OMC haalt het berichtobject op uit de Objecten API via de `resourceUrl` in het event.
+
+### Stap 3 — Identificatietype check
+
+Het bericht moet een `identificatie` bevatten met een BSN-waarde. Het OMC gebruikt dit BSN om de contactgegevens van de burger op te halen via OpenKlant.
+
+> Anders dan bij andere scenario's is er bij dit scenario **geen zaak** gekoppeld. Het OMC bevraagt OpenKlant direct op BSN.
+
+### Stap 4 — Gegevens ophalen
+
+1. `GET /objects/{uuid}` — berichtobject (uit Objecten API)
+2. Contactgegevens van de burger via OpenKlant op basis van BSN
+
+### Stap 5 — Notificatie versturen
+
+Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template. Er wordt geen contactmoment teruggeschreven omdat er geen zaak gekoppeld is.
+
+---
+
+## Vereisten samengevat
+
+| Conditie | Waarde |
+|---|---|
+| `ZGW_WHITELIST_MESSAGE_ALLOWED` | `true` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` |
+| `bericht.identificatie.type` | `bsn` |
+| Burger heeft contactgegevens | E-mail of telefoonnummer in OpenKlant |
 
 ---
 
@@ -42,21 +72,11 @@ Dit scenario wordt geactiveerd wanneer een nieuw bericht beschikbaar is voor de 
         "value": "123456789"
       },
       "onderwerp": "Uw aanvraag is in behandeling",
-      "berichtinhoud": "Er is een nieuw bericht voor u beschikbaar.",
-      "zaak": "https://openzaak.mijnstad.nl/zaken/api/v1/zaken/..."
+      "berichtinhoud": "Er is een nieuw bericht voor u beschikbaar."
     }
   }
 }
 ```
-
----
-
-## Vereisten
-
-- Het scenario Bericht ontvangen moet zijn ingeschakeld (`ZGW_WHITELIST_MESSAGE_ALLOWED=true`)
-- Het objecttype UUID moet overeenkomen met `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID`
-- De burger (BSN of KVK) moet contactgegevens hebben in OpenKlant
-- Het template-ID moet zijn ingesteld
 
 ---
 
@@ -66,8 +86,6 @@ Dit scenario wordt geactiveerd wanneer een nieuw bericht beschikbaar is voor de 
 |---|---|---|
 | `((bericht.onderwerp))` | berichtobject | Onderwerp van het bericht |
 | `((bericht.berichtinhoud))` | berichtobject | Inhoud van het bericht |
-| `((zaak.identificatie))` | zaak | Zaaknummer gekoppeld aan het bericht |
-| `((zaak.omschrijving))` | zaak | Omschrijving van de zaak |
 | `((klant.voornaam))` | klant | Voornaam van de klant |
 | `((klant.voorvoegselAchternaam))` | klant | Tussenvoegsel van de klant |
 | `((klant.achternaam))` | klant | Achternaam van de klant |
