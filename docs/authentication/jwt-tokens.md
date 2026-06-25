@@ -66,13 +66,13 @@ This generates a token valid for 60 minutes.
 
 Fill in the claims manually at [jwt.io](https://jwt.io) using the values from your `OMC_AUTH_JWT_*` environment variables.
 
-<!-- image: Documentation/images/jwt_signature.png -->
+![JWT Signature](../images/jwt_signature.png)
 
 ### Option 3 — Visual Studio launch profile
 
 If running locally, define the `OMC_AUTH_JWT_*` variables in your `launchSettings.json` profile and run the Secrets Manager project directly.
 
-<!-- image: Documentation/images/launchProfiles_secrets_manager.png -->
+![Secrets Manager launch profile](../images/launchProfiles_secrets_manager.png)
 
 ---
 
@@ -86,13 +86,13 @@ Click **Authorize** in the Swagger UI and enter:
 Bearer <your-token>
 ```
 
-<!-- image: Documentation/images/swagger_ui_authorization.png -->
+![Swagger UI authorization](../images/swagger_ui_authorization.png)
 
 ### Postman
 
 In the **Authorization** tab, select **Bearer Token** and paste the token.
 
-<!-- image: Documentation/images/postman_authorization.png -->
+![Postman authorization](../images/postman_authorization.png)
 
 ### HTTP header
 
@@ -106,5 +106,5 @@ Authorization: Bearer <your-token>
 
 > **HTTP 401 Unauthorized** — Invalid or expired JWT token. Regenerate the token and ensure the `OMC_AUTH_JWT_SECRET` matches what was used to sign it.
 
-<!-- image: Documentation/images/general_jwt_invalid.png -->
-<!-- image: Documentation/images/general_jwt_secret_wrong.png -->
+![Invalid JWT token error](../images/general_jwt_invalid.png)
+![Invalid JWT secret error](../images/general_jwt_secret_wrong.png)

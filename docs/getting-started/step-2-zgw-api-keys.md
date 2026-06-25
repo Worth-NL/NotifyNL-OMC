@@ -12,6 +12,8 @@ In the **OpenKlant** admin environment, go to **API Auth** and generate a token 
 |---|---|
 | `ZGW_AUTH_KEY_OPENKLANT` | Required for workflow **v2 and above** |
 
+![OpenKlant API key creation](../images/step%202%20image%201.png)
+
 ---
 
 ## 2.2 OpenZaak JWT credentials
@@ -29,6 +31,8 @@ OpenZaak uses JWT authentication. In the **OpenZaak** admin environment, create 
 
 > The JWT secret and claims configured here **must match exactly** what is registered in the OpenZaak admin UI. OMC generates the JWT token internally using these values.
 
+![OpenZaak JWT credentials](../images/step%202%20image%202.png)
+
 ---
 
 ## 2.3 Objecten API key
@@ -39,6 +43,8 @@ In the **Objecten** admin environment, generate a token for OMC.
 |---|---|
 | `ZGW_AUTH_KEY_OBJECTEN` | API key for the Objecten service |
 
+![Objecten API key creation](../images/step%202%20image%203.png)
+
 ---
 
 ## 2.4 ObjectTypen API key
@@ -48,6 +54,8 @@ In the **ObjectTypen** admin environment, generate a token for OMC.
 | Variable | Description |
 |---|---|
 | `ZGW_AUTH_KEY_OBJECTTYPEN` | API key for the ObjectTypen service |
+
+![ObjectTypen API key creation](../images/step%202%20image%204.png)
 
 ---
 

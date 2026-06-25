@@ -103,4 +103,4 @@ https://<your-omc-domain>/swagger/index.html
 
 Available in both `Development` and `Production` environments. Requires a valid JWT Bearer token — see [JWT tokens](../authentication/jwt-tokens.md).
 
-<!-- image: Documentation/images/swagger_ui_example.png -->
+![Swagger UI](../images/swagger_ui_example.png)
