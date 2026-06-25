@@ -1,6 +1,7 @@
 ## 2.0.1
 
 - Adds documentation to a /docs folder to sync to gitbook
+- Fix multiline changelog output in CI workflow
 
 ## 2.0.0
 
