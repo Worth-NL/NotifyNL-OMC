@@ -26,7 +26,6 @@ jobs:
               - 'OMC.sln'
               - 'OMC.sln.DotSettings'
               - 'OMC/**'
-
   validate-versions:
     runs-on: ubuntu-latest
     needs: changes
@@ -91,6 +90,31 @@ jobs:
             echo "✅ Version ${{ steps.project.outputs.version_project }} found in CHANGELOG.md"
           fi
         name: Check if project version is in CHANGELOG.md
+
+      - run: |
+          project_version="${{ steps.project.outputs.version_project }}"
+          CHANGELOG_SECTION=$(python3 -c "
+          import re
+          with open('CHANGELOG.md', 'r') as f:
+            content = f.read()
+            match = re.search(r'## $project_version\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
+            if match:
+                print(match.group(1).strip())
+            else:
+                raise ValueError(f'No changelog entry found for version {project_version}')
+          ")
+          echo "Changelog for version $project_version:"
+          echo "$CHANGELOG_SECTION"
+          echo "notes=$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
+        name: Extract Changelog Section
+        id: changelog
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: v.${{ steps.project.outputs.version_project }}
+          body: ${{ steps.changelog.outputs.notes }}
+          generateReleaseNotes: true
+          token: ${{ secrets.RELEASE_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
