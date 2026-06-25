@@ -1,70 +1,77 @@
-# NotifyNL Output Management Component (OMC)
+# Output Management & NotifyNL
 
 [![Build](https://img.shields.io/github/actions/workflow/status/worth-nl/notifynl-omc/merge.yaml?style=for-the-badge\&logo=github)](https://github.com/Worth-NL/NotifyNL-OMC)
-[![Version](https://img.shields.io/github/v/tag/worth-nl/notifynl-omc?style=for-the-badge\&logo=github\&label=version)](https://github.com/Worth-NL/NotifyNL-OMC/releases)
+[![Versie](https://img.shields.io/github/v/tag/worth-nl/notifynl-omc?style=for-the-badge\&logo=github\&label=versie)](https://github.com/Worth-NL/NotifyNL-OMC/releases)
 [![Docker](https://img.shields.io/docker/v/worthnl/notifynl-omc?sort=date\&arch=amd64\&style=for-the-badge\&logo=docker)](https://hub.docker.com/r/worthnl/notifynl-omc)
 
 ---
 
-## What is OMC?
+## Wat is NotifyNL?
 
-The **Output Management Component (OMC)** is an open-source, stateless middleware service that bridges Dutch municipal case management systems (ZGW APIs) with [NotifyNL](https://admin.notifynl.nl) — the Dutch government notification platform for sending emails, SMS messages, and letters to citizens and organisations.
+NotifyNL stelt centrale en lokale overheden in staat om berichten te versturen aan burgers en bedrijven via verschillende kanalen, waaronder e-mail en sms.
 
-When deployed in a ZGW environment, OMC listens for events on the **NotificatiesAPI** and automatically handles the full notification workflow: fetching case and citizen data, selecting the right template, sending the notification via NotifyNL, and writing a delivery receipt back to **OpenKlant** as a contact moment.
+Organisaties beheren uitgaande berichten vaak verspreid over meerdere afdelingen en systemen, wat verschillende uitdagingen met zich meebrengt:
 
-> **NotifyNL** is the delivery engine — it handles the actual sending of emails, SMS, and letters. OMC is the integration layer that connects your ZGW environment to NotifyNL without requiring NotifyNL to have direct access to your citizen or case registrations.
+- Beveiligingstoezicht is moeilijk in gedecentraliseerde systemen
+- Berichtconsistentie lijdt eronder, waardoor het voor ontvangers onduidelijk is of communicatie van de overheid afkomstig is
+- Bounceafhandeling kan niet centraal worden beheerd
+- Naleving van de WMEBV-wetgeving is ingewikkeld bij een gedecentraliseerde opzet
+
+NotifyNL lost dit op door berichtbeheer te centraliseren, uniforme burgercommunicatie te bieden, transactionele berichten vanuit processen te vereenvoudigen en vragen van burgers over de status van diensten te verminderen.
+
+> **NotifyNL** is het afleverplatform — het verzorgt de daadwerkelijke verzending van e-mails, sms-berichten en brieven. Het Output Management Component (OMC) is de integratielaag die jouw ZGW-omgeving verbindt met NotifyNL, zonder dat NotifyNL directe toegang nodig heeft tot je burger- of zaakregistraties.
 >
-> For NotifyNL documentation, see [admin.notifynl.nl](https://admin.notifynl.nl/using-notify/api-documentation).
+> Voor NotifyNL documentatie, zie [admin.notifynl.nl](https://admin.notifynl.nl/using-notify/api-documentation).
 
 ---
 
-## What does OMC do?
+## Wat doet het OMC?
 
-1. Receives event notifications from **Open Notificaties** (e.g. a case was created, a task was assigned)
-2. Fetches the relevant case, citizen, and contact details from the ZGW APIs
-3. Determines which notification scenario applies and which channel to use (email, SMS, or letter)
-4. Sends the notification via NotifyNL using the configured template
-5. Receives the delivery status callback from NotifyNL
-6. Writes a **contact moment** back to OpenKlant so delivery history is visible in the citizen portal
+1. Ontvangt eventberichten van **Open Notificaties** (bijv. een zaak is aangemaakt, een taak is toegewezen)
+2. Haalt de relevante zaak-, burger- en contactgegevens op uit de ZGW API's
+3. Bepaalt welk notificatiescenario van toepassing is en welk kanaal gebruikt wordt (e-mail, sms of brief)
+4. Verstuurt de notificatie via NotifyNL met het geconfigureerde template
+5. Ontvangt de afleverstatusmelding van NotifyNL
+6. Schrijft een **contactmoment** terug naar OpenKlant zodat de aflevergeschiedenis zichtbaar is in het burgerportaal
 
-OMC is **stateless** — you can run as many instances as needed without coordination between them.
+Het OMC is **stateless** — je kunt zoveel instanties draaien als nodig zonder onderlinge afstemming.
 
 ---
 
-## Supported ZGW services
+## Ondersteunde ZGW diensten
 
-OMC integrates with the following ZGW / Open Services:
+Het OMC integreert met de volgende ZGW / Open Services:
 
-| Service | Repository | Purpose |
+| Dienst | Repository | Doel |
 |---|---|---|
-| **Open Notificaties** | [open-zaak/open-notificaties](https://github.com/open-zaak/open-notificaties) | Event subscription and delivery |
-| **Open Zaak** | [open-zaak/open-zaak](https://github.com/open-zaak/open-zaak) | Cases, statuses, decisions |
-| **Open Klant** | [maykinmedia/open-klant](https://github.com/maykinmedia/open-klant) | Citizen contact details and preferences |
-| **Besluiten** | Part of Open Zaak | Decisions linked to cases |
-| **Objecten** | [maykinmedia/objects-api](https://github.com/maykinmedia/objects-api) | Tasks, messages, custom objects |
-| **ObjectTypen** | [maykinmedia/objecttypes-api](https://github.com/maykinmedia/objecttypes-api) | Object type definitions |
-| **Klantinteracties** | [vng-realisatie/klantinteracties](https://vng-realisatie.github.io/klantinteracties/) | Contact moments (v2, used in workflow v2) |
+| **Open Notificaties** | [open-zaak/open-notificaties](https://github.com/open-zaak/open-notificaties) | Eventabonnementen en -aflevering |
+| **Open Zaak** | [open-zaak/open-zaak](https://github.com/open-zaak/open-zaak) | Zaken, statussen, besluiten |
+| **Open Klant** | [maykinmedia/open-klant](https://github.com/maykinmedia/open-klant) | Contactgegevens en voorkeuren van burgers |
+| **Besluiten** | Onderdeel van Open Zaak | Besluiten gekoppeld aan zaken |
+| **Objecten** | [maykinmedia/objects-api](https://github.com/maykinmedia/objects-api) | Taken, berichten, aangepaste objecten |
+| **ObjectTypen** | [maykinmedia/objecttypes-api](https://github.com/maykinmedia/objecttypes-api) | Objecttype-definities |
+| **Klantinteracties** | [vng-realisatie/klantinteracties](https://vng-realisatie.github.io/klantinteracties/) | Contactmomenten (v2, gebruikt in werkwijze v2) |
 
 ---
 
-## Supported notification scenarios
+## Ondersteunde notificatiescenario's
 
 | Scenario | Trigger |
 |---|---|
-| **Case Created** | A new case (`zaak`) is opened for a citizen or organisation |
-| **Case Updated** | The status of an existing case changes |
-| **Case Closed** | A case reaches its final status |
-| **Task Assigned** | A task (`taak`) is assigned to a citizen or organisation |
-| **Decision Made** | A decision (`besluit`) is made that affects a citizen |
-| **Message Received** | A message is placed in the citizen's message box |
+| **Zaak aangemaakt** | Een nieuwe zaak wordt geopend voor een burger of organisatie |
+| **Zaak gewijzigd** | De status van een bestaande zaak wijzigt |
+| **Zaak afgesloten** | Een zaak bereikt de eindstatus |
+| **Taak toegewezen** | Een taak wordt toegewezen aan een burger of organisatie |
+| **Besluit genomen** | Een besluit dat een burger raakt wordt genomen |
+| **Bericht ontvangen** | Een bericht wordt geplaatst in de berichtenbox van de burger |
 
 ---
 
 ## Open source
 
-Both OMC and NotifyNL are fully open source.
+Zowel het OMC als NotifyNL zijn volledig open source.
 
-- **OMC source code:** [github.com/Worth-NL/NotifyNL-OMC](https://github.com/Worth-NL/NotifyNL-OMC)
+- **OMC broncode:** [github.com/Worth-NL/NotifyNL-OMC](https://github.com/Worth-NL/NotifyNL-OMC)
 - **NotifyNL platform:** [notificatie.nl/open-source](https://www.notificatie.nl/open-source)
-- **Developed and maintained by:** [Worth Systems](https://worth.systems)
-- **License:** EUPL v1.2
+- **Ontwikkeld en onderhouden door:** [Worth Systems](https://worth.systems)
+- **Licentie:** EUPL v1.2

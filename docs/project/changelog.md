@@ -1,164 +1,172 @@
 # Changelog
 
-## 2.0.0
+---
 
-- Upgrades .NET 8 → .NET 10
-- Implements PostGuard integration for sending encrypted PDFs unlockable with Yivi wallets
-- Renames all `Zhv` endpoint references to `Zgw`
+## v2.0.0 ⚠️ Breaking changes
 
-## 1.17.19
+- Bijgewerkt naar .NET 10
+- PostGuard-integratie geïmplementeerd voor het versturen van versleutelde PDF's te openen met Yivi-wallets
+- Alle `Zhv` eindpuntreferenties hernoemd naar `Zgw` in omgevingsvariabelen
+- Werkwijze versie 2 is nu de standaard (`OMC_FEATURE_WORKFLOW_VERSION=2`)
+- `ZGW_AUTH_KEY_OPENKLANT` is nu vereist voor werkwijze v2
+- KVK-ondersteuning toegevoegd naast BSN
+- Brieftemplates (`NOTIFY_TEMPLATEID_LETTER_*`) toegevoegd
 
-- Adds custom GovUkNotify client to accept extras when sending letters; returns `202` on confirm without reference
+---
 
-## 1.17.18
+## v1.17.19
 
-- Adds Keycloak logic and BRP / Haal Centraal integration with verbose logging for testing
+- Voegt aangepaste GovUkNotify-client toe voor het accepteren van extra velden bij het versturen van brieven; geeft `202` terug bij bevestiging zonder referentie
 
-## 1.17.17
+## v1.17.18
 
-- Adds test endpoint for sending letters through NotifyNL
+- Voegt Keycloak-logica en BRP / Haal Centraal-integratie toe met uitgebreide logging voor testen
 
-## 1.17.16
+## v1.17.17
 
-- Remaps Object to Expoints-specific payload
+- Voegt test-eindpunt toe voor het versturen van brieven via NotifyNL
 
-## 1.17.15
+## v1.17.16
 
-- New KTO implementation treating KTO as a notification
+- Verwijst Object opnieuw naar Expoints-specifieke payload
 
-## 1.17.14
+## v1.17.15
 
-- First clean-up: logs outgoing API calls to ZGW and their responses in Sentry; no longer fetches case status and its type twice; checks notification expectation earlier in case scenarios
+- Nieuwe KTO-implementatie waarbij KTO als notificatie wordt behandeld
 
-## 1.17.13
+## v1.17.14
 
-- Bugfix: catches errors from OpenKlant and surfaces them
+- Eerste opschoning: logt uitgaande API-aanroepen naar ZGW en hun responses in Sentry; haalt zaakstatus en type niet meer tweemaal op; controleert notificatieverwachting eerder in zaakscenario's
 
-## 1.17.12
+## v1.17.13
 
-- Bugfix: sets relevant services to scoped scope to prevent race conditions
+- Bugfix: vangt fouten van OpenKlant op en toont ze
 
-## 1.17.11
+## v1.17.12
 
-- Prevents possible race conditions by not using QueryBase
+- Bugfix: stelt relevante services in op scoped scope om race conditions te voorkomen
 
-## 1.17.10
+## v1.17.11
 
-- Adds `CaseResultType` and includes it in `NotifyData` for the Case Closed scenario
+- Voorkomt mogelijke race conditions door QueryBase niet te gebruiken
 
-## 1.17.9
+## v1.17.10
 
-- Bugfix: if the initiator role has no BSN, does not attempt to query parties (OpenKlant returns a list in this case)
+- Voegt `CaseResultType` toe en neemt dit op in `NotifyData` voor het scenario Zaak afgesloten
 
-## 1.17.8
+## v1.17.9
 
-- Bugfix: removes KTO execution from `ITelemetryService`
+- Bugfix: als de initiatorrol geen BSN heeft, wordt niet geprobeerd partijen op te vragen (OpenKlant geeft in dat geval een lijst terug)
 
-## 1.17.7
+## v1.17.8
 
-- Bugfix: comparison was happening on description instead of reference; `ActorId` added
+- Bugfix: verwijdert KTO-uitvoering uit `ITelemetryService`
 
-## 1.17.6
+## v1.17.7
 
-- Changes OpenKlant variables in `appsettings.json` to: `"CodeObjectType": "zaak"`, `"CodeRegister": "open-zaak"`, `"CodeObjectTypeId": "uuid"` per ZGW standards
+- Bugfix: vergelijking vond plaats op beschrijving in plaats van referentie; `ActorId` toegevoegd
 
-## 1.17.5
+## v1.17.6
 
-- Bugfix: adds JSON escape logic when building `ContactMomentenJsonBody`
+- Wijzigt OpenKlant-variabelen in `appsettings.json` naar: `"CodeObjectType": "zaak"`, `"CodeRegister": "open-zaak"`, `"CodeObjectTypeId": "uuid"` conform ZGW-standaarden
 
-## 1.17.4
+## v1.17.5
 
-- Adds notification subject and body to the contact moment
+- Bugfix: voegt JSON-escape-logica toe bij het opbouwen van `ContactMomentenJsonBody`
 
-## 1.17.3
+## v1.17.4
 
-- Fixes Case Created scenario to check the triggering status's `volgnummer` equals `1`
+- Voegt notificatieonderwerp en -inhoud toe aan het contactmoment
 
-## 1.17.2
+## v1.17.3
 
-- Makes `voorkeursAdres` (preferred address) optional — if not set, a digital reference to the zaak is required for notifications to be sent
+- Herstelt het scenario Zaak aangemaakt zodat het controleert of het `volgnummer` van de triggerende status gelijk is aan `1`
 
-## 1.17.1
+## v1.17.2
 
-- Changes `Bsn` to `bsn` in query parameters (OpenKlant does not accept capitals)
+- Maakt `voorkeursAdres` (voorkeursadres) optioneel — als dit niet is ingesteld, is een digitale verwijzing naar de zaak vereist voor het versturen van notificaties
 
-## 1.17.0 ⚠️ Breaking change
+## v1.17.1
 
-- `appsettings.json` changed because OpenKlant changed `PartijIdentificator` from a string to an enum. Requires OpenKlant **v2.12.0 or higher**.
+- Wijzigt `Bsn` naar `bsn` in queryparameters (OpenKlant accepteert geen hoofdletters)
 
-## 1.16.0 ⚠️ Breaking change
+## v1.17.0 ⚠️ Breaking change
 
-- `ZGW_ENDPOINT_*` variables must now include the HTTP protocol prefix (e.g. `https://openzaak.mycity.nl/...`)
+- `appsettings.json` gewijzigd omdat OpenKlant `PartijIdentificator` van een string naar een enum heeft veranderd. Vereist OpenKlant **v2.12.0 of hoger**.
 
-## 1.15.8
+## v1.16.0 ⚠️ Breaking change
 
-- Adds `OMC_CONTEXT_PATH` environment variable for reverse proxy path prefix support. Default: empty string.
+- `ZGW_ENDPOINT_*`-variabelen moeten nu het HTTP-protocol als prefix bevatten (bijv. `https://openzaak.mijnstad.nl/...`)
 
-## 1.15.7
+## v1.15.8
 
-- Adds contact moment callback to documentation
+- Voegt omgevingsvariabele `OMC_CONTEXT_PATH` toe voor ondersteuning van reverse proxy-padprefixen. Standaard: lege string.
 
-## 1.15.6
+## v1.15.7
 
-- Adds documentation for Case Created scenario
+- Voegt contactmoment-callback toe aan documentatie
 
-## 1.15.5
+## v1.15.6
 
-- Bugfix: handles multiple roles where some have no `inpBsn`
+- Voegt documentatie toe voor het scenario Zaak aangemaakt
 
-## 1.15.4
+## v1.15.5
 
-- Bugfix: corrects wrongful setting of distribution channel that sometimes caused errors in NotifyNL
+- Bugfix: verwerkt meerdere rollen waarvan sommige geen `inpBsn` hebben
 
-## 1.15.3
+## v1.15.4
 
-- Updates `DetermineDistributionChannel` to check against both `"Telefoon"` and `"telefoonnummer"` as digital address types (OpenKlant v2.4.0 changed the value)
+- Bugfix: corrigeert het onjuist instellen van het distributiekanaal dat soms fouten veroorzaakte in NotifyNL
 
-## 1.15.2
+## v1.15.3
 
-- Documentation updates
+- Werkt `DetermineDistributionChannel` bij om te controleren op zowel `"Telefoon"` als `"telefoonnummer"` als typen digitaal adres (OpenKlant v2.4.0 wijzigde de waarde)
 
-## 1.15.1 ⚠️ Breaking change (launchSettings)
+## v1.15.2
 
-- Adds more personal data to KTO call to Expoints. Breaking changes to `launchSettings.json` — see `KTO_*` section in [environment variables](../configuration/environment-variables.md).
+- Documentatie-updates
 
-## 1.15.0 ⚠️ Breaking change (launchSettings)
+## v1.15.1 ⚠️ Breaking change (launchSettings)
 
-- Introduces Customer Satisfaction Survey (KTO) integration via Expoints. Breaking changes to `launchSettings.json` — see `KTO_*` section.
+- Voegt meer persoonsgegevens toe aan KTO-aanroep naar Expoints. Breaking changes in `launchSettings.json` — zie de `KTO_*`-sectie in [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md).
 
-## 1.14.6
+## v1.15.0 ⚠️ Breaking change (launchSettings)
 
-- Makes digital address type comparison case-insensitive (accepts both `"Email"` and `"email"`)
+- Introduceert Klanttevredenheidsonderzoek (KTO)-integratie via Expoints. Breaking changes in `launchSettings.json` — zie de `KTO_*`-sectie.
 
-## 1.14.5
+## v1.14.6
 
-- Missing `.image.tag` update on chart
+- Maakt vergelijking van digitaaladrestype hoofdletterongevoelig (accepteert zowel `"Email"` als `"email"`)
 
-## 1.14.4
+## v1.14.5
 
-- Corrects Base64 decoding for post-merge deployment
+- Ontbrekende `.image.tag`-update in chart
 
-## 1.14.3
+## v1.14.4
 
-- Updates to test and build automation
+- Corrigeert Base64-decodering voor post-merge uitrolling
 
-## 1.14.2
+## v1.14.3
 
-- Patches CVE-2024-21907 and consolidates dependencies
+- Updates voor test- en bouwautomatisering
 
-## 1.14.1
+## v1.14.2
 
-- Version numbering patch
+- Patcht CVE-2024-21907 en consolideert afhankelijkheden
 
-## 1.14.0
+## v1.14.1
 
-- Adds option to override a citizen's preferred digital address based on case number
+- Versienummeringspatch
 
-## 1.13.2
+## v1.14.0
 
-- Updates to test and build automation
+- Voegt optie toe om het voorkeursdigitale adres van een burger te overschrijven op basis van zaaknummer
 
-## 1.13.1
+## v1.13.2
 
-- Updates documentation (old paths)
-- Code cleanup: generic method naming, streamlined parameters
+- Updates voor test- en bouwautomatisering
+
+## v1.13.1
+
+- Documentatie-updates (oude paden)
+- Code-opschoning: generieke methodenaamgeving, gestroomlijnde parameters
