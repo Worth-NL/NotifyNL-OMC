@@ -6,41 +6,105 @@ Dit scenario wordt geactiveerd wanneer een besluit wordt genomen dat een burger 
 
 ## Triggercondities
 
+Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenmerken:
+
 | Veld | Vereiste waarde |
 |---|---|
 | `kanaal` | `besluiten` |
 | `resource` | `besluit` |
 | `actie` | `create` |
-| `besluittype.besluitcategorie` | `definitief` |
-| `besluittype.publicatietekst` aanwezig | Ja (openbaar besluit) |
 
 ---
 
-## Voorbeeldpayload
+## Verwerkingslogica
 
-```json
-{
-  "kanaal": "besluiten",
-  "resource": "besluit",
-  "actie": "create",
-  "kenmerken": {
-    "bronorganisatie": "123456789",
-    "besluittype": "https://openzaak.mijnstad.nl/catalogi/api/v1/besluittypen/...",
-    "verantwoordelijkeOrganisatie": "123456789"
-  },
-  "resourceUrl": "https://openzaak.mijnstad.nl/besluiten/api/v1/besluiten/..."
-}
+Dit is het meest uitgebreide scenario — het OMC voert meerdere validaties uit en haalt documenten op voordat een notificatie wordt verstuurd.
+
+### Stap 1 — Besluitresource ophalen
+
+Het OMC haalt de besluitresource op via de `resourceUrl` uit het event.
+
+### Stap 2 — Informatieobject UUID check
+
+```
+informatieobject.objectType UUID ∈ ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOBJECTTYPE_UUIDS
 ```
 
+Het informatieobject gekoppeld aan het besluit moet een objecttype-UUID hebben dat voorkomt in de geconfigureerde lijst. Meerdere UUID's zijn mogelijk.
+
+### Stap 3 — Informatieobject status check
+
+```
+informatieobject.status == "definitief"
+```
+
+Alleen informatieobjecten met status `definitief` leiden tot een notificatie.
+
+### Stap 4 — Vertrouwelijkheid check
+
+```
+informatieobject.vertrouwelijkheidaanduiding == "openbaar"
+```
+
+Het informatieobject moet als `openbaar` zijn aangemerkt. Vertrouwelijke documenten worden niet genotificeerd.
+
+### Stap 5 — Informeren check
+
+```
+zaaktype.informeren == true
+```
+
+Het zaaktype van de gekoppelde zaak moet `informeren` op `true` hebben staan in Open Zaak.
+
+### Stap 6 — Whitelist check
+
+```
+zaaktype.identificatie ∈ ZGW_WHITELIST_DECISIONMADE_IDS
+```
+
+Het zaaktype moet voorkomen in de geconfigureerde whitelist.
+
+### Stap 7 — Gegevens ophalen
+
+Het OMC haalt aanvullende gegevens op:
+
+1. `GET /besluiten/{uuid}` — besluitgegevens
+2. `GET /enkelvoudiginformatieobjecten/{uuid}` — informatieobject
+3. `GET /zaken/{uuid}/statussen` — statussen van de gekoppelde zaak
+4. `GET /zaaktypen/{uuid}` — zaaktype
+5. `GET /besluittypen/{uuid}` — besluittype
+6. `GET /zaken/{uuid}` — zaakgegevens
+7. Contactgegevens van de burger via OpenKlant (BSN)
+8. `GET /besluitinformatieobjecten` — documenten gekoppeld aan het besluit
+
+### Stap 8 — Documenten filteren
+
+Per document wordt aanvullend gecontroleerd:
+
+```
+document.vertrouwelijkheidaanduiding == "openbaar"
+AND
+document.status == "definitief"
+```
+
+Alleen documenten die aan beide condities voldoen worden meegenomen.
+
+### Stap 9 — Notificatie versturen
+
+Het OMC verstuurt de notificatie via NotifyNL en slaat daarna een object op in de Objecten API met de templatepreview en documentverwijzingen.
+
 ---
 
-## Vereisten
+## Vereisten samengevat
 
-- Het besluittype moet op de whitelist staan (`ZGW_WHITELIST_DECISIONMADE_IDS`)
-- `besluittype.besluitcategorie` moet `definitief` zijn
-- Het besluit moet openbaar zijn (`publicatietekst` aanwezig)
-- De burger moet contactgegevens hebben in OpenKlant via de gekoppelde zaak
-- Het template-ID moet zijn ingesteld
+| Conditie | Waarde |
+|---|---|
+| `informatieobject.objectType` UUID | Moet in geconfigureerde UUID-lijst staan |
+| `informatieobject.status` | `definitief` |
+| `informatieobject.vertrouwelijkheidaanduiding` | `openbaar` |
+| `zaaktype.informeren` | `true` |
+| `zaaktype.identificatie` | Moet op whitelist staan |
+| Burger heeft contactgegevens | E-mail of telefoonnummer in OpenKlant |
 
 ---
 

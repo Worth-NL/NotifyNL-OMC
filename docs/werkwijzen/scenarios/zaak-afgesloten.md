@@ -6,39 +6,71 @@ Dit scenario wordt geactiveerd wanneer een zaak de eindstatus bereikt.
 
 ## Triggercondities
 
+Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenmerken:
+
 | Veld | Vereiste waarde |
 |---|---|
 | `kanaal` | `zaken` |
 | `resource` | `status` |
 | `actie` | `create` |
-| Status `isEindstatus` | `true` |
 
 ---
 
-## Voorbeeldpayload
+## Verwerkingslogica
 
-```json
-{
-  "kanaal": "zaken",
-  "resource": "status",
-  "actie": "create",
-  "kenmerken": {
-    "bronorganisatie": "123456789",
-    "zaaktype": "https://openzaak.mijnstad.nl/catalogi/api/v1/zaaktypen/...",
-    "vertrouwelijkheidaanduiding": "openbaar"
-  },
-  "resourceUrl": "https://openzaak.mijnstad.nl/zaken/api/v1/statussen/..."
-}
+Nadat het event is ontvangen, haalt het OMC de statusgegevens op en controleert de volgende condities **in volgorde**. Als één conditie niet klopt, wordt de verwerking afgebroken.
+
+### Stap 1 — Statustype ophalen
+
+Het OMC haalt het statustype op via de `typeUri` van de ontvangen status.
+
+### Stap 2 — Eindstatus check
+
+```
+statustype.isEindstatus == true
 ```
 
+Alleen statustypes gemarkeerd als eindstatus activeren dit scenario. Tussentijdse statussen worden afgehandeld door [Zaak aangemaakt](zaak-aangemaakt.md) of [Zaak gewijzigd](zaak-gewijzigd.md).
+
+### Stap 3 — Informeren check
+
+```
+statustype.informeren == true
+```
+
+Het statustype in Open Zaak moet het veld `informeren` op `true` hebben staan. Als dit `false` is, verstuurt het OMC geen notificatie voor dit statustype.
+
+### Stap 4 — Whitelist check
+
+```
+zaaktype.identificatie ∈ ZGW_WHITELIST_ZAAKCLOSE_IDS
+```
+
+Het zaaktype van de zaak moet voorkomen in de geconfigureerde whitelist. Gebruik `*` om alle zaaktypen toe te staan.
+
+### Stap 5 — Gegevens ophalen
+
+Het OMC haalt aanvullende gegevens op:
+
+1. `GET /zaken/{uuid}` — zaakgegevens
+2. `GET /zaaktypen/{uuid}` — zaaktype (voor whitelist check)
+3. `GET /resultaattypen/{uuid}` — resultaattype (optioneel, alleen als de zaak een resultaat heeft)
+4. Contactgegevens van de burger via OpenKlant (BSN of KVK)
+
+### Stap 6 — Notificatie versturen
+
+Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template en schrijft daarna een contactmoment terug naar OpenKlant.
+
 ---
 
-## Vereisten
+## Vereisten samengevat
 
-- Het zaaktype moet op de whitelist staan (`ZGW_WHITELIST_ZAAKCLOSE_IDS`)
-- `statustype.isEindstatus` moet `true` zijn
-- De burger moet contactgegevens hebben in OpenKlant
-- Het template-ID moet zijn ingesteld
+| Conditie | Waarde |
+|---|---|
+| `statustype.isEindstatus` | `true` |
+| `statustype.informeren` | `true` |
+| `zaaktype.identificatie` | Moet op whitelist staan |
+| Burger heeft contactgegevens | E-mail of telefoonnummer in OpenKlant |
 
 ---
 
