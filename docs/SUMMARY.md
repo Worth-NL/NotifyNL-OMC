@@ -55,6 +55,10 @@
 
 * [Endpoints](api-referentie/endpoints.md)
 
+## API Documentatie
+
+* [NotifyNL API Documentatie (REST)](api-documentatie/notify-nl-api-documentatie-rest.md)
+
 ## Project
 
 * [Changelog](project/changelog.md)
