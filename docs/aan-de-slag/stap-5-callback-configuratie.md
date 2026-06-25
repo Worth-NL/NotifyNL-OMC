@@ -6,13 +6,53 @@ Nadat het OMC een notificatie heeft verstuurd via NotifyNL, moet NotifyNL de afl
 
 ## 5.1 Lang levend token aanmaken
 
-Het callback-eindpunt van het OMC vereist authenticatie. Genereer een lang levend JWT-token met de [Secrets Manager](../authenticatie/secrets-manager.md) in datetime-modus:
+Het callback-eindpunt van het OMC vereist authenticatie. Genereer een lang levend JWT-token via een van de volgende methoden.
+
+### Methode 1 — Secrets Manager (aanbevolen)
 
 ```bash
 ./SecretsManager --datetime "2030-01-01T00:00:00"
 ```
 
-Sla het gegenereerde token op — je hebt het nodig in de volgende stap.
+### Methode 2 — jwt.io
+
+Ga naar [jwt.io](https://jwt.io) en maak handmatig een token aan:
+
+**Header** — selecteer algoritme `HS256`:
+
+```json
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+**Payload** — gebruik de waarden uit je OMC-configuratie:
+
+```json
+{
+  "iss": "<OMC_AUTH_JWT_ISSUER>",
+  "aud": "<OMC_AUTH_JWT_AUDIENCE>",
+  "sub": "<OMC_AUTH_JWT_USERID>",
+  "iat": 1700000000,
+  "exp": 1893456000
+}
+```
+
+> - `iss`, `aud` en `sub` moeten exact overeenkomen met de waarden in je OMC-configuratie (`OMC_AUTH_JWT_ISSUER`, `OMC_AUTH_JWT_AUDIENCE`, `OMC_AUTH_JWT_USERID`).
+> - `aud` mag worden weggelaten als `OMC_AUTH_JWT_AUDIENCE` niet is ingesteld.
+> - `iat` is de huidige tijd in epoch-seconden. `exp` is de vervaldatum — voor een token geldig tot 2030-01-01 gebruik je `1893456000`.
+> - Gebruik [epochconverter.com](https://www.epochconverter.com) om een datum naar epoch-seconden te converteren.
+
+**Verify Signature** — vul je geheime sleutel in:
+
+```
+<OMC_AUTH_JWT_SECRET>
+```
+
+Het gegenereerde token verschijnt links op de pagina. Kopieer de volledige string.
+
+Sla het token op — je hebt het nodig in de volgende stap.
 
 ---
 
