@@ -1,7 +1,12 @@
+## 2.0.1
+
+- Adds documentation to a /docs folder to sync to gitbook
+- Fix multiline changelog output in CI workflow
+
 ## 2.0.0
 
 - Upgrades .net8.0 => to .net10.0
-- Implements PostGuard endpoint to send encrypted pdfs unlockable with yivi wallets.
+- Implements PostGuard endpoint to send encrypted pdfs unlockable with yivi wallets
 - Renames all "Zhv" endpoints to "Zgw"
 
 ## 1.17.19
