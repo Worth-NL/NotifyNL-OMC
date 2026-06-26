@@ -520,10 +520,6 @@ namespace Common.Settings.Configuration
             [Config]
             public AuthenticationComponent Auth { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
-            [Config]
-            public FeatureComponent Feature { get; }
-
             /// <inheritdoc cref="ContextComponent"/>
             [Config]
             public ContextComponent Context { get; }
@@ -531,6 +527,7 @@ namespace Common.Settings.Configuration
             /// <inheritdoc cref="ActorComponent"/>
             [Config]
             public ActorComponent Actor { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -539,7 +536,6 @@ namespace Common.Settings.Configuration
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
-                this.Feature = new FeatureComponent(loadersContext, parentName);
                 this.Context = new ContextComponent(loadersContext, parentName);
                 this.Actor = new ActorComponent(loadersContext, parentName);
             }
@@ -610,29 +606,6 @@ namespace Common.Settings.Configuration
                     public string UserName()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(UserName));
                 }
-            }
-
-            /// <summary>
-            /// The "Feature" part of the settings.
-            /// </summary>
-            public sealed record FeatureComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="FeatureComponent"/> class.
-                /// </summary>
-                public FeatureComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Feature));
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                public byte Workflow_Version()
-                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
             }
 
             /// <summary>
@@ -811,8 +784,7 @@ namespace Common.Settings.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     public string OpenKlant()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
-                           disableValidation: this._configuration.OMC.Feature.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -1689,9 +1661,6 @@ namespace Common.Settings.Configuration
             // OMC | Authorization | JWT
             TryGetConfigurations(ref counter, methodNames, omcConfiguration.Auth.JWT);
 
-            // OMC | Features
-            TryGetConfigurations(ref counter, methodNames, omcConfiguration.Feature);
-                
             var zgwConfiguration = configuration.ZGW;
 
             // ZGW | Authorization | JWT
