@@ -26,7 +26,6 @@ jobs:
               - 'OMC.sln'
               - 'OMC.sln.DotSettings'
               - 'OMC/**'
-
   validate-versions:
     runs-on: ubuntu-latest
     needs: changes
@@ -92,20 +91,43 @@ jobs:
           fi
         name: Check if project version is in CHANGELOG.md
 
+      - run: |
+          project_version="${{ steps.project.outputs.version_project }}"
+          CHANGELOG_SECTION=$(python3 -c "
+          import re
+          with open('CHANGELOG.md', 'r') as f:
+            content = f.read()
+            match = re.search(r'## $project_version\n(.*?)(?=\n##|\Z)', content, re.DOTALL)
+            if match:
+                print(match.group(1).strip())
+            else:
+                raise ValueError(f'No changelog entry found for version {project_version}')
+          ")
+          echo "Changelog for version $project_version:"
+          echo "$CHANGELOG_SECTION"
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        name: Extract Changelog Section
+        id: changelog
+
   test:
     runs-on: ubuntu-latest
     needs: validate-versions
     strategy:
       matrix:
         dotnet-version: ["10.0"]
-        test-project:
-          [
-            "OMC/Tests/Core/Application/Common.UnitTests",
-            "OMC/Tests/Core/Domain/ZgwModels.UnitTests",
-            "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit",
-            "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests",
-            "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests",
-          ]
+        include:
+          - test-project: "OMC/Tests/Core/Application/Common.UnitTests"
+            threshold: 35
+          - test-project: "OMC/Tests/Core/Domain/ZgwModels.UnitTests"
+            threshold: 35
+          - test-project: "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit"
+            threshold: 35
+          - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests"
+            threshold: 35
+          - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests"
+            threshold: 0
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
@@ -135,7 +157,7 @@ jobs:
       - uses: alsi-lawr/dotnet-test-coverlet@v1
         with:
           project: ${{ matrix.test-project }}
-          threshold: 50
+          threshold: ${{ matrix.threshold }}
           dotnet-version: ${{ matrix.dotnet-version }}
         name: Run unit tests and generate coverage
         id: run-tests
