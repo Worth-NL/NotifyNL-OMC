@@ -1,17 +1,14 @@
-﻿// © 2023, Worth Systems.
+// © 2023, Worth Systems.
 
 using Common.Constants;
 using System.Text.Json.Serialization;
 using ZgwModels.Mapping.Models.Interfaces;
 
-namespace ZgwModels.Mapping.Models.POCOs.OpenZaak.v2
+namespace ZgwModels.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
     /// The details of the case retrieved from "OpenZaak" Web API service.
     /// </summary>
-    /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web API service | "OMC workflow" v2.
-    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseDetails : IJsonSerializable
     {

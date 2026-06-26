@@ -3,7 +3,6 @@
 using Common.Constants;
 using System.Text.Json.Serialization;
 using ZgwModels.Mapping.Models.Interfaces;
-using ZgwModels.Mapping.Models.POCOs.OpenZaak.v2;
 
 namespace ZgwModels.Mapping.Models.POCOs.OpenZaak
 {

@@ -81,7 +81,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void OmcConfiguration_Valid_EnvironmentVariables_ReturnsNotDefaultValues()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -98,7 +98,7 @@ namespace Common.Tests.Unit.Settings.Configuration
             (string CaseId, TestDelegate Logic, string ExpectedErrorMessage) test)
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
             Assert.Multiple(() =>
@@ -143,7 +143,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForSpecificCaseId_ReturnsExpectedResult(string caseId, bool expectedResult)
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act
             #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
@@ -163,7 +163,7 @@ namespace Common.Tests.Unit.Settings.Configuration
         public void IsAllowed_InEnvironmentMode_ForEmptyWhitelistedIDs_ReturnsFalse()
         {
             // Arrange
-            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act
             #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
@@ -180,36 +180,13 @@ namespace Common.Tests.Unit.Settings.Configuration
         }
 
         [Test]
-        public void OpenKlant_InEnvironmentMode_OmcWorkflowV1_ApiKeyIsNotRequired()
-        {
-            // Arrange
-            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v1);
-
-            // Act
-            string openKlantApiKey = configuration.ZGW.Auth.Key.OpenKlant();
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(1));
-                Assert.That(openKlantApiKey, Is.Empty);
-            });
-        }
-
-        [Test]
-        public void OpenKlant_InEnvironmentMode_OmcWorkflowV2_ApiKeyIsRequired()
+        public void OpenKlant_InEnvironmentMode_ApiKeyIsRequired()
         {
             // Arrange
             using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
 
             // Act & Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(configuration.OMC.Feature.Workflow_Version(), Is.EqualTo(2));
-                ArgumentException? exception = Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
-                Assert.That(exception?.Message, Is.EqualTo(CommonResources.Configuration_ERROR_ValueNotFoundOrEmpty
-                    .Replace("{0}", "ZGW_AUTH_KEY_OPENKLANT")));
-            });
+            Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
         }
         #endregion
 
