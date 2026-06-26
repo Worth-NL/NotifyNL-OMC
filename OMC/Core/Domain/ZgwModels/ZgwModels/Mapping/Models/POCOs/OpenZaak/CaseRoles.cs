@@ -1,4 +1,4 @@
-﻿// © 2023, Worth Systems.
+// © 2023, Worth Systems.
 
 using Common.Extensions;
 using Common.Settings.Configuration;
@@ -6,14 +6,11 @@ using System.Text.Json.Serialization;
 using ZgwModels.Mapping.Models.Interfaces;
 using ZgwModels.Properties;
 
-namespace ZgwModels.Mapping.Models.POCOs.OpenZaak.v2
+namespace ZgwModels.Mapping.Models.POCOs.OpenZaak
 {
     /// <summary>
     /// The roles of the case retrieved from "OpenZaak" Web API service.
     /// </summary>
-    /// <remarks>
-    ///   Version: "OpenZaak" (1.0) Web API service | "OMC workflow" v2.
-    /// </remarks>
     /// <seealso cref="IJsonSerializable"/>
     public struct CaseRoles : IJsonSerializable
     {
@@ -24,10 +21,10 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenZaak.v2
         [JsonPropertyName("count")]
         [JsonPropertyOrder(0)]
         public int Count { get; set; }
-        
+
         /// <summary>
         /// The collection of:
-        /// <inheritdoc cref="OpenZaak.CaseRole"/>
+        /// <inheritdoc cref="CaseRole"/>
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("results")]
@@ -42,7 +39,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenZaak.v2
         }
 
         /// <summary>
-        /// Gets the desired <see cref="OpenZaak.CaseRole"/>.
+        /// Gets the desired <see cref="CaseRole"/>.
         /// </summary>
         /// <returns>
         ///   The single role.

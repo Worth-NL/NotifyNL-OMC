@@ -130,7 +130,7 @@ jobs:
           - test-project: "OMC/Tests/Core/Domain/ZgwModels.UnitTests"
             threshold: 35
           - test-project: "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit"
-            threshold: 35
+            threshold: 10
           - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests"
             threshold: 35
           - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests"

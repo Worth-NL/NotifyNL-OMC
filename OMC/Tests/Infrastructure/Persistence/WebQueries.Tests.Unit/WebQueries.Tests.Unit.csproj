@@ -31,10 +31,22 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
   
+  <!-- appsettings for ConfigurationHandler -->
+  <ItemGroup>
+    <Content Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\appsettings.Test.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Infrastructure\Persistence\WebQueries\WebQueries.csproj" />
     <ProjectReference Include="..\..\..\Core\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
+  </ItemGroup>
+
+  <!-- Code coverage -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
 
 </Project>

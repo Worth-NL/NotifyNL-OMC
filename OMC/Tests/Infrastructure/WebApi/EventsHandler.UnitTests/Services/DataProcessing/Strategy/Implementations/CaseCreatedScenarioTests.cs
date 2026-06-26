@@ -37,7 +37,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            this._testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            this._testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
         }
 
         [TearDown]

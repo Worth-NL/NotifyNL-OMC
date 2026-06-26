@@ -279,7 +279,7 @@ namespace EventsHandler
             // Domain queries and resources
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
-            builder.Services.RegisterOpenServices(builder);
+            builder.Services.RegisterOpenServices();
 
             // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
@@ -397,7 +397,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ZgwVersionRegister>();
 
             // User Interaction
-            builder.Services.RegisterResponders(builder);
+            builder.Services.RegisterResponders();
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
@@ -442,81 +442,20 @@ namespace EventsHandler
             services.AddScoped<KtoScenario>();
         }
 
-        private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
+        private static void RegisterOpenServices(this IServiceCollection services)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
-
             // Common query methods
             services.AddSingleton<IQueryBase, QueryBase>();
 
             // Strategies
-            services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
+            services.AddSingleton<OpenZaak.Interfaces.IQueryZaak, OpenZaak.QueryZaak>();
+            services.AddSingleton<OpenKlant.Interfaces.IQueryKlant, OpenKlant.v2.QueryKlant>();
+            services.AddSingleton<Besluiten.Interfaces.IQueryBesluiten, Besluiten.QueryBesluiten>();
+            services.AddSingleton<Objecten.Interfaces.IQueryObjecten, Objecten.QueryObjecten>();
+            services.AddSingleton<ObjectTypen.Interfaces.IQueryObjectTypen, ObjectTypen.QueryObjectTypen>();
 
             // Feedback and telemetry
-            services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
-
-            return;
-
-            static Type DetermineOpenZaakVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(OpenZaak.v1.QueryZaak),
-                    2 => typeof(OpenZaak.v2.QueryZaak),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenZaakUnknown)
-                };
-            }
-
-            static Type DetermineOpenKlantVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(OpenKlant.v1.QueryKlant),
-                    2 => typeof(OpenKlant.v2.QueryKlant),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenKlantUnknown)
-                };
-            }
-
-            static Type DetermineBesluitenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(Besluiten.v1.QueryBesluiten),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionBesluitenUnknown)
-                };
-            }
-
-            static Type DetermineObjectenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(Objecten.v1.QueryObjecten),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionObjectenUnknown)
-                };
-            }
-
-            static Type DetermineObjectTypenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(ObjectTypen.v1.QueryObjectTypen),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionObjectTypenUnknown)
-                };
-            }
-
-            static Type DetermineTelemetryVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(Register.v1.ContactRegistration),
-                    2 => typeof(Register.v2.ContactRegistration),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionTelemetryUnknown)
-                };
-            }
+            services.AddScoped<ITelemetryService, Register.v2.ContactRegistration>();
         }
 
         private static void RegisterClientFactories(this IServiceCollection services)
@@ -525,24 +464,10 @@ namespace EventsHandler
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
-        private static void RegisterResponders(this IServiceCollection services, WebApplicationBuilder builder)
+        private static void RegisterResponders(this IServiceCollection services)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
-
             services.AddSingleton<NotificationEventResponder>();
-            services.AddScoped(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
-
-            return;
-
-            static Type DetermineResponderVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(Responder.v1.NotifyCallbackResponder),
-                    2 => typeof(Responder.v2.NotifyCallbackResponder),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionNotifyResponderUnknown)
-                };
-            }
+            services.AddScoped<GeneralResponder, Responder.v2.NotifyCallbackResponder>();
         }
         #endregion
         #endregion
