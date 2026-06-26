@@ -1,15 +1,12 @@
-﻿// © 2024, Worth Systems.
+// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.Versioning.Interfaces;
 
-namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.v1
+namespace WebQueries.DataQuerying.Strategies.Queries.Objecten
 {
     /// <inheritdoc cref="IQueryObjecten"/>
-    /// <remarks>
-    ///   Version: "Objecten" (v1) Web API service | "OMC workflow" v1.
-    /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     public sealed class QueryObjecten : IQueryObjecten
     {

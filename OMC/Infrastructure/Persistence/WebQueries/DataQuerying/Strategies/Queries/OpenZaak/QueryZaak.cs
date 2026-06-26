@@ -1,4 +1,4 @@
-﻿// © 2024, Worth Systems.
+// © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Strategies.Interfaces;
@@ -6,15 +6,11 @@ using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
-using ZgwModels.Mapping.Models.POCOs.OpenZaak.v1;
 using ZgwModels.Properties;
 
-namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
+namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak
 {
     /// <inheritdoc cref="IQueryZaak"/>
-    /// <remarks>
-    ///   Version: "OpenZaak" (v1) Web API service | "OMC workflow" v1.
-    /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     public sealed class QueryZaak : IQueryZaak
     {
@@ -36,25 +32,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
         /// <inheritdoc cref="IQueryZaak.GetCaseRoleAsync(IQueryBase, Uri)"/>
         async Task<CaseRole> IQueryZaak.GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri)
         {
-            const string subjectType = "natuurlijk_persoon";  // NOTE: Only this specific parameter value is supported
-
-            return (await GetCaseRolesV1Async(queryBase, caseUri, subjectType))
-                .CaseRole(((IQueryZaak)this).Configuration);
-        }
-
-        private async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, Uri caseUri, string subjectType)
-        {
             // Predefined URL components
             string rolesEndpoint = $"{((IQueryZaak)this).GetDomain()}/rollen";
 
             // Request URL
-            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}" +
-                                          $"&betrokkeneType={subjectType}");
+            var caseWithRoleUri = new Uri($"{rolesEndpoint}?zaak={caseUri}");
 
-            return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v1
+            CaseRoles caseRoles = await queryBase.ProcessGetAsync<CaseRoles>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseWithRoleUri,
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseRole);
+
+            return caseRoles.CaseRole(((IQueryZaak)this).Configuration);
         }
         #endregion
 
@@ -62,16 +51,12 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
         /// <inheritdoc cref="IQueryZaak.GetCaseTypeUriAsync(IQueryBase, Uri)"/>
         async Task<Uri> IQueryZaak.GetCaseTypeUriAsync(IQueryBase queryBase, Uri caseUri)
         {
-            return (await GetCaseDetailsV1Async(queryBase, caseUri))
-                .CaseTypeUrl;
-        }
-
-        private static async Task<CaseDetails> GetCaseDetailsV1Async(IQueryBase queryBase, Uri caseUri)
-        {
-            return await queryBase.ProcessGetAsync<CaseDetails>(  // NOTE: CaseDetails v1
+            CaseDetails caseDetails = await queryBase.ProcessGetAsync<CaseDetails>(
                 httpClientType: HttpClientTypes.OpenZaak_v1,
-                uri: caseUri,  // Request URL
+                uri: caseUri,
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseDetails);
+
+            return caseDetails.CaseTypeUrl;
         }
         #endregion
     }

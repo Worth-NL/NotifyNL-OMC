@@ -12,6 +12,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using ZgwModels.Mapping.Enums.Objecten;
+using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
@@ -91,30 +92,28 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
+
+
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.Email.TaskAssigned();
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            bool isValid = IsValid(this._taskData.ExpirationDate);
-            string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
-            string expirationDateProvided = GetExpirationDateProvided(isValid);
-            
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["taak.verloopdatum"] = formattedExpirationDate;
-                s_emailPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
+                s_emailPersonalization["taak.verloopdatum"] = GetFormattedExpirationDate(IsValid(this._taskData.ExpirationDate), this._taskData.ExpirationDate);
+                s_emailPersonalization["taak.heeft_verloopdatum"] = GetExpirationDateProvided(IsValid(this._taskData.ExpirationDate));
                 s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
 
                 s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
@@ -122,23 +121,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 return s_emailPersonalization;
             }
-        }
-
-        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
-        {
-            return isValid
-                ? expirationDate.ConvertToDutchDateString()  // 01-01-2001
-                : CommonValues.Default.Models.DefaultStringValue;
-        }
-
-        private static string GetExpirationDateProvided(bool isValid)
-        {
-            return isValid ? "yes" : "no";
-        }
-
-        private static bool IsValid(DateTime expirationDate)
-        {
-            return expirationDate != default;  // 0001-01-01, 00:00:00
         }
         #endregion
 
@@ -192,6 +174,17 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         protected override string GetWhitelistEnvVarName() => this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().ToString();
+        #endregion
+
+        #region Helper methods
+        private static bool IsValid(DateTime expirationDate)
+            => expirationDate != default;
+
+        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
+            => isValid ? expirationDate.ConvertToDutchDateString() : "-";
+
+        private static string GetExpirationDateProvided(bool isValid)
+            => isValid ? "yes" : "no";
         #endregion
     }
 }

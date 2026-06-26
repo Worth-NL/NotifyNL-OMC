@@ -35,8 +35,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         [OneTimeSetUp]
         public void TestsInitialize()
         {
-            // NOTE: ZGW_WHITELIST_ZAAKCLOSE_IDS = "*" in ValidEnvironment_v1 — every case type is allowed
-            this._testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+            // NOTE: ZGW_WHITELIST_ZAAKCLOSE_IDS = "*" in ValidEnvironment_v2 — every case type is allowed
+            this._testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
         }
 
         [TearDown]
