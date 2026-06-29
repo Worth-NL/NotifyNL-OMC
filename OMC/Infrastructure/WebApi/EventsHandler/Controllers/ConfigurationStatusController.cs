@@ -45,20 +45,27 @@ namespace EventsHandler.Controllers
 
             int total = 0, passed = 0;
 
-            await foreach (CheckResult check in checkService.RunChecksAsync(ct))
+            try
             {
-                string json = JsonSerializer.Serialize(check, s_jsonOptions);
-                await Response.WriteAsync($"data: {json}\n\n", ct);
+                await foreach (CheckResult check in checkService.RunChecksAsync(ct))
+                {
+                    string json = JsonSerializer.Serialize(check, s_jsonOptions);
+                    await Response.WriteAsync($"data: {json}\n\n", ct);
+                    await Response.Body.FlushAsync(ct);
+
+                    total++;
+                    if (check.Ok) passed++;
+                }
+
+                string summary = JsonSerializer.Serialize(
+                    new { total, passed, failed = total - passed }, s_jsonOptions);
+                await Response.WriteAsync($"event: complete\ndata: {summary}\n\n", ct);
                 await Response.Body.FlushAsync(ct);
-
-                total++;
-                if (check.Ok) passed++;
             }
-
-            string summary = JsonSerializer.Serialize(
-                new { total, passed, failed = total - passed }, s_jsonOptions);
-            await Response.WriteAsync($"event: complete\ndata: {summary}\n\n", ct);
-            await Response.Body.FlushAsync(ct);
+            catch (OperationCanceledException)
+            {
+                // Client disconnected (tab closed / navigated away) — not an error.
+            }
         }
 
         private const string Html = """
