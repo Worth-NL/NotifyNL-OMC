@@ -653,9 +653,9 @@ namespace EventsHandler.Controllers
                     RV -- "Channel = besluiten\\nResource = besluit" --> decision_made["⚖️ Decision Made\\n(Besluit genomen)"]
                     RV -- "No match" --> NI(["⏹ NotImplemented"])
 
-                    CB -- "SerialNumber = 1" --> case_created["🆕 Case Created\\n(Zaak aangemaakt)"]
-                    CB -- "SerialNumber > 1\\nnot final status" --> case_updated["🔄 Case Status Updated\\n(Zaakstatus bijgewerkt)"]
-                    CB -- "SerialNumber > 1\\nIsFinalStatus" --> case_closed["✅ Case Closed\\n(Zaak afgesloten)"]
+                    CB -- "volgnummer = 1" --> case_created["🆕 Case Created\\n(Zaak aangemaakt)"]
+                    CB -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated\\n(Zaakstatus bijgewerkt)"]
+                    CB -- "volgnummer > 1\\\\neindStatus = true" --> case_closed["✅ Case Closed\\n(Zaak afgesloten)"]
 
                     OB -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned\\n(Taak toegewezen)"]
                     OB -- "= MessageObjectType UUID" --> msg_received["💬 Message Received\\n(Bericht ontvangen)"]
@@ -692,11 +692,11 @@ namespace EventsHandler.Controllers
                     WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> NE{"IsNotification\\nExpected?"}
+                    GT --> NE{"informeren?"}
                     NE -- No --> AB1(["⏹ Aborted — informeren = false"])
-                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "> 1, not final" --> case_updated["🔄 Case Status Updated →"]
-                    SN -- "> 1, IsFinalStatus" --> case_closed["✅ Case Closed →"]
+                    NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated →"]
+                    SN -- "eindStatus = true" --> case_closed["✅ Case Closed →"]
                     SN -- "= 1" --> SCENARIO["🆕 CaseCreatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakCreate_IDs\\n(or wildcard *)?"}
                     WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
@@ -723,12 +723,12 @@ namespace EventsHandler.Controllers
                     WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> NE{"IsNotification\\nExpected?"}
+                    GT --> NE{"informeren?"}
                     NE -- No --> AB1(["⏹ Aborted — informeren = false"])
-                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "= 1" --> case_created["🆕 Case Created →"]
-                    SN -- "> 1, IsFinalStatus" --> case_closed["✅ Case Closed →"]
-                    SN -- "> 1, not final" --> SCENARIO["🔄 CaseStatusUpdatedScenario"]
+                    NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
+                    SN -- "volgnummer = 1" --> case_created["🆕 Case Created →"]
+                    SN -- "eindStatus = true" --> case_closed["✅ Case Closed →"]
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> SCENARIO["🔄 CaseStatusUpdatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakUpdate_IDs\\n(or wildcard *)?"}
                     WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri"]
@@ -754,16 +754,16 @@ namespace EventsHandler.Controllers
                     WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> NE{"IsNotification\\nExpected?"}
+                    GT --> NE{"informeren?"}
                     NE -- No --> AB1(["⏹ Aborted — informeren = false"])
-                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "= 1" --> case_created["🆕 Case Created →"]
-                    SN -- "> 1, not final" --> case_updated["🔄 Case Status Updated →"]
-                    SN -- "> 1, IsFinalStatus" --> SCENARIO["✅ CaseClosedScenario"]
+                    NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
+                    SN -- "volgnummer = 1" --> case_created["🆕 Case Created →"]
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated →"]
+                    SN -- "eindStatus = true" --> SCENARIO["✅ CaseClosedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakClose_IDs\\n(or wildcard *)?"}
                     WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri\\n(includes expanded.result.resultType)"]
-                    GC --> CR{"case.Expanded\\n.Result.ResultType != null?"}
+                    GC --> CR{"zaak.resultaat\\\\n.resultaattype != null?"}
                     CR -- Yes --> GR["GET CaseResultType\\nOpenZaak — resultType URI"]
                     CR -- No  --> GP
                     GR --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status\\n+ zaak.resultaat.resultaatType.omschrijving"]
@@ -792,17 +792,17 @@ namespace EventsHandler.Controllers
                     OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
                     OT -- "= TaskObjectType UUID" --> SCENARIO["📋 TaskAssignedScenario"]
                     SCENARIO --> GT["GET Task object\\nObjecten API — ResourceUri"]
-                    GT --> CS{"task.Status\\n== Open?"}
+                    GT --> CS{"taak.status\\\\n== Open?"}
                     CS -- No --> AB1(["⏹ Aborted — task already closed"])
-                    CS -- Yes --> IT{"task.Identification.Type\\n== BSN or KVK?"}
+                    CS -- Yes --> IT{"taak.identificatie.type\\\\n== BSN of KVK?"}
                     IT -- No --> AB2(["⏹ Aborted — unsupported id type"])
                     IT -- Yes --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — task.CaseUri"]
                     GCS --> WL{"Case type in\\nTaskAssigned_IDs?"}
                     WL -- No --> AB3(["⏹ Aborted — not whitelisted"])
-                    WL -- Yes --> NP{"caseType\\n.IsNotificationExpected?"}
+                    WL -- Yes --> NP{"zaaktype\\\\n.informeren?"}
                     NP -- No --> AB4(["⏹ Aborted — informeren = false"])
                     NP -- Yes --> GC["GET Case\\nOpenZaak — task.CaseUri"]
-                    GC --> BSN{"Identification.Type\\n== BSN?"}
+                    GC --> BSN{"taak.identificatie.type\\\\n== BSN?"}
                     BSN -- Yes --> GPB["GET Party data\\nOpenKlant — case.Uri + BSN"]
                     BSN -- No  --> GPK["GET Party data\\nOpenKlant — case.Uri + case.Id\\npersonalisation: naam + taak.verloopdatum + taak.title + zaak"]
                     GPB & GPK --> CHANNEL{"Distribution\\nChannel?"}
@@ -859,17 +859,17 @@ namespace EventsHandler.Controllers
                     WEBHOOK --> SCENARIO["⚖️ DecisionMadeScenario"]
                     SCENARIO --> GDR["GET DecisionResource\\nOpenBesluiten — ResourceUri"]
                     GDR --> GIO["GET InfoObject\\nOpenZaak — decisionResource.InfoObjectUri"]
-                    GIO --> CIT{"infoObject.TypeUri UUID\\nin DecisionInfoObjectType_Uuids?"}
+                    GIO --> CIT{"informatieobject.informatieobjecttype\\\\nUUID in DecisionInfoObjectType_Uuids?"}
                     CIT -- No --> AB1(["⏹ Aborted — InfoObject type not in allowed set"])
-                    CIT -- Yes --> CST{"infoObject.Status\\n== Definitive?"}
+                    CIT -- Yes --> CST{"informatieobject.status\\\\n== definitief?"}
                     CST -- No --> AB2(["⏹ Aborted — document not yet definitive"])
-                    CST -- Yes --> CCV{"infoObject.Confidentiality\\n== NonConfidential?"}
+                    CST -- Yes --> CCV{"informatieobject.vertrouwelijkheid\\\\n== openbaar?"}
                     CCV -- No --> AB3(["⏹ Aborted — document is confidential"])
                     CCV -- Yes --> GD["GET Decision\\nOpenBesluiten — decisionResource.DecisionUri"]
                     GD --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — decision.CaseUri"]
                     GCS --> WL{"Case type in\\nDecisionMade_IDs?"}
                     WL -- No --> AB4(["⏹ Aborted — not whitelisted"])
-                    WL -- Yes --> NP{"caseType\\n.IsNotificationExpected?"}
+                    WL -- Yes --> NP{"zaaktype\\\\n.informeren?"}
                     NP -- No --> AB5(["⏹ Aborted — informeren = false"])
                     NP -- Yes --> GB["GET BSN number\\nOpenZaak — decision.CaseUri\\n(empty if organisation — no BSN)"]
                     GB --> GDT["GET DecisionType\\nOpenBesluiten"]
@@ -958,6 +958,30 @@ namespace EventsHandler.Controllers
                 let current = null;
                 let ctr = 0;
 
+                // Wire native click listeners onto Mermaid-rendered SVG nodes.
+                // Mermaid generates IDs like "flowchart-nodeId-N"; match by prefix.
+                function wireClicks(wrap) {
+                  const svg = wrap.querySelector('svg');
+                  if (!svg) return;
+                  const nodeMap = {
+                    routing:       'routing',
+                    case_created:  'case-created',
+                    case_updated:  'case-updated',
+                    case_closed:   'case-closed',
+                    task_assigned: 'task-assigned',
+                    msg_received:  'message-received',
+                    decision_made: 'decision-made',
+                    kto:           'kto',
+                  };
+                  Object.entries(nodeMap).forEach(([nid, key]) => {
+                    svg.querySelectorAll(`[id^="flowchart-${nid}-"]`).forEach(el => {
+                      const node = el.closest('g') || el;
+                      node.style.cursor = 'pointer';
+                      node.addEventListener('click', () => select(key));
+                    });
+                  });
+                }
+
                 async function select(key) {
                   if (key === current) return;
                   current = key;
@@ -977,6 +1001,7 @@ namespace EventsHandler.Controllers
                   try {
                     const { svg } = await mermaid.render(id, s.diagram);
                     wrap.innerHTML = svg;
+                    wireClicks(wrap);
                   } catch (err) {
                     wrap.innerHTML = `<pre style="color:red;font-size:0.72rem;white-space:pre-wrap;padding:1rem">${err}</pre>`;
                   }
