@@ -116,25 +116,35 @@ namespace EventsHandler.Controllers
                 /* ── Check rows ── */
                 .checks { border-top: 1px solid #334155; }
                 .check {
-                  display: flex; align-items: baseline; gap: 0;
+                  display: flex; align-items: flex-start; gap: 0;
                   padding: 0.5rem 1.25rem; border-bottom: 1px solid #1e3050;
                   font-size: 0.85rem; animation: fadeIn 0.15s ease;
                 }
                 .check:last-child { border-bottom: none; }
-                .check-icon { width: 1.4rem; flex-shrink: 0; font-style: normal; }
-                .check-name { flex: 1; color: #cbd5e1; padding: 0 0.5rem; }
+                .check-icon { width: 1.4rem; flex-shrink: 0; font-style: normal; padding-top: 1px; }
+                .check-body { flex: 1; min-width: 0; }
+                .check-main { display: flex; align-items: baseline; gap: 0; }
+                .check-name { flex: 1; color: #cbd5e1; padding: 0 0.5rem; white-space: nowrap; }
                 .check-detail {
                   color: #475569; font-size: 0.78rem;
                   font-family: 'SFMono-Regular', 'Consolas', monospace;
                   max-width: 380px; overflow: hidden;
                   text-overflow: ellipsis; white-space: nowrap;
                 }
-                .check-detail.ok   { color: #22c55e; }
+                .check-detail.ok { color: #22c55e; }
                 .check-detail.fail {
-                  color: #ef4444;
-                  white-space: normal; word-break: break-word;
-                  text-overflow: unset;
+                  color: #ef4444; white-space: pre-wrap; word-break: break-all;
+                  text-overflow: unset; max-width: 100%;
+                  max-height: 8rem; overflow-y: auto;
+                  display: block; margin-top: 0.2rem;
+                  background: #1a0a0a; padding: 0.4rem 0.5rem; border-radius: 4px;
                 }
+                .check-hint {
+                  margin-top: 0.3rem; font-size: 0.73rem;
+                  color: #f59e0b;
+                  font-family: 'SFMono-Regular', 'Consolas', monospace;
+                }
+                .check-hint::before { content: "→ set: "; color: #78716c; }
 
                 /* ── Summary ── */
                 .summary {
@@ -207,15 +217,29 @@ namespace EventsHandler.Controllers
                   const g = getGroup(d.group, d.icon || '📋');
                   const row = document.createElement('div');
                   row.className = 'check';
+                  const detail = d.detail ? `<span class="check-detail ${d.ok ? 'ok' : 'fail'}">${esc(d.detail)}</span>` : '';
+                  const hint   = (!d.ok && d.hint) ? `<div class="check-hint">${esc(d.hint)}</div>` : '';
                   row.innerHTML =
                     `<i class="check-icon">${d.ok ? '✓' : '✗'}</i>` +
-                    `<span class="check-name">${d.name}</span>` +
-                    `<span class="check-detail ${d.ok ? 'ok' : 'fail'}">${d.detail || ''}</span>`;
+                    `<div class="check-body">` +
+                      `<div class="check-main">` +
+                        `<span class="check-name">${esc(d.name)}</span>` +
+                        (d.ok ? detail : '') +
+                      `</div>` +
+                      (!d.ok ? detail : '') +
+                      hint +
+                    `</div>`;
                   g.checksEl.appendChild(row);
                   d.ok ? g.ok++ : g.fail++;
                   total++; if (d.ok) passed++;
                   updateBadge(d.group, g);
                   updateProgress();
+                }
+
+                function esc(s) {
+                  return String(s)
+                    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
                 }
 
                 function updateBadge(name, g) {
