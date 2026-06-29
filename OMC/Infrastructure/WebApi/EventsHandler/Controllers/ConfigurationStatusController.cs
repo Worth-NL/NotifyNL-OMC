@@ -404,23 +404,17 @@ namespace EventsHandler.Controllers
                 }
                 body {
                   font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
-                  background: var(--bg);
-                  color: var(--charcoal);
-                  min-height: 100vh;
-                  display: flex;
-                  flex-direction: column;
+                  background: var(--bg); color: var(--charcoal);
+                  min-height: 100vh; display: flex; flex-direction: column;
                 }
-
-                /* ── Topbar ── */
                 .topbar {
                   background: var(--orange); padding: 0 2rem; height: 56px;
-                  display: flex; align-items: center; justify-content: space-between;
-                  flex-shrink: 0;
+                  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
                 }
                 .topbar-brand {
-                  display: flex; align-items: center; gap: 0.6rem;
-                  color: #fff; font-weight: 700; font-size: 0.85rem;
-                  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+                  display: flex; align-items: center; gap: 0.6rem; color: #fff;
+                  font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em;
+                  text-transform: uppercase; text-decoration: none;
                 }
                 .topbar-links { display: flex; gap: 0.5rem; }
                 .topbar-link {
@@ -430,151 +424,107 @@ namespace EventsHandler.Controllers
                 }
                 .topbar-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
-                /* ── Body layout: sidebar + main ── */
-                .layout {
-                  display: flex;
-                  flex: 1;
-                  overflow: hidden;
-                  height: calc(100vh - 56px);
-                }
+                .layout { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 56px); }
 
                 /* ── Sidebar ── */
                 .sidebar {
-                  width: 260px;
-                  flex-shrink: 0;
-                  background: var(--surface);
-                  border-right: 1px solid var(--border);
-                  display: flex;
-                  flex-direction: column;
-                  overflow-y: auto;
+                  width: 248px; flex-shrink: 0; background: var(--surface);
+                  border-right: 1px solid var(--border); display: flex;
+                  flex-direction: column; overflow-y: auto;
                 }
-                .sidebar-header {
-                  padding: 1.25rem 1.25rem 0.6rem;
-                  border-bottom: 1px solid var(--border);
+                .sidebar-hd {
+                  padding: 1.1rem 1.1rem 0.6rem; border-bottom: 1px solid var(--border);
                 }
                 .sidebar-label {
-                  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
-                  text-transform: uppercase; color: var(--orange); margin-bottom: 0.25rem;
-                }
-                .sidebar-title {
-                  font-size: 0.875rem; font-weight: 700; color: var(--dark);
-                }
-                .sidebar-sub {
-                  font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.4;
-                }
-                .scenario-list { padding: 0.6rem 0; flex: 1; }
-                .scenario-btn {
-                  display: flex; align-items: flex-start; gap: 0.65rem;
-                  width: 100%; padding: 0.7rem 1.25rem;
-                  background: none; border: none; cursor: pointer;
-                  text-align: left; transition: background 0.1s;
-                  border-left: 3px solid transparent;
-                }
-                .scenario-btn:hover { background: var(--bg); }
-                .scenario-btn.active {
-                  background: #FFF0EC;
-                  border-left-color: var(--orange);
-                }
-                .scenario-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-                .scenario-label { flex: 1; }
-                .scenario-name {
-                  font-size: 0.8rem; font-weight: 600; color: var(--dark); line-height: 1.3;
-                }
-                .scenario-nl {
-                  font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem;
-                }
-                .scenario-channel {
-                  display: inline-block; font-size: 0.6rem; font-weight: 600;
-                  letter-spacing: 0.05em; padding: 0.1rem 0.4rem; border-radius: 4px;
-                  margin-top: 0.3rem; text-transform: uppercase;
-                }
-                .ch-zaken    { background: #dbeafe; color: #1d4ed8; }
-                .ch-objecten { background: #d1fae5; color: #065f46; }
-                .ch-besluiten{ background: #ede9fe; color: #6d28d9; }
-
-                /* ── Legend strip ── */
-                .legend {
-                  display: flex; flex-wrap: wrap; gap: 0.4rem 1rem;
-                  padding: 0.7rem 1.5rem;
-                  background: var(--surface);
-                  border-bottom: 1px solid var(--border);
-                  font-size: 0.72rem; flex-shrink: 0;
-                }
-                .legend-item { display: flex; align-items: center; gap: 0.35rem; color: var(--muted); }
-                .leg { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-
-                /* ── Main panel ── */
-                .main {
-                  flex: 1;
-                  display: flex;
-                  flex-direction: column;
-                  overflow: hidden;
-                }
-                .main-header {
-                  padding: 1rem 1.5rem 0.8rem;
-                  background: var(--surface);
-                  border-bottom: 1px solid var(--border);
-                  flex-shrink: 0;
-                }
-                .main-label {
-                  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+                  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
                   text-transform: uppercase; color: var(--orange); margin-bottom: 0.2rem;
                 }
-                .main-title {
-                  font-size: 1.2rem; font-weight: 700; color: var(--dark);
-                }
-                .main-desc {
-                  font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem;
-                }
-
-                .diagram-area {
-                  flex: 1;
-                  overflow: auto;
-                  padding: 1.5rem;
-                  display: flex;
-                  justify-content: center;
-                  align-items: flex-start;
-                }
-                #diagram-wrap {
-                  background: var(--surface);
-                  border: 1px solid var(--border);
-                  border-radius: 12px;
-                  padding: 2rem;
-                  box-shadow: 0 1px 8px rgb(30 34 56 / 0.06);
-                  min-width: 300px;
-                  transform-origin: top center;
-                  transition: transform 0.15s ease;
-                }
-                #diagram-wrap svg { max-width: 100%; }
-                #loading {
-                  display: flex; align-items: center; gap: 0.6rem;
-                  padding: 3rem; color: var(--muted); font-size: 0.85rem;
-                }
-                .spinner {
-                  width: 18px; height: 18px;
-                  border: 2px solid var(--border);
-                  border-top-color: var(--orange);
-                  border-radius: 50%;
-                  animation: spin 0.6s linear infinite;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-
-                /* ── Zoom bar ── */
-                .zoom-bar {
-                  position: fixed; bottom: 1.25rem; right: 1.25rem;
-                  display: flex; gap: 0.3rem;
-                  background: var(--surface); border: 1px solid var(--border);
-                  border-radius: 8px; padding: 0.25rem;
-                  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); z-index: 10;
-                }
-                .zoom-btn {
-                  background: none; border: none; cursor: pointer;
-                  width: 28px; height: 28px; border-radius: 5px;
-                  font-size: 0.95rem; font-weight: 700; color: var(--charcoal);
-                  display: flex; align-items: center; justify-content: center;
+                .sidebar-title { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+                .sidebar-hint  { font-size: 0.68rem; color: var(--muted); margin-top: 0.25rem; line-height: 1.4; }
+                .scenario-list { padding: 0.4rem 0; }
+                .sbtn {
+                  display: flex; align-items: flex-start; gap: 0.55rem;
+                  width: 100%; padding: 0.6rem 1.1rem; background: none; border: none;
+                  cursor: pointer; text-align: left; border-left: 3px solid transparent;
                   transition: background 0.1s;
                 }
-                .zoom-btn:hover { background: var(--bg); }
+                .sbtn:hover { background: var(--bg); }
+                .sbtn.active { background: #FFF0EC; border-left-color: var(--orange); }
+                .sbtn-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+                .sbtn-name { font-size: 0.78rem; font-weight: 600; color: var(--dark); line-height: 1.3; }
+                .sbtn-nl   { font-size: 0.68rem; color: var(--muted); }
+                .sbtn-ch {
+                  display: inline-block; font-size: 0.58rem; font-weight: 700;
+                  letter-spacing: 0.04em; padding: 0.1rem 0.35rem; border-radius: 3px;
+                  margin-top: 0.25rem; text-transform: uppercase;
+                }
+                .ch-zaken     { background: #dbeafe; color: #1d4ed8; }
+                .ch-objecten  { background: #d1fae5; color: #065f46; }
+                .ch-besluiten { background: #ede9fe; color: #6d28d9; }
+                .ch-overview  { background: var(--border); color: var(--muted); }
+
+                /* ── Main panel ── */
+                .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+                .legend {
+                  display: flex; flex-wrap: wrap; gap: 0.35rem 1rem;
+                  padding: 0.6rem 1.4rem; background: var(--surface);
+                  border-bottom: 1px solid var(--border); font-size: 0.7rem; flex-shrink: 0;
+                }
+                .li { display: flex; align-items: center; gap: 0.3rem; color: var(--muted); }
+                .ld { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+                .ld-clickable {
+                  width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0;
+                  background: var(--dark); outline: 2px dashed #FF7A59; outline-offset: 1px;
+                }
+
+                .main-hd {
+                  padding: 0.9rem 1.4rem 0.7rem; background: var(--surface);
+                  border-bottom: 1px solid var(--border); flex-shrink: 0;
+                }
+                .main-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.15rem; }
+                .main-title { font-size: 1.15rem; font-weight: 700; color: var(--dark); }
+                .main-desc  { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+                .diagram-area {
+                  flex: 1; overflow: auto; padding: 1.25rem;
+                  display: flex; justify-content: center; align-items: flex-start;
+                }
+                #dwrap {
+                  background: var(--surface); border: 1px solid var(--border);
+                  border-radius: 12px; padding: 1.75rem;
+                  box-shadow: 0 1px 8px rgb(30 34 56 / 0.06);
+                  transform-origin: top center; transition: transform 0.12s ease;
+                }
+                #dwrap svg { max-width: 100%; display: block; }
+
+                #loading {
+                  display: flex; align-items: center; gap: 0.6rem;
+                  padding: 3rem; color: var(--muted); font-size: 0.82rem;
+                }
+                .spin {
+                  width: 16px; height: 16px; border: 2px solid var(--border);
+                  border-top-color: var(--orange); border-radius: 50%;
+                  animation: sp 0.6s linear infinite; flex-shrink: 0;
+                }
+                @keyframes sp { to { transform: rotate(360deg); } }
+
+                .zoom-bar {
+                  position: fixed; bottom: 1.1rem; right: 1.1rem; display: flex; gap: 0.25rem;
+                  background: var(--surface); border: 1px solid var(--border);
+                  border-radius: 7px; padding: 0.2rem;
+                  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); z-index: 20;
+                }
+                .zbtn {
+                  background: none; border: none; cursor: pointer; width: 26px; height: 26px;
+                  border-radius: 4px; font-size: 0.9rem; font-weight: 700; color: var(--charcoal);
+                  display: flex; align-items: center; justify-content: center; transition: background 0.1s;
+                }
+                .zbtn:hover { background: var(--bg); }
+
+                /* make Mermaid clickable nodes show pointer cursor */
+                #dwrap svg .node.clickable > * { cursor: pointer !important; }
+                #dwrap svg g[class*="node"]:has(title) { cursor: pointer; }
               </style>
             </head>
             <body>
@@ -592,50 +542,50 @@ namespace EventsHandler.Controllers
               </nav>
 
               <div class="layout">
-                <!-- Sidebar -->
                 <aside class="sidebar">
-                  <div class="sidebar-header">
-                    <div class="sidebar-label">Decision flows</div>
-                    <div class="sidebar-title">Scenarios</div>
-                    <div class="sidebar-sub">Click a scenario to trace its decision path from webhook to outcome.</div>
+                  <div class="sidebar-hd">
+                    <div class="sidebar-label">Scenario flows</div>
+                    <div class="sidebar-title">Decision diagrams</div>
+                    <div class="sidebar-hint">Click a scenario — or click a dark node inside any diagram — to navigate between flows.</div>
                   </div>
-                  <div class="scenario-list" id="scenarioList"></div>
+                  <div class="scenario-list" id="sList"></div>
                 </aside>
 
-                <!-- Main -->
                 <div class="main">
                   <div class="legend">
-                    <span class="legend-item"><span class="leg" style="background:#FF7A59"></span>Entry / webhook</span>
-                    <span class="legend-item"><span class="leg" style="background:#1E2238"></span>Scenario selected</span>
-                    <span class="legend-item"><span class="leg" style="background:#16a34a"></span>Success</span>
-                    <span class="legend-item"><span class="leg" style="background:#dc2626"></span>Aborted (silent, no retry)</span>
-                    <span class="legend-item"><span class="leg" style="background:#f59e0b"></span>Failure (retried)</span>
-                    <span class="legend-item"><span class="leg" style="background:#6b7280"></span>Skipped</span>
-                    <span class="legend-item"><span class="leg" style="background:#dbeafe;border:1px solid #93c5fd"></span>Processing step</span>
+                    <span class="li"><span class="ld" style="background:#FF7A59"></span>Webhook / entry</span>
+                    <span class="li"><span class="ld" style="background:#1E2238"></span>Scenario node</span>
+                    <span class="li"><span class="ld" style="background:#16a34a"></span>Success</span>
+                    <span class="li"><span class="ld" style="background:#dc2626"></span>Aborted (silent)</span>
+                    <span class="li"><span class="ld" style="background:#f59e0b"></span>Failure (retry)</span>
+                    <span class="li"><span class="ld" style="background:#6b7280"></span>Skipped</span>
+                    <span class="li"><span class="ld-clickable"></span>Click to navigate →</span>
                   </div>
-                  <div class="main-header">
-                    <div class="main-label" id="mainLabel">Select a scenario</div>
-                    <div class="main-title" id="mainTitle">—</div>
-                    <div class="main-desc" id="mainDesc">Choose a scenario from the list on the left to see its decision flow.</div>
+                  <div class="main-hd">
+                    <div class="main-label" id="mLabel">overview</div>
+                    <div class="main-title" id="mTitle">—</div>
+                    <div class="main-desc"  id="mDesc">Select a scenario from the list.</div>
                   </div>
                   <div class="diagram-area">
-                    <div id="diagram-wrap">
-                      <div id="loading"><div class="spinner"></div>Initialising Mermaid…</div>
+                    <div id="dwrap">
+                      <div id="loading"><div class="spin"></div>Initialising…</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div class="zoom-bar">
-                <button class="zoom-btn" onclick="zoom(1.2)" title="Zoom in">+</button>
-                <button class="zoom-btn" onclick="zoom(1/1.2)" title="Zoom out">−</button>
-                <button class="zoom-btn" onclick="resetZoom()" title="Reset" style="font-size:0.65rem;font-weight:800">⊙</button>
+                <button class="zbtn" onclick="zoom(1.2)">+</button>
+                <button class="zbtn" onclick="zoom(1/1.2)">−</button>
+                <button class="zbtn" onclick="resetZoom()" style="font-size:0.6rem;font-weight:900">⊙</button>
               </div>
 
               <script type="module">
                 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 
-                const THEME = {
+                mermaid.initialize({
+                  startOnLoad: false,
+                  securityLevel: 'loose',
                   theme: 'base',
                   themeVariables: {
                     primaryColor:       '#dbeafe',
@@ -647,213 +597,298 @@ namespace EventsHandler.Controllers
                     fontSize:           '13px',
                     fontFamily:         "'Sora', ui-sans-serif, system-ui, sans-serif",
                   }
+                });
+
+                // ── Global dispatcher called by Mermaid click events ──────────
+                window.go = function(nodeId) {
+                  const map = {
+                    routing:       'routing',
+                    case_created:  'case-created',
+                    case_updated:  'case-updated',
+                    case_closed:   'case-closed',
+                    task_assigned: 'task-assigned',
+                    msg_received:  'message-received',
+                    decision_made: 'decision-made',
+                    kto:           'kto',
+                  };
+                  if (map[nodeId]) select(map[nodeId]);
                 };
 
-                mermaid.initialize({ startOnLoad: false, ...THEME });
+                // ── Shared channel-routing + send tail ───────────────────────
+                const TAIL = `
+                    CHANNEL -- Email  --> BE["Build Email NotifyData\\ntemplate + naam + zaak fields"]
+                    CHANNEL -- SMS    --> BS["Build SMS NotifyData\\nsame personalisation"]
+                    CHANNEL -- Letter --> BL["Build Letter NotifyData\\n+ full postal address"]
+                    CHANNEL -- Both   --> BB["Build Email + SMS\\n(sent sequentially)"]
+                    CHANNEL -- Unknown --> FC(["🔁 Failure — unknown channel"])
+                    BE & BS & BL & BB --> NL["POST Notify NL API\\n/v2/notifications/{method}"]
+                    NL --> NR{"HTTP 201?"}
+                    NR -- No  --> RT(["🔁 Failure — retry"])
+                    NR -- Yes --> OK(["✅ Citizen notified"])
+                    style FC fill:#f59e0b,color:#fff,stroke:none
+                    style RT fill:#f59e0b,color:#fff,stroke:none
+                    style OK fill:#16a34a,color:#fff,stroke:none`;
 
-                // ── Shared tail used by case/task/message scenarios ─────────────
-                const CHANNEL_TAIL = `
-                    CHANNEL -- Email --> BUILD_E["Build NotifyData — Email\\ntemplate configured in Notify__TemplateId"]
-                    CHANNEL -- SMS --> BUILD_S["Build NotifyData — SMS"]
-                    CHANNEL -- Letter --> BUILD_L["Build NotifyData — Letter\\n+ full postal address"]
-                    CHANNEL -- Both --> BUILD_B["Build NotifyData — Email + SMS (sequentially)"]
-                    CHANNEL -- Unknown --> FAIL_C(["🔁 Failure\\nNo valid channel — retry"])
-                    BUILD_E & BUILD_S & BUILD_L & BUILD_B --> NOTIFY["POST to Notify NL API"]
-                    NOTIFY --> NR{"HTTP 201?"}
-                    NR -- No --> RETRY(["🔁 Failure — retry"])
-                    NR -- Yes --> SUCCESS(["✅ Citizen notified"])
-                    style FAIL_C  fill:#f59e0b,color:#fff,stroke:none
-                    style RETRY   fill:#f59e0b,color:#fff,stroke:none
-                    style SUCCESS fill:#16a34a,color:#fff,stroke:none`;
+                // ── Clickable routing node appended to top of each diagram ───
+                const HOME = `
+                    routing(["🗺 Routing overview"])
+                    click routing go "Back to routing overview"
+                    style routing fill:#EEF0F3,color:#2B2E43,stroke:#D5DAE1`;
 
+                // ── Scenario definitions ─────────────────────────────────────
                 const SCENARIOS = [
                   {
-                    key: 'case-created',
-                    icon: '📄',
-                    name: 'Case Created',
-                    nl: 'Zaak aangemaakt',
-                    channel: 'zaken',
-                    desc: 'Triggered when a new case status is created with SerialNumber = 1 (first status ever). Routes via OpenZaak and OpenKlant to notify the citizen.',
+                    key: 'routing', icon: '🗺', name: 'Routing Overview',
+                    nl: 'Gebeurtenisrouting', channel: 'overview',
+                    desc: 'Top-level event routing. Click any dark scenario node to drill into its decision flow.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=zaken / Resource=status"])
+                    WEBHOOK(["📨 OpenNotificaties webhook\\nPOST /api/v1/notifications"])
+                    WEBHOOK --> DV["Deserialize + validate\\nNotificationEvent"]
+                    DV --> TP{"Test ping?\\nChannel=Unknown, Resource=Unknown"}
+                    TP -- Yes --> SK(["⏹ Skipped — connectivity check only"])
+                    TP -- No  --> RV{"Route by\\nAction / Channel / Resource"}
+
+                    RV -- "Channel = zaken\\nResource = status" --> CB["Case routing\\n──────────────\\nGET CaseStatus → CaseStatusType\\ncheck IsNotificationExpected"]
+                    RV -- "Channel = objecten\\nResource = object" --> OB["Object routing\\n──────────────\\nmatch ObjectType UUID"]
+                    RV -- "Channel = besluiten\\nResource = besluit" --> decision_made["⚖️ Decision Made\\n(Besluit genomen)"]
+                    RV -- "No match" --> NI(["⏹ NotImplemented"])
+
+                    CB -- "SerialNumber = 1" --> case_created["🆕 Case Created\\n(Zaak aangemaakt)"]
+                    CB -- "SerialNumber > 1\\nnot final status" --> case_updated["🔄 Case Status Updated\\n(Zaakstatus bijgewerkt)"]
+                    CB -- "SerialNumber > 1\\nIsFinalStatus" --> case_closed["✅ Case Closed\\n(Zaak afgesloten)"]
+
+                    OB -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned\\n(Taak toegewezen)"]
+                    OB -- "= MessageObjectType UUID" --> msg_received["💬 Message Received\\n(Bericht ontvangen)"]
+                    OB -- "= KtoObjectType UUID" --> kto["⭐ KTO\\n(Klanttevredenheidsonderzoek)"]
+                    OB -- "Unknown UUID" --> AB(["⏹ Aborted"])
+
+                    click case_created  go "Open Case Created flow"
+                    click case_updated  go "Open Case Status Updated flow"
+                    click case_closed   go "Open Case Closed flow"
+                    click task_assigned go "Open Task Assigned flow"
+                    click msg_received  go "Open Message Received flow"
+                    click decision_made go "Open Decision Made flow"
+                    click kto           go "Open KTO flow"
+
+                    style WEBHOOK       fill:#FF7A59,color:#fff,stroke:none
+                    style case_created  fill:#1E2238,color:#fff,stroke:none
+                    style case_updated  fill:#1E2238,color:#fff,stroke:none
+                    style case_closed   fill:#1E2238,color:#fff,stroke:none
+                    style task_assigned fill:#1E2238,color:#fff,stroke:none
+                    style msg_received  fill:#1E2238,color:#fff,stroke:none
+                    style decision_made fill:#1E2238,color:#fff,stroke:none
+                    style kto           fill:#1E2238,color:#fff,stroke:none
+                    style SK fill:#6b7280,color:#fff,stroke:none
+                    style NI fill:#6b7280,color:#fff,stroke:none
+                    style AB fill:#dc2626,color:#fff,stroke:none`
+                  },
+                  {
+                    key: 'case-created', icon: '📄', name: 'Case Created',
+                    nl: 'Zaak aangemaakt', channel: 'zaken',
+                    desc: 'SerialNumber = 1 (first status ever on the case). Whitelist check → fetch case + party → notify by channel.',
+                    diagram: `flowchart TD
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> CI{"IsNotification\\nExpected?"}
-                    CI -- No --> AB1(["⏹ Aborted\\ninformeren = false"])
-                    CI -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "> 1" --> OTHER["→ Updated / Closed scenario"]
+                    GT --> NE{"IsNotification\\nExpected?"}
+                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
+                    SN -- "> 1, not final" --> case_updated["🔄 Case Status Updated →"]
+                    SN -- "> 1, IsFinalStatus" --> case_closed["✅ Case Closed →"]
                     SN -- "= 1" --> SCENARIO["🆕 CaseCreatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakCreate_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted\\nnot whitelisted"])
+                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri"]
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak.identificatie + zaak.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
-                    ${CHANNEL_TAIL}
+                    ${TAIL}
+                    click case_updated go "Open Case Status Updated flow"
+                    click case_closed  go "Open Case Closed flow"
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
-                    style AB1       fill:#dc2626,color:#fff,stroke:none
-                    style AB2       fill:#dc2626,color:#fff,stroke:none`
+                    style case_updated fill:#1E2238,color:#fff,stroke:none
+                    style case_closed  fill:#1E2238,color:#fff,stroke:none
+                    style AB1 fill:#dc2626,color:#fff,stroke:none
+                    style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'case-updated',
-                    icon: '🔄',
-                    name: 'Case Status Updated',
-                    nl: 'Zaakstatus bijgewerkt',
-                    channel: 'zaken',
-                    desc: 'Triggered when a new status is added to an existing case (SerialNumber > 1) that is not yet the final status. Includes status description in personalisation.',
+                    key: 'case-updated', icon: '🔄', name: 'Case Status Updated',
+                    nl: 'Zaakstatus bijgewerkt', channel: 'zaken',
+                    desc: 'SerialNumber > 1 and not IsFinalStatus. Includes status.omschrijving (CaseStatusType.Name) in personalisation.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=zaken / Resource=status"])
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> CI{"IsNotification\\nExpected?"}
-                    CI -- No --> AB1(["⏹ Aborted\\ninformeren = false"])
-                    CI -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "= 1" --> OTHER1["→ CaseCreatedScenario"]
-                    SN -- "> 1, IsFinal" --> OTHER2["→ CaseClosedScenario"]
+                    GT --> NE{"IsNotification\\nExpected?"}
+                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
+                    SN -- "= 1" --> case_created["🆕 Case Created →"]
+                    SN -- "> 1, IsFinalStatus" --> case_closed["✅ Case Closed →"]
                     SN -- "> 1, not final" --> SCENARIO["🔄 CaseStatusUpdatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakUpdate_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted\\nnot whitelisted"])
+                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri"]
-                    GC --> GP["GET Party data\\nOpenKlant\\npersonalisation: naam + zaak + status.omschrijving"]
+                    GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
-                    ${CHANNEL_TAIL}
+                    ${TAIL}
+                    click case_created go "Open Case Created flow"
+                    click case_closed  go "Open Case Closed flow"
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
-                    style AB1       fill:#dc2626,color:#fff,stroke:none
-                    style AB2       fill:#dc2626,color:#fff,stroke:none`
+                    style case_created fill:#1E2238,color:#fff,stroke:none
+                    style case_closed  fill:#1E2238,color:#fff,stroke:none
+                    style AB1 fill:#dc2626,color:#fff,stroke:none
+                    style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'case-closed',
-                    icon: '✅',
-                    name: 'Case Closed',
-                    nl: 'Zaak afgesloten',
-                    channel: 'zaken',
-                    desc: 'Triggered when the final status is reached (IsFinalStatus = true). Optionally fetches a CaseResultType to include the outcome description in the notification.',
+                    key: 'case-closed', icon: '✅', name: 'Case Closed',
+                    nl: 'Zaak afgesloten', channel: 'zaken',
+                    desc: 'IsFinalStatus = true. Optionally fetches CaseResultType if a result is set on the case — adds zaak.resultaat.resultaatType.omschrijving to personalisation.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=zaken / Resource=status"])
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
-                    GT --> CI{"IsNotification\\nExpected?"}
-                    CI -- No --> AB1(["⏹ Aborted\\ninformeren = false"])
-                    CI -- Yes --> SN{"StatusType\\nSerialNumber?"}
-                    SN -- "= 1" --> OTHER1["→ CaseCreatedScenario"]
-                    SN -- "> 1, not final" --> OTHER2["→ CaseStatusUpdatedScenario"]
+                    GT --> NE{"IsNotification\\nExpected?"}
+                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- Yes --> SN{"StatusType\\nSerialNumber?"}
+                    SN -- "= 1" --> case_created["🆕 Case Created →"]
+                    SN -- "> 1, not final" --> case_updated["🔄 Case Status Updated →"]
                     SN -- "> 1, IsFinalStatus" --> SCENARIO["✅ CaseClosedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakClose_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted\\nnot whitelisted"])
+                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri\\n(includes expanded.result.resultType)"]
-                    GC --> CR{"case.Expanded\\n.Result.ResultType\\n!= null?"}
-                    CR -- Yes --> GRT["GET CaseResultType\\nOpenZaak — resultType URI"]
-                    CR -- No --> GP
-                    GRT --> GP["GET Party data\\nOpenKlant\\npersonalisation: naam + zaak + status\\n+ zaak.resultaat.resultaatType.omschrijving"]
+                    GC --> CR{"case.Expanded\\n.Result.ResultType != null?"}
+                    CR -- Yes --> GR["GET CaseResultType\\nOpenZaak — resultType URI"]
+                    CR -- No  --> GP
+                    GR --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status\\n+ zaak.resultaat.resultaatType.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
-                    ${CHANNEL_TAIL}
+                    ${TAIL}
+                    click case_created go "Open Case Created flow"
+                    click case_updated go "Open Case Status Updated flow"
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
-                    style AB1       fill:#dc2626,color:#fff,stroke:none
-                    style AB2       fill:#dc2626,color:#fff,stroke:none`
+                    style case_created fill:#1E2238,color:#fff,stroke:none
+                    style case_updated fill:#1E2238,color:#fff,stroke:none
+                    style AB1 fill:#dc2626,color:#fff,stroke:none
+                    style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'task-assigned',
-                    icon: '📋',
-                    name: 'Task Assigned',
-                    nl: 'Taak toegewezen',
-                    channel: 'objecten',
-                    desc: 'Triggered when a new Object with ObjectType matching TaskObjectType_Uuid is received. Validates task status, identification type, case type whitelist, and notification permission before notifying.',
+                    key: 'task-assigned', icon: '📋', name: 'Task Assigned',
+                    nl: 'Taak toegewezen', channel: 'objecten',
+                    desc: 'ObjectType UUID matches TaskObjectType_Uuid. Four sequential validations: task open, BSN/KVK identification, case type whitelist, and IsNotificationExpected.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=objecten / Resource=object"])
-                    WEBHOOK --> OT{"ObjectType UUID\\n== TaskObjectType_Uuid?"}
-                    OT -- No --> OTHER["→ Message / KTO / Abort"]
-                    OT -- Yes --> SCENARIO["📋 TaskAssignedScenario"]
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK --> OT{"ObjectType UUID?"}
+                    OT -- "= MessageObjectType UUID" --> msg_received["💬 Message Received →"]
+                    OT -- "= KtoObjectType UUID" --> kto["⭐ KTO →"]
+                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
+                    OT -- "= TaskObjectType UUID" --> SCENARIO["📋 TaskAssignedScenario"]
                     SCENARIO --> GT["GET Task object\\nObjecten API — ResourceUri"]
                     GT --> CS{"task.Status\\n== Open?"}
-                    CS -- No --> AB1(["⏹ Aborted\\nTask already closed"])
-                    CS -- Yes --> IT{"task.Identification\\n.Type == BSN or KVK?"}
-                    IT -- No --> AB2(["⏹ Aborted\\nUnsupported identification type"])
-                    IT -- Yes --> GCS["GET CaseStatuses\\nOpenZaak — task.CaseUri"]
-                    GCS --> GCT["GET last CaseType\\nOpenZaak — from statuses"]
-                    GCT --> WL{"Case type in\\nTaskAssigned_IDs?"}
-                    WL -- No --> AB3(["⏹ Aborted\\nnot whitelisted"])
+                    CS -- No --> AB1(["⏹ Aborted — task already closed"])
+                    CS -- Yes --> IT{"task.Identification.Type\\n== BSN or KVK?"}
+                    IT -- No --> AB2(["⏹ Aborted — unsupported id type"])
+                    IT -- Yes --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — task.CaseUri"]
+                    GCS --> WL{"Case type in\\nTaskAssigned_IDs?"}
+                    WL -- No --> AB3(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> NP{"caseType\\n.IsNotificationExpected?"}
-                    NP -- No --> AB4(["⏹ Aborted\\ninformeren = false on caseType"])
+                    NP -- No --> AB4(["⏹ Aborted — informeren = false"])
                     NP -- Yes --> GC["GET Case\\nOpenZaak — task.CaseUri"]
-                    GC --> BSN{"Identification\\nType == BSN?"}
+                    GC --> BSN{"Identification.Type\\n== BSN?"}
                     BSN -- Yes --> GPB["GET Party data\\nOpenKlant — case.Uri + BSN"]
-                    BSN -- No --> GPK["GET Party data\\nOpenKlant — case.Uri + case.Identification"]
+                    BSN -- No  --> GPK["GET Party data\\nOpenKlant — case.Uri + case.Id\\npersonalisation: naam + taak.verloopdatum + taak.title + zaak"]
                     GPB & GPK --> CHANNEL{"Distribution\\nChannel?"}
-                    ${CHANNEL_TAIL}
-                    style WEBHOOK fill:#FF7A59,color:#fff,stroke:none
-                    style SCENARIO fill:#1E2238,color:#fff,stroke:none
+                    ${TAIL}
+                    click msg_received go "Open Message Received flow"
+                    click kto          go "Open KTO flow"
+                    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+                    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+                    style msg_received fill:#1E2238,color:#fff,stroke:none
+                    style kto          fill:#1E2238,color:#fff,stroke:none
+                    style AB0 fill:#dc2626,color:#fff,stroke:none
                     style AB1 fill:#dc2626,color:#fff,stroke:none
                     style AB2 fill:#dc2626,color:#fff,stroke:none
                     style AB3 fill:#dc2626,color:#fff,stroke:none
                     style AB4 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'message-received',
-                    icon: '💬',
-                    name: 'Message Received',
-                    nl: 'Bericht ontvangen',
-                    channel: 'objecten',
-                    desc: 'Triggered when a direct message Object arrives (MessageObjectType_Uuid). Requires ZGW__Whitelist__Message_Allowed = true. Looks up the citizen by BSN from the message payload — no case is involved.',
+                    key: 'message-received', icon: '💬', name: 'Message Received',
+                    nl: 'Bericht ontvangen', channel: 'objecten',
+                    desc: 'ObjectType UUID matches MessageObjectType_Uuid. Requires ZGW__Whitelist__Message_Allowed = true. Party is looked up by BSN from the message object — no case is involved.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=objecten / Resource=object"])
-                    WEBHOOK --> OT{"ObjectType UUID\\n== MessageObjectType_Uuid?"}
-                    OT -- No --> OTHER["→ Task / KTO / Abort"]
-                    OT -- Yes --> SCENARIO["💬 MessageReceivedScenario"]
-                    SCENARIO --> MA{"ZGW__Whitelist\\n__Message_Allowed\\n== true?"}
-                    MA -- No --> AB1(["⏹ Aborted\\nMessages globally disabled"])
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK --> OT{"ObjectType UUID?"}
+                    OT -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned →"]
+                    OT -- "= KtoObjectType UUID" --> kto["⭐ KTO →"]
+                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
+                    OT -- "= MessageObjectType UUID" --> SCENARIO["💬 MessageReceivedScenario"]
+                    SCENARIO --> MA{"ZGW__Whitelist\\n__Message_Allowed?"}
+                    MA -- No --> AB1(["⏹ Aborted — messages disabled globally"])
                     MA -- Yes --> GM["GET Message object\\nObjecten API — ResourceUri"]
                     GM --> EX["Extract message.Record.Data\\n→ Subject, ActionsPerspective, BSN"]
-                    EX --> GP["GET Party data\\nOpenKlant — BSN from message\\n(no case URI — message has no linked case)"]
+                    EX --> GP["GET Party data\\nOpenKlant — BSN from message\\n(no case URI — message has no linked case)\\npersonalisation: naam + message.onderwerp + handelingsperspectief"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
-                    ${CHANNEL_TAIL}
-                    style WEBHOOK  fill:#FF7A59,color:#fff,stroke:none
-                    style SCENARIO fill:#1E2238,color:#fff,stroke:none
-                    style AB1      fill:#dc2626,color:#fff,stroke:none`
+                    ${TAIL}
+                    click task_assigned go "Open Task Assigned flow"
+                    click kto           go "Open KTO flow"
+                    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+                    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+                    style task_assigned fill:#1E2238,color:#fff,stroke:none
+                    style kto           fill:#1E2238,color:#fff,stroke:none
+                    style AB0 fill:#dc2626,color:#fff,stroke:none
+                    style AB1 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'decision-made',
-                    icon: '⚖️',
-                    name: 'Decision Made',
-                    nl: 'Besluit genomen',
-                    channel: 'besluiten',
-                    desc: 'Most complex scenario. Validates document type, status, and confidentiality before processing. Unlike other scenarios, does NOT send an email/SMS directly — instead it writes a structured message object to the Objecten API for citizens to retrieve via their portal.',
+                    key: 'decision-made', icon: '⚖️', name: 'Decision Made',
+                    nl: 'Besluit genomen', channel: 'besluiten',
+                    desc: 'Five validations on the decision document before processing. Does NOT call Notify NL directly — instead writes a structured message to the Objecten API for the citizen portal.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=besluiten / Resource=besluit"])
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=besluiten / Resource=besluit"])
                     WEBHOOK --> SCENARIO["⚖️ DecisionMadeScenario"]
                     SCENARIO --> GDR["GET DecisionResource\\nOpenBesluiten — ResourceUri"]
                     GDR --> GIO["GET InfoObject\\nOpenZaak — decisionResource.InfoObjectUri"]
                     GIO --> CIT{"infoObject.TypeUri UUID\\nin DecisionInfoObjectType_Uuids?"}
-                    CIT -- No --> AB1(["⏹ Aborted\\nInfoObject type not in allowed set"])
+                    CIT -- No --> AB1(["⏹ Aborted — InfoObject type not in allowed set"])
                     CIT -- Yes --> CST{"infoObject.Status\\n== Definitive?"}
-                    CST -- No --> AB2(["⏹ Aborted\\nDocument not yet definitive"])
+                    CST -- No --> AB2(["⏹ Aborted — document not yet definitive"])
                     CST -- Yes --> CCV{"infoObject.Confidentiality\\n== NonConfidential?"}
-                    CCV -- No --> AB3(["⏹ Aborted\\nDocument is confidential"])
+                    CCV -- No --> AB3(["⏹ Aborted — document is confidential"])
                     CCV -- Yes --> GD["GET Decision\\nOpenBesluiten — decisionResource.DecisionUri"]
                     GD --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — decision.CaseUri"]
                     GCS --> WL{"Case type in\\nDecisionMade_IDs?"}
-                    WL -- No --> AB4(["⏹ Aborted\\nnot whitelisted"])
+                    WL -- No --> AB4(["⏹ Aborted — not whitelisted"])
                     WL -- Yes --> NP{"caseType\\n.IsNotificationExpected?"}
-                    NP -- No --> AB5(["⏹ Aborted\\ninformeren = false"])
-                    NP -- Yes --> GB["GET BSN number\\nOpenZaak — decision.CaseUri\\n(empty if organisation)"]
+                    NP -- No --> AB5(["⏹ Aborted — informeren = false"])
+                    NP -- Yes --> GB["GET BSN number\\nOpenZaak — decision.CaseUri\\n(empty if organisation — no BSN)"]
                     GB --> GDT["GET DecisionType\\nOpenBesluiten"]
                     GDT --> GC["GET Case\\nOpenZaak — decision.CaseUri"]
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri + BSN"]
                     GP --> CH{"Distribution\\nChannel?"}
-                    CH -- Any --> PREV["GenerateTemplatePreviewAsync\\nNotify NL — render template locally"]
-                    CH -- Unknown --> FAIL_C(["🔁 Failure\\nNo valid channel"])
-                    PREV --> PK{"Preview OK?"}
-                    PK -- No --> FAIL_P(["🔁 Failure\\nTemplate preview failed"])
-                    PK -- Yes --> NL["ReplaceWhitespaces\\nnormalise newlines for Logius"]
-                    NL --> GDOC["GET Documents\\nOpenBesluiten — linked to decision"]
-                    GDOC --> FILT["Filter InfoObjects\\nkeep: Definitive + NonConfidential"]
-                    FILT --> VU{"Valid URIs\\nfound?"}
-                    VU -- No --> FAIL_D(["🔁 Failure\\nNo valid attachments"])
-                    VU -- Yes --> CO["POST CreateObject\\nObjecten API\\nmessage JSON: onderwerp + berichtTekst\\n+ publicatiedatum + referentie + bijlages"]
-                    CO --> OK{"HTTP 201?"}
-                    OK -- No --> RETRY(["🔁 Failure — retry"])
-                    OK -- Yes --> SUCCESS(["✅ Decision message stored\\nCitizen retrieves via portal"])
+                    CH -- "Any channel" --> PV["GenerateTemplatePreviewAsync\\nNotify NL — render besluit template locally"]
+                    CH -- Unknown --> FC(["🔁 Failure — unknown channel"])
+                    PV --> PK{"Preview OK?"}
+                    PK -- No --> FP(["🔁 Failure — template preview failed"])
+                    PK -- Yes --> NWL["ReplaceWhitespaces\\nnormalise newlines for Logius (\\\\r\\\\n)"]
+                    NWL --> GDOC["GET Documents\\nOpenBesluiten — all docs linked to decision"]
+                    GDOC --> FLT["Filter InfoObjects\\nkeep: Status=Definitive AND NonConfidential"]
+                    FLT --> VU{"Valid attachment\\nURIs found?"}
+                    VU -- No --> FD(["🔁 Failure — no valid attachments"])
+                    VU -- Yes --> CO["POST CreateObject\\nObjecten API — message JSON\\n(onderwerp + berichtTekst + publicatiedatum\\n+ referentie + identificatie + bijlages)"]
+                    CO --> OR{"HTTP 201?"}
+                    OR -- No --> RT(["🔁 Failure — retry"])
+                    OR -- Yes --> SUC(["✅ Decision message stored in Objecten\\nCitizen reads via portal"])
                     style WEBHOOK  fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO fill:#1E2238,color:#fff,stroke:none
                     style AB1 fill:#dc2626,color:#fff,stroke:none
@@ -861,104 +896,106 @@ namespace EventsHandler.Controllers
                     style AB3 fill:#dc2626,color:#fff,stroke:none
                     style AB4 fill:#dc2626,color:#fff,stroke:none
                     style AB5 fill:#dc2626,color:#fff,stroke:none
-                    style FAIL_C fill:#f59e0b,color:#fff,stroke:none
-                    style FAIL_P fill:#f59e0b,color:#fff,stroke:none
-                    style FAIL_D fill:#f59e0b,color:#fff,stroke:none
-                    style RETRY  fill:#f59e0b,color:#fff,stroke:none
-                    style SUCCESS fill:#16a34a,color:#fff,stroke:none`
+                    style FC  fill:#f59e0b,color:#fff,stroke:none
+                    style FP  fill:#f59e0b,color:#fff,stroke:none
+                    style FD  fill:#f59e0b,color:#fff,stroke:none
+                    style RT  fill:#f59e0b,color:#fff,stroke:none
+                    style SUC fill:#16a34a,color:#fff,stroke:none`
                   },
                   {
-                    key: 'kto',
-                    icon: '⭐',
-                    name: 'Customer Satisfaction (KTO)',
-                    nl: 'Klanttevredenheidsonderzoek',
-                    channel: 'objecten',
-                    desc: 'Triggered when a KTO Object arrives (KtoObjectType_Uuid). Handled entirely outside the normal Notify NL pipeline — authenticates with OAuth2 and posts to an external KTO provider (e.g. Expoints).',
+                    key: 'kto', icon: '⭐', name: 'Customer Satisfaction (KTO)',
+                    nl: 'Klanttevredenheidsonderzoek', channel: 'objecten',
+                    desc: 'ObjectType UUID matches KtoObjectType_Uuid. Handled before the normal pipeline in NotifyProcessor — authenticates with OAuth2 client credentials and posts to an external KTO provider.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 Webhook\\nAction=Create / Channel=objecten / Resource=object"])
-                    WEBHOOK --> OT{"ObjectType UUID\\n== KtoObjectType_Uuid?"}
-                    OT -- No --> OTHER["→ Task / Message / Abort"]
-                    OT -- Yes --> SCENARIO["⭐ KtoScenario\\n(detected in NotifyProcessor\\nbefore normal pipeline)"]
-                    SCENARIO --> FAC["KtoScenarioFactory.Create()\\nBuild HTTP client with\\nOAuth2 client-credentials config"]
-                    FAC --> TOK["GET OAuth2 token\\nKTO__Auth__JWT__Issuer\\nClient ID + Secret → access_token"]
+                    ${HOME}
+                    routing --> WEBHOOK
+                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK --> OT{"ObjectType UUID?"}
+                    OT -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned →"]
+                    OT -- "= MessageObjectType UUID" --> msg_received["💬 Message Received →"]
+                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
+                    OT -- "= KtoObjectType UUID" --> SCENARIO["⭐ KtoScenario\\n(detected in NotifyProcessor\\nbefore normal pipeline)"]
+                    SCENARIO --> FAC["KtoScenarioFactory.Create()\\nBuild HTTP client with OAuth2 config\\nKTO__Auth__JWT__ClientId + Secret + Scope"]
+                    FAC --> TOK["POST OAuth2 token request\\nKTO__Auth__JWT__Issuer\\n→ access_token (client credentials)"]
                     TOK --> TK{"Token acquired?"}
-                    TK -- No --> AB1(["🔁 Failure\\nCannot authenticate with KTO provider"])
+                    TK -- No --> AB1(["🔁 Failure — cannot authenticate"])
                     TK -- Yes --> POST["POST to KTO provider\\nKTO__Url\\nnotification payload + Bearer token"]
                     POST --> OK{"HTTP 2xx?"}
-                    OK -- No --> RETRY(["🔁 Failure — retry"])
-                    OK -- Yes --> SUCCESS(["✅ KTO survey triggered\\nat provider (e.g. Expoints)"])
-                    NOTE["ℹ️ KTO bypasses OpenKlant,\\nOpenZaak, Notify NL entirely.\\nNo DistributionChannel routing."]
-                    style WEBHOOK  fill:#FF7A59,color:#fff,stroke:none
-                    style SCENARIO fill:#1E2238,color:#fff,stroke:none
-                    style AB1      fill:#dc2626,color:#fff,stroke:none
-                    style RETRY    fill:#f59e0b,color:#fff,stroke:none
-                    style SUCCESS  fill:#16a34a,color:#fff,stroke:none
-                    style NOTE     fill:#fff3cd,stroke:#ffc107,color:#555`
+                    OK -- No  --> RT(["🔁 Failure — retry"])
+                    OK -- Yes --> SUC(["✅ KTO survey triggered at provider"])
+                    NOTE["ℹ️ KTO bypasses OpenKlant, OpenZaak, and\\nNotify NL entirely. No DistributionChannel routing."]
+                    click task_assigned go "Open Task Assigned flow"
+                    click msg_received  go "Open Message Received flow"
+                    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+                    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+                    style task_assigned fill:#1E2238,color:#fff,stroke:none
+                    style msg_received  fill:#1E2238,color:#fff,stroke:none
+                    style AB0 fill:#dc2626,color:#fff,stroke:none
+                    style AB1 fill:#dc2626,color:#fff,stroke:none
+                    style RT  fill:#f59e0b,color:#fff,stroke:none
+                    style SUC fill:#16a34a,color:#fff,stroke:none
+                    style NOTE fill:#fff3cd,stroke:#ffc107,color:#555`
                   }
                 ];
 
-                // Build sidebar
-                const list = document.getElementById('scenarioList');
+                // ── Build sidebar ─────────────────────────────────────────────
+                const list = document.getElementById('sList');
                 SCENARIOS.forEach(s => {
                   const btn = document.createElement('button');
-                  btn.className = 'scenario-btn';
-                  btn.id = 'btn-' + s.key;
-                  const chClass = { zaken: 'ch-zaken', objecten: 'ch-objecten', besluiten: 'ch-besluiten' }[s.channel] || '';
+                  btn.className = 'sbtn'; btn.id = 'btn-' + s.key;
+                  const chCls = { zaken:'ch-zaken', objecten:'ch-objecten', besluiten:'ch-besluiten', overview:'ch-overview' }[s.channel] || '';
                   btn.innerHTML =
-                    `<span class="scenario-icon">${s.icon}</span>` +
-                    `<span class="scenario-label">` +
-                      `<span class="scenario-name">${s.name}</span>` +
-                      `<span class="scenario-nl">${s.nl}</span>` +
-                      `<span class="scenario-channel ${chClass}">${s.channel}</span>` +
+                    `<span class="sbtn-icon">${s.icon}</span>` +
+                    `<span><span class="sbtn-name">${s.name}</span>` +
+                    `<br><span class="sbtn-nl">${s.nl}</span>` +
+                    (s.channel !== 'overview' ? `<br><span class="sbtn-ch ${chCls}">${s.channel}</span>` : '') +
                     `</span>`;
-                  btn.onclick = () => selectScenario(s.key);
+                  btn.onclick = () => select(s.key);
                   list.appendChild(btn);
                 });
 
-                let currentKey = null;
-                let renderCounter = 0;
+                // ── Rendering ─────────────────────────────────────────────────
+                let current = null;
+                let ctr = 0;
 
-                async function selectScenario(key) {
-                  if (key === currentKey) return;
-                  currentKey = key;
-
-                  // Update sidebar active state
-                  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
-                  document.getElementById('btn-' + key).classList.add('active');
+                async function select(key) {
+                  if (key === current) return;
+                  current = key;
+                  document.querySelectorAll('.sbtn').forEach(b => b.classList.remove('active'));
+                  document.getElementById('btn-' + key)?.classList.add('active');
 
                   const s = SCENARIOS.find(x => x.key === key);
-                  document.getElementById('mainLabel').textContent = s.channel + ' / ' + s.nl;
-                  document.getElementById('mainTitle').textContent = s.icon + ' ' + s.name;
-                  document.getElementById('mainDesc').textContent = s.desc;
+                  document.getElementById('mLabel').textContent = s.channel === 'overview' ? 'overview' : s.channel + ' channel';
+                  document.getElementById('mTitle').textContent = s.icon + ' ' + s.name;
+                  document.getElementById('mDesc').textContent  = s.desc;
 
-                  // Show loading
-                  const wrap = document.getElementById('diagram-wrap');
-                  wrap.innerHTML = '<div id="loading"><div class="spinner"></div>Rendering diagram…</div>';
+                  const wrap = document.getElementById('dwrap');
+                  wrap.innerHTML = '<div id="loading"><div class="spin"></div>Rendering…</div>';
                   resetZoom();
 
-                  // Render
-                  const id = 'mmd-' + (++renderCounter);
+                  const id = 'mmd' + (++ctr);
                   try {
                     const { svg } = await mermaid.render(id, s.diagram);
                     wrap.innerHTML = svg;
                   } catch (err) {
-                    wrap.innerHTML = `<pre style="color:red;font-size:0.75rem;padding:1rem">${err}</pre>`;
+                    wrap.innerHTML = `<pre style="color:red;font-size:0.72rem;white-space:pre-wrap;padding:1rem">${err}</pre>`;
                   }
                 }
 
-                // Auto-select first scenario
-                selectScenario(SCENARIOS[0].key);
+                // expose so zoom script can call resetZoom
+                window._selectScenario = select;
+                select('routing');
               </script>
 
               <script>
                 let scale = 1;
-                function zoom(factor) {
-                  scale = Math.min(Math.max(scale * factor, 0.25), 3);
-                  document.getElementById('diagram-wrap').style.transform = `scale(${scale})`;
+                function zoom(f) {
+                  scale = Math.min(Math.max(scale * f, 0.25), 3);
+                  document.getElementById('dwrap').style.transform = `scale(${scale})`;
                 }
                 function resetZoom() {
                   scale = 1;
-                  const w = document.getElementById('diagram-wrap');
+                  const w = document.getElementById('dwrap');
                   if (w) w.style.transform = 'scale(1)';
                 }
               </script>
