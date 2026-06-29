@@ -28,6 +28,12 @@ namespace EventsHandler.Controllers
         public ContentResult Index() => Content(Html, "text/html; charset=utf-8");
 
         /// <summary>
+        /// Returns an interactive scenario flow diagram for the Case Created (Zaak aangemaakt) scenario.
+        /// </summary>
+        [HttpGet("/status/flow")]
+        public ContentResult Flow() => Content(FlowHtml, "text/html; charset=utf-8");
+
+        /// <summary>
         /// Streams configuration check results as Server-Sent Events.
         /// </summary>
         [HttpGet("/status/stream")]
@@ -241,7 +247,10 @@ namespace EventsHandler.Controllers
                   </svg>
                   Notificatie.nl — OMC
                 </a>
-                <a class="topbar-link" href="/swagger" target="_blank">API docs ↗</a>
+                <div style="display:flex;gap:0.5rem">
+                  <a class="topbar-link" href="/status/flow">Scenario flow →</a>
+                  <a class="topbar-link" href="/swagger" target="_blank">API docs ↗</a>
+                </div>
               </nav>
 
               <div class="container">
@@ -360,6 +369,260 @@ namespace EventsHandler.Controllers
                   src.close();
                   document.getElementById('pLabel').textContent = 'Connection lost — refresh to retry';
                 };
+              </script>
+            </body>
+            </html>
+            """;
+
+        private const string FlowHtml = """
+            <!DOCTYPE html>
+            <html lang="nl">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>OMC — Case Created Flow</title>
+              <link rel="preconnect" href="https://fonts.googleapis.com">
+              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+              <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+              <style>
+                *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+                :root {
+                  --orange:  #FF7A59;
+                  --dark:    #1E2238;
+                  --charcoal:#2B2E43;
+                  --muted:   #80818C;
+                  --bg:      #F6F7FA;
+                  --surface: #FFFFFF;
+                  --border:  #EEF0F3;
+                }
+
+                body {
+                  font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+                  background: var(--bg);
+                  color: var(--charcoal);
+                  min-height: 100vh;
+                  display: flex;
+                  flex-direction: column;
+                }
+
+                .topbar {
+                  background: var(--orange);
+                  padding: 0 2rem;
+                  height: 56px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  flex-shrink: 0;
+                }
+                .topbar-brand {
+                  display: flex; align-items: center; gap: 0.6rem;
+                  color: #fff; font-weight: 700; font-size: 0.85rem;
+                  letter-spacing: 0.06em; text-transform: uppercase;
+                  text-decoration: none;
+                }
+                .topbar-brand svg { flex-shrink: 0; }
+                .topbar-links { display: flex; gap: 0.5rem; }
+                .topbar-link {
+                  color: rgba(255,255,255,0.85); font-size: 0.8rem; font-weight: 500;
+                  text-decoration: none; border: 1px solid rgba(255,255,255,0.4);
+                  padding: 0.3rem 0.8rem; border-radius: 6px;
+                  transition: background 0.15s;
+                }
+                .topbar-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+                .page-header {
+                  padding: 2rem 2rem 1rem;
+                  border-bottom: 1px solid var(--border);
+                  background: var(--surface);
+                }
+                .page-label {
+                  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+                  text-transform: uppercase; color: var(--orange); margin-bottom: 0.35rem;
+                }
+                .page-header h1 {
+                  font-size: 1.5rem; font-weight: 700; color: var(--dark);
+                }
+                .page-header p {
+                  margin-top: 0.3rem; color: var(--muted); font-size: 0.85rem;
+                }
+
+                .legend {
+                  display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;
+                  padding: 0.9rem 2rem; background: var(--surface);
+                  border-bottom: 1px solid var(--border); font-size: 0.78rem;
+                }
+                .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+                .legend-dot {
+                  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+                }
+                .dot-start   { background: #FF7A59; }
+                .dot-success { background: #16a34a; }
+                .dot-stop    { background: #6b7280; }
+                .dot-abort   { background: #dc2626; }
+                .dot-retry   { background: #f59e0b; }
+                .dot-scenario{ background: #1E2238; }
+                .dot-step    { background: #dbeafe; border: 1px solid #93c5fd; }
+
+                /* diagram container fills remaining height */
+                .diagram-wrap {
+                  flex: 1;
+                  overflow: auto;
+                  padding: 2rem;
+                  display: flex;
+                  justify-content: center;
+                  align-items: flex-start;
+                }
+                .diagram-wrap .mermaid {
+                  background: var(--surface);
+                  border: 1px solid var(--border);
+                  border-radius: 12px;
+                  padding: 2rem;
+                  box-shadow: 0 1px 8px rgb(30 34 56 / 0.06);
+                  max-width: 100%;
+                  overflow: auto;
+                }
+
+                /* zoom controls */
+                .zoom-bar {
+                  position: fixed; bottom: 1.5rem; right: 1.5rem;
+                  display: flex; gap: 0.35rem;
+                  background: var(--surface); border: 1px solid var(--border);
+                  border-radius: 8px; padding: 0.3rem; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+                }
+                .zoom-btn {
+                  background: none; border: none; cursor: pointer;
+                  width: 30px; height: 30px; border-radius: 5px;
+                  font-size: 1rem; font-weight: 600; color: var(--charcoal);
+                  display: flex; align-items: center; justify-content: center;
+                  transition: background 0.12s;
+                }
+                .zoom-btn:hover { background: var(--bg); }
+              </style>
+            </head>
+            <body>
+
+              <nav class="topbar">
+                <a class="topbar-brand" href="https://www.notificatie.nl" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  Notificatie.nl — OMC
+                </a>
+                <div class="topbar-links">
+                  <a class="topbar-link" href="/status">← Configuration status</a>
+                  <a class="topbar-link" href="/swagger" target="_blank">API docs ↗</a>
+                </div>
+              </nav>
+
+              <div class="page-header">
+                <div class="page-label">Scenario flow — decision diagram</div>
+                <h1>Case Created (Zaak aangemaakt)</h1>
+                <p>Traces every decision the OMC makes when OpenNotificaties delivers a <code>zaken / status / create</code> event — from raw webhook to citizen notification.</p>
+              </div>
+
+              <div class="legend">
+                <span class="legend-item"><span class="legend-dot dot-start"></span>Entry / trigger</span>
+                <span class="legend-item"><span class="legend-dot dot-scenario"></span>Scenario selected</span>
+                <span class="legend-item"><span class="legend-dot dot-success"></span>Success</span>
+                <span class="legend-item"><span class="legend-dot dot-abort"></span>Aborted (silent, no retry)</span>
+                <span class="legend-item"><span class="legend-dot dot-retry"></span>Failure (will retry)</span>
+                <span class="legend-item"><span class="legend-dot dot-stop"></span>Skipped / not applicable</span>
+              </div>
+
+              <div class="diagram-wrap">
+                <div class="mermaid" id="diagram">
+            flowchart TD
+                WEBHOOK(["📨 OpenNotificaties webhook\nPOST /api/v1/notifications"])
+
+                WEBHOOK --> DESER["Deserialize JSON\nto NotificationEvent"]
+                DESER --> VALID{"Valid payload?\nAll required fields present?"}
+                VALID -- "No" --> NOT_POSSIBLE(["⏹ NotPossible\nLog & discard"])
+                VALID -- Yes --> IS_TEST{"Test ping?\nChannel=Unknown, Resource=Unknown\nmainObject = test URL"}
+                IS_TEST -- Yes --> SKIPPED(["⏹ Skipped\nConnectivity ping only"])
+                IS_TEST -- No --> RESOLVE{"Route by\nAction / Channel / Resource"}
+
+                RESOLVE -- "Action=Create\nChannel=zaken\nResource=status" --> GET_STATUS
+                RESOLVE -- "Action=Create\nChannel=objecten\nResource=object" --> OBJ_BRANCH["Match ObjectType UUID\n→ Task / Message / KTO scenario"]
+                RESOLVE -- "Action=Create\nChannel=besluiten\nResource=besluit" --> DEC_BRANCH["⚖️ DecisionMadeScenario"]
+                RESOLVE -- "No match" --> NOT_IMPL(["⏹ NotImplemented"])
+
+                GET_STATUS["GET CaseStatus\nOpenZaak — ResourceUri"]
+                GET_STATUS --> GET_STATUS_TYPE["GET CaseStatusType\nOpenZaak — status.TypeUri"]
+                GET_STATUS_TYPE --> CHECK_INFORM{"IsNotificationExpected\n(informeren field)?"}
+                CHECK_INFORM -- No --> ABORTED_INFORM(["⏹ Aborted\ninformeren = false"])
+                CHECK_INFORM -- Yes --> CHECK_SERIAL{"StatusType\nSerialNumber?"}
+
+                CHECK_SERIAL -- "= 1\n(first status ever)" --> SCENARIO_CREATED["🆕 CaseCreatedScenario"]
+                CHECK_SERIAL -- "> 1  and  not final" --> SCENARIO_UPDATED["🔄 CaseStatusUpdatedScenario"]
+                CHECK_SERIAL -- "> 1  and  IsFinalStatus" --> SCENARIO_CLOSED["✅ CaseClosedScenario"]
+
+                SCENARIO_CREATED --> WHITELIST{"Case type ID in\nZGW__Whitelist__ZaakCreate_IDs?"}
+                WHITELIST -- "No (not whitelisted)" --> ABORTED_WL(["⏹ Aborted\ncaseType not in whitelist"])
+                WHITELIST -- "Yes — or wildcard *" --> GET_CASE["GET Case details\nOpenZaak — notification.MainObjectUri"]
+                GET_CASE --> GET_PARTY["GET Party data\nOpenKlant — case.Uri + case.Identification"]
+                GET_PARTY --> CHANNEL{"DistributionChannel\nfrom OpenKlant?"}
+
+                CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__ZaakCreate\npersonalisation: naam, zaak.id, zaak.omschrijving"]
+                CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__ZaakCreate"]
+                CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__ZaakCreate\n+ full postal address"]
+                CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS\n(two packages, sent sequentially)"]
+                CHANNEL -- "Unknown / missing" --> FAIL_CHANNEL(["🔁 Failure\nNo valid channel — retry"])
+
+                BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND_CALL["POST to Notify NL API\n/v2/notifications/{method}\ntemplateId + personalisation + reference"]
+                SEND_CALL --> SEND_RESP{"HTTP 201 Created?"}
+                SEND_RESP -- "No (NotifyClientException)" --> RETRY(["🔁 Failure\nRetry later"])
+                SEND_RESP -- Yes --> SUCCESS(["✅ Success\nCitizen notified"])
+
+                style WEBHOOK         fill:#FF7A59,color:#fff,stroke:none
+                style SUCCESS         fill:#16a34a,color:#fff,stroke:none
+                style SCENARIO_CREATED fill:#1E2238,color:#fff,stroke:none
+                style NOT_POSSIBLE    fill:#6b7280,color:#fff,stroke:none
+                style SKIPPED         fill:#6b7280,color:#fff,stroke:none
+                style NOT_IMPL        fill:#6b7280,color:#fff,stroke:none
+                style ABORTED_INFORM  fill:#dc2626,color:#fff,stroke:none
+                style ABORTED_WL      fill:#dc2626,color:#fff,stroke:none
+                style FAIL_CHANNEL    fill:#f59e0b,color:#fff,stroke:none
+                style RETRY           fill:#f59e0b,color:#fff,stroke:none
+                </div>
+              </div>
+
+              <div class="zoom-bar">
+                <button class="zoom-btn" onclick="zoom(1.2)" title="Zoom in">+</button>
+                <button class="zoom-btn" onclick="zoom(1/1.2)" title="Zoom out">−</button>
+                <button class="zoom-btn" onclick="resetZoom()" title="Reset zoom" style="font-size:0.7rem">⊙</button>
+              </div>
+
+              <script type="module">
+                import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+                mermaid.initialize({
+                  startOnLoad: true,
+                  theme: 'base',
+                  themeVariables: {
+                    primaryColor:      '#dbeafe',
+                    primaryTextColor:  '#1E2238',
+                    primaryBorderColor:'#93c5fd',
+                    lineColor:         '#80818C',
+                    secondaryColor:    '#F6F7FA',
+                    tertiaryColor:     '#F6F7FA',
+                    fontSize:          '13px',
+                    fontFamily:        "'Sora', ui-sans-serif, system-ui, sans-serif",
+                  }
+                });
+              </script>
+
+              <script>
+                let scale = 1;
+                const diagram = document.getElementById('diagram');
+                function zoom(factor) {
+                  scale = Math.min(Math.max(scale * factor, 0.3), 3);
+                  diagram.style.transform = `scale(${scale})`;
+                  diagram.style.transformOrigin = 'top center';
+                }
+                function resetZoom() {
+                  scale = 1;
+                  diagram.style.transform = 'scale(1)';
+                }
               </script>
             </body>
             </html>
