@@ -520,6 +520,7 @@ namespace EventsHandler
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/", () => Results.Redirect("/status"));
             app.MapControllers();  // Mapping actions from API controllers
 
             app.UseSentryTracing();  // Enable Sentry to capture transactions

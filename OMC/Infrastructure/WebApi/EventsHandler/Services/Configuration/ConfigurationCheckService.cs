@@ -214,10 +214,16 @@ namespace EventsHandler.Services.Configuration
             try
             {
                 var ids = getter();
-                bool ok = ids.Count > 0;
-                return new CheckResult(group, icon, name, ok,
-                    ok ? $"{ids.Count} case type(s)" : "none configured — no notifications will be sent for this scenario",
-                    ok ? null : hint);
+
+                if (ids.IsWildcard)
+                    return new CheckResult(group, icon, name, true, "all case types allowed (*)");
+
+                if (ids.Count == 0)
+                    return new CheckResult(group, icon, name, false,
+                        "none configured — no notifications will be sent for this scenario", hint);
+
+                string listed = string.Join(", ", ids.Values);
+                return new CheckResult(group, icon, name, true, $"{ids.Count} case type(s): {listed}");
             }
             catch { return new CheckResult(group, icon, name, false, "not configured", hint); }
         }
