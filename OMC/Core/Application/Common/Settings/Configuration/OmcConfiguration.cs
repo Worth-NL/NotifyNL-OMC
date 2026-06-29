@@ -942,6 +942,16 @@ namespace Common.Settings.Configuration
                     public int Count { get; }
 
                     /// <summary>
+                    /// Whether the wildcard <c>*</c> is configured, meaning all case types are allowed.
+                    /// </summary>
+                    public bool IsWildcard { get; }
+
+                    /// <summary>
+                    /// The configured case type IDs. Empty when <see cref="IsWildcard"/> is <see langword="true"/>.
+                    /// </summary>
+                    public IReadOnlyList<string> Values { get; }
+
+                    /// <summary>
                     /// Initializes a new instance of the <see cref="IDs"/> class.
                     /// </summary>
                     public IDs(ILoadingService loadersContext, string currentPath, string nodeName)
@@ -959,6 +969,8 @@ namespace Common.Settings.Configuration
                             if (caseTypeIds.Contains(Wildcard))
                             {
                                 this._isEverythingAllowed = true;
+                                this.IsWildcard = true;
+                                this.Values = Array.Empty<string>();
 
                                 return;  // NOTE: Initializing collection of Case Type IDs is not necessary, because everything is allowed anyway
                             }
@@ -968,6 +980,8 @@ namespace Common.Settings.Configuration
                                 s_allWhitelistedCaseTypeIds.Add(ComposeID(this._finalPath, id));
                             }
                         }
+
+                        this.Values = Array.AsReadOnly(caseTypeIds);
                     }
 
                     /// <summary>

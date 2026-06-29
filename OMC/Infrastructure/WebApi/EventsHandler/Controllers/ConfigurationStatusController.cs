@@ -75,11 +75,19 @@ namespace EventsHandler.Controllers
 
                 /* ── Header ── */
                 .header { margin-bottom: 2rem; }
+                .header-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
                 .header h1 {
                   font-size: 1.6rem; font-weight: 700; color: #f8fafc;
                   display: flex; align-items: center; gap: 0.5rem;
                 }
                 .header p { color: #94a3b8; margin-top: 0.3rem; font-size: 0.9rem; }
+                .swagger-link {
+                  flex-shrink: 0; font-size: 0.8rem; color: #64748b;
+                  text-decoration: none; border: 1px solid #334155;
+                  padding: 0.3rem 0.7rem; border-radius: 0.4rem;
+                  transition: color 0.15s, border-color 0.15s;
+                }
+                .swagger-link:hover { color: #94a3b8; border-color: #475569; }
                 .progress-wrap { margin-top: 1.25rem; }
                 .progress-bar {
                   height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;
@@ -165,7 +173,10 @@ namespace EventsHandler.Controllers
             <body>
               <div class="container">
                 <div class="header">
-                  <h1>🔧 OMC Configuration Check</h1>
+                  <div class="header-top">
+                    <h1>🔧 OMC Configuration Check</h1>
+                    <a class="swagger-link" href="/swagger" target="_blank">API docs (Swagger) ↗</a>
+                  </div>
                   <p>Live status of all required settings and service connections. Secret values are never shown.</p>
                   <div class="progress-wrap">
                     <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
