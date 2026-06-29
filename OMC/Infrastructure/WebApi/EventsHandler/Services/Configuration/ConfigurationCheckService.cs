@@ -228,17 +228,30 @@ namespace EventsHandler.Services.Configuration
             try
             {
                 HttpRequestResponse r = await fn().WaitAsync(ct);
-                return new CheckResult(group, icon, name, r.IsSuccess, r.IsSuccess ? "reachable" : "unreachable");
+                if (r.IsSuccess)
+                    return new CheckResult(group, icon, name, true, "reachable");
+
+                string detail = string.IsNullOrWhiteSpace(r.JsonResponse)
+                    ? "unreachable — no response body"
+                    : Truncate(r.JsonResponse, 120);
+                return new CheckResult(group, icon, name, false, detail);
             }
             catch (OperationCanceledException)
             {
-                return new CheckResult(group, icon, name, false, "timed out");
+                return new CheckResult(group, icon, name, false, "timed out — check the endpoint URL and network");
+            }
+            catch (HttpRequestException ex)
+            {
+                string reason = ex.InnerException?.Message ?? ex.Message;
+                return new CheckResult(group, icon, name, false, Truncate(reason, 120));
             }
             catch (Exception ex)
             {
-                string msg = ex.Message.Length > 80 ? ex.Message[..80] + "…" : ex.Message;
-                return new CheckResult(group, icon, name, false, msg);
+                return new CheckResult(group, icon, name, false, Truncate(ex.Message, 120));
             }
         }
+
+        private static string Truncate(string s, int max)
+            => s.Length <= max ? s : s[..max] + "…";
     }
 }

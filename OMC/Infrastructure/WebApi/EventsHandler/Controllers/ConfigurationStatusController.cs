@@ -126,11 +126,15 @@ namespace EventsHandler.Controllers
                 .check-detail {
                   color: #475569; font-size: 0.78rem;
                   font-family: 'SFMono-Regular', 'Consolas', monospace;
-                  max-width: 320px; overflow: hidden;
+                  max-width: 380px; overflow: hidden;
                   text-overflow: ellipsis; white-space: nowrap;
                 }
                 .check-detail.ok   { color: #22c55e; }
-                .check-detail.fail { color: #ef4444; }
+                .check-detail.fail {
+                  color: #ef4444;
+                  white-space: normal; word-break: break-word;
+                  text-overflow: unset;
+                }
 
                 /* ── Summary ── */
                 .summary {
