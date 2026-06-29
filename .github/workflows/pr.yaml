@@ -119,13 +119,13 @@ jobs:
         dotnet-version: ["10.0"]
         include:
           - test-project: "OMC/Tests/Core/Application/Common.UnitTests"
-            threshold: 35
+            threshold: 60
           - test-project: "OMC/Tests/Core/Domain/ZgwModels.UnitTests"
-            threshold: 35
+            threshold: 60
           - test-project: "OMC/Tests/Infrastructure/Persistence/WebQueries.Tests.Unit"
             threshold: 10
           - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.UnitTests"
-            threshold: 35
+            threshold: 60
           - test-project: "OMC/Tests/Infrastructure/WebApi/EventsHandler.IntegrationTests"
             threshold: 0
 
