@@ -1,0 +1,57 @@
+---
+title: OMC — Task Assigned (Taak toegewezen) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=objecten / Resource=object"])
+
+    WEBHOOK --> CHK_TYPE{"notification.Attributes\n.ObjectTypeUri UUID?"}
+    CHK_TYPE -- "= KtoObjectType_Uuid" --> KTO["→ KtoScenario"]
+    CHK_TYPE -- "= MessageObjectType_Uuid" --> MSG["→ MessageReceivedScenario"]
+    CHK_TYPE -- "= TaskObjectType_Uuid" --> SCENARIO["📋 TaskAssignedScenario"]
+    CHK_TYPE -- Unknown --> AB0(["⏹ Aborted\nObjectType UUID not configured"])
+
+    SCENARIO --> GET_TASK["GET Task object\nObjecten API — notification.ResourceUri"]
+
+    GET_TASK --> CHK_STATUS{"task.Status\n== Open?"}
+    CHK_STATUS -- No --> AB1(["⏹ Aborted\nTask is already closed"])
+
+    CHK_STATUS -- Yes --> CHK_IDTYPE{"task.Identification.Type\n== BSN  or  KVK?"}
+    CHK_IDTYPE -- No --> AB2(["⏹ Aborted\nIdentification type not supported"])
+
+    CHK_IDTYPE -- Yes --> GET_STATUSES["GET CaseStatuses\nOpenZaak — task.CaseUri"]
+    GET_STATUSES --> GET_CASETYPE["GET last CaseType\nOpenZaak — from statuses"]
+
+    GET_CASETYPE --> WHITELIST{"Case type ID in\nZGW__Whitelist__TaskAssigned_IDs?"}
+    WHITELIST -- No --> AB3(["⏹ Aborted\ncaseType not whitelisted"])
+
+    WHITELIST -- Yes --> CHK_PERMIT{"caseType\n.IsNotificationExpected?"}
+    CHK_PERMIT -- No --> AB4(["⏹ Aborted\ninformeren = false on caseType"])
+
+    CHK_PERMIT -- Yes --> GET_CASE["GET Case\nOpenZaak — task.CaseUri"]
+
+    GET_CASE --> CHK_BSN{"task.Identification.Type\n== BSN?"}
+    CHK_BSN -- Yes --> GET_PARTY_BSN["GET Party data\nOpenKlant — case.Uri + BSN number"]
+    CHK_BSN -- No --> GET_PARTY_KVK["GET Party data\nOpenKlant — case.Uri + case.Identification"]
+    GET_PARTY_BSN & GET_PARTY_KVK --> CHANNEL{"DistributionChannel?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__TaskAssigned\n+ naam + taak.verloopdatum + taak.title + zaak"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__TaskAssigned"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__TaskAssigned\n+ full postal address"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS"]
+    CHANNEL -- Unknown --> FAIL_CH(["🔁 Failure\nNo valid channel"])
+
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND["POST to Notify NL API"]
+    SEND --> OK{"HTTP 201 Created?"}
+    OK -- No --> RETRY(["🔁 Failure\nRetry later"])
+    OK -- Yes --> SUCCESS(["✅ Success\nCitizen notified of task assignment"])
+
+    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS   fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+    style AB0       fill:#dc2626,color:#fff,stroke:none
+    style AB1       fill:#dc2626,color:#fff,stroke:none
+    style AB2       fill:#dc2626,color:#fff,stroke:none
+    style AB3       fill:#dc2626,color:#fff,stroke:none
+    style AB4       fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CH   fill:#f59e0b,color:#fff,stroke:none
+    style RETRY     fill:#f59e0b,color:#fff,stroke:none
