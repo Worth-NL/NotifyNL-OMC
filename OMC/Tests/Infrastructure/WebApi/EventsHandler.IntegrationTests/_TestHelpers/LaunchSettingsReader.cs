@@ -15,19 +15,34 @@ namespace EventsHandler.Tests.Integration._TestHelpers
             if (!File.Exists(path))
                 return [];
 
-            // JsonCommentHandling.Skip handles both // and /* */ style comments
-            var options = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip };
-            using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(path), options);
+            var options = new JsonDocumentOptions
+            {
+                CommentHandling     = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true
+            };
 
-            if (!doc.RootElement.TryGetProperty("profiles", out JsonElement profiles) ||
-                !profiles.TryGetProperty(ProfileName, out JsonElement profile) ||
-                !profile.TryGetProperty("environmentVariables", out JsonElement envVars))
+            JsonDocument doc;
+            try
+            {
+                doc = JsonDocument.Parse(File.ReadAllText(path), options);
+            }
+            catch (JsonException)
             {
                 return [];
             }
 
-            return envVars.EnumerateObject()
-                .ToDictionary(p => p.Name, p => p.Value.GetString() ?? string.Empty);
+            using (doc)
+            {
+                if (!doc.RootElement.TryGetProperty("profiles", out JsonElement profiles) ||
+                    !profiles.TryGetProperty(ProfileName, out JsonElement profile) ||
+                    !profile.TryGetProperty("environmentVariables", out JsonElement envVars))
+                {
+                    return [];
+                }
+
+                return envVars.EnumerateObject()
+                    .ToDictionary(p => p.Name, p => p.Value.GetString() ?? string.Empty);
+            }
         }
 
         internal static bool HasRealValues(Dictionary<string, string> envVars)
@@ -38,7 +53,6 @@ namespace EventsHandler.Tests.Integration._TestHelpers
 
         private static string ResolvelaunchSettingsPath()
         {
-            // Climb from bin/Debug|Release/net10.0 up to the solution root, then back down
             string? dir = AppContext.BaseDirectory;
 
             for (int i = 0; i < 10; i++)
