@@ -488,15 +488,16 @@ namespace EventsHandler.Controllers
 
                 .diagram-area {
                   flex: 1; overflow: auto; padding: 1.25rem;
-                  display: flex; justify-content: center; align-items: flex-start;
+                  display: flex; justify-content: flex-start; align-items: flex-start;
                 }
                 #dwrap {
                   background: var(--surface); border: 1px solid var(--border);
                   border-radius: 12px; padding: 1.75rem;
                   box-shadow: 0 1px 8px rgb(30 34 56 / 0.06);
-                  transform-origin: top center; transition: transform 0.12s ease;
+                  transform-origin: top left; transition: transform 0.12s ease;
+                  width: max-content; min-width: calc(100% - 2.5rem);
                 }
-                #dwrap svg { max-width: 100%; display: block; }
+                #dwrap svg { display: block; }
 
                 #loading {
                   display: flex; align-items: center; gap: 0.6rem;
@@ -523,8 +524,7 @@ namespace EventsHandler.Controllers
                 .zbtn:hover { background: var(--bg); }
 
                 /* make Mermaid clickable nodes show pointer cursor */
-                #dwrap svg .node.clickable > * { cursor: pointer !important; }
-                #dwrap svg g[class*="node"]:has(title) { cursor: pointer; }
+                #dwrap svg g.node.clickable { cursor: pointer !important; }
               </style>
             </head>
             <body>
@@ -959,11 +959,12 @@ namespace EventsHandler.Controllers
                 let ctr = 0;
 
                 // Wire native click listeners onto Mermaid-rendered SVG nodes.
-                // Mermaid generates IDs like "flowchart-nodeId-N"; match by prefix.
+                // Mermaid marks click-enabled nodes with class "clickable" on the <g>.
+                // It also generates IDs like "flowchart-nodeId-N" from which we recover the node ID.
                 function wireClicks(wrap) {
                   const svg = wrap.querySelector('svg');
                   if (!svg) return;
-                  const nodeMap = {
+                  const scenarioKeys = {
                     routing:       'routing',
                     case_created:  'case-created',
                     case_updated:  'case-updated',
@@ -973,12 +974,12 @@ namespace EventsHandler.Controllers
                     decision_made: 'decision-made',
                     kto:           'kto',
                   };
-                  Object.entries(nodeMap).forEach(([nid, key]) => {
-                    svg.querySelectorAll(`[id^="flowchart-${nid}-"]`).forEach(el => {
-                      const node = el.closest('g') || el;
-                      node.style.cursor = 'pointer';
-                      node.addEventListener('click', () => select(key));
-                    });
+                  svg.querySelectorAll('g.node.clickable').forEach(g => {
+                    const m = (g.id || '').match(/^flowchart-(.+)-\d+$/);
+                    if (!m) return;
+                    const key = scenarioKeys[m[1]];
+                    if (!key) return;
+                    g.addEventListener('click', () => select(key));
                   });
                 }
 
@@ -1002,6 +1003,7 @@ namespace EventsHandler.Controllers
                     const { svg } = await mermaid.render(id, s.diagram);
                     wrap.innerHTML = svg;
                     wireClicks(wrap);
+                    applyZoom(1.5);
                   } catch (err) {
                     wrap.innerHTML = `<pre style="color:red;font-size:0.72rem;white-space:pre-wrap;padding:1rem">${err}</pre>`;
                   }
@@ -1014,15 +1016,12 @@ namespace EventsHandler.Controllers
 
               <script>
                 let scale = 1;
-                function zoom(f) {
-                  scale = Math.min(Math.max(scale * f, 0.25), 3);
+                function applyZoom(s) {
+                  scale = Math.min(Math.max(s, 0.3), 5);
                   document.getElementById('dwrap').style.transform = `scale(${scale})`;
                 }
-                function resetZoom() {
-                  scale = 1;
-                  const w = document.getElementById('dwrap');
-                  if (w) w.style.transform = 'scale(1)';
-                }
+                function zoom(f) { applyZoom(scale * f); }
+                function resetZoom() { applyZoom(1.5); }
               </script>
             </body>
             </html>
