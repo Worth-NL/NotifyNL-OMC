@@ -1,3 +1,8 @@
+## 2.0.2
+
+- Remove v1 workflow versioning: drop OpenKlant v1, OpenZaak v1/v2 distinction, and OMC_FEATURE_WORKFLOW_VERSION configuration
+- Add integration test framework using WebApplicationFactory with launchSettings-based configuration and JWT token generation
+
 ## 2.0.1
 
 - Adds documentation to a /docs folder to sync to gitbook
