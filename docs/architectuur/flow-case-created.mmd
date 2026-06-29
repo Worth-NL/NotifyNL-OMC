@@ -1,0 +1,95 @@
+---
+title: OMC — Case Created (Zaak aangemaakt) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nPOST /api/v1/notifications"])
+
+    WEBHOOK --> DESER["Deserialize JSON body\nto NotificationEvent"]
+
+    DESER --> VALID{"Valid payload?\nAll required fields present?"}
+    VALID -- "No  →  CS0" --> NOT_POSSIBLE(["⏹ NotPossible\nLog & discard — cannot process"])
+
+    VALID -- Yes --> IS_TEST{"Test ping?\nChannel = Unknown\nResource = Unknown\nmainObject = test URL"}
+    IS_TEST -- Yes --> SKIPPED(["⏹ Skipped\nConnectivity check only — no action"])
+
+    IS_TEST -- No --> RESOLVE{"Resolve scenario\nWhat are Action / Channel / Resource?"}
+
+    %% ── Routing branches ──────────────────────────────────────────
+    RESOLVE -- "Action = Create\nChannel = zaken\nResource = status" --> CASE_BRANCH
+    RESOLVE -- "Action = Create\nChannel = objecten\nResource = object" --> OBJ_BRANCH
+    RESOLVE -- "Action = Create\nChannel = besluiten\nResource = besluit" --> DEC_BRANCH
+    RESOLVE -- "No match" --> NOT_IMPL(["⏹ NotImplemented\nSkipped — unknown event type"])
+
+    %% ── Case branch ───────────────────────────────────────────────
+    subgraph CASE_BRANCH ["① Case event — identify which scenario"]
+        direction TB
+        GET_STATUS["GET CaseStatus\nOpenZaak — ResourceUri"]
+        GET_STATUS_TYPE["GET CaseStatusType\nOpenZaak — status.TypeUri"]
+        CHECK_INFORM{"IsNotificationExpected\n(informeren field)?"}
+        CHECK_SERIAL{"StatusType.SerialNumber?"}
+
+        GET_STATUS --> GET_STATUS_TYPE --> CHECK_INFORM
+        CHECK_INFORM -- No --> ABORTED_INFORM(["⏹ Aborted\nInformeren = false on this status type"])
+        CHECK_INFORM -- Yes --> CHECK_SERIAL
+
+        CHECK_SERIAL -- "= 1\n(first status ever)" --> SCENARIO_CREATED["🆕 CaseCreatedScenario"]
+        CHECK_SERIAL -- "&gt; 1  &amp;&amp;  not final" --> SCENARIO_UPDATED["🔄 CaseStatusUpdatedScenario"]
+        CHECK_SERIAL -- "&gt; 1  &amp;&amp;  IsFinalStatus" --> SCENARIO_CLOSED["✅ CaseClosedScenario"]
+    end
+
+    %% ── Object branch (summary only) ─────────────────────────────
+    subgraph OBJ_BRANCH ["② Object event — match on ObjectType UUID"]
+        direction TB
+        OBJ_TASK["📋 TaskAssignedScenario\n(= ZGW__Variable__ObjectType__TaskObjectType_Uuid)"]
+        OBJ_MSG["💬 MessageReceivedScenario\n(= ZGW__Variable__ObjectType__MessageObjectType_Uuid)"]
+        OBJ_KTO["⭐ KtoScenario\n(= ZGW__Variable__ObjectType__KtoObjectType_Uuid)"]
+        OBJ_UNKNOWN(["⏹ Aborted\nObjectType UUID not in configuration"])
+    end
+
+    DEC_BRANCH --> SCENARIO_DECISION["⚖️ DecisionMadeScenario"]
+
+    %% ── CaseCreatedScenario: PrepareDataAsync ─────────────────────
+    SCENARIO_CREATED --> PREPARE
+
+    subgraph PREPARE ["CaseCreatedScenario — PrepareDataAsync"]
+        direction TB
+        WHITELIST{"Case type ID\nin ZGW__Whitelist__ZaakCreate_IDs?"}
+        WHITELIST -- No --> ABORTED_WL(["⏹ Aborted\ncaseType not whitelisted — stop silently"])
+        WHITELIST -- "Yes  (or wildcard *)" --> GET_CASE["GET Case\nOpenZaak — notification.MainObjectUri"]
+        GET_CASE --> GET_PARTY["GET Party data\nOpenKlant — case.Uri + case.Identification"]
+        GET_PARTY --> PARTY_OK["PreparedData ready\n(CommonPartyData + CaseUri)"]
+    end
+
+    %% ── Channel routing ───────────────────────────────────────────
+    PARTY_OK --> CHANNEL{"DistributionChannel\n(from OpenKlant party record)?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__ZaakCreate\npersonalisation: naam, zaak.identificatie, zaak.omschrijving"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__ZaakCreate\n(same personalisation as email)"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__ZaakCreate\n+ full postal address from party record"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS\n(two packages, sent in sequence)"]
+    CHANNEL -- "Unknown / missing" --> FAIL_CHANNEL(["🔁 Failure\nNo valid channel — retry"])
+
+    %% ── Send ──────────────────────────────────────────────────────
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND
+
+    subgraph SEND ["ProcessDataAsync — send via Notify NL"]
+        direction TB
+        SEND_CALL["POST /v2/notifications/{email|sms|letter}\nNotify NL API\nwith templateId + personalisation + reference"]
+        SEND_RESP{"HTTP 201 Created?"}
+        SEND_CALL --> SEND_RESP
+        SEND_RESP -- No --> RETRY(["🔁 Failure\nNotifyClientException — retry later"])
+    end
+
+    SEND_RESP -- Yes --> SUCCESS(["✅ Success\nCitizen notified — case reference logged"])
+
+    %% ── Styling ───────────────────────────────────────────────────
+    style WEBHOOK        fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS        fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO_CREATED fill:#1E2238,color:#fff,stroke:none
+    style NOT_POSSIBLE   fill:#6b7280,color:#fff,stroke:none
+    style SKIPPED        fill:#6b7280,color:#fff,stroke:none
+    style NOT_IMPL       fill:#6b7280,color:#fff,stroke:none
+    style ABORTED_INFORM fill:#dc2626,color:#fff,stroke:none
+    style ABORTED_WL     fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CHANNEL   fill:#f59e0b,color:#fff,stroke:none
+    style RETRY          fill:#f59e0b,color:#fff,stroke:none
