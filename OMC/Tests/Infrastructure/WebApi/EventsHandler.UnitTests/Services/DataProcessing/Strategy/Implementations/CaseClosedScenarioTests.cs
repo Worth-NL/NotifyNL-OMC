@@ -287,7 +287,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             if (hasResultType)
             {
                 this._mockedQueryContext
-                    .Setup(mock => mock.GetCaseResultTypeAsync(It.IsAny<Uri?>()))
+                    .Setup(mock => mock.GetCaseResultTypeAsync(It.IsAny<Uri>()))
                     .ReturnsAsync(new CaseResultType { Name = "Gegrond" });
             }
 
@@ -354,7 +354,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 .Verify(mock => mock.GetPartyDataAsync(It.IsAny<Uri?>(), It.IsAny<string?>(), It.IsAny<string?>()), Times.Exactly(getPartyCount));
 
             this._mockedQueryContext
-                .Verify(mock => mock.GetCaseResultTypeAsync(It.IsAny<Uri?>()), Times.Exactly(getResultTypeCount));
+                .Verify(mock => mock.GetCaseResultTypeAsync(It.IsAny<Uri>()), Times.Exactly(getResultTypeCount));
 
             this._getDataVerified = true;
 
