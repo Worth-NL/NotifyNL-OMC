@@ -57,134 +57,206 @@ namespace EventsHandler.Controllers
 
         private const string Html = """
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="nl">
             <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>OMC Configuration Check</title>
+              <title>OMC — Configuration Check</title>
+              <link rel="preconnect" href="https://fonts.googleapis.com">
+              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+              <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
               <style>
                 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-                body {
-                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                  background: #0f172a;
-                  color: #e2e8f0;
-                  min-height: 100vh;
-                  padding-bottom: 4rem;
-                }
-                .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem; }
 
-                /* ── Header ── */
-                .header { margin-bottom: 2rem; }
-                .header-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-                .header h1 {
-                  font-size: 1.6rem; font-weight: 700; color: #f8fafc;
-                  display: flex; align-items: center; gap: 0.5rem;
+                :root {
+                  --orange:        #FF7A59;
+                  --orange-light:  #FFF0EC;
+                  --orange-border: #FF8E72;
+                  --dark:          #1E2238;
+                  --charcoal:      #2B2E43;
+                  --muted:         #80818C;
+                  --light-muted:   #C3C6D0;
+                  --bg:            #F6F7FA;
+                  --surface:       #FFFFFF;
+                  --border:        #EEF0F3;
+                  --border-strong: #D5DAE1;
+                  --green:         #16a34a;
+                  --green-bg:      #f0fdf4;
+                  --green-border:  #bbf7d0;
+                  --red:           #dc2626;
+                  --red-bg:        #fff5f5;
+                  --red-border:    #fecaca;
                 }
-                .header p { color: #94a3b8; margin-top: 0.3rem; font-size: 0.9rem; }
-                .swagger-link {
-                  flex-shrink: 0; font-size: 0.8rem; color: #64748b;
-                  text-decoration: none; border: 1px solid #334155;
-                  padding: 0.3rem 0.7rem; border-radius: 0.4rem;
-                  transition: color 0.15s, border-color 0.15s;
+
+                body {
+                  font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+                  background: var(--bg);
+                  color: var(--charcoal);
+                  min-height: 100vh;
                 }
-                .swagger-link:hover { color: #94a3b8; border-color: #475569; }
-                .progress-wrap { margin-top: 1.25rem; }
-                .progress-bar {
-                  height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;
+
+                /* ── Top nav bar ── */
+                .topbar {
+                  background: var(--orange);
+                  padding: 0 2rem;
+                  height: 56px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                }
+                .topbar-brand {
+                  display: flex; align-items: center; gap: 0.6rem;
+                  color: #fff; font-weight: 700; font-size: 0.85rem;
+                  letter-spacing: 0.06em; text-transform: uppercase;
+                  text-decoration: none;
+                }
+                .topbar-brand svg { flex-shrink: 0; }
+                .topbar-link {
+                  color: rgba(255,255,255,0.85); font-size: 0.8rem; font-weight: 500;
+                  text-decoration: none; border: 1px solid rgba(255,255,255,0.4);
+                  padding: 0.3rem 0.8rem; border-radius: 6px;
+                  transition: background 0.15s, color 0.15s;
+                }
+                .topbar-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+                /* ── Page layout ── */
+                .container { max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+                /* ── Page header ── */
+                .page-header { margin-bottom: 2rem; }
+                .page-label {
+                  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+                  text-transform: uppercase; color: var(--orange); margin-bottom: 0.4rem;
+                }
+                .page-header h1 {
+                  font-size: 1.75rem; font-weight: 700; color: var(--dark); line-height: 1.2;
+                }
+                .page-header p {
+                  margin-top: 0.4rem; color: var(--muted); font-size: 0.875rem; font-weight: 400;
+                }
+
+                /* ── Progress ── */
+                .progress-wrap { margin-top: 1.5rem; }
+                .progress-track {
+                  height: 5px; background: var(--border-strong); border-radius: 99px; overflow: hidden;
                 }
                 .progress-fill {
-                  height: 100%; width: 0%; background: #3b82f6; border-radius: 3px;
-                  transition: width 0.4s ease;
+                  height: 100%; width: 0%; background: var(--orange); border-radius: 99px;
+                  transition: width 0.35s ease;
                 }
-                .progress-label { font-size: 0.8rem; color: #64748b; margin-top: 0.4rem; }
+                .progress-label {
+                  margin-top: 0.45rem; font-size: 0.78rem; font-weight: 500; color: var(--muted);
+                }
 
-                /* ── Group card ── */
+                /* ── Group cards ── */
                 .group {
-                  background: #1e293b; border-radius: 0.75rem;
-                  margin-bottom: 0.75rem; overflow: hidden;
-                  border: 1px solid #334155;
+                  background: var(--surface); border-radius: 12px;
+                  border: 1px solid var(--border); margin-bottom: 0.75rem;
+                  overflow: hidden;
+                  box-shadow: 0 1px 4px rgb(30 34 56 / 0.05);
                 }
                 .group-header {
-                  display: flex; align-items: center; gap: 0.6rem;
-                  padding: 0.9rem 1.25rem; cursor: pointer;
-                  font-weight: 600; font-size: 0.9rem; letter-spacing: 0.01em;
-                  user-select: none;
+                  display: flex; align-items: center; gap: 0.65rem;
+                  padding: 0.9rem 1.25rem; cursor: pointer; user-select: none;
+                  border-bottom: 1px solid transparent;
+                  transition: background 0.12s;
                 }
-                .group-header:hover { background: #243347; }
-                .group-name { flex: 1; }
+                .group-header:hover { background: var(--bg); }
+                .group-icon { font-size: 1rem; flex-shrink: 0; }
+                .group-name {
+                  flex: 1; font-size: 0.875rem; font-weight: 600; color: var(--dark);
+                }
                 .group-badge {
-                  font-size: 0.72rem; padding: 0.2rem 0.55rem;
-                  border-radius: 1rem; font-weight: 600; white-space: nowrap;
+                  font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.6rem;
+                  border-radius: 99px; white-space: nowrap;
                 }
-                .badge-checking { background: #1e3050; color: #64748b; }
-                .badge-ok       { background: #14532d; color: #4ade80; }
-                .badge-warn     { background: #422006; color: #fb923c; }
-                .badge-fail     { background: #450a0a; color: #f87171; }
+                .badge-checking { background: var(--border); color: var(--muted); }
+                .badge-ok   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+                .badge-fail { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
 
                 /* ── Check rows ── */
-                .checks { border-top: 1px solid #334155; }
+                .checks { }
                 .check {
-                  display: flex; align-items: flex-start; gap: 0;
-                  padding: 0.5rem 1.25rem; border-bottom: 1px solid #1e3050;
-                  font-size: 0.85rem; animation: fadeIn 0.15s ease;
+                  display: flex; align-items: flex-start;
+                  padding: 0.55rem 1.25rem; border-top: 1px solid var(--border);
+                  font-size: 0.825rem; animation: fadeIn 0.15s ease;
                 }
-                .check:last-child { border-bottom: none; }
-                .check-icon { width: 1.4rem; flex-shrink: 0; font-style: normal; padding-top: 1px; }
+                .check-icon {
+                  width: 1.3rem; flex-shrink: 0; font-style: normal;
+                  font-weight: 700; padding-top: 1px;
+                }
+                .icon-ok   { color: var(--green); }
+                .icon-fail { color: var(--red); }
                 .check-body { flex: 1; min-width: 0; }
-                .check-main { display: flex; align-items: baseline; gap: 0; }
-                .check-name { flex: 1; color: #cbd5e1; padding: 0 0.5rem; white-space: nowrap; }
+                .check-main { display: flex; align-items: baseline; }
+                .check-name {
+                  flex: 1; color: var(--charcoal); font-weight: 500;
+                  padding-right: 0.75rem; white-space: nowrap;
+                }
                 .check-detail {
-                  color: #475569; font-size: 0.78rem;
+                  color: var(--muted); font-size: 0.75rem;
                   font-family: 'SFMono-Regular', 'Consolas', monospace;
                   max-width: 380px; overflow: hidden;
                   text-overflow: ellipsis; white-space: nowrap;
                 }
-                .check-detail.ok { color: #22c55e; }
+                .check-detail.ok { color: var(--green); font-weight: 500; }
                 .check-detail.fail {
-                  color: #ef4444; white-space: pre-wrap; word-break: break-all;
+                  color: var(--red); white-space: pre-wrap; word-break: break-all;
                   text-overflow: unset; max-width: 100%;
-                  max-height: 8rem; overflow-y: auto;
-                  display: block; margin-top: 0.2rem;
-                  background: #1a0a0a; padding: 0.4rem 0.5rem; border-radius: 4px;
+                  max-height: 8rem; overflow-y: auto; display: block;
+                  margin-top: 0.25rem;
+                  background: var(--red-bg); border: 1px solid var(--red-border);
+                  padding: 0.4rem 0.6rem; border-radius: 6px;
                 }
                 .check-hint {
-                  margin-top: 0.3rem; font-size: 0.73rem;
-                  color: #f59e0b;
-                  font-family: 'SFMono-Regular', 'Consolas', monospace;
+                  margin-top: 0.3rem; font-size: 0.7rem; font-weight: 500;
+                  color: var(--orange); font-family: 'SFMono-Regular', 'Consolas', monospace;
                 }
-                .check-hint::before { content: "→ set: "; color: #78716c; }
+                .check-hint::before { content: "→ set: "; color: var(--muted); font-weight: 400; }
 
-                /* ── Summary ── */
+                /* ── Summary card ── */
                 .summary {
-                  margin-top: 1.5rem; padding: 1.5rem; text-align: center;
-                  background: #1e293b; border-radius: 0.75rem; border: 1px solid #334155;
+                  margin-top: 1.5rem; padding: 1.75rem; text-align: center;
+                  background: var(--surface); border-radius: 12px;
+                  border: 1px solid var(--border);
+                  box-shadow: 0 1px 4px rgb(30 34 56 / 0.05);
                   display: none;
                 }
                 .summary.visible { display: block; }
-                .summary-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
-                .summary-sub   { color: #94a3b8; font-size: 0.88rem; }
+                .summary-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem; }
+                .summary-sub   { color: var(--muted); font-size: 0.85rem; }
 
                 @keyframes fadeIn {
-                  from { opacity: 0; transform: translateY(-3px); }
+                  from { opacity: 0; transform: translateY(-2px); }
                   to   { opacity: 1; transform: translateY(0); }
                 }
               </style>
             </head>
             <body>
+
+              <nav class="topbar">
+                <a class="topbar-brand" href="https://www.notificatie.nl" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  Notificatie.nl — OMC
+                </a>
+                <a class="topbar-link" href="/swagger" target="_blank">API docs ↗</a>
+              </nav>
+
               <div class="container">
-                <div class="header">
-                  <div class="header-top">
-                    <h1>🔧 OMC Configuration Check</h1>
-                    <a class="swagger-link" href="/swagger" target="_blank">API docs (Swagger) ↗</a>
-                  </div>
+                <div class="page-header">
+                  <div class="page-label">Configuration status</div>
+                  <h1>OMC Configuration Check</h1>
                   <p>Live status of all required settings and service connections. Secret values are never shown.</p>
                   <div class="progress-wrap">
-                    <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+                    <div class="progress-track"><div class="progress-fill" id="pFill"></div></div>
                     <div class="progress-label" id="pLabel">Connecting…</div>
                   </div>
                 </div>
 
                 <div id="groups"></div>
+
                 <div class="summary" id="summary">
                   <div class="summary-title" id="sTitle"></div>
                   <div class="summary-sub"   id="sSub"></div>
@@ -192,11 +264,11 @@ namespace EventsHandler.Controllers
               </div>
 
               <script>
-                const state = {};   // groupName → { el, checksEl, badgeEl, ok, fail }
+                const state = {};
                 let total = 0, passed = 0;
-                const EST = 44;    // rough total for progress bar
+                const EST = 44;
 
-                function groupKey(name) { return name.replace(/[^a-z0-9]/gi, '-'); }
+                function groupKey(n) { return n.replace(/[^a-z0-9]/gi, '-'); }
 
                 function getGroup(name, icon) {
                   if (state[name]) return state[name];
@@ -205,17 +277,13 @@ namespace EventsHandler.Controllers
                   div.className = 'group';
                   div.innerHTML =
                     `<div class="group-header" onclick="toggle('${key}')">` +
-                      `<span>${icon}</span>` +
+                      `<span class="group-icon">${icon}</span>` +
                       `<span class="group-name">${name}</span>` +
                       `<span class="group-badge badge-checking" id="b-${key}">checking…</span>` +
                     `</div>` +
                     `<div class="checks" id="c-${key}"></div>`;
                   document.getElementById('groups').appendChild(div);
-                  state[name] = {
-                    badgeEl:  div.querySelector(`#b-${key}`),
-                    checksEl: div.querySelector(`#c-${key}`),
-                    ok: 0, fail: 0
-                  };
+                  state[name] = { badgeEl: div.querySelector(`#b-${key}`), checksEl: div.querySelector(`#c-${key}`), ok: 0, fail: 0 };
                   return state[name];
                 }
 
@@ -228,32 +296,27 @@ namespace EventsHandler.Controllers
                   const g = getGroup(d.group, d.icon || '📋');
                   const row = document.createElement('div');
                   row.className = 'check';
-                  const detail = d.detail ? `<span class="check-detail ${d.ok ? 'ok' : 'fail'}">${esc(d.detail)}</span>` : '';
-                  const hint   = (!d.ok && d.hint) ? `<div class="check-hint">${esc(d.hint)}</div>` : '';
+                  const ok     = d.ok;
+                  const detail = d.detail ? `<span class="check-detail ${ok ? 'ok' : 'fail'}">${esc(d.detail)}</span>` : '';
+                  const hint   = (!ok && d.hint) ? `<div class="check-hint">${esc(d.hint)}</div>` : '';
                   row.innerHTML =
-                    `<i class="check-icon">${d.ok ? '✓' : '✗'}</i>` +
+                    `<i class="check-icon ${ok ? 'icon-ok' : 'icon-fail'}">${ok ? '✓' : '✗'}</i>` +
                     `<div class="check-body">` +
-                      `<div class="check-main">` +
-                        `<span class="check-name">${esc(d.name)}</span>` +
-                        (d.ok ? detail : '') +
-                      `</div>` +
-                      (!d.ok ? detail : '') +
-                      hint +
+                      `<div class="check-main"><span class="check-name">${esc(d.name)}</span>${ok ? detail : ''}</div>` +
+                      (!ok ? detail : '') + hint +
                     `</div>`;
                   g.checksEl.appendChild(row);
-                  d.ok ? g.ok++ : g.fail++;
-                  total++; if (d.ok) passed++;
-                  updateBadge(d.group, g);
+                  ok ? g.ok++ : g.fail++;
+                  total++; if (ok) passed++;
+                  updateBadge(g);
                   updateProgress();
                 }
 
                 function esc(s) {
-                  return String(s)
-                    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
                 }
 
-                function updateBadge(name, g) {
+                function updateBadge(g) {
                   const b = g.badgeEl, t = g.ok + g.fail;
                   if (g.fail > 0) {
                     b.className = 'group-badge badge-fail';
@@ -270,26 +333,24 @@ namespace EventsHandler.Controllers
                 }
 
                 const src = new EventSource('/status/stream');
-
                 src.onmessage = e => { try { addCheck(JSON.parse(e.data)); } catch {} };
 
                 src.addEventListener('complete', e => {
                   src.close();
                   const d = JSON.parse(e.data);
                   document.getElementById('pFill').style.width = '100%';
-                  document.getElementById('pLabel').textContent =
-                    `All done — ${d.passed} passed, ${d.failed} failed`;
+                  document.getElementById('pLabel').textContent = `All done — ${d.passed} passed, ${d.failed} failed`;
 
                   const s = document.getElementById('summary');
                   s.classList.add('visible');
                   const title = document.getElementById('sTitle');
                   const sub   = document.getElementById('sSub');
                   if (d.failed === 0) {
-                    title.style.color = '#22c55e';
+                    title.style.color = 'var(--green)';
                     title.textContent = '✅ Everything looks good';
                     sub.textContent = 'All required settings are present and services are reachable.';
                   } else {
-                    title.style.color = '#f59e0b';
+                    title.style.color = 'var(--orange)';
                     title.textContent = `⚠️ ${d.failed} issue${d.failed !== 1 ? 's' : ''} found`;
                     sub.textContent = `${d.passed} of ${d.total} checks passed. Review the items marked ✗ above.`;
                   }
