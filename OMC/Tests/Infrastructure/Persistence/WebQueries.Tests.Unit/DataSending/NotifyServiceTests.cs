@@ -80,7 +80,7 @@ namespace WebQueries.Tests.Unit.DataSending
 
         #region SendEmailAsync
         [Test]
-        public async Task SendEmailAsync_WhenClientSucceeds_ReturnsSuccess()
+        public async Task SendEmailAsync_WhenClientSucceeds_ReturnsSuccessAsync()
         {
             _notifyClientMock
                 .Setup(c => c.SendEmailAsync(
@@ -94,7 +94,7 @@ namespace WebQueries.Tests.Unit.DataSending
         }
 
         [Test]
-        public async Task SendEmailAsync_WhenClientFails_ReturnsFailure()
+        public async Task SendEmailAsync_WhenClientFails_ReturnsFailureAsync()
         {
             _notifyClientMock
                 .Setup(c => c.SendEmailAsync(
@@ -110,7 +110,7 @@ namespace WebQueries.Tests.Unit.DataSending
 
         #region SendSmsAsync
         [Test]
-        public async Task SendSmsAsync_WithLeadingZero_ConvertsToNlCountryCode()
+        public async Task SendSmsAsync_WithLeadingZero_ConvertsToNlCountryCodeAsync()
         {
             string? capturedNumber = null;
 
@@ -127,7 +127,7 @@ namespace WebQueries.Tests.Unit.DataSending
         }
 
         [Test]
-        public async Task SendSmsAsync_WhenClientSucceeds_ReturnsSuccess()
+        public async Task SendSmsAsync_WhenClientSucceeds_ReturnsSuccessAsync()
         {
             _notifyClientMock
                 .Setup(c => c.SendSmsAsync(
@@ -143,7 +143,7 @@ namespace WebQueries.Tests.Unit.DataSending
 
         #region SendLetterAsync
         [Test]
-        public async Task SendLetterAsync_WhenClientSucceeds_ReturnsSuccess()
+        public async Task SendLetterAsync_WhenClientSucceeds_ReturnsSuccessAsync()
         {
             _notifyClientMock
                 .Setup(c => c.SendLetterAsync(
@@ -158,7 +158,7 @@ namespace WebQueries.Tests.Unit.DataSending
 
         #region GenerateTemplatePreviewAsync
         [Test]
-        public async Task GenerateTemplatePreviewAsync_WhenClientSucceeds_ReturnsSuccess()
+        public async Task GenerateTemplatePreviewAsync_WhenClientSucceeds_ReturnsSuccessAsync()
         {
             _notifyClientMock
                 .Setup(c => c.GenerateTemplatePreviewAsync(
@@ -173,7 +173,7 @@ namespace WebQueries.Tests.Unit.DataSending
 
         #region GetNotificationDataAsync
         [Test]
-        public async Task GetNotificationDataAsync_WhenClientFails_ReturnsFailure()
+        public async Task GetNotificationDataAsync_WhenClientFails_ReturnsFailureAsync()
         {
             Guid notificationId = Guid.NewGuid();
 

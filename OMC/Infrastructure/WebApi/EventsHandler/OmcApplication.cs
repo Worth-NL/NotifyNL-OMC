@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-// Marker type used by WebApplicationFactory<TEntryPoint> in integration tests to locate this assembly.
-// WebApplicationFactory uses TEntryPoint only to find the assembly; Program.Main is discovered automatically.
+/// <summary>Marker type used by <see cref="Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory{TEntryPoint}"/> in integration tests to locate this assembly.</summary>
 [ExcludeFromCodeCoverage]
 public sealed class OmcApplication { }
