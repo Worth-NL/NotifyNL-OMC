@@ -662,13 +662,13 @@ namespace EventsHandler.Controllers
                     OB -- "= KtoObjectType UUID" --> kto["⭐ KTO\\n(Klanttevredenheidsonderzoek)"]
                     OB -- "Unknown UUID" --> AB(["⏹ Aborted"])
 
-                    click case_created  go
-                    click case_updated  go
-                    click case_closed   go
+                    click case_created go
+                    click case_updated go
+                    click case_closed go
                     click task_assigned go
-                    click msg_received  go
+                    click msg_received go
                     click decision_made go
-                    click kto           go
+                    click kto go
 
                     style WEBHOOK       fill:#FF7A59,color:#fff,stroke:none
                     style case_created  fill:#1E2238,color:#fff,stroke:none
@@ -705,7 +705,7 @@ namespace EventsHandler.Controllers
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
                     click case_updated go
-                    click case_closed  go
+                    click case_closed go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style case_updated fill:#1E2238,color:#fff,stroke:none
@@ -736,7 +736,7 @@ namespace EventsHandler.Controllers
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
                     click case_created go
-                    click case_closed  go
+                    click case_closed go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style case_created fill:#1E2238,color:#fff,stroke:none
@@ -808,7 +808,7 @@ namespace EventsHandler.Controllers
                     GPB & GPK --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
                     click msg_received go
-                    click kto          go
+                    click kto go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style msg_received fill:#1E2238,color:#fff,stroke:none
@@ -840,7 +840,7 @@ namespace EventsHandler.Controllers
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
                     click task_assigned go
-                    click kto           go
+                    click kto go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style task_assigned fill:#1E2238,color:#fff,stroke:none
@@ -925,7 +925,7 @@ namespace EventsHandler.Controllers
                     OK -- Yes --> SUC(["✅ KTO survey triggered at provider"])
                     NOTE["ℹ️ KTO bypasses OpenKlant, OpenZaak, and\\nNotify NL entirely. No DistributionChannel routing."]
                     click task_assigned go
-                    click msg_received  go
+                    click msg_received go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style task_assigned fill:#1E2238,color:#fff,stroke:none
