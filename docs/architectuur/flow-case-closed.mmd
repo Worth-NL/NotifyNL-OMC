@@ -1,0 +1,44 @@
+---
+title: OMC — Case Closed (Zaak afgesloten) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=zaken / Resource=status"])
+
+    WEBHOOK --> GET_STATUS["GET CaseStatus\nOpenZaak — ResourceUri"]
+    GET_STATUS --> GET_TYPE["GET CaseStatusType\nOpenZaak — status.TypeUri"]
+    GET_TYPE --> CHK_INFORM{"IsNotificationExpected?"}
+    CHK_INFORM -- No --> AB1(["⏹ Aborted\ninformeren = false"])
+    CHK_INFORM -- Yes --> CHK_SERIAL{"StatusType.SerialNumber?"}
+    CHK_SERIAL -- "= 1" --> OTHER1["→ CaseCreatedScenario"]
+    CHK_SERIAL -- "> 1  and  not final" --> OTHER2["→ CaseStatusUpdatedScenario"]
+    CHK_SERIAL -- "> 1  and  IsFinalStatus" --> SCENARIO["✅ CaseClosedScenario"]
+
+    SCENARIO --> WHITELIST{"Case type ID in\nZGW__Whitelist__ZaakClose_IDs?"}
+    WHITELIST -- No --> AB2(["⏹ Aborted\nnot whitelisted"])
+    WHITELIST -- "Yes  (or wildcard *)" --> GET_CASE["GET Case\nOpenZaak — notification.MainObjectUri\n(includes expanded.result.resultType)"]
+
+    GET_CASE --> CHK_RESULT{"case.Expanded\n.Result.ResultType != null?"}
+    CHK_RESULT -- Yes --> GET_RESULT["GET CaseResultType\nOpenZaak — resultType URI"]
+    CHK_RESULT -- No --> GET_PARTY
+    GET_RESULT --> GET_PARTY["GET Party data\nOpenKlant — case.Uri"]
+
+    GET_PARTY --> CHANNEL{"DistributionChannel?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__ZaakClose\n+ naam + zaak + status.omschrijving\n+ zaak.resultaat.resultaatType.omschrijving"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__ZaakClose"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__ZaakClose\n+ full postal address"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS"]
+    CHANNEL -- "Unknown" --> FAIL_CH(["🔁 Failure\nNo valid channel"])
+
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND["POST to Notify NL API"]
+    SEND --> OK{"HTTP 201 Created?"}
+    OK -- No --> RETRY(["🔁 Failure\nRetry later"])
+    OK -- Yes --> SUCCESS(["✅ Success\nCitizen notified of case closure"])
+
+    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS   fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+    style AB1       fill:#dc2626,color:#fff,stroke:none
+    style AB2       fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CH   fill:#f59e0b,color:#fff,stroke:none
+    style RETRY     fill:#f59e0b,color:#fff,stroke:none

@@ -1,0 +1,73 @@
+---
+title: OMC — Decision Made (Besluit genomen) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=besluiten / Resource=besluit"])
+
+    WEBHOOK --> SCENARIO["⚖️ DecisionMadeScenario"]
+
+    SCENARIO --> GET_DEC_RES["GET DecisionResource\nOpenBesluiten — ResourceUri"]
+    GET_DEC_RES --> GET_INFO["GET InfoObject\nOpenZaak — decisionResource.InfoObjectUri"]
+
+    GET_INFO --> CHK_INFO_TYPE{"infoObject.TypeUri UUID\nin DecisionInfoObjectType_Uuids?"}
+    CHK_INFO_TYPE -- No --> AB1(["⏹ Aborted\nInfoObject type not in allowed set\nset ZGW__Variable__ObjectType__DecisionInfoObjectType_Uuids"])
+
+    CHK_INFO_TYPE -- Yes --> CHK_STATUS{"infoObject.Status\n== Definitive?"}
+    CHK_STATUS -- No --> AB2(["⏹ Aborted\nDocument is not yet definitive"])
+
+    CHK_STATUS -- Yes --> CHK_CONF{"infoObject.Confidentiality\n== NonConfidential?"}
+    CHK_CONF -- No --> AB3(["⏹ Aborted\nDocument is confidential"])
+
+    CHK_CONF -- Yes --> GET_DEC["GET Decision\nOpenBesluiten — decisionResource.DecisionUri"]
+    GET_DEC --> GET_STATUSES["GET CaseStatuses\nOpenZaak — decision.CaseUri"]
+    GET_STATUSES --> GET_CASETYPE["GET last CaseType\nOpenZaak — from statuses"]
+
+    GET_CASETYPE --> WHITELIST{"Case type ID in\nZGW__Whitelist__DecisionMade_IDs?"}
+    WHITELIST -- No --> AB4(["⏹ Aborted\ncaseType not whitelisted"])
+
+    WHITELIST -- Yes --> CHK_PERMIT{"caseType\n.IsNotificationExpected?"}
+    CHK_PERMIT -- No --> AB5(["⏹ Aborted\ninformeren = false on caseType"])
+
+    CHK_PERMIT -- Yes --> GET_BSN["GET BSN number\nOpenZaak — decision.CaseUri\n(empty string if organisation — no BSN)"]
+    GET_BSN --> GET_DECTYPE["GET DecisionType\nOpenBesluiten — decision.DecisionTypeUri"]
+    GET_DECTYPE --> GET_CASE["GET Case\nOpenZaak — decision.CaseUri"]
+    GET_CASE --> GET_PARTY["GET Party data\nOpenKlant — case.Uri + BSN"]
+
+    GET_PARTY --> CHANNEL{"DistributionChannel?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__DecisionMade\n(same template for all channels)\n+ naam + besluit fields (datum, toelichting,\n  bestuursorgaan, ingangsdatum, vervaldatum, ...)\n+ besluittype + zaak + zaaktype"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__DecisionMade"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\n+ full postal address + besluit fields"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS"]
+    CHANNEL -- Unknown --> FAIL_CH(["🔁 Failure\nNo valid channel"])
+
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> PREVIEW["GenerateTemplatePreviewAsync\nNotify NL — render template with personalisation"]
+    PREVIEW --> CHK_PREVIEW{"Preview OK?"}
+    CHK_PREVIEW -- No --> FAIL_PREV(["🔁 Failure\nTemplate preview failed"])
+
+    CHK_PREVIEW -- Yes --> NORMALIZE["ReplaceWhitespaces\nnormalise newlines for Logius (\\r\\n)"]
+    NORMALIZE --> GET_DOCS["GET Documents\nOpenBesluiten — all docs linked to decision"]
+    GET_DOCS --> FILTER["Filter InfoObjects\nkeep: Status=Definitive AND NonConfidential"]
+    FILTER --> CHK_DOCS{"Valid InfoObject URIs\nfound?"}
+    CHK_DOCS -- No --> FAIL_DOCS(["🔁 Failure\nNo valid document attachments"])
+
+    CHK_DOCS -- Yes --> CREATE_OBJ["POST CreateObject\nObjecten API — message JSON body\n(onderwerp, berichtTekst, publicatiedatum,\n referentie, identificatie, bijlages)"]
+    CREATE_OBJ --> OK{"HTTP 201 Created?"}
+    OK -- No --> RETRY(["🔁 Failure\nRetry later"])
+    OK -- Yes --> SUCCESS(["✅ Success\nDecision message stored in Objecten\ncitizen can retrieve via portal"])
+
+    note["Note: Decision Made does NOT call Notify NL to send\nan email/SMS directly. Instead it writes a structured\nmessage object to the Objecten API so citizens can\nread it via their portal (e.g. MijnDenHaag)."]
+
+    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS   fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+    style AB1       fill:#dc2626,color:#fff,stroke:none
+    style AB2       fill:#dc2626,color:#fff,stroke:none
+    style AB3       fill:#dc2626,color:#fff,stroke:none
+    style AB4       fill:#dc2626,color:#fff,stroke:none
+    style AB5       fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CH   fill:#f59e0b,color:#fff,stroke:none
+    style FAIL_PREV fill:#f59e0b,color:#fff,stroke:none
+    style FAIL_DOCS fill:#f59e0b,color:#fff,stroke:none
+    style RETRY     fill:#f59e0b,color:#fff,stroke:none
+    style note      fill:#fff3cd,stroke:#ffc107,color:#333

@@ -1,0 +1,37 @@
+---
+title: OMC — Message Received (Bericht ontvangen) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=objecten / Resource=object"])
+
+    WEBHOOK --> CHK_TYPE{"notification.Attributes\n.ObjectTypeUri UUID?"}
+    CHK_TYPE -- "= MessageObjectType_Uuid" --> SCENARIO["💬 MessageReceivedScenario"]
+    CHK_TYPE -- Other --> OTHER["→ Task / KTO / Abort"]
+
+    SCENARIO --> CHK_ALLOWED{"ZGW__Whitelist__Message_Allowed\n== true?"}
+    CHK_ALLOWED -- No --> AB1(["⏹ Aborted\nMessages globally disabled\nset ZGW__Whitelist__Message_Allowed=true"])
+
+    CHK_ALLOWED -- Yes --> GET_MSG["GET Message object\nObjecten API — notification.ResourceUri"]
+    GET_MSG --> EXTRACT["Extract message.Record.Data\n→ Subject, ActionsPerspective,\n  Identification (BSN)"]
+
+    EXTRACT --> GET_PARTY["GET Party data\nOpenKlant — BSN number from message\n(no case URI — message has no linked case)"]
+
+    GET_PARTY --> CHANNEL{"DistributionChannel?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__MessageReceived\npersonalisation: naam\n+ message.onderwerp\n+ message.handelingsperspectief"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__MessageReceived"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__MessageReceived\n+ full postal address + message fields"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS"]
+    CHANNEL -- Unknown --> FAIL_CH(["🔁 Failure\nNo valid channel"])
+
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND["POST to Notify NL API"]
+    SEND --> OK{"HTTP 201 Created?"}
+    OK -- No --> RETRY(["🔁 Failure\nRetry later"])
+    OK -- Yes --> SUCCESS(["✅ Success\nCitizen notified of message"])
+
+    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS   fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+    style AB1       fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CH   fill:#f59e0b,color:#fff,stroke:none
+    style RETRY     fill:#f59e0b,color:#fff,stroke:none
