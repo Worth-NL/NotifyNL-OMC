@@ -65,7 +65,6 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// <summary>
         /// The date when the <see cref="Case"/> was mutated last.
         /// </summary>
-        [JsonRequired]
         [JsonPropertyName("laatstGemuteerd")]
         [JsonPropertyOrder(5)]
         public DateTime? LatestMutationDate { get; set; }
