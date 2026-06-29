@@ -632,7 +632,7 @@ namespace EventsHandler.Controllers
                 // ── Clickable routing node appended to top of each diagram ───
                 const HOME = `
                     routing(["🗺 Routing overview"])
-                    click routing go "Back to routing overview"
+                    click routing go
                     style routing fill:#EEF0F3,color:#2B2E43,stroke:#D5DAE1`;
 
                 // ── Scenario definitions ─────────────────────────────────────
@@ -662,13 +662,13 @@ namespace EventsHandler.Controllers
                     OB -- "= KtoObjectType UUID" --> kto["⭐ KTO\\n(Klanttevredenheidsonderzoek)"]
                     OB -- "Unknown UUID" --> AB(["⏹ Aborted"])
 
-                    click case_created  go "Open Case Created flow"
-                    click case_updated  go "Open Case Status Updated flow"
-                    click case_closed   go "Open Case Closed flow"
-                    click task_assigned go "Open Task Assigned flow"
-                    click msg_received  go "Open Message Received flow"
-                    click decision_made go "Open Decision Made flow"
-                    click kto           go "Open KTO flow"
+                    click case_created  go
+                    click case_updated  go
+                    click case_closed   go
+                    click task_assigned go
+                    click msg_received  go
+                    click decision_made go
+                    click kto           go
 
                     style WEBHOOK       fill:#FF7A59,color:#fff,stroke:none
                     style case_created  fill:#1E2238,color:#fff,stroke:none
@@ -704,8 +704,8 @@ namespace EventsHandler.Controllers
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak.identificatie + zaak.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
-                    click case_updated go "Open Case Status Updated flow"
-                    click case_closed  go "Open Case Closed flow"
+                    click case_updated go
+                    click case_closed  go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style case_updated fill:#1E2238,color:#fff,stroke:none
@@ -735,8 +735,8 @@ namespace EventsHandler.Controllers
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
-                    click case_created go "Open Case Created flow"
-                    click case_closed  go "Open Case Closed flow"
+                    click case_created go
+                    click case_closed  go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style case_created fill:#1E2238,color:#fff,stroke:none
@@ -769,8 +769,8 @@ namespace EventsHandler.Controllers
                     GR --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status\\n+ zaak.resultaat.resultaatType.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
-                    click case_created go "Open Case Created flow"
-                    click case_updated go "Open Case Status Updated flow"
+                    click case_created go
+                    click case_updated go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style case_created fill:#1E2238,color:#fff,stroke:none
@@ -807,8 +807,8 @@ namespace EventsHandler.Controllers
                     BSN -- No  --> GPK["GET Party data\\nOpenKlant — case.Uri + case.Id\\npersonalisation: naam + taak.verloopdatum + taak.title + zaak"]
                     GPB & GPK --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
-                    click msg_received go "Open Message Received flow"
-                    click kto          go "Open KTO flow"
+                    click msg_received go
+                    click kto          go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style msg_received fill:#1E2238,color:#fff,stroke:none
@@ -839,8 +839,8 @@ namespace EventsHandler.Controllers
                     EX --> GP["GET Party data\\nOpenKlant — BSN from message\\n(no case URI — message has no linked case)\\npersonalisation: naam + message.onderwerp + handelingsperspectief"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
                     ${TAIL}
-                    click task_assigned go "Open Task Assigned flow"
-                    click kto           go "Open KTO flow"
+                    click task_assigned go
+                    click kto           go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style task_assigned fill:#1E2238,color:#fff,stroke:none
@@ -924,8 +924,8 @@ namespace EventsHandler.Controllers
                     OK -- No  --> RT(["🔁 Failure — retry"])
                     OK -- Yes --> SUC(["✅ KTO survey triggered at provider"])
                     NOTE["ℹ️ KTO bypasses OpenKlant, OpenZaak, and\\nNotify NL entirely. No DistributionChannel routing."]
-                    click task_assigned go "Open Task Assigned flow"
-                    click msg_received  go "Open Message Received flow"
+                    click task_assigned go
+                    click msg_received  go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO  fill:#1E2238,color:#fff,stroke:none
                     style task_assigned fill:#1E2238,color:#fff,stroke:none
