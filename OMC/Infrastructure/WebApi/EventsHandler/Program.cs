@@ -9,6 +9,7 @@ using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
 using Common.Versioning.Models;
 using EventsHandler.Controllers;
+using EventsHandler.Services.Configuration;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
@@ -279,6 +280,7 @@ namespace EventsHandler
             // Domain queries and resources
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
+            builder.Services.AddScoped<ConfigurationCheckService>();
             builder.Services.RegisterOpenServices();
 
             // HTTP communication
