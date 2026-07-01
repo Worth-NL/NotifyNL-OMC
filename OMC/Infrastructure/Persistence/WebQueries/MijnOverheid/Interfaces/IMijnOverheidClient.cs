@@ -11,7 +11,8 @@ namespace WebQueries.MijnOverheid.Interfaces
         /// Sends a CloudEvent to MijnOverheid.
         /// </summary>
         /// <param name="cloudEvent">The event to send.</param>
-        /// <returns>True if the request succeeded (2xx status), otherwise false.</returns>
-        Task<MijnOverheidResponse> SendAsync(CloudEvent cloudEvent);
+        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+        /// <returns>A <see cref="MijnOverheidResponse"/> indicating the result.</returns>
+        Task<MijnOverheidResponse> SendAsync(CloudEvent cloudEvent, CancellationToken cancellationToken = default);
     }
 }
