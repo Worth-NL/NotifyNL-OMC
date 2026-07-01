@@ -70,6 +70,13 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         public DateTime? LatestMutationDate { get; set; }
 
         /// <summary>
+        /// The date when the <see cref="Case"/> was opened last.
+        /// </summary>
+        [JsonPropertyName("laatstGeopend")]
+        [JsonPropertyOrder(6)]
+        public DateTime? LastOpenedDate { get; set; }
+
+        /// <summary>
         /// The reference to the current <see cref="CaseStatus"/> in <see cref="System.Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
@@ -77,7 +84,7 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </summary>
         [JsonRequired]
         [JsonPropertyName("status")]
-        [JsonPropertyOrder(6)]
+        [JsonPropertyOrder(7)]
         public Uri StatusUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
@@ -87,14 +94,14 @@ namespace ZhvModels.Mapping.Models.POCOs.OpenZaak
         /// </code>
         /// </summary>
         [JsonPropertyName("resultaat")]
-        [JsonPropertyOrder(7)]
+        [JsonPropertyOrder(8)]
         public Uri ResultUri { [UsedImplicitly] get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Contains expanded objects requested via the `expand` query parameter.
         /// </summary>
         [JsonPropertyName("_expand")]
-        [JsonPropertyOrder(8)]
+        [JsonPropertyOrder(9)]
         public ExpandedResult? Expanded { get; set; }
 
         /// <summary>
