@@ -198,9 +198,9 @@
         "MIJNOVERHEID_WEBHOOK_URL": "",                                                 // string (url)
 
         // New variables for MijnOverheid OAuth2
-        "MIJNOVERHEID_CLIENT_ID": "",                                                   // string
-        "MIJNOVERHEID_SECRET": "",                                                      // string (secret)
-        "MIJNOVERHEID_TOKEN_ENDPOINT": ""                                               // string (url)
+        "MIJNOVERHEID_AUTH_CLIENT_ID": "",                                              // string
+        "MIJNOVERHEID_AUTH_SECRET": "",                                                 // string (secret)
+        "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT": ""                                          // string (url)
         }
       }
     },
