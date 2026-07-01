@@ -108,11 +108,11 @@
         "BRP_CLIENTKEY_PEM_PATH": ""                                                    // string
       }
     },
-    "IIS Express (Workflow v2)": { 
+    "IIS Express (Workflow v2)": {
       "commandName": "",                                                                // string
       "launchBrowser": true,                                                            // bool
       "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
+      "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "",                                                   // string
 
         "OMC_ACTOR_ID": "",                                                             // guid
@@ -194,9 +194,14 @@
         "BRP_BASEURL": "",                                                              // string
         "BRP_CLIENTCERT_PEM_PATH": "",                                                  // string
         "BRP_CLIENTKEY_PEM_PATH": "",                                                   // string
-        
-        "MIJNOVERHEID_WEBHOOK_URL": ""                                                  // string (url)
-      }
+
+        "MIJNOVERHEID_WEBHOOK_URL": "",                                                 // string (url)
+
+        // New variables for MijnOverheid OAuth2
+        "MIJNOVERHEID_CLIENT_ID": "",                                                   // string
+        "MIJNOVERHEID_SECRET": "",                                                      // string (secret)
+        "MIJNOVERHEID_TOKEN_ENDPOINT": ""                                               // string (url)
+        }
       }
     },
     "Docker": { 

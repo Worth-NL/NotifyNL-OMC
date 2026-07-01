@@ -3,6 +3,7 @@ using Common.Settings.Configuration;
 using Microsoft.Extensions.Logging;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.MijnOverheid.Enums;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
 using ZhvModels.Mapping.Enums.NotificatieApi;
@@ -12,7 +13,8 @@ using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 namespace WebQueries.MijnOverheid
 {
     /// <summary>
-    /// 
+    /// Forwards CloudEvents to MijnOverheid after applying relevant business rules,
+    /// including whitelist filtering and timestamp‑based deduplication.
     /// </summary>
     public class MijnOverheidForwarder : IMijnOverheidForwarder
     {
@@ -22,12 +24,12 @@ namespace WebQueries.MijnOverheid
         private readonly ILogger<MijnOverheidForwarder> _logger;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="MijnOverheidForwarder"/> class.
         /// </summary>
-        /// <param name="dataQuery"></param>
-        /// <param name="mijnOverheidClient"></param>
-        /// <param name="configuration"></param>
-        /// <param name="logger"></param>
+        /// <param name="dataQuery">Data query service for OpenZaak.</param>
+        /// <param name="mijnOverheidClient">Client to send events to MijnOverheid.</param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <param name="logger">Logger instance.</param>
         public MijnOverheidForwarder(
             IDataQueryService<NotificationEvent> dataQuery,
             IMijnOverheidClient mijnOverheidClient,
@@ -41,13 +43,14 @@ namespace WebQueries.MijnOverheid
         }
 
         /// <summary>
-        /// 
+        /// Determines whether the incoming CloudEvent should be forwarded to MijnOverheid,
+        /// and if so, sends it.
         /// </summary>
-        /// <param name="cloudEvent"></param>
-        /// <returns></returns>
+        /// <param name="cloudEvent">The incoming CloudEvent.</param>
+        /// <returns>A <see cref="MijnOverheidResponse"/> if forwarded; otherwise <c>null</c>.</returns>
         public async Task<MijnOverheidResponse?> ForwardIfNeededAsync(CloudEvent cloudEvent)
         {
-            // Step 1: Validate CloudEvent and its Subject
+            // 1. Validate Subject
             if (string.IsNullOrEmpty(cloudEvent.Subject))
             {
                 _logger.LogWarning("CloudEvent has no Subject.");
@@ -60,10 +63,18 @@ namespace WebQueries.MijnOverheid
                 return null;
             }
 
+            // 2. Parse event type
+            MijnOverheidEventType eventType = ParseEventType(cloudEvent.Type);
+            if (eventType == MijnOverheidEventType.Unknown)
+            {
+                _logger.LogWarning("Unknown CloudEvent type: {EventType}, skipping.", cloudEvent.Type);
+                return null;
+            }
+
+            // 3. Create a single query context using the case URI
             string caseUrl = $"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}";
             var caseUri = new Uri(caseUrl);
 
-            // Dummy notification to get query context
             var dummyNotification = new NotificationEvent
             {
                 MainObjectUri = caseUri,
@@ -71,23 +82,122 @@ namespace WebQueries.MijnOverheid
                 Resource = Resources.Case,
                 Action = Actions.Update
             };
+
             IQueryContext queryContext = _dataQuery.From(dummyNotification);
 
+            // 4. Delegate to type-specific handler
+            return eventType switch
+            {
+                MijnOverheidEventType.CaseDeleted => await HandleDeletedAsync(cloudEvent),
+                MijnOverheidEventType.CaseOpened => await HandleOpenedAsync(cloudEvent, queryContext, caseUuid),
+                MijnOverheidEventType.CaseMutated => await HandleMutatedAsync(cloudEvent, queryContext, caseUuid),
+                _ => null
+            };
+        }
+
+        #region Event handlers
+
+        /// <summary>
+        /// Handles a "zaak-verwijderd" event – forwards it unconditionally without fetching case data.
+        /// </summary>
+        /// <param name="cloudEvent">The incoming CloudEvent.</param>
+        /// <returns>The response from MijnOverheid, or <c>null</c> if sending fails.</returns>
+        private async Task<MijnOverheidResponse?> HandleDeletedAsync(CloudEvent cloudEvent)
+        {
+            _logger.LogInformation("Processing deletion event for case {Subject}. Forwarding directly.", cloudEvent.Subject);
+
+            CloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
+            return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Handles a "zaak-geopend" event – forwards only if the event time corresponds
+        /// to the case's current <see cref="Case.LastOpenedDate"/> (stateless check).
+        /// </summary>
+        /// <param name="cloudEvent">The incoming CloudEvent.</param>
+        /// <param name="queryContext">The shared query context for OpenZaak.</param>
+        /// <param name="caseUuid">The UUID of the case.</param>
+        /// <returns>The response from MijnOverheid, or <c>null</c> if the event is stale or sending fails.</returns>
+        private async Task<MijnOverheidResponse?> HandleOpenedAsync(
+            CloudEvent cloudEvent,
+            IQueryContext queryContext,
+            Guid caseUuid)
+        {
+            _logger.LogInformation("Processing 'geopend' event for case {Subject}.", cloudEvent.Subject);
+
+            // Fetch the case to get the current LatestOpenedDate
             Case caseData;
             try
             {
+                var caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
                 caseData = await queryContext.GetCaseAsync(caseUri);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Case not found for UUID {CaseUuid}", caseUuid);
+                _logger.LogError(ex, "Failed to fetch case {CaseUuid} for 'geopend' event.", caseUuid);
+                return null;  // cannot verify, skip
+            }
+
+            // If the case has no LatestOpenedDate, this is the first open – forward.
+            if (!caseData.LastOpenedDate.HasValue)
+            {
+                _logger.LogDebug("Case {CaseId} has no LatestOpenedDate; forwarding 'geopend' event.", caseData.Identification);
+                CloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
+                return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
+            }
+
+            // Compare event time with the case's LatestOpenedDate
+            DateTime eventTimeUtc = cloudEvent.Time.UtcDateTime;
+            DateTime latestOpenedUtc = caseData.LastOpenedDate.Value;
+
+            if (eventTimeUtc >= latestOpenedUtc)
+            {
+                _logger.LogDebug("Forwarding 'geopend' for case {CaseId} (event time {EventTime} >= LatestOpenedDate {OpenDate}).",
+                    caseData.Identification, eventTimeUtc, latestOpenedUtc);
+
+                CloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
+                return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
+            }
+            else
+            {
+                _logger.LogDebug("Skipping 'geopend' for case {CaseId}: event time {EventTime} is older than LatestOpenedDate {OpenDate}.",
+                    caseData.Identification, eventTimeUtc, latestOpenedUtc);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Handles a "zaak-gemuteerd" event – applies whitelist, notification‑expected filters,
+        /// and timestamp verification using <see cref="Case.LatestMutationDate"/>.
+        /// </summary>
+        /// <param name="cloudEvent">The incoming CloudEvent.</param>
+        /// <param name="queryContext">The shared query context for OpenZaak.</param>
+        /// <param name="caseUuid">The UUID of the case.</param>
+        /// <returns>The response from MijnOverheid, or <c>null</c> if filters fail, event is stale, or sending fails.</returns>
+        private async Task<MijnOverheidResponse?> HandleMutatedAsync(
+            CloudEvent cloudEvent,
+            IQueryContext queryContext,
+            Guid caseUuid)
+        {
+            _logger.LogDebug("Processing 'gemuteerd' event for case {Subject}.", cloudEvent.Subject);
+
+            // Fetch case
+            Case caseData;
+            try
+            {
+                var caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
+                caseData = await queryContext.GetCaseAsync(caseUri);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch case {CaseUuid} for mutation event.", caseUuid);
                 return null;
             }
 
-            // Fetch current status from case's StatusUri
+            // Fetch status
             if (caseData.StatusUri == CommonValues.Default.Models.EmptyUri)
             {
-                _logger.LogWarning("Case {CaseId} has no status URI, cannot determine scenario", caseData.Identification);
+                _logger.LogWarning("Case {CaseId} has no status URI; cannot apply filters.", caseData.Identification);
                 return null;
             }
 
@@ -98,10 +208,11 @@ namespace WebQueries.MijnOverheid
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to fetch status for case {CaseId}", caseData.Identification);
+                _logger.LogError(ex, "Failed to fetch status for case {CaseId}.", caseData.Identification);
                 return null;
             }
 
+            // Fetch status type
             CaseStatusType statusType;
             try
             {
@@ -109,62 +220,109 @@ namespace WebQueries.MijnOverheid
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to fetch status type for case {CaseId}", caseData.Identification);
+                _logger.LogError(ex, "Failed to fetch status type for case {CaseId}.", caseData.Identification);
                 return null;
             }
 
-            // Determine which whitelist to use
-            bool isWhitelisted;
-            string scenarioName;
+            // Apply whitelist and notification-expected filters
+            bool isWhitelisted = IsWhitelisted(statusType, out string scenarioName);
+            bool notificationExpected = statusType.IsNotificationExpected;
+
+            if (!isWhitelisted || !notificationExpected)
+            {
+                _logger.LogInformation(
+                    "Skipping mutation event for case {CaseId}: whitelisted={Whitelisted}, notificationExpected={NotificationExpected}",
+                    caseData.Identification,
+                    isWhitelisted,
+                    notificationExpected);
+                return null;
+            }
+
+            // === Timestamp verification ===
+            DateTime eventTimeUtc = cloudEvent.Time.UtcDateTime;
+            DateTime? latestMutationUtc = caseData.LatestMutationDate;
+
+            if (latestMutationUtc.HasValue && eventTimeUtc < latestMutationUtc.Value)
+            {
+                _logger.LogDebug("Skipping mutation event for case {CaseId}: event time {EventTime} is older than LatestMutationDate {MutationDate}.",
+                    caseData.Identification, eventTimeUtc, latestMutationUtc.Value);
+                return null;
+            }
+
+            // If LatestMutationDate is null (should not happen for a mutation event), we still forward.
+            // Or if event time is >= latest mutation date, forward.
+            _logger.LogDebug("Mutation event for case {CaseId} passed filters ({Scenario}) and timestamp check. Forwarding.", caseData.Identification, scenarioName);
+
+            CloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
+            return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
+        }
+
+        #endregion
+
+        #region Helper methods
+
+        /// <summary>
+        /// Parses the CloudEvent type string into a <see cref="MijnOverheidEventType"/>.
+        /// </summary>
+        /// <param name="type">The event type string from the CloudEvent.</param>
+        /// <returns>The corresponding enum value, or <see cref="MijnOverheidEventType.Unknown"/>.</returns>
+        private static MijnOverheidEventType ParseEventType(string? type)
+        {
+            return type switch
+            {
+                "nl.overheid.zaken.zaak-gemuteerd" => MijnOverheidEventType.CaseMutated,
+                "nl.overheid.zaken.zaak-geopend" => MijnOverheidEventType.CaseOpened,
+                "nl.overheid.zaken.zaak-verwijderd" => MijnOverheidEventType.CaseDeleted,
+                _ => MijnOverheidEventType.Unknown
+            };
+        }
+
+        /// <summary>
+        /// Creates a new CloudEvent from the incoming one, preserving the original Time and other fields.
+        /// The <c>Data</c> property is set to <c>null</c> (since externAttenderen is removed).
+        /// </summary>
+        /// <param name="incoming">The incoming CloudEvent.</param>
+        /// <returns>A new CloudEvent instance suitable for forwarding.</returns>
+        private static CloudEvent CreateOutgoingEvent(CloudEvent incoming)
+        {
+            return new CloudEvent
+            {
+                SpecVersion = incoming.SpecVersion,
+                Type = incoming.Type,
+                Source = incoming.Source,
+                Subject = incoming.Subject,
+                Id = incoming.Id,          // Keep original ID; consider generating a new one if needed
+                Time = incoming.Time,      // Use original event time
+                DataRef = incoming.DataRef,
+                DataContentType = incoming.DataContentType,
+                Data = null                // No data payload (externAttenderen removed)
+            };
+        }
+
+        /// <summary>
+        /// Determines if the status type is whitelisted for the corresponding scenario.
+        /// </summary>
+        /// <param name="statusType">The status type to check.</param>
+        /// <param name="scenarioName">When this method returns, contains the scenario name (create, close, update).</param>
+        /// <returns><c>true</c> if the status type is whitelisted; otherwise <c>false</c>.</returns>
+        private bool IsWhitelisted(CaseStatusType statusType, out string scenarioName)
+        {
             if (statusType.SerialNumber == 1)
             {
-                isWhitelisted = _configuration.ZGW.Whitelist.ZaakCreate_IDs().IsAllowed(statusType.Identification);
                 scenarioName = "create";
+                return _configuration.ZGW.Whitelist.ZaakCreate_IDs().IsAllowed(statusType.Identification);
             }
-            else if (statusType.IsFinalStatus)
+
+            if (statusType.IsFinalStatus)
             {
-                isWhitelisted = _configuration.ZGW.Whitelist.ZaakClose_IDs().IsAllowed(statusType.Identification);
                 scenarioName = "close";
-            }
-            else
-            {
-                isWhitelisted = _configuration.ZGW.Whitelist.ZaakUpdate_IDs().IsAllowed(statusType.Identification);
-                scenarioName = "update";
+                return _configuration.ZGW.Whitelist.ZaakClose_IDs().IsAllowed(statusType.Identification);
             }
 
-            if (!isWhitelisted)
-            {
-                _logger.LogInformation("Status type {StatusTypeId} not whitelisted for {Scenario}, skipping forward", statusType.Identification, scenarioName);
-                return null;
-            }
-
-            if (!statusType.IsNotificationExpected)
-            {
-                _logger.LogInformation("Notification not expected for status type {StatusTypeId}, skipping forward", statusType.Identification);
-                return null;
-            }
-
-            // All checks passed – forward the original CloudEvent
-            // Prepare the outgoing CloudEvent by cloning the incoming one and modifying Time and Data
-            DateTimeOffset eventTime = caseData.LatestMutationDate.HasValue
-                ? new DateTimeOffset(caseData.LatestMutationDate.Value, TimeSpan.Zero)
-                : DateTimeOffset.UtcNow;
-
-            var outgoingEvent = new CloudEvent
-            {
-                SpecVersion = cloudEvent.SpecVersion,
-                Type = cloudEvent.Type,
-                Source = cloudEvent.Source,
-                Subject = cloudEvent.Subject,
-                Id = cloudEvent.Id,           // keep original ID (or generate new? requirement unclear – I keep original)
-                Time = eventTime,
-                DataRef = cloudEvent.DataRef,
-                DataContentType = cloudEvent.DataContentType,
-                Data = null                    // always null
-            };
-
-            _logger.LogDebug("Forwarding {EventType} for case {CaseId} as {Scenario}", cloudEvent.Type, caseData.Identification, scenarioName);
-            return await _mijnOverheidClient.SendAsync(outgoingEvent);
+            scenarioName = "update";
+            return _configuration.ZGW.Whitelist.ZaakUpdate_IDs().IsAllowed(statusType.Identification);
         }
+
+        #endregion
     }
 }
