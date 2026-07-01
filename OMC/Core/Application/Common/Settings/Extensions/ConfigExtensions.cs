@@ -69,19 +69,19 @@ namespace Common.Settings.Extensions
         public static string MijnOverheidWebHookUrl => "MIJNOVERHEID_WEBHOOK_URL";
 
         /// <summary>
-        /// The OAuth2 client ID for MijnOverheid, provided via the "MIJNOVERHEID_CLIENT_ID" environment variable.
+        /// The OAuth2 client ID for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_CLIENT_ID" environment variable.
         /// </summary>
-        public static string MijnOverheidClientId => "MIJNOVERHEID_CLIENT_ID";
+        public static string MijnOverheidClientId => "MIJNOVERHEID_AUTH_CLIENT_ID";
 
         /// <summary>
-        /// The OAuth2 client secret for MijnOverheid, provided via the "MIJNOVERHEID_SECRET" environment variable.
+        /// The OAuth2 client secret for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_SECRET" environment variable.
         /// </summary>
-        public static string MijnOverheidSecret => "MIJNOVERHEID_SECRET";
+        public static string MijnOverheidSecret => "MIJNOVERHEID_AUTH_SECRET";
 
         /// <summary>
-        /// The OAuth2 token endpoint for MijnOverheid, provided via the "MIJNOVERHEID_TOKEN_ENDPOINT" environment variable.
+        /// The OAuth2 token endpoint for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT" environment variable.
         /// </summary>
-        public static string MijnOverheidTokenEndpoint => "MIJNOVERHEID_TOKEN_ENDPOINT";
+        public static string MijnOverheidTokenEndpoint => "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT";
 
         // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
