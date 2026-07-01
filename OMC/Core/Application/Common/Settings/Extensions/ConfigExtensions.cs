@@ -69,9 +69,9 @@ namespace Common.Settings.Extensions
         public static string MijnOverheidWebHookUrl => "MIJNOVERHEID_WEBHOOK_URL";
 
         /// <summary>
-        /// The OAuth2 client ID for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_CLIENT_ID" environment variable.
+        /// The OAuth2 client ID for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_CLIENTID" environment variable.
         /// </summary>
-        public static string MijnOverheidClientId => "MIJNOVERHEID_AUTH_CLIENT_ID";
+        public static string MijnOverheidClientId => "MIJNOVERHEID_AUTH_CLIENTID";
 
         /// <summary>
         /// The OAuth2 client secret for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_SECRET" environment variable.
