@@ -34,8 +34,8 @@
         "OMC_AUTH_JWT_ISSUER": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_AUDIENCE": "https://omc.test.notifynl.nl/",
         "OMC_AUTH_JWT_EXPIRESINMIN": "60",
-        "OMC_AUTH_JWT_USERID": "OMC (Acc)",
-        "OMC_AUTH_JWT_USERNAME": "OMC (Acc)",
+        "OMC_AUTH_JWT_USERID": "OMC (Test)",
+        "OMC_AUTH_JWT_USERNAME": "OMC (Test)",
 
         "OMC_FEATURE_WORKFLOW_VERSION": "2",
 
@@ -63,7 +63,7 @@
         "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
         "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
         "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
-        "ZGW_WHITELIST_DECISIONMADE_IDS": "*",
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "blabla, bloebloe",
         "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
 
         "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",

@@ -309,7 +309,7 @@ namespace EventsHandler.Controllers
                 }
 
                 function addCheck(d) {
-                  const g = getGroup(d.group, d.icon || '📋');
+                  const g = getGroup(d.group, d.icon || '');
                   const row = document.createElement('div');
                   row.className = 'check';
                   const ok     = d.ok;
@@ -363,7 +363,7 @@ namespace EventsHandler.Controllers
                   const sub   = document.getElementById('sSub');
                   if (d.failed === 0) {
                     title.style.color = 'var(--green)';
-                    title.textContent = '✅ Everything looks good';
+                    title.textContent = ' Everything looks good';
                     sub.textContent = 'All required settings are present and services are reachable.';
                   } else {
                     title.style.color = 'var(--orange)';
@@ -620,47 +620,47 @@ namespace EventsHandler.Controllers
                     CHANNEL -- SMS    --> BS["Build SMS NotifyData\\nsame personalisation"]
                     CHANNEL -- Letter --> BL["Build Letter NotifyData\\n+ full postal address"]
                     CHANNEL -- Both   --> BB["Build Email + SMS\\n(sent sequentially)"]
-                    CHANNEL -- Unknown --> FC(["🔁 Failure — unknown channel"])
+                    CHANNEL -- Unknown --> FC(["Failure — unknown channel"])
                     BE & BS & BL & BB --> NL["POST Notify NL API\\n/v2/notifications/{method}"]
                     NL --> NR{"HTTP 201?"}
-                    NR -- No  --> RT(["🔁 Failure — retry"])
-                    NR -- Yes --> OK(["✅ Citizen notified"])
+                    NR -- No  --> RT(["Failure — retry"])
+                    NR -- Yes --> OK(["Citizen notified"])
                     style FC fill:#f59e0b,color:#fff,stroke:none
                     style RT fill:#f59e0b,color:#fff,stroke:none
                     style OK fill:#16a34a,color:#fff,stroke:none`;
 
                 // ── Clickable routing node appended to top of each diagram ───
                 const HOME = `
-                    routing(["🗺 Routing overview"])
+                    routing(["Routing overview"])
                     click routing go
                     style routing fill:#EEF0F3,color:#2B2E43,stroke:#D5DAE1`;
 
                 // ── Scenario definitions ─────────────────────────────────────
                 const SCENARIOS = [
                   {
-                    key: 'routing', icon: '🗺', name: 'Routing Overview',
+                    key: 'routing', icon: '', name: 'Routing Overview',
                     nl: 'Gebeurtenisrouting', channel: 'overview',
                     desc: 'Top-level event routing. Click any dark scenario node to drill into its decision flow.',
                     diagram: `flowchart TD
-                    WEBHOOK(["📨 OpenNotificaties webhook\\nPOST /api/v1/notifications"])
+                    WEBHOOK(["OpenNotificaties webhook\\nPOST /api/v1/notifications"])
                     WEBHOOK --> DV["Deserialize + validate\\nNotificationEvent"]
                     DV --> TP{"Test ping?\\nChannel=Unknown, Resource=Unknown"}
-                    TP -- Yes --> SK(["⏹ Skipped — connectivity check only"])
+                    TP -- Yes --> SK(["Skipped — connectivity check only"])
                     TP -- No  --> RV{"Route by\\nAction / Channel / Resource"}
 
                     RV -- "Channel = zaken\\nResource = status" --> CB["Case routing\\n──────────────\\nGET CaseStatus → CaseStatusType\\ncheck IsNotificationExpected"]
                     RV -- "Channel = objecten\\nResource = object" --> OB["Object routing\\n──────────────\\nmatch ObjectType UUID"]
-                    RV -- "Channel = besluiten\\nResource = besluit" --> decision_made["⚖️ Decision Made\\n(Besluit genomen)"]
-                    RV -- "No match" --> NI(["⏹ NotImplemented"])
+                    RV -- "Channel = besluiten\\nResource = besluit" --> decision_made["Decision Made\\n(Besluit genomen)"]
+                    RV -- "No match" --> NI(["NotImplemented"])
 
-                    CB -- "volgnummer = 1" --> case_created["🆕 Case Created\\n(Zaak aangemaakt)"]
-                    CB -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated\\n(Zaakstatus bijgewerkt)"]
-                    CB -- "volgnummer > 1\\\\neindStatus = true" --> case_closed["✅ Case Closed\\n(Zaak afgesloten)"]
+                    CB -- "volgnummer = 1" --> case_created["Case Created\\n(Zaak aangemaakt)"]
+                    CB -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["Case Status Updated\\n(Zaakstatus bijgewerkt)"]
+                    CB -- "volgnummer > 1\\\\neindStatus = true" --> case_closed["Case Closed\\n(Zaak afgesloten)"]
 
-                    OB -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned\\n(Taak toegewezen)"]
-                    OB -- "= MessageObjectType UUID" --> msg_received["💬 Message Received\\n(Bericht ontvangen)"]
-                    OB -- "= KtoObjectType UUID" --> kto["⭐ KTO\\n(Klanttevredenheidsonderzoek)"]
-                    OB -- "Unknown UUID" --> AB(["⏹ Aborted"])
+                    OB -- "= TaskObjectType UUID" --> task_assigned["Task Assigned\\n(Taak toegewezen)"]
+                    OB -- "= MessageObjectType UUID" --> msg_received["Message Received\\n(Bericht ontvangen)"]
+                    OB -- "= KtoObjectType UUID" --> kto["KTO\\n(Klanttevredenheidsonderzoek)"]
+                    OB -- "Unknown UUID" --> AB(["Aborted"])
 
                     click case_created go
                     click case_updated go
@@ -683,23 +683,23 @@ namespace EventsHandler.Controllers
                     style AB fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'case-created', icon: '📄', name: 'Case Created',
+                    key: 'case-created', icon: '', name: 'Case Created',
                     nl: 'Zaak aangemaakt', channel: 'zaken',
                     desc: 'SerialNumber = 1 (first status ever on the case). Whitelist check → fetch case + party → notify by channel.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
+                    WEBHOOK(["Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
                     GT --> NE{"informeren?"}
-                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- No --> AB1(["Aborted — informeren = false"])
                     NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
-                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated →"]
-                    SN -- "eindStatus = true" --> case_closed["✅ Case Closed →"]
-                    SN -- "= 1" --> SCENARIO["🆕 CaseCreatedScenario"]
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["Case Status Updated →"]
+                    SN -- "eindStatus = true" --> case_closed["Case Closed →"]
+                    SN -- "= 1" --> SCENARIO["CaseCreatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakCreate_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
+                    WL -- No --> AB2(["Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri"]
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak.identificatie + zaak.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
@@ -714,23 +714,23 @@ namespace EventsHandler.Controllers
                     style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'case-updated', icon: '🔄', name: 'Case Status Updated',
+                    key: 'case-updated', icon: '', name: 'Case Status Updated',
                     nl: 'Zaakstatus bijgewerkt', channel: 'zaken',
                     desc: 'SerialNumber > 1 and not IsFinalStatus. Includes status.omschrijving (CaseStatusType.Name) in personalisation.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
+                    WEBHOOK(["Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
                     GT --> NE{"informeren?"}
-                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- No --> AB1(["Aborted — informeren = false"])
                     NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
-                    SN -- "volgnummer = 1" --> case_created["🆕 Case Created →"]
-                    SN -- "eindStatus = true" --> case_closed["✅ Case Closed →"]
-                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> SCENARIO["🔄 CaseStatusUpdatedScenario"]
+                    SN -- "volgnummer = 1" --> case_created["Case Created →"]
+                    SN -- "eindStatus = true" --> case_closed["Case Closed →"]
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> SCENARIO["CaseStatusUpdatedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakUpdate_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
+                    WL -- No --> AB2(["Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri"]
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri\\npersonalisation: naam + zaak + status.omschrijving"]
                     GP --> CHANNEL{"Distribution\\nChannel?"}
@@ -745,23 +745,23 @@ namespace EventsHandler.Controllers
                     style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'case-closed', icon: '✅', name: 'Case Closed',
+                    key: 'case-closed', icon: '', name: 'Case Closed',
                     nl: 'Zaak afgesloten', channel: 'zaken',
                     desc: 'IsFinalStatus = true. Optionally fetches CaseResultType if a result is set on the case — adds zaak.resultaat.resultaatType.omschrijving to personalisation.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=zaken / Resource=status"])
+                    WEBHOOK(["Webhook — Channel=zaken / Resource=status"])
                     WEBHOOK --> GS["GET CaseStatus\\nOpenZaak — ResourceUri"]
                     GS --> GT["GET CaseStatusType\\nOpenZaak — status.TypeUri"]
                     GT --> NE{"informeren?"}
-                    NE -- No --> AB1(["⏹ Aborted — informeren = false"])
+                    NE -- No --> AB1(["Aborted — informeren = false"])
                     NE -- Yes --> SN{"statustype\\\\nvolgnummer?"}
-                    SN -- "volgnummer = 1" --> case_created["🆕 Case Created →"]
-                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["🔄 Case Status Updated →"]
-                    SN -- "eindStatus = true" --> SCENARIO["✅ CaseClosedScenario"]
+                    SN -- "volgnummer = 1" --> case_created["Case Created →"]
+                    SN -- "volgnummer > 1\\\\nniet eindStatus" --> case_updated["Case Status Updated →"]
+                    SN -- "eindStatus = true" --> SCENARIO["CaseClosedScenario"]
                     SCENARIO --> WL{"Case type in\\nZaakClose_IDs\\n(or wildcard *)?"}
-                    WL -- No --> AB2(["⏹ Aborted — not whitelisted"])
+                    WL -- No --> AB2(["Aborted — not whitelisted"])
                     WL -- Yes --> GC["GET Case\\nOpenZaak — MainObjectUri\\n(includes expanded.result.resultType)"]
                     GC --> CR{"zaak.resultaat\\\\n.resultaattype != null?"}
                     CR -- Yes --> GR["GET CaseResultType\\nOpenZaak — resultType URI"]
@@ -779,28 +779,28 @@ namespace EventsHandler.Controllers
                     style AB2 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'task-assigned', icon: '📋', name: 'Task Assigned',
+                    key: 'task-assigned', icon: '', name: 'Task Assigned',
                     nl: 'Taak toegewezen', channel: 'objecten',
                     desc: 'ObjectType UUID matches TaskObjectType_Uuid. Four sequential validations: task open, BSN/KVK identification, case type whitelist, and IsNotificationExpected.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK(["Webhook — Channel=objecten / Resource=object"])
                     WEBHOOK --> OT{"ObjectType UUID?"}
-                    OT -- "= MessageObjectType UUID" --> msg_received["💬 Message Received →"]
-                    OT -- "= KtoObjectType UUID" --> kto["⭐ KTO →"]
-                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
-                    OT -- "= TaskObjectType UUID" --> SCENARIO["📋 TaskAssignedScenario"]
+                    OT -- "= MessageObjectType UUID" --> msg_received["Message Received →"]
+                    OT -- "= KtoObjectType UUID" --> kto["KTO →"]
+                    OT -- "Unknown" --> AB0(["Aborted — UUID not configured"])
+                    OT -- "= TaskObjectType UUID" --> SCENARIO["TaskAssignedScenario"]
                     SCENARIO --> GT["GET Task object\\nObjecten API — ResourceUri"]
                     GT --> CS{"taak.status\\\\n== Open?"}
-                    CS -- No --> AB1(["⏹ Aborted — task already closed"])
+                    CS -- No --> AB1(["Aborted — task already closed"])
                     CS -- Yes --> IT{"taak.identificatie.type\\\\n== BSN of KVK?"}
-                    IT -- No --> AB2(["⏹ Aborted — unsupported id type"])
+                    IT -- No --> AB2(["Aborted — unsupported id type"])
                     IT -- Yes --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — task.CaseUri"]
                     GCS --> WL{"Case type in\\nTaskAssigned_IDs?"}
-                    WL -- No --> AB3(["⏹ Aborted — not whitelisted"])
+                    WL -- No --> AB3(["Aborted — not whitelisted"])
                     WL -- Yes --> NP{"zaaktype\\\\n.informeren?"}
-                    NP -- No --> AB4(["⏹ Aborted — informeren = false"])
+                    NP -- No --> AB4(["Aborted — informeren = false"])
                     NP -- Yes --> GC["GET Case\\nOpenZaak — task.CaseUri"]
                     GC --> BSN{"taak.identificatie.type\\\\n== BSN?"}
                     BSN -- Yes --> GPB["GET Party data\\nOpenKlant — case.Uri + BSN"]
@@ -820,20 +820,20 @@ namespace EventsHandler.Controllers
                     style AB4 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'message-received', icon: '💬', name: 'Message Received',
+                    key: 'message-received', icon: '', name: 'Message Received',
                     nl: 'Bericht ontvangen', channel: 'objecten',
                     desc: 'ObjectType UUID matches MessageObjectType_Uuid. Requires ZGW__Whitelist__Message_Allowed = true. Party is looked up by BSN from the message object — no case is involved.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK(["Webhook — Channel=objecten / Resource=object"])
                     WEBHOOK --> OT{"ObjectType UUID?"}
-                    OT -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned →"]
-                    OT -- "= KtoObjectType UUID" --> kto["⭐ KTO →"]
-                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
-                    OT -- "= MessageObjectType UUID" --> SCENARIO["💬 MessageReceivedScenario"]
+                    OT -- "= TaskObjectType UUID" --> task_assigned["Task Assigned →"]
+                    OT -- "= KtoObjectType UUID" --> kto["KTO →"]
+                    OT -- "Unknown" --> AB0(["Aborted — UUID not configured"])
+                    OT -- "= MessageObjectType UUID" --> SCENARIO["MessageReceivedScenario"]
                     SCENARIO --> MA{"ZGW__Whitelist\\n__Message_Allowed?"}
-                    MA -- No --> AB1(["⏹ Aborted — messages disabled globally"])
+                    MA -- No --> AB1(["Aborted — messages disabled globally"])
                     MA -- Yes --> GM["GET Message object\\nObjecten API — ResourceUri"]
                     GM --> EX["Extract message.Record.Data\\n→ Subject, ActionsPerspective, BSN"]
                     EX --> GP["GET Party data\\nOpenKlant — BSN from message\\n(no case URI — message has no linked case)\\npersonalisation: naam + message.onderwerp + handelingsperspectief"]
@@ -849,46 +849,46 @@ namespace EventsHandler.Controllers
                     style AB1 fill:#dc2626,color:#fff,stroke:none`
                   },
                   {
-                    key: 'decision-made', icon: '⚖️', name: 'Decision Made',
+                    key: 'decision-made', icon: '', name: 'Decision Made',
                     nl: 'Besluit genomen', channel: 'besluiten',
                     desc: 'Five validations on the decision document before processing. Does NOT call Notify NL directly — instead writes a structured message to the Objecten API for the citizen portal.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=besluiten / Resource=besluit"])
-                    WEBHOOK --> SCENARIO["⚖️ DecisionMadeScenario"]
+                    WEBHOOK(["Webhook — Channel=besluiten / Resource=besluit"])
+                    WEBHOOK --> SCENARIO["DecisionMadeScenario"]
                     SCENARIO --> GDR["GET DecisionResource\\nOpenBesluiten — ResourceUri"]
                     GDR --> GIO["GET InfoObject\\nOpenZaak — decisionResource.InfoObjectUri"]
                     GIO --> CIT{"informatieobject.informatieobjecttype\\\\nUUID in DecisionInfoObjectType_Uuids?"}
-                    CIT -- No --> AB1(["⏹ Aborted — InfoObject type not in allowed set"])
+                    CIT -- No --> AB1(["Aborted — InfoObject type not in allowed set"])
                     CIT -- Yes --> CST{"informatieobject.status\\\\n== definitief?"}
-                    CST -- No --> AB2(["⏹ Aborted — document not yet definitive"])
+                    CST -- No --> AB2(["Aborted — document not yet definitive"])
                     CST -- Yes --> CCV{"informatieobject.vertrouwelijkheid\\\\n== openbaar?"}
-                    CCV -- No --> AB3(["⏹ Aborted — document is confidential"])
+                    CCV -- No --> AB3(["Aborted — document is confidential"])
                     CCV -- Yes --> GD["GET Decision\\nOpenBesluiten — decisionResource.DecisionUri"]
                     GD --> GCS["GET CaseStatuses → last CaseType\\nOpenZaak — decision.CaseUri"]
                     GCS --> WL{"Case type in\\nDecisionMade_IDs?"}
-                    WL -- No --> AB4(["⏹ Aborted — not whitelisted"])
+                    WL -- No --> AB4(["Aborted — not whitelisted"])
                     WL -- Yes --> NP{"zaaktype\\\\n.informeren?"}
-                    NP -- No --> AB5(["⏹ Aborted — informeren = false"])
+                    NP -- No --> AB5(["Aborted — informeren = false"])
                     NP -- Yes --> GB["GET BSN number\\nOpenZaak — decision.CaseUri\\n(empty if organisation — no BSN)"]
                     GB --> GDT["GET DecisionType\\nOpenBesluiten"]
                     GDT --> GC["GET Case\\nOpenZaak — decision.CaseUri"]
                     GC --> GP["GET Party data\\nOpenKlant — case.Uri + BSN"]
                     GP --> CH{"Distribution\\nChannel?"}
                     CH -- "Any channel" --> PV["GenerateTemplatePreviewAsync\\nNotify NL — render besluit template locally"]
-                    CH -- Unknown --> FC(["🔁 Failure — unknown channel"])
+                    CH -- Unknown --> FC(["Failure — unknown channel"])
                     PV --> PK{"Preview OK?"}
-                    PK -- No --> FP(["🔁 Failure — template preview failed"])
+                    PK -- No --> FP(["Failure — template preview failed"])
                     PK -- Yes --> NWL["ReplaceWhitespaces\\nnormalise newlines for Logius (\\\\r\\\\n)"]
                     NWL --> GDOC["GET Documents\\nOpenBesluiten — all docs linked to decision"]
                     GDOC --> FLT["Filter InfoObjects\\nkeep: Status=Definitive AND NonConfidential"]
                     FLT --> VU{"Valid attachment\\nURIs found?"}
-                    VU -- No --> FD(["🔁 Failure — no valid attachments"])
+                    VU -- No --> FD(["Failure — no valid attachments"])
                     VU -- Yes --> CO["POST CreateObject\\nObjecten API — message JSON\\n(onderwerp + berichtTekst + publicatiedatum\\n+ referentie + identificatie + bijlages)"]
                     CO --> OR{"HTTP 201?"}
-                    OR -- No --> RT(["🔁 Failure — retry"])
-                    OR -- Yes --> SUC(["✅ Decision message stored in Objecten\\nCitizen reads via portal"])
+                    OR -- No --> RT(["Failure — retry"])
+                    OR -- Yes --> SUC(["Decision message stored in Objecten\\nCitizen reads via portal"])
                     style WEBHOOK  fill:#FF7A59,color:#fff,stroke:none
                     style SCENARIO fill:#1E2238,color:#fff,stroke:none
                     style AB1 fill:#dc2626,color:#fff,stroke:none
@@ -903,27 +903,27 @@ namespace EventsHandler.Controllers
                     style SUC fill:#16a34a,color:#fff,stroke:none`
                   },
                   {
-                    key: 'kto', icon: '⭐', name: 'Customer Satisfaction (KTO)',
+                    key: 'kto', icon: '', name: 'Customer Satisfaction (KTO)',
                     nl: 'Klanttevredenheidsonderzoek', channel: 'objecten',
                     desc: 'ObjectType UUID matches KtoObjectType_Uuid. Handled before the normal pipeline in NotifyProcessor — authenticates with OAuth2 client credentials and posts to an external KTO provider.',
                     diagram: `flowchart TD
                     ${HOME}
                     routing --> WEBHOOK
-                    WEBHOOK(["📨 Webhook — Channel=objecten / Resource=object"])
+                    WEBHOOK(["Webhook — Channel=objecten / Resource=object"])
                     WEBHOOK --> OT{"ObjectType UUID?"}
-                    OT -- "= TaskObjectType UUID" --> task_assigned["📋 Task Assigned →"]
-                    OT -- "= MessageObjectType UUID" --> msg_received["💬 Message Received →"]
-                    OT -- "Unknown" --> AB0(["⏹ Aborted — UUID not configured"])
-                    OT -- "= KtoObjectType UUID" --> SCENARIO["⭐ KtoScenario\\n(detected in NotifyProcessor\\nbefore normal pipeline)"]
+                    OT -- "= TaskObjectType UUID" --> task_assigned["Task Assigned →"]
+                    OT -- "= MessageObjectType UUID" --> msg_received["Message Received →"]
+                    OT -- "Unknown" --> AB0(["Aborted — UUID not configured"])
+                    OT -- "= KtoObjectType UUID" --> SCENARIO["KtoScenario\\n(detected in NotifyProcessor\\nbefore normal pipeline)"]
                     SCENARIO --> FAC["KtoScenarioFactory.Create()\\nBuild HTTP client with OAuth2 config\\nKTO__Auth__JWT__ClientId + Secret + Scope"]
                     FAC --> TOK["POST OAuth2 token request\\nKTO__Auth__JWT__Issuer\\n→ access_token (client credentials)"]
                     TOK --> TK{"Token acquired?"}
-                    TK -- No --> AB1(["🔁 Failure — cannot authenticate"])
+                    TK -- No --> AB1(["Failure — cannot authenticate"])
                     TK -- Yes --> POST["POST to KTO provider\\nKTO__Url\\nnotification payload + Bearer token"]
                     POST --> OK{"HTTP 2xx?"}
-                    OK -- No  --> RT(["🔁 Failure — retry"])
-                    OK -- Yes --> SUC(["✅ KTO survey triggered at provider"])
-                    NOTE["ℹ️ KTO bypasses OpenKlant, OpenZaak, and\\nNotify NL entirely. No DistributionChannel routing."]
+                    OK -- No  --> RT(["Failure — retry"])
+                    OK -- Yes --> SUC(["KTO survey triggered at provider"])
+                    NOTE["KTO bypasses OpenKlant, OpenZaak, and\\nNotify NL entirely. No DistributionChannel routing."]
                     click task_assigned go
                     click msg_received go
                     style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
@@ -945,7 +945,6 @@ namespace EventsHandler.Controllers
                   btn.className = 'sbtn'; btn.id = 'btn-' + s.key;
                   const chCls = { zaken:'ch-zaken', objecten:'ch-objecten', besluiten:'ch-besluiten', overview:'ch-overview' }[s.channel] || '';
                   btn.innerHTML =
-                    `<span class="sbtn-icon">${s.icon}</span>` +
                     `<span><span class="sbtn-name">${s.name}</span>` +
                     `<br><span class="sbtn-nl">${s.nl}</span>` +
                     (s.channel !== 'overview' ? `<br><span class="sbtn-ch ${chCls}">${s.channel}</span>` : '') +
@@ -991,7 +990,7 @@ namespace EventsHandler.Controllers
 
                   const s = SCENARIOS.find(x => x.key === key);
                   document.getElementById('mLabel').textContent = s.channel === 'overview' ? 'overview' : s.channel + ' channel';
-                  document.getElementById('mTitle').textContent = s.icon + ' ' + s.name;
+                  document.getElementById('mTitle').textContent = s.name;
                   document.getElementById('mDesc').textContent  = s.desc;
 
                   const wrap = document.getElementById('dwrap');
