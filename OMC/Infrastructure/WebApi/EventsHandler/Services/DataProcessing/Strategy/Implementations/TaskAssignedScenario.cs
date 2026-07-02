@@ -63,6 +63,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
             }
 
+            // start doing checks here isProduct or isCase  >?
+
+            // if case:
             // TODO: Will be aggregated with CaseStatusType in future
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
@@ -75,9 +78,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
-            
+
+            // Validation based on casetye/statustype is over
+
+            // this can be removed? i think?
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
 
+            // here more if's are neede because if idtype == bsn use bsn if idtyp == kvk use kvk number
             // Preparing party details
             string? bsnNumber = this._taskData.Identification.Type == IdTypes.Bsn
                 ? this._taskData.Identification.Value  // BSN number
@@ -116,6 +123,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 s_emailPersonalization["taak.heeft_verloopdatum"] = GetExpirationDateProvided(IsValid(this._taskData.ExpirationDate));
                 s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
 
+                // here more if's if we are dealing with a product
                 s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
