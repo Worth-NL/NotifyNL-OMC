@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Move REST API documentation to notifynl-api repository; update page with redirect link
+
 ## 2.0.1
 
 - Adds documentation to a /docs folder to sync to gitbook
