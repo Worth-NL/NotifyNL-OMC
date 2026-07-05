@@ -13,8 +13,10 @@ using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox; // for MessageScenario
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
+// for MessageForwarder
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -30,23 +32,20 @@ namespace EventsHandler.Services.DataProcessing
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
         private readonly IKtoScenarioFactory _ktoScenarioFactory;
+        private readonly MessageForwarder _messageForwarder;   // new
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
-        /// </summary>
-        /// <param name="serializer">The input de(serializing) service.</param>
-        /// <param name="validator">The input validating service.</param>
-        /// <param name="resolver">The strategies resolving service.</param>
-        /// <param name="ktoScenarioFactory">The strategy to send Kto</param>
         public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
-            IScenariosResolver<INotifyScenario, NotificationEvent> resolver, IKtoScenarioFactory ktoScenarioFactory)  // Dependency Injection (DI)
+            IScenariosResolver<INotifyScenario, NotificationEvent> resolver,
+            IKtoScenarioFactory ktoScenarioFactory,
+            MessageForwarder messageForwarder)     // new parameter
         {
             this._serializer = serializer;
             this._validator = validator;
             this._resolver = resolver;
             this._ktoScenarioFactory = ktoScenarioFactory;
+            this._messageForwarder = messageForwarder;
         }
 
         /// <inheritdoc cref="IProcessingService.ProcessAsync(object)"/>
@@ -56,28 +55,42 @@ namespace EventsHandler.Services.DataProcessing
 
             try
             {
-                // Deserialize received JSON payload
-                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(json);
+                // Step 1: Convert incoming object to JsonElement for inspection
+                JsonElement jsonElement = json is JsonElement je
+                    ? je
+                    : JsonDocument.Parse(JsonSerializer.Serialize(json)).RootElement;
+
+                // Step 2: Try to extract the actual payload if this is a CloudEvent wrapper
+                JsonElement? actualPayload = TryExtractPayloadFromCloudEvent(jsonElement);
+                if (actualPayload == null)
+                {
+                    return ProcessingResult.Skipped(
+                        "Received CloudEvent missing required 'data' property.", json, details);
+                }
+
+                // Step 3: Deserialize the (possibly extracted) payload into the expected NotificationEvent
+                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(actualPayload.Value);
                 details = notification.Details;
 
-                // Validate deserialized notification to check if it's sufficiently complete to be processed
+                // Step 4: Validate deserialized notification
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
-                    // STOP: The notification is not complete; any further processing of it would be pointless
-                    return ProcessingResult.NotPossible(ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message, json, notification.Details);
+                    return ProcessingResult.NotPossible(
+                        ZgwResources.Deserialization_ERROR_NotDeserialized_Notification_Properties_Message,
+                        json, notification.Details);
                 }
 
-                // Determine if the received notification is "test" (ping) event => In this case, do nothing
+                // Step 5: Ping/test detection – silently skip
                 if (IsTest(notification))
                 {
-                    // STOP: The notification SHOULD not be sent; it's just a connectivity test not a failure
-                    return ProcessingResult.Skipped(ApiResources.Processing_ERROR_Notification_Test, json, details);
+                    return ProcessingResult.Skipped(
+                        ApiResources.Processing_ERROR_Notification_Test, json, details);
                 }
 
-                // Choose an adequate business-scenario (strategy) to process the notification
-                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
+                // Step 6: Determine business scenario
+                INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);
 
-                // Determine if the received notification is "Kto" (Customer satisfaction survey) event => In this case, Send Kto request
+                // Step 7: Special handling for Kto scenario
                 if (scenario is KtoScenario)
                 {
                     try
@@ -95,29 +108,38 @@ namespace EventsHandler.Services.DataProcessing
                     }
                 }
 
-                // Get data from external services (e.g., "OpenZaak", "OpenKlant", other APIs)
+                // Step 8: Special handling for Message scenario (MOBB forwarding)
+                if (scenario is MessageBoxScenario)
+                {
+                    HttpRequestResponse forwardResponse = await _messageForwarder.ForwardMessageAsync(notification);
+
+                    return forwardResponse.IsFailure
+                        ? ProcessingResult.Failure(forwardResponse.JsonResponse, json, details)
+                        : ProcessingResult.Success("Message forwarded to MOBB API", json, details);
+                }
+
+                // Step 9: For all other scenarios – query external data (OpenZaak, etc.)
                 QueryingDataResponse queryDataResponse;
 
                 if ((queryDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
                 {
-                    string message = string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent, queryDataResponse.Message);
+                    string message = string.Format(
+                        ApiResources.Processing_ERROR_Scenario_NotificationNotSent,
+                        queryDataResponse.Message);
 
-                    // RETRY: The notification COULD not be sent due to missing or inconsistent data
                     return ProcessingResult.Failure(message, json, details);
                 }
 
-                // Processing the prepared data in a specific way (e.g., sending to "Notify NL")
+                // Step 10: Process the data (e.g., send to Notify NL)
                 ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, queryDataResponse.Content);
 
                 return processingDataResponse.IsFailure
-                    // RETRY: Something bad happened and "Notify NL" did not send the notification as expected
                     ? ProcessingResult.Failure(
-                        string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent, processingDataResponse.Message), json, details)
-
-                    // SUCCESS: The notification was sent and the completion status was reported to the telemetry API
-                    : ProcessingResult.Success(ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
+                        string.Format(ApiResources.Processing_ERROR_Scenario_NotificationNotSent,
+                            processingDataResponse.Message), json, details)
+                    : ProcessingResult.Success(
+                        ApiResources.Processing_SUCCESS_Scenario_NotificationSent, json, details);
             }
-            // Handling errors in a specific way depends on their types or severities
             catch (Exception exception)
             {
                 return HandleException(exception, json, details);
@@ -125,9 +147,7 @@ namespace EventsHandler.Services.DataProcessing
         }
 
         #region Helper methods
-        /// <summary>
-        /// Determines whether the received <see cref="NotificationEvent"/> is just a "test" ping.
-        /// </summary>
+
         private static bool IsTest(NotificationEvent notification)
         {
             const string testUrl = "http://some.hoofdobject.nl/";
@@ -141,28 +161,39 @@ namespace EventsHandler.Services.DataProcessing
             string.Equals(notification.ResourceUri.AbsoluteUri, testUrl);
         }
 
+        private static JsonElement? TryExtractPayloadFromCloudEvent(JsonElement potentialCloudEvent)
+        {
+            bool hasSpecVersion = potentialCloudEvent.TryGetProperty("specversion", out _);
+            bool hasType = potentialCloudEvent.TryGetProperty("type", out _);
+            bool hasSource = potentialCloudEvent.TryGetProperty("source", out _);
+            bool hasId = potentialCloudEvent.TryGetProperty("id", out _);
+
+            if (hasSpecVersion && hasType && hasSource && hasId)
+            {
+                if (potentialCloudEvent.TryGetProperty("data", out JsonElement dataElement))
+                {
+                    return dataElement;
+                }
+                return null;
+            }
+
+            return potentialCloudEvent;
+        }
+
         private static ProcessingResult HandleException(Exception exception, object json, BaseEnhancedDetails details)
         {
             return exception switch
             {
-                // STOP: The JSON payload COULD not be deserialized; any further processing of it would be pointless
                 JsonException => ProcessingResult.Skipped(exception.Message, json, details),
-
-                // STOP: The notification COULD not be sent, but it's not a failure
                 NotImplementedException => ProcessingResult.Skipped(ApiResources.Processing_ERROR_Scenario_NotImplemented, json, details),
-
-                // STOP: The notification SHOULD not be sent due to internal condition
                 AbortedNotifyingException => ProcessingResult.Aborted(exception.Message, json, details),
-
-                // RETRY: The notification COULD not be sent because of issues with "Notify NL" (e.g., authorization or service being down)
                 NotifyClientException => ProcessingResult.Failure(
                     string.Format(ApiResources.Processing_ERROR_Exception_Notify, exception.Message), json, details),
-
-                // RETRY: The notification COULD not be sent
                 _ => ProcessingResult.Failure(
                     string.Format(ApiResources.Processing_ERROR_Exception_Unhandled, exception.GetType().Name, exception.Message), json, details)
             };
         }
+
         #endregion
     }
 }
