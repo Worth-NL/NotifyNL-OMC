@@ -10,6 +10,10 @@ using ZhvModels.Mapping.Enums.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Mapping.Models.POCOs.OpenZaak;
 
+// Type aliases to distinguish the two CloudEvent types
+using IncomingCloudEvent = ZhvModels.Mapping.Events.CloudEvent;
+using OutgoingCloudEvent = WebQueries.MijnOverheid.Models.CloudEvent;
+
 namespace WebQueries.MijnOverheid
 {
     /// <summary>
@@ -46,9 +50,9 @@ namespace WebQueries.MijnOverheid
         /// Determines whether the incoming CloudEvent should be forwarded to MijnOverheid,
         /// and if so, sends it.
         /// </summary>
-        /// <param name="cloudEvent">The incoming CloudEvent.</param>
+        /// <param name="cloudEvent">The incoming CloudEvent (from ZhvModels).</param>
         /// <returns>A <see cref="MijnOverheidResponse"/> if forwarded; otherwise <c>null</c>.</returns>
-        public async Task<MijnOverheidResponse?> ForwardIfNeededAsync(CloudEvent cloudEvent)
+        public async Task<MijnOverheidResponse?> ForwardIfNeededAsync(IncomingCloudEvent cloudEvent)
         {
             // 1. Validate Subject
             if (string.IsNullOrEmpty(cloudEvent.Subject))
@@ -102,11 +106,11 @@ namespace WebQueries.MijnOverheid
         /// </summary>
         /// <param name="cloudEvent">The incoming CloudEvent.</param>
         /// <returns>The response from MijnOverheid, or <c>null</c> if sending fails.</returns>
-        private async Task<MijnOverheidResponse?> HandleDeletedAsync(CloudEvent cloudEvent)
+        private async Task<MijnOverheidResponse?> HandleDeletedAsync(IncomingCloudEvent cloudEvent)
         {
             _logger.LogInformation("Processing deletion event for case {Subject}. Forwarding directly.", cloudEvent.Subject);
 
-            CloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
+            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
             return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
         }
 
@@ -119,35 +123,44 @@ namespace WebQueries.MijnOverheid
         /// <param name="caseUuid">The UUID of the case.</param>
         /// <returns>The response from MijnOverheid, or <c>null</c> if the event is stale or sending fails.</returns>
         private async Task<MijnOverheidResponse?> HandleOpenedAsync(
-            CloudEvent cloudEvent,
+            IncomingCloudEvent cloudEvent,
             IQueryContext queryContext,
             Guid caseUuid)
         {
             _logger.LogInformation("Processing 'geopend' event for case {Subject}.", cloudEvent.Subject);
 
             // Fetch the case to get the current LatestOpenedDate
+            Uri caseUri;
             Case caseData;
             try
             {
-                var caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
+                caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
                 caseData = await queryContext.GetCaseAsync(caseUri);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to fetch case {CaseUuid} for 'geopend' event.", caseUuid);
-                return null;  // cannot verify, skip
+                return null;
             }
 
             // If the case has no LatestOpenedDate, this is the first open – forward.
             if (!caseData.LastOpenedDate.HasValue)
             {
                 _logger.LogDebug("Case {CaseId} has no LatestOpenedDate; forwarding 'geopend' event.", caseData.Identification);
-                CloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
+                OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
                 return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
             }
 
+            // Check initiator type
+            bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
+            if (!isNaturalPerson)
+            {
+                _logger.LogInformation("Skipping 'geopend' event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
+                return null;
+            }
+
             // Compare event time with the case's LatestOpenedDate
-            DateTime eventTimeUtc = cloudEvent.Time.UtcDateTime;
+            DateTime eventTimeUtc = cloudEvent.Time; // already in UTC
             DateTime latestOpenedUtc = caseData.LastOpenedDate.Value;
 
             if (eventTimeUtc >= latestOpenedUtc)
@@ -155,7 +168,7 @@ namespace WebQueries.MijnOverheid
                 _logger.LogDebug("Forwarding 'geopend' for case {CaseId} (event time {EventTime} >= LatestOpenedDate {OpenDate}).",
                     caseData.Identification, eventTimeUtc, latestOpenedUtc);
 
-                CloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
+                OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
                 return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
             }
             else
@@ -175,22 +188,31 @@ namespace WebQueries.MijnOverheid
         /// <param name="caseUuid">The UUID of the case.</param>
         /// <returns>The response from MijnOverheid, or <c>null</c> if filters fail, event is stale, or sending fails.</returns>
         private async Task<MijnOverheidResponse?> HandleMutatedAsync(
-            CloudEvent cloudEvent,
+            IncomingCloudEvent cloudEvent,
             IQueryContext queryContext,
             Guid caseUuid)
         {
             _logger.LogDebug("Processing 'gemuteerd' event for case {Subject}.", cloudEvent.Subject);
 
             // Fetch case
+            Uri caseUri;
             Case caseData;
             try
             {
-                var caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
+                caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
                 caseData = await queryContext.GetCaseAsync(caseUri);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to fetch case {CaseUuid} for mutation event.", caseUuid);
+                return null;
+            }
+
+            // Check initiator type
+            bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
+            if (!isNaturalPerson)
+            {
+                _logger.LogInformation("Skipping mutation event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
                 return null;
             }
 
@@ -238,8 +260,8 @@ namespace WebQueries.MijnOverheid
                 return null;
             }
 
-            // === Timestamp verification ===
-            DateTime eventTimeUtc = cloudEvent.Time.UtcDateTime;
+            // Timestamp verification
+            DateTime eventTimeUtc = cloudEvent.Time; // already in UTC
             DateTime? latestMutationUtc = caseData.LatestMutationDate;
 
             if (latestMutationUtc.HasValue && eventTimeUtc < latestMutationUtc.Value)
@@ -249,11 +271,9 @@ namespace WebQueries.MijnOverheid
                 return null;
             }
 
-            // If LatestMutationDate is null (should not happen for a mutation event), we still forward.
-            // Or if event time is >= latest mutation date, forward.
             _logger.LogDebug("Mutation event for case {CaseId} passed filters ({Scenario}) and timestamp check. Forwarding.", caseData.Identification, scenarioName);
 
-            CloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
+            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
             return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
         }
 
@@ -278,24 +298,24 @@ namespace WebQueries.MijnOverheid
         }
 
         /// <summary>
-        /// Creates a new CloudEvent from the incoming one, preserving the original Time and other fields.
+        /// Creates a new outgoing CloudEvent from the incoming one, preserving the original Time and other fields.
         /// The <c>Data</c> property is set to <c>null</c> (since externAttenderen is removed).
         /// </summary>
-        /// <param name="incoming">The incoming CloudEvent.</param>
-        /// <returns>A new CloudEvent instance suitable for forwarding.</returns>
-        private static CloudEvent CreateOutgoingEvent(CloudEvent incoming)
+        /// <param name="incoming">The incoming CloudEvent (from ZhvModels).</param>
+        /// <returns>A new CloudEvent instance suitable for forwarding (from WebQueries).</returns>
+        private static OutgoingCloudEvent CreateOutgoingEvent(IncomingCloudEvent incoming)
         {
-            return new CloudEvent
+            return new OutgoingCloudEvent
             {
                 SpecVersion = incoming.SpecVersion,
                 Type = incoming.Type,
                 Source = incoming.Source,
                 Subject = incoming.Subject,
-                Id = incoming.Id,          // Keep original ID; consider generating a new one if needed
-                Time = incoming.Time,      // Use original event time
-                DataRef = incoming.DataRef,
-                DataContentType = incoming.DataContentType,
-                Data = null                // No data payload (externAttenderen removed)
+                Id = incoming.Id,
+                Time = incoming.Time,
+                DataRef = incoming.DataRef ?? "",
+                DataContentType = incoming.DataContentType ?? "",
+                Data = null
             };
         }
 
@@ -323,6 +343,25 @@ namespace WebQueries.MijnOverheid
             return _configuration.ZGW.Whitelist.ZaakUpdate_IDs().IsAllowed(statusType.Identification);
         }
 
+        /// <summary>
+        /// Checks whether the initiator of the case is a natural person.
+        /// </summary>
+        /// <param name="queryContext">The query context.</param>
+        /// <param name="caseUri">The case URI.</param>
+        /// <param name="caseId">The case identification for logging.</param>
+        /// <returns><c>true</c> if the initiator is a natural person; otherwise <c>false</c>.</returns>
+        private async Task<bool> IsInitiatorNaturalPersonAsync(IQueryContext queryContext, Uri caseUri, string caseId)
+        {
+            try
+            {
+                return await queryContext.CheckIfInitiatorIsNaturalPersonAsync(caseUri);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to check initiator type for case {CaseId}. Skipping.", caseId);
+                return false;
+            }
+        }
         #endregion
     }
 }
