@@ -57,6 +57,7 @@ using WebQueries.MijnOverheid.Clients;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
+using ZhvModels.Mapping.Events;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
 using ZhvModels.Serialization;
 using ZhvModels.Serialization.Interfaces;
@@ -212,6 +213,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.RegisterNotifyStrategies();
 
+            builder.Services.AddScoped<CloudEventNormalizer>();
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
             builder.Services.RegisterOpenServices(builder);

@@ -42,6 +42,11 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
                 .CaseRole(((IQueryZaak)this).Configuration);
         }
 
+        public Task<bool> CheckIfInitiatorIsNaturalPersonAsync(IQueryBase queryBase, Uri caseUri)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task<CaseRoles> GetCaseRolesV1Async(IQueryBase queryBase, Uri caseUri, string subjectType)
         {
             // Predefined URL components
