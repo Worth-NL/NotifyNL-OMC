@@ -141,7 +141,7 @@ namespace EventsHandler.Controllers
                 }
 
                 // 2. Forward if needed
-                MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync(cloudEvent);
+                MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync((CloudEvent)cloudEvent);
 
                 // 3. Return response
                 return LogApiResponse(LogLevel.Information, moResponse == null ? Ok("Event was not forwarded (skipped).") : StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
