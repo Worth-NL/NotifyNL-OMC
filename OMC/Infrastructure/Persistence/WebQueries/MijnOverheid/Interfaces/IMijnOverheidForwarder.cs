@@ -1,4 +1,5 @@
 ﻿using WebQueries.MijnOverheid.Models;
+using CloudEvent = ZhvModels.Mapping.Events.CloudEvent;
 
 namespace WebQueries.MijnOverheid.Interfaces
 {

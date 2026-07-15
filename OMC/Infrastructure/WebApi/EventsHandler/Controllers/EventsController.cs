@@ -14,12 +14,15 @@ using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using EventsHandler.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
 using WebQueries.Versioning;
+using ZhvModels.Mapping.Events;
 using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using CloudEvent = ZhvModels.Mapping.Events.CloudEvent;
 
 namespace EventsHandler.Controllers
 {
@@ -35,6 +38,7 @@ namespace EventsHandler.Controllers
         private readonly IVersionRegister _omcRegister;
         private readonly IVersionRegister _zhvRegister;
         private readonly IMijnOverheidForwarder _mijnOverheidForwarder;
+        private readonly CloudEventNormalizer _normalizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
@@ -43,19 +47,22 @@ namespace EventsHandler.Controllers
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="omcRegister">The OMC version register.</param>
         /// <param name="zhvRegister">The ZHV version register.</param>
-        /// <param name="mijnOverheidForwarder"></param>
+        /// <param name="mijnOverheidForwarder">The forwarder to MijnOverheid.</param>
+        /// <param name="normalizer">The CloudEvent normalizer for incoming payloads.</param>
         public EventsController(
-            IProcessingService processor, 
+            IProcessingService processor,
             NotificationEventResponder responder,
-            OmcVersionRegister omcRegister, 
+            OmcVersionRegister omcRegister,
             ZhvVersionRegister zhvRegister,
-            IMijnOverheidForwarder mijnOverheidForwarder)
+            IMijnOverheidForwarder mijnOverheidForwarder,
+            CloudEventNormalizer normalizer)
         {
             this._processor = processor;
             this._responder = responder;
             this._omcRegister = omcRegister;
             this._zhvRegister = zhvRegister;
             this._mijnOverheidForwarder = mijnOverheidForwarder;
+            this._normalizer = normalizer;
         }
 
         /// <summary>
@@ -112,31 +119,32 @@ namespace EventsHandler.Controllers
         ///   This endpoint receives CloudEvents (e.g., zaak-gemuteerd, zaak-geopend, zaak-verwijderd),
         ///   checks whitelist and notification permissions (for gemuteerd events), and forwards to MijnOverheid.
         /// </remarks>
-        /// <param name="cloudEvent">The CloudEvent from ZGW API (application/cloudevents+json).</param>
+        /// <param name="json">The incoming JSON payload (CloudEvent or NotificationEvent).</param>
         [HttpPost]
-        [Route("Cloudevents")]
+        [Route("MijnZaken")]
         [ApiAuthorization]
         [AspNetExceptionsHandler]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ReceiveCloudEventAsync([Required, FromBody] CloudEvent cloudEvent)
+        public async Task<IActionResult> MOMZAsync([Required, FromBody] JObject json)
         {
             try
             {
-                if (cloudEvent == null || string.IsNullOrEmpty(cloudEvent.Type))
+                // 1. Normalize the incoming payload to a unified CloudEvent
+                CloudEvent? cloudEvent = _normalizer.Normalize(json);
+                if (cloudEvent == null)
                 {
-                    ObjectResult errorResponse = _responder.GetExceptionResponse("CloudEvent is missing or has no 'type' property.");
+                    ObjectResult errorResponse = _responder.GetExceptionResponse("Unsupported payload format or missing required fields.");
                     return LogApiResponse(LogLevel.Warning, errorResponse);
                 }
 
+                // 2. Forward if needed
                 MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync(cloudEvent);
 
-                // Skipped – return 200 OK with a simple message
+                // 3. Return response
                 return LogApiResponse(LogLevel.Information, moResponse == null ? Ok("Event was not forwarded (skipped).") : StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
-
-                // Return exactly what MijnOverheid returned: status code and response body
             }
             catch (Exception exception)
             {

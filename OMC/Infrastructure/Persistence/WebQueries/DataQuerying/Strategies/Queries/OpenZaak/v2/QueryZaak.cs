@@ -55,6 +55,35 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
                 uri: caseWithRoleUri,
                 fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseRole);
         }
+
+        /// <summary>
+        /// Check if case initiator is a natural person (natuurlijk persoon) based on the case URI.
+        /// </summary>
+        /// <param name="queryBase"></param>
+        /// <param name="caseUri"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckIfInitiatorIsNaturalPersonAsync(IQueryBase queryBase, Uri caseUri)
+        {
+            string rolesEndpoint = $"{((IQueryZaak)this).GetDomain()}/rollen";
+
+            var queryParams = new List<string>
+            {
+                $"zaak={Uri.EscapeDataString(caseUri.ToString())}",
+                "omschrijvingGeneriek=initiator",
+                "betrokkeneType=natuurlijk_persoon",
+                "pageSize=1"
+            };
+            string query = string.Join("&", queryParams);
+            var requestUri = new Uri($"{rolesEndpoint}?{query}");
+
+            CaseRoles response = await queryBase.ProcessGetAsync<CaseRoles>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: requestUri,
+                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseRole);
+
+            // Since Results is never null (initialized as empty list), we can simply:
+            return response.Results.Any();
+        }
         #endregion
 
         #region Polymorphic (Case type URI)
