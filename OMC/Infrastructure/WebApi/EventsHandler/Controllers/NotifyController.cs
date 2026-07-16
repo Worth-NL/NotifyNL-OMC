@@ -9,7 +9,7 @@ using EventsHandler.Utilities.Swagger.Examples;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
-using ZhvModels.Mapping.Models.POCOs.NotifyNL;
+using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Controllers
 {

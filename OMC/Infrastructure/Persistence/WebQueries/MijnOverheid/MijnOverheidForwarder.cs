@@ -6,12 +6,12 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.MijnOverheid.Enums;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 // Type aliases to distinguish the two CloudEvent types
-using IncomingCloudEvent = ZhvModels.Mapping.Events.CloudEvent;
+using IncomingCloudEvent = ZgwModels.Mapping.Events.CloudEvent;
 using OutgoingCloudEvent = WebQueries.MijnOverheid.Models.CloudEvent;
 
 namespace WebQueries.MijnOverheid

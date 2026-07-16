@@ -8,11 +8,11 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant.Converters;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant.v1;
-using ZhvModels.Properties;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v1;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
 {
@@ -84,7 +84,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
             return await queryBase.ProcessGetAsync<PartyResults>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
                 uri: citizenUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoPartyResults);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);
         }
 
         // NOTE: Single result
@@ -93,7 +93,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
             return await queryBase.ProcessGetAsync<PartyResult>(
                 httpClientType: HttpClientTypes.OpenKlant_v1,
                 uri: citizenUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoPartyResults);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);
         }
         #endregion
 
@@ -109,7 +109,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
                 httpClientType: HttpClientTypes.Telemetry_Contactmomenten,
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoFeedbackKlant);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
         /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api-docs",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "C:\\Users\\FrankMolenaar\\notifynl-api\\docs", "-l", "4444", "--no-clipboard"],
+      "port": 4444
+    }
+  ]
+}

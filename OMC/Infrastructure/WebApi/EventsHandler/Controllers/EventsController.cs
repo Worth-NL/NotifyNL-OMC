@@ -20,9 +20,9 @@ using System.ComponentModel.DataAnnotations;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
 using WebQueries.Versioning;
-using ZhvModels.Mapping.Events;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using CloudEvent = ZhvModels.Mapping.Events.CloudEvent;
+using ZgwModels.Mapping.Events;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using CloudEvent = ZgwModels.Mapping.Events.CloudEvent;
 
 namespace EventsHandler.Controllers
 {
@@ -36,7 +36,7 @@ namespace EventsHandler.Controllers
         private readonly IProcessingService _processor;
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly IVersionRegister _omcRegister;
-        private readonly IVersionRegister _zhvRegister;
+        private readonly IVersionRegister _zgwRegister;
         private readonly IMijnOverheidForwarder _mijnOverheidForwarder;
         private readonly CloudEventNormalizer _normalizer;
 
@@ -46,21 +46,21 @@ namespace EventsHandler.Controllers
         /// <param name="processor">The input processing service (business logic).</param>
         /// <param name="responder">The output standardization service (UX/UI).</param>
         /// <param name="omcRegister">The OMC version register.</param>
-        /// <param name="zhvRegister">The ZHV version register.</param>
+        /// <param name="zgwRegister">The ZGW version register.</param>
         /// <param name="mijnOverheidForwarder">The forwarder to MijnOverheid.</param>
         /// <param name="normalizer">The CloudEvent normalizer for incoming payloads.</param>
         public EventsController(
             IProcessingService processor,
             NotificationEventResponder responder,
             OmcVersionRegister omcRegister,
-            ZhvVersionRegister zhvRegister,
+            ZgwVersionRegister zgwRegister,
             IMijnOverheidForwarder mijnOverheidForwarder,
             CloudEventNormalizer normalizer)
         {
             this._processor = processor;
             this._responder = responder;
             this._omcRegister = omcRegister;
-            this._zhvRegister = zhvRegister;
+            this._zgwRegister = zgwRegister;
             this._mijnOverheidForwarder = mijnOverheidForwarder;
             this._normalizer = normalizer;
         }
@@ -168,7 +168,7 @@ namespace EventsHandler.Controllers
             LogApiResponse(LogLevel.Trace, ApiResources.Endpoint_Events_Version_INFO_ApiVersionRequested);
 
             return Ok(this._omcRegister.GetVersion(
-                this._zhvRegister.GetVersion()));
+                this._zgwRegister.GetVersion()));
         }
     }
 }

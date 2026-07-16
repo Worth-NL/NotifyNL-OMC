@@ -6,9 +6,9 @@ using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Validation;
 using EventsHandler.Services.Validation.Interfaces;
 using Moq;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Tests.Unit._TestHelpers;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Tests.Unit._TestHelpers;
 
 namespace EventsHandler.Tests.Unit.Services.Validation
 {

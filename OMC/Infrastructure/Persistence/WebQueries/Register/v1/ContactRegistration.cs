@@ -6,10 +6,10 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Enums;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.OpenKlant;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Enums;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v1
 {
@@ -100,7 +100,6 @@ namespace WebQueries.Register.v1
         /// <param name="reference"></param>
         /// <param name="notificationMethod"></param>
         /// <param name="messages"></param>
-        /// <param name="caseStatus"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public string GetNewCreateContactMomentJsonBody(NotifyReference reference, NotifyMethods notificationMethod,

@@ -198,6 +198,8 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
+# Allow .nupkg files in the LocalPackages folder
+!LocalPackages/*.nupkg
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore
