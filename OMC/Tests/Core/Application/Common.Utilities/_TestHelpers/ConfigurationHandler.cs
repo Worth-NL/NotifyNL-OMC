@@ -146,7 +146,13 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE",                     GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE",                      GetTestValue(isValid, testGuid, "12345678-1234-12-34-1234-123456789012") },
                 { "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED",                   GetTestValue(isValid, testGuid, "123456789-1234-1234-1234-123456789012") },
-                { "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED",                GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") }
+                { "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED",                GetTestValue(isValid, testGuid, "!2345678-1234-12-34-1234-123456789*12") },
+                
+                // POSTGUARD environment variables
+                { "POSTGUARD_API_KEY",                                    GetTestValue(isValid, testString) },
+                { "POSTGUARD_API_PKGURL",                                 GetTestValue(isValid, "https://pkg.staging.postguard.eu") },
+                { "POSTGUARD_API_CRYPTIFYURL",                            GetTestValue(isValid, "https://fileshare.staging.postguard.eu") },
+                { "POSTGUARD_TEMPLATEID_SENDPOSTGUARDPDF",                GetTestValue(isValid, testGuid) },
             };
 
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)

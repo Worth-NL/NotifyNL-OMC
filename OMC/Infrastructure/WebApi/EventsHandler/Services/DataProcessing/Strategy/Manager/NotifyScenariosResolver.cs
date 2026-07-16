@@ -11,10 +11,10 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 {
@@ -85,7 +85,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
                 {
-                    // Scenario #7: "Message received"
+                    // Scenario #7: "KTO received"
                     return this._serviceProvider.GetRequiredService<KtoScenario>();
                 }
 

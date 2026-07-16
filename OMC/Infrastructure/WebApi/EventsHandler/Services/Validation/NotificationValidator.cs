@@ -6,10 +6,10 @@ using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using EventsHandler.Services.Validation.Interfaces;
 using System.Reflection;
-using ZhvModels.Enums;
-using ZhvModels.Mapping.Helpers;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using EventAttributes = ZhvModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
+using ZgwModels.Enums;
+using ZgwModels.Mapping.Helpers;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using EventAttributes = ZgwModels.Mapping.Models.POCOs.NotificatieApi.EventAttributes;
 
 namespace EventsHandler.Services.Validation
 {
@@ -82,7 +82,7 @@ namespace EventsHandler.Services.Validation
         /// </para>
         /// </summary>
         /// <remarks>
-        ///   NOTE: Only the properties related to the specific notification type (defined in <see cref="NotificationEvent"/>.<see cref="ZhvModels.Mapping.Enums.NotificatieApi.Channels"/>)
+        ///   NOTE: Only the properties related to the specific notification type (defined in <see cref="NotificationEvent"/>.<see cref="ZgwModels.Mapping.Enums.NotificatieApi.Channels"/>)
         ///   will be validated, to not produce any unnecessary validation noise (by checking properties which are not
         ///   essential anyway for this specific business case).
         /// </remarks>

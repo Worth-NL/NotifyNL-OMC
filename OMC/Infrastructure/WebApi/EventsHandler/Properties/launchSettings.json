@@ -1,29 +1,29 @@
 {
-  "profiles": { 
-    "http": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": ""                                                    // string
+  "profiles": {
+    "http": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "" // string
       },
-      "dotnetRunMessages": true,                                                        // bool
-      "applicationUrl": ""                                                              // string (url)
+      "dotnetRunMessages": true, // bool
+      "applicationUrl": "" // string (url)
     },
-    "https": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "environmentVariables": { 
-        "ASPNETCORE_ENVIRONMENT": ""                                                    // string
+    "https": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "" // string
       },
-      "dotnetRunMessages": true,                                                        // bool
-      "applicationUrl": ""                                                              // string (url)
+      "dotnetRunMessages": true, // bool
+      "applicationUrl": "" // string (url)
     },
-    "IIS Express (Workflow v1)": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
+    "IIS Express (Workflow v1)": {
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "", // string
 
@@ -111,9 +111,9 @@
       }
     },
     "IIS Express (Workflow v2)": {
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
+      "commandName": "", // string
+      "launchBrowser": true, // bool
+      "launchUrl": "", // string
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "", // string
 
@@ -206,21 +206,21 @@
         "MIJNOVERHEID_AUTH_SECRET": "", // string (secret)
         "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT": "" // string (url)
       }
-      }
-    },
-    "Docker": { 
-      "commandName": "",                                                                // string
-      "launchBrowser": true,                                                            // bool
-      "launchUrl": "",                                                                  // string
-      "publishAllPorts": true,                                                          // bool
-      "useSSL": true                                                                    // bool
     }
   },
+  "Docker": {
+    "commandName": "", // string
+    "launchBrowser": true, // bool
+    "launchUrl": "", // string
+    "publishAllPorts": true, // bool
+    "useSSL": true // bool
+  }
+},
   "$schema": "",                                                                        // string (url)
-  "iisSettings": { 
+  "iisSettings": {
     "windowsAuthentication": true,                                                      // bool
     "anonymousAuthentication": true,                                                    // bool
-    "iisExpress": { 
+    "iisExpress": {
       "applicationUrl": "",                                                             // string (url)
       "sslPort": ""                                                                     // number (port)
     }
