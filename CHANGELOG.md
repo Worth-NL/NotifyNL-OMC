@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Adds a "MijnZaken" endpoint that normalizes incoming ZGW CloudEvents/NotificationEvents and forwards them to MijnOverheid, with whitelist and natural-person filtering
+
 ## 2.0.1
 
 - Adds documentation to a /docs folder to sync to gitbook
