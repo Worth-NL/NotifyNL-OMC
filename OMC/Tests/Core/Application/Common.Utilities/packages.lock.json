@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
+    "net10.0": {
       "Macross.Json.Extensions": {
         "type": "Direct",
         "requested": "[3.0.0, )",
@@ -46,6 +46,11 @@
         "dependencies": {
           "System.Diagnostics.EventLog": "6.0.0"
         }
+      },
+      "E4A.PostGuard": {
+        "type": "Transitive",
+        "resolved": "0.3.0",
+        "contentHash": "r/2HxFv2IlLKT82EZ+6KhvNFLJ4JLP9DukpdKWkck8RodXqJAVwe58zvJQ339zzTtWVXN7ELZQg3F2eKX1fKVQ=="
       },
       "JetBrains.Annotations": {
         "type": "Transitive",
@@ -137,16 +142,16 @@
       },
       "PostSharp": {
         "type": "Transitive",
-        "resolved": "2024.1.6",
-        "contentHash": "zghGz7QN67qKCha/aJOQnAUVXLnNdCzdhRMLvJC0jxeA5UuabdmTwrMfeU4b25c577jYvAuaTsFzp5/kAk6wQQ==",
+        "resolved": "2026.0.9",
+        "contentHash": "OfpO6ZW+xBwyXtOlhNLVHamqmsCwGlYqkAMsrmcc7NTmzUjPxA1155tsVsQEAra5FIx42Bc5RFgDDh6MoVOmVg==",
         "dependencies": {
-          "PostSharp.Redist": "2024.1.6"
+          "PostSharp.Redist": "2026.0.9"
         }
       },
       "PostSharp.Redist": {
         "type": "Transitive",
-        "resolved": "2024.1.6",
-        "contentHash": "SdDPPIEkgxNOhACU7mu6ehWORYpVo9OALY9xKONlC6Ao08oSiXKUAI4EYb7nQUzCv2TatK1zSny98eyKs6w75A=="
+        "resolved": "2026.0.9",
+        "contentHash": "7AqiI2UJC0CVmrf+LcDvGrlIOrfsTUe/8aupFc6kH3eD/nSYjuVk093DV3Eoxk/cEiRwZVuz5/11DDi69odUFg=="
       },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
@@ -156,12 +161,13 @@
       "OMC.Common": {
         "type": "Project",
         "dependencies": {
+          "E4A.PostGuard": "[0.3.0, )",
           "JetBrains.Annotations": "[2024.3.0, )",
           "Macross.Json.Extensions": "[3.0.0, )",
           "Microsoft.Extensions.Configuration.Binder": "[8.0.2, )",
           "Microsoft.Extensions.DependencyInjection": "[8.0.1, )",
           "Microsoft.Extensions.Logging.Abstractions": "[2.1.1, )",
-          "PostSharp": "[2024.1.6, )"
+          "PostSharp": "[2026.0.9, )"
         }
       }
     }

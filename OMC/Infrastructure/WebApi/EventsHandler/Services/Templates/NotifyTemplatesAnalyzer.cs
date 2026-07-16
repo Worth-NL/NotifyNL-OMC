@@ -4,8 +4,8 @@ using Common.Extensions;
 using EventsHandler.Services.Templates.Interfaces;
 using Notify.Models.Responses;
 using System.Text.RegularExpressions;
-using ZhvModels.Mapping.Enums.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 
 namespace EventsHandler.Services.Templates
 {

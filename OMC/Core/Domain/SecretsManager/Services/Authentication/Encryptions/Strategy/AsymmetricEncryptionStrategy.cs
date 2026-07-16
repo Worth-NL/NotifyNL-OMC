@@ -58,7 +58,7 @@ namespace SecretsManager.Services.Authentication.Encryptions.Strategy
         /// <inheritdoc cref="IJwtEncryptionStrategy.SaveJwtToken(string)"/>
         void IJwtEncryptionStrategy.SaveJwtToken(string jwtToken)
         {
-            // Save the tokens in [...]/bin/Debug/net8.0
+            // Save the tokens in [...]/bin/Debug/net10.0
             File.WriteAllText(IJwtEncryptionStrategy.JwtTokensPath, jwtToken);
         }
     }

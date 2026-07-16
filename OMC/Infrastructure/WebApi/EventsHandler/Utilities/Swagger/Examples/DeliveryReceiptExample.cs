@@ -4,8 +4,8 @@ using Common.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using ZhvModels.Mapping.Enums.NotifyNL;
-using ZhvModels.Mapping.Models.POCOs.NotifyNL;
+using ZgwModels.Mapping.Enums.NotifyNL;
+using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 
 namespace EventsHandler.Utilities.Swagger.Examples
 {

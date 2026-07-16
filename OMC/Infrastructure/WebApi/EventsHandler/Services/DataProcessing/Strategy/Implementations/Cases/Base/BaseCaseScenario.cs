@@ -5,8 +5,8 @@ using EventsHandler.Services.DataProcessing.Strategy.Base;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases.Base
 {
