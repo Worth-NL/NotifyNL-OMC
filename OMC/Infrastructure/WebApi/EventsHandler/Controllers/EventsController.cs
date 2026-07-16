@@ -14,6 +14,7 @@ using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Utilities.Swagger.Examples;
 using EventsHandler.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
@@ -79,8 +80,8 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler] // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [SwaggerRequestExample(typeof(NotificationEvent),
-            typeof(NotificationEventExample))] // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        //[SwaggerRequestExample(typeof(NotificationEvent),
+        //    typeof(NotificationEventExample))] // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status202Accepted,
             Type = typeof(BaseStandardResponseBody))] // REASON: The notification was sent to "Notify NL" Web API service
         [ProducesResponseType(StatusCodes.Status206PartialContent,
@@ -119,36 +120,32 @@ namespace EventsHandler.Controllers
         ///   This endpoint receives CloudEvents (e.g., zaak-gemuteerd, zaak-geopend, zaak-verwijderd),
         ///   checks whitelist and notification permissions (for gemuteerd events), and forwards to MijnOverheid.
         /// </remarks>
-        /// <param name="json">The incoming JSON payload (CloudEvent or NotificationEvent).</param>
+        /// <param name="json">The incoming JSON payload (CloudEvent or NotificationEvent) as a raw string.</param>
         [HttpPost]
         [Route("MijnZaken")]
         [ApiAuthorization]
         [AspNetExceptionsHandler]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> MOMZAsync([Required, FromBody] JObject json)
+        public async Task<IActionResult> MOMZAsync([FromBody] JObject payload)
         {
             try
             {
-                // 1. Normalize the incoming payload to a unified CloudEvent
-                CloudEvent? cloudEvent = _normalizer.Normalize(json);
-                if (cloudEvent == null)
-                {
-                    ObjectResult errorResponse = _responder.GetExceptionResponse("Unsupported payload format or missing required fields.");
-                    return LogApiResponse(LogLevel.Warning, errorResponse);
-                }
+                if (!payload.HasValues)
+                    return BadRequest("Empty or invalid payload.");
 
-                // 2. Forward if needed
-                MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync((CloudEvent)cloudEvent);
+                CloudEvent? cloudEvent = _normalizer.Normalize(payload);
+                if (!cloudEvent.HasValue)
+                    return BadRequest("Unsupported payload format or missing required fields.");
 
-                // 3. Return response
-                return LogApiResponse(LogLevel.Information, moResponse == null ? Ok("Event was not forwarded (skipped).") : StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
+                MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync(cloudEvent.Value);
+                return moResponse == null ? Ok("Skipped") : StatusCode(moResponse.StatusCode, moResponse.ResponseBody);
             }
-            catch (Exception exception)
+            catch (JsonReaderException ex)
             {
-                return LogApiResponse(exception, _responder.GetExceptionResponse(exception));
+                return BadRequest($"Invalid JSON: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, _responder.GetExceptionResponse(ex));
             }
         }
 

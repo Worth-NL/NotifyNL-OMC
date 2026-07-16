@@ -129,7 +129,7 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]
         // Swagger UI
-        [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
+        //[SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendEmailAsync(
             [Required, FromQuery] string emailAddress,
@@ -169,7 +169,7 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]
         // Swagger UI
-        [SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
+        //[SwaggerRequestExample(typeof(Dictionary<string, object>), typeof(PersonalizationExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendSmsAsync(
             [Required, FromQuery] string mobileNumber,
@@ -202,7 +202,7 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]
         // Swagger UI
-        [SwaggerRequestExample(typeof(SendLetterRequest), typeof(SendLetterRequestExample))]
+        //[SwaggerRequestExample(typeof(SendLetterRequest), typeof(SendLetterRequestExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> SendLetterAsync(
             [Optional, FromQuery] string? letterTemplateId,
@@ -332,7 +332,7 @@ namespace EventsHandler.Controllers
         [ApiAuthorization]
         // User experience
         [AspNetExceptionsHandler]
-        [SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]
+        //[SwaggerRequestExample(typeof(NotifyReference), typeof(NotifyReferenceExample))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync(
             [Required, FromBody] object json,

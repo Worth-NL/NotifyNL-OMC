@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization.Interfaces;
 
 namespace ZgwModels.Mapping.Events
 {
@@ -14,16 +15,22 @@ namespace ZgwModels.Mapping.Events
     {
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<CloudEventNormalizer> _logger;
+        private readonly ISerializationService _serializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudEventNormalizer"/> class.
         /// </summary>
         /// <param name="configuration">The application configuration, used to retrieve the ZGW URN.</param>
         /// <param name="logger">The logger for recording normalization failures.</param>
-        public CloudEventNormalizer(OmcConfiguration configuration, ILogger<CloudEventNormalizer> logger)
+        /// <param name="serializer">The serializer service used to deserialize NotificationEvents (same as the rest of the project).</param>
+        public CloudEventNormalizer(
+            OmcConfiguration configuration,
+            ILogger<CloudEventNormalizer> logger,
+            ISerializationService serializer)
         {
             _configuration = configuration;
             _logger = logger;
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -39,33 +46,31 @@ namespace ZgwModels.Mapping.Events
             if (payload.ContainsKey("specversion"))
                 return ConvertCloudEventJObject(payload);
 
-            if (!payload.ContainsKey("kanaal"))
+            if (payload.ContainsKey("kanaal") || payload.ContainsKey("Kanaal"))
             {
-                _logger.LogWarning("Payload does not contain 'kanaal' – skipping normalization.");
-                return null;
+                // Use the SAME proven serializer as the Listen endpoint
+                // This respects [EnumMember] attributes and all custom converters.
+                string json = payload.ToString();
+                NotificationEvent notification = _serializer.Deserialize<NotificationEvent>(json);
+
+                if (notification.IsInvalidEvent(out _))
+                {
+                    _logger.LogWarning("NotificationEvent deserialization produced invalid data.");
+                    return null;
+                }
+
+                return ConvertNotification(notification);
             }
 
-            NotificationEvent notification = payload.ToObject<NotificationEvent>();
-            if (notification.IsInvalidEvent(out _))
-            {
-                _logger.LogWarning("NotificationEvent deserialization failed or is invalid.");
-                return null;
-            }
-
-            return ConvertNotification(notification);
+            _logger.LogWarning("Payload format not recognized (missing specversion or kanaal).");
+            return null;
         }
 
         /// <summary>
         /// Converts a CloudEvent JObject into a <see cref="CloudEvent"/>.
         /// </summary>
-        /// <param name="payload">The incoming CloudEvent JSON.</param>
-        /// <returns>
-        /// A <see cref="CloudEvent"/> if all required fields are present and non‑empty;
-        /// otherwise <c>null</c>.
-        /// </returns>
         private CloudEvent? ConvertCloudEventJObject(JObject payload)
         {
-            // Required fields: specversion, type, source, subject, id, time
             string? specVersion = payload.Value<string>("specversion");
             if (string.IsNullOrWhiteSpace(specVersion))
             {
@@ -123,33 +128,25 @@ namespace ZgwModels.Mapping.Events
         }
 
         /// <summary>
-        /// Converts a <see cref="NotificationEvent"/> into a <see cref="CloudEvent"/>.
+        /// Converts a deserialized <see cref="NotificationEvent"/> into a <see cref="CloudEvent"/>.
         /// </summary>
-        /// <param name="notification">The incoming NotificationEvent.</param>
-        /// <returns>
-        /// A <see cref="CloudEvent"/> if the event type is known and all required data is present;
-        /// otherwise <c>null</c>.
-        /// </returns>
         private CloudEvent? ConvertNotification(NotificationEvent notification)
         {
-            // Try to map to a known CloudEvent type – returns null if unknown
             string? eventType = MapToCloudEventType(notification);
             if (eventType == null)
             {
-                _logger.LogWarning("Unsupported NotificationEvent mapping: Channel={Channel}, Resource={Resource}, Action={Action}",
+                _logger.LogWarning("Unsupported mapping for Channel={Channel}, Resource={Resource}, Action={Action}",
                     notification.Channel, notification.Resource, notification.Action);
-                return null; // unsupported mapping
-            }
-
-            // Validate MainObjectUri
-            Uri caseUri = notification.MainObjectUri;
-            if (string.IsNullOrWhiteSpace(caseUri.ToString()))
-            {
-                _logger.LogWarning("NotificationEvent has empty MainObjectUri.");
                 return null;
             }
 
-            // Extract UUID (last segment)
+            Uri caseUri = notification.MainObjectUri;
+            if (string.IsNullOrWhiteSpace(caseUri.ToString()))
+            {
+                _logger.LogWarning("MainObjectUri is empty.");
+                return null;
+            }
+
             string caseUuid = caseUri.Segments.Last();
             if (string.IsNullOrWhiteSpace(caseUuid))
             {
@@ -157,20 +154,18 @@ namespace ZgwModels.Mapping.Events
                 return null;
             }
 
-            // ResourceUri is required for DataRef
             Uri resourceUri = notification.ResourceUri;
             if (string.IsNullOrWhiteSpace(resourceUri.ToString()))
             {
-                _logger.LogWarning("NotificationEvent has empty ResourceUri.");
+                _logger.LogWarning("ResourceUri is empty.");
                 return null;
             }
 
-            // Validate that the ZGW URN is configured
             string source = _configuration.ZGW.Urn();
             if (string.IsNullOrWhiteSpace(source))
             {
-                _logger.LogWarning("ZGW URN is not configured; cannot set CloudEvent Source.");
-                return null; // missing source configuration
+                _logger.LogWarning("ZGW URN is not configured.");
+                return null;
             }
 
             return new CloudEvent
@@ -187,21 +182,12 @@ namespace ZgwModels.Mapping.Events
             };
         }
 
-        /// <summary>
-        /// Strictly maps a <see cref="NotificationEvent"/> to a CloudEvent type string.
-        /// </summary>
-        /// <param name="notification">The NotificationEvent to map.</param>
-        /// <returns>
-        /// The CloudEvent type (e.g., "nl.overheid.zaken.zaak-gemuteerd") if the combination
-        /// of <see cref="NotificationEvent.Channel"/>, <see cref="NotificationEvent.Resource"/>,
-        /// and <see cref="NotificationEvent.Action"/> is known; otherwise <c>null</c>.
-        /// </returns>
         private static string? MapToCloudEventType(NotificationEvent notification)
         {
             return (notification.Channel, notification.Resource, notification.Action) switch
             {
                 (Channels.Cases, Resources.Status, Actions.Create) => "nl.overheid.zaken.zaak-gemuteerd",
-                _ => null // unknown – will skip forwarding
+                _ => null
             };
         }
     }

@@ -99,7 +99,8 @@ namespace EventsHandler
         #region Services: External (.NET)
         private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson();
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddAuthentication(setup =>

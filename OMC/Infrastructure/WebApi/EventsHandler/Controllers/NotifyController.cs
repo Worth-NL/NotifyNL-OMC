@@ -46,7 +46,7 @@ namespace EventsHandler.Controllers
         // User experience
         [AspNetExceptionsHandler]  // NOTE: Replace errors raised by ASP.NET Core with standardized API responses
         // Swagger UI
-        [SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
+        //[SwaggerRequestExample(typeof(DeliveryReceipt), typeof(DeliveryReceiptExample))]  // NOTE: Documentation of expected JSON schema with sample and valid payload values
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(BaseEnhancedStandardResponseBody))]  // REASON: The JSON structure is invalid
         public async Task<IActionResult> ConfirmAsync([Required, FromBody] object json)
         {
