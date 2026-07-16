@@ -5,9 +5,9 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.Versioning.Interfaces;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak;
-using ZhvModels.Mapping.Models.POCOs.OpenZaak.v1;
-using ZhvModels.Properties;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.v1;
+using ZgwModels.Properties;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
 {
@@ -42,6 +42,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
                 .CaseRole(((IQueryZaak)this).Configuration);
         }
 
+        /// <inheritdoc cref="IQueryZaak.CheckIfInitiatorIsNaturalPersonAsync(IQueryBase, Uri)"/>
         public Task<bool> CheckIfInitiatorIsNaturalPersonAsync(IQueryBase queryBase, Uri caseUri)
         {
             throw new NotImplementedException();
@@ -59,7 +60,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
             return await queryBase.ProcessGetAsync<CaseRoles>(  // NOTE: CaseRoles v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseWithRoleUri,
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseRole);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseRole);
         }
         #endregion
 
@@ -76,7 +77,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v1
             return await queryBase.ProcessGetAsync<CaseDetails>(  // NOTE: CaseDetails v1
                 httpClientType: HttpClientTypes.OpenZaak_v1,
                 uri: caseUri,  // Request URL
-                fallbackErrorMessage: ZhvResources.HttpRequest_ERROR_NoCaseDetails);
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseDetails);
         }
         #endregion
     }

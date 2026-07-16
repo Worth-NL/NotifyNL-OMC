@@ -7,9 +7,9 @@ using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
-using ZhvModels.Extensions;
-using ZhvModels.Mapping.Models.POCOs.NotificatieApi;
-using ZhvModels.Serialization.Interfaces;
+using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization.Interfaces;
 
 namespace WebQueries.DataSending
 {

@@ -7,7 +7,7 @@
   <PropertyGroup>
     <AssemblyName>OMC.WebQueries</AssemblyName>
 
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -21,9 +21,9 @@
 
   <!-- Packages -->
   <ItemGroup>
-    <!-- Domain -->
-    <PackageReference Include="GovukNotify" Version="6.1.0" />  <!-- NOTE: Do not upgrade yet. This is critical notification component, and we haven't tested v7.0+ before -->
+    <!-- Domain -->  <!-- NOTE: Do not upgrade yet. This is critical notification component, and we haven't tested v7.0+ before -->
     <!-- Asynchronicity helpers -->
+    <PackageReference Include="GovukNotify" Version="7.0.2-custom" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.12.19" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Sentry.AspNetCore" Version="4.13.0" />
@@ -32,7 +32,7 @@
   <!-- Projects -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Domain\SecretsManager\SecretsManager.csproj" />
-    <ProjectReference Include="..\..\..\Core\Domain\ZhvModels\ZhvModels\ZhvModels.csproj" />
+    <ProjectReference Include="..\..\..\Core\Domain\ZgwModels\ZgwModels\ZgwModels.csproj" />
   </ItemGroup>
 
   <!-- Exposition to internal members -->
