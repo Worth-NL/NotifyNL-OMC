@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Serialization.Interfaces;
 
 namespace ZgwModels.Mapping.Events
 {
@@ -14,16 +15,19 @@ namespace ZgwModels.Mapping.Events
     {
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<CloudEventNormalizer> _logger;
+        private readonly ISerializationService _serializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudEventNormalizer"/> class.
         /// </summary>
         /// <param name="configuration">The application configuration, used to retrieve the ZGW URN.</param>
         /// <param name="logger">The logger for recording normalization failures.</param>
-        public CloudEventNormalizer(OmcConfiguration configuration, ILogger<CloudEventNormalizer> logger)
+        /// <param name="serializer">The input deserializing service, used to correctly map Dutch JSON keys onto <see cref="NotificationEvent"/>.</param>
+        public CloudEventNormalizer(OmcConfiguration configuration, ILogger<CloudEventNormalizer> logger, ISerializationService serializer)
         {
             _configuration = configuration;
             _logger = logger;
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -45,7 +49,7 @@ namespace ZgwModels.Mapping.Events
                 return null;
             }
 
-            NotificationEvent notification = payload.ToObject<NotificationEvent>();
+            NotificationEvent notification = _serializer.Deserialize<NotificationEvent>(payload.ToString());
             if (notification.IsInvalidEvent(out _))
             {
                 _logger.LogWarning("NotificationEvent deserialization failed or is invalid.");
@@ -181,7 +185,7 @@ namespace ZgwModels.Mapping.Events
                 Subject = caseUuid,
                 Id = Guid.NewGuid().ToString(),
                 Time = DateTime.UtcNow,
-                DataRef = resourceUri.ToString(),
+                DataRef = caseUri.AbsolutePath,
                 DataContentType = "application/json",
                 Data = null
             };
