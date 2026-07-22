@@ -70,8 +70,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.v2
             {
                 $"zaak={Uri.EscapeDataString(caseUri.ToString())}",
                 "omschrijvingGeneriek=initiator",
-                "betrokkeneType=natuurlijk_persoon",
-                "pageSize=1"
+                "betrokkeneType=natuurlijk_persoon"
             };
             string query = string.Join("&", queryParams);
             var requestUri = new Uri($"{rolesEndpoint}?{query}");
