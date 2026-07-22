@@ -205,6 +205,8 @@ namespace ZgwModels.Mapping.Events
             return (notification.Channel, notification.Resource, notification.Action) switch
             {
                 (Channels.Cases, Resources.Status, Actions.Create) => "nl.overheid.zaken.zaak-gemuteerd",
+                (Channels.Cases, Resources.Case, Actions.Read) => "nl.overheid.zaken.zaak-geopend",
+                (Channels.Cases, Resources.Case, Actions.Destroy) => "nl.overheid.zaken.zaak-verwijderd",
                 _ => null // unknown – will skip forwarding
             };
         }

@@ -37,6 +37,12 @@ namespace ZgwModels.Mapping.Enums.NotificatieApi
         /// Destroy action.
         /// </summary>
         [JsonPropertyName("destroy")]
-        Destroy = 3
+        Destroy = 3,
+
+        /// <summary>
+        /// Read action.
+        /// </summary>
+        [JsonPropertyName("read")]
+        Read = 4
     }
 }
