@@ -128,12 +128,12 @@ namespace EventsHandler.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> MOMZAsync([Required, FromBody] JObject json)
+        public async Task<IActionResult> MOMZAsync([Required, FromBody] object json)
         {
             try
             {
                 // 1. Normalize the incoming payload to a unified CloudEvent
-                CloudEvent? cloudEvent = _normalizer.Normalize(json);
+                CloudEvent? cloudEvent = _normalizer.Normalize(JObject.Parse($"{json}"));
                 if (cloudEvent == null)
                 {
                     ObjectResult errorResponse = _responder.GetExceptionResponse("Unsupported payload format or missing required fields.");

@@ -168,7 +168,7 @@ namespace WebQueries.MijnOverheid
                 _logger.LogDebug("Forwarding 'geopend' for case {CaseId} (event time {EventTime} >= LatestOpenedDate {OpenDate}).",
                     caseData.Identification, eventTimeUtc, latestOpenedUtc);
 
-                OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
+                OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent, latestOpenedUtc);
                 return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
             }
             else
@@ -273,7 +273,7 @@ namespace WebQueries.MijnOverheid
 
             _logger.LogDebug("Mutation event for case {CaseId} passed filters ({Scenario}) and timestamp check. Forwarding.", caseData.Identification, scenarioName);
 
-            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
+            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent, latestMutationUtc);
             return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
         }
 
@@ -302,8 +302,9 @@ namespace WebQueries.MijnOverheid
         /// The <c>Data</c> property is set to <c>null</c> (since externAttenderen is removed).
         /// </summary>
         /// <param name="incoming">The incoming CloudEvent (from ZhvModels).</param>
+        /// <param name="actualEventTime">The actual timestamp of the underlying case event, if known.</param>
         /// <returns>A new CloudEvent instance suitable for forwarding (from WebQueries).</returns>
-        private static OutgoingCloudEvent CreateOutgoingEvent(IncomingCloudEvent incoming)
+        private static OutgoingCloudEvent CreateOutgoingEvent(IncomingCloudEvent incoming, DateTime? actualEventTime = null)
         {
             return new OutgoingCloudEvent
             {
@@ -312,7 +313,7 @@ namespace WebQueries.MijnOverheid
                 Source = incoming.Source,
                 Subject = incoming.Subject,
                 Id = incoming.Id,
-                Time = incoming.Time,
+                Time = actualEventTime ?? incoming.Time,
                 DataRef = incoming.DataRef ?? "",
                 DataContentType = incoming.DataContentType ?? "",
                 Data = null
