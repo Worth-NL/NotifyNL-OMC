@@ -47,6 +47,7 @@
 
 ## Integraties
 
+* [MijnOverheid](integraties/mijnoverheid.md)
 * [KTO / Expoints](integraties/kto-expoints.md)
 * [BRP / Haal Centraal](integraties/brp-haalcentraal.md)
 * [PostGuard](integraties/postguard.md)

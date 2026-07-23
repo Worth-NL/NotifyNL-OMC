@@ -14,6 +14,23 @@ Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenm
 | `resource` | `besluit` |
 | `actie` | `create` |
 
+### Voorbeeld payload
+
+```json
+{
+  "actie": "create",
+  "kanaal": "besluiten",
+  "resource": "besluit",
+  "kenmerken": {
+    "besluittype": "https://openzaak.mijnstad.nl/catalogi/api/v1/besluittypen/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "verantwoordelijkeOrganisatie": "123456789"
+  },
+  "hoofdObject": "https://openzaak.mijnstad.nl/besluiten/api/v1/besluiten/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "resourceUrl": "https://openzaak.mijnstad.nl/besluiten/api/v1/besluiten/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "aanmaakdatum": "2026-01-15T10:30:00Z"
+}
+```
+
 ---
 
 ## Verwerkingslogica
