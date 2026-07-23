@@ -21,6 +21,19 @@ namespace EventsHandler.Services.Configuration
     [ExcludeFromCodeCoverage]
     public sealed class ConfigurationCheckService(OmcConfiguration config, IQueryContext queryContext)
     {
+        /// <summary>Number of checks emitted by every group except "Message Received", whose size depends on configuration.</summary>
+        private const int FixedGroupChecksCount = 5 /*OMC Auth*/ + 5 /*ZGW Auth*/ + 6 /*Endpoints*/ + 2 /*Notify*/ + 5 /*Connectivity*/
+            + 3 /*CaseCreated*/ + 3 /*CaseUpdated*/ + 3 /*CaseClosed*/ + 4 /*TaskAssigned*/ + 3 /*DecisionMade*/ + 4 /*Kto*/;
+
+        /// <summary>The exact number of checks <see cref="RunChecksAsync"/> will emit, so consumers don't have to guess.</summary>
+        public int GetExpectedTotal()
+        {
+            bool messageAllowed;
+            try { messageAllowed = config.ZGW.Whitelist.Message_Allowed(); } catch { messageAllowed = false; }
+
+            return FixedGroupChecksCount + (messageAllowed ? 4 : 1);
+        }
+
         /// <summary>Streams check results as they complete.</summary>
         public async IAsyncEnumerable<CheckResult> RunChecksAsync([EnumeratorCancellation] CancellationToken ct = default)
         {

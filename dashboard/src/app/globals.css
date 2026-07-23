@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --color-orange: #ff7a59;
+  --color-orange-light: #fff0ec;
+  --color-orange-border: #ff8e72;
+  --color-dark: #1e2238;
+  --color-charcoal: #2b2e43;
+  --color-muted: #80818c;
+  --color-light-muted: #c3c6d0;
+  --color-bg: #f6f7fa;
+  --color-surface: #ffffff;
+  --color-border: #eef0f3;
+  --color-border-strong: #d5dae1;
+  --color-green: #16a34a;
+  --color-green-bg: #f0fdf4;
+  --color-green-border: #bbf7d0;
+  --color-red: #dc2626;
+  --color-red-bg: #fff5f5;
+  --color-red-border: #fecaca;
+  --color-amber: #f59e0b;
+  --color-grey: #6b7280;
+}
+
+@theme inline {
+  --color-orange: var(--color-orange);
+  --color-orange-light: var(--color-orange-light);
+  --color-orange-border: var(--color-orange-border);
+  --color-dark: var(--color-dark);
+  --color-charcoal: var(--color-charcoal);
+  --color-muted: var(--color-muted);
+  --color-light-muted: var(--color-light-muted);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-green: var(--color-green);
+  --color-green-bg: var(--color-green-bg);
+  --color-green-border: var(--color-green-border);
+  --color-red: var(--color-red);
+  --color-red-bg: var(--color-red-bg);
+  --color-red-border: var(--color-red-border);
+  --color-amber: var(--color-amber);
+  --color-grey: var(--color-grey);
+  --font-sans: var(--font-sora);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-charcoal);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

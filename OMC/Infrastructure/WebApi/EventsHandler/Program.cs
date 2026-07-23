@@ -97,11 +97,26 @@ namespace EventsHandler
         }
         #endregion
 
+        private const string DashboardCorsPolicy = "Dashboard";
+
         #region Services: External (.NET)
         private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+
+            builder.Services.AddCors(setup =>
+            {
+                setup.AddPolicy(DashboardCorsPolicy, policy =>
+                {
+                    string[] origins = (Environment.GetEnvironmentVariable(ConfigExtensions.DashboardOrigins) ?? "http://localhost:3000")
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                    policy.WithOrigins(origins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             builder.Services.AddAuthentication(setup =>
             {
@@ -218,6 +233,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
             builder.Services.AddScoped<ConfigurationCheckService>();
+            builder.Services.AddSingleton<ScenarioFlowService>();
             builder.Services.RegisterOpenServices();
 
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
@@ -441,15 +457,51 @@ namespace EventsHandler
 
             app.UseHttpsRedirection();
 
+            // Serves the statically-exported dashboard (wwwroot/status, wwwroot/status/flow,
+            // wwwroot/_next/*) baked into this image at build time — see the explicit
+            // /status and /status/flow routes below for the corresponding index.html files.
+            app.UseStaticFiles();
+
+            app.UseCors(DashboardCorsPolicy);
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapGet("/", () => Results.Redirect("/status"));
+            app.MapGet("/", () =>
+            {
+                // DASHBOARD_URL lets a future deployment point this at a separately hosted
+                // dashboard; today it's unset and the dashboard is co-hosted at /status.
+                string? dashboardUrl = Environment.GetEnvironmentVariable(ConfigExtensions.DashboardUrl);
+
+                return Results.Redirect(string.IsNullOrWhiteSpace(dashboardUrl) ? "/status" : dashboardUrl);
+            });
+
+            // Falls back to /swagger when the dashboard hasn't been built locally (e.g. plain
+            // `dotnet run`/Visual Studio F5 without ever running `npm run build` in dashboard/)
+            // so development against the API is never blocked by a missing frontend build.
+            app.MapGet("/status", () => ServeDashboardPage(app, "status", "index.html"));
+            app.MapGet("/status/flow", () => ServeDashboardPage(app, "status", "flow", "index.html"));
+
             app.MapControllers();  // Mapping actions from API controllers
 
             app.UseSentryTracing();
 
             return app;
+        }
+
+        private static IResult ServeDashboardPage(WebApplication app, params string[] relativePathSegments)
+        {
+            // WebRootPath is null (not just missing on disk) when wwwroot doesn't exist at all —
+            // e.g. a plain `dotnet run`/Visual Studio F5 without ever building the dashboard.
+            string? webRootPath = app.Environment.WebRootPath;
+            if (string.IsNullOrEmpty(webRootPath))
+            {
+                return Results.Redirect("/swagger");
+            }
+
+            string path = Path.Combine([webRootPath, .. relativePathSegments]);
+
+            return File.Exists(path) ? Results.File(path, "text/html") : Results.Redirect("/swagger");
         }
         #endregion
     }

@@ -89,6 +89,18 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string SentryEnvironment => "SENTRY_ENVIRONMENT";
 
+        /// <summary>
+        /// Comma-separated list of allowed CORS origins for the standalone dashboard frontend,
+        /// provided via the "DASHBOARD_ORIGINS" environment variable.
+        /// </summary>
+        public static string DashboardOrigins => "DASHBOARD_ORIGINS";
+
+        /// <summary>
+        /// The URL of the standalone dashboard frontend that the OMC root path redirects to,
+        /// provided via the "DASHBOARD_URL" environment variable.
+        /// </summary>
+        public static string DashboardUrl => "DASHBOARD_URL";
+
         private static string? s_openZaakDomainEnvVarName;
 
         private static string? s_ktoUrlValue;
