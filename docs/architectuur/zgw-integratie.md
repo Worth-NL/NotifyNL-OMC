@@ -46,6 +46,31 @@ sequenceDiagram
 
 ---
 
+## Sequentiediagram — Zaak gemuteerd naar MijnOverheid
+
+```mermaid
+sequenceDiagram
+    participant ON as Open Notificaties
+    participant OMC as OMC
+    participant OZ as Open Zaak
+    participant MO as MijnOverheid
+
+    ON->>OMC: POST /Events/MijnZaken (status/zaak event)
+    OMC->>OMC: JWT valideren + normaliseren naar CloudEvent
+    OMC->>OZ: GET /zaken/{uuid} + /rollen (initiator)
+    OZ-->>OMC: Zaakgegevens + rol
+    OMC->>OZ: GET /statussen/{uuid} + /statustypen/{uuid}
+    OZ-->>OMC: Status + statustype
+    OMC->>OMC: Filters: natuurlijk persoon, whitelist, informeren, verouderd?
+    OMC->>MO: POST CloudEvent (zaak-gemuteerd/geopend/verwijderd)
+    MO-->>OMC: Statuscode (bijv. 204)
+    OMC-->>ON: Doorgestuurde statuscode
+```
+
+Zie [MijnOverheid](../integraties/mijnoverheid.md) voor de volledige uitleg van gebeurtenistypen en filters.
+
+---
+
 ## ZGW context
 
 ZGW is de Nederlandse overheidsstandaard voor zaakgericht werken. De kernprincipes zijn:

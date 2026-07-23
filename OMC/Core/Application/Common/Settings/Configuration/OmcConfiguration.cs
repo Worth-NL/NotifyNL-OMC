@@ -677,18 +677,29 @@ namespace Common.Settings.Configuration
             [Config]
             public VariableComponent Variable { get; }
 
+            private ILoadersContext _loadersContext;
+
+            private string _currentPath;
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
             public ZgwComponent(IServiceProvider serviceProvider, string parentName, OmcConfiguration configuration)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
-
+                _loadersContext = loadersContext;
+                _currentPath = parentName;
                 this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variable = new VariableComponent(loadersContext, parentName);
             }
+
+            /// <summary>
+            /// Gets the ZGW URN (OIN/RSIN) identifier.
+            /// </summary>
+            [Config]
+            public string Urn()
+                => GetCachedValue(_loadersContext, _currentPath, nameof(Urn));
 
             /// <summary>
             /// The "Authentication" part of the settings.

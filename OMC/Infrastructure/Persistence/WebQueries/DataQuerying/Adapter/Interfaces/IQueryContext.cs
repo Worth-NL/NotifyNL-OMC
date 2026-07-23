@@ -104,6 +104,13 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         ///   </para>
         /// </remarks>
         public Task<Uri> GetCaseTypeUriAsync(Uri? caseUri = null);
+
+        /// <summary>
+        /// Checks if the initiator of the case is a natural person.
+        /// </summary>
+        /// <param name="caseUri">The case URI.</param>
+        /// <returns>True if the initiator is a natural person; otherwise, false.</returns>
+        Task<bool> CheckIfInitiatorIsNaturalPersonAsync(Uri caseUri);
         #endregion
 
         #region IQueryKlant

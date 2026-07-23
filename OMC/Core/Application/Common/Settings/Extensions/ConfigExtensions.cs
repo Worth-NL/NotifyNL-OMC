@@ -63,6 +63,26 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string BrpCertificateKey => "BRP_CLIENTKEY_PEM_PATH";
 
+        /// <summary>
+        /// The "MIJNOVERHEID_WEBHOOK_URL" environment variable.
+        /// </summary>
+        public static string MijnOverheidWebHookUrl => "MIJNOVERHEID_WEBHOOK_URL";
+
+        /// <summary>
+        /// The OAuth2 client ID for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_CLIENTID" environment variable.
+        /// </summary>
+        public static string MijnOverheidClientId => "MIJNOVERHEID_AUTH_CLIENTID";
+
+        /// <summary>
+        /// The OAuth2 client secret for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_SECRET" environment variable.
+        /// </summary>
+        public static string MijnOverheidSecret => "MIJNOVERHEID_AUTH_SECRET";
+
+        /// <summary>
+        /// The OAuth2 token endpoint for MijnOverheid, provided via the "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT" environment variable.
+        /// </summary>
+        public static string MijnOverheidTokenEndpoint => "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT";
+
         // TODO: Most of these environment variable names can be objectified in OmcConfiguration
         /// <summary>
         /// The "SENTRY_ENVIRONMENT" environment variable.
@@ -119,7 +139,7 @@ namespace Common.Settings.Extensions
         }
 
         private static string? s_messageAllowedEnvVarName;
-        
+
         /// <summary>
         /// The "ZGW_WHITELIST_MESSAGEALLOWED" environment variable.
         /// </summary>
@@ -152,7 +172,7 @@ namespace Common.Settings.Extensions
         }
 
         private static string? s_infoObjectTypesEnvVarName;
-        
+
         /// <summary>
         /// The "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS" environment variable.
         /// </summary>
@@ -201,7 +221,7 @@ namespace Common.Settings.Extensions
         }
 
         private static string? s_openKlantDomainValue;
-        
+
         /// <summary>
         /// Gets the OpenKlant domain.
         /// </summary>
@@ -260,7 +280,7 @@ namespace Common.Settings.Extensions
                 ? createdGuid
                 : ThrowArgumentException<Guid>(CommonResources.Configuration_ERROR_InvalidTemplateId, value);
         }
-        
+
         /// <summary>
         /// Ensures that the value from the configuration file is a valid <see cref="Uri"/> address.
         /// </summary>
