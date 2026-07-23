@@ -237,6 +237,7 @@
       "OMC.ZgwModels": {
         "type": "Project",
         "dependencies": {
+          "Newtonsoft.Json": "[13.0.1, )",
           "OMC.Common": "[1.0.0, )"
         }
       }

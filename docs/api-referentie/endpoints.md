@@ -25,6 +25,25 @@ Het primaire eindpunt dat events ontvangt van Open Notificaties.
 
 ---
 
+### POST /Events/MijnZaken
+
+Ontvangt zaakgebeurtenissen (als CloudEvent of NotificationEvent) en stuurt relevante gebeurtenissen door naar MijnOverheid. Zie [MijnOverheid](../integraties/mijnoverheid.md) voor de volledige uitleg van gebeurtenistypen en filters.
+
+**Authenticatie:** JWT Bearer  
+**Verzoekinhoud:** CloudEvent- of NotificationEvent JSON-payload
+
+**Responscodes:**
+
+| Code | Betekenis |
+|---|---|
+| Statuscode van MijnOverheid (bijv. `204`) | Doorgestuurd — dit is een direct doorgestuurde respons van MijnOverheid, geen door OMC gegenereerde code |
+| `200 OK` (body: `"Event was not forwarded (skipped)."`) | OMC heeft zelf besloten niet door te sturen — geen foutsituatie |
+| `400 Bad Request` | Payload niet herkend, of afgewezen door MijnOverheid |
+| `401 Unauthorized` | Ontbrekend of ongeldig JWT-token |
+| `500 Internal Server Error` | Fout buiten een payloadprobleem om |
+
+---
+
 ### GET /Events/Version
 
 Geeft de huidige OMC-versie terug.

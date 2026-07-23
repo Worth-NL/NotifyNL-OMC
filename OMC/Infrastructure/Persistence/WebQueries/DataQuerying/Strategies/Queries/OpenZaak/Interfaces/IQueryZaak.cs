@@ -219,6 +219,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CaseRole> GetCaseRoleAsync(IQueryBase queryBase, Uri caseUri);
+
+        /// <summary>
+        /// Checks if the initiator of the case is a natural person.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="caseUri">The <see cref="Case"/> in <see cref="Uri"/> format.</param>
+        /// <returns>True if the initiator is a natural person; otherwise, false.</returns>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<bool> CheckIfInitiatorIsNaturalPersonAsync(IQueryBase queryBase, Uri caseUri);
         #endregion
 
         #region Abstract (Case type URI)

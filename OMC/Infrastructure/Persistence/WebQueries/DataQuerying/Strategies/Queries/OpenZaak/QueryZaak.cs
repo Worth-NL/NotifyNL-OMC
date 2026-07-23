@@ -18,7 +18,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak
         OmcConfiguration IQueryZaak.Configuration { get; set; } = null!;
 
         /// <inheritdoc cref="IVersionDetails.Version"/>
-        string IVersionDetails.Version => "1.12.1";
+        string IVersionDetails.Version => "1.2.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryZaak"/> class.
@@ -44,6 +44,34 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenZaak
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseRole);
 
             return caseRoles.CaseRole(((IQueryZaak)this).Configuration);
+        }
+
+        /// <summary>
+        /// Check if case initiator is a natural person (natuurlijk persoon) based on the case URI.
+        /// </summary>
+        /// <param name="queryBase"></param>
+        /// <param name="caseUri"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckIfInitiatorIsNaturalPersonAsync(IQueryBase queryBase, Uri caseUri)
+        {
+            string rolesEndpoint = $"{((IQueryZaak)this).GetDomain()}/rollen";
+
+            var queryParams = new List<string>
+            {
+                $"zaak={Uri.EscapeDataString(caseUri.ToString())}",
+                "omschrijvingGeneriek=initiator",
+                "betrokkeneType=natuurlijk_persoon"
+            };
+            string query = string.Join("&", queryParams);
+            var requestUri = new Uri($"{rolesEndpoint}?{query}");
+
+            CaseRoles response = await queryBase.ProcessGetAsync<CaseRoles>(
+                httpClientType: HttpClientTypes.OpenZaak_v1,
+                uri: requestUri,
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoCaseRole);
+
+            // Since Results is never null (initialized as empty list), we can simply:
+            return response.Results.Any();
         }
         #endregion
 

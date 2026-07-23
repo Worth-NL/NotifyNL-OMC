@@ -112,7 +112,13 @@
         "POSTGUARD_API_KEY": "",
         "POSTGUARD_API_PKGURL": "https://pkg.postguard.eu",
         "POSTGUARD_API_CRYPTIFYURL": "https://storage.postguard.eu",
-        "POSTGUARD_TEMPLATEID_SENDPOSTGUARDPDF": "2a9965ac-b727-4f18-8586-29b85aad73df"
+        "POSTGUARD_TEMPLATEID_SENDPOSTGUARDPDF": "2a9965ac-b727-4f18-8586-29b85aad73df",
+
+        "MIJNOVERHEID_WEBHOOK_URL": "",
+
+        "MIJNOVERHEID_AUTH_CLIENTID": "",
+        "MIJNOVERHEID_AUTH_SECRET": "",
+        "MIJNOVERHEID_AUTH_TOKEN_ENDPOINT": ""
       }
     },
     "Docker": {

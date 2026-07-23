@@ -121,6 +121,10 @@ namespace WebQueries.DataQuerying.Adapter
             // 1b. Use the provided case URI to retrieve the case type URI from CaseDetails
             return await this._queryZaak.TryGetCaseTypeUriAsync(this._queryBase, caseUri);
         }
+
+        /// <inheritdoc cref="IQueryContext.CheckIfInitiatorIsNaturalPersonAsync(Uri)"/>
+        async Task<bool> IQueryContext.CheckIfInitiatorIsNaturalPersonAsync(Uri caseUri)
+            => await this._queryZaak.CheckIfInitiatorIsNaturalPersonAsync(this._queryBase, caseUri);
         #endregion
 
         #region IQueryKlant
