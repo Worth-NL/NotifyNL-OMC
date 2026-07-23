@@ -17,6 +17,24 @@ Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenm
 
 Het OMC haalt het objecttype-UUID uit de `objectType`-URL in het event en vergelijkt dit met de geconfigureerde waarde. Als het niet overeenkomt, wordt het event genegeerd.
 
+### Voorbeeld payload
+
+```json
+{
+  "actie": "create",
+  "kanaal": "objecten",
+  "resource": "object",
+  "kenmerken": {
+    "objectType": "https://objecttypen.mijnstad.nl/api/v1/objecttypes/66666666-6666-6666-6666-666666666666"
+  },
+  "hoofdObject": "https://objecten.mijnstad.nl/api/v2/objects/77777777-7777-7777-7777-777777777777",
+  "resourceUrl": "https://objecten.mijnstad.nl/api/v2/objects/77777777-7777-7777-7777-777777777777",
+  "aanmaakdatum": "2026-01-15T10:30:00Z"
+}
+```
+
+Zie de [taakobjectstructuur](#taakobjectstructuur-objecten-api) hieronder voor de inhoud die het OMC vervolgens ophaalt bij `hoofdObject`/`resourceUrl`.
+
 ---
 
 ## Verwerkingslogica

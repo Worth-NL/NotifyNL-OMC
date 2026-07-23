@@ -2,6 +2,14 @@
 
 ---
 
+## v2.1.0
+
+- [MijnOverheid](../integraties/mijnoverheid.md)-integratie toegevoegd: het eindpunt `POST /Events/MijnZaken` normaliseert inkomende ZGW CloudEvents/NotificationEvents en stuurt relevante zaakgebeurtenissen door naar MijnOverheid, met whitelist- en natuurlijk-persoonfiltering
+- Ondersteuning toegevoegd voor de gebeurtenissen "zaak geopend" en "zaak verwijderd" (voorheen werd alleen "zaak gemuteerd" herkend vanuit NotificationEvent-payloads)
+- Diverse correcties aan de MijnZaken-payloadverwerking, veldmapping en tijdstipnauwkeurigheid, zodat het eindpunt end-to-end correct werkt
+
+---
+
 ## v2.0.0 ⚠️ Breaking changes
 
 - Bijgewerkt naar .NET 10

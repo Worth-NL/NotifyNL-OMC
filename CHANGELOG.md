@@ -1,6 +1,8 @@
 ## 2.1.0
 
 - Adds a "MijnZaken" endpoint that normalizes incoming ZGW CloudEvents/NotificationEvents and forwards them to MijnOverheid, with whitelist and natural-person filtering
+- Adds support for zaak-geopend and zaak-verwijderd events (previously only zaak-gemuteerd was recognized from NotificationEvent-shaped input)
+- Fixes MijnZaken payload binding, NotificationEvent field mapping, dataref format, and event timestamp accuracy so the endpoint works end-to-end
 
 ## 2.0.1
 
