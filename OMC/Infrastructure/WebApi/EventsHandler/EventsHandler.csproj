@@ -28,7 +28,29 @@
     <!-- Docker -->
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
+
+    <!-- The dashboard's wwwroot is populated post-build (Docker COPY, or manually for local
+         testing), not through MSBuild's static web assets pipeline, and is never committed.
+         The build-time manifest that feature generates would otherwise go stale and crash the
+         app at startup whenever wwwroot's contents differ from what existed at build time.
+         We serve wwwroot ourselves via UseStaticFiles() in Program.cs, so this isn't needed. -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
+
+  <!-- Automatically builds the dashboard into wwwroot on first build/F5, so /status "just
+       works" without a manual npm step — mirrors the Docker image's Node build stage. Skipped
+       once wwwroot exists (so it doesn't slow down every later build), in CI (the Dockerfile
+       builds it there instead — no Node tooling on the CI runners), or via
+       `-p:SkipDashboardBuild=true`. Never fails the .NET build even if Node/npm isn't
+       installed — /status and /status/flow already fall back to /swagger gracefully either way. -->
+  <Target Name="BuildDashboardIfMissing" BeforeTargets="Build"
+          Condition="!Exists('$(MSBuildProjectDirectory)/wwwroot') AND '$(CI)' != 'true' AND '$(SkipDashboardBuild)' != 'true'">
+    <Message Importance="high"
+             Text="Dashboard not built yet — running 'npm run build:omc' so /status works (first build only; pass -p:SkipDashboardBuild=true to skip)." />
+    <Exec Command="npm run build:omc"
+          WorkingDirectory="$(MSBuildProjectDirectory)/../../../../dashboard"
+          ContinueOnError="WarnAndContinue" />
+  </Target>
 
   <!-- Packages -->
   <ItemGroup>
@@ -73,6 +95,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ApiResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Services\Configuration\Data\ScenarioFlows.json" />
   </ItemGroup>
 
 </Project>
