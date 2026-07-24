@@ -11,6 +11,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.Tracing;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -45,25 +46,46 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             if (IsCaseScenario(model))
             {
                 IQueryContext queryContext = this._dataQuery.From(model);
-                CaseStatus caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
-                CaseStatusType currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+
+                TraceContext.Emit("openzaak", "start");
+                CaseStatus caseStatus;
+                CaseStatusType currentCaseStatusType;
+                try
+                {
+                    caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
+                    currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+                }
+                catch
+                {
+                    TraceContext.Emit("openzaak", "fail");
+                    throw;
+                }
+                TraceContext.Emit("openzaak", "ok");
 
                 if (!currentCaseStatusType.IsNotificationExpected)
                 {
+                    TraceContext.Emit("informerencheck", "abort");
                     throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren);
                 }
+                TraceContext.Emit("informerencheck", "ok");
 
                 // Scenario #1: "Case created"
                 if (currentCaseStatusType.SerialNumber == 1)
                 {
+                    TraceContext.SetScenario("case-created");
                     return (this._serviceProvider.GetRequiredService<CaseCreatedScenario>()).SetCaseStatusType(currentCaseStatusType);
                 }
 
-                return !currentCaseStatusType.IsFinalStatus
+                if (!currentCaseStatusType.IsFinalStatus)
+                {
                     // Scenario #2: "Case status updated"
-                    ? (this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()).SetCaseStatusType(currentCaseStatusType)
-                    // Scenario #3: "Case finished"
-                    : (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
+                    TraceContext.SetScenario("case-updated");
+                    return (this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()).SetCaseStatusType(currentCaseStatusType);
+                }
+
+                // Scenario #3: "Case finished"
+                TraceContext.SetScenario("case-closed");
+                return (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
             }
 
             // Object scenarios
@@ -74,18 +96,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.TaskObjectType_Uuid()))
                 {
                     // Scenario #4: "Task assigned"
+                    TraceContext.SetScenario("task-assigned");
                     return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
                 }
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()))
                 {
                     // Scenario #6: "Message received"
+                    TraceContext.SetScenario("message-received");
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
                 }
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
                 {
                     // Scenario #7: "KTO received"
+                    TraceContext.SetScenario("kto");
                     return this._serviceProvider.GetRequiredService<KtoScenario>();
                 }
 
@@ -98,6 +123,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             // Scenario #5: "Decision made"
             if (IsDecisionScenario(model))
             {
+                TraceContext.SetScenario("decision-made");
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 

@@ -16,6 +16,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Tracing;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Enums.Objecten;
@@ -59,14 +60,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         {
             // Setup
             this._queryContext = this.DataQuery.From(notification);
-            
+
+            TraceContext.Emit("besluiten", "start");
             this._decisionResource = await this._queryContext.GetDecisionResourceAsync();
+            TraceContext.Emit("besluiten", "ok");
+
+            TraceContext.Emit("openzaak", "start");
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
+            TraceContext.Emit("openzaak", "ok");
 
             // Validation #1: The info object needs to be of a specific type
             Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
             if (!this.Configuration.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
+                TraceContext.Emit("documentcheck", "abort");
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
                         /* {0} */ $"{infoObjectTypeId}",
@@ -76,22 +83,30 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #2: Status needs to be definitive
             if (infoObject.Status != MessageStatus.Definitive)
             {
+                TraceContext.Emit("documentcheck", "abort");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
             // Validation #3: Confidentiality needs to be acceptable
             if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)
             {
+                TraceContext.Emit("documentcheck", "abort");
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
                         infoObject.Confidentiality));
             }
+            TraceContext.Emit("documentcheck", "ok");
 
             // TODO: Will be aggregated with CaseStatusType in future
+            TraceContext.Emit("besluiten", "start");
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
+            TraceContext.Emit("besluiten", "ok");
+
+            TraceContext.Emit("openzaak", "start");
             this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                              await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                    this._decision.CaseUri));                 // 1. Case URI
+            TraceContext.Emit("openzaak", "ok");
 
             // Validation #4: The case type identifier must be whitelisted
             ValidateCaseId(
@@ -103,23 +118,34 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Preparing party details
             this._bsnNumber = await GetBsnNumberAsync();
-            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
-            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
 
-            return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(
-                    this._case.Uri,
-                    this._bsnNumber, 
-                    this._case.Identification),
-                caseUri: this._case.Uri);
+            TraceContext.Emit("besluiten", "start");
+            this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
+            TraceContext.Emit("besluiten", "ok");
+
+            TraceContext.Emit("openzaak", "start");
+            this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
+            TraceContext.Emit("openzaak", "ok");
+
+            TraceContext.Emit("openklant", "start");
+            CommonPartyData party = await this._queryContext.GetPartyDataAsync(
+                this._case.Uri,
+                this._bsnNumber,
+                this._case.Identification);
+            TraceContext.Emit("openklant", "ok");
+
+            return new PreparedData(party: party, caseUri: this._case.Uri);
         }
 
         private async Task<string> GetBsnNumberAsync()
         {
             try
             {
-                return await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
-                             this._decision.CaseUri);               // 1. Case URI
+                TraceContext.Emit("openzaak", "start");
+                string bsn = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
+                                   this._decision.CaseUri);                // 1. Case URI
+                TraceContext.Emit("openzaak", "ok");
+                return bsn;
             }
             catch (Exception)
             {
@@ -280,8 +306,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             string dataJson = PrepareDataJson(templateResponse.Subject, modifiedResponseBody, commaSeparatedUris);
 
+            // Decision Made never actually sends via Notify NL — the preview above is as far as
+            // that goes. This POST to Objecten (for the citizen portal to read) is its real
+            // "output" step, standing in for a channel send.
+            TraceContext.Emit("objecten", "start");
             HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
                                                         this._queryContext.PrepareObjectJsonBody(dataJson));
+            TraceContext.Emit("objecten", requestResponse.IsFailure ? "fail" : "ok");
+
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
                 : ProcessingDataResponse.Success();
@@ -302,11 +334,15 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         private async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext)
         {
             // Retrieve documents
+            TraceContext.Emit("besluiten", "start");
             List<Document> documents = (await queryContext.GetDocumentsAsync(this._decisionResource))
                                        .Results;
+            TraceContext.Emit("besluiten", "ok");
+
             // Prepare URIs
             List<string> validInfoObjectsUris = new(documents.Count);
 
+            TraceContext.Emit("openzaak", "start");
             foreach (Document document in documents)
             {
                 // Retrieve info objects from documents
@@ -322,6 +358,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 // Keep the URI references to the valid info objects
                 validInfoObjectsUris.Add($"\"{document.InfoObjectUri}\"");
             }
+            TraceContext.Emit("openzaak", "ok");
 
             return validInfoObjectsUris.Join();
         }

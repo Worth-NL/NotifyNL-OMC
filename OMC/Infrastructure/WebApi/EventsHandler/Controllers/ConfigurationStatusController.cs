@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Channels;
+using WebQueries.Tracing;
 
 namespace EventsHandler.Controllers
 {
@@ -64,6 +66,42 @@ namespace EventsHandler.Controllers
             catch (OperationCanceledException)
             {
                 // Client disconnected (tab closed / navigated away) — not an error.
+            }
+        }
+
+        /// <summary>
+        /// Streams real-time notification-processing steps as Server-Sent Events for as long as
+        /// a dashboard client stays connected. Nothing is persisted — see <see cref="TraceEmitter"/>.
+        /// Structural only: stage/status/timing, never case identifiers or citizen data.
+        /// </summary>
+        [HttpGet("/status/trace/stream")]
+        public async Task TraceStreamAsync([FromServices] TraceEmitter traceEmitter, CancellationToken ct)
+        {
+            Response.ContentType = "text/event-stream; charset=utf-8";
+            Response.Headers.Append("Cache-Control", "no-cache");
+            Response.Headers.Append("X-Accel-Buffering", "no");
+
+            (Guid subscriptionId, ChannelReader<TraceEvent> reader) = traceEmitter.Subscribe();
+
+            try
+            {
+                await Response.WriteAsync("event: ready\ndata: {}\n\n", ct);
+                await Response.Body.FlushAsync(ct);
+
+                await foreach (TraceEvent traceEvent in reader.ReadAllAsync(ct))
+                {
+                    string json = JsonSerializer.Serialize(traceEvent, s_jsonOptions);
+                    await Response.WriteAsync($"data: {json}\n\n", ct);
+                    await Response.Body.FlushAsync(ct);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Client disconnected (tab closed / navigated away) — not an error.
+            }
+            finally
+            {
+                traceEmitter.Unsubscribe(subscriptionId);
             }
         }
     }

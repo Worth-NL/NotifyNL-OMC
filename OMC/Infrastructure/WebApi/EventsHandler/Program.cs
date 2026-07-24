@@ -38,6 +38,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using WebQueries.Tracing;
 using WebQueries.BRP;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
@@ -234,6 +235,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IQueryContext, QueryContext>();
             builder.Services.AddScoped<ConfigurationCheckService>();
             builder.Services.AddSingleton<ScenarioFlowService>();
+            builder.Services.AddSingleton<TraceEmitter>();
             builder.Services.RegisterOpenServices();
 
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
