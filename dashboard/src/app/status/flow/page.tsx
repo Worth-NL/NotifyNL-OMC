@@ -2,7 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Background, BackgroundVariant, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
+import {
+  Background,
+  BackgroundVariant,
+  ReactFlow,
+  ReactFlowProvider,
+  ViewportPortal,
+  Edge,
+  Node,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import {
   CHANNEL_NODES,
@@ -17,6 +26,7 @@ import {
 } from "@/lib/architecture";
 import { layoutGraph, LayoutResult } from "@/lib/layout";
 import { useLiveMetrics } from "@/hooks/useLiveMetrics";
+import { useTraceStream } from "@/hooks/useTraceStream";
 import { fetchScenarios, ScenarioFlow } from "@/lib/api";
 import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader";
 import { MetricsBar } from "@/components/architecture/MetricsBar";
@@ -25,6 +35,8 @@ import { NodeState } from "@/components/architecture/NodeCard";
 import { ColumnLabelNode, FlowNode, PatternEngineFlowNode } from "@/components/architecture/FlowNode";
 import { TrafficEdge } from "@/components/architecture/TrafficEdge";
 import { DiagramModal } from "@/components/architecture/DiagramModal";
+import { NodeRect, TracePip } from "@/components/architecture/TracePip";
+import { LiveLogPanel } from "@/components/architecture/LiveLogPanel";
 
 // The "all" flow option has no single scenario of its own — it maps to the backend's
 // top-level routing-overview diagram instead.
@@ -89,6 +101,15 @@ const LAYOUT: LayoutResult = {
   edgeHandles: { ...mainLayout.edgeHandles, ...registerEdgeHandles },
 };
 
+// Geometry lookup for the trace pip — same positions React Flow uses, plus each node's real
+// rendered size, so the pip's bezier curves line up exactly with the static edges underneath.
+const NODE_RECTS: Record<string, NodeRect> = {
+  [PATTERN_ENGINE_KEY]: { ...LAYOUT.positions[PATTERN_ENGINE_KEY], width: PATTERN_ENGINE_WIDTH, height: PATTERN_ENGINE_HEIGHT },
+  ...Object.fromEntries(
+    ALL_ARCH_NODES.map((n) => [n.key, { ...LAYOUT.positions[n.key], width: CARD_WIDTH, height: CARD_HEIGHT }]),
+  ),
+};
+
 const COLUMN_GROUPS: { label: string; keys: string[] }[] = [
   { label: "Invoer", keys: INPUT_NODES.map((n) => n.key) },
   { label: "Verwerking", keys: [PATTERN_ENGINE_KEY] },
@@ -127,6 +148,7 @@ export default function FlowPage() {
   const [diagramOpen, setDiagramOpen] = useState(false);
 
   const metrics = useLiveMetrics(ALL_NODE_KEYS);
+  const trace = useTraceStream(isTracing);
   const selectedFlow = FLOW_OPTIONS.find((f) => f.key === selectedFlowKey) ?? FLOW_OPTIONS[0];
 
   useEffect(() => {
@@ -289,16 +311,22 @@ export default function FlowPage() {
             >
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
               <FitViewOnReady />
+              <ViewportPortal>
+                <TracePip hop={trace.activeHop} nodeRects={NODE_RECTS} edgeHandles={LAYOUT.edgeHandles} />
+              </ViewportPortal>
             </ReactFlow>
           </ReactFlowProvider>
         </div>
+
+        <LiveLogPanel log={trace.log} connected={trace.connected} />
 
         <p className="text-[0.68rem] text-arch-faint">
           Selecteer een flow in het paneel &ldquo;Output Patronen&rdquo; om te zien welke
           registers, kanalen en bevestigingen die flow daadwerkelijk gebruikt — niet-gebruikte
           onderdelen dimmen. Grijze, gestippelde kaarten zijn nog niet aangesloten op een echte
           OMC-integratie. Klik het diagram-icoon om de beslisboom van de geselecteerde flow te
-          bekijken.
+          bekijken. Klik &ldquo;Trace starten&rdquo; om een echte binnenkomende notificatie live
+          door het systeem te volgen.
         </p>
       </div>
 
