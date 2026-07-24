@@ -11,6 +11,7 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Tracing;
 using ZgwModels.Mapping.Enums.Objecten;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -49,28 +50,35 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
+            TraceContext.Emit("objecten", "start");
             this._taskData = await this._queryContext.GetTaskAsync();
+            TraceContext.Emit("objecten", "ok");
 
             // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
+                TraceContext.Emit("taakcheck", "abort");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             // Validation #2: The task needs to be assigned to a person
             if (this._taskData.Identification.Type is not (IdTypes.Bsn or IdTypes.Kvk))
             {
+                TraceContext.Emit("taakcheck", "abort");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
             }
+            TraceContext.Emit("taakcheck", "ok");
 
             // start doing checks here isProduct or isCase  >?
 
             // if case:
             // TODO: Will be aggregated with CaseStatusType in future
+            TraceContext.Emit("openzaak", "start");
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
-            
+            TraceContext.Emit("openzaak", "ok");
+
             // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().IsAllowed,
@@ -82,7 +90,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation based on casetye/statustype is over
 
             // this can be removed? i think?
+            TraceContext.Emit("openzaak", "start");
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
+            TraceContext.Emit("openzaak", "ok");
 
             // here more if's are neede because if idtype == bsn use bsn if idtyp == kvk use kvk number
             // Preparing party details
@@ -90,12 +100,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 ? this._taskData.Identification.Value  // BSN number
                 : null;
 
-            return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(
-                    caseUri: this._case.Uri,
-                    bsnNumber: bsnNumber, 
-                    caseIdentifier: this._case.Identification),
-                caseUri: this._case.Uri);
+            TraceContext.Emit("openklant", "start");
+            CommonPartyData party = await this._queryContext.GetPartyDataAsync(
+                caseUri: this._case.Uri,
+                bsnNumber: bsnNumber,
+                caseIdentifier: this._case.Identification);
+            TraceContext.Emit("openklant", "ok");
+
+            return new PreparedData(party: party, caseUri: this._case.Uri);
         }
         #endregion
 

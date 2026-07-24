@@ -10,6 +10,7 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Tracing;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
@@ -43,21 +44,27 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #1: Sending messages should be allowed
             if (!this.Configuration.ZGW.Whitelist.Message_Allowed())
             {
+                TraceContext.Emit("berichtenschakelaar", "abort");
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_MessagesForbidden, GetWhitelistEnvVarName()));
             }
+            TraceContext.Emit("berichtenschakelaar", "ok");
 
             // Setup
             IQueryContext queryContext = this.DataQuery.From(notification);
 
+            TraceContext.Emit("objecten", "start");
             this._messageData = (await queryContext.GetMessageAsync()).Record.Data;
-            
+            TraceContext.Emit("objecten", "ok");
+
             // Preparing party details
-            return new PreparedData(
-                party: await queryContext.GetPartyDataAsync(
-                    caseUri: null,
-                    bsnNumber: this._messageData.Identification.Value),  // BSN number
-                caseUri: null);  // NOTE: There is no case linked so, there is no case URI either
+            TraceContext.Emit("openklant", "start");
+            CommonPartyData party = await queryContext.GetPartyDataAsync(
+                caseUri: null,
+                bsnNumber: this._messageData.Identification.Value);  // BSN number
+            TraceContext.Emit("openklant", "ok");
+
+            return new PreparedData(party: party, caseUri: null);  // NOTE: There is no case linked so, there is no case URI either
         }
         #endregion
 

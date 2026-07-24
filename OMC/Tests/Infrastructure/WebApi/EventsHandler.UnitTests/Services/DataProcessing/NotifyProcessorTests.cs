@@ -17,6 +17,7 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO.Interfaces;
 using WebQueries.Properties;
+using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Properties;
@@ -43,7 +44,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             this._mockedResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
             this._mockedKtoScenarioFactory = new Mock<IKtoScenarioFactory>(MockBehavior.Strict);
 
-            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object);
+            // Real (not mocked): a pure in-memory, no-op-when-unsubscribed broadcaster — nothing to fake.
+            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object, new TraceEmitter());
         }
 
         [SetUp]

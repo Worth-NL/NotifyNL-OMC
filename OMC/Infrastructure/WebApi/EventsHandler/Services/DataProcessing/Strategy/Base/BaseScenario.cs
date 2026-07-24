@@ -18,6 +18,7 @@ using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using WebQueries.Tracing;
 
 namespace EventsHandler.Services.DataProcessing.Strategy.Base
 {
@@ -59,6 +60,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         {
             PreparedData preparedData = await PrepareDataAsync(notification);
 
+            TraceContext.Emit("kanaalresolutie", "ok", preparedData.Party.DistributionChannel.ToString());
+
             // Determine which types of notifications should be published
             return preparedData.Party.DistributionChannel switch
             {
@@ -97,9 +100,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         {
             if (isCaseIdWhitelistedValidation.Invoke(caseId))
             {
+                TraceContext.Emit("zaaktypewhitelist", "ok");
                 return;
             }
 
+            TraceContext.Emit("zaaktypewhitelist", "abort");
             throw new AbortedNotifyingException(string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_CaseTypeId, caseId, scenarioName));
         }
         
@@ -112,8 +117,11 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
         {
             if (!isNotificationExpected)
             {
+                TraceContext.Emit("informerencheck", "abort");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren);
             }
+
+            TraceContext.Emit("informerencheck", "ok");
         }
         #endregion
 
@@ -214,6 +222,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
             // Sending notifications (default behavior of the most scenarios/strategies)
             foreach (NotifyData data in notifyData)
             {
+                string channelStage = data.NotificationMethod switch
+                {
+                    NotifyMethods.Email => "notify-email",
+                    NotifyMethods.Sms => "notify-sms",
+                    NotifyMethods.Letter => "notify-post",
+                    _ => "kanaalresolutie"
+                };
+
                 NotifySendResponse response = data.NotificationMethod switch
                 {
                     NotifyMethods.Email => await this.NotifyService.SendEmailAsync(data),
@@ -224,10 +240,14 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
 
                 if (response.IsFailure)  // Fail early (if there are two packages given, failure of just single one of them is enough)
                 {
+                    TraceContext.Emit(channelStage, "fail");
                     return ProcessingDataResponse.Failure(response.Error);
                 }
+
+                TraceContext.Emit(channelStage, "ok");
             }
 
+            TraceContext.Emit("contactmoment", "ok");
             return ProcessingDataResponse.Success();
         }
         #endregion

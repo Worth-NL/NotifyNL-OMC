@@ -15,6 +15,7 @@ using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
+using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -30,6 +31,7 @@ namespace EventsHandler.Services.DataProcessing
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
         private readonly IKtoScenarioFactory _ktoScenarioFactory;
+        private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyProcessor"/> class.
@@ -38,15 +40,18 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="validator">The input validating service.</param>
         /// <param name="resolver">The strategies resolving service.</param>
         /// <param name="ktoScenarioFactory">The strategy to send Kto</param>
+        /// <param name="traceEmitter">Broadcasts real-time processing steps to the dashboard.</param>
         public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
-            IScenariosResolver<INotifyScenario, NotificationEvent> resolver, IKtoScenarioFactory ktoScenarioFactory)  // Dependency Injection (DI)
+            IScenariosResolver<INotifyScenario, NotificationEvent> resolver, IKtoScenarioFactory ktoScenarioFactory,
+            TraceEmitter traceEmitter)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
             this._validator = validator;
             this._resolver = resolver;
             this._ktoScenarioFactory = ktoScenarioFactory;
+            this._traceEmitter = traceEmitter;
         }
 
         /// <inheritdoc cref="IProcessingService.ProcessAsync(object)"/>
@@ -74,6 +79,12 @@ namespace EventsHandler.Services.DataProcessing
                     return ProcessingResult.Skipped(ApiResources.Processing_ERROR_Notification_Test, json, details);
                 }
 
+                // A real notification is entering the pipeline — start a trace for the dashboard
+                // (no-op if nobody is watching; cleared in the finally block below regardless).
+                TraceContext.Start(this._traceEmitter);
+                TraceContext.Emit("opennotificaties", "ok");
+                TraceContext.Emit("output-patronen", "ok");
+
                 // Choose an adequate business-scenario (strategy) to process the notification
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);  // TODO: If failure, return ProcessingResult here (response pattern)
 
@@ -82,8 +93,10 @@ namespace EventsHandler.Services.DataProcessing
                 {
                     try
                     {
+                        TraceContext.Emit("kto", "start");
                         WebQueries.KTO.Models.KtoScenario ktoScenario = _ktoScenarioFactory.Create();
                         HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
+                        TraceContext.Emit("kto", ktoResponse.IsFailure ? "fail" : "ok");
 
                         return ktoResponse.IsFailure
                             ? ProcessingResult.Failure(ktoResponse.JsonResponse, json, details)
@@ -91,6 +104,7 @@ namespace EventsHandler.Services.DataProcessing
                     }
                     catch (Exception ex)
                     {
+                        TraceContext.Emit("kto", "fail");
                         throw new Exception(ex.Message);
                     }
                 }
@@ -121,6 +135,11 @@ namespace EventsHandler.Services.DataProcessing
             catch (Exception exception)
             {
                 return HandleException(exception, json, details);
+            }
+            finally
+            {
+                // Never leak this trace's ambient state into unrelated work on a reused context.
+                TraceContext.Clear();
             }
         }
 
