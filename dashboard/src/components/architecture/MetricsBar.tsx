@@ -92,7 +92,7 @@ export function MetricsBar({
 
       <div className="ml-auto flex items-center gap-2">
         <span className="text-[0.6rem] font-semibold tracking-wide text-arch-faint uppercase">
-          Belasting — 6u
+          Belasting — laatste minuut
         </span>
         <Sparkline values={sparkline} />
       </div>

@@ -25,8 +25,7 @@ import {
   REGISTER_NODES,
 } from "@/lib/architecture";
 import { layoutGraph, LayoutResult } from "@/lib/layout";
-import { useLiveMetrics } from "@/hooks/useLiveMetrics";
-import { useTraceStream } from "@/hooks/useTraceStream";
+import { useOmcTelemetry } from "@/hooks/useOmcTelemetry";
 import { fetchScenarios, ScenarioFlow } from "@/lib/api";
 import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader";
 import { MetricsBar } from "@/components/architecture/MetricsBar";
@@ -43,7 +42,6 @@ import { LiveLogPanel } from "@/components/architecture/LiveLogPanel";
 const OVERVIEW_DIAGRAM_KEY = "routing";
 
 const ALL_ARCH_NODES = [...INPUT_NODES, ...REGISTER_NODES, ...FILTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
-const ALL_NODE_KEYS = [...ALL_ARCH_NODES.map((n) => n.key), PATTERN_ENGINE_KEY];
 
 const NODE_TYPES = { flowNode: FlowNode, patternEngine: PatternEngineFlowNode, columnLabel: ColumnLabelNode };
 const EDGE_TYPES = { traffic: TrafficEdge };
@@ -147,8 +145,7 @@ export default function FlowPage() {
   const [scenarios, setScenarios] = useState<ScenarioFlow[]>([]);
   const [diagramOpen, setDiagramOpen] = useState(false);
 
-  const metrics = useLiveMetrics(ALL_NODE_KEYS);
-  const trace = useTraceStream(isTracing);
+  const telemetry = useOmcTelemetry(isTracing);
   const selectedFlow = FLOW_OPTIONS.find((f) => f.key === selectedFlowKey) ?? FLOW_OPTIONS[0];
 
   useEffect(() => {
@@ -196,7 +193,7 @@ export default function FlowPage() {
       id: n.key,
       type: "flowNode",
       position: LAYOUT.positions[n.key],
-      data: { node: n, state: nodeState(n.key, n.active), throughput: metrics.nodeThroughput[n.key] },
+      data: { node: n, state: nodeState(n.key, n.active), throughput: telemetry.nodeThroughput[n.key] },
       draggable: false,
       selectable: false,
     }));
@@ -209,7 +206,7 @@ export default function FlowPage() {
         flows: FLOW_OPTIONS,
         selectedKey: selectedFlowKey,
         onSelect: setSelectedFlowKey,
-        totalProcessed: metrics.totalProcessed,
+        totalProcessed: telemetry.totalProcessed,
         onViewDiagram: () => setDiagramOpen(true),
         diagramAvailable: activeDiagram !== null,
       },
@@ -228,7 +225,7 @@ export default function FlowPage() {
 
     return [...labelNodes, ...cardNodes, patternEngineNode];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFlowKey, metrics.nodeThroughput, metrics.totalProcessed, usedKeys, activeDiagram]);
+  }, [selectedFlowKey, telemetry.nodeThroughput, telemetry.totalProcessed, usedKeys, activeDiagram]);
 
   const edges: Edge[] = useMemo(
     () =>
@@ -278,10 +275,10 @@ export default function FlowPage() {
         <MetricsBar
           environment={environment}
           onEnvironmentChange={setEnvironment}
-          load={metrics.load}
-          avgHandlingMs={metrics.avgHandlingMs}
-          throughputPerSec={metrics.throughputPerSec}
-          sparkline={metrics.sparkline}
+          load={telemetry.load}
+          avgHandlingMs={telemetry.avgHandlingMs}
+          throughputPerSec={telemetry.throughputPerSec}
+          sparkline={telemetry.sparkline}
         />
 
         <ConnectionLegend />
@@ -311,13 +308,13 @@ export default function FlowPage() {
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
               <FitViewOnReady />
               <ViewportPortal>
-                <TracePip hop={trace.activeHop} nodeRects={NODE_RECTS} edgeHandles={LAYOUT.edgeHandles} />
+                <TracePip hop={telemetry.activeHop} nodeRects={NODE_RECTS} edgeHandles={LAYOUT.edgeHandles} />
               </ViewportPortal>
             </ReactFlow>
           </ReactFlowProvider>
         </div>
 
-        <LiveLogPanel log={trace.log} connected={trace.connected} />
+        <LiveLogPanel log={telemetry.log} connected={telemetry.connected} />
 
         <p className="text-[0.68rem] text-arch-faint">
           Selecteer een flow in het paneel &ldquo;Output Patronen&rdquo; om te zien welke

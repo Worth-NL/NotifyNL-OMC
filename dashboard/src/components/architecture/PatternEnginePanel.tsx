@@ -79,7 +79,7 @@ export function PatternEnginePanel({
       </label>
 
       <div className="mt-3 text-[1.4rem] font-bold text-arch-teal">{formatCount(totalProcessed)}</div>
-      <div className="text-[0.65rem] text-arch-muted">berichten verwerkt</div>
+      <div className="text-[0.65rem] text-arch-muted">berichten verwerkt sinds laden</div>
 
       <div className="mt-3 flex items-center gap-1.5 text-[0.68rem] font-medium">
         <span className="h-1.5 w-1.5 rounded-full bg-arch-green" />
