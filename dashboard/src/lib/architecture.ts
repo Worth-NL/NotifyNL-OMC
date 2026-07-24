@@ -125,6 +125,12 @@ export const EDGES: FlowEdge[] = [
   { source: "kanaalresolutie", target: "notify-email", category: "producten" },
   { source: "kanaalresolutie", target: "notify-sms", category: "producten" },
   { source: "kanaalresolutie", target: "notify-post", category: "producten" },
+  // Berichtenbox/Lokale Berichtenbox are aspirational (active: false) — never real sends —
+  // but still need an edge into the main graph, or Dagre treats {berichtenbox, archief} and
+  // {lokale-berichtenbox, contactherstel} as disconnected components with nothing else
+  // anchoring them, and dumps them off in a corner unrelated to the rest of Uitvoer.
+  { source: "kanaalresolutie", target: "berichtenbox", category: "producten" },
+  { source: "kanaalresolutie", target: "lokale-berichtenbox", category: "producten" },
 
   { source: "notify-email", target: "contactmoment", category: "bevestiging" },
   { source: "notify-sms", target: "contactmoment", category: "bevestiging" },
