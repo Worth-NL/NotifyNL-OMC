@@ -20,6 +20,23 @@
   --color-red-border: #fecaca;
   --color-amber: #f59e0b;
   --color-grey: #6b7280;
+
+  /* Architecture/flow overview page — distinct light palette from the orange brand theme
+     used elsewhere, matching the design reference for that page specifically. */
+  --color-arch-bg: #eef1f7;
+  --color-arch-surface: #ffffff;
+  --color-arch-border: #e2e6f0;
+  --color-arch-ink: #1e293b;
+  --color-arch-muted: #64748b;
+  --color-arch-faint: #94a3b8;
+  --color-arch-teal: #0d9488;
+  --color-arch-teal-light: #ccfbf1;
+  --color-arch-green: #22c55e;
+  --color-arch-indigo: #6366f1;
+  --color-arch-blue: #3b82f6;
+  --color-arch-amber: #f59e0b;
+  --color-arch-emerald: #10b981;
+  --color-arch-violet: #8b5cf6;
 }
 
 @theme inline {
@@ -43,6 +60,21 @@
   --color-amber: var(--color-amber);
   --color-grey: var(--color-grey);
   --font-sans: var(--font-sora);
+
+  --color-arch-bg: var(--color-arch-bg);
+  --color-arch-surface: var(--color-arch-surface);
+  --color-arch-border: var(--color-arch-border);
+  --color-arch-ink: var(--color-arch-ink);
+  --color-arch-muted: var(--color-arch-muted);
+  --color-arch-faint: var(--color-arch-faint);
+  --color-arch-teal: var(--color-arch-teal);
+  --color-arch-teal-light: var(--color-arch-teal-light);
+  --color-arch-green: var(--color-arch-green);
+  --color-arch-indigo: var(--color-arch-indigo);
+  --color-arch-blue: var(--color-arch-blue);
+  --color-arch-amber: var(--color-arch-amber);
+  --color-arch-emerald: var(--color-arch-emerald);
+  --color-arch-violet: var(--color-arch-violet);
 }
 
 body {
