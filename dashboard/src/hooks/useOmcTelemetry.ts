@@ -31,8 +31,10 @@ interface PlannedHop {
 
 // Real steps arrive within milliseconds of each other — far too fast to see move. This is the
 // artificial per-hop pace for the pip/log replay, independent of how fast the real pipeline
-// actually ran (each event still carries its own real elapsedMs).
-const HOP_DELAY_MS = 550;
+// actually ran (each event still carries its own real elapsedMs). Kept slightly longer than
+// TracePip's 0.6s glide so each hop finishes with a brief, natural pause at the node before
+// the next one starts, rather than the next glide cutting the previous one off.
+const HOP_DELAY_MS = 700;
 const MAX_LOG_LINES = 150;
 
 // How the numeric metrics are derived from real events — no simulation, no database:

@@ -308,7 +308,7 @@ export default function FlowPage() {
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
               <FitViewOnReady />
               <ViewportPortal>
-                <TracePip hop={telemetry.activeHop} nodeRects={NODE_RECTS} edgeHandles={LAYOUT.edgeHandles} />
+                <TracePip hop={telemetry.activeHop} nodeRects={NODE_RECTS} />
               </ViewportPortal>
             </ReactFlow>
           </ReactFlowProvider>
