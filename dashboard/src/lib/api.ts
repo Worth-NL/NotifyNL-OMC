@@ -39,3 +39,16 @@ export async function fetchScenarios(): Promise<ScenarioFlow[]> {
   }
   return res.json();
 }
+
+// Structural only — matches WebQueries.Tracing.TraceEvent. Never carries case identifiers,
+// BSNs, or other citizen data; see the comment on that record for why.
+export interface TraceEvent {
+  traceId: string;
+  stage: string;
+  status: "start" | "ok" | "fail" | "abort";
+  scenario: string | null;
+  detail: string | null;
+  elapsedMs: number;
+}
+
+export const TRACE_STREAM_URL = `${OMC_API_URL}/status/trace/stream`;
