@@ -1,52 +1,308 @@
 "use client";
 
-import { useState } from "react";
-import { TopBar } from "@/components/TopBar";
-import { Sidebar } from "@/components/flow/Sidebar";
-import { Legend } from "@/components/flow/Legend";
-import { DiagramViewer } from "@/components/flow/DiagramViewer";
-import { useScenarios } from "@/hooks/useScenarios";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { Background, BackgroundVariant, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import {
+  CHANNEL_NODES,
+  CONFIRMATION_NODES,
+  EDGES,
+  EDGE_CATEGORY_COLOR,
+  FILTER_NODES,
+  FLOW_OPTIONS,
+  INPUT_NODES,
+  PATTERN_ENGINE_KEY,
+  REGISTER_NODES,
+} from "@/lib/architecture";
+import { layoutGraph, LayoutResult } from "@/lib/layout";
+import { useLiveMetrics } from "@/hooks/useLiveMetrics";
+import { fetchScenarios, ScenarioFlow } from "@/lib/api";
+import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader";
+import { MetricsBar } from "@/components/architecture/MetricsBar";
+import { ConnectionLegend } from "@/components/architecture/ConnectionLegend";
+import { NodeState } from "@/components/architecture/NodeCard";
+import { ColumnLabelNode, FlowNode, PatternEngineFlowNode } from "@/components/architecture/FlowNode";
+import { TrafficEdge } from "@/components/architecture/TrafficEdge";
+import { DiagramModal } from "@/components/architecture/DiagramModal";
+
+// The "all" flow option has no single scenario of its own — it maps to the backend's
+// top-level routing-overview diagram instead.
+const OVERVIEW_DIAGRAM_KEY = "routing";
+
+const ALL_ARCH_NODES = [...INPUT_NODES, ...REGISTER_NODES, ...FILTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
+const ALL_NODE_KEYS = [...ALL_ARCH_NODES.map((n) => n.key), PATTERN_ENGINE_KEY];
+
+const NODE_TYPES = { flowNode: FlowNode, patternEngine: PatternEngineFlowNode, columnLabel: ColumnLabelNode };
+const EDGE_TYPES = { traffic: TrafficEdge };
+
+const CARD_WIDTH = 220;
+const CARD_HEIGHT = 108;
+const PATTERN_ENGINE_WIDTH = 260;
+const PATTERN_ENGINE_HEIGHT = 340;
+
+// The main chain (Invoer -> Output Patronen -> Kanaal keuze -> filters -> Uitvoer ->
+// Afleverbevestiging) is a real left-to-right pipeline, so Dagre lays it out. Registers are
+// excluded from that pass entirely — OMC calls each one and gets a response back, they're
+// never a forward hop — and are placed by hand in a row directly below Output Patronen, with
+// edges dropping straight from its bottom edge (see EDGES comment in lib/architecture.ts).
+const MAIN_CHAIN_NODES = [...INPUT_NODES, ...FILTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
+const MAIN_CHAIN_KEYS = new Set<string>([...MAIN_CHAIN_NODES.map((n) => n.key), PATTERN_ENGINE_KEY]);
+const MAIN_CHAIN_EDGES = EDGES.filter((e) => MAIN_CHAIN_KEYS.has(e.source) && MAIN_CHAIN_KEYS.has(e.target));
+
+const mainLayout = layoutGraph(
+  [
+    ...MAIN_CHAIN_NODES.map((n) => ({ id: n.key, width: CARD_WIDTH, height: CARD_HEIGHT })),
+    { id: PATTERN_ENGINE_KEY, width: PATTERN_ENGINE_WIDTH, height: PATTERN_ENGINE_HEIGHT },
+  ],
+  MAIN_CHAIN_EDGES,
+);
+
+const REGISTER_GAP_X = 20;
+const REGISTER_ROW_GAP_Y = 100;
+const REGISTER_ROW_SPACING_Y = 24;
+const REGISTER_MAX_PER_ROW = 5;
+const patternPos = mainLayout.positions[PATTERN_ENGINE_KEY];
+const registerFirstRowY = patternPos.y + PATTERN_ENGINE_HEIGHT + REGISTER_ROW_GAP_Y;
+
+const registerRows: (typeof REGISTER_NODES)[number][][] = [];
+for (let i = 0; i < REGISTER_NODES.length; i += REGISTER_MAX_PER_ROW) {
+  registerRows.push(REGISTER_NODES.slice(i, i + REGISTER_MAX_PER_ROW));
+}
+
+const registerPositions: LayoutResult["positions"] = {};
+const registerEdgeHandles: LayoutResult["edgeHandles"] = {};
+let registerLabelX = Infinity;
+registerRows.forEach((row, rowIndex) => {
+  const rowWidth = row.length * CARD_WIDTH + (row.length - 1) * REGISTER_GAP_X;
+  const rowStartX = patternPos.x + PATTERN_ENGINE_WIDTH / 2 - rowWidth / 2;
+  const rowY = registerFirstRowY + rowIndex * (CARD_HEIGHT + REGISTER_ROW_SPACING_Y);
+  registerLabelX = Math.min(registerLabelX, rowStartX);
+  row.forEach((n, i) => {
+    registerPositions[n.key] = { x: rowStartX + i * (CARD_WIDTH + REGISTER_GAP_X), y: rowY };
+    registerEdgeHandles[`${PATTERN_ENGINE_KEY}->${n.key}`] = { sourceHandle: "bottom", targetHandle: "top" };
+  });
+});
+
+const LAYOUT: LayoutResult = {
+  positions: { ...mainLayout.positions, ...registerPositions },
+  edgeHandles: { ...mainLayout.edgeHandles, ...registerEdgeHandles },
+};
+
+const COLUMN_GROUPS: { label: string; keys: string[] }[] = [
+  { label: "Invoer", keys: INPUT_NODES.map((n) => n.key) },
+  { label: "Verwerking", keys: [PATTERN_ENGINE_KEY] },
+  { label: "Kanaal & filters", keys: FILTER_NODES.map((n) => n.key) },
+  { label: "Uitvoer", keys: CHANNEL_NODES.map((n) => n.key) },
+  { label: "Afleverbevestiging", keys: CONFIRMATION_NODES.map((n) => n.key) },
+];
+
+const COLUMN_LABELS = [
+  ...COLUMN_GROUPS.map((g) => ({
+    label: g.label,
+    x: Math.min(...g.keys.map((k) => LAYOUT.positions[k].x)),
+    y: Math.min(...g.keys.map((k) => LAYOUT.positions[k].y)) - 40,
+  })),
+  { label: "Registers", x: registerLabelX, y: registerFirstRowY - 40 },
+];
+
+// `fitView` (the boolean prop) only ever runs once, synchronously at mount — if the
+// container hasn't settled into its final size yet (e.g. still animating in, or a class
+// hasn't been applied by the time React Flow first measures), the fit is wrong and never
+// recalculated. Re-running it imperatively next frame is the standard fix.
+function FitViewOnReady() {
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    const id = requestAnimationFrame(() => fitView({ padding: 0.06 }));
+    return () => cancelAnimationFrame(id);
+  }, [fitView]);
+  return null;
+}
 
 export default function FlowPage() {
-  const { scenarios, loading, error } = useScenarios();
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [selectedFlowKey, setSelectedFlowKey] = useState("all");
+  const [environment, setEnvironment] = useState<"productie" | "test">("productie");
+  const [isTracing, setIsTracing] = useState(false);
+  const [scenarios, setScenarios] = useState<ScenarioFlow[]>([]);
+  const [diagramOpen, setDiagramOpen] = useState(false);
 
-  // Default to the first scenario once loaded, without an extra render pass.
-  const currentKey = selectedKey ?? scenarios[0]?.key ?? null;
-  const current = scenarios.find((s) => s.key === currentKey) ?? null;
+  const metrics = useLiveMetrics(ALL_NODE_KEYS);
+  const selectedFlow = FLOW_OPTIONS.find((f) => f.key === selectedFlowKey) ?? FLOW_OPTIONS[0];
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchScenarios()
+      .then((data) => {
+        if (!cancelled) setScenarios(data);
+      })
+      .catch((err) => console.error("Failed to load scenario diagrams", err));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const activeDiagram = useMemo(() => {
+    const diagramKey = selectedFlowKey === "all" ? OVERVIEW_DIAGRAM_KEY : selectedFlowKey;
+    return scenarios.find((s) => s.key === diagramKey) ?? null;
+  }, [scenarios, selectedFlowKey]);
+
+  const usedKeys = useMemo(
+    () =>
+      new Set([
+        ...INPUT_NODES.map((n) => n.key),
+        PATTERN_ENGINE_KEY,
+        ...selectedFlow.registers,
+        ...selectedFlow.filters,
+        ...selectedFlow.channels,
+        ...selectedFlow.confirmations,
+      ]),
+    [selectedFlow],
+  );
+
+  function nodeState(key: string, active: boolean): NodeState {
+    if (!active) return "inactive";
+    return usedKeys.has(key) ? "highlighted" : "dimmed";
+  }
+
+  function reset() {
+    setSelectedFlowKey("all");
+    setIsTracing(false);
+  }
+
+  const nodes: Node[] = useMemo(() => {
+    const cardNodes: Node[] = ALL_ARCH_NODES.map((n) => ({
+      id: n.key,
+      type: "flowNode",
+      position: LAYOUT.positions[n.key],
+      data: { node: n, state: nodeState(n.key, n.active), throughput: metrics.nodeThroughput[n.key] },
+      draggable: false,
+      selectable: false,
+    }));
+
+    const patternEngineNode: Node = {
+      id: PATTERN_ENGINE_KEY,
+      type: "patternEngine",
+      position: LAYOUT.positions[PATTERN_ENGINE_KEY],
+      data: {
+        flows: FLOW_OPTIONS,
+        selectedKey: selectedFlowKey,
+        onSelect: setSelectedFlowKey,
+        totalProcessed: metrics.totalProcessed,
+        onViewDiagram: () => setDiagramOpen(true),
+        diagramAvailable: activeDiagram !== null,
+      },
+      draggable: false,
+      selectable: false,
+    };
+
+    const labelNodes: Node[] = COLUMN_LABELS.map((c) => ({
+      id: `label-${c.label}`,
+      type: "columnLabel",
+      position: { x: c.x, y: c.y },
+      data: { label: c.label },
+      draggable: false,
+      selectable: false,
+    }));
+
+    return [...labelNodes, ...cardNodes, patternEngineNode];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFlowKey, metrics.nodeThroughput, metrics.totalProcessed, usedKeys, activeDiagram]);
+
+  const edges: Edge[] = useMemo(
+    () =>
+      EDGES.map((e, i) => {
+        const sourceActive = ALL_ARCH_NODES.find((n) => n.key === e.source)?.active ?? true;
+        const targetActive = ALL_ARCH_NODES.find((n) => n.key === e.target)?.active ?? true;
+        const live = sourceActive && targetActive && usedKeys.has(e.source) && usedKeys.has(e.target);
+        const color = EDGE_CATEGORY_COLOR[e.category];
+        const handles = LAYOUT.edgeHandles[`${e.source}->${e.target}`];
+
+        return {
+          id: `e-${i}-${e.source}-${e.target}`,
+          source: e.source,
+          target: e.target,
+          sourceHandle: handles.sourceHandle,
+          targetHandle: handles.targetHandle,
+          type: "traffic",
+          data: { live, throughput: metrics.nodeThroughput[e.source] ?? 0 },
+          style: {
+            stroke: color,
+            strokeWidth: live ? 1.75 : 1,
+            opacity: sourceActive && targetActive ? (live ? 0.9 : 0.35) : 0.15,
+            strokeDasharray: sourceActive && targetActive ? undefined : "4 3",
+          },
+        };
+      }),
+    [usedKeys, metrics.nodeThroughput],
+  );
 
   return (
-    <div className="flex h-screen flex-col">
-      <TopBar links={[{ href: "/status", label: "← Configuration" }]} />
+    <div className="min-h-screen bg-arch-bg">
+      <nav className="flex h-12 items-center justify-between border-b border-arch-border bg-arch-surface px-6">
+        <Link href="/status" className="text-[0.72rem] font-semibold text-arch-muted hover:text-arch-ink">
+          ← Configuratiestatus
+        </Link>
+        <span className="text-[0.68rem] font-bold tracking-[0.1em] text-arch-teal uppercase">
+          Notificatie.nl — OMC
+        </span>
+      </nav>
 
-      <div className="flex h-[calc(100vh-56px)] flex-1 overflow-hidden">
-        <Sidebar scenarios={scenarios} currentKey={currentKey} onSelect={setSelectedKey} />
+      <div className="flex flex-col gap-4 px-6 py-6">
+        <ArchitectureHeader
+          isTracing={isTracing}
+          onToggleTrace={() => setIsTracing((t) => !t)}
+          onReset={reset}
+        />
 
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <Legend />
+        <MetricsBar
+          environment={environment}
+          onEnvironmentChange={setEnvironment}
+          load={metrics.load}
+          avgHandlingMs={metrics.avgHandlingMs}
+          throughputPerSec={metrics.throughputPerSec}
+          sparkline={metrics.sparkline}
+        />
 
-          <div className="flex-shrink-0 border-b border-border bg-surface px-[1.4rem] pt-3.5 pb-2.5">
-            <div className="mb-0.5 text-[0.62rem] font-bold tracking-[0.12em] text-orange uppercase">
-              {current ? (current.channel === "overview" ? "overview" : `${current.channel} channel`) : "overview"}
-            </div>
-            <div className="text-[1.15rem] font-bold text-dark">{current?.name ?? "—"}</div>
-            <div className="mt-0.5 text-[0.75rem] text-muted">
-              {current?.desc ?? "Select a scenario from the list."}
-            </div>
-          </div>
+        <ConnectionLegend />
 
-          {loading && (
-            <div className="flex items-center gap-2.5 p-12 text-[0.82rem] text-muted">
-              <div className="h-4 w-4 animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-border border-t-orange" />
-              Initialising…
-            </div>
-          )}
-          {error && <div className="p-12 text-[0.82rem] text-red">Failed to load scenarios: {error}</div>}
-          {current && (
-            <DiagramViewer key={current.key} scenario={current} onNavigate={setSelectedKey} />
-          )}
+        <div
+          className="w-full overflow-hidden rounded-lg border border-arch-border bg-arch-surface"
+          style={{ height: 900 }}
+        >
+          <ReactFlowProvider>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={NODE_TYPES}
+              edgeTypes={EDGE_TYPES}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              panOnDrag={false}
+              panOnScroll={false}
+              zoomOnScroll={false}
+              zoomOnPinch={false}
+              zoomOnDoubleClick={false}
+              minZoom={0.15}
+              maxZoom={1.1}
+              proOptions={{ hideAttribution: true }}
+            >
+              <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
+              <FitViewOnReady />
+            </ReactFlow>
+          </ReactFlowProvider>
         </div>
+
+        <p className="text-[0.68rem] text-arch-faint">
+          Selecteer een flow in het paneel &ldquo;Output Patronen&rdquo; om te zien welke
+          registers, kanalen en bevestigingen die flow daadwerkelijk gebruikt — niet-gebruikte
+          onderdelen dimmen. Grijze, gestippelde kaarten zijn nog niet aangesloten op een echte
+          OMC-integratie. Klik het diagram-icoon om de beslisboom van de geselecteerde flow te
+          bekijken.
+        </p>
       </div>
+
+      <DiagramModal scenario={diagramOpen ? activeDiagram : null} onClose={() => setDiagramOpen(false)} />
     </div>
   );
 }
