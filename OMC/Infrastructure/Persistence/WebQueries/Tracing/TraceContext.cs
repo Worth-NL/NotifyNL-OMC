@@ -21,6 +21,8 @@ namespace WebQueries.Tracing
             public required Stopwatch Stopwatch { get; init; }
             public required TraceEmitter Emitter { get; init; }
             public string? Scenario { get; set; }
+            public string? LastStage { get; set; }
+            public string? LastStatus { get; set; }
         }
 
         /// <summary>
@@ -62,7 +64,15 @@ namespace WebQueries.Tracing
         public static void Emit(string stage, string status, string? detail = null)
         {
             State? state = s_current.Value;
-            if (state is null || !state.Emitter.HasSubscribers)
+            if (state is null)
+            {
+                return;
+            }
+
+            state.LastStage = stage;
+            state.LastStatus = status;
+
+            if (!state.Emitter.HasSubscribers)
             {
                 return;
             }
@@ -74,6 +84,21 @@ namespace WebQueries.Tracing
                 Scenario: state.Scenario,
                 Detail: detail,
                 ElapsedMs: state.Stopwatch.ElapsedMilliseconds));
+        }
+
+        /// <summary>
+        /// If the last-reported step for the current trace was a "start" that never reached a
+        /// terminal status (an exception propagated out of the register/gate call that would
+        /// have completed it — most call sites don't wrap every individual call in try/catch),
+        /// emits a synthetic "fail" for that same stage so the trace never just goes silent.
+        /// Call from the outermost catch block around notification processing.
+        /// </summary>
+        public static void EmitPendingFailure()
+        {
+            if (s_current.Value is { LastStatus: "start", LastStage: { } stage })
+            {
+                Emit(stage, "fail");
+            }
         }
 
         /// <summary>

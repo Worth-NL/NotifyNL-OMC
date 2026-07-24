@@ -134,6 +134,11 @@ namespace EventsHandler.Services.DataProcessing
             // Handling errors in a specific way depends on their types or severities
             catch (Exception exception)
             {
+                // Most call sites only emit "start" before a register/gate call, not a
+                // try/catch around every single one — without this, an exception here would
+                // otherwise leave the dashboard's trace hanging on that step forever instead
+                // of showing the failure.
+                TraceContext.EmitPendingFailure();
                 return HandleException(exception, json, details);
             }
             finally
