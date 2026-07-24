@@ -1,4 +1,4 @@
-import { TraceLogLine } from "@/hooks/useTraceStream";
+import { TraceLogLine } from "@/hooks/useOmcTelemetry";
 
 const STATUS_LABEL: Record<TraceLogLine["status"], string> = {
   start: "start",

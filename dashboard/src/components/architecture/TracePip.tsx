@@ -2,7 +2,7 @@
 
 import { getBezierPath, Position } from "@xyflow/react";
 import { LayoutResult } from "@/lib/layout";
-import { TraceHop } from "@/hooks/useTraceStream";
+import { TraceHop } from "@/hooks/useOmcTelemetry";
 
 export interface NodeRect {
   x: number;
