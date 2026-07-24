@@ -246,7 +246,6 @@ export default function FlowPage() {
           sourceHandle: handles.sourceHandle,
           targetHandle: handles.targetHandle,
           type: "traffic",
-          data: { live, throughput: metrics.nodeThroughput[e.source] ?? 0 },
           style: {
             stroke: color,
             strokeWidth: live ? 1.75 : 1,
@@ -255,7 +254,7 @@ export default function FlowPage() {
           },
         };
       }),
-    [usedKeys, metrics.nodeThroughput],
+    [usedKeys],
   );
 
   return (
