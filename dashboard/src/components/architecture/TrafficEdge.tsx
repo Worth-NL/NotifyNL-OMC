@@ -1,10 +1,31 @@
 import { BaseEdge, EdgeProps, getBezierPath } from "@xyflow/react";
 
-// Curved edge matching the reference design's style. Used to render animated "ambient
-// traffic" bubbles driven by spoofed throughput data — removed because it read as real
-// activity when nothing was actually happening. The real trace pip (TracePip.tsx) is now the
-// only thing that moves along these edges, and only for genuine notifications.
-export function TrafficEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style }: EdgeProps) {
+export interface TrafficEdgeData extends Record<string, unknown> {
+  /** True while a real trace hop is currently traversing this exact edge. */
+  live?: boolean;
+  /** True when the hop is walking the edge backward (e.g. a register's return trip to
+   * Output Patronen) — flips which way the flowing dots travel. */
+  reverse?: boolean;
+  /** Category color for the flowing-dots overlay; falls back to the edge's own stroke. */
+  liveColor?: string;
+}
+
+// Curved edge matching the reference design's style. The flowing-dots overlay below uses the
+// same stroke-dasharray/stroke-dashoffset technique as the reference's always-on ambient
+// animation, but — unlike that version — is only ever rendered on the specific edge a real
+// trace hop is currently traversing, for as long as it's live. Nothing animates when no real
+// notification is moving through the system.
+export function TrafficEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style,
+  data,
+}: EdgeProps) {
   const [path] = getBezierPath({
     sourceX,
     sourceY,
@@ -15,5 +36,25 @@ export function TrafficEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosi
     curvature: 0.42,
   });
 
-  return <BaseEdge id={id} path={path} style={style} />;
+  const { live, reverse, liveColor } = (data as TrafficEdgeData) ?? {};
+
+  return (
+    <>
+      <BaseEdge id={id} path={path} style={style} />
+      {live && (
+        <path
+          d={path}
+          fill="none"
+          stroke={liveColor ?? style?.stroke ?? "var(--color-arch-teal)"}
+          strokeWidth={2.75}
+          strokeLinecap="round"
+          strokeDasharray="2 15"
+          style={{
+            animation: "arch-flow-dash 0.5s linear infinite",
+            animationDirection: reverse ? "reverse" : "normal",
+          }}
+        />
+      )}
+    </>
+  );
 }
