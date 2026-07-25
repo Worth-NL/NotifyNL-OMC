@@ -210,7 +210,12 @@ export default function FlowPage() {
 
   const activeHop = telemetry.activeHop;
 
-  const edges: Edge[] = useMemo(
+  // Static per-edge definitions — deliberately independent of `activeHop`, so a hop change
+  // never recreates the other ~32 edges' objects. React Flow re-renders a TrafficEdge whenever
+  // its object reference changes; recomputing the whole array every ~second (once per hop) was
+  // making 32 unrelated edges re-render alongside the one that actually mattered, which was
+  // enough main-thread churn to visibly disrupt the traveling dot's SMIL timing.
+  const baseEdges: Edge[] = useMemo(
     () =>
       EDGES.map((e, i) => {
         const sourceActive = ALL_ARCH_NODES.find((n) => n.key === e.source)?.active ?? true;
@@ -219,16 +224,7 @@ export default function FlowPage() {
         const color = EDGE_CATEGORY_COLOR[e.category];
         const handles = LAYOUT.edgeHandles[`${e.source}->${e.target}`];
 
-        // A real hop rides this exact edge — forward if it matches the declared direction,
-        // reverse for a register's return trip to Output Patronen (same line, walked backward).
-        const traceForward = activeHop?.from === e.source && activeHop?.to === e.target;
-        const traceReverse = activeHop?.from === e.target && activeHop?.to === e.source;
-
-        const data: TrafficEdgeData = {
-          live: traceForward || traceReverse,
-          reverse: traceReverse,
-          liveColor: color,
-        };
+        const data: TrafficEdgeData = { liveColor: color };
 
         return {
           id: `e-${i}-${e.source}-${e.target}`,
@@ -246,8 +242,23 @@ export default function FlowPage() {
           },
         };
       }),
-    [usedKeys, activeHop],
+    [usedKeys],
   );
+
+  // Patches in `live`/`reverse`/`seq` for only the one edge (if any) a real hop is currently
+  // traversing — every other edge keeps the exact same object reference from `baseEdges`.
+  const edges: Edge[] = useMemo(() => {
+    if (!activeHop) return baseEdges;
+    return baseEdges.map((edge) => {
+      const traceForward = activeHop.from === edge.source && activeHop.to === edge.target;
+      const traceReverse = activeHop.from === edge.target && activeHop.to === edge.source;
+      if (!traceForward && !traceReverse) return edge;
+      return {
+        ...edge,
+        data: { ...edge.data, live: true, reverse: traceReverse, seq: activeHop.seq } satisfies TrafficEdgeData,
+      };
+    });
+  }, [baseEdges, activeHop]);
 
   return (
     <div className="min-h-screen bg-arch-bg">
