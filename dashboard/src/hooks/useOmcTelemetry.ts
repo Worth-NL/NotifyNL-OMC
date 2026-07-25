@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { TRACE_STREAM_URL, TraceEvent } from "@/lib/api";
 import { findTracePath } from "@/lib/tracePath";
+import { PATTERN_ENGINE_KEY, REGISTER_NODES } from "@/lib/architecture";
+
+const REGISTER_KEYS = new Set(REGISTER_NODES.map((n) => n.key));
 
 export interface TraceLogLine {
   id: string;
@@ -17,7 +20,7 @@ export interface TraceLogLine {
 export interface TraceHop {
   from: string;
   to: string;
-  /** Monotonic per-hop counter — lets TracePip force a fresh SMIL restart even when two
+  /** Monotonic per-hop counter, exposed so consumers can force a restart even when two
    * different hops happen to share the same (from, to) pair. */
   seq: number;
 }
@@ -29,12 +32,12 @@ interface PlannedHop {
   commit?: TraceLogLine;
 }
 
-// Real steps arrive within milliseconds of each other — far too fast to see move. This is the
-// artificial per-hop pace for the pip/log replay, independent of how fast the real pipeline
-// actually ran (each event still carries its own real elapsedMs). Kept slightly longer than
-// TracePip's 0.6s glide so each hop finishes with a brief, natural pause at the node before
-// the next one starts, rather than the next glide cutting the previous one off.
-const HOP_DELAY_MS = 700;
+// Real steps arrive within milliseconds of each other — far too fast for a human to see move.
+// This is the artificial per-hop pace for the edge-flow/log replay, independent of how fast
+// the real pipeline actually ran (each event still carries its own real elapsedMs). Deliberately
+// generous — kept well longer than TrafficEdge's 0.5s flow-dash cycle so each hop gets a couple
+// of clearly visible cycles before the next one starts, rather than a blink-and-you-miss-it flash.
+const HOP_DELAY_MS = 1000;
 const MAX_LOG_LINES = 150;
 
 // How the numeric metrics are derived from real events — no simulation, no database:
@@ -65,9 +68,9 @@ export interface OmcTelemetry {
  * The single real-time data source for the architecture page. Connects to
  * /status/trace/stream once, for as long as this hook stays mounted, and derives every number
  * it returns from genuine events — nothing here is simulated or backed by a database.
- * `tracingActive` only toggles whether the pip/log replay is shown; the underlying connection
- * and counters (throughput, load, totals) keep running regardless, so they reflect activity
- * "since this page was opened" even while the visual trace is paused.
+ * `tracingActive` only toggles whether the edge-flow/log replay is shown; the underlying
+ * connection and counters (throughput, load, totals) keep running regardless, so they reflect
+ * activity "since this page was opened" even while the visual trace is paused.
  */
 export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
   const [connected, setConnected] = useState(false);
@@ -187,10 +190,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       };
 
       const lastStage = lastStageByTraceRef.current.get(event.traceId);
-      lastStageByTraceRef.current.set(event.traceId, event.stage);
 
       if (!lastStage) {
         // First step of a new trace — nothing to animate a hop from yet, just record it.
+        lastStageByTraceRef.current.set(event.traceId, event.stage);
         hopQueueRef.current.push({ from: event.stage, to: event.stage, commit: logLine });
         playQueue();
         return;
@@ -198,6 +201,7 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
 
       const path = lastStage === event.stage ? [lastStage, event.stage] : findTracePath(lastStage, event.stage);
       if (!path || path.length < 2) {
+        lastStageByTraceRef.current.set(event.traceId, event.stage);
         hopQueueRef.current.push({ from: event.stage, to: event.stage, commit: logLine });
         playQueue();
         return;
@@ -211,6 +215,21 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
           commit: isLastLeg ? logLine : undefined,
         });
       }
+
+      // Registers are never a forward stage of their own — OMC calls out and comes straight
+      // back to Output Patronen before doing anything else (see lib/architecture.ts's EDGES
+      // comment). Once a register call reaches a terminal status, queue that return leg right
+      // away instead of waiting for whatever stage happens to fire next: without this, two
+      // calls to the same register in a row (or just a gap before the next real event) would
+      // leave the pip sitting at the register instead of visibly heading back to the hub.
+      const isRegisterRoundTrip = event.status !== "start" && REGISTER_KEYS.has(event.stage);
+      if (isRegisterRoundTrip) {
+        hopQueueRef.current.push({ from: event.stage, to: PATTERN_ENGINE_KEY });
+        lastStageByTraceRef.current.set(event.traceId, PATTERN_ENGINE_KEY);
+      } else {
+        lastStageByTraceRef.current.set(event.traceId, event.stage);
+      }
+
       playQueue();
     };
 

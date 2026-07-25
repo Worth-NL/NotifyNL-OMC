@@ -2,16 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  Background,
-  BackgroundVariant,
-  ReactFlow,
-  ReactFlowProvider,
-  ViewportPortal,
-  Edge,
-  Node,
-  useReactFlow,
-} from "@xyflow/react";
+import { Background, BackgroundVariant, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import {
   CHANNEL_NODES,
@@ -32,9 +23,8 @@ import { MetricsBar } from "@/components/architecture/MetricsBar";
 import { ConnectionLegend } from "@/components/architecture/ConnectionLegend";
 import { NodeState } from "@/components/architecture/NodeCard";
 import { ColumnLabelNode, FlowNode, PatternEngineFlowNode } from "@/components/architecture/FlowNode";
-import { TrafficEdge } from "@/components/architecture/TrafficEdge";
+import { TrafficEdge, TrafficEdgeData } from "@/components/architecture/TrafficEdge";
 import { DiagramModal } from "@/components/architecture/DiagramModal";
-import { NodeRect, TracePip } from "@/components/architecture/TracePip";
 import { LiveLogPanel } from "@/components/architecture/LiveLogPanel";
 
 // The "all" flow option has no single scenario of its own — it maps to the backend's
@@ -97,15 +87,6 @@ registerRows.forEach((row, rowIndex) => {
 const LAYOUT: LayoutResult = {
   positions: { ...mainLayout.positions, ...registerPositions },
   edgeHandles: { ...mainLayout.edgeHandles, ...registerEdgeHandles },
-};
-
-// Geometry lookup for the trace pip — same positions React Flow uses, plus each node's real
-// rendered size, so the pip's bezier curves line up exactly with the static edges underneath.
-const NODE_RECTS: Record<string, NodeRect> = {
-  [PATTERN_ENGINE_KEY]: { ...LAYOUT.positions[PATTERN_ENGINE_KEY], width: PATTERN_ENGINE_WIDTH, height: PATTERN_ENGINE_HEIGHT },
-  ...Object.fromEntries(
-    ALL_ARCH_NODES.map((n) => [n.key, { ...LAYOUT.positions[n.key], width: CARD_WIDTH, height: CARD_HEIGHT }]),
-  ),
 };
 
 const COLUMN_GROUPS: { label: string; keys: string[] }[] = [
@@ -227,6 +208,8 @@ export default function FlowPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFlowKey, telemetry.nodeThroughput, telemetry.totalProcessed, usedKeys, activeDiagram]);
 
+  const activeHop = telemetry.activeHop;
+
   const edges: Edge[] = useMemo(
     () =>
       EDGES.map((e, i) => {
@@ -236,6 +219,17 @@ export default function FlowPage() {
         const color = EDGE_CATEGORY_COLOR[e.category];
         const handles = LAYOUT.edgeHandles[`${e.source}->${e.target}`];
 
+        // A real hop rides this exact edge — forward if it matches the declared direction,
+        // reverse for a register's return trip to Output Patronen (same line, walked backward).
+        const traceForward = activeHop?.from === e.source && activeHop?.to === e.target;
+        const traceReverse = activeHop?.from === e.target && activeHop?.to === e.source;
+
+        const data: TrafficEdgeData = {
+          live: traceForward || traceReverse,
+          reverse: traceReverse,
+          liveColor: color,
+        };
+
         return {
           id: `e-${i}-${e.source}-${e.target}`,
           source: e.source,
@@ -243,6 +237,7 @@ export default function FlowPage() {
           sourceHandle: handles.sourceHandle,
           targetHandle: handles.targetHandle,
           type: "traffic",
+          data,
           style: {
             stroke: color,
             strokeWidth: live ? 1.75 : 1,
@@ -251,7 +246,7 @@ export default function FlowPage() {
           },
         };
       }),
-    [usedKeys],
+    [usedKeys, activeHop],
   );
 
   return (
@@ -307,9 +302,6 @@ export default function FlowPage() {
             >
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
               <FitViewOnReady />
-              <ViewportPortal>
-                <TracePip hop={telemetry.activeHop} nodeRects={NODE_RECTS} />
-              </ViewportPortal>
             </ReactFlow>
           </ReactFlowProvider>
         </div>

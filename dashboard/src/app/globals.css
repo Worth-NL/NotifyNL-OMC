@@ -98,3 +98,15 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* Flowing-dots traffic overlay on architecture edges (TrafficEdge.tsx) — same technique as
+   the reference design's always-on ambient animation, but only ever applied to the specific
+   edge a real trace hop is currently traversing. -17 = -(dasharray 2 + 15), one full
+   dash+gap cycle, so the loop is seamless. `animation-direction: reverse` (set inline per
+   edge based on hop direction) plays the same keyframes backward instead of needing a
+   second, mirrored keyframe set. */
+@keyframes arch-flow-dash {
+  to {
+    stroke-dashoffset: -17;
+  }
+}
