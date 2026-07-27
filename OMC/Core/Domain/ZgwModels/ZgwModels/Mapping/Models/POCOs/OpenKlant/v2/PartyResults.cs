@@ -46,7 +46,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         ///   The data of a single party (e.g., citizen or organization).
         /// </returns>
         /// <exception cref="HttpRequestException"/>
-        public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+        public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber, string Reason)
             Party(OmcConfiguration configuration,
                 string? caseIdentifier = null)
         {
@@ -61,6 +61,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             DistributionChannels distributionChannel = default;
             string fallbackEmailAddress = string.Empty;
             string fallbackPhoneNumber = string.Empty;
+            string reason = string.Empty;
 
             // Determine which party result should be returned and match the data
             foreach (PartyResult partyResult in this.Results)
@@ -74,9 +75,9 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
                 // Determine which address is preferred
                 if (IsPreferredFound(configuration, partyResult,
                         ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
-                        ref fallbackEmailAddress, ref fallbackPhoneNumber, caseIdentifier))
+                        ref fallbackEmailAddress, ref fallbackPhoneNumber, ref reason, caseIdentifier))
                 {
-                    return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
+                    return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber, reason);
                 }
             }
 
@@ -89,7 +90,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         /// <inheritdoc>
         ///     <cref>Party(OmcConfiguration)</cref>
         /// </inheritdoc>
-        public static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+        public static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber, string Reason)
             Party(
                 OmcConfiguration configuration,
                 PartyResult partyResult,
@@ -106,13 +107,14 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             DistributionChannels distributionChannel = default;
             string fallbackEmailAddress = string.Empty;
             string fallbackPhoneNumber = string.Empty;
+            string reason = string.Empty;
 
             // Determine which address is preferred
             if (IsPreferredFound(configuration, partyResult,
                     ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
-                    ref fallbackEmailAddress, ref fallbackPhoneNumber, caseIdentifier))
+                    ref fallbackEmailAddress, ref fallbackPhoneNumber, ref reason, caseIdentifier))
             {
-                return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
+                return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber, reason);
             }
 
             // Pick any matching address
@@ -132,6 +134,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             ref DistributionChannels distributionChannel,
             ref string fallbackEmailAddress,
             ref string fallbackPhoneNumber,
+            ref string reason,
             string? caseIdentifier = null)
         {
             Guid? prefDigitalAddressId = party.PreferredDigitalAddress?.Id;
@@ -165,7 +168,8 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     // Set fallback values when case identifier matches, and return true
                     SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
-                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel);
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel,
+                        ref reason, $"digital address is linked to case \"{caseIdentifier}\"");
                     return true;
                 }
 
@@ -180,7 +184,8 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     // Update fallback values with the preferred address
                     SetPreferredAddress(party, digitalAddress, configuration, ref fallbackEmailOwningParty,
-                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel);
+                        ref fallbackPhoneOwningParty, ref fallbackEmailAddress, ref fallbackPhoneNumber, ref distributionChannel,
+                        ref reason, "this is the party's preferred digital address in OpenKlant");
                     // Set flag that a preferred address is found. This can still be overridden by case identification match
                     prefDigitalAddressFoundFlag = true;
                 }
@@ -214,7 +219,10 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             // ReSharper disable once RedundantAssignment
             ref string fallbackPhoneNumber,
             // ReSharper disable once RedundantAssignment
-            ref DistributionChannels distributionChannel)
+            ref DistributionChannels distributionChannel,
+            // ReSharper disable once RedundantAssignment
+            ref string reason,
+            string reasonText)
         {
             DistributionChannels preferredDistributionChannel = DetermineDistributionChannel(digitalAddress, configuration);
 
@@ -228,10 +236,11 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             fallbackPhoneOwningParty = party;
             fallbackPhoneNumber = phoneNumber;
             distributionChannel = preferredDistributionChannel;
+            reason = reasonText;
         }
 
         // NOTE: Checks alternative contact addresses
-        private static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
+        private static (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber, string Reason)
             GetMatchingContactDetails(
                 PartyResult fallbackEmailOwningParty, PartyResult fallbackPhoneOwningParty,
                 string fallbackEmailAddress, string fallbackPhoneNumber)
@@ -241,7 +250,8 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             if (fallbackEmailAddress.IsNotNullOrEmpty())
             {
                 return (fallbackEmailOwningParty, DistributionChannels.Email,
-                    EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty);
+                    EmailAddress: fallbackEmailAddress, PhoneNumber: string.Empty,
+                    Reason: "no case-linked or preferred digital address found; used the first available e-mail address");
             }
 
             // 3b. FALLBACK APPROACH: If the email also couldn't be determined then alternatively
@@ -249,7 +259,8 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             if (fallbackPhoneNumber.IsNotNullOrEmpty())
             {
                 return (fallbackPhoneOwningParty, DistributionChannels.Sms,
-                    EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber);
+                    EmailAddress: string.Empty, PhoneNumber: fallbackPhoneNumber,
+                    Reason: "no case-linked or preferred digital address found, and no e-mail address available; used the first available phone number");
             }
 
             // 3c. In the case of worst possible scenario, that preferred address couldn't be determined

@@ -73,7 +73,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);  // If both phone and email are preferred, email would have priority
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -83,6 +83,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));  // The preferred address was found
                 Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -95,7 +96,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults testPartyResults = GetTestPartyResults(testPartyEmail, testPartyPhone);  // If both phone and email are preferred, email would have priority
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -105,6 +106,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // First encountered email is returned because the preferred address couldn't be determined
                 Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+                Assert.That(actualReason, Does.Contain("first available e-mail"));
             });
         }
 
@@ -118,7 +120,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -128,6 +130,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
                 Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -142,7 +145,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = testPartyResults.Party(this._validAppSettingsConfiguration, CaseIdentification);
 
             // Assert
@@ -152,6 +155,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // The preferred address was found
                 Assert.That(actualPhoneNumber, Is.Empty);  // Since email is priority, phone should be ignored
+                Assert.That(actualReason, Does.Contain(CaseIdentification!));
             });
         }
 
@@ -163,7 +167,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResults testPartyResults = GetTestPartyResults(testParty);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = testPartyResults.Party(this._validAppSettingsConfiguration);
 
             // Assert
@@ -173,6 +177,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
                 Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));  // First encountered phone is returned because the preferred address couldn't be determined
+                Assert.That(actualReason, Does.Contain("first available phone"));
             });
         }
 
@@ -208,7 +213,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, testId, testId);  // Email should have priority over phone
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail);
 
             // Assert
@@ -218,6 +223,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));  // The preferred address was found
                 Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -231,7 +237,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testPartyEmail = GetTestPartyResult_Email_CaseMatch(this._validAppSettingsConfiguration, testId, addressId);  // Email should have priority over phone
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail, CaseIdentification);
 
             // Assert
@@ -241,6 +247,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // The preferred address was found
                 Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+                Assert.That(actualReason, Does.Contain(CaseIdentification!));
             });
         }
 
@@ -251,7 +258,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testPartyEmail = GetTestPartyResult_Email(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());  // Email should have priority over phone
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testPartyEmail);
 
             // Assert
@@ -261,6 +268,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
                 Assert.That(actualEmailAddress, Is.EqualTo($"first_{TestEmail}"));  // First encountered email is returned because the preferred address couldn't be determined
                 Assert.That(actualPhoneNumber, Is.Empty);  // Only email is provided
+                Assert.That(actualReason, Does.Contain("first available e-mail"));
             });
         }
 
@@ -273,7 +281,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
@@ -283,6 +291,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
                 Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -293,7 +302,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, Guid.Empty, Guid.NewGuid());
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
@@ -303,6 +312,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
                 Assert.That(actualPhoneNumber, Is.EqualTo($"first_{TestPhone}"));  // First encountered phone is returned because the preferred address couldn't be determined
+                Assert.That(actualReason, Does.Contain("first available phone"));
             });
         }
 
@@ -316,7 +326,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testParty = GetTestPartyResult_Phone_V2(this._validAppSettingsConfiguration, testId, testId);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
@@ -326,6 +336,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);  // Only phone is provided
                 Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -340,7 +351,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testParty = GetTestPartyResult_Phone_Email(this._validAppSettingsConfiguration, partyId, addressId);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
@@ -348,8 +359,9 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             {
                 Assert.That(actualParty, Is.EqualTo(testParty));
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
-                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}")); 
+                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));
                 Assert.That(actualPhoneNumber, Is.Empty);  // The preferred address was found
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
 
@@ -364,7 +376,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             PartyResult testParty = GetTestPartyResult_Email_Phone(this._validAppSettingsConfiguration, partyId, addressId);
 
             // Act
-            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
+            (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, string actualReason)
                 = PartyResults.Party(this._validAppSettingsConfiguration, testParty);
 
             // Assert
@@ -374,6 +386,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
                 Assert.That(actualEmailAddress, Is.Empty);
                 Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));  // The preferred address was found
+                Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
         #endregion
