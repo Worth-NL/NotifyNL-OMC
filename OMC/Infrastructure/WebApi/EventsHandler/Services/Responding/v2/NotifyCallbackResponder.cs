@@ -10,6 +10,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.Register.Interfaces;
+using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
@@ -28,6 +29,7 @@ namespace EventsHandler.Services.Responding.v2
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
         private readonly INotifyService<NotifyData> _notifyService;
+        private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyCallbackResponder"/> class.
@@ -36,13 +38,15 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="notifyService"></param>
-        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
+        /// <param name="traceEmitter">Broadcasts this callback's outcome to the dashboard, correlated back to the original trace via <see cref="NotifyReference.TraceId"/>.</param>
+        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService, TraceEmitter traceEmitter)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
             this._responder = this;  // NOTE: Shortcut to use interface methods faster ("NotifyResponder" parent derives from "IRespondingService<T>" interface)
             this._telemetry = telemetry;
             this._notifyService = notifyService;
+            this._traceEmitter = traceEmitter;
         }
 
         /// <inheritdoc cref="GeneralResponder.HandleNotifyCallbackAsync(object)"/>
@@ -67,7 +71,11 @@ namespace EventsHandler.Services.Responding.v2
 
                 if (status is FeedbackTypes.Success or FeedbackTypes.Failure)
                 {
-                    informResult = await InformUserAboutStatusAsync(callback, status);
+                    (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
+
+                    EmitDeliveryConfirmationTrace(reference, notificationMethod, status);
+
+                    informResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
                 }
 
                 // If we have a telemetry result, base the HTTP response on that
@@ -116,9 +124,9 @@ namespace EventsHandler.Services.Responding.v2
         private const string True = "true";
         private const string False = "false";
 
-        private async Task<HttpRequestResponse> InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        private async Task<HttpRequestResponse> InformUserAboutStatusAsync(
+            DeliveryReceipt callback, NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
         {
-            (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
             NotificationData notificationData = await GetNotificationDataAsync(reference, notificationMethod, callback.Id);
 
             // Register the new status of the notification (for the user)
@@ -134,6 +142,43 @@ namespace EventsHandler.Services.Responding.v2
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
+        }
+
+        /// <summary>
+        /// Resolves the dashboard trace this delivery receipt belongs to (if any — older
+        /// in-flight sends from before this correlation existed won't have a <see cref="NotifyReference.TraceId"/>)
+        /// and reports the real outcome back to it: the channel-send stage that's been sitting
+        /// in "pending" since the original scenario handed off to "Notify NL"
+        /// (see EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync),
+        /// and "contactmoment" right after it — this is genuinely the moment either of those
+        /// resolve, not the synchronous send.
+        /// </summary>
+        private void EmitDeliveryConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
+        {
+            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            {
+                return;
+            }
+
+            string channelStage = notificationMethod switch
+            {
+                NotifyMethods.Email => "notify-email",
+                NotifyMethods.Sms => "notify-sms",
+                NotifyMethods.Letter => "notify-post",
+                _ => "kanaalresolutie"
+            };
+            string status = feedbackType == FeedbackTypes.Success ? "ok" : "fail";
+
+            long elapsedMs = 0;
+            string detail = "confirmed by Notify NL";
+            if (reference.SentAtUnixMs is { } sentAtUnixMs)
+            {
+                elapsedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - sentAtUnixMs;
+                detail = $"confirmed by Notify NL after {TimeSpan.FromMilliseconds(elapsedMs):mm\\:ss}";
+            }
+
+            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
         }
 
         private void LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
