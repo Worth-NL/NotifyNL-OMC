@@ -1,13 +1,14 @@
 import { TraceLogLine } from "@/hooks/useOmcTelemetry";
 
-const STATUS_LABEL: Record<TraceLogLine["status"], string> = {
+export const STATUS_LABEL: Record<TraceLogLine["status"], string> = {
   start: "start",
   ok: "ok",
   fail: "fout",
   abort: "afgebroken",
+  pending: "wacht op bevestiging",
 };
 
-function isError(status: TraceLogLine["status"]): boolean {
+export function isError(status: TraceLogLine["status"]): boolean {
   return status === "fail" || status === "abort";
 }
 
@@ -37,7 +38,9 @@ export function LiveLogPanel({ log, connected }: { log: TraceLogLine[]; connecte
               {line.scenario && <span className="shrink-0 text-arch-teal">{line.scenario}</span>}
               <span className="shrink-0 font-semibold">{line.stage}</span>
               <span className={isError(line.status) ? "font-semibold" : "text-arch-muted"}>{STATUS_LABEL[line.status]}</span>
-              {line.detail && <span className="text-arch-faint">({line.detail})</span>}
+              {line.detail && (
+                <span className={isError(line.status) ? "font-semibold text-red" : "text-arch-faint"}>({line.detail})</span>
+              )}
             </div>
           ))
         )}

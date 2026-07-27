@@ -10,17 +10,23 @@ export function NodeCard({
   node,
   state,
   throughput,
+  onClick,
 }: {
   node: ArchitectureNode;
   state: NodeState;
   throughput?: number;
+  onClick?: () => void;
 }) {
   const isInactive = state === "inactive";
   const isDimmed = state === "dimmed";
 
   return (
-    <div
-      className={`rounded-lg border bg-arch-surface p-3 transition-all duration-200 ${
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-lg border bg-arch-surface p-3 text-left transition-all duration-200 ${
+        onClick ? "cursor-pointer hover:border-arch-teal/60" : ""
+      } ${
         isInactive
           ? "border-dashed border-arch-border opacity-70"
           : isDimmed
@@ -54,6 +60,6 @@ export function NodeCard({
           </span>
         )}
       </div>
-    </div>
+    </button>
   );
 }

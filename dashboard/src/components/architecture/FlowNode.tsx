@@ -24,6 +24,7 @@ export interface FlowNodeData extends Record<string, unknown> {
   node: ArchitectureNode;
   state: NodeState;
   throughput?: number;
+  onClick?: () => void;
 }
 
 // @xyflow/react sets `pointer-events: none` inline on `.react-flow__node` whenever the node
@@ -36,7 +37,7 @@ export function FlowNode({ data }: { data: FlowNodeData }) {
   return (
     <div className="pointer-events-auto" style={{ width: 220 }}>
       <AllHandles />
-      <NodeCard node={data.node} state={data.state} throughput={data.throughput} />
+      <NodeCard node={data.node} state={data.state} throughput={data.throughput} onClick={data.onClick} />
     </div>
   );
 }
