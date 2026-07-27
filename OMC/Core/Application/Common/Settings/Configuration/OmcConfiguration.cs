@@ -1259,6 +1259,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>
@@ -1302,6 +1307,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>
