@@ -57,6 +57,16 @@ namespace WebQueries.Tracing
         }
 
         /// <summary>
+        /// The identifier of the trace currently flowing through this async call chain, or
+        /// <see langword="null"/> outside <see cref="Start"/>/<see cref="Clear"/>. Lets code that
+        /// hands work off to something asynchronous (e.g. a "Notify NL" send, whose delivery
+        /// confirmation arrives on a later, unrelated request) stash this trace's identity so
+        /// that later event can still be attributed to it.
+        /// </summary>
+        public static string? CurrentTraceId
+            => s_current.Value?.TraceId;
+
+        /// <summary>
         /// Emits a step for the current trace. A no-op if no trace is active (e.g. a test ping,
         /// or code running outside <see cref="Start"/>/<see cref="Clear"/>) or nobody is
         /// subscribed to the stream.
@@ -93,11 +103,16 @@ namespace WebQueries.Tracing
         /// emits a synthetic "fail" for that same stage so the trace never just goes silent.
         /// Call from the outermost catch block around notification processing.
         /// </summary>
-        public static void EmitPendingFailure()
+        /// <param name="detail">
+        /// The exception message explaining why processing failed — the same text already
+        /// returned to the API caller in the response body, so surfacing it here doesn't
+        /// disclose anything beyond what already crosses the system boundary.
+        /// </param>
+        public static void EmitPendingFailure(string? detail = null)
         {
             if (s_current.Value is { LastStatus: "start", LastStage: { } stage })
             {
-                Emit(stage, "fail");
+                Emit(stage, "fail", detail);
             }
         }
 

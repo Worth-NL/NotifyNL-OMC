@@ -9,6 +9,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.Tracing;
+using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
@@ -51,7 +52,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 this.Configuration.ZGW.Whitelist.ZaakClose_IDs().IsAllowed,
                 this._caseStatusType.Identification, GetWhitelistEnvVarName());
 
-            TraceContext.Emit("openzaak", "start");
+            Guid zaakId = notification.MainObjectUri.GetGuid();
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {zaakId}");
             this._case = await this._queryContext.GetCaseAsync(notification.MainObjectUri);
 
             if (this._case.Expanded?.Result.ResultType != null)
@@ -59,12 +61,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 this._resultType =
                     await this._queryContext.GetCaseResultTypeAsync(this._case.Expanded?.Result.ResultType!);
             }
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"zaak with id {zaakId} retrieved");
 
             // Preparing party details
-            TraceContext.Emit("openklant", "start");
+            TraceContext.Emit("openklant", "start", $"Attempting to retrieve klant for zaak with id {zaakId}");
             CommonPartyData party = await this._queryContext.GetPartyDataAsync(this._case.Uri, caseIdentifier: this._case.Identification);
-            TraceContext.Emit("openklant", "ok");
+            TraceContext.Emit("openklant", "ok", $"klant for zaak with id {zaakId} retrieved");
 
             return new PreparedData(party: party, caseUri: this._case.Uri);
         }

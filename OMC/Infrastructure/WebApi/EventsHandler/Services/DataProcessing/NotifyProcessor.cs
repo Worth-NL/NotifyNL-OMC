@@ -93,10 +93,11 @@ namespace EventsHandler.Services.DataProcessing
                 {
                     try
                     {
-                        TraceContext.Emit("kto", "start");
+                        TraceContext.Emit("kto", "start", "Attempting to send KTO survey");
                         WebQueries.KTO.Models.KtoScenario ktoScenario = _ktoScenarioFactory.Create();
                         HttpRequestResponse ktoResponse = await ktoScenario.SendKtoAsync(notification);
-                        TraceContext.Emit("kto", ktoResponse.IsFailure ? "fail" : "ok");
+                        TraceContext.Emit("kto", ktoResponse.IsFailure ? "fail" : "ok",
+                            ktoResponse.IsFailure ? ktoResponse.JsonResponse : "KTO survey sent");
 
                         return ktoResponse.IsFailure
                             ? ProcessingResult.Failure(ktoResponse.JsonResponse, json, details)
@@ -104,7 +105,7 @@ namespace EventsHandler.Services.DataProcessing
                     }
                     catch (Exception ex)
                     {
-                        TraceContext.Emit("kto", "fail");
+                        TraceContext.Emit("kto", "fail", ex.Message);
                         throw new Exception(ex.Message);
                     }
                 }
@@ -137,8 +138,9 @@ namespace EventsHandler.Services.DataProcessing
                 // Most call sites only emit "start" before a register/gate call, not a
                 // try/catch around every single one — without this, an exception here would
                 // otherwise leave the dashboard's trace hanging on that step forever instead
-                // of showing the failure.
-                TraceContext.EmitPendingFailure();
+                // of showing the failure. The message is the same text already returned to the
+                // API caller below via HandleException, just surfaced live on the dashboard too.
+                TraceContext.EmitPendingFailure(exception.Message);
                 return HandleException(exception, json, details);
             }
             finally

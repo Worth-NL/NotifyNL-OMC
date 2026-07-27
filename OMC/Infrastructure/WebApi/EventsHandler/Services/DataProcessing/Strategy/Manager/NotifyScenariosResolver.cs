@@ -47,7 +47,8 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             {
                 IQueryContext queryContext = this._dataQuery.From(model);
 
-                TraceContext.Emit("openzaak", "start");
+                Guid statusId = model.ResourceUri.GetGuid();
+                TraceContext.Emit("openzaak", "start", $"Attempting to retrieve status with id {statusId}");
                 CaseStatus caseStatus;
                 CaseStatusType currentCaseStatusType;
                 try
@@ -55,19 +56,19 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
                     currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    TraceContext.Emit("openzaak", "fail");
+                    TraceContext.Emit("openzaak", "fail", exception.Message);
                     throw;
                 }
-                TraceContext.Emit("openzaak", "ok");
+                TraceContext.Emit("openzaak", "ok", $"status with id {statusId} retrieved");
 
                 if (!currentCaseStatusType.IsNotificationExpected)
                 {
-                    TraceContext.Emit("informerencheck", "abort");
+                    TraceContext.Emit("informerencheck", "abort", $"status type {currentCaseStatusType.Identification} has \"informeren\" set to false");
                     throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren);
                 }
-                TraceContext.Emit("informerencheck", "ok");
+                TraceContext.Emit("informerencheck", "ok", $"status type {currentCaseStatusType.Identification} has \"informeren\" set to true");
 
                 // Scenario #1: "Case created"
                 if (currentCaseStatusType.SerialNumber == 1)

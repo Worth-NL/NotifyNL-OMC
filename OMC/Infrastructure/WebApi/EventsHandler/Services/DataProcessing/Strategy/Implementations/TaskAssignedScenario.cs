@@ -50,21 +50,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
-            TraceContext.Emit("objecten", "start");
+            Guid taskId = notification.MainObjectUri.GetGuid();
+            TraceContext.Emit("objecten", "start", $"Attempting to retrieve taak with id {taskId}");
             this._taskData = await this._queryContext.GetTaskAsync();
-            TraceContext.Emit("objecten", "ok");
+            TraceContext.Emit("objecten", "ok", $"taak with id {taskId} retrieved");
 
             // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
-                TraceContext.Emit("taakcheck", "abort");
+                TraceContext.Emit("taakcheck", "abort", $"task status is {this._taskData.Status}, expected {TaskStatuses.Open}");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             // Validation #2: The task needs to be assigned to a person
             if (this._taskData.Identification.Type is not (IdTypes.Bsn or IdTypes.Kvk))
             {
-                TraceContext.Emit("taakcheck", "abort");
+                TraceContext.Emit("taakcheck", "abort", $"identification type is {this._taskData.Identification.Type}");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
             }
             TraceContext.Emit("taakcheck", "ok");
@@ -73,11 +74,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // if case:
             // TODO: Will be aggregated with CaseStatusType in future
-            TraceContext.Emit("openzaak", "start");
+            Guid taskCaseId = this._taskData.CaseUri.GetGuid();
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaaktype for zaak with id {taskCaseId}");
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"zaaktype for zaak with id {taskCaseId} retrieved");
 
             // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
@@ -90,9 +92,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation based on casetye/statustype is over
 
             // this can be removed? i think?
-            TraceContext.Emit("openzaak", "start");
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {taskCaseId}");
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"zaak with id {taskCaseId} retrieved");
 
             // here more if's are neede because if idtype == bsn use bsn if idtyp == kvk use kvk number
             // Preparing party details
@@ -100,12 +102,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 ? this._taskData.Identification.Value  // BSN number
                 : null;
 
-            TraceContext.Emit("openklant", "start");
+            TraceContext.Emit("openklant", "start", $"Attempting to retrieve klant for zaak with id {taskCaseId}");
             CommonPartyData party = await this._queryContext.GetPartyDataAsync(
                 caseUri: this._case.Uri,
                 bsnNumber: bsnNumber,
                 caseIdentifier: this._case.Identification);
-            TraceContext.Emit("openklant", "ok");
+            TraceContext.Emit("openklant", "ok", $"klant for zaak with id {taskCaseId} retrieved");
 
             return new PreparedData(party: party, caseUri: this._case.Uri);
         }
