@@ -87,22 +87,17 @@ namespace WebQueries.MOBB
                 return HttpRequestResponse.Failure("Message text is empty or missing.");
             }
 
-            // Step 6: Validate the message
-            if (!messageData.IsInMyGovernmentMessageBox)
-            {
-                return HttpRequestResponse.Failure("Message is not intended for MyGovernment Berichtenbox.");
-            }
-
+            // Step 6: Resolve the recipient's BSN and OpenKlant party - needed regardless of MOBB vs. fallback
             string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
             if (recipientBsn == null)
             {
                 return HttpRequestResponse.Failure("Recipient is not a citizen (BSN not found in RecipientUrn).");
             }
 
-            // Resolve the OpenKlant party for this BSN (needed to correlate a contactmoment on the callback)
             CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn);
             Guid partyId = partyData.Uri.GetGuid();
 
+            // Step 7: Whitelist gate - applies regardless of delivery channel
             string? messageType = messageData.MessageType;
             if (string.IsNullOrEmpty(messageType) ||
                 !_configuration.ZGW.Whitelist.VtbMessage_Types().IsAllowed(messageType))
@@ -110,13 +105,19 @@ namespace WebQueries.MOBB
                 return HttpRequestResponse.Failure($"MessageType '{messageType}' not allowed by whitelist.");
             }
 
-            // Step 7: Append hardcoded postfix to the message text
+            // Step 8: MO BB? - if not eligible, fall back to digitale post (email) or a letter
+            if (!messageData.IsInMyGovernmentMessageBox)
+            {
+                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, partyData, partyId);
+            }
+
+            // Step 9: Append hardcoded postfix to the message text
             string modifiedMessageText = $"{messageData.MessageText}{HardcodedMessagePostfix}";
 
-            // Step 8: Fetch attachments (maximum 2) as SingularInformationObject
+            // Step 10: Fetch attachments (maximum 2) as SingularInformationObject
             List<SingularInformationObject> documents = await FetchAttachmentsAsync(queryContext, messageData.Attachments);
 
-            // Step 9: Build the request payload for NotifyNL/MOBB
+            // Step 11: Build the request payload for NotifyNL/MOBB
             var notifyAttachments = documents
                 .Where(document => !string.IsNullOrEmpty(document.Content) && !string.IsNullOrEmpty(document.Filename))
                 .Select(document => new Attachment { file = document.Content, filename = document.Filename })
@@ -127,15 +128,8 @@ namespace WebQueries.MOBB
                 return HttpRequestResponse.Failure("No usable attachments (with content) were found for this message.");
             }
 
-            // Step 10: Build the reference (compressed & encoded CloudEvent + extras) and send via the MessageBox proxy
-            var referenceData = new MessageBoxNotifyReference
-            {
-                CloudEvent = cloudEvent,
-                MessageId = messageUuid,
-                PartyId = partyId,
-                Mobb = true
-            };
-            string reference = await _serializer.Serialize(referenceData).CompressGZipAsync(CancellationToken.None);
+            // Step 12: Build the reference (compressed & encoded CloudEvent + extras) and send via the MessageBox proxy
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: true);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -150,6 +144,58 @@ namespace WebQueries.MOBB
                 ? HttpRequestResponse.Failure(sendResponse.Error)
                 : HttpRequestResponse.Success(
                     $"Message forwarded to MOBB. UUID: {messageUuid}, Documents: {notifyAttachments.Count}");
+        }
+
+        /// <summary>
+        /// Digitale post fallback for when a message is not (or no longer) eligible for MOBB delivery:
+        /// sends an email notification if the recipient has a usable email address, otherwise falls
+        /// back to a letter (not yet implemented).
+        /// </summary>
+        private async Task<HttpRequestResponse> SendDigitalePostFallbackAsync(
+            JsonElement cloudEvent, Guid messageUuid, CommonPartyData partyData, Guid partyId)
+        {
+            if (string.IsNullOrEmpty(partyData.EmailAddress))
+            {
+                // TODO: No usable email - fall back to a letter (needs PDF generation + INotifyClient.SendPrecompiledLetterAsync).
+                return HttpRequestResponse.Failure("No email address available for this recipient; letter fallback is not yet implemented.");
+            }
+
+            Dictionary<string, object> personalization = new()
+            {
+                ["klant.voornaam"] = partyData.Name,
+                ["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix,
+                ["klant.achternaam"] = partyData.Surname
+            };
+
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false);
+
+            INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
+
+            NotifySendResponse sendResponse = await notifyClient.SendEmailAsync(
+                partyData.EmailAddress,
+                _configuration.Notify.TemplateId.Email.MessageBox().ToString(),
+                personalization,
+                reference);
+
+            return sendResponse.IsFailure
+                ? HttpRequestResponse.Failure(sendResponse.Error)
+                : HttpRequestResponse.Success("Digitale post (email) notification sent.");
+        }
+
+        /// <summary>
+        /// Builds the compressed &amp; Base64-encoded "reference" (CloudEvent + extras) to pass to NotifyNL.
+        /// </summary>
+        private async Task<string> BuildReferenceAsync(JsonElement cloudEvent, Guid messageUuid, Guid partyId, bool mobb)
+        {
+            var referenceData = new MessageBoxNotifyReference
+            {
+                CloudEvent = cloudEvent,
+                MessageId = messageUuid,
+                PartyId = partyId,
+                Mobb = mobb
+            };
+
+            return await _serializer.Serialize(referenceData).CompressGZipAsync(CancellationToken.None);
         }
 
         #region Private helpers
