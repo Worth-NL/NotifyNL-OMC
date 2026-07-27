@@ -5,10 +5,9 @@ using Notify.Exceptions;
 using Notify.Models;
 using Notify.Models.Responses;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Mail;
+
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
-using Attachment = System.Net.Mail.Attachment;
 
 namespace WebQueries.DataSending.Clients.Proxy
 {
@@ -73,17 +72,16 @@ namespace WebQueries.DataSending.Clients.Proxy
 
         /// <inheritdoc cref="INotifyClient.SendMessageBoxNotificationAsync"/>
         async Task<NotifySendResponse> INotifyClient.SendMessageBoxNotificationAsync(
-            string sender,
             string recipient,
             string message,
             string subject,
-            IEnumerable<Attachment> enumerable, //TODO: Wrong Attachment type this reflects attachments as fetched at zgw berichten not the pdf's themselves.
+            IEnumerable<Attachment> attachments,
             string reference)
         {
             try
             {
                 _ = await _notificationClient.SendMessageBoxNotificationAsync(
-                    sender, recipient, message, subject, null, reference);
+                    recipient, message, subject, attachments, reference);
 
                 return NotifySendResponse.Success();
             }

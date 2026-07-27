@@ -51,6 +51,8 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO;
 using WebQueries.KTO.Interfaces;
+using WebQueries.MOBB;
+using WebQueries.MOBB.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -274,6 +276,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
+            builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources

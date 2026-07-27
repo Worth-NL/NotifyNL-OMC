@@ -1,6 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Net.Mail;
+using Notify.Models;
 using WebQueries.DataSending.Models.Reponses;
 
 namespace WebQueries.DataSending.Clients.Interfaces
@@ -66,9 +66,6 @@ namespace WebQueries.DataSending.Clients.Interfaces
         /// <summary>
         /// Sends a message to a user's digital message box (e.g., Berichtenbox) asynchronously.
         /// </summary>
-        /// <param name="sender">
-        ///   The identifier or name of the sender originating the message.
-        /// </param>
         /// <param name="recipient">
         ///   The recipient's unique identifier (such as a BSN or other user key) to deliver the message to.
         /// </param>
@@ -79,19 +76,13 @@ namespace WebQueries.DataSending.Clients.Interfaces
         ///   The subject line or title of the message.
         /// </param>
         /// <param name="attachments">
-        ///   The collection of attachments to include with the message.
-        ///   <para>
-        ///     TODO: The current Attachment type is incorrect – it reflects attachments as fetched from
-        ///     the ZGW Berichten API, not the actual PDF/file payloads. This needs to be updated to the
-        ///     correct file/PDF type.
-        ///   </para>
+        ///   The collection of attachments (base64-encoded file content and filename) to include with the message.
         /// </param>
         /// <param name="reference">
         ///   A unique identifier you can create if you need to. This reference
         ///   identifies a single unique notification or a batch of notifications.
         /// </param>
         public Task<NotifySendResponse> SendMessageBoxNotificationAsync(
-            string sender,
             string recipient,
             string message,
             string subject,

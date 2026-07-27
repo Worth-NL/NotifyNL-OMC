@@ -13,10 +13,9 @@ using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox; // for MessageScenario
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
-// for MessageForwarder
+using WebQueries.MOBB.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -32,20 +31,20 @@ namespace EventsHandler.Services.DataProcessing
         private readonly IValidationService<NotificationEvent> _validator;
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
         private readonly IKtoScenarioFactory _ktoScenarioFactory;
-        private readonly MessageForwarder _messageForwarder;   // new
+        private readonly IMessageBoxScenario _messageBoxScenario;
 
         public NotifyProcessor(
             ISerializationService serializer,
             IValidationService<NotificationEvent> validator,
             IScenariosResolver<INotifyScenario, NotificationEvent> resolver,
             IKtoScenarioFactory ktoScenarioFactory,
-            MessageForwarder messageForwarder)     // new parameter
+            IMessageBoxScenario messageBoxScenario)
         {
             this._serializer = serializer;
             this._validator = validator;
             this._resolver = resolver;
             this._ktoScenarioFactory = ktoScenarioFactory;
-            this._messageForwarder = messageForwarder;
+            this._messageBoxScenario = messageBoxScenario;
         }
 
         /// <inheritdoc cref="IProcessingService.ProcessAsync(object)"/>
@@ -56,23 +55,45 @@ namespace EventsHandler.Services.DataProcessing
             try
             {
                 // Step 1: Convert incoming object to JsonElement for inspection
-                JsonElement jsonElement = json is JsonElement je
-                    ? je
-                    : JsonDocument.Parse(JsonSerializer.Serialize(json)).RootElement;
-
-                // Step 2: Try to extract the actual payload if this is a CloudEvent wrapper
-                JsonElement? actualPayload = TryExtractPayloadFromCloudEvent(jsonElement);
-                if (actualPayload == null)
+                JsonElement jsonElement = json switch
                 {
-                    return ProcessingResult.Skipped(
-                        "Received CloudEvent missing required 'data' property.", json, details);
+                    JsonElement je => je,
+                    string jsonString => JsonDocument.Parse(jsonString).RootElement,  // Already raw JSON text – parse directly, don't re-encode it
+                    _ => JsonDocument.Parse(JsonSerializer.Serialize(json)).RootElement
+                };
+
+                // Step 2: Check if this is a CloudEvent (has specversion, type, source, id)
+                bool isCloudEvent = IsCloudEvent(jsonElement);
+
+                if (isCloudEvent)
+                {
+                    // Step 2a: CloudEvent handling – bypass NotificationEvent deserialization
+                    string cloudEventType = jsonElement.GetProperty("type").GetString() ?? string.Empty;
+
+                    // Route based on CloudEvent type – look for ".berichten." (case-insensitive)
+                    if (cloudEventType.Contains(".berichten.", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Pass the entire CloudEvent (jsonElement) to the scenario
+                        HttpRequestResponse response = await _messageBoxScenario.ProcessCloudEventAsync(jsonElement);
+                        return response.IsFailure
+                            ? ProcessingResult.Failure(response.JsonResponse, json, details)
+                            : ProcessingResult.Success("CloudEvent processed via MessageBoxScenario", json, details);
+                    }
+                    else
+                    {
+                        // Unsupported CloudEvent type – skip
+                        return ProcessingResult.Skipped($"Unsupported CloudEvent type: {cloudEventType}", json, details);
+                    }
                 }
 
-                // Step 3: Deserialize the (possibly extracted) payload into the expected NotificationEvent
-                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(actualPayload.Value);
+                // Step 3: Not a CloudEvent – proceed with the existing notification flow
+                // (deserialize into NotificationEvent, validate, test detection, etc.)
+
+                // Step 3a: Deserialize the payload into NotificationEvent
+                NotificationEvent notification = this._serializer.Deserialize<NotificationEvent>(jsonElement);
                 details = notification.Details;
 
-                // Step 4: Validate deserialized notification
+                // Step 3b: Validate deserialized notification
                 if (this._validator.Validate(ref notification) is HealthCheck.ERROR_Invalid)
                 {
                     return ProcessingResult.NotPossible(
@@ -80,17 +101,17 @@ namespace EventsHandler.Services.DataProcessing
                         json, notification.Details);
                 }
 
-                // Step 5: Ping/test detection – silently skip
+                // Step 3c: Ping/test detection – silently skip
                 if (IsTest(notification))
                 {
                     return ProcessingResult.Skipped(
                         ApiResources.Processing_ERROR_Notification_Test, json, details);
                 }
 
-                // Step 6: Determine business scenario
+                // Step 3d: Determine business scenario
                 INotifyScenario scenario = await this._resolver.DetermineScenarioAsync(notification);
 
-                // Step 7: Special handling for Kto scenario
+                // Step 3e: Special handling for Kto scenario
                 if (scenario is KtoScenario)
                 {
                     try
@@ -108,17 +129,7 @@ namespace EventsHandler.Services.DataProcessing
                     }
                 }
 
-                // Step 8: Special handling for Message scenario (MOBB forwarding)
-                if (scenario is MessageBoxScenario)
-                {
-                    HttpRequestResponse forwardResponse = await _messageForwarder.ForwardMessageAsync(notification);
-
-                    return forwardResponse.IsFailure
-                        ? ProcessingResult.Failure(forwardResponse.JsonResponse, json, details)
-                        : ProcessingResult.Success("Message forwarded to MOBB API", json, details);
-                }
-
-                // Step 9: For all other scenarios – query external data (OpenZaak, etc.)
+                // Step 3f: For all other scenarios – query external data (OpenZaak, etc.)
                 QueryingDataResponse queryDataResponse;
 
                 if ((queryDataResponse = await scenario.TryGetDataAsync(notification)).IsFailure)
@@ -130,7 +141,7 @@ namespace EventsHandler.Services.DataProcessing
                     return ProcessingResult.Failure(message, json, details);
                 }
 
-                // Step 10: Process the data (e.g., send to Notify NL)
+                // Step 3g: Process the data (e.g., send to Notify NL)
                 ProcessingDataResponse processingDataResponse = await scenario.ProcessDataAsync(notification, queryDataResponse.Content);
 
                 return processingDataResponse.IsFailure
@@ -148,6 +159,14 @@ namespace EventsHandler.Services.DataProcessing
 
         #region Helper methods
 
+        private static bool IsCloudEvent(JsonElement potentialCloudEvent)
+        {
+            return potentialCloudEvent.TryGetProperty("specversion", out _) &&
+                   potentialCloudEvent.TryGetProperty("type", out _) &&
+                   potentialCloudEvent.TryGetProperty("source", out _) &&
+                   potentialCloudEvent.TryGetProperty("id", out _);
+        }
+
         private static bool IsTest(NotificationEvent notification)
         {
             const string testUrl = "http://some.hoofdobject.nl/";
@@ -159,25 +178,6 @@ namespace EventsHandler.Services.DataProcessing
             } &&
             string.Equals(notification.MainObjectUri.AbsoluteUri, testUrl) &&
             string.Equals(notification.ResourceUri.AbsoluteUri, testUrl);
-        }
-
-        private static JsonElement? TryExtractPayloadFromCloudEvent(JsonElement potentialCloudEvent)
-        {
-            bool hasSpecVersion = potentialCloudEvent.TryGetProperty("specversion", out _);
-            bool hasType = potentialCloudEvent.TryGetProperty("type", out _);
-            bool hasSource = potentialCloudEvent.TryGetProperty("source", out _);
-            bool hasId = potentialCloudEvent.TryGetProperty("id", out _);
-
-            if (hasSpecVersion && hasType && hasSource && hasId)
-            {
-                if (potentialCloudEvent.TryGetProperty("data", out JsonElement dataElement))
-                {
-                    return dataElement;
-                }
-                return null;
-            }
-
-            return potentialCloudEvent;
         }
 
         private static ProcessingResult HandleException(Exception exception, object json, BaseEnhancedDetails details)

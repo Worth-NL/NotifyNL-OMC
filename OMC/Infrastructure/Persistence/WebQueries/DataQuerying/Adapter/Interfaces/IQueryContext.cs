@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -14,8 +15,10 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Documents;
 
 namespace WebQueries.DataQuerying.Adapter.Interfaces
 {
@@ -33,6 +36,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
     /// <seealso cref="IQueryBesluiten"/>
     /// <seealso cref="IQueryObjecten"/>
     /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryVtb"/>
     public interface IQueryContext
     {
         #region IQueryBase
@@ -225,6 +229,24 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #region IQueryCustomerSatisfactionSurvey
         /// <inheritdoc cref="IDomain"/>
         public Task<HttpRequestResponse> SendKtoAsync(string body);
+        #endregion
+
+        #region IQueryVtb
+        /// <summary>
+        /// Gets a message (Vtb Bericht) from the OpenVTB API by its URI.
+        /// </summary>
+        /// <param name="vtbMessageUri">The URI of the message to retrieve.</param>
+        /// <returns>The deserialized VTB message data.</returns>
+        Task<VtbMessage> GetVtbMessageAsync(Uri vtbMessageUri);
+        #endregion
+
+        #region IQueryDocumenten
+        /// <summary>
+        /// Gets a document (SingularInformationObject) by its UUID from the Documenten API.
+        /// </summary>
+        /// <param name="documentUuid">The UUID of the document.</param>
+        /// <returns>The document metadata.</returns>
+        Task<SingularInformationObject> GetDocumentAsync(Guid documentUuid);
         #endregion
     }
 }
