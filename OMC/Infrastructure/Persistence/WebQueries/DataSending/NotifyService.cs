@@ -1,7 +1,7 @@
 ﻿// © 2023, Worth Systems.
 
-using System.Net.Mail;
 using Common.Extensions;
+using Notify.Models;
 using WebQueries.DataSending.Clients.Factories;
 using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
@@ -69,7 +69,7 @@ namespace WebQueries.DataSending
         async Task<NotifySendResponse> INotifyService<NotifyData>.SendMessageBoxNotificationAsync(NotifyData package)
         {
             return await ResolveNotifyClient(package.Reference.Notification)
-                .SendMessageBoxNotificationAsync("a", "a", "a", "a", new Attachment[] {}, "a");
+                .SendMessageBoxNotificationAsync("a", "a", "a", new Attachment[] {}, "a");
         }
 
         /// <inheritdoc cref="INotifyService{TPackage}.GenerateTemplatePreviewAsync(TPackage)"/>

@@ -145,12 +145,14 @@
         "ZGW_ENDPOINT_OBJECTEN": "", // string (url)
         "ZGW_ENDPOINT_OBJECTTYPEN": "", // string (url)
         "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // string (url)
+        "ZGW_ENDPOINT_DOCUMENTEN": "", // string (url)
 
         "ZGW_WHITELIST_ZAAKCREATE_IDS": "", // string
         "ZGW_WHITELIST_ZAAKUPDATE_IDS": "", // string
         "ZGW_WHITELIST_ZAAKCLOSE_IDS": "", // string
         "ZGW_WHITELIST_TASKASSIGNED_IDS": "", // string
         "ZGW_WHITELIST_DECISIONMADE_IDS": "", // string
+        "ZGW_WHITELIST_VTBMESSAGE_TYPES": "", // string
         "ZGW_WHITELIST_MESSAGE_ALLOWED": "", // string
 
         "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "", // guid

@@ -823,6 +823,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string OpenVtb()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
                 }
             }
 
@@ -865,6 +870,11 @@ namespace Common.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                public string Documenten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Documenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 public string Objecten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
@@ -877,6 +887,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string ContactMomenten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string OpenVtb()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
             }
 
             /// <summary>
@@ -928,6 +943,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public IDs VtbMessage_Types()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(VtbMessage_Types));
 
                 // --------------
                 // Flags (simple)

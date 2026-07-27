@@ -63,7 +63,7 @@ namespace WebQueries.DataSending
         async Task<HttpRequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType); 
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType);
 
             return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Post, body: requestBody);
         }
@@ -111,6 +111,10 @@ namespace WebQueries.DataSending
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));  // API Key
+
+            // Added: OpenVtb client using static API key
+            this._httpClients.TryAdd(HttpClientTypes.OpenVtb, this._httpClientFactory
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenVtb)), contentCrs]));
         }
 
         /// <summary>
@@ -131,7 +135,8 @@ namespace WebQueries.DataSending
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Objecten or
                 HttpClientTypes.ObjectTypen or
-                HttpClientTypes.Telemetry_Klantinteracties
+                HttpClientTypes.Telemetry_Klantinteracties or
+                HttpClientTypes.OpenVtb
                     => this._httpClients[httpClientType],
 
                 _ => throw new ArgumentException(
@@ -196,6 +201,9 @@ namespace WebQueries.DataSending
 
                 HttpClientTypes.ObjectTypen
                     => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
+
+                HttpClientTypes.OpenVtb
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenVtb()}",
 
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
