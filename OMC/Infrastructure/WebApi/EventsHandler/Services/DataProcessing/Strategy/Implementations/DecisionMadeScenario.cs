@@ -61,19 +61,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
-            TraceContext.Emit("besluiten", "start");
+            Guid besluitId = notification.MainObjectUri.GetGuid();
+            TraceContext.Emit("besluiten", "start", $"Attempting to retrieve besluit with id {besluitId}");
             this._decisionResource = await this._queryContext.GetDecisionResourceAsync();
-            TraceContext.Emit("besluiten", "ok");
+            TraceContext.Emit("besluiten", "ok", $"besluit with id {besluitId} retrieved");
 
-            TraceContext.Emit("openzaak", "start");
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve informatieobject for besluit with id {besluitId}");
             InfoObject infoObject = await this._queryContext.GetInfoObjectAsync(this._decisionResource);
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"informatieobject for besluit with id {besluitId} retrieved");
 
             // Validation #1: The info object needs to be of a specific type
             Guid infoObjectTypeId = infoObject.TypeUri.GetGuid();
             if (!this.Configuration.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids().Contains(infoObjectTypeId))
             {
-                TraceContext.Emit("documentcheck", "abort");
+                TraceContext.Emit("documentcheck", "abort", $"informatieobjecttype {infoObjectTypeId} is not whitelisted");
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_Whitelist_InfoObjectType,
                         /* {0} */ $"{infoObjectTypeId}",
@@ -83,30 +84,32 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #2: Status needs to be definitive
             if (infoObject.Status != MessageStatus.Definitive)
             {
-                TraceContext.Emit("documentcheck", "abort");
+                TraceContext.Emit("documentcheck", "abort", $"informatieobject status is {infoObject.Status}, expected {MessageStatus.Definitive}");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_DecisionStatus);
             }
 
             // Validation #3: Confidentiality needs to be acceptable
             if (infoObject.Confidentiality != PrivacyNotices.NonConfidential)
             {
-                TraceContext.Emit("documentcheck", "abort");
+                TraceContext.Emit("documentcheck", "abort", $"confidentiality is {infoObject.Confidentiality}, expected {PrivacyNotices.NonConfidential}");
                 throw new AbortedNotifyingException(
                     string.Format(ApiResources.Processing_ABORT_DoNotSendNotification_DecisionConfidentiality,
                         infoObject.Confidentiality));
             }
-            TraceContext.Emit("documentcheck", "ok");
+            TraceContext.Emit("documentcheck", "ok",
+                $"informatieobjecttype {infoObjectTypeId} whitelisted, status {MessageStatus.Definitive}, confidentiality {PrivacyNotices.NonConfidential}");
 
             // TODO: Will be aggregated with CaseStatusType in future
-            TraceContext.Emit("besluiten", "start");
+            TraceContext.Emit("besluiten", "start", $"Attempting to retrieve besluit with id {besluitId}");
             this._decision = await this._queryContext.GetDecisionAsync(this._decisionResource);
-            TraceContext.Emit("besluiten", "ok");
+            TraceContext.Emit("besluiten", "ok", $"besluit with id {besluitId} retrieved");
 
-            TraceContext.Emit("openzaak", "start");
+            Guid decisionCaseId = this._decision.CaseUri.GetGuid();
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaaktype for zaak with id {decisionCaseId}");
             this._caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                              await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                    this._decision.CaseUri));                 // 1. Case URI
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"zaaktype for zaak with id {decisionCaseId} retrieved");
 
             // Validation #4: The case type identifier must be whitelisted
             ValidateCaseId(
@@ -117,31 +120,33 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             ValidateNotifyPermit(this._caseType.IsNotificationExpected);
 
             // Preparing party details
-            this._bsnNumber = await GetBsnNumberAsync();
+            this._bsnNumber = await GetBsnNumberAsync(decisionCaseId);
 
-            TraceContext.Emit("besluiten", "start");
+            TraceContext.Emit("besluiten", "start", $"Attempting to retrieve besluittype for besluit with id {besluitId}");
             this._decisionType = await this._queryContext.GetDecisionTypeAsync(this._decision);
-            TraceContext.Emit("besluiten", "ok");
+            TraceContext.Emit("besluiten", "ok", $"besluittype for besluit with id {besluitId} retrieved");
 
-            TraceContext.Emit("openzaak", "start");
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {decisionCaseId}");
             this._case = await this._queryContext.GetCaseAsync(this._decision.CaseUri);
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"zaak with id {decisionCaseId} retrieved");
 
-            TraceContext.Emit("openklant", "start");
+            TraceContext.Emit("openklant", "start", $"Attempting to retrieve klant for zaak with id {decisionCaseId}");
             CommonPartyData party = await this._queryContext.GetPartyDataAsync(
                 this._case.Uri,
                 this._bsnNumber,
                 this._case.Identification);
-            TraceContext.Emit("openklant", "ok");
+            TraceContext.Emit("openklant", "ok", $"klant for zaak with id {decisionCaseId} retrieved");
 
             return new PreparedData(party: party, caseUri: this._case.Uri);
         }
 
-        private async Task<string> GetBsnNumberAsync()
+        private async Task<string> GetBsnNumberAsync(Guid caseId)
         {
             try
             {
-                TraceContext.Emit("openzaak", "start");
+                // No detail on this "ok" — the return value is the BSN itself, which the trace
+                // log never carries (see TraceEvent's structural-only, no-PII rule).
+                TraceContext.Emit("openzaak", "start", $"Attempting to retrieve BSN for zaak with id {caseId}");
                 string bsn = await this._queryContext.GetBsnNumberAsync(  // 2. BSN number
                                    this._decision.CaseUri);                // 1. Case URI
                 TraceContext.Emit("openzaak", "ok");
@@ -149,7 +154,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
             catch (Exception)
             {
-                return string.Empty;  // NOTE: Organization will not have BSN number
+                // NOTE: Organization will not have BSN number — an expected, non-error outcome,
+                // so no "fail" is emitted here (matches the pre-existing swallow-and-continue).
+                return string.Empty;
             }
         }
         #endregion
@@ -309,10 +316,12 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Decision Made never actually sends via Notify NL — the preview above is as far as
             // that goes. This POST to Objecten (for the citizen portal to read) is its real
             // "output" step, standing in for a channel send.
-            TraceContext.Emit("objecten", "start");
+            Guid processBesluitId = this._decisionResource.DecisionUri.GetGuid();
+            TraceContext.Emit("objecten", "start", $"Attempting to create object for besluit with id {processBesluitId}");
             HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
                                                         this._queryContext.PrepareObjectJsonBody(dataJson));
-            TraceContext.Emit("objecten", requestResponse.IsFailure ? "fail" : "ok");
+            TraceContext.Emit("objecten", requestResponse.IsFailure ? "fail" : "ok",
+                requestResponse.IsFailure ? requestResponse.JsonResponse : $"object for besluit with id {processBesluitId} created");
 
             return requestResponse.IsFailure
                 ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
@@ -333,16 +342,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <exception cref="JsonException"/>
         private async Task<string> GetValidInfoObjectUrisAsync(IQueryContext queryContext)
         {
+            Guid besluitId = this._decisionResource.DecisionUri.GetGuid();
+
             // Retrieve documents
-            TraceContext.Emit("besluiten", "start");
+            TraceContext.Emit("besluiten", "start", $"Attempting to retrieve documenten for besluit with id {besluitId}");
             List<Document> documents = (await queryContext.GetDocumentsAsync(this._decisionResource))
                                        .Results;
-            TraceContext.Emit("besluiten", "ok");
+            TraceContext.Emit("besluiten", "ok", $"{documents.Count} document(en) for besluit with id {besluitId} retrieved");
 
             // Prepare URIs
             List<string> validInfoObjectsUris = new(documents.Count);
 
-            TraceContext.Emit("openzaak", "start");
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve informatieobjecten for {documents.Count} document(en)");
             foreach (Document document in documents)
             {
                 // Retrieve info objects from documents
@@ -358,7 +369,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 // Keep the URI references to the valid info objects
                 validInfoObjectsUris.Add($"\"{document.InfoObjectUri}\"");
             }
-            TraceContext.Emit("openzaak", "ok");
+            TraceContext.Emit("openzaak", "ok", $"{validInfoObjectsUris.Count} of {documents.Count} informatieobject(en) valid");
 
             return validInfoObjectsUris.Join();
         }
