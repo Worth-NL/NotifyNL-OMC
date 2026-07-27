@@ -45,7 +45,7 @@ export async function fetchScenarios(): Promise<ScenarioFlow[]> {
 export interface TraceEvent {
   traceId: string;
   stage: string;
-  status: "start" | "ok" | "fail" | "abort";
+  status: "start" | "ok" | "fail" | "abort" | "pending";
   scenario: string | null;
   detail: string | null;
   elapsedMs: number;
