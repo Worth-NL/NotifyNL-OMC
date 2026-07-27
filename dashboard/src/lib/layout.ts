@@ -20,6 +20,33 @@ export interface LayoutResult {
 }
 
 /**
+ * Picks a handle pair per edge from real node geometry — exported separately from
+ * `layoutGraph` so callers who hand-adjust a few Dagre-computed positions afterward (see the
+ * filter-chain override in status/flow/page.tsx) can re-derive handles matching the *final*
+ * layout instead of the pre-adjustment one.
+ */
+export function computeEdgeHandles(
+  positions: LayoutResult["positions"],
+  nodes: LayoutInputNode[],
+  edges: LayoutInputEdge[],
+): LayoutResult["edgeHandles"] {
+  const edgeHandles: LayoutResult["edgeHandles"] = {};
+  for (const e of edges) {
+    const sourcePos = positions[e.source];
+    const targetPos = positions[e.target];
+    const sourceNode = nodes.find((n) => n.id === e.source)!;
+    const dx = targetPos.x - sourcePos.x;
+    const dy = targetPos.y - sourcePos.y;
+    const mostlyVertical = Math.abs(dy) > Math.abs(dx) + sourceNode.width * 0.5;
+
+    edgeHandles[`${e.source}->${e.target}`] = mostlyVertical
+      ? { sourceHandle: "bottom", targetHandle: "top" }
+      : { sourceHandle: "right", targetHandle: "left" };
+  }
+  return edgeHandles;
+}
+
+/**
  * Runs Dagre's layered graph layout (left-to-right) to get crossing-minimized node positions
  * from the actual edge topology, instead of hand-placed coordinates that inevitably cross once
  * a column has more than a couple of fan-out connections.
@@ -45,19 +72,5 @@ export function layoutGraph(nodes: LayoutInputNode[], edges: LayoutInputEdge[]):
     positions[n.id] = { x: x - n.width / 2, y: y - n.height / 2 };
   }
 
-  const edgeHandles: LayoutResult["edgeHandles"] = {};
-  for (const e of edges) {
-    const sourcePos = positions[e.source];
-    const targetPos = positions[e.target];
-    const sourceNode = nodes.find((n) => n.id === e.source)!;
-    const dx = targetPos.x - sourcePos.x;
-    const dy = targetPos.y - sourcePos.y;
-    const mostlyVertical = Math.abs(dy) > Math.abs(dx) + sourceNode.width * 0.5;
-
-    edgeHandles[`${e.source}->${e.target}`] = mostlyVertical
-      ? { sourceHandle: "bottom", targetHandle: "top" }
-      : { sourceHandle: "right", targetHandle: "left" };
-  }
-
-  return { positions, edgeHandles };
+  return { positions, edgeHandles: computeEdgeHandles(positions, nodes, edges) };
 }
