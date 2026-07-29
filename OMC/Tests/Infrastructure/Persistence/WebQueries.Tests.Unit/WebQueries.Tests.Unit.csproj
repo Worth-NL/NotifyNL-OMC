@@ -37,4 +37,11 @@
     <ProjectReference Include="..\..\..\Core\Application\Common.Utilities\Common.Tests.Utilities.csproj" />
   </ItemGroup>
 
+  <!-- Settings -->
+  <ItemGroup>
+    <Content Include="..\..\..\..\Infrastructure\WebApi\EventsHandler\appsettings.Test.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
