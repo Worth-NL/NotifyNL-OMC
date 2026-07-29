@@ -301,7 +301,10 @@ namespace WebQueries.BRP
             {
                 type = "RaadpleegMetBurgerservicenummer",
                 burgerservicenummer = new[] { bsn },
-                fields = new[] { "burgerservicenummer", "naam", "adressering", "geslacht", "adresseringBinnenland" }
+                // NOTE: "adresseringBinnenland" is not a real field per the Haal Centraal BRP Personen
+                // OpenAPI spec (v2.7.0, https://developer.rvig.nl/brp-api/personen/specificatie/) - domestic
+                // vs. foreign address lines is an authorization-profile distinction, not a separate field.
+                fields = new[] { "burgerservicenummer", "naam", "adressering", "geslacht" }
             };
 
             string json = JsonSerializer.Serialize(requestBody, new JsonSerializerOptions

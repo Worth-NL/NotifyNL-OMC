@@ -2,7 +2,10 @@
 using System.Text.RegularExpressions;
 using Common.Extensions;
 using Common.Settings.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Notify.Models;
+using WebQueries.BRP;
+using WebQueries.BRP.Models;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
@@ -33,17 +36,20 @@ namespace WebQueries.MOBB
         private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
         private readonly ISerializationService _serializer;
         private readonly OmcConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
 
         public MessageBoxScenarioImplementation(
             IDataQueryService<NotificationEvent> dataQuery,
             IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ISerializationService serializer,
-            OmcConfiguration configuration)
+            OmcConfiguration configuration,
+            IServiceProvider serviceProvider)
         {
             _dataQuery = dataQuery;
             _notifyClientFactory = notifyClientFactory;
             _serializer = serializer;
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -108,7 +114,7 @@ namespace WebQueries.MOBB
             // Step 8: MO BB? - if not eligible, fall back to digitale post (email) or a letter
             if (!messageData.IsInMyGovernmentMessageBox)
             {
-                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, partyData, partyId);
+                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId);
             }
 
             // Step 9: Append hardcoded postfix to the message text
@@ -149,15 +155,14 @@ namespace WebQueries.MOBB
         /// <summary>
         /// Digitale post fallback for when a message is not (or no longer) eligible for MOBB delivery:
         /// sends an email notification if the recipient has a usable email address, otherwise falls
-        /// back to a letter (not yet implemented).
+        /// back to a letter.
         /// </summary>
         private async Task<HttpRequestResponse> SendDigitalePostFallbackAsync(
-            JsonElement cloudEvent, Guid messageUuid, CommonPartyData partyData, Guid partyId)
+            JsonElement cloudEvent, Guid messageUuid, string recipientBsn, CommonPartyData partyData, Guid partyId)
         {
             if (string.IsNullOrEmpty(partyData.EmailAddress))
             {
-                // TODO: No usable email - fall back to a letter (needs PDF generation + INotifyClient.SendPrecompiledLetterAsync).
-                return HttpRequestResponse.Failure("No email address available for this recipient; letter fallback is not yet implemented.");
+                return await SendLetterFallbackAsync(recipientBsn);
             }
 
             Dictionary<string, object> personalization = new()
@@ -180,6 +185,58 @@ namespace WebQueries.MOBB
             return sendResponse.IsFailure
                 ? HttpRequestResponse.Failure(sendResponse.Error)
                 : HttpRequestResponse.Success("Digitale post (email) notification sent.");
+        }
+
+        /// <summary>
+        /// Letter fallback for when the recipient has no usable email address. The postal address is
+        /// meant to be sourced from BRP (Basisregistratie Personen) rather than OpenKlant - BRP is the
+        /// intended single source of truth for postal addresses used in letters (unlike the older,
+        /// name-only BRP enrichment described in docs/integraties/brp-haalcentraal.md, which predates
+        /// this use case and is stale with respect to it).
+        /// </summary>
+        /// <remarks>
+        /// Only the BRP lookup is wired up so far - two things are still blocking a real send:
+        /// (1) the actual NotifyNL API is being changed by a colleague to handle attachments correctly
+        ///     for letters, and the GovukNotify client fork needs a follow-up update once that lands
+        ///     (see <see cref="INotifyClient.SendMessageBoxNotificationAsync"/>'s sibling, SendPrecompiledLetterAsync,
+        ///     on the underlying Notify.Client.NotificationClient);
+        /// (2) no sample BRP response has been verified yet, so the 'adressering'/'adresseringBinnenland'
+        ///     fields aren't parsed into a postal address - the raw response is only fetched, not used.
+        /// </remarks>
+        private async Task<HttpRequestResponse> SendLetterFallbackAsync(string recipientBsn)
+        {
+            Adressering? adressering;
+
+            try
+            {
+                // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
+                // environment (BRP integration is documented as optional), so this must not become a
+                // hard dependency of every MessageBox notification - only of the letter fallback.
+                BrpClient brpClient = _serviceProvider.GetRequiredService<BrpClient>();
+                string brpResponse = await brpClient.QueryPersonAsync(recipientBsn);
+
+                PersonenQueryResponse result = _serializer.Deserialize<PersonenQueryResponse>(brpResponse);
+                adressering = result.Personen is { Count: > 0 } personen ? personen[0].Adressering : null;
+            }
+            catch (Exception exception)
+            {
+                return HttpRequestResponse.Failure(
+                    $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
+            }
+
+            // NOTE: Never include actual BRP field values (name, address lines, etc.) in a returned
+            // message - BRP data must only ever be processed in memory, never logged or stored, and
+            // this result can end up in logs further up the call chain.
+            if (adressering is not { Adresregel1: not (null or "") })
+            {
+                return HttpRequestResponse.Failure("BRP returned no usable address for this recipient; cannot send a letter.");
+            }
+
+            // TODO: Generate the letter PDF from the message content + resolved adressering (aanhef,
+            // aanschrijfwijze, address lines), and send it via INotifyClient.SendPrecompiledLetterAsync
+            // once NotifyNL/GovukNotify support attachments correctly.
+            return HttpRequestResponse.Failure(
+                "Letter fallback: a postal address was resolved via BRP, but PDF generation and sending are not yet implemented.");
         }
 
         /// <summary>
