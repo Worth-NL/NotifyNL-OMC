@@ -113,12 +113,14 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_OBJECTEN",                                GetTestValue(isValid, testDomain, "https://domain") },
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                             GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKCLOSE_IDS",                          GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
 
                 { "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },

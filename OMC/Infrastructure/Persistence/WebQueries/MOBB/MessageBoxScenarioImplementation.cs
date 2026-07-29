@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Common.Extensions;
 using Common.Settings.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Notify.Models;
 using WebQueries.BRP;
 using WebQueries.BRP.Models;
@@ -14,6 +15,7 @@ using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.MOBB.Models;
+using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
@@ -37,19 +39,22 @@ namespace WebQueries.MOBB
         private readonly ISerializationService _serializer;
         private readonly OmcConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<MessageBoxScenarioImplementation> _logger;
 
         public MessageBoxScenarioImplementation(
             IDataQueryService<NotificationEvent> dataQuery,
             IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ISerializationService serializer,
             OmcConfiguration configuration,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ILogger<MessageBoxScenarioImplementation> logger)
         {
             _dataQuery = dataQuery;
             _notifyClientFactory = notifyClientFactory;
             _serializer = serializer;
             _configuration = configuration;
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         /// <summary>
@@ -69,8 +74,11 @@ namespace WebQueries.MOBB
             string? subject = subjectElement.GetString();
             if (string.IsNullOrEmpty(subject) || !Guid.TryParse(subject, out Guid messageUuid))
             {
+                _logger.LogWarning("MOBB CloudEvent had a missing/invalid 'subject' (expected a message UUID).");
                 return HttpRequestResponse.Failure($"Invalid UUID in 'subject': '{subject}'");
             }
+
+            _logger.LogInformation("Message {MessageId}: processing MOBB CloudEvent.", messageUuid);
 
             // Step 2: Create a dummy NotificationEvent to get an IQueryContext
             var dummyNotification = new NotificationEvent
@@ -90,6 +98,7 @@ namespace WebQueries.MOBB
 
             if (string.IsNullOrWhiteSpace(messageData.MessageText))
             {
+                _logger.LogWarning("Message {MessageId}: text is empty/missing; dropping (no fallback).", messageUuid);
                 return HttpRequestResponse.Failure("Message text is empty or missing.");
             }
 
@@ -97,23 +106,30 @@ namespace WebQueries.MOBB
             string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
             if (recipientBsn == null)
             {
+                _logger.LogWarning("Message {MessageId}: recipient is not a citizen (no BSN in RecipientUrn); dropping (no fallback).", messageUuid);
                 return HttpRequestResponse.Failure("Recipient is not a citizen (BSN not found in RecipientUrn).");
             }
 
             CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn);
             Guid partyId = partyData.Uri.GetGuid();
 
+            _logger.LogDebug("Message {MessageId}: resolved recipient BSN (length {BsnLength}) to OpenKlant party {PartyId}.",
+                messageUuid, recipientBsn.Length, partyId);
+
             // Step 7: Whitelist gate - applies regardless of delivery channel
             string? messageType = messageData.MessageType;
             if (string.IsNullOrEmpty(messageType) ||
                 !_configuration.ZGW.Whitelist.VtbMessage_Types().IsAllowed(messageType))
             {
+                _logger.LogWarning("Message {MessageId}: rejected by whitelist (MessageType '{MessageType}'); dropping (no fallback).",
+                    messageUuid, messageType);
                 return HttpRequestResponse.Failure($"MessageType '{messageType}' not allowed by whitelist.");
             }
 
             // Step 8: MO BB? - if not eligible, fall back to digitale post (email) or a letter
             if (!messageData.IsInMyGovernmentMessageBox)
             {
+                _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
                 return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId);
             }
 
@@ -131,8 +147,11 @@ namespace WebQueries.MOBB
 
             if (notifyAttachments.Count == 0)
             {
+                _logger.LogWarning("Message {MessageId}: no usable attachments (with content) found; dropping (no fallback).", messageUuid);
                 return HttpRequestResponse.Failure("No usable attachments (with content) were found for this message.");
             }
+
+            _logger.LogDebug("Message {MessageId}: {Count} usable attachment(s) collected.", messageUuid, notifyAttachments.Count);
 
             // Step 12: Build the reference (compressed & encoded CloudEvent + extras) and send via the MessageBox proxy
             string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: true);
@@ -146,10 +165,26 @@ namespace WebQueries.MOBB
                 notifyAttachments,
                 reference);
 
-            return sendResponse.IsFailure
-                ? HttpRequestResponse.Failure(sendResponse.Error)
-                : HttpRequestResponse.Success(
-                    $"Message forwarded to MOBB. UUID: {messageUuid}, Documents: {notifyAttachments.Count}");
+            if (sendResponse.IsFailure)
+            {
+                // BPMN: Gateway_0ifw4jw "(Permanent) Success?" -> "Nee" -> Activity_0noguvy -> falls through
+                // to the same digitale-post/letter fallback chain as MOBB-ineligibility.
+                // TODO (treated uniformly for now, per instruction): the BPMN distinguishes "no MOBB
+                // subscription" (no separate failed-attempt contactmoment, just adjusted fallback text) from
+                // "technical failure" (a failed-attempt contactmoment IS created) - NotifySendResponse doesn't
+                // expose enough detail to tell these apart yet. This draft does not create a separate
+                // "failed MOBB attempt" contactmoment at all; it just falls through to the fallback chain.
+                _logger.LogWarning(
+                    "Message {MessageId}: MOBB send REJECTED synchronously ({Error}); falling back to digitale-post/letter. " +
+                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    messageUuid, sendResponse.Error);
+                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId);
+            }
+
+            _logger.LogInformation("Message {MessageId}: MOBB send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
+
+            return HttpRequestResponse.Success(
+                $"Message forwarded to MOBB. UUID: {messageUuid}, Documents: {notifyAttachments.Count}");
         }
 
         /// <summary>
@@ -162,7 +197,9 @@ namespace WebQueries.MOBB
         {
             if (string.IsNullOrEmpty(partyData.EmailAddress))
             {
-                return await SendLetterFallbackAsync(recipientBsn);
+                // BPMN: Gateway_1sxsz56 "Nee, geen digitale post" -> straight to letter.
+                _logger.LogInformation("Message {MessageId}: no email address on file; going straight to letter fallback.", messageUuid);
+                return await SendLetterFallbackAsync(messageUuid, recipientBsn, wasGefaaldeNotificatie: false);
             }
 
             Dictionary<string, object> personalization = new()
@@ -182,9 +219,20 @@ namespace WebQueries.MOBB
                 personalization,
                 reference);
 
-            return sendResponse.IsFailure
-                ? HttpRequestResponse.Failure(sendResponse.Error)
-                : HttpRequestResponse.Success("Digitale post (email) notification sent.");
+            if (sendResponse.IsFailure)
+            {
+                // BPMN: Gateway_1nwlhkp "Notificatie gelukt?" -> "Nee" -> Activity_19stszm (flag "Was
+                // notificatie") -> falls through to letter.
+                _logger.LogWarning(
+                    "Message {MessageId}: digitale-post (email) send REJECTED synchronously ({Error}); falling back to letter. " +
+                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    messageUuid, sendResponse.Error);
+                return await SendLetterFallbackAsync(messageUuid, recipientBsn, wasGefaaldeNotificatie: true);
+            }
+
+            _logger.LogInformation("Message {MessageId}: digitale-post (email) send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
+
+            return HttpRequestResponse.Success("Digitale post (email) notification sent.");
         }
 
         /// <summary>
@@ -203,8 +251,11 @@ namespace WebQueries.MOBB
         /// (2) no sample BRP response has been verified yet, so the 'adressering'/'adresseringBinnenland'
         ///     fields aren't parsed into a postal address - the raw response is only fetched, not used.
         /// </remarks>
-        private async Task<HttpRequestResponse> SendLetterFallbackAsync(string recipientBsn)
+        private async Task<HttpRequestResponse> SendLetterFallbackAsync(Guid messageUuid, string recipientBsn, bool wasGefaaldeNotificatie)
         {
+            _logger.LogInformation("Message {MessageId}: attempting letter fallback (was notificatie failed: {WasGefaaldeNotificatie}).",
+                messageUuid, wasGefaaldeNotificatie);
+
             Adressering? adressering;
 
             try
@@ -220,6 +271,7 @@ namespace WebQueries.MOBB
             }
             catch (Exception exception)
             {
+                _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
                 return HttpRequestResponse.Failure(
                     $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
             }
@@ -229,27 +281,149 @@ namespace WebQueries.MOBB
             // this result can end up in logs further up the call chain.
             if (adressering is not { Adresregel1: not (null or "") })
             {
+                _logger.LogWarning("Message {MessageId}: BRP returned no usable address; cannot send a letter.", messageUuid);
                 return HttpRequestResponse.Failure("BRP returned no usable address for this recipient; cannot send a letter.");
             }
 
+            _logger.LogInformation(
+                "Message {MessageId}: BRP address resolved, but letter PDF generation/send is not yet implemented.", messageUuid);
+
             // TODO: Generate the letter PDF from the message content + resolved adressering (aanhef,
             // aanschrijfwijze, address lines), and send it via INotifyClient.SendPrecompiledLetterAsync
-            // once NotifyNL/GovukNotify support attachments correctly.
+            // once NotifyNL/GovukNotify support attachments correctly. Once that send exists, its reference
+            // should be built via BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false,
+            // wasGefaaldeNotificatie: wasGefaaldeNotificatie) so the callback/contactmoment can tell this
+            // letter apart from one reached because there was no email address at all (BPMN: "Was notificatie").
             return HttpRequestResponse.Failure(
                 "Letter fallback: a postal address was resolved via BRP, but PDF generation and sending are not yet implemented.");
         }
 
         /// <summary>
+        /// Continues the fallback chain from an asynchronous delivery-receipt callback reporting that a
+        /// previously-accepted send actually failed to deliver. See <see cref="IMessageBoxScenario.HandleDeliveryFailureAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   <paramref name="failedChannel"/> comes from NotifyNL's own callback <c>Type</c> field
+        ///   (via <c>callback.Type.ConvertToNotifyMethod()</c>), so it is the actual reported channel -
+        ///   not something derived from <see cref="MessageBoxNotifyReference.Mobb"/>/<see cref="MessageBoxNotifyReference.WasGefaaldeNotificatie"/>,
+        ///   which alone cannot distinguish "this was the e-mail fallback" from "this was the eventual
+        ///   letter fallback" (both currently have <c>Mobb == false</c>).
+        ///   <para>
+        ///   TODO (unconfirmed): this relies on <see cref="ZgwModels.Mapping.Enums.NotifyNL.NotificationTypes.Mobb"/>'s
+        ///   placeholder <c>"messagebox"</c> callback-type mapping being correct. If NotifyNL's real MOBB
+        ///   delivery-receipt type string differs, <c>ConvertToNotifyMethod</c> safely falls back to
+        ///   <see cref="NotifyMethods.None"/> (never throws) - in that case this method just reports failure
+        ///   without cascading, rather than risking a wrong fallback decision.
+        ///   </para>
+        /// </remarks>
+        public async Task<HttpRequestResponse> HandleDeliveryFailureAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
+        {
+            _logger.LogWarning("Message {MessageId}: delivery-receipt callback reported FAILURE for channel {FailedChannel}.",
+                reference.MessageId, failedChannel);
+
+            if (failedChannel == NotifyMethods.Letter)
+            {
+                // BPMN: Gateway_1ivgfj2 "Gelukt?" -> "Nee - Alleen technische issues" -> only a failed
+                // contactmoment is created (handled by the caller); Activity_1xeolbh's own annotation notes
+                // the print street currently has no further fallback path back to OMC.
+                _logger.LogWarning("Message {MessageId}: letter delivery failed; no further fallback channel exists for this Bericht.",
+                    reference.MessageId);
+                return HttpRequestResponse.Failure(
+                    "Letter delivery failed (reported via callback); no further fallback channel exists for this Bericht.");
+            }
+
+            if (failedChannel != NotifyMethods.Mobb && failedChannel != NotifyMethods.Email)
+            {
+                _logger.LogWarning(
+                    "Message {MessageId}: delivery-failure callback reported an unrecognized/unsupported channel ('{FailedChannel}'); no fallback attempted.",
+                    reference.MessageId, failedChannel);
+                return HttpRequestResponse.Failure(
+                    $"Delivery failure callback reported an unrecognized/unsupported channel ('{failedChannel}') for a MOBB Bericht; no fallback was attempted.");
+            }
+
+            string recipientBsn;
+            CommonPartyData partyData;
+
+            try
+            {
+                // Re-derive recipient identity from OpenVTB/OpenKlant using only the MessageId that
+                // round-tripped through the reference - BSN is deliberately not stored in the reference
+                // itself, matching why only PartyId (not BSN) is kept there for the OpenKlant side.
+                (recipientBsn, partyData) = await ResolveRecipientAsync(reference.MessageId);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception,
+                    "Message {MessageId}: could not re-resolve recipient context for the delivery-failure fallback.", reference.MessageId);
+                return HttpRequestResponse.Failure(
+                    $"Could not re-resolve recipient context for the delivery-failure fallback: {exception.Message}");
+            }
+
+            if (failedChannel == NotifyMethods.Mobb)
+            {
+                // BPMN: Gateway_0ifw4jw "(Permanent) Success?" -> "Nee" -> Activity_0noguvy -> same
+                // digitale-post/letter fallback chain as MOBB-ineligibility or a synchronous send failure.
+                _logger.LogInformation("Message {MessageId}: MOBB delivery failed; attempting digitale-post/letter fallback.", reference.MessageId);
+                return await SendDigitalePostFallbackAsync(reference.CloudEvent, reference.MessageId, recipientBsn, partyData, reference.PartyId);
+            }
+
+            // BPMN: Gateway_1nwlhkp "Notificatie gelukt?" -> "Nee" -> Activity_19stszm (flag "Was
+            // notificatie") -> falls through to letter.
+            _logger.LogInformation("Message {MessageId}: digitale-post (email) delivery failed; attempting letter fallback.", reference.MessageId);
+            return await SendLetterFallbackAsync(reference.MessageId, recipientBsn, wasGefaaldeNotificatie: true);
+        }
+
+        /// <summary>
+        /// Re-fetches the VTB message by UUID and resolves the recipient's BSN + OpenKlant party data -
+        /// the same lookups <see cref="ProcessCloudEventAsync"/>'s steps 2-6 perform, factored out so a
+        /// delivery-failure callback (which only carries <see cref="MessageBoxNotifyReference.MessageId"/>,
+        /// not the recipient's BSN) can redo them independently.
+        /// </summary>
+        private async Task<(string RecipientBsn, CommonPartyData PartyData)> ResolveRecipientAsync(Guid messageUuid)
+        {
+            var dummyNotification = new NotificationEvent
+            {
+                MainObjectUri = new Uri($"http://temp.uri/{messageUuid}")
+            };
+
+            IQueryContext queryContext = _dataQuery.From(dummyNotification);
+
+            string baseUrl = _configuration.ZGW.Endpoint.OpenVtb();
+            Uri messageUri = new($"{baseUrl}/berichten/{messageUuid:D}");
+            VtbMessage messageData = await queryContext.GetVtbMessageAsync(messageUri);
+
+            string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
+            if (recipientBsn == null)
+            {
+                throw new InvalidOperationException("Recipient is not a citizen (BSN not found in RecipientUrn).");
+            }
+
+            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn);
+
+            return (recipientBsn, partyData);
+        }
+
+        /// <summary>
         /// Builds the compressed &amp; Base64-encoded "reference" (CloudEvent + extras) to pass to NotifyNL.
         /// </summary>
-        private async Task<string> BuildReferenceAsync(JsonElement cloudEvent, Guid messageUuid, Guid partyId, bool mobb)
+        /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
+        /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
+        /// <param name="partyId">The resolved OpenKlant party GUID.</param>
+        /// <param name="mobb">Whether this particular send actually went out via MOBB.</param>
+        /// <param name="wasGefaaldeNotificatie">
+        ///   Whether a digitale-post (email) attempt failed before this send happened - only meaningful
+        ///   for a letter fallback reference; see <see cref="MessageBoxNotifyReference.WasGefaaldeNotificatie"/>.
+        /// </param>
+        private async Task<string> BuildReferenceAsync(
+            JsonElement cloudEvent, Guid messageUuid, Guid partyId, bool mobb, bool wasGefaaldeNotificatie = false)
         {
             var referenceData = new MessageBoxNotifyReference
             {
                 CloudEvent = cloudEvent,
                 MessageId = messageUuid,
                 PartyId = partyId,
-                Mobb = mobb
+                Mobb = mobb,
+                WasGefaaldeNotificatie = wasGefaaldeNotificatie
             };
 
             return await _serializer.Serialize(referenceData).CompressGZipAsync(CancellationToken.None);

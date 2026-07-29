@@ -326,6 +326,20 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string CodeObjectTypeId()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectTypeId));
+
+                    // TODO (first-version, unconfirmed): these two are placeholders for the MOBB/Berichtenbox
+                    // contactmoment "onderwerpobject" - unlike "zaak"/"open-zaak" above, a Bericht object type
+                    // has not actually been registered/confirmed in OpenKlant yet. Get real values from whoever
+                    // manages OpenKlant's registered object types before relying on these.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Bericht));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
                 }
 
                 /// <summary>
