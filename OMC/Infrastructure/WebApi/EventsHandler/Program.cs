@@ -443,6 +443,19 @@ namespace EventsHandler
                         return next();
                     }
 
+                    // CodeQL cs/web/unvalidated-url-redirection: reject a request path starting
+                    // with "//" before it reaches Redirect() — some clients/proxies pass that
+                    // through as a literal PathString, and left unchecked it would make the
+                    // built target protocol-relative (browsers treat "//host/..." as a redirect
+                    // to a different host, same as "https://host/..."). pathBase is trusted
+                    // configuration and always prepended first, so this is otherwise always a
+                    // same-origin relative path — this closes the one way that stops being true.
+                    if (context.Request.Path.Value?.StartsWith("//") == true)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        return Task.CompletedTask;
+                    }
+
                     string newPath = pathBase + context.Request.Path + context.Request.QueryString;
                     context.Response.Redirect(newPath);
                     return Task.CompletedTask;
