@@ -1,4 +1,4 @@
-﻿// © 2023, Worth Systems.
+﻿// © 2023. Worth Systems.
 
 using Common.Constants;
 using Common.Extensions;
@@ -73,35 +73,22 @@ using Responder = EventsHandler.Services.Responding;
 
 namespace EventsHandler
 {
-    /// <summary>
-    /// The entry point to the Web API application, responsible for configuring and starting its instance.
-    /// </summary>
     [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
     {
-        /// <summary>
-        /// Custom simplified version of application configuration.
-        /// </summary>
-        /// <param name="args">The <see cref="Program"/> startup arguments.</param>
         internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
-                .AddConfiguration()       // 1. Configuration (appsettings.json)
-                .AddExternalServices()    // 2. Microsoft .NET services
-                .AddInternalServices()    // 3. Internal OMC services
-                .ConfigureHttpPipeline()  // 4. Configure pipeline (what should happen during HTTP request-response cycle)
-                .Run();                   // 5. Start the application
+                .AddConfiguration()
+                .AddExternalServices()
+                .AddInternalServices()
+                .ConfigureHttpPipeline()
+                .Run();
         }
 
         #region Configuration
-        /// <summary>
-        /// Adding application configurations from JSON files.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
         {
-            // Configuration appsettings.json files
             const string appSettingsRootName = "appsettings";
 
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
@@ -114,17 +101,9 @@ namespace EventsHandler
         private const string DashboardCorsPolicy = "Dashboard";
 
         #region Services: External (.NET)
-        /// <summary>
-        /// Registration of .NET services, used by the application.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
-            // API Controllers
             builder.Services.AddControllers();
-
-            // Navigate directly to the endpoints from API Controllers (instead of using explicit .Map() routing in config)
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddCors(setup =>
@@ -152,29 +131,22 @@ namespace EventsHandler
                 EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
                 OmcConfiguration configuration = builder.Services.GetRequiredService<OmcConfiguration>();
 
-                // Disable some default validations, preventing the JWT token to be recognized as valid
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Validation parameters
                     ValidIssuer = configuration.OMC.Auth.JWT.Issuer(),
                     ValidAudience = configuration.OMC.Auth.JWT.Audience(),
                     IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Auth.JWT.Secret()),
-
-                    // Validation criteria
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true
                 };
 
-                // Skip repacking user Claims into Microsoft specific objects
                 setup.MapInboundClaims = false;
             });
 
-            // Swagger UI: Configuration
             builder.Services.AddSwaggerGen(setup =>
             {
-                // Enable API documentation in Swagger UI
                 setup.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = ApiResources.Swagger_UI_Version,
@@ -182,15 +154,12 @@ namespace EventsHandler
                     Description = ApiResources.Swagger_UI_Description
                 });
 
-                // Enable [SwaggerRequestExample] filter for parameters in Swagger UI
                 setup.ExampleFilters();
 
-                // Map XML documentation from API Controllers into Swagger UI
                 string xmlDocumentationFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlDocumentationPath = Path.Combine(AppContext.BaseDirectory, xmlDocumentationFile);
                 setup.IncludeXmlComments(xmlDocumentationPath);
 
-                // Enable required JWT authentication tokens from Headers in Swagger UI
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
@@ -206,17 +175,15 @@ namespace EventsHandler
                     }
                 };
 
-                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);  // Enable authentication input (button) to provide JWT in Swagger UI
-                setup.AddSecurityRequirement(new OpenApiSecurityRequirement                // Add authentications requirements for API methods in Swagger UI
+                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
                 });
             });
 
-            // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
-            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();  // NOTE: Any class which belongs to the solution
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();
 
-            // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
             {
                 options.ConfigureSentryOptions(isDebugEnabled: builder.Environment.IsDevelopment());
@@ -225,70 +192,37 @@ namespace EventsHandler
             return builder;
         }
 
-        #region Sentry configuration
-        /// <summary>
-        /// Configure logging options for Sentry.
-        /// <para>
-        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
-        /// </para>
-        /// </summary>
         private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
-            // Sentry Data Source Name (DSN) => where to log application events
             options.Dsn = Environment.GetEnvironmentVariable(ConfigExtensions.SentryDsn)
-                          ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
-                                            // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
-                                            // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
+                          ?? string.Empty;
 
-            // Informational messages are the most detailed to log
-            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
-                                                     : SentryLevel.Info;  // Less detailed (not affecting performance) settings for logs
-
-            // Detailed debugging logs in the console window
+            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug : SentryLevel.Info;
             options.Debug = isDebugEnabled;
-
-            // Enables Sentry's "Release Health" feature
             options.AutoSessionTracking = true;
-
-            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
             options.IsGlobalModeEnabled = false;
-
-            // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
-            // Fetch version from EventsHandler.Csproj and set OmcVersion.
             Version? version = Assembly.GetEntryAssembly()?.GetName().Version;
 
             if (version is not null)
                 OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
 
-            // Version of the application ("OMC Web API" in this case)
             options.Release = OmcVersion.GetExpandedVersion();
-
-            // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment) ??
                                   CommonValues.Default.Models.DefaultStringValue;
         }
         #endregion
-        #endregion
 
         #region Services: Internal (OMC)
-        /// <summary>
-        /// Registration of custom services, used for business logic and internal processes.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with custom services.</returns>
         private static WebApplicationBuilder AddInternalServices(this WebApplicationBuilder builder)
         {
-            // Configurations
             builder.Services.AddSingleton<OmcConfiguration>();
             builder.Services.RegisterLoadingStrategies();
 
-            // JWT generation
             builder.Services.RegisterEncryptionStrategy(builder);
 
-            // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
@@ -306,7 +240,6 @@ namespace EventsHandler
             builder.Services.AddSingleton<TraceEmitter>();
             builder.Services.RegisterOpenServices();
 
-            // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
@@ -419,7 +352,6 @@ namespace EventsHandler
 
             builder.Services.RegisterClientFactories();
 
-            // Versioning
             builder.Services.AddSingleton<OmcVersionRegister>();
             builder.Services.AddSingleton<ZgwVersionRegister>();
 
@@ -433,32 +365,26 @@ namespace EventsHandler
         #region Aggregated registrations
         private static void RegisterEncryptionStrategy(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            // Strategies
             services.AddSingleton(typeof(IJwtEncryptionStrategy),
                 builder.Configuration.IsEncryptionAsymmetric()
                     ? typeof(AsymmetricEncryptionStrategy)
                     : typeof(SymmetricEncryptionStrategy));
 
-            // Context
             services.AddSingleton<EncryptionContext>();
         }
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
         {
-            // Strategy Context (acting like loader strategy facade)
             services.AddSingleton<ILoadersContext, LoadersContext>();
 
-            // Strategies
             services.AddSingleton<AppSettingsLoader>();
             services.AddSingleton<EnvironmentLoader>();
         }
 
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
-            // Strategy Resolver (returning dedicated scenarios' strategy)
             services.AddScoped<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
-            // Strategies
             services.AddScoped<CaseCreatedScenario>();
             services.AddScoped<CaseStatusUpdatedScenario>();
             services.AddScoped<CaseClosedScenario>();
@@ -504,16 +430,10 @@ namespace EventsHandler
         #endregion
 
         #region HTTP Pipeline
-        /// <summary>
-        /// Configures the HTTP pipeline with middlewares.
-        /// </summary>
-        /// <param name="builder">The pre-configured <see cref="WebApplicationBuilder"/>.</param>
-        /// <returns>Configured <see cref="WebApplication"/>.</returns>
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
 
-            // Get configuration
             OmcConfiguration configuration = app.Services.GetRequiredService<OmcConfiguration>();
             string pathBase = configuration.OMC.Context.Path();
 
@@ -523,7 +443,6 @@ namespace EventsHandler
             {
                 app.Use((context, next) =>
                 {
-                    // If the request does not start with the path base, redirect
                     if (context.Request.Path.StartsWithSegments(pathBase))
                     {
                         return next();
@@ -550,14 +469,13 @@ namespace EventsHandler
                 app.UsePathBase(pathBase);
             }
 
-            // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();  // Try to redirect from HTTP to HTTPS (after first HTTP call)
+            app.UseHttpsRedirection();
 
             // Serves the statically-exported dashboard (wwwroot/status, wwwroot/status/flow,
             // wwwroot/_next/*) baked into this image at build time — see the explicit
@@ -586,7 +504,7 @@ namespace EventsHandler
 
             app.MapControllers();  // Mapping actions from API controllers
 
-            app.UseSentryTracing();  // Enable Sentry to capture transactions
+            app.UseSentryTracing();
 
             return app;
         }

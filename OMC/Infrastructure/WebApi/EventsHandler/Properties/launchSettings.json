@@ -39,6 +39,8 @@
 
         "OMC_FEATURE_WORKFLOW_VERSION": "2",
 
+        "ZGW_URN": "",
+
         // NOTE: In OMC Workflow v2 this will be used only for OpenZaak and Besluiten
         "ZGW_AUTH_JWT_SECRET": "",
         "ZGW_AUTH_JWT_ISSUER": "goc",
