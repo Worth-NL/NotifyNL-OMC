@@ -5,6 +5,12 @@ on:
     branches: ["main"]
     types: [opened, synchronize, ready_for_review]
 
+# Every job here only reads this repo via actions/checkout — the Test-environment deploy
+# authenticates with its own RELEASE_TOKEN/K8S_CONFIG secrets, and the DockerHub push with
+# DOCKERHUB_TOKEN, not the default GITHUB_TOKEN — so read-only is enough for all of them.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   # Don't want the tests running in parallel
