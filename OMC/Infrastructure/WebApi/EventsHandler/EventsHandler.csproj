@@ -46,7 +46,14 @@
   <Target Name="BuildDashboardIfMissing" BeforeTargets="Build"
           Condition="!Exists('$(MSBuildProjectDirectory)/wwwroot') AND '$(CI)' != 'true' AND '$(SkipDashboardBuild)' != 'true'">
     <Message Importance="high"
-             Text="Dashboard not built yet — running 'npm run build:omc' so /status works (first build only; pass -p:SkipDashboardBuild=true to skip)." />
+             Text="Dashboard not built yet — installing dependencies and running 'npm run build:omc' so /status works (first build only; pass -p:SkipDashboardBuild=true to skip)." />
+    <!-- Unconditional, not just "if node_modules is missing": a colleague's checkout can also
+         have an older node_modules that predates a newly added dependency (e.g. @xyflow/react),
+         which still fails 'next build' with the same "Module not found" error. npm install is
+         a fast no-op when nothing changed, so there's no real cost to always running it here. -->
+    <Exec Command="npm install"
+          WorkingDirectory="$(MSBuildProjectDirectory)/../../../../dashboard"
+          ContinueOnError="WarnAndContinue" />
     <Exec Command="npm run build:omc"
           WorkingDirectory="$(MSBuildProjectDirectory)/../../../../dashboard"
           ContinueOnError="WarnAndContinue" />
