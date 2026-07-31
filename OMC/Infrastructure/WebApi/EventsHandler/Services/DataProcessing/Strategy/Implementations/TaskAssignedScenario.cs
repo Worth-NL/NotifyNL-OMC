@@ -70,8 +70,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             }
             TraceContext.Emit("taakcheck", "ok");
 
-            // start doing checks here isProduct or isCase  >?
-
             // if case:
             // TODO: Will be aggregated with CaseStatusType in future
             Guid taskCaseId = this._taskData.CaseUri.GetGuid();
@@ -89,14 +87,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
 
-            // Validation based on casetye/statustype is over
-
-            // this can be removed? i think?
             TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {taskCaseId}");
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
             TraceContext.Emit("openzaak", "ok", $"zaak with id {taskCaseId} retrieved");
 
-            // here more if's are neede because if idtype == bsn use bsn if idtyp == kvk use kvk number
             // Preparing party details
             string? bsnNumber = this._taskData.Identification.Type == IdTypes.Bsn
                 ? this._taskData.Identification.Value  // BSN number
@@ -113,31 +107,32 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
-
-
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.Email.TaskAssigned();
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
+            bool isValid = IsValid(this._taskData.ExpirationDate);
+            string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
+            string expirationDateProvided = GetExpirationDateProvided(isValid);
+
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
                 s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
                 s_emailPersonalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["taak.verloopdatum"] = GetFormattedExpirationDate(IsValid(this._taskData.ExpirationDate), this._taskData.ExpirationDate);
-                s_emailPersonalization["taak.heeft_verloopdatum"] = GetExpirationDateProvided(IsValid(this._taskData.ExpirationDate));
+                s_emailPersonalization["taak.verloopdatum"] = formattedExpirationDate;
+                s_emailPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
                 s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
 
-                // here more if's if we are dealing with a product
                 s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
                 s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
 
@@ -199,14 +194,22 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #endregion
 
         #region Helper methods
-        private static bool IsValid(DateTime expirationDate)
-            => expirationDate != default;
-
         private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
-            => isValid ? expirationDate.ConvertToDutchDateString() : "-";
+        {
+            return isValid
+                ? expirationDate.ConvertToDutchDateString()  // 01-01-2001
+                : CommonValues.Default.Models.DefaultStringValue;
+        }
 
         private static string GetExpirationDateProvided(bool isValid)
-            => isValid ? "yes" : "no";
+        {
+            return isValid ? "yes" : "no";
+        }
+
+        private static bool IsValid(DateTime expirationDate)
+        {
+            return expirationDate != default;  // 0001-01-01, 00:00:00
+        }
         #endregion
     }
 }
