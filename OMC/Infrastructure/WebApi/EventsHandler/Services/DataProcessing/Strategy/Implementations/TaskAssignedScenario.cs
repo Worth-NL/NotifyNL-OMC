@@ -107,16 +107,18 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         }
         #endregion
 
+
+
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.Email.TaskAssigned();
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             bool isValid = IsValid(this._taskData.ExpirationDate);
