@@ -4,6 +4,7 @@
 - Adds support for zaak-geopend and zaak-verwijderd events (previously only zaak-gemuteerd was recognized from NotificationEvent-shaped input)
 - Fixes MijnZaken payload binding, NotificationEvent field mapping, dataref format, and event timestamp accuracy so the endpoint works end-to-end
 - Adds the configuration status dashboard (statically served React/Next.js SPA) with a live scenario-trace visualization
+- Moves REST API documentation to the notifynl-api repository; page now redirects there
 
 ## 2.0.2
 
