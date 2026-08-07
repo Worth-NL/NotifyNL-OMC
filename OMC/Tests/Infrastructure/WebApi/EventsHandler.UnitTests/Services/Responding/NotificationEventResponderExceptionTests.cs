@@ -7,6 +7,7 @@ using EventsHandler.Services.Responding.Enums;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -16,6 +17,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding
     public sealed class NotificationEventResponderExceptionTests
     {
         private Mock<IDetailsBuilder> _builderMock = null!;
+        private Mock<ILogger<NotificationEventResponder>> _loggerMock = null!;
         private IRespondingService _responder = null!;
 
         private static readonly ErrorDetails s_errorDetails = new("Error", "cases", ["reason"]);
@@ -34,7 +36,9 @@ namespace EventsHandler.Tests.Unit.Services.Responding
                 .Setup(b => b.Get<UnknownDetails>(It.IsAny<Reasons>()))
                 .Returns(s_unknownDetails);
 
-            _responder = new NotificationEventResponder(_builderMock.Object);
+            _loggerMock = new Mock<ILogger<NotificationEventResponder>>();
+
+            _responder = new NotificationEventResponder(_builderMock.Object, _loggerMock.Object);
         }
 
         #region GetExceptionResponse(Exception)

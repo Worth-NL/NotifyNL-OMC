@@ -13,6 +13,11 @@ namespace ZgwModels.Mapping.Events
     /// </summary>
     public class CloudEventNormalizer
     {
+        private const string ExpectedNotificationFormats =
+            """
+            {"actie":"create","kanaal":"zaken","resource":"status","kenmerken":{"zaaktype":"<zaaktype-url>","bronorganisatie":"<rsin>","vertrouwelijkheidaanduiding":"openbaar"},"hoofdObject":"<zaak-url>","resourceUrl":"<status-url>","aanmaakdatum":"<ISO8601>"} (zaak-gemuteerd), or the same shape with "resource":"zaak" and "actie":"read" (zaak-geopend) / "actie":"destroy" (zaak-verwijderd)
+            """;
+
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<CloudEventNormalizer> _logger;
         private readonly ISerializationService _serializer;
@@ -34,81 +39,95 @@ namespace ZgwModels.Mapping.Events
         /// Converts an incoming payload (CloudEvent or NotificationEvent) into a unified CloudEvent.
         /// </summary>
         /// <param name="payload">The raw JSON payload (JObject).</param>
+        /// <param name="reason">When the payload is rejected, describes specifically what was malformed or unsupported.</param>
         /// <returns>
         /// A <see cref="CloudEvent"/> if the payload is valid and can be mapped;
         /// otherwise <c>null</c> if the format is unsupported or required fields are missing.
         /// </returns>
-        public CloudEvent? Normalize(JObject payload)
+        public CloudEvent? Normalize(JObject payload, out string? reason)
         {
+            reason = null;
+
             if (payload.ContainsKey("specversion"))
-                return ConvertCloudEventJObject(payload);
+                return ConvertCloudEventJObject(payload, out reason);
 
             if (!payload.ContainsKey("kanaal"))
             {
-                _logger.LogWarning("Payload does not contain 'kanaal' – skipping normalization.");
+                reason = "Payload does not contain 'kanaal'.";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             NotificationEvent notification = _serializer.Deserialize<NotificationEvent>(payload.ToString());
             if (notification.IsInvalidEvent(out _))
             {
-                _logger.LogWarning("NotificationEvent deserialization failed or is invalid.");
+                reason = "NotificationEvent deserialization failed or is invalid.";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
-            return ConvertNotification(notification);
+            return ConvertNotification(payload, notification, out reason);
         }
 
         /// <summary>
         /// Converts a CloudEvent JObject into a <see cref="CloudEvent"/>.
         /// </summary>
         /// <param name="payload">The incoming CloudEvent JSON.</param>
+        /// <param name="reason">When the payload is rejected, describes specifically what was malformed or unsupported.</param>
         /// <returns>
         /// A <see cref="CloudEvent"/> if all required fields are present and non‑empty;
         /// otherwise <c>null</c>.
         /// </returns>
-        private CloudEvent? ConvertCloudEventJObject(JObject payload)
+        private CloudEvent? ConvertCloudEventJObject(JObject payload, out string? reason)
         {
+            reason = null;
+
             // Required fields: specversion, type, source, subject, id, time
             string? specVersion = payload.Value<string>("specversion");
             if (string.IsNullOrWhiteSpace(specVersion))
             {
-                _logger.LogWarning("CloudEvent missing 'specversion'.");
+                reason = $"CloudEvent is missing 'specversion'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             string? type = payload.Value<string>("type");
             if (string.IsNullOrWhiteSpace(type))
             {
-                _logger.LogWarning("CloudEvent missing 'type'.");
+                reason = $"CloudEvent is missing 'type'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             string? source = payload.Value<string>("source");
             if (string.IsNullOrWhiteSpace(source))
             {
-                _logger.LogWarning("CloudEvent missing 'source'.");
+                reason = $"CloudEvent is missing 'source'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             string? subject = payload.Value<string>("subject");
             if (string.IsNullOrWhiteSpace(subject))
             {
-                _logger.LogWarning("CloudEvent missing 'subject'.");
+                reason = $"CloudEvent is missing 'subject'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             string? id = payload.Value<string>("id");
             if (string.IsNullOrWhiteSpace(id))
             {
-                _logger.LogWarning("CloudEvent missing 'id'.");
+                reason = $"CloudEvent is missing 'id'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             DateTime? time = payload.Value<DateTime?>("time");
             if (!time.HasValue)
             {
-                _logger.LogWarning("CloudEvent missing 'time'.");
+                reason = $"CloudEvent is missing 'time'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
@@ -129,19 +148,23 @@ namespace ZgwModels.Mapping.Events
         /// <summary>
         /// Converts a <see cref="NotificationEvent"/> into a <see cref="CloudEvent"/>.
         /// </summary>
+        /// <param name="payload">The raw incoming JSON payload, used to echo back what was actually received when rejecting it.</param>
         /// <param name="notification">The incoming NotificationEvent.</param>
+        /// <param name="reason">When the payload is rejected, describes specifically what was malformed or unsupported.</param>
         /// <returns>
         /// A <see cref="CloudEvent"/> if the event type is known and all required data is present;
         /// otherwise <c>null</c>.
         /// </returns>
-        private CloudEvent? ConvertNotification(NotificationEvent notification)
+        private CloudEvent? ConvertNotification(JObject payload, NotificationEvent notification, out string? reason)
         {
+            reason = null;
+
             // Try to map to a known CloudEvent type – returns null if unknown
             string? eventType = MapToCloudEventType(notification);
             if (eventType == null)
             {
-                _logger.LogWarning("Unsupported NotificationEvent mapping: Channel={Channel}, Resource={Resource}, Action={Action}",
-                    notification.Channel, notification.Resource, notification.Action);
+                reason = $"We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null; // unsupported mapping
             }
 
@@ -149,7 +172,8 @@ namespace ZgwModels.Mapping.Events
             Uri caseUri = notification.MainObjectUri;
             if (string.IsNullOrWhiteSpace(caseUri.ToString()))
             {
-                _logger.LogWarning("NotificationEvent has empty MainObjectUri.");
+                reason = $"NotificationEvent has an empty 'hoofdObject'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
@@ -157,7 +181,8 @@ namespace ZgwModels.Mapping.Events
             string caseUuid = caseUri.Segments.Last();
             if (string.IsNullOrWhiteSpace(caseUuid))
             {
-                _logger.LogWarning("Could not extract UUID from MainObjectUri: {MainObjectUri}", caseUri);
+                reason = $"Could not extract a UUID from 'hoofdObject' ({caseUri}). Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
@@ -165,7 +190,8 @@ namespace ZgwModels.Mapping.Events
             Uri resourceUri = notification.ResourceUri;
             if (string.IsNullOrWhiteSpace(resourceUri.ToString()))
             {
-                _logger.LogWarning("NotificationEvent has empty ResourceUri.");
+                reason = $"NotificationEvent has an empty 'resourceUrl'. Received: {payload}";
+                _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
@@ -173,7 +199,8 @@ namespace ZgwModels.Mapping.Events
             string source = _configuration.ZGW.Urn();
             if (string.IsNullOrWhiteSpace(source))
             {
-                _logger.LogWarning("ZGW URN is not configured; cannot set CloudEvent Source.");
+                reason = "ZGW URN is not configured on this OMC instance; cannot set CloudEvent Source.";
+                _logger.LogWarning("{Reason}", reason);
                 return null; // missing source configuration
             }
 
