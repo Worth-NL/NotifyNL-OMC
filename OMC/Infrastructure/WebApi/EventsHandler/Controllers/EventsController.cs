@@ -133,10 +133,10 @@ namespace EventsHandler.Controllers
             try
             {
                 // 1. Normalize the incoming payload to a unified CloudEvent
-                CloudEvent? cloudEvent = _normalizer.Normalize(JObject.Parse($"{json}"));
+                CloudEvent? cloudEvent = _normalizer.Normalize(JObject.Parse($"{json}"), out string? reason);
                 if (cloudEvent == null)
                 {
-                    ObjectResult errorResponse = _responder.GetExceptionResponse("Unsupported payload format or missing required fields.");
+                    ObjectResult errorResponse = _responder.GetExceptionResponse(reason ?? "Unsupported payload format or missing required fields.");
                     return LogApiResponse(LogLevel.Warning, errorResponse);
                 }
 
