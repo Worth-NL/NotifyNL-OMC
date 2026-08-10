@@ -18,6 +18,9 @@ namespace ZgwModels.Mapping.Events
             {"actie":"create","kanaal":"zaken","resource":"status","kenmerken":{"zaaktype":"<zaaktype-url>","bronorganisatie":"<rsin>","vertrouwelijkheidaanduiding":"openbaar"},"hoofdObject":"<zaak-url>","resourceUrl":"<status-url>","aanmaakdatum":"<ISO8601>"} (zaak-gemuteerd), or the same shape with "resource":"zaak" and "actie":"read" (zaak-geopend) / "actie":"destroy" (zaak-verwijderd)
             """;
 
+        // NOTE: Order must match the validatedProperties order in NotificationEvent.IsInvalidEvent
+        private static readonly string[] s_invalidPropertyNames = ["actie", "kanaal", "resource", "hoofdObject", "resourceUrl"];
+
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<CloudEventNormalizer> _logger;
         private readonly ISerializationService _serializer;
@@ -59,9 +62,10 @@ namespace ZgwModels.Mapping.Events
             }
 
             NotificationEvent notification = _serializer.Deserialize<NotificationEvent>(payload.ToString());
-            if (notification.IsInvalidEvent(out _))
+            if (notification.IsInvalidEvent(out int[] invalidPropertiesIndices))
             {
-                reason = "NotificationEvent deserialization failed or is invalid.";
+                string invalidProperties = string.Join(", ", invalidPropertiesIndices.Select(index => s_invalidPropertyNames[index]));
+                reason = $"NotificationEvent is missing or has an invalid value for: {invalidProperties}. We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received: {payload}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
