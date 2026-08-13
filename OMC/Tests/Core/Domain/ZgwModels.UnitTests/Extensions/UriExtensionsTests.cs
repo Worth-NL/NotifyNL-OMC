@@ -67,12 +67,11 @@ namespace ZgwModels.Tests.Unit.Extensions
 
         #region IsNullOrDefault / IsNotNullOrDefault
         [Test]
-        public void IsNullOrDefault_ForNullUri_ReturnsFalse()
+        public void IsNullOrDefault_ForNullUri_ReturnsTrue()
         {
-            // Implementation uses EmptyUri.Equals(uri); Uri.Equals(null) is false
             Uri? uri = null;
 
-            Assert.That(uri.IsNullOrDefault(), Is.False);
+            Assert.That(uri.IsNullOrDefault(), Is.True);
         }
 
         [Test]
@@ -88,12 +87,11 @@ namespace ZgwModels.Tests.Unit.Extensions
         }
 
         [Test]
-        public void IsNotNullOrDefault_ForNullUri_ReturnsTrue()
+        public void IsNotNullOrDefault_ForNullUri_ReturnsFalse()
         {
-            // null does not equal EmptyUri, so IsNullOrDefault(null) is false → IsNotNullOrDefault is true
             Uri? uri = null;
 
-            Assert.That(uri.IsNotNullOrDefault(), Is.True);
+            Assert.That(uri.IsNotNullOrDefault(), Is.False);
         }
 
         [Test]
