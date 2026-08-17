@@ -6,6 +6,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.MijnOverheid.Enums;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
+using WebQueries.Tracing;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
@@ -75,6 +76,16 @@ namespace WebQueries.MijnOverheid
                 return null;
             }
 
+            // Tells the dashboard which of the three MijnZaken flows to animate — set as soon as
+            // we know it, before any register/filter step below emits its first trace event.
+            TraceContext.SetScenario(eventType switch
+            {
+                MijnOverheidEventType.CaseMutated => "mijnzaken-gemuteerd",
+                MijnOverheidEventType.CaseOpened => "mijnzaken-geopend",
+                MijnOverheidEventType.CaseDeleted => "mijnzaken-verwijderd",
+                _ => "mijnzaken-gemuteerd" // unreachable — Unknown already returned above
+            });
+
             // 3. Create a single query context using the case URI
             string caseUrl = $"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}";
             var caseUri = new Uri(caseUrl);
@@ -111,7 +122,7 @@ namespace WebQueries.MijnOverheid
             _logger.LogInformation("Processing deletion event for case {Subject}. Forwarding directly.", cloudEvent.Subject);
 
             OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent);
-            return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
+            return await SendAndTraceAsync(outgoingEvent);
         }
 
         /// <summary>
@@ -132,13 +143,16 @@ namespace WebQueries.MijnOverheid
             // Fetch the case to get the current LatestOpenedDate
             Uri caseUri;
             Case caseData;
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {caseUuid}");
             try
             {
                 caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
                 caseData = await queryContext.GetCaseAsync(caseUri);
+                TraceContext.Emit("openzaak", "ok", $"zaak with id {caseUuid} retrieved");
             }
             catch (Exception ex)
             {
+                TraceContext.Emit("openzaak", "fail", ex.Message);
                 _logger.LogError(ex, "Failed to fetch case {CaseUuid} for 'geopend' event.", caseUuid);
                 return null;
             }
@@ -148,16 +162,19 @@ namespace WebQueries.MijnOverheid
             {
                 _logger.LogDebug("Case {CaseId} has no LatestOpenedDate; forwarding 'geopend' event.", caseData.Identification);
                 OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
-                return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
+                return await SendAndTraceAsync(outgoing);
             }
 
             // Check initiator type
+            TraceContext.Emit("naturalpersoncheck", "start", "Attempting to verify the initiator is a natural person");
             bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
             if (!isNaturalPerson)
             {
+                TraceContext.Emit("naturalpersoncheck", "abort", "initiator is not a natural person");
                 _logger.LogInformation("Skipping 'geopend' event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
                 return null;
             }
+            TraceContext.Emit("naturalpersoncheck", "ok", "initiator is a natural person");
 
             // Compare event time with the case's LatestOpenedDate
             DateTime eventTimeUtc = cloudEvent.Time; // already in UTC
@@ -165,14 +182,16 @@ namespace WebQueries.MijnOverheid
 
             if (eventTimeUtc >= latestOpenedUtc)
             {
+                TraceContext.Emit("mijnzaken-staleness", "ok", $"event time {eventTimeUtc:O} >= laatstGeopend {latestOpenedUtc:O}");
                 _logger.LogDebug("Forwarding 'geopend' for case {CaseId} (event time {EventTime} >= LatestOpenedDate {OpenDate}).",
                     caseData.Identification, eventTimeUtc, latestOpenedUtc);
 
                 OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent, latestOpenedUtc);
-                return await _mijnOverheidClient.SendAsync(outgoing, CancellationToken.None);
+                return await SendAndTraceAsync(outgoing);
             }
             else
             {
+                TraceContext.Emit("mijnzaken-staleness", "abort", $"event time {eventTimeUtc:O} is older than laatstGeopend {latestOpenedUtc:O}");
                 _logger.LogDebug("Skipping 'geopend' for case {CaseId}: event time {EventTime} is older than LatestOpenedDate {OpenDate}.",
                     caseData.Identification, eventTimeUtc, latestOpenedUtc);
                 return null;
@@ -197,58 +216,76 @@ namespace WebQueries.MijnOverheid
             // Fetch case
             Uri caseUri;
             Case caseData;
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {caseUuid}");
             try
             {
                 caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
                 caseData = await queryContext.GetCaseAsync(caseUri);
+                TraceContext.Emit("openzaak", "ok", $"zaak with id {caseUuid} retrieved");
             }
             catch (Exception ex)
             {
+                TraceContext.Emit("openzaak", "fail", ex.Message);
                 _logger.LogError(ex, "Failed to fetch case {CaseUuid} for mutation event.", caseUuid);
                 return null;
             }
 
             // Check initiator type
+            TraceContext.Emit("naturalpersoncheck", "start", "Attempting to verify the initiator is a natural person");
             bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
             if (!isNaturalPerson)
             {
+                TraceContext.Emit("naturalpersoncheck", "abort", "initiator is not a natural person");
                 _logger.LogInformation("Skipping mutation event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
                 return null;
             }
+            TraceContext.Emit("naturalpersoncheck", "ok", "initiator is a natural person");
 
             // Fetch status
             if (caseData.StatusUri == CommonValues.Default.Models.EmptyUri)
             {
+                TraceContext.Emit("openzaak", "fail", "case has no status URI");
                 _logger.LogWarning("Case {CaseId} has no status URI; cannot apply filters.", caseData.Identification);
                 return null;
             }
 
             CaseStatus caseStatus;
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve status for case {caseData.Identification}");
             try
             {
                 caseStatus = await queryContext.GetCaseStatusAsync(caseData.StatusUri);
+                TraceContext.Emit("openzaak", "ok", "status retrieved");
             }
             catch (Exception ex)
             {
+                TraceContext.Emit("openzaak", "fail", ex.Message);
                 _logger.LogError(ex, "Failed to fetch status for case {CaseId}.", caseData.Identification);
                 return null;
             }
 
             // Fetch status type
             CaseStatusType statusType;
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve status type for case {caseData.Identification}");
             try
             {
                 statusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+                TraceContext.Emit("openzaak", "ok", "status type retrieved");
             }
             catch (Exception ex)
             {
+                TraceContext.Emit("openzaak", "fail", ex.Message);
                 _logger.LogError(ex, "Failed to fetch status type for case {CaseId}.", caseData.Identification);
                 return null;
             }
 
             // Apply whitelist and notification-expected filters
             bool isWhitelisted = IsWhitelisted(statusType, out string scenarioName);
+            TraceContext.Emit("zaaktypewhitelist", isWhitelisted ? "ok" : "abort",
+                $"zaaktype {statusType.Identification} whitelisted={isWhitelisted} (scenario={scenarioName})");
+
             bool notificationExpected = statusType.IsNotificationExpected;
+            TraceContext.Emit("informerencheck", notificationExpected ? "ok" : "abort",
+                $"status type {statusType.Identification} has \"informeren\" set to {notificationExpected}");
 
             if (!isWhitelisted || !notificationExpected)
             {
@@ -266,15 +303,19 @@ namespace WebQueries.MijnOverheid
 
             if (latestMutationUtc.HasValue && eventTimeUtc < latestMutationUtc.Value)
             {
+                TraceContext.Emit("mijnzaken-staleness", "abort",
+                    $"event time {eventTimeUtc:O} is older than laatstGemuteerd {latestMutationUtc.Value:O}");
                 _logger.LogDebug("Skipping mutation event for case {CaseId}: event time {EventTime} is older than LatestMutationDate {MutationDate}.",
                     caseData.Identification, eventTimeUtc, latestMutationUtc.Value);
                 return null;
             }
+            TraceContext.Emit("mijnzaken-staleness", "ok",
+                latestMutationUtc.HasValue ? $"event time {eventTimeUtc:O} >= laatstGemuteerd {latestMutationUtc.Value:O}" : "laatstGemuteerd not populated by source system — check skipped");
 
             _logger.LogDebug("Mutation event for case {CaseId} passed filters ({Scenario}) and timestamp check. Forwarding.", caseData.Identification, scenarioName);
 
             OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent, latestMutationUtc);
-            return await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
+            return await SendAndTraceAsync(outgoingEvent);
         }
 
         #endregion
@@ -362,6 +403,20 @@ namespace WebQueries.MijnOverheid
                 _logger.LogError(ex, "Failed to check initiator type for case {CaseId}. Skipping.", caseId);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Sends the outgoing CloudEvent to Logius MijnZaken (the MijnOverheid webhook), emitting
+        /// the dashboard's single trace step for this shared exit point regardless of which of the
+        /// three event-type branches called it.
+        /// </summary>
+        private async Task<MijnOverheidResponse> SendAndTraceAsync(OutgoingCloudEvent outgoingEvent)
+        {
+            TraceContext.Emit("logius-mijnzaken", "start", "Attempting to forward CloudEvent to Logius MijnZaken");
+            MijnOverheidResponse response = await _mijnOverheidClient.SendAsync(outgoingEvent, CancellationToken.None);
+            TraceContext.Emit("logius-mijnzaken", response.IsSuccess ? "ok" : "fail",
+                response.IsSuccess ? $"HTTP {response.StatusCode}" : $"HTTP {response.StatusCode}: {response.ResponseBody}");
+            return response;
         }
         #endregion
     }

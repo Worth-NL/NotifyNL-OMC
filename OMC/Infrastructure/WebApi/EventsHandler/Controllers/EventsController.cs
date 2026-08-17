@@ -19,6 +19,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel.DataAnnotations;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MijnOverheid.Models;
+using WebQueries.Tracing;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Events;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -39,6 +40,7 @@ namespace EventsHandler.Controllers
         private readonly IVersionRegister _zgwRegister;
         private readonly IMijnOverheidForwarder _mijnOverheidForwarder;
         private readonly CloudEventNormalizer _normalizer;
+        private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventsController"/> class.
@@ -49,13 +51,15 @@ namespace EventsHandler.Controllers
         /// <param name="zgwRegister">The ZGW version register.</param>
         /// <param name="mijnOverheidForwarder">The forwarder to MijnOverheid.</param>
         /// <param name="normalizer">The CloudEvent normalizer for incoming payloads.</param>
+        /// <param name="traceEmitter">Broadcasts real-time processing steps to the dashboard.</param>
         public EventsController(
             IProcessingService processor,
             NotificationEventResponder responder,
             OmcVersionRegister omcRegister,
             ZgwVersionRegister zgwRegister,
             IMijnOverheidForwarder mijnOverheidForwarder,
-            CloudEventNormalizer normalizer)
+            CloudEventNormalizer normalizer,
+            TraceEmitter traceEmitter)
         {
             this._processor = processor;
             this._responder = responder;
@@ -63,6 +67,7 @@ namespace EventsHandler.Controllers
             this._zgwRegister = zgwRegister;
             this._mijnOverheidForwarder = mijnOverheidForwarder;
             this._normalizer = normalizer;
+            this._traceEmitter = traceEmitter;
         }
 
         /// <summary>
@@ -140,15 +145,45 @@ namespace EventsHandler.Controllers
                     return LogApiResponse(LogLevel.Warning, errorResponse);
                 }
 
+                // A real, understood event is entering the MijnZaken pipeline — start a trace for
+                // the dashboard (no-op if nobody is watching; cleared in the finally block below
+                // regardless). Which of the three flows this becomes is set inside
+                // ForwardIfNeededAsync as soon as the CloudEvent type is parsed.
+                TraceContext.Start(this._traceEmitter);
+                TraceContext.Emit("oneground", "ok");
+                TraceContext.Emit("output-patronen", "ok");
+
                 // 2. Forward if needed
                 MijnOverheidResponse? moResponse = await _mijnOverheidForwarder.ForwardIfNeededAsync((CloudEvent)cloudEvent);
 
-                // 3. Return response
-                return LogApiResponse(LogLevel.Information, moResponse == null ? Ok("Event was not forwarded (skipped).") : StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
+                // 3. Return response — the trace's final leg: OMC's own HTTP response to this
+                // request travels back to whichever system called /Events/MijnZaken (Oneground),
+                // carrying whatever Logius said (or the "skipped" outcome, if a filter aborted
+                // before Logius was ever called). The graph is undirected for pathfinding (see
+                // tracePath.ts), so re-emitting "oneground" here — the same stage the trace
+                // started on — is enough for the dashboard to animate the round trip back.
+                if (moResponse == null)
+                {
+                    TraceContext.Emit("oneground", "ok", "Event was not forwarded (skipped) — reporting back to Oneground");
+                    return LogApiResponse(LogLevel.Information, Ok("Event was not forwarded (skipped)."));
+                }
+
+                TraceContext.Emit("oneground", moResponse.IsSuccess ? "ok" : "fail",
+                    $"Returning Logius response (HTTP {moResponse.StatusCode}) to Oneground");
+                return LogApiResponse(LogLevel.Information, StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
             }
             catch (Exception exception)
             {
+                // Most call sites only emit "start" before a register/gate call, not a try/catch
+                // around every single one — without this, an exception here would otherwise leave
+                // the dashboard's trace hanging on that step forever instead of showing the failure.
+                TraceContext.EmitPendingFailure(exception.Message);
                 return LogApiResponse(exception, _responder.GetExceptionResponse(exception));
+            }
+            finally
+            {
+                // Never leak this trace's ambient state into unrelated work on a reused context.
+                TraceContext.Clear();
             }
         }
 
