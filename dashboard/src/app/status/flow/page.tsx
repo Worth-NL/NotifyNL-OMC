@@ -59,30 +59,114 @@ const MAIN_CHAIN_LAYOUT_NODES = [
 
 const mainLayoutAuto = layoutGraph(MAIN_CHAIN_LAYOUT_NODES, MAIN_CHAIN_EDGES);
 
-// Dagre's own crossing-minimized ranks are a fine starting point, but its within-rank ordering
-// doesn't line up Zaaktype whitelist / Informeren-check / Kanaalresolutie into the single
-// straight chain they conceptually are. Patching just these positions after Dagre runs — same
-// technique as the register row below — keeps everything else on its normal auto-computed
-// layout.
-const FILTER_ROW_Y = mainLayoutAuto.positions.documentcheck.y;
+// Dagre's own crossing-minimized ranks are a fine starting point for X (rank/column), but its
+// within-rank Y-ordering doesn't line up Zaaktype whitelist / Informeren-check / Kanaalresolutie
+// into the single straight chain they conceptually are — and is sensitive enough to unrelated
+// edges elsewhere in the graph that adding the MijnZaken nodes once visibly knocked Taak- &
+// ID-typecheck to a distant, unrelated position despite none of its own edges changing. Rather
+// than patch a growing number of individual within-rank positions after each new addition, the
+// whole "Kanaal & filters" column is laid out by hand as a fixed 4-row grid on one uniform row
+// gap, reusing only Dagre's X per column (rank spacing is the one thing it gets right):
+//   Row -2: Berichten-schakelaar   (Message Received's own gate; feeds Kanaalresolutie)
+//   Row -1: Taak-check             (Task Assigned's own pre-check, feeds Zaaktype whitelist)
+//   Row  0: Documentstatus -> Zaaktype whitelist -> Informeren-check -> Kanaalresolutie
+//           (the shared chain itself, dead straight)
+//   Row +1: Natuurlijk persoon-check -> Verouderd-check
+//           (MijnZaken's own lane — Natuurlijk persoon-check plays the same "own pre-check"
+//           role as Taak-check, just feeding a same-row neighbor instead of the shared
+//           whitelist; Verouderd-check also takes a short drop-in from Informeren-check
+//           directly above it, mirroring how Kanaalresolutie takes one from
+//           Berichten-schakelaar two rows above *it*)
+// Every edge into/out of this grid is forced to enter/exit left/right below, never top/bottom —
+// registers are the one deliberate exception to that (see the register loop further down),
+// since their round-trip-from-the-hub relationship really is vertical, not a forward hop.
+const FILTER_COL1_X = mainLayoutAuto.positions.documentcheck.x; // taakcheck / documentcheck / naturalpersoncheck
+const FILTER_COL2_X = mainLayoutAuto.positions.zaaktypewhitelist.x;
+const FILTER_COL3_X = mainLayoutAuto.positions.informerencheck.x;
+const FILTER_COL4_X = mainLayoutAuto.positions.kanaalresolutie.x; // kanaalresolutie / mijnzaken-staleness
 
-// Berichten-schakelaar (Message Received's own gate, unrelated to the whitelist/informeren
-// chain) sits above Documentstatus, well above Output Patronen's own top edge — genuine empty
-// space its long edge to Kanaalresolutie can clear through.
+const FILTER_ROW_GAP = CARD_HEIGHT + 24; // one consistent gap, reused for every row transition below
+const FILTER_ROW_Y = mainLayoutAuto.positions.documentcheck.y;
+const FILTER_ROW_ABOVE2_Y = FILTER_ROW_Y - 2 * FILTER_ROW_GAP;
+const FILTER_ROW_ABOVE_Y = FILTER_ROW_Y - FILTER_ROW_GAP;
+const FILTER_ROW_BELOW_Y = FILTER_ROW_Y + FILTER_ROW_GAP;
+
 const filterPositionOverrides: LayoutResult["positions"] = {
-  berichtenschakelaar: { x: mainLayoutAuto.positions.documentcheck.x, y: mainLayoutAuto.positions[PATTERN_ENGINE_KEY].y - (CARD_HEIGHT + 40) },
-  zaaktypewhitelist: { x: mainLayoutAuto.positions.zaaktypewhitelist.x, y: FILTER_ROW_Y },
-  informerencheck: { x: mainLayoutAuto.positions.informerencheck.x, y: FILTER_ROW_Y },
-  kanaalresolutie: { x: mainLayoutAuto.positions.kanaalresolutie.x, y: FILTER_ROW_Y },
+  berichtenschakelaar: { x: FILTER_COL1_X, y: FILTER_ROW_ABOVE2_Y },
+  taakcheck: { x: FILTER_COL1_X, y: FILTER_ROW_ABOVE_Y },
+  documentcheck: { x: FILTER_COL1_X, y: FILTER_ROW_Y },
+  zaaktypewhitelist: { x: FILTER_COL2_X, y: FILTER_ROW_Y },
+  informerencheck: { x: FILTER_COL3_X, y: FILTER_ROW_Y },
+  kanaalresolutie: { x: FILTER_COL4_X, y: FILTER_ROW_Y },
+  naturalpersoncheck: { x: FILTER_COL1_X, y: FILTER_ROW_BELOW_Y },
+  "mijnzaken-staleness": { x: FILTER_COL4_X, y: FILTER_ROW_BELOW_Y },
 };
 
-const mainPositions = { ...mainLayoutAuto.positions, ...filterPositionOverrides };
+// Uitvoer column, same hand-placed-grid treatment: Dagre free-orders these (several, like
+// PostGuard, have no real inbound edge in this pipeline at all — see CHANNEL_NODES comment — so
+// it has nothing but its outgoing edge to rank by), which is what put Logius MijnZaken at the
+// very top of the stack instead of next to the other "not really live" channels it belongs
+// with. Stacked by hand instead, one column, uniform gap, Logius MijnZaken directly under
+// PostGuard. Anchored on notify-email's Dagre X/top, the one channel guaranteed a normal inbound
+// rank (fed from Kanaalresolutie) to anchor off.
+const CHANNEL_STACK_ORDER = [
+  "notify-email",
+  "notify-sms",
+  "notify-post",
+  "postguard",
+  "logius-mijnzaken",
+  "berichtenbox",
+  "lokale-berichtenbox",
+];
+const channelPositionOverrides: LayoutResult["positions"] = {};
+CHANNEL_STACK_ORDER.forEach((key, i) => {
+  channelPositionOverrides[key] = {
+    x: mainLayoutAuto.positions["notify-email"].x,
+    y: FILTER_ROW_ABOVE2_Y + i * FILTER_ROW_GAP,
+  };
+});
+
+// All hand-placed positions merged before computing handles even once — computing handles from
+// the filter grid alone (before the channel stack existed) previously left several channel
+// edges' dx/dy stale, which is exactly what re-introduces an accidental top/bottom pick once a
+// target moves further away vertically than it was when handles were last computed.
+const mainPositions = { ...mainLayoutAuto.positions, ...filterPositionOverrides, ...channelPositionOverrides };
 const mainEdgeHandles = computeEdgeHandles(mainPositions, MAIN_CHAIN_LAYOUT_NODES, MAIN_CHAIN_EDGES);
-// Entering Kanaalresolutie from directly above — rather than the auto-computed left/right,
-// which routes this long cross-diagram edge straight through Zaaktype whitelist and
-// Informeren-check's row — keeps the curve elevated above the whole filter row for nearly its
-// entire span, only dropping in the short final stretch directly over Kanaalresolutie itself.
-mainEdgeHandles["berichtenschakelaar->kanaalresolutie"] = { sourceHandle: "right", targetHandle: "top" };
+
+// Force left/right on every edge touching a hand-placed node above — rather than trust the auto
+// dx/dy heuristic to land on the same choice as spacing keeps changing — everywhere except the
+// register round-trips below, which are deliberately top/bottom (see the register loop further
+// down): registers are a real vertical round trip through the hub, not a forward hop.
+const FORCE_LR_EDGES: [string, string][] = [
+  [PATTERN_ENGINE_KEY, "berichtenschakelaar"],
+  [PATTERN_ENGINE_KEY, "taakcheck"],
+  [PATTERN_ENGINE_KEY, "documentcheck"],
+  [PATTERN_ENGINE_KEY, "naturalpersoncheck"],
+  [PATTERN_ENGINE_KEY, "zaaktypewhitelist"],
+  ["taakcheck", "zaaktypewhitelist"],
+  ["documentcheck", "zaaktypewhitelist"],
+  ["zaaktypewhitelist", "informerencheck"],
+  ["informerencheck", "kanaalresolutie"],
+  ["berichtenschakelaar", "kanaalresolutie"],
+  ["informerencheck", "mijnzaken-staleness"],
+  ["naturalpersoncheck", "mijnzaken-staleness"],
+  ["mijnzaken-staleness", "logius-mijnzaken"],
+  [PATTERN_ENGINE_KEY, "logius-mijnzaken"],
+  ["kanaalresolutie", "notify-email"],
+  ["kanaalresolutie", "notify-sms"],
+  ["kanaalresolutie", "notify-post"],
+  ["kanaalresolutie", "berichtenbox"],
+  ["kanaalresolutie", "lokale-berichtenbox"],
+  ["notify-email", "contactmoment"],
+  ["notify-sms", "contactmoment"],
+  ["notify-post", "contactmoment"],
+  ["postguard", "contactmoment"],
+  ["berichtenbox", "archief"],
+  ["lokale-berichtenbox", "contactherstel"],
+];
+for (const [source, target] of FORCE_LR_EDGES) {
+  mainEdgeHandles[`${source}->${target}`] = { sourceHandle: "right", targetHandle: "left" };
+}
 
 const mainLayout: LayoutResult = {
   positions: mainPositions,

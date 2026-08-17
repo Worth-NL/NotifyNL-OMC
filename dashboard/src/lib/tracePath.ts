@@ -1,4 +1,4 @@
-import { EDGES, FLOW_OPTIONS, INPUT_NODES, PATTERN_ENGINE_KEY } from "./architecture";
+import { EDGES, FLOW_OPTIONS, PATTERN_ENGINE_KEY } from "./architecture";
 
 // The architecture graph's edges are directional for rendering (arrows point the way data
 // conceptually flows), but a real notification's journey is a sequence of round trips through
@@ -34,7 +34,7 @@ const SCENARIO_KEYS: Map<string, Set<string>> = new Map(
   FLOW_OPTIONS.map((option) => [
     option.key,
     new Set([
-      ...INPUT_NODES.map((n) => n.key),
+      ...option.inputs,
       PATTERN_ENGINE_KEY,
       ...option.registers,
       ...option.filters,

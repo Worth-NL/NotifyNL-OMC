@@ -14,31 +14,34 @@ export interface ArchitectureNode {
 
 export const INPUT_NODES: ArchitectureNode[] = [
   { key: "opennotificaties", name: "Open Notificaties", subtitle: "Notificatie-API — NL-GOV", version: "v1.4.2", active: true },
+  { key: "oneground", name: "Roxit Oneground", subtitle: "Zaaksysteem — MijnZaken events", active: true },
   { key: "mendix", name: "Mendix", subtitle: "Low-code app-events", version: "v2.6", active: false },
 ];
 
 export const REGISTER_NODES: ArchitectureNode[] = [
-  { key: "openklant", name: "Open Klant", subtitle: "Klantinteracties — partij + digitaal adres", version: "v2.0", active: true },
-  { key: "openzaak", name: "Open Zaak", subtitle: "Zaken, statussen, resultaten", version: "v1.3", active: true },
-  { key: "objecten", name: "Objecten", subtitle: "Taken, berichten, KTO-triggers", version: "v2.0", active: true },
+  { key: "openklant", name: "KlantAPI (OpenKlant)", subtitle: "Klantinteracties — partij + digitaal adres", version: "v2.0", active: true },
+  { key: "openzaak", name: "ZaakAPI (OpenZaak)", subtitle: "Zaken, statussen, resultaten", version: "v1.3", active: true },
+  { key: "objecten", name: "ObjectenAPI (OpenObject)", subtitle: "Taken, berichten, KTO-triggers", version: "v2.0", active: true },
   { key: "objecttypen", name: "ObjectTypen", subtitle: "Schema's voor Objecten API", version: "v1.1", active: true },
-  { key: "besluiten", name: "Besluiten", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
+  { key: "besluiten", name: "BesluitenAPI (OpenZaak)", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
   { key: "brp", name: "BRP", subtitle: "Haal Centraal — persoonsgegevens", version: "v2.2", active: true },
   { key: "kto", name: "KTO", subtitle: "Klanttevredenheidsonderzoek (Expoints)", active: true },
-  { key: "documentstore", name: "Document store", subtitle: "Centrale documentopslag", active: false },
-  { key: "profielservice", name: "Profiel service", subtitle: "Voorkeuren per burger", active: false },
-  { key: "urn", name: "URN", subtitle: "OIN/RSIN bronidentificatie", active: false },
-  { key: "vtb", name: "VTB", subtitle: "Verificatie toegangsbeheer", active: false },
+  { key: "documentstore", name: "DocumentAPI (OpenZaak)", subtitle: "Centrale documentopslag", active: false },
+  { key: "profielservice", name: "ProfielService (MoZa)", subtitle: "Voorkeuren per burger", active: false },
+  { key: "vtb", name: "BerichtenAPI (OpenVTB)", subtitle: "Verificatie toegangsbeheer", active: false },
 ];
 
 // Replaces a generic 3-node guess ("Kanaal keuze" / "Privacy filter" / "Notificatie filter")
 // with the gates that actually exist in the C# source, verified per scenario:
-//   - "Privacy filter" as GDPR/consent never existed in this pipeline — the one natural-person
-//     check in the codebase (CheckIfInitiatorIsNaturalPersonAsync) belongs to the separate
-//     /MijnZaken forwarding pipeline, not these 7 scenarios.
+//   - "Privacy filter" as GDPR/consent never existed in the main 7-scenario pipeline — the one
+//     natural-person check in the codebase (CheckIfInitiatorIsNaturalPersonAsync) belongs to
+//     the separate /MijnZaken forwarding pipeline (naturalpersoncheck below), not these 7.
 //   - "Notificatie filter" (dedup/throttle) has zero basis in code — no send-log, no
 //     "already notified" check anywhere in the repo.
 // See BaseScenario.cs, and each ScenarioXyz.cs's PrepareDataAsync, for the real gates below.
+// naturalpersoncheck/mijnzaken-staleness are MijnZaken-only (MijnOverheidForwarder.cs) — not
+// used by any of the 7 main scenarios, same relationship taakcheck/documentcheck already have
+// with the shared chain: a scenario-family's own pre-check that feeds into it.
 export const FILTER_NODES: ArchitectureNode[] = [
   { key: "zaaktypewhitelist", name: "Zaaktype whitelist", subtitle: "ValidateCaseId — per-scenario env var", active: true },
   { key: "informerencheck", name: "Informeren-check", subtitle: "IsNotificationExpected", active: true },
@@ -46,6 +49,8 @@ export const FILTER_NODES: ArchitectureNode[] = [
   { key: "berichtenschakelaar", name: "Berichten-schakelaar", subtitle: "Globale aan/uit-vlag — geen per-zaaktype whitelist", active: true },
   { key: "taakcheck", name: "Taak- & ID-typecheck", subtitle: "Taak open + BSN/KVK", active: true },
   { key: "documentcheck", name: "Documentstatus & vertrouwelijkheid", subtitle: "Definitief + niet-vertrouwelijk", active: true },
+  { key: "naturalpersoncheck", name: "Natuurlijk persoon-check", subtitle: "CheckIfInitiatorIsNaturalPersonAsync — MijnZaken", active: true },
+  { key: "mijnzaken-staleness", name: "Verouderd-check", subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd", active: true },
 ];
 
 // "Letter"/"Both" branches exist in BaseScenario's DistributionChannel switch, but the live
@@ -60,6 +65,7 @@ export const CHANNEL_NODES: ArchitectureNode[] = [
   { key: "postguard", name: "PostGuard", subtitle: "Handmatig testendpoint — geen scenario roept dit aan", active: false },
   { key: "berichtenbox", name: "Notify Berichtenbox", subtitle: "MijnOverheid berichtenbox", active: false },
   { key: "lokale-berichtenbox", name: "Lokale Berichtenbox", subtitle: "Gemeentelijk portaal", active: false },
+  { key: "logius-mijnzaken", name: "Logius MijnZaken", subtitle: "CloudEvent — MijnOverheid burgerportaal", active: true },
 ];
 
 export const CONFIRMATION_NODES: ArchitectureNode[] = [
@@ -96,6 +102,7 @@ export interface FlowEdge {
 // trip to/from Output Patronen (rendered below it), not a forward hop to Kanaal keuze.
 export const EDGES: FlowEdge[] = [
   { source: "opennotificaties", target: PATTERN_ENGINE_KEY, category: "zaken" },
+  { source: "oneground", target: PATTERN_ENGINE_KEY, category: "zaken" },
   { source: "mendix", target: PATTERN_ENGINE_KEY, category: "producten" },
 
   ...REGISTER_NODES.map((n) => ({ source: PATTERN_ENGINE_KEY, target: n.key, category: "verrijking" as const })),
@@ -138,6 +145,30 @@ export const EDGES: FlowEdge[] = [
   { source: "postguard", target: "contactmoment", category: "bevestiging" },
   { source: "berichtenbox", target: "archief", category: "bevestiging" },
   { source: "lokale-berichtenbox", target: "contactherstel", category: "bevestiging" },
+
+  // MijnZaken (MijnOverheidForwarder.cs) — a separate pipeline from the 7 above, entered via
+  // Oneground instead of Open Notificaties, with its own filter chain and a single fixed
+  // channel (no kanaalresolutie — there's only one destination, so nothing to resolve) and no
+  // confirmation step (the chain ends at the MijnOverheid POST response, no contactmoment write-
+  // back). "Zaak verwijderd" skips fetching case data entirely and forwards unconditionally, so
+  // it needs its own hub → channel shortcut. "Zaak geopend" has a first-open shortcut (no prior
+  // laatstGeopend to compare against) that skips straight to the channel too, but doesn't need a
+  // dedicated edge for it — hub → naturalpersoncheck → Verouderd-check already reaches it in two
+  // hops.
+  //
+  // Deliberately NOT edged directly to zaaktypewhitelist: HandleMutatedAsync's real emit order
+  // is naturalpersoncheck → openzaak (status + status type fetch) → zaaktypewhitelist, i.e. an
+  // openzaak hop sits between them. The register↔hub edges already connect both ends via Output
+  // Patronen (openzaak is only ever a round trip from the hub, same as every other register), so
+  // a dedicated edge here would be both redundant for pathfinding and wrong about the real
+  // sequence — it was also the single edge putting Natuurlijk persoon-check into direct
+  // Dagre-ordering competition with Taak- & ID-typecheck / Documentstatus for placement next to
+  // Zaaktype whitelist, which is what pushed the whole filter column into a crossing mess.
+  { source: PATTERN_ENGINE_KEY, target: "naturalpersoncheck", category: "zaken" },
+  { source: "informerencheck", target: "mijnzaken-staleness", category: "zaken" },
+  { source: "naturalpersoncheck", target: "mijnzaken-staleness", category: "zaken" },
+  { source: "mijnzaken-staleness", target: "logius-mijnzaken", category: "zaken" },
+  { source: PATTERN_ENGINE_KEY, target: "logius-mijnzaken", category: "zaken" },
 ];
 
 export interface FlowOption {
@@ -145,6 +176,10 @@ export interface FlowOption {
   key: string;
   name: string;
   nl: string;
+  /** Which INPUT_NODES entry point(s) this flow is reachable from — most flows have exactly
+   * one; without this, scenarioKeys() can't tell Open Notificaties and Oneground apart and
+   * both would show as "live" for every flow. */
+  inputs: string[];
   registers: string[];
   filters: string[];
   channels: string[];
@@ -156,6 +191,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "all",
     name: "Alle flows",
     nl: "Volledig overzicht",
+    inputs: INPUT_NODES.map((n) => n.key),
     registers: REGISTER_NODES.map((n) => n.key),
     filters: FILTER_NODES.map((n) => n.key),
     channels: CHANNEL_NODES.map((n) => n.key),
@@ -165,6 +201,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "case-created",
     name: "Case Created",
     nl: "Zaak aangemaakt",
+    inputs: ["opennotificaties"],
     registers: ["openzaak", "openklant"],
     filters: ["zaaktypewhitelist", "informerencheck", "kanaalresolutie"],
     channels: ["notify-email", "notify-sms"],
@@ -174,6 +211,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "case-updated",
     name: "Case Status Updated",
     nl: "Zaakstatus bijgewerkt",
+    inputs: ["opennotificaties"],
     registers: ["openzaak", "openklant"],
     filters: ["zaaktypewhitelist", "informerencheck", "kanaalresolutie"],
     channels: ["notify-email", "notify-sms"],
@@ -183,6 +221,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "case-closed",
     name: "Case Closed",
     nl: "Zaak afgesloten",
+    inputs: ["opennotificaties"],
     registers: ["openzaak", "openklant"],
     filters: ["zaaktypewhitelist", "informerencheck", "kanaalresolutie"],
     channels: ["notify-email", "notify-sms"],
@@ -192,6 +231,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "task-assigned",
     name: "Task Assigned",
     nl: "Taak toegewezen",
+    inputs: ["opennotificaties"],
     registers: ["objecten", "openzaak", "openklant"],
     // Real order in TaskAssignedScenario.PrepareDataAsync: task-open + BSN/KVK check first,
     // then the shared zaaktype whitelist, then the informeren check.
@@ -203,6 +243,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "message-received",
     name: "Message Received",
     nl: "Bericht ontvangen",
+    inputs: ["opennotificaties"],
     registers: ["objecten", "openklant"],
     // The only scenario with no zaaktype whitelist and no informeren-check — its single gate
     // is a global on/off flag (ZGW_WHITELIST_MESSAGE_ALLOWED), not per-case-type.
@@ -214,6 +255,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "decision-made",
     name: "Decision Made",
     nl: "Besluit genomen",
+    inputs: ["opennotificaties"],
     registers: ["besluiten", "openzaak", "openklant", "objecten"],
     // Real order in DecisionMadeScenario.PrepareDataAsync: InfoObject-type + status +
     // confidentiality checks first, then the shared zaaktype whitelist, then informeren.
@@ -228,9 +270,49 @@ export const FLOW_OPTIONS: FlowOption[] = [
     key: "kto",
     name: "Customer Satisfaction (KTO)",
     nl: "Klanttevredenheidsonderzoek",
+    inputs: ["opennotificaties"],
     registers: ["kto"],
     filters: [],
     channels: [],
+    confirmations: [],
+  },
+  {
+    key: "mijnzaken-gemuteerd",
+    name: "MijnZaken - Case Mutated",
+    nl: "MijnZaken - Zaak gemuteerd",
+    inputs: ["oneground"],
+    registers: ["openzaak"],
+    // Real order in MijnOverheidForwarder.HandleMutatedAsync: fetch case, natural-person
+    // check, fetch status + status type, then the shared zaaktype whitelist + informeren-check
+    // (same fields/env vars the main pipeline's case scenarios use, re-checked independently
+    // here), then its own staleness check against Case.LatestMutationDate ("laatstGemuteerd").
+    filters: ["naturalpersoncheck", "zaaktypewhitelist", "informerencheck", "mijnzaken-staleness"],
+    channels: ["logius-mijnzaken"],
+    confirmations: [],
+  },
+  {
+    key: "mijnzaken-geopend",
+    name: "MijnZaken - Case Opened",
+    nl: "MijnZaken - Zaak geopend",
+    inputs: ["oneground"],
+    registers: ["openzaak"],
+    // No whitelist/informeren check for this type. HandleOpenedAsync has a first-open
+    // shortcut (no prior laatstGeopend on the case → forward unconditionally, skipping both
+    // filters below) — the direct Output Patronen → Verouderd-check edge covers that path.
+    filters: ["naturalpersoncheck", "mijnzaken-staleness"],
+    channels: ["logius-mijnzaken"],
+    confirmations: [],
+  },
+  {
+    key: "mijnzaken-verwijderd",
+    name: "MijnZaken - Case Deleted",
+    nl: "MijnZaken - Zaak verwijderd",
+    inputs: ["oneground"],
+    // Unconditional forward — HandleDeletedAsync never fetches case data (a deleted case
+    // can't be fetched), so there's nothing to filter on at all.
+    registers: [],
+    filters: [],
+    channels: ["logius-mijnzaken"],
     confirmations: [],
   },
 ];
