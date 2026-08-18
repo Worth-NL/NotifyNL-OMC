@@ -34,12 +34,15 @@ namespace ZgwModels.Mapping.Enums.NotifyNL
         /// Notification type: MOBB / Berichtenbox message.
         /// </summary>
         /// <remarks>
-        ///   TODO (first-version, unconfirmed): "messagebox" is a temporary stand-in for whatever delivery-receipt
-        ///   `type` value NotifyNL actually returns for a MOBB send - not yet confirmed. Update once known;
-        ///   the "safe" JSON converter on this enum means a wrong guess just falls back to <see cref="Unknown"/>
-        ///   rather than throwing, so this is low-risk to leave as a placeholder for now.
+        ///   "messagebox" is the confirmed delivery-receipt <c>type</c> value NotifyNL returns for a MOBB send.
         /// </remarks>
         [JsonPropertyName("messagebox")]
-        Mobb = 3
+        Mobb = 3,
+
+        /// <summary>
+        /// Notification type: letter.
+        /// </summary>
+        [JsonPropertyName("letter")]
+        Letter = 4
     }
 }

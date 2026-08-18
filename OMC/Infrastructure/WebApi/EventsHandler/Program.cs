@@ -59,9 +59,11 @@ using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Serialization;
 using ZgwModels.Serialization.Interfaces;
 using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
+using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
@@ -458,6 +460,8 @@ namespace EventsHandler
             services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
+            services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
+            services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
 
             // Feedback and telemetry
             services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));

@@ -5,7 +5,9 @@ using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
 using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
@@ -14,6 +16,7 @@ using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 using ZgwModels.Serialization.Interfaces;
@@ -175,8 +178,8 @@ namespace EventsHandler.Services.Responding.v2
                 messages: [
                     DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Subject : string.Empty),
-                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
-                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                    TruncateContactMomentBody(DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty)),
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
@@ -187,6 +190,19 @@ namespace EventsHandler.Services.Responding.v2
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Caps a MOBB contactmoment's "inhoud" (content) at <see cref="MaxContactMomentBodyLength"/>
+        /// characters, regardless of source channel (MOBB/e-mail/letter).
+        /// </summary>
+        private const int MaxContactMomentBodyLength = 1000;
+
+        private static string TruncateContactMomentBody(string messageText)
+        {
+            return messageText.Length > MaxContactMomentBodyLength
+                ? messageText[..MaxContactMomentBodyLength]
+                : messageText;
         }
 
         /// <summary>
@@ -321,11 +337,14 @@ namespace EventsHandler.Services.Responding.v2
         ///   <see cref="NotificationEvent"/> is built here purely to satisfy that type requirement - it is
         ///   never persisted or sent anywhere, only used in-memory for this one call.
         ///   <para>
-        ///   That empty event has <c>Channel</c> at its default (<c>Unknown</c>), so if the static client cache
-        ///   hasn't been warmed yet by an earlier real email/sms/letter send in this process,
-        ///   <c>NotificationEvent.GetOrganizationId()</c> will throw. Caught below and treated as a soft
-        ///   failure, so a cold cache degrades to the existing generic-UX-message fallback instead of breaking
-        ///   the whole callback.
+        ///   Its <c>Channel</c> is deliberately set to <see cref="Channels.Objects"/> rather than left at the
+        ///   default <c>Unknown</c>: <see cref="NotificationEventExtensions.GetOrganizationId"/> throws for
+        ///   any channel it doesn't recognize (only <c>Cases</c>/<c>Decisions</c>/<c>Objects</c> resolve),
+        ///   and for MOBB - which never has a real "Cases"/"Decisions" channel - this would otherwise throw
+        ///   on every single call, not just an occasional cold-start. Confirmed safe: <see cref="NotificationClientFactory"/>
+        ///   only uses this value for a log line, never to select which Notify NL account/credentials are used
+        ///   (there is exactly one, configured globally via <c>NOTIFY_API_BASEURL</c>/<c>NOTIFY_API_KEY</c>), so
+        ///   the returned "missing" organization ID has no effect beyond that log line.
         ///   </para>
         /// </remarks>
         private async Task<NotificationData> GetMessageBoxNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
@@ -334,7 +353,7 @@ namespace EventsHandler.Services.Responding.v2
             {
                 var dummyReference = new NotifyReference
                 {
-                    Notification = new NotificationEvent()
+                    Notification = new NotificationEvent { Channel = Channels.Objects }
                 };
 
                 var data = new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], dummyReference);

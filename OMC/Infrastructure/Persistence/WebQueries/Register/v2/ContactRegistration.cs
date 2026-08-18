@@ -136,8 +136,8 @@ namespace WebQueries.Register.v2
             // Escape string values safely
             // Prefixes the subject with a short channel label (e.g. "[MOBB]", "[MOBB-fallback: e-mail]") so
             // the multiple possible outputs for the same Bericht (MOBB / e-mail fallback / letter fallback)
-            // are clearly distinguishable in a portal listing a Bericht's contactmomenten - see the BPMN note
-            // on Activity_1wlptpo ("meerdere outputs... duidelijk weergegeven").
+            // are clearly distinguishable in a portal listing a Bericht's contactmomenten - see the BPMN's
+            // shared success-contactmoment step's own annotation ("meerdere outputs... duidelijk weergegeven").
             string safeSubject = JsonSerializer.Serialize($"[{BuildChannelLabel(reference, notificationMethod)}] {userMessageSubject}");
             string safeBody = JsonSerializer.Serialize(userMessageBody);
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToString());

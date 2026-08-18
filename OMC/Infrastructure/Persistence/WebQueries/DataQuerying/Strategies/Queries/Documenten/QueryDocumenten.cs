@@ -47,6 +47,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Documenten
             );
         }
 
+        /// <inheritdoc cref="IQueryDocumenten.TryGetDocumentContentAsync(IQueryBase, Uri)"/>
+        async Task<string> IQueryDocumenten.TryGetDocumentContentAsync(IQueryBase queryBase, Uri contentUri)
+        {
+            return await queryBase.ProcessGetBinaryAsBase64Async(
+                httpClientType: HttpClientTypes.OpenZaak_v1, // Same JWT authentication - the download link lives on the same Documenten API domain
+                uri: contentUri,
+                fallbackErrorMessage: $"Failed to download document content from {contentUri}."
+            );
+        }
+
         /// <summary>
         /// Checks the health of the Documenten API.
         /// </summary>

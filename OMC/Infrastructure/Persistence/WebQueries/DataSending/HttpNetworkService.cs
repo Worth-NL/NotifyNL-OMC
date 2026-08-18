@@ -73,6 +73,12 @@ namespace WebQueries.DataSending
         {
             return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Delete);
         }
+
+        /// <inheritdoc cref="IHttpNetworkService.GetBinaryAsBase64Async(HttpClientTypes, Uri)"/>
+        async Task<HttpRequestResponse> IHttpNetworkService.GetBinaryAsBase64Async(HttpClientTypes httpClientType, Uri uri)
+        {
+            return await ExecuteBinaryCallAsync(httpClientType, uri);
+        }
         #endregion
 
         #region HTTP Clients
@@ -243,6 +249,45 @@ namespace WebQueries.DataSending
                 return result.IsSuccessStatusCode
                     ? HttpRequestResponse.Success(responseContent)
                     : HttpRequestResponse.Failure(responseContent);
+            }
+            catch (Exception exception)
+            {
+                return HttpRequestResponse.Failure(exception.Message);
+            }
+        }
+
+        /// <summary>
+        /// Same safety procedure as <see cref="ExecuteCallAsync"/>, but for endpoints returning a raw binary
+        /// body (e.g., a Documenten API file download) rather than JSON/text - reading it as bytes and
+        /// Base64-encoding it avoids the UTF8 mangling <see cref="HttpContent.ReadAsStringAsync()"/> would
+        /// cause on arbitrary binary content.
+        /// </summary>
+        private async Task<HttpRequestResponse> ExecuteBinaryCallAsync(HttpClientTypes httpClientType, Uri uri)
+        {
+            try
+            {
+                await _semaphore.WaitAsync();
+                HttpClient client = ResolveClient(httpClientType);
+
+                // The client's default "Accept: application/json" (set for every client by RegularHttpClientFactory)
+                // makes binary/file endpoints reject the request with 406 Not Acceptable, since they can only
+                // render their actual content type (e.g. "application/octet-stream"). Overriding Accept to "*/*"
+                // on this specific request avoids that without touching the shared client's default headers.
+                using var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+
+                HttpResponseMessage result = await client.SendAsync(request);
+
+                _semaphore.Release();
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
+                }
+
+                byte[] responseBytes = await result.Content.ReadAsByteArrayAsync();
+                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes));
             }
             catch (Exception exception)
             {

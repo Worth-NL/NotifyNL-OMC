@@ -35,11 +35,15 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
         /// <param name="bsnNumber">The BSN (Citizen Service Number) to get citizen party.</param>
         /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
+        /// <param name="requireDigitalAddress">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   Ignored by the "OpenKlant" (1.0) implementation.
+        /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier = null);
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier = null, bool requireDigitalAddress = true);
 
         /// <summary>
         /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string, string?)"/>

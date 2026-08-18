@@ -26,7 +26,8 @@ namespace ZgwModels.Extensions
 
                 NotificationTypes.Sms => NotifyMethods.Sms,
 
-                // TODO: unconfirmed placeholder - see the remark on NotificationTypes.Mobb
+                NotificationTypes.Letter => NotifyMethods.Letter,
+
                 NotificationTypes.Mobb => NotifyMethods.Mobb,
 
                 // FAILURE: Return fallback enum B

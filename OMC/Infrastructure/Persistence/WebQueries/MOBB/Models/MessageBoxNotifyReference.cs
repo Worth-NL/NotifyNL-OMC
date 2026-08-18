@@ -56,7 +56,7 @@ namespace WebQueries.MOBB.Models
         /// send happened - only meaningful when this reference belongs to a letter fallback.
         /// </summary>
         /// <remarks>
-        ///   Maps to the BPMN's "Was notificatie" flag on <c>Activity_19stszm</c>, used to decide whether a
+        ///   Maps to the BPMN's "Was notificatie" flag on the email-failure contactmoment step, used to decide whether a
         ///   fallback letter template should include the "please fix your email address" text. Unlike
         ///   "Was voor MOBB", this genuinely cannot be derived from <see cref="Mobb"/> or the delivered
         ///   channel alone - it records a failed *prior* attempt on a different channel.

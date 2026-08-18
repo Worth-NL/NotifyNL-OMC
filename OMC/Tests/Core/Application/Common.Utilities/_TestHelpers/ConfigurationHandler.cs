@@ -105,6 +105,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_AUTH_KEY_OPENKLANT",                               GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTEN",                                GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTTYPEN",                             GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENVTB",                                 GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },

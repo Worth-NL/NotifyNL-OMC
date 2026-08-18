@@ -38,8 +38,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v1
         }
 
         #region Polymorphic (Party data)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
         {
             // Predefined URL components
             string citizensEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/klanten";
