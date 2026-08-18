@@ -40,15 +40,6 @@ namespace WebQueries.DataSending.Interfaces
         public Task<NotifySendResponse> SendLetterAsync(TPackage package);
 
         /// <summary>
-        /// Sends the package of data over message box notification method.
-        /// </summary>
-        /// <param name="package">The package of data to be sent.</param>
-        /// <returns>
-        ///   Standardized response from the Web API service.
-        /// </returns>
-        public Task<NotifySendResponse> SendMessageBoxNotificationAsync(TPackage package);
-
-        /// <summary>
         /// Generates template preview from a given package.
         /// </summary>
         /// <param name="package">The package of data to be used.</param>

@@ -103,7 +103,12 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenZaak.Documents
         public string? Filename { get; set; }
 
         /// <summary>
-        /// Gets the base64-encoded content of the document.
+        /// On a GET response, holds a download URI for the document's content - despite this field's own
+        /// name, it is NOT the base64-encoded content itself (confirmed against the live Documenten API;
+        /// the OpenAPI spec's own description for this field is misleading, describing write-side chunked-
+        /// upload behavior under a type that's actually read as a URI). Callers need a second request
+        /// against this URI (WebQueries' <c>IQueryContext.GetDocumentContentAsync</c>) to get the real,
+        /// Base64-encoded bytes.
         /// </summary>
         [JsonPropertyName("inhoud")]
         public string? Content { get; set; }

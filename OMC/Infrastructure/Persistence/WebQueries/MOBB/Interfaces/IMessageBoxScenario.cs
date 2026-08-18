@@ -22,9 +22,10 @@ namespace WebQueries.MOBB.Interfaces
         /// <summary>
         /// Continues the MOBB -> digitale-post (e-mail) -> letter fallback chain from within the
         /// asynchronous Notify NL delivery-receipt callback, for the case where the *initial send call*
-        /// was accepted, but the actual delivery later failed (BPMN: Gateway_0ifw4jw "(Permanent) Success?"
-        /// and Gateway_1nwlhkp "Notificatie gelukt?" - both evaluate the callback's delivery status, not
-        /// the synchronous send response already handled by <see cref="ProcessCloudEventAsync"/>).
+        /// was accepted, but the actual delivery later failed (BPMN: the MOBB delivery-outcome gateway
+        /// ("(Permanent) Success?") and the email delivery-outcome gateway ("Notificatie gelukt?") - both
+        /// evaluate the callback's delivery status, not the synchronous send response already handled by
+        /// <see cref="ProcessCloudEventAsync"/>).
         /// </summary>
         /// <param name="reference">The reference that round-tripped through the failed delivery's callback.</param>
         /// <param name="failedChannel">Which channel (as reported by the callback itself) just failed.</param>

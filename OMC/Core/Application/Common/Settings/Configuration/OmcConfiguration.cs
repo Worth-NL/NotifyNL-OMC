@@ -1233,6 +1233,26 @@ namespace Common.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                 /// <summary>
+                /// The template ID for the MOBB letter fallback.
+                /// </summary>
+                /// <remarks>
+                ///   NOTE: Deliberately does NOT go through <see cref="LetterComponent"/> - its constructor
+                ///   has a pre-existing bug (builds its settings path from <c>nameof(Sms)</c> instead of
+                ///   <c>nameof(Letter)</c>), so every accessor on it actually resolves an SMS env var. Fixing
+                ///   that bug affects 5 unrelated live scenarios' letter channel and needs ops coordination
+                ///   across environments, so it is deliberately left alone here. This accessor instead builds
+                ///   its own, correctly-named "Letter" path node directly, resolving
+                ///   <c>NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX</c> - matching the same nesting convention already
+                ///   used by <see cref="EmailComponent.MessageBox"/> (<c>NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX</c>).
+                /// </remarks>
+                [Config]
+                public Guid MessageBoxLetter()
+                {
+                    string letterPath = this._loadersContext.GetPathWithNode(this._currentPath, nameof(Letter));
+                    return GetCachedUuidValue(this._loadersContext, letterPath, nameof(EmailComponent.MessageBox));
+                }
+
+                /// <summary>
                 /// The "Email" part of the settings.
                 /// </summary>
                 public sealed record EmailComponent

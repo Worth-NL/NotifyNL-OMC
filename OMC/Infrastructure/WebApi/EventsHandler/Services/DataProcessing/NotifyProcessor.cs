@@ -70,8 +70,11 @@ namespace EventsHandler.Services.DataProcessing
                     // Step 2a: CloudEvent handling – bypass NotificationEvent deserialization
                     string cloudEventType = jsonElement.GetProperty("type").GetString() ?? string.Empty;
 
-                    // Route based on CloudEvent type – look for ".berichten." (case-insensitive)
-                    if (cloudEventType.Contains(".berichten.", StringComparison.OrdinalIgnoreCase))
+                    // Route based on CloudEvent type – Open VTB's Berichten component emits types prefixed
+                    // "nl.overheid.berichten." (confirmed against https://github.com/maykinmedia/open-vtb/blob/main/docs/installation/cloud_events.rst).
+                    // Which specific type (e.g. "bericht-gepubliceerd" vs. "bericht-geregistreerd") actually
+                    // requires action is decided inside MessageBoxScenario, not here – this is only domain routing.
+                    if (cloudEventType.StartsWith("nl.overheid.berichten.", StringComparison.OrdinalIgnoreCase))
                     {
                         // Pass the entire CloudEvent (jsonElement) to the scenario
                         HttpRequestResponse response = await _messageBoxScenario.ProcessCloudEventAsync(jsonElement);

@@ -132,7 +132,14 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         ///     </para>
         ///   </para>
         /// </remarks>
-        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null);
+        /// <param name="caseUri">The <see cref="Case"/> <see cref="Uri"/>, used only when <paramref name="bsnNumber"/> is missing.</param>
+        /// <param name="bsnNumber">The BSN (Citizen Service Number), when already known.</param>
+        /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
+        /// <param name="requireDigitalAddress">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   Only honored on the citizen (BSN-based) lookup path; the case-role/organization path is unaffected.
+        /// </param>
+        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null, bool requireDigitalAddress = true);
 
         /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
         public Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody);
@@ -247,6 +254,16 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <param name="documentUuid">The UUID of the document.</param>
         /// <returns>The document metadata.</returns>
         Task<SingularInformationObject> GetDocumentAsync(Guid documentUuid);
+
+        /// <summary>
+        /// Downloads a document's actual binary content and returns it Base64-encoded.
+        /// </summary>
+        /// <param name="contentUri">
+        ///   The download URI from <see cref="SingularInformationObject.Content"/> ("inhoud") - that field
+        ///   holds a download link on GET, not the file content itself; see that struct's remarks.
+        /// </param>
+        /// <returns>The Base64-encoded file content.</returns>
+        Task<string> GetDocumentContentAsync(Uri contentUri);
         #endregion
     }
 }

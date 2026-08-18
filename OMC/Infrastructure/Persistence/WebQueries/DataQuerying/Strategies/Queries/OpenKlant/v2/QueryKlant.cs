@@ -38,8 +38,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         }
 
         #region Polymorphic (Party data)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
         {
             if (string.IsNullOrEmpty(bsnNumber))
             {
@@ -58,8 +58,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
             return (await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand))  // Many party results
-                .Party(((IQueryKlant)this).Configuration, 
-                    caseIdentifier)  // Single determined party result
+                .Party(((IQueryKlant)this).Configuration,
+                    caseIdentifier, requireDigitalAddress)  // Single determined party result
                 .ConvertToUnified();
         }
 

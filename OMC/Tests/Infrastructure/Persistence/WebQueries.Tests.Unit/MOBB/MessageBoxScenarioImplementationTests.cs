@@ -83,8 +83,10 @@ namespace WebQueries.Tests.Unit.MOBB
         private const string TestEmailAddress = "citizen@example.com";
         private static readonly Uri s_partyUri = new("https://openklant.test/partijen/22222222-2222-2222-2222-222222222222");
 
-        private static JsonElement BuildCloudEvent(object? subject)
-            => JsonSerializer.SerializeToElement(new { subject });
+        private const string BerichtGepubliceerdType = "nl.overheid.berichten.bericht-gepubliceerd";
+
+        private static JsonElement BuildCloudEvent(object? subject, string type = BerichtGepubliceerdType)
+            => JsonSerializer.SerializeToElement(new { type, subject });
 
         private static VtbMessage BuildVtbMessage(
             bool isInMobbInbox = true,
@@ -134,8 +136,64 @@ namespace WebQueries.Tests.Unit.MOBB
         private void SetUpPartyData(CommonPartyData partyData)
         {
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null))
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false))
                 .ReturnsAsync(partyData);
+        }
+        #endregion
+
+        #region ProcessCloudEventAsync() - CloudEvent type gating
+        [Test]
+        public async Task ProcessCloudEventAsync_BerichtGeregistreerdType_ReturnsSuccess_WithoutProcessing()
+        {
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(
+                BuildCloudEvent(s_messageUuid, type: "nl.overheid.berichten.bericht-geregistreerd"));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("does not require action"));
+            });
+
+            // No VtbMessage lookup, no party lookup, no send should have happened
+            this._mockedQueryContext.Verify(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()), Times.Never);
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_UnrecognizedType_ReturnsSuccess_WithoutProcessing()
+        {
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(
+                BuildCloudEvent(s_messageUuid, type: "nl.overheid.berichten.some-future-type"));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("does not require action"));
+            });
+
+            this._mockedQueryContext.Verify(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()), Times.Never);
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_MissingType_ReturnsSuccess_WithoutProcessing()
+        {
+            // Arrange
+            JsonElement cloudEventWithoutType = JsonSerializer.SerializeToElement(new { subject = s_messageUuid });
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(cloudEventWithoutType);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("does not require action"));
+            });
+
+            this._mockedQueryContext.Verify(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()), Times.Never);
         }
         #endregion
 
@@ -144,7 +202,7 @@ namespace WebQueries.Tests.Unit.MOBB
         public async Task ProcessCloudEventAsync_MissingSubject_ReturnsFailure()
         {
             // Arrange
-            JsonElement cloudEventWithoutSubject = JsonSerializer.SerializeToElement(new { });
+            JsonElement cloudEventWithoutSubject = JsonSerializer.SerializeToElement(new { type = BerichtGepubliceerdType });
 
             // Act
             HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(cloudEventWithoutSubject);
@@ -248,7 +306,7 @@ namespace WebQueries.Tests.Unit.MOBB
                 this._mockedNotifyClient.Verify(mock => mock.SendEmailAsync(
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Once);
                 this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Never);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Never);
             });
         }
 
@@ -276,11 +334,19 @@ namespace WebQueries.Tests.Unit.MOBB
 
         #region ProcessCloudEventAsync() - MOBB eligible
         [Test]
-        public async Task ProcessCloudEventAsync_MobbEligible_NoUsableAttachments_ReturnsFailure_WithoutFallback()
+        public async Task ProcessCloudEventAsync_MobbEligible_NoUsableAttachments_SendsWithEmptyAttachments_ReturnsSuccess()
         {
-            // Arrange: the only attachment present is a standard pre-uploaded one, which is always skipped
+            // Arrange: the only attachment present is a standard pre-uploaded one, which is always skipped -
+            // 0 to 2 attachments are allowed, so 0 usable attachments should still proceed to a MOBB send
+            // (matching the underlying GovukNotify client's own relaxed validation), not be dropped.
             SetUpVtbMessage(BuildVtbMessage(attachments: [BuildAttachment(Guid.NewGuid(), isMessageTypeAttachment: true)]));
             SetUpPartyData(BuildPartyData());
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.Is<IEnumerable<Attachment>>(attachments => !attachments.Any()), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
 
             // Act
             HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
@@ -288,10 +354,11 @@ namespace WebQueries.Tests.Unit.MOBB
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.JsonResponse, Does.Contain("attachments"));
+                Assert.That(result.IsSuccess, Is.True);
 
-                this._mockedNotifyClientFactory.Verify(mock => mock.GetHttpClient(It.IsAny<string>()), Times.Never);
+                this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.Is<IEnumerable<Attachment>>(attachments => !attachments.Any()), It.IsAny<string>()), Times.Once);
             });
         }
 
@@ -309,7 +376,85 @@ namespace WebQueries.Tests.Unit.MOBB
 
             this._mockedNotifyClient
                 .Setup(mock => mock.SendMessageBoxNotificationAsync(
-                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.That(result.IsSuccess, Is.True);
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_MobbEligible_AttachmentContentIsResolved_NotTheRawDownloadUri()
+        {
+            // Arrange - "inhoud" is a download URI on GET, not the file content itself (confirmed against
+            // the live Documenten API), so GetDocumentAsync alone must not be treated as usable attachment
+            // content - the actual bytes need a second, explicit GetDocumentContentAsync fetch.
+            Guid documentUuid = Guid.NewGuid();
+            SetUpVtbMessage(BuildVtbMessage(attachments: [BuildAttachment(documentUuid)]));
+            SetUpPartyData(BuildPartyData());
+
+            Uri downloadUri = new("https://openzaak.test/documenten/api/v1/enkelvoudiginformatieobjecten/" +
+                                   $"{documentUuid:D}/download?versie=1");
+            const string realBase64Content = "cmVhbC1wZGYtYnl0ZXM=";  // NOT the download URI
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentAsync(documentUuid))
+                .ReturnsAsync(new SingularInformationObject { Content = downloadUri.ToString(), Filename = "file.pdf" });
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentContentAsync(downloadUri))
+                .ReturnsAsync(realBase64Content);
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.Is<IEnumerable<Attachment>>(attachments =>
+                        attachments.Single().file == realBase64Content &&
+                        attachments.Single().file != downloadUri.ToString()),
+                    It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+
+                this._mockedQueryContext.Verify(mock => mock.GetDocumentContentAsync(downloadUri), Times.Once);
+                this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.Is<IEnumerable<Attachment>>(attachments => attachments.Single().file == realBase64Content),
+                    It.IsAny<string>()), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_MobbEligible_AttachmentContentFetchFails_SkipsThatAttachment_StillSucceeds()
+        {
+            // Arrange - a failure resolving the real content (e.g. Documenten API unreachable) must not
+            // break the whole send; the attachment is just dropped, matching the existing per-attachment
+            // failure handling for a bad UUID/URN.
+            Guid documentUuid = Guid.NewGuid();
+            SetUpVtbMessage(BuildVtbMessage(attachments: [BuildAttachment(documentUuid)]));
+            SetUpPartyData(BuildPartyData());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentAsync(documentUuid))
+                .ReturnsAsync(new SingularInformationObject { Content = "https://openzaak.test/download", Filename = "file.pdf" });
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetDocumentContentAsync(It.IsAny<Uri>()))
+                .ThrowsAsync(new HttpRequestException("Documenten API unreachable"));
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.Is<IEnumerable<Attachment>>(attachments => !attachments.Any()), It.IsAny<string>()))
                 .ReturnsAsync(NotifySendResponse.Success());
 
             // Act
@@ -333,7 +478,7 @@ namespace WebQueries.Tests.Unit.MOBB
 
             this._mockedNotifyClient
                 .Setup(mock => mock.SendMessageBoxNotificationAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
                 .ReturnsAsync(NotifySendResponse.Failure("MOBB rejected synchronously"));
 
             this._mockedNotifyClient
@@ -352,7 +497,7 @@ namespace WebQueries.Tests.Unit.MOBB
                 // NOTE: no contactmoment is created for this synchronous rejection today (see project notes) -
                 // this test only verifies the fallback itself is triggered.
                 this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Once);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Once);
                 this._mockedNotifyClient.Verify(mock => mock.SendEmailAsync(
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Once);
             });
@@ -372,7 +517,7 @@ namespace WebQueries.Tests.Unit.MOBB
 
             this._mockedNotifyClient
                 .Setup(mock => mock.SendMessageBoxNotificationAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
                 .ReturnsAsync(NotifySendResponse.Failure("MOBB rejected synchronously"));
 
             this._mockedNotifyClient
