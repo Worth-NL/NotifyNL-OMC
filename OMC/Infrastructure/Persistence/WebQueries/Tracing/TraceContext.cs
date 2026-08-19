@@ -23,6 +23,12 @@ namespace WebQueries.Tracing
             public string? Scenario { get; set; }
             public string? LastStage { get; set; }
             public string? LastStatus { get; set; }
+            /// <summary>
+            /// Distinct stages reached so far, in visiting order (consecutive repeats of the same
+            /// stage collapsed to one entry) — only <see cref="ReturnAlongPath"/> reads this; every
+            /// other pipeline can ignore it entirely.
+            /// </summary>
+            public List<string> Path { get; } = [];
         }
 
         /// <summary>
@@ -82,6 +88,16 @@ namespace WebQueries.Tracing
             state.LastStage = stage;
             state.LastStatus = status;
 
+            // Only terminal outcomes count as "reached" for path-retracing purposes — "start"
+            // marks an attempt, not an arrival — and consecutive repeats of the same stage (e.g.
+            // three separate "openzaak" round trips in a row) collapse to a single hop, matching
+            // how the dashboard already treats a register as one visual node regardless of how
+            // many individual calls land on it.
+            if (status != "start" && (state.Path.Count == 0 || state.Path[^1] != stage))
+            {
+                state.Path.Add(stage);
+            }
+
             if (!state.Emitter.HasSubscribers)
             {
                 return;
@@ -114,6 +130,38 @@ namespace WebQueries.Tracing
             {
                 Emit(stage, "fail", detail);
             }
+        }
+
+        /// <summary>
+        /// Emits a synthetic return trip back through every stage this trace actually reached, in
+        /// reverse order, before finally emitting <paramref name="finalStage"/> — for pipelines
+        /// where a single incoming request produces a single outgoing HTTP response that
+        /// conceptually flows all the way back to the original caller (MijnZaken, forwarded to
+        /// Logius and responded to Oneground), rather than ending at a one-way terminal step the
+        /// way a Notify NL send does. Without this, <c>findTracePath</c> would just take whatever
+        /// shortcut edge happens to exist straight back to the entry point instead of retracing
+        /// the real path — technically a valid route on the graph, but not what actually happened.
+        /// </summary>
+        public static void ReturnAlongPath(string finalStage, string finalStatus, string? finalDetail = null)
+        {
+            if (s_current.Value is not { } state)
+            {
+                return;
+            }
+
+            // Snapshot before replaying — Emit() below appends to state.Path as each hop plays
+            // back, so indexing into the live list while it grows would drift.
+            string[] forwardPath = [.. state.Path];
+
+            // forwardPath[0] is the entry stage, forwardPath[^1] is wherever the trace currently
+            // sits — walk everything strictly between them, in reverse, then land on finalStage
+            // (normally the same stage as forwardPath[0], closing the loop).
+            for (int i = forwardPath.Length - 2; i >= 1; i--)
+            {
+                Emit(forwardPath[i], "ok", $"Response returning via {forwardPath[i]}");
+            }
+
+            Emit(finalStage, finalStatus, finalDetail);
         }
 
         /// <summary>
