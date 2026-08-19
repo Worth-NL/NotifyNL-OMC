@@ -159,16 +159,16 @@ namespace EventsHandler.Controllers
                 // 3. Return response — the trace's final leg: OMC's own HTTP response to this
                 // request travels back to whichever system called /Events/MijnZaken (Oneground),
                 // carrying whatever Logius said (or the "skipped" outcome, if a filter aborted
-                // before Logius was ever called). The graph is undirected for pathfinding (see
-                // tracePath.ts), so re-emitting "oneground" here — the same stage the trace
-                // started on — is enough for the dashboard to animate the round trip back.
+                // before Logius was ever called). ReturnAlongPath replays every stage this trace
+                // actually reached, in reverse, before landing back on "oneground" — so the
+                // dashboard animates the real route home instead of a straight shortcut.
                 if (moResponse == null)
                 {
-                    TraceContext.Emit("oneground", "ok", "Event was not forwarded (skipped) — reporting back to Oneground");
+                    TraceContext.ReturnAlongPath("oneground", "ok", "Event was not forwarded (skipped) — reporting back to Oneground");
                     return LogApiResponse(LogLevel.Information, Ok("Event was not forwarded (skipped)."));
                 }
 
-                TraceContext.Emit("oneground", moResponse.IsSuccess ? "ok" : "fail",
+                TraceContext.ReturnAlongPath("oneground", moResponse.IsSuccess ? "ok" : "fail",
                     $"Returning Logius response (HTTP {moResponse.StatusCode}) to Oneground");
                 return LogApiResponse(LogLevel.Information, StatusCode(moResponse.StatusCode, moResponse.ResponseBody));
             }
