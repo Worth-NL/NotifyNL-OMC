@@ -145,6 +145,7 @@ const FORCE_LR_EDGES: [string, string][] = [
   [PATTERN_ENGINE_KEY, "zaaktypewhitelist"],
   ["taakcheck", "zaaktypewhitelist"],
   ["documentcheck", "zaaktypewhitelist"],
+  ["naturalpersoncheck", "zaaktypewhitelist"],
   ["zaaktypewhitelist", "informerencheck"],
   ["informerencheck", "kanaalresolutie"],
   ["berichtenschakelaar", "kanaalresolutie"],

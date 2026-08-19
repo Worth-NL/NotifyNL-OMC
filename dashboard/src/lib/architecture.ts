@@ -156,16 +156,16 @@ export const EDGES: FlowEdge[] = [
   // dedicated edge for it — hub → naturalpersoncheck → Verouderd-check already reaches it in two
   // hops.
   //
-  // Deliberately NOT edged directly to zaaktypewhitelist: HandleMutatedAsync's real emit order
-  // is naturalpersoncheck → openzaak (status + status type fetch) → zaaktypewhitelist, i.e. an
-  // openzaak hop sits between them. The register↔hub edges already connect both ends via Output
-  // Patronen (openzaak is only ever a round trip from the hub, same as every other register), so
-  // a dedicated edge here would be both redundant for pathfinding and wrong about the real
-  // sequence — it was also the single edge putting Natuurlijk persoon-check into direct
-  // Dagre-ordering competition with Taak- & ID-typecheck / Documentstatus for placement next to
-  // Zaaktype whitelist, which is what pushed the whole filter column into a crossing mess.
+  // naturalpersoncheck → zaaktypewhitelist: same intervening-openzaak-hop situation as
+  // taakcheck/documentcheck above (HandleMutatedAsync's real emit order is naturalpersoncheck →
+  // openzaak (status + status type fetch) → zaaktypewhitelist), and drawn direct for the same
+  // reason those are — the register↔hub round trip is already implied, this edge is the
+  // filter-chain shape the dashboard shows.
   { source: PATTERN_ENGINE_KEY, target: "naturalpersoncheck", category: "zaken" },
+  { source: "naturalpersoncheck", target: "zaaktypewhitelist", category: "zaken" },
   { source: "informerencheck", target: "mijnzaken-staleness", category: "zaken" },
+  // Also needed directly for "Zaak geopend" (mijnzaken-geopend), whose filter chain is just
+  // naturalpersoncheck → mijnzaken-staleness with no whitelist/informeren step in between.
   { source: "naturalpersoncheck", target: "mijnzaken-staleness", category: "zaken" },
   { source: "mijnzaken-staleness", target: "logius-mijnzaken", category: "zaken" },
   { source: PATTERN_ENGINE_KEY, target: "logius-mijnzaken", category: "zaken" },
