@@ -140,20 +140,9 @@ namespace WebQueries.MijnOverheid
         {
             _logger.LogInformation("Processing 'geopend' event for case {Subject}.", cloudEvent.Subject);
 
-            // Fetch the case to get the current LatestOpenedDate
-            Uri caseUri;
-            Case caseData;
-            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {caseUuid}");
-            try
+            (Uri caseUri, Case? fetchedCase) = await FetchCaseWithTraceAsync(queryContext, caseUuid, "'geopend' event");
+            if (fetchedCase is not { } caseData)
             {
-                caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
-                caseData = await queryContext.GetCaseAsync(caseUri);
-                TraceContext.Emit("openzaak", "ok", $"zaak with id {caseUuid} retrieved");
-            }
-            catch (Exception ex)
-            {
-                TraceContext.Emit("openzaak", "fail", ex.Message);
-                _logger.LogError(ex, "Failed to fetch case {CaseUuid} for 'geopend' event.", caseUuid);
                 return null;
             }
 
@@ -165,20 +154,14 @@ namespace WebQueries.MijnOverheid
                 return await SendAndTraceAsync(outgoing);
             }
 
-            // Check initiator type
-            TraceContext.Emit("naturalpersoncheck", "start", "Attempting to verify the initiator is a natural person");
-            bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
-            if (!isNaturalPerson)
+            if (!await VerifyNaturalPersonWithTraceAsync(queryContext, caseUri, caseData.Identification, "'geopend' event"))
             {
-                TraceContext.Emit("naturalpersoncheck", "abort", "initiator is not a natural person");
-                _logger.LogInformation("Skipping 'geopend' event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
                 return null;
             }
-            TraceContext.Emit("naturalpersoncheck", "ok", "initiator is a natural person");
 
             // Compare event time with the case's LatestOpenedDate
-            DateTime eventTimeUtc = cloudEvent.Time; // already in UTC
-            DateTime latestOpenedUtc = caseData.LastOpenedDate.Value;
+            DateTime eventTimeUtc = AsUtc(cloudEvent.Time);
+            DateTime latestOpenedUtc = AsUtc(caseData.LastOpenedDate.Value);
 
             if (eventTimeUtc >= latestOpenedUtc)
             {
@@ -213,33 +196,16 @@ namespace WebQueries.MijnOverheid
         {
             _logger.LogDebug("Processing 'gemuteerd' event for case {Subject}.", cloudEvent.Subject);
 
-            // Fetch case
-            Uri caseUri;
-            Case caseData;
-            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {caseUuid}");
-            try
+            (Uri caseUri, Case? fetchedCase) = await FetchCaseWithTraceAsync(queryContext, caseUuid, "mutation event");
+            if (fetchedCase is not { } caseData)
             {
-                caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
-                caseData = await queryContext.GetCaseAsync(caseUri);
-                TraceContext.Emit("openzaak", "ok", $"zaak with id {caseUuid} retrieved");
-            }
-            catch (Exception ex)
-            {
-                TraceContext.Emit("openzaak", "fail", ex.Message);
-                _logger.LogError(ex, "Failed to fetch case {CaseUuid} for mutation event.", caseUuid);
                 return null;
             }
 
-            // Check initiator type
-            TraceContext.Emit("naturalpersoncheck", "start", "Attempting to verify the initiator is a natural person");
-            bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseData.Identification);
-            if (!isNaturalPerson)
+            if (!await VerifyNaturalPersonWithTraceAsync(queryContext, caseUri, caseData.Identification, "mutation event"))
             {
-                TraceContext.Emit("naturalpersoncheck", "abort", "initiator is not a natural person");
-                _logger.LogInformation("Skipping mutation event for case {CaseId}: initiator is not a natural person.", caseData.Identification);
                 return null;
             }
-            TraceContext.Emit("naturalpersoncheck", "ok", "initiator is a natural person");
 
             // Fetch status
             if (caseData.StatusUri == CommonValues.Default.Models.EmptyUri)
@@ -298,8 +264,8 @@ namespace WebQueries.MijnOverheid
             }
 
             // Timestamp verification
-            DateTime eventTimeUtc = cloudEvent.Time; // already in UTC
-            DateTime? latestMutationUtc = caseData.LatestMutationDate;
+            DateTime eventTimeUtc = AsUtc(cloudEvent.Time);
+            DateTime? latestMutationUtc = caseData.LatestMutationDate is { } rawLatestMutation ? AsUtc(rawLatestMutation) : null;
 
             if (latestMutationUtc.HasValue && eventTimeUtc < latestMutationUtc.Value)
             {
@@ -321,6 +287,66 @@ namespace WebQueries.MijnOverheid
         #endregion
 
         #region Helper methods
+
+        /// <summary>
+        /// Fetches a case for a MijnZaken event, tracing the attempt and its outcome — shared by
+        /// <see cref="HandleOpenedAsync"/>/<see cref="HandleMutatedAsync"/>, which otherwise
+        /// duplicated this exact fetch/trace/catch shape with only their log wording differing.
+        /// </summary>
+        /// <returns>The case URI (always populated) and the fetched case, or a <see langword="null"/> case if the fetch failed (already traced/logged).</returns>
+        private async Task<(Uri CaseUri, Case? CaseData)> FetchCaseWithTraceAsync(
+            IQueryContext queryContext, Guid caseUuid, string eventDescription)
+        {
+            var caseUri = new Uri($"{_configuration.ZGW.Endpoint.OpenZaak()}/zaken/{caseUuid}");
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {caseUuid}");
+            try
+            {
+                Case caseData = await queryContext.GetCaseAsync(caseUri);
+                TraceContext.Emit("openzaak", "ok", $"zaak with id {caseUuid} retrieved");
+                return (caseUri, caseData);
+            }
+            catch (Exception ex)
+            {
+                TraceContext.Emit("openzaak", "fail", ex.Message);
+                _logger.LogError(ex, "Failed to fetch case {CaseUuid} for {EventDescription}.", caseUuid, eventDescription);
+                return (caseUri, null);
+            }
+        }
+
+        /// <summary>
+        /// Verifies the case's initiator is a natural person, tracing the attempt and outcome —
+        /// shared by <see cref="HandleOpenedAsync"/>/<see cref="HandleMutatedAsync"/>, which
+        /// otherwise duplicated this exact check/trace shape with only their log wording differing.
+        /// </summary>
+        private async Task<bool> VerifyNaturalPersonWithTraceAsync(
+            IQueryContext queryContext, Uri caseUri, string caseId, string eventDescription)
+        {
+            TraceContext.Emit("naturalpersoncheck", "start", "Attempting to verify the initiator is a natural person");
+            bool isNaturalPerson = await IsInitiatorNaturalPersonAsync(queryContext, caseUri, caseId);
+            if (!isNaturalPerson)
+            {
+                TraceContext.Emit("naturalpersoncheck", "abort", "initiator is not a natural person");
+                _logger.LogInformation("Skipping {EventDescription} for case {CaseId}: initiator is not a natural person.", eventDescription, caseId);
+                return false;
+            }
+            TraceContext.Emit("naturalpersoncheck", "ok", "initiator is a natural person");
+            return true;
+        }
+
+        /// <summary>
+        /// Normalizes a timestamp to UTC regardless of its <see cref="DateTimeKind"/>. The raw
+        /// comparison operators used for staleness checks don't look at Kind at all — they just
+        /// compare Ticks — so an Unspecified/Local-kind value from one deserializer (e.g. an
+        /// offset-bearing OpenZaak timestamp that didn't get tagged Utc) compared directly
+        /// against a properly-normalized value from another would silently compare the wrong
+        /// instants without this.
+        /// </summary>
+        private static DateTime AsUtc(DateTime value) => value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
 
         /// <summary>
         /// Parses the CloudEvent type string into a <see cref="MijnOverheidEventType"/>.
