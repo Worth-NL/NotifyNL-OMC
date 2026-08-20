@@ -9,7 +9,6 @@ using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
-using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v1

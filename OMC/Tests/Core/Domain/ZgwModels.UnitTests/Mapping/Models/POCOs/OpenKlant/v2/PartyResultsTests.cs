@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Net;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using NUnit.Framework;
