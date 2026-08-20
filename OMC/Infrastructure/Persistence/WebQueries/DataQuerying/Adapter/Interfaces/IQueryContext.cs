@@ -115,7 +115,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         public Task<HttpRequestResponse> GetKlantHealthCheckAsync();
 
         /// <summary>
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
         /// </summary>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
@@ -136,7 +136,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <param name="bsnNumber">The BSN (Citizen Service Number), when already known.</param>
         /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
         /// <param name="requireDigitalAddress">
-        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
         ///   Only honored on the citizen (BSN-based) lookup path; the case-role/organization path is unaffected.
         /// </param>
         public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null, bool requireDigitalAddress = true);
