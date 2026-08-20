@@ -90,9 +90,12 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
-                        EmitDeliveryConfirmationTrace(reference, notificationMethod, status);
+                        EmitChannelConfirmationTrace(reference, notificationMethod, status);
 
-                        informResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
+                        HttpRequestResponse contactMomentResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
+                        EmitContactMomentTrace(reference, contactMomentResult);
+
+                        informResult = contactMomentResult;
                     }
                 }
 
@@ -165,13 +168,12 @@ namespace EventsHandler.Services.Responding.v2
         /// <summary>
         /// Resolves the dashboard trace this delivery receipt belongs to (if any — older
         /// in-flight sends from before this correlation existed won't have a <see cref="NotifyReference.TraceId"/>)
-        /// and reports the real outcome back to it: the channel-send stage that's been sitting
-        /// in "pending" since the original scenario handed off to "Notify NL"
-        /// (see EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync),
-        /// and "contactmoment" right after it — this is genuinely the moment either of those
-        /// resolve, not the synchronous send.
+        /// and reports the channel-send stage's real outcome back to it — the stage that's been
+        /// sitting in "pending" since the original scenario handed off to "Notify NL" (see
+        /// EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync).
+        /// This is genuinely the moment Notify NL confirms delivery, not the synchronous send.
         /// </summary>
-        private void EmitDeliveryConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
+        private void EmitChannelConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
         {
             if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
             {
@@ -186,17 +188,46 @@ namespace EventsHandler.Services.Responding.v2
                 _ => "kanaalresolutie"
             };
             string status = feedbackType == FeedbackTypes.Success ? "ok" : "fail";
-
-            long elapsedMs = 0;
-            string detail = "confirmed by Notify NL";
-            if (reference.SentAtUnixMs is { } sentAtUnixMs)
-            {
-                elapsedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - sentAtUnixMs;
-                detail = $"confirmed by Notify NL after {TimeSpan.FromMilliseconds(elapsedMs):mm\\:ss}";
-            }
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs, "confirmed by Notify NL");
 
             this._traceEmitter.Emit(new TraceEvent(reference.TraceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+        }
+
+        /// <summary>
+        /// Reports the "contactmoment" stage's real outcome, based on whether the write to
+        /// Contactmomenten/Klantinteracties itself succeeded — deliberately independent of the
+        /// channel-send stage's status above: Notify NL confirming delivery doesn't guarantee
+        /// the contactmoment write also succeeded, and a failed send still gets its own
+        /// "delivery failed" message registered as a (successful) contactmoment.
+        /// </summary>
+        private void EmitContactMomentTrace(NotifyReference reference, HttpRequestResponse contactMomentResult)
+        {
+            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            {
+                return;
+            }
+
+            string status = contactMomentResult.IsSuccess ? "ok" : "fail";
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs,
+                contactMomentResult.IsSuccess ? "contactmoment registered" : $"failed to register contactmoment: {contactMomentResult.JsonResponse}");
+
             this._traceEmitter.Emit(new TraceEvent(reference.TraceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+        }
+
+        /// <summary>
+        /// Computes how long it's been since the original scenario handed this notification off
+        /// to "Notify NL" (if that moment was recorded), appending the elapsed time to
+        /// <paramref name="outcomeText"/> for the trace's detail message.
+        /// </summary>
+        private static (long ElapsedMs, string Detail) DescribeElapsedSinceSend(long? sentAtUnixMs, string outcomeText)
+        {
+            if (sentAtUnixMs is not { } sentAt)
+            {
+                return (0, outcomeText);
+            }
+
+            long elapsedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - sentAt;
+            return (elapsedMs, $"{outcomeText} after {TimeSpan.FromMilliseconds(elapsedMs):mm\\:ss}");
         }
 
         /// <summary>
