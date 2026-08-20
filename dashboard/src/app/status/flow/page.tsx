@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Background, BackgroundVariant, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
+import { Background, BackgroundVariant, Controls, PanOnScrollMode, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import {
   CHANNEL_NODES,
@@ -426,16 +426,18 @@ export default function FlowPage() {
               nodesDraggable={false}
               nodesConnectable={false}
               elementsSelectable={false}
-              panOnDrag={false}
-              panOnScroll={false}
+              panOnDrag
+              panOnScroll
+              panOnScrollMode={PanOnScrollMode.Free}
               zoomOnScroll={false}
-              zoomOnPinch={false}
-              zoomOnDoubleClick={false}
+              zoomOnPinch
+              zoomOnDoubleClick
               minZoom={0.15}
-              maxZoom={1.1}
+              maxZoom={1.5}
               proOptions={{ hideAttribution: true }}
             >
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
+              <Controls showInteractive={false} />
               <FitViewOnReady />
             </ReactFlow>
           </ReactFlowProvider>
