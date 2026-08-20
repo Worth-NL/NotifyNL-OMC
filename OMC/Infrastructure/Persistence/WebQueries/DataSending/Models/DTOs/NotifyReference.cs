@@ -39,7 +39,13 @@ namespace WebQueries.DataSending.Models.DTOs
         /// <summary>
         /// The boolean flag indicating if it was sent to Logius Message Box.
         /// </summary>
-        [JsonRequired]
+        /// <remarks>
+        ///   Deliberately not [JsonRequired]: this reference gets gzip-compressed and handed to
+        ///   "Notify NL", which echoes it back later — on its own schedule — as the "reference" on
+        ///   a delivery-confirmation callback. A reference minted before a deploy that adds a new
+        ///   required field would fail to deserialize on that later callback, turning a real,
+        ///   successfully-processed notification into a 500 with no contactmoment registered.
+        /// </remarks>
         [JsonInclude]
         [JsonPropertyOrder(3)]
         public bool Mobb { get; set; } = false;
@@ -47,7 +53,6 @@ namespace WebQueries.DataSending.Models.DTOs
         /// <summary>
         /// The boolean flag indicating if a notification was sent successfully.
         /// </summary>
-        [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(4)]
         public bool Notified { get; set; } = false;
