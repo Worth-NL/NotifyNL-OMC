@@ -52,6 +52,7 @@
         "ZGW_AUTH_KEY_OPENKLANT": "", // NOTE: Required if OMC Workflow v2 is used
         "ZGW_AUTH_KEY_OBJECTEN": "",
         "ZGW_AUTH_KEY_OBJECTTYPEN": "",
+        "ZGW_AUTH_KEY_OPENVTB": "",
 
         "ZGW_ENDPOINT_OPENNOTIFICATIES": "https://opennotificaties.test.notifynl.nl/api/v1",
         "ZGW_ENDPOINT_OPENZAAK": "https://openzaak.test.notifynl.nl/zaken/api/v1",
@@ -60,12 +61,15 @@
         "ZGW_ENDPOINT_OBJECTEN": "https://objecten.test.notifynl.nl/api/v2",
         "ZGW_ENDPOINT_OBJECTTYPEN": "https://objecttypen.test.notifynl.nl/api/v1",
         "ZGW_ENDPOINT_CONTACTMOMENTEN": "https://openklantv2.test.notifynl.nl/klantinteracties/api/v1", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_DOCUMENTEN": "https://openzaak.test.notifynl.nl/documenten/api/v1",
+        "ZGW_ENDPOINT_OPENVTB": "https://openvtb.test.notifynl.nl/berichten/api/v1",
 
         "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
         "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
         "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
         "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
         "ZGW_WHITELIST_DECISIONMADE_IDS": "blabla, bloebloe",
+        "ZGW_WHITELIST_VTBMESSAGE_TYPES": "*",
         "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
 
         "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",
@@ -92,6 +96,9 @@
         "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "0b261922-1d97-4ae4-a8d0-65378f99c832",
         "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "7113162a-ac53-4935-bc27-4381f6a08adf",
         "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "89bef33b-f6fe-4f8f-87e7-29ce41b8b329",
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX": "",
+
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX": "",
 
         "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "dd0ab7d1-29f2-4946-9c99-ddab50689339",
         "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "d8404235-377d-4a44-be58-dbdb7cf80d7b",

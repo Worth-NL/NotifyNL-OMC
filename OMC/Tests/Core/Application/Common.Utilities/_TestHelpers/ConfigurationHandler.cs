@@ -103,6 +103,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_AUTH_KEY_OPENKLANT",                               GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTEN",                                GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTTYPEN",                             GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENVTB",                                 GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },
@@ -111,12 +112,14 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_OBJECTEN",                                GetTestValue(isValid, testDomain, "https://domain") },
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                             GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKCLOSE_IDS",                          GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
 
                 { "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
@@ -139,6 +142,9 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE",                    GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED",                 GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED",              GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",                   GetTestValue(isValid, testGuid) },
+
+                { "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX",                  GetTestValue(isValid, testGuid) },
 
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE",                     GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE",                     GetTestValue(isValid, testGuid) },

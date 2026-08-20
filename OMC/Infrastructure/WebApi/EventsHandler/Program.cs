@@ -57,6 +57,8 @@ using WebQueries.KTO.Interfaces;
 using WebQueries.MijnOverheid;
 using WebQueries.MijnOverheid.Clients;
 using WebQueries.MijnOverheid.Interfaces;
+using WebQueries.MOBB;
+using WebQueries.MOBB.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Events;
@@ -64,9 +66,11 @@ using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Serialization;
 using ZgwModels.Serialization.Interfaces;
 using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
+using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
@@ -229,6 +233,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
+            builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -409,6 +414,8 @@ namespace EventsHandler
             services.AddSingleton<Besluiten.Interfaces.IQueryBesluiten, Besluiten.QueryBesluiten>();
             services.AddSingleton<Objecten.Interfaces.IQueryObjecten, Objecten.QueryObjecten>();
             services.AddSingleton<ObjectTypen.Interfaces.IQueryObjectTypen, ObjectTypen.QueryObjectTypen>();
+            services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
+            services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
 
             // Feedback and telemetry
             services.AddScoped<ITelemetryService, Register.v2.ContactRegistration>();

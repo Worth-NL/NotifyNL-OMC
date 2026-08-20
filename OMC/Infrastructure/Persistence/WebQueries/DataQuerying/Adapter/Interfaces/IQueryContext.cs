@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -14,8 +15,10 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Documents;
 
 namespace WebQueries.DataQuerying.Adapter.Interfaces
 {
@@ -33,6 +36,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
     /// <seealso cref="IQueryBesluiten"/>
     /// <seealso cref="IQueryObjecten"/>
     /// <seealso cref="IQueryObjectTypen"/>
+    /// <seealso cref="IQueryVtb"/>
     public interface IQueryContext
     {
         #region IQueryBase
@@ -135,7 +139,14 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         ///     </para>
         ///   </para>
         /// </remarks>
-        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null);
+        /// <param name="caseUri">The <see cref="Case"/> <see cref="Uri"/>, used only when <paramref name="bsnNumber"/> is missing.</param>
+        /// <param name="bsnNumber">The BSN (Citizen Service Number), when already known.</param>
+        /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
+        /// <param name="requireDigitalAddress">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   Only honored on the citizen (BSN-based) lookup path; the case-role/organization path is unaffected.
+        /// </param>
+        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null, bool requireDigitalAddress = true);
 
         /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
         public Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody);
@@ -232,6 +243,34 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         #region IQueryCustomerSatisfactionSurvey
         /// <inheritdoc cref="IDomain"/>
         public Task<HttpRequestResponse> SendKtoAsync(string body);
+        #endregion
+
+        #region IQueryVtb
+        /// <summary>
+        /// Gets a message (Vtb Bericht) from the OpenVTB API by its URI.
+        /// </summary>
+        /// <param name="vtbMessageUri">The URI of the message to retrieve.</param>
+        /// <returns>The deserialized VTB message data.</returns>
+        Task<VtbMessage> GetVtbMessageAsync(Uri vtbMessageUri);
+        #endregion
+
+        #region IQueryDocumenten
+        /// <summary>
+        /// Gets a document (SingularInformationObject) by its UUID from the Documenten API.
+        /// </summary>
+        /// <param name="documentUuid">The UUID of the document.</param>
+        /// <returns>The document metadata.</returns>
+        Task<SingularInformationObject> GetDocumentAsync(Guid documentUuid);
+
+        /// <summary>
+        /// Downloads a document's actual binary content and returns it Base64-encoded.
+        /// </summary>
+        /// <param name="contentUri">
+        ///   The download URI from <see cref="SingularInformationObject.Content"/> ("inhoud") - that field
+        ///   holds a download link on GET, not the file content itself; see that struct's remarks.
+        /// </param>
+        /// <returns>The Base64-encoded file content.</returns>
+        Task<string> GetDocumentContentAsync(Uri contentUri);
         #endregion
     }
 }

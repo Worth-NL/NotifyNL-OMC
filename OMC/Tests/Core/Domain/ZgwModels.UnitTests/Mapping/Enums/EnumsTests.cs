@@ -49,6 +49,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         // NotifyNL: Notification types
         [TestCase(typeof(NotificationTypes), NotificationTypes.Email, "email")]
         [TestCase(typeof(NotificationTypes), NotificationTypes.Sms, "sms")]
+        [TestCase(typeof(NotificationTypes), NotificationTypes.Letter, "letter")]
         // NotifyNL: Delivery statuses
         [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Created, "created")]
         [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.Sending, "sending")]
@@ -110,6 +111,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         // NotifyNL: Notification types
         [TestCase("email", typeof(NotificationTypes), NotificationTypes.Email)]
         [TestCase("sms", typeof(NotificationTypes), NotificationTypes.Sms)]
+        [TestCase("letter", typeof(NotificationTypes), NotificationTypes.Letter)]
         // NotifyNL: Delivery statuses
         [TestCase("created", typeof(DeliveryStatuses), DeliveryStatuses.Created)]
         [TestCase("sending", typeof(DeliveryStatuses), DeliveryStatuses.Sending)]

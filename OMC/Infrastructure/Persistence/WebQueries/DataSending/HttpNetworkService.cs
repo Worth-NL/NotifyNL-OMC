@@ -63,7 +63,7 @@ namespace WebQueries.DataSending
         async Task<HttpRequestResponse> IHttpNetworkService.PostAsync(HttpClientTypes httpClientType, Uri uri, string jsonBody)
         {
             // Prepare HTTP Request Body
-            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType); 
+            StringContent requestBody = new(jsonBody, Encoding.UTF8, QueryValues.Default.Network.ContentType);
 
             return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Post, body: requestBody);
         }
@@ -72,6 +72,12 @@ namespace WebQueries.DataSending
         async Task<HttpRequestResponse> IHttpNetworkService.DeleteAsync(HttpClientTypes httpClientType, Uri uri)
         {
             return await ExecuteCallAsync(httpClientType, uri, httpMethod: HttpMethod.Delete);
+        }
+
+        /// <inheritdoc cref="IHttpNetworkService.GetBinaryAsBase64Async(HttpClientTypes, Uri)"/>
+        async Task<HttpRequestResponse> IHttpNetworkService.GetBinaryAsBase64Async(HttpClientTypes httpClientType, Uri uri)
+        {
+            return await ExecuteBinaryCallAsync(httpClientType, uri);
         }
         #endregion
 
@@ -111,6 +117,10 @@ namespace WebQueries.DataSending
 
             this._httpClients.TryAdd(HttpClientTypes.Telemetry_Klantinteracties, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.Telemetry_Klantinteracties))]));  // API Key
+
+            // Added: OpenVtb client using static API key
+            this._httpClients.TryAdd(HttpClientTypes.OpenVtb, this._httpClientFactory
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenVtb)), contentCrs]));
         }
 
         /// <summary>
@@ -131,7 +141,8 @@ namespace WebQueries.DataSending
                 HttpClientTypes.OpenKlant_v2 or
                 HttpClientTypes.Objecten or
                 HttpClientTypes.ObjectTypen or
-                HttpClientTypes.Telemetry_Klantinteracties
+                HttpClientTypes.Telemetry_Klantinteracties or
+                HttpClientTypes.OpenVtb
                     => this._httpClients[httpClientType],
 
                 _ => throw new ArgumentException(
@@ -197,6 +208,9 @@ namespace WebQueries.DataSending
                 HttpClientTypes.ObjectTypen
                     => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.ObjectTypen()}",
 
+                HttpClientTypes.OpenVtb
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenVtb()}",
+
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
             };
@@ -235,6 +249,45 @@ namespace WebQueries.DataSending
                 return result.IsSuccessStatusCode
                     ? HttpRequestResponse.Success(responseContent)
                     : HttpRequestResponse.Failure(responseContent);
+            }
+            catch (Exception exception)
+            {
+                return HttpRequestResponse.Failure(exception.Message);
+            }
+        }
+
+        /// <summary>
+        /// Same safety procedure as <see cref="ExecuteCallAsync"/>, but for endpoints returning a raw binary
+        /// body (e.g., a Documenten API file download) rather than JSON/text - reading it as bytes and
+        /// Base64-encoding it avoids the UTF8 mangling <see cref="HttpContent.ReadAsStringAsync()"/> would
+        /// cause on arbitrary binary content.
+        /// </summary>
+        private async Task<HttpRequestResponse> ExecuteBinaryCallAsync(HttpClientTypes httpClientType, Uri uri)
+        {
+            try
+            {
+                await _semaphore.WaitAsync();
+                HttpClient client = ResolveClient(httpClientType);
+
+                // The client's default "Accept: application/json" (set for every client by RegularHttpClientFactory)
+                // makes binary/file endpoints reject the request with 406 Not Acceptable, since they can only
+                // render their actual content type (e.g. "application/octet-stream"). Overriding Accept to "*/*"
+                // on this specific request avoids that without touching the shared client's default headers.
+                using var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+
+                HttpResponseMessage result = await client.SendAsync(request);
+
+                _semaphore.Release();
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
+                }
+
+                byte[] responseBytes = await result.Content.ReadAsByteArrayAsync();
+                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes));
             }
             catch (Exception exception)
             {

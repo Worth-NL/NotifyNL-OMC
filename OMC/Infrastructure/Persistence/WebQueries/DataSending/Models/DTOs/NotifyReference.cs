@@ -37,13 +37,29 @@ namespace WebQueries.DataSending.Models.DTOs
         public Guid PartyId { get; set; } = Guid.Empty;
 
         /// <summary>
+        /// The boolean flag indicating if it was sent to Logius Message Box.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(3)]
+        public bool Mobb { get; set; } = false;
+
+        /// <summary>
+        /// The boolean flag indicating if a notification was sent successfully.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(4)]
+        public bool Notified { get; set; } = false;
+
+        /// <summary>
         /// The dashboard trace this notification belongs to, if any — carried through opaquely
         /// (never interpreted by "Notify NL" itself) so its later delivery confirmation
         /// callback can still be attributed to the same trace, even though that callback
         /// arrives on a separate, later request with no other link back to this one.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyOrder(3)]
+        [JsonPropertyOrder(5)]
         public string? TraceId { get; set; }
 
         /// <summary>
@@ -51,7 +67,7 @@ namespace WebQueries.DataSending.Models.DTOs
         /// out how long a later delivery confirmation took to arrive.
         /// </summary>
         [JsonInclude]
-        [JsonPropertyOrder(4)]
+        [JsonPropertyOrder(6)]
         public long? SentAtUnixMs { get; set; }
 
         /// <summary>
