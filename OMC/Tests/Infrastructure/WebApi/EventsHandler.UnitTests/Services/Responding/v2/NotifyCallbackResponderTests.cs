@@ -30,6 +30,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
         private Mock<ITelemetryService> _mockedTelemetry = null!;
         private Mock<INotifyService<NotifyData>> _mockedNotifyService = null!;
         private Mock<IMessageBoxScenario> _mockedMessageBoxScenario = null!;
+        private TraceEmitter _traceEmitter = null!;
 
         private GeneralResponder _responder = null!;
 
@@ -52,13 +53,15 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
             OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(
                 ConfigurationHandler.TestLoaderTypesSetup.BothValid_v2);
 
+            this._traceEmitter = new TraceEmitter();
+
             this._responder = new NotifyCallbackResponder(
                 configuration,
                 this._mockedSerializer.Object,
                 this._mockedTelemetry.Object,
                 this._mockedNotifyService.Object,
                 this._mockedMessageBoxScenario.Object,
-                new TraceEmitter());
+                this._traceEmitter);
         }
 
         #region Test data
@@ -224,6 +227,53 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
                 this._mockedTelemetry.Verify(mock => mock.ReportCompletionAsync(
                     It.IsAny<NotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string>(), It.IsAny<string[]>()), Times.Once);
             });
+        }
+
+        [TestCase(true, "ok")]
+        [TestCase(false, "fail")]
+        public async Task HandleNotifyCallbackAsync_NonMessageBoxCallback_TracesContactMomentStage_ByItsOwnRegistrationOutcome_NotByNotifyFeedback(
+            bool contactMomentWriteSucceeds, string expectedContactMomentStatus)
+        {
+            // Arrange - Notify NL reports a successful delivery either way; only the contactmoment
+            // write's own outcome should decide the "contactmoment" trace stage's status, so a failed
+            // write must still trace "fail" even though the send itself was "Delivered".
+            const string traceId = "trace-under-test";
+            (Guid _, System.Threading.Channels.ChannelReader<TraceEvent> reader) = this._traceEmitter.Subscribe();
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<DeliveryReceipt>(It.IsAny<object>()))
+                .Returns(BuildDeliveryReceipt(s_compressedStandardReference, DeliveryStatuses.Delivered, NotificationTypes.Email));
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<NotifyReference>(It.IsAny<object>()))
+                .Returns(new NotifyReference { TraceId = traceId });
+
+            this._mockedTelemetry
+                .Setup(mock => mock.ReportCompletionAsync(
+                    It.IsAny<NotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string>(), It.IsAny<string[]>()))
+                .ReturnsAsync(contactMomentWriteSucceeds
+                    ? HttpRequestResponse.Success("contactmoment created")
+                    : HttpRequestResponse.Failure("contactmoment API rejected the write"));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert - drain every event this callback emitted and find the "contactmoment" one
+            var emitted = new List<TraceEvent>();
+            while (reader.TryRead(out TraceEvent? traceEvent))
+            {
+                emitted.Add(traceEvent);
+            }
+
+            TraceEvent? contactMomentEvent = emitted.SingleOrDefault(e => e.Stage == "contactmoment");
+            Assert.That(contactMomentEvent, Is.Not.Null, "Expected a 'contactmoment' trace event to be emitted.");
+            Assert.That(contactMomentEvent!.Status, Is.EqualTo(expectedContactMomentStatus));
+
+            // The channel-send stage always reflects Notify's own feedback ("Delivered" => "ok"),
+            // independent of whether the contactmoment write succeeded.
+            TraceEvent? channelEvent = emitted.SingleOrDefault(e => e.Stage == "notify-email");
+            Assert.That(channelEvent, Is.Not.Null, "Expected a 'notify-email' trace event to be emitted.");
+            Assert.That(channelEvent!.Status, Is.EqualTo("ok"));
         }
     }
 }
