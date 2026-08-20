@@ -194,7 +194,7 @@ namespace EventsHandler.Controllers
         ///     NOTE: If empty the ID of a very first looked up letter template will be used.
         ///   </para>
         /// </param>
-        /// <param name="request">The request body containing personalization, extras, and client reference.</param>
+        /// <param name="request">The request body containing personalization and client reference.</param>
         [HttpPost]
         [Route($"{UrlStart}SendLetter")]
         // Security
@@ -213,7 +213,6 @@ namespace EventsHandler.Controllers
                 contactDetails: "",  // Not used for letters
                 letterTemplateId,
                 request.Personalization ?? new Dictionary<string, object>(),
-                request.Extras,
                 request.Reference);
         }
 
@@ -372,7 +371,6 @@ namespace EventsHandler.Controllers
         /// <param name="contactDetails">The recipient's email address or phone number (ignored for letters).</param>
         /// <param name="templateId">The GOV.UK Notify template ID. If null, the first available template for the channel is used.</param>
         /// <param name="personalization">Dictionary of template placeholder values.</param>
-        /// <param name="extras">Optional dictionary of additional letter-specific options (e.g., postage, letter type). Ignored for email/SMS.</param>
         /// <param name="reference">Optional client reference for the letter (ignored for email/SMS).</param>
         /// <returns>
         ///   The standardized <see cref="ObjectResult"/> API response.
@@ -382,7 +380,6 @@ namespace EventsHandler.Controllers
             string contactDetails,
             string? templateId,
             Dictionary<string, object> personalization,
-            Dictionary<string, object>? extras = null,
             string? reference = null)
         {
             try
@@ -411,7 +408,7 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            _ = await notifyClient.SendLetterAsync(templateId, null, reference, extras);
+                            _ = await notifyClient.SendLetterAsync(templateId, null, reference);
                             break;
 
                         default:
@@ -441,7 +438,7 @@ namespace EventsHandler.Controllers
                             break;
 
                         case NotifyMethods.Letter:
-                            _ = await notifyClient.SendLetterAsync(templateId, personalization, reference, extras);
+                            _ = await notifyClient.SendLetterAsync(templateId, personalization, reference);
                             break;
 
                         default:
@@ -479,9 +476,6 @@ namespace EventsHandler.Controllers
     {
         /// <summary>Optional dictionary of template placeholder values.</summary>
         public Dictionary<string, object>? Personalization { get; set; }
-
-        /// <summary>Optional dictionary of additional letter-specific options (e.g., postage, letter type).</summary>
-        public Dictionary<string, object>? Extras { get; set; }
 
         /// <summary>Optional client reference for the letter.</summary>
         public string? Reference { get; set; }

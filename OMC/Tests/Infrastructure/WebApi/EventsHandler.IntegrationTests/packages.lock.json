@@ -95,11 +95,11 @@
       },
       "GovukNotify": {
         "type": "Transitive",
-        "resolved": "7.0.2-custom",
-        "contentHash": "falcu50lvuiwQ4Gnd+6rY+ZF99nEzHcvbqP8X045zzqDwu/+Yii8IKkjBhS484xjB5Qh9/RLfEpWzGhjtA208Q==",
+        "resolved": "9.4.0-custom",
+        "contentHash": "epCChTPvsFhr/vrUDjjX1Oq3vOCVzcoR2UVrTjp60xhqomYZrVBhBlKZg5tAIZgCY5lhctWUsOs6l+IctK0jvA==",
         "dependencies": {
-          "JWT": "[7.1.0, 9.0.0)",
-          "Newtonsoft.Json": "[10.0.3, 14.0.0)"
+          "JWT": "[11.0.0, 12.0.0)",
+          "Newtonsoft.Json": "[13.0.4, 14.0.0)"
         }
       },
       "JetBrains.Annotations": {
@@ -109,11 +109,10 @@
       },
       "JWT": {
         "type": "Transitive",
-        "resolved": "7.1.0",
-        "contentHash": "z33XjdWSKszw/SRde6fvVsCL2gaKdktZDHJIfpp0RqzNU7RQIaWC4wHUVV2i3RzQSsvQ4bjI3/2kwEAT5S62nA==",
+        "resolved": "11.0.0",
+        "contentHash": "jOT1PA95jgf78CqWsKt8hz9Uzv4J39vukzf5nYtfky9N6wl1W4vIXT1CdkQI7zG20HnApEMtmpC/pMtCKr4rvw==",
         "dependencies": {
-          "Newtonsoft.Json": "9.0.1",
-          "System.Reflection.TypeExtensions": "4.7.0"
+          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Macross.Json.Extensions": {
@@ -544,8 +543,8 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "PostSharp": {
         "type": "Transitive",
@@ -666,11 +665,6 @@
           "Microsoft.IdentityModel.Tokens": "7.1.2"
         }
       },
-      "System.Reflection.TypeExtensions": {
-        "type": "Transitive",
-        "resolved": "4.7.0",
-        "contentHash": "VybpaOQQhqE6siHppMktjfGBw1GCwvCqiufqmP8F1nj7fTUNtW35LOEt3UZTEsECfo+ELAl/9o9nJx3U91i7vA=="
-      },
       "OMC.Common": {
         "type": "Project",
         "dependencies": {
@@ -690,7 +684,7 @@
           "E4A.PostGuard": "[0.3.0, )",
           "Microsoft.AspNetCore.OpenApi": "[9.0.0, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.21.0, )",
-          "Newtonsoft.Json": "[13.0.1, )",
+          "Newtonsoft.Json": "[13.0.4, )",
           "OMC.WebQueries": "[1.0.0, )",
           "Sentry.AspNetCore": "[4.13.0, )",
           "Sentry.Profiling": "[4.13.0, )",
@@ -708,9 +702,9 @@
       "OMC.WebQueries": {
         "type": "Project",
         "dependencies": {
-          "GovukNotify": "[7.0.2-custom, )",
+          "GovukNotify": "[9.4.0-custom, )",
           "Microsoft.VisualStudio.Threading": "[17.12.19, )",
-          "Newtonsoft.Json": "[13.0.1, )",
+          "Newtonsoft.Json": "[13.0.4, )",
           "OMC.SecretsManager": "[1.0.0, )",
           "OMC.ZgwModels": "[1.0.0, )",
           "Sentry.AspNetCore": "[4.13.0, )"

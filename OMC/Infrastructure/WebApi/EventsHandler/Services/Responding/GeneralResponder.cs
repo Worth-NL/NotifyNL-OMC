@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notify.Exceptions;
 using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.MOBB.Models;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
@@ -248,6 +250,50 @@ namespace EventsHandler.Services.Responding
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
             return (notification, notificationMethod);
+        }
+
+        /// <summary>
+        /// Determines whether the given callback's reference was built for the MOBB / Berichtenbox
+        /// scenario (<see cref="MessageBoxNotifyReference"/>) rather than the standard <see cref="NotifyReference"/>.
+        /// </summary>
+        /// <remarks>
+        ///   First-version draft: distinguishes the two by peeking at the decoded reference for a
+        ///   "MessageId" property, which only <see cref="MessageBoxNotifyReference"/> has. This means the
+        ///   reference gets decompressed/parsed twice for a MOBB callback (once here, once by whichever
+        ///   Extract...CallbackDataAsync is subsequently called) - acceptable for a first version, but
+        ///   worth collapsing into a single decode if this needs tightening up later.
+        /// </remarks>
+        internal async Task<bool> IsMessageBoxCallbackAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            if (decodedReference.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(decodedReference);
+
+            return document.RootElement.TryGetProperty(nameof(MessageBoxNotifyReference.MessageId), out _);
+        }
+
+        /// <summary>
+        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback, for the
+        /// MOBB / Berichtenbox scenario reference shape.
+        /// </summary>
+        /// <param name="callback">The callback to be analyzed.</param>
+        /// <returns>
+        ///   The notification data required for further processing.
+        /// </returns>
+        internal async Task<(MessageBoxNotifyReference, NotifyMethods)> ExtractMessageBoxCallbackDataAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            MessageBoxNotifyReference reference = this.Serializer.Deserialize<MessageBoxNotifyReference>(decodedReference);
+
+            NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+            return (reference, notificationMethod);
         }
 
         /// <summary>
