@@ -227,7 +227,12 @@ namespace EventsHandler.Services.Responding.v2
             }
 
             long elapsedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - sentAt;
-            return (elapsedMs, $"{outcomeText} after {TimeSpan.FromMilliseconds(elapsedMs):mm\\:ss}");
+
+            // TimeSpan's custom "mm" format is a component (0-59), not a total — formatting
+            // directly with "mm\:ss" would silently truncate any elapsed hours/days instead of
+            // rolling them into the minutes shown. TotalMinutes doesn't have that problem.
+            TimeSpan elapsed = TimeSpan.FromMilliseconds(elapsedMs);
+            return (elapsedMs, $"{outcomeText} after {(int)elapsed.TotalMinutes}:{elapsed.Seconds:D2}");
         }
 
         /// <summary>
@@ -404,8 +409,19 @@ namespace EventsHandler.Services.Responding.v2
         private async Task<NotificationData> GetNotificationDataAsync(
             NotifyReference reference, NotifyMethods notificationMethod, Guid notificationId)
         {
-            var data = new NotifyData(notificationMethod, String.Empty, Guid.Empty, [], reference);
-            return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            try
+            {
+                var data = new NotifyData(notificationMethod, String.Empty, Guid.Empty, [], reference);
+                return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            }
+            catch (Exception exception)
+            {
+                // Must not throw: EmitContactMomentTrace (called by InformUserAboutStatusAsync's
+                // caller, right after it returns) would otherwise never run, leaving the dashboard's
+                // "contactmoment" node stuck at "pending" forever for a request that already
+                // finished. Same defensive shape as the MOBB counterpart below.
+                return NotificationData.Failure(exception.Message);
+            }
         }
 
         /// <summary>
