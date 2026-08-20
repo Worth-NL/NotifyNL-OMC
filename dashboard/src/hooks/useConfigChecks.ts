@@ -37,7 +37,11 @@ export function useConfigChecks(): ConfigChecksState {
 
     source.addEventListener("start", (event) => {
       const data = JSON.parse((event as MessageEvent).data) as { total: number };
-      setState((prev) => ({ ...prev, expectedTotal: data.total, status: "streaming" }));
+      // A "start" event always means a fresh run of every check (the initial connection, or a
+      // reconnect after the error handler below let the browser retry) — reset accumulated state
+      // so a reconnect doesn't append a second copy of every check on top of a stale/partial run.
+      groupsRef.current = [];
+      setState((prev) => ({ ...prev, groups: [], received: 0, expectedTotal: data.total, status: "streaming" }));
     });
 
     source.onmessage = (event) => {
@@ -68,8 +72,11 @@ export function useConfigChecks(): ConfigChecksState {
     });
 
     source.onerror = () => {
+      // Deliberately doesn't close the connection — a transient network blip should let the
+      // browser's native EventSource auto-reconnect (same as useOmcTelemetry's trace stream),
+      // not permanently strand the page on "error" until a manual reload. The "complete" handler
+      // above still closes the source once the stream has legitimately finished.
       setState((prev) => (prev.status === "complete" ? prev : { ...prev, status: "error" }));
-      source.close();
     };
 
     return () => source.close();
