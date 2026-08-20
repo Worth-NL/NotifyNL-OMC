@@ -132,8 +132,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
   const nodeThroughputRef = useRef<Record<string, number>>({});
   const eventTimestampsRef = useRef<number[]>([]);
   const durationSamplesRef = useRef<number[]>([]);
-  const currentTraceIdRef = useRef<string | null>(null);
-  const currentTraceLastElapsedRef = useRef(0);
+  // Each trace's own last-seen elapsedMs, keyed by traceId (insertion order == arrival order of
+  // each trace's first event) — a single shared "current trace" ref can't represent several
+  // traces in flight at once without one trace's value stomping another's.
+  const lastElapsedByTraceRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -176,6 +178,15 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
             if (playingTracesRef.current.has(traceId)) return;
             activeHopsByTraceRef.current.delete(traceId);
             publishActiveHops();
+
+            // This trace's per-trace working state (which stage it last visited, its now-empty
+            // hop queue) is done being useful — free it. Without this, a dashboard tab left open
+            // for hours/days accumulates one never-freed entry per trace forever; unlike
+            // seenTraceIdsRef (a permanent dedup set backing the monotonic "total processed"
+            // counter, which genuinely needs to remember every trace ID), nothing later reads a
+            // finished trace's last stage or queue.
+            lastStageByTraceRef.current.delete(traceId);
+            hopQueuesByTraceRef.current.delete(traceId);
           }, HOP_DELAY_MS);
           return;
         }
@@ -247,20 +258,23 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
         seenTraceIdsRef.current.add(event.traceId);
         setTotalProcessed(seenTraceIdsRef.current.size);
 
-        if (currentTraceIdRef.current && currentTraceIdRef.current !== event.traceId) {
-          // A different trace just started — the previous one is presumed finished; bank its
-          // last-known elapsed time as one real "handling time" sample.
-          durationSamplesRef.current = [...durationSamplesRef.current, currentTraceLastElapsedRef.current].slice(
+        // A new trace just started — bank the OLDEST still-tracked trace's own last-known
+        // elapsed time as one real "handling time" sample (not whatever trace happened to send
+        // the most recent event, which could be an unrelated trace still mid-flight).
+        const oldestEntry = lastElapsedByTraceRef.current.entries().next();
+        if (!oldestEntry.done) {
+          const [finishedTraceId, finishedElapsedMs] = oldestEntry.value;
+          lastElapsedByTraceRef.current.delete(finishedTraceId);
+          durationSamplesRef.current = [...durationSamplesRef.current, finishedElapsedMs].slice(
             -MAX_DURATION_SAMPLES,
           );
           const avg =
             durationSamplesRef.current.reduce((sum, ms) => sum + ms, 0) / durationSamplesRef.current.length;
           setAvgHandlingMs(Math.round(avg));
         }
-        currentTraceIdRef.current = event.traceId;
       }
       if (!isAsyncConfirmationEvent(event)) {
-        currentTraceLastElapsedRef.current = event.elapsedMs;
+        lastElapsedByTraceRef.current.set(event.traceId, event.elapsedMs);
       }
 
       nodeThroughputRef.current = {

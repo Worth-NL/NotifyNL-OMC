@@ -7,9 +7,13 @@ function Sparkline({ values }: { values: number[] }) {
   const min = Math.min(...values, 0);
   const range = max - min || 1;
 
+  // values.length - 1 is 0 for a single point, which would divide by zero and produce a NaN
+  // coordinate (silently dropped by the SVG parser, rendering nothing for that first tick).
+  const xDivisor = Math.max(values.length - 1, 1);
+
   const points = values
     .map((v, i) => {
-      const x = (i / (values.length - 1)) * width;
+      const x = (i / xDivisor) * width;
       const y = height - ((v - min) / range) * height;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     })
