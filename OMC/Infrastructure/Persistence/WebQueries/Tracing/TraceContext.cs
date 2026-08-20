@@ -21,8 +21,16 @@ namespace WebQueries.Tracing
             public required Stopwatch Stopwatch { get; init; }
             public required TraceEmitter Emitter { get; init; }
             public string? Scenario { get; set; }
-            public string? LastStage { get; set; }
-            public string? LastStatus { get; set; }
+            /// <summary>
+            /// Stages that reported "start" but haven't yet reported a terminal status — normally
+            /// at most one entry, since almost every call site emits sequentially, but tracked as
+            /// a set rather than a single last-stage slot so two stages started within the same
+            /// trace before either resolves (e.g. a future concurrent pair of register calls)
+            /// don't stomp on each other: a single mutable slot could only ever remember the more
+            /// recent one, so <see cref="EmitPendingFailure"/> would mark the wrong stage failed
+            /// (or the wrong-but-not-actually-hung one) if an exception ever interrupted the other.
+            /// </summary>
+            public HashSet<string> PendingStages { get; } = [];
             /// <summary>
             /// Distinct stages reached so far, in visiting order (consecutive repeats of the same
             /// stage collapsed to one entry) — only <see cref="ReturnAlongPath"/> reads this; every
@@ -85,8 +93,14 @@ namespace WebQueries.Tracing
                 return;
             }
 
-            state.LastStage = stage;
-            state.LastStatus = status;
+            if (status == "start")
+            {
+                state.PendingStages.Add(stage);
+            }
+            else
+            {
+                state.PendingStages.Remove(stage);
+            }
 
             // Only terminal outcomes count as "reached" for path-retracing purposes — "start"
             // marks an attempt, not an arrival — and consecutive repeats of the same stage (e.g.
@@ -126,7 +140,14 @@ namespace WebQueries.Tracing
         /// </param>
         public static void EmitPendingFailure(string? detail = null)
         {
-            if (s_current.Value is { LastStatus: "start", LastStage: { } stage })
+            if (s_current.Value is not { } state)
+            {
+                return;
+            }
+
+            // Snapshot first — Emit() below removes from PendingStages as each synthetic "fail"
+            // lands, so iterating the live set while it shrinks would skip entries.
+            foreach (string stage in state.PendingStages.ToArray())
             {
                 Emit(stage, "fail", detail);
             }

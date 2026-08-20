@@ -249,6 +249,9 @@ namespace EventsHandler
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
+            // MijnOverheidClient resolves its HttpClient by name (IHttpClientFactory.CreateClient(nameof(MijnOverheidClient)))
+            // rather than the typed-client pattern used by its siblings above — the name must match exactly.
+            builder.Services.AddHttpClient(nameof(MijnOverheidClient));
             builder.Services.AddScoped<IMijnOverheidClient, MijnOverheidClient>();
             builder.Services.AddScoped<IMijnOverheidForwarder, MijnOverheidForwarder>();
             builder.Services.AddHttpClient<BrpClient>()
