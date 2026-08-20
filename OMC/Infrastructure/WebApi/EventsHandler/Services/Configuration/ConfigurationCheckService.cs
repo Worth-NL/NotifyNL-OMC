@@ -21,17 +21,23 @@ namespace EventsHandler.Services.Configuration
     [ExcludeFromCodeCoverage]
     public sealed class ConfigurationCheckService(OmcConfiguration config, IQueryContext queryContext)
     {
-        /// <summary>Number of checks emitted by every group except "Message Received", whose size depends on configuration.</summary>
-        private const int FixedGroupChecksCount = 5 /*OMC Auth*/ + 5 /*ZGW Auth*/ + 6 /*Endpoints*/ + 2 /*Notify*/ + 5 /*Connectivity*/
-            + 3 /*CaseCreated*/ + 3 /*CaseUpdated*/ + 3 /*CaseClosed*/ + 4 /*TaskAssigned*/ + 3 /*DecisionMade*/ + 4 /*Kto*/;
+        /// <summary>
+        /// The 5 connectivity checks are the only group not safely re-countable here: they're
+        /// real HTTP calls, so re-running them just to count them would double every outbound
+        /// request. Every other group below is a pure, side-effect-free read of already-loaded
+        /// config, so its count is derived by actually calling it — including the conditional
+        /// "Message Received" group — rather than hand-mirrored as a second number that can
+        /// silently drift from what <see cref="RunChecksAsync"/> actually yields.
+        /// </summary>
+        private const int ConnectivityCheckCount = 5; // OpenZaak, OpenKlant, OpenBesluiten, Objecten, ObjectTypen — see RunChecksAsync
 
         /// <summary>The exact number of checks <see cref="RunChecksAsync"/> will emit, so consumers don't have to guess.</summary>
         public int GetExpectedTotal()
         {
-            bool messageAllowed;
-            try { messageAllowed = config.ZGW.Whitelist.Message_Allowed(); } catch { messageAllowed = false; }
-
-            return FixedGroupChecksCount + (messageAllowed ? 4 : 1);
+            return OmcAuthChecks().Count() + ZgwAuthChecks().Count() + EndpointChecks().Count() + NotifyConfigChecks().Count()
+                + ConnectivityCheckCount
+                + CaseCreatedChecks().Count() + CaseUpdatedChecks().Count() + CaseClosedChecks().Count()
+                + TaskAssignedChecks().Count() + MessageReceivedChecks().Count() + DecisionMadeChecks().Count() + KtoChecks().Count();
         }
 
         /// <summary>Streams check results as they complete.</summary>
@@ -41,21 +47,32 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in ZgwAuthChecks())          yield return r;
             foreach (var r in EndpointChecks())         yield return r;
             foreach (var r in NotifyConfigChecks())     yield return r;
-            yield return await ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenZaak",
+
+            // Five independent HTTP round trips — started together so total latency is the
+            // slowest single check, not their sum (previously awaited one at a time, so one slow
+            // or timing-out service delayed every check after it, not just its own).
+            Task<CheckResult> openZaakCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenZaak",
                 () => queryContext.GetZaakHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__OpenZaak, ZGW__Auth__JWT__Secret, ZGW__Auth__JWT__Issuer, ZGW__Auth__JWT__UserId");
-            yield return await ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenKlant",
+            Task<CheckResult> openKlantCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenKlant",
                 () => queryContext.GetKlantHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__OpenKlant, ZGW__Auth__Key__OpenKlant");
-            yield return await ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenBesluiten",
+            Task<CheckResult> besluitenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenBesluiten",
                 () => queryContext.GetBesluitenHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__Besluiten, ZGW__Auth__JWT__Secret, ZGW__Auth__JWT__Issuer");
-            yield return await ConnectivityCheckAsync("Service Connectivity", "🔗", "Objecten",
+            Task<CheckResult> objectenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "Objecten",
                 () => queryContext.GetObjectenHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__Objecten, ZGW__Auth__Key__Objecten");
-            yield return await ConnectivityCheckAsync("Service Connectivity", "🔗", "ObjectTypen",
+            Task<CheckResult> objectTypenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "ObjectTypen",
                 () => queryContext.GetObjectTypenHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__ObjectTypen, ZGW__Auth__Key__ObjectTypen");
+
+            yield return await openZaakCheck;
+            yield return await openKlantCheck;
+            yield return await besluitenCheck;
+            yield return await objectenCheck;
+            yield return await objectTypenCheck;
+
             foreach (var r in CaseCreatedChecks())      yield return r;
             foreach (var r in CaseUpdatedChecks())      yield return r;
             foreach (var r in CaseClosedChecks())       yield return r;
