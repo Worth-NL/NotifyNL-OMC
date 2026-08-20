@@ -35,5 +35,11 @@ namespace ZgwModels.Mapping.Enums.NotificatieApi
         /// </summary>
         [JsonPropertyName("besluiten")]
         Decisions = 3,
+
+        /// <summary>
+        /// messages channel.
+        /// </summary>
+        [JsonPropertyName("berichten")]
+        Messages = 4,
     }
 }

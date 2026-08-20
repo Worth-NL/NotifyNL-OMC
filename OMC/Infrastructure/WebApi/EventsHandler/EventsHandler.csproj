@@ -10,7 +10,7 @@
   <PropertyGroup>
     <!-- Project -->
     <AssemblyName>OMC.EventsHandler</AssemblyName>
-    <VersionPrefix>2.0.1</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
 
     <TargetFramework>net10.0</TargetFramework>
 
@@ -40,7 +40,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="E4A.PostGuard" Version="0.3.0" />
     <!-- Logging -->
     <PackageReference Include="Sentry.AspNetCore" Version="4.13.0" />

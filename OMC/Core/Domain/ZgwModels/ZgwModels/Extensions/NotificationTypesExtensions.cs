@@ -26,6 +26,10 @@ namespace ZgwModels.Extensions
 
                 NotificationTypes.Sms => NotifyMethods.Sms,
 
+                NotificationTypes.Letter => NotifyMethods.Letter,
+
+                NotificationTypes.Mobb => NotifyMethods.Mobb,
+
                 // FAILURE: Return fallback enum B
                 _ => NotifyMethods.None
             };

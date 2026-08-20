@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using System.Net;
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using NUnit.Framework;
@@ -313,7 +312,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
             // Arrange
             var testId = Guid.NewGuid();
 
-            PartyResult testParty = GetTestPartyResult_Phone_V2(this._validAppSettingsConfiguration, testId, testId);
+            PartyResult testParty = GetTestPartyResult_Phone_V2(testId, testId);
 
             // Act
             (PartyResult actualParty, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber)
@@ -642,7 +641,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// In this set of test data there is no emails, so phone numbers will always be used.
         /// </summary>
-        private static PartyResult GetTestPartyResult_Phone_V2(OmcConfiguration configuration, Guid partyId, Guid addressId)
+        private static PartyResult GetTestPartyResult_Phone_V2(Guid partyId, Guid addressId)
         {
             return new PartyResult
             {

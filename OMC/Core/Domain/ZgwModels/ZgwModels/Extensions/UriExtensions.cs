@@ -49,7 +49,7 @@ namespace ZgwModels.Extensions
         /// </returns>
         public static bool IsNullOrDefault([NotNullWhen(false)] this Uri? uri)
         {
-            return CommonValues.Default.Models.EmptyUri.Equals(uri);
+            return uri is null || CommonValues.Default.Models.EmptyUri.Equals(uri);
         }
         
         /// <summary>

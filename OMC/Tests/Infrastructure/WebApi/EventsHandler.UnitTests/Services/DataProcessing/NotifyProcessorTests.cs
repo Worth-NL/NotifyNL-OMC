@@ -16,6 +16,7 @@ using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO.Interfaces;
+using WebQueries.MOBB.Interfaces;
 using WebQueries.Properties;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -32,6 +33,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
         private Mock<IValidationService<NotificationEvent>> _mockedValidator = null!;
         private Mock<IScenariosResolver<INotifyScenario, NotificationEvent>> _mockedResolver = null!;
         private Mock<IKtoScenarioFactory> _mockedKtoScenarioFactory = null!;
+        private Mock<IMessageBoxScenario> _mockedMessageBoxScenario = null!;
 
         private IProcessingService _processor = null!;
 
@@ -42,8 +44,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             this._mockedValidator = new Mock<IValidationService<NotificationEvent>>(MockBehavior.Strict);
             this._mockedResolver = new Mock<IScenariosResolver<INotifyScenario, NotificationEvent>>(MockBehavior.Strict);
             this._mockedKtoScenarioFactory = new Mock<IKtoScenarioFactory>(MockBehavior.Strict);
+            this._mockedMessageBoxScenario = new Mock<IMessageBoxScenario>(MockBehavior.Strict);
 
-            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object);
+            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object, this._mockedMessageBoxScenario.Object);
         }
 
         [SetUp]

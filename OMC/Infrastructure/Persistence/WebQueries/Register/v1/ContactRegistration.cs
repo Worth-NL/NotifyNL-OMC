@@ -4,11 +4,11 @@ using Common.Settings.Configuration;
 using Microsoft.VisualStudio.Threading;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
-using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v1
@@ -104,6 +104,16 @@ namespace WebQueries.Register.v1
         /// <exception cref="NotImplementedException"></exception>
         public string GetNewCreateContactMomentJsonBody(NotifyReference reference, NotifyMethods notificationMethod,
             IReadOnlyList<string> messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Just for v2 implementation. MOBB / Berichtenbox is only supported on the v2 ("OMC workflow" v2) path.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        string ITelemetryService.GetMessageBoxContactMomentJsonBody(
+            MessageBoxNotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             throw new NotImplementedException();
         }

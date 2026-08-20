@@ -49,5 +49,18 @@ namespace WebQueries.DataQuerying.Strategies.Interfaces
         /// <exception cref="JsonException"/>
         internal Task<TModel> ProcessPostAsync<TModel>(HttpClientTypes httpClientType, Uri uri, string jsonBody, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable;
+
+        /// <summary>
+        /// Sends the <see cref="HttpMethods.Get"/> request to the specified URI and returns the raw binary
+        /// response Base64-encoded, instead of deserializing it as JSON.
+        /// </summary>
+        /// <param name="httpClientType">The type of <see cref="HttpClient"/> to be used.</param>
+        /// <param name="uri">The URI to be used during <see cref="HttpMethods.Get"/> request.</param>
+        /// <param name="fallbackErrorMessage">The message to be returned in case of failed request.</param>
+        /// <returns>
+        ///   The Base64-encoded content.
+        /// </returns>
+        /// <exception cref="HttpRequestException"/>
+        internal Task<string> ProcessGetBinaryAsBase64Async(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage);
     }
 }

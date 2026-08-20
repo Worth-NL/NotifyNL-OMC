@@ -326,6 +326,20 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string CodeObjectTypeId()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectTypeId));
+
+                    // TODO (first-version, unconfirmed): these two are placeholders for the MOBB/Berichtenbox
+                    // contactmoment "onderwerpobject" - unlike "zaak"/"open-zaak" above, a Bericht object type
+                    // has not actually been registered/confirmed in OpenKlant yet. Get real values from whoever
+                    // manages OpenKlant's registered object types before relying on these.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Bericht));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
                 }
 
                 /// <summary>
@@ -823,6 +837,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string OpenVtb()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
                 }
             }
 
@@ -865,6 +884,11 @@ namespace Common.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                public string Documenten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Documenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 public string Objecten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
@@ -877,6 +901,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string ContactMomenten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string OpenVtb()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
             }
 
             /// <summary>
@@ -928,6 +957,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public IDs VtbMessage_Types()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(VtbMessage_Types));
 
                 // --------------
                 // Flags (simple)
@@ -1199,6 +1233,26 @@ namespace Common.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                 /// <summary>
+                /// The template ID for the MOBB letter fallback.
+                /// </summary>
+                /// <remarks>
+                ///   NOTE: Deliberately does NOT go through <see cref="LetterComponent"/> - its constructor
+                ///   has a pre-existing bug (builds its settings path from <c>nameof(Sms)</c> instead of
+                ///   <c>nameof(Letter)</c>), so every accessor on it actually resolves an SMS env var. Fixing
+                ///   that bug affects 5 unrelated live scenarios' letter channel and needs ops coordination
+                ///   across environments, so it is deliberately left alone here. This accessor instead builds
+                ///   its own, correctly-named "Letter" path node directly, resolving
+                ///   <c>NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX</c> - matching the same nesting convention already
+                ///   used by <see cref="EmailComponent.MessageBox"/> (<c>NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX</c>).
+                /// </remarks>
+                [Config]
+                public Guid MessageBoxLetter()
+                {
+                    string letterPath = this._loadersContext.GetPathWithNode(this._currentPath, nameof(Letter));
+                    return GetCachedUuidValue(this._loadersContext, letterPath, nameof(EmailComponent.MessageBox));
+                }
+
+                /// <summary>
                 /// The "Email" part of the settings.
                 /// </summary>
                 public sealed record EmailComponent
@@ -1239,6 +1293,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>
@@ -1282,6 +1341,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>

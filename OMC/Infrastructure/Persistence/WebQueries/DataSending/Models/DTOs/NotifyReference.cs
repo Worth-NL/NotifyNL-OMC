@@ -37,6 +37,22 @@ namespace WebQueries.DataSending.Models.DTOs
         public Guid PartyId { get; set; } = Guid.Empty;
 
         /// <summary>
+        /// The boolean flag indicating if it was sent to Logius Message Box.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(3)]
+        public bool Mobb { get; set; } = false;
+
+        /// <summary>
+        /// The boolean flag indicating if a notification was sent successfully.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(4)]
+        public bool Notified { get; set; } = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.
         /// </summary>
         public NotifyReference()

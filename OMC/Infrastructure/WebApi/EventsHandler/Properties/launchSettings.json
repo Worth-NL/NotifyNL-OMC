@@ -1,217 +1,228 @@
 {
   "profiles": {
     "http": {
-      "commandName": "", // string
-      "launchBrowser": true, // bool
-      "launchUrl": "", // string
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "" // string
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": true, // bool
-      "applicationUrl": "" // string (url)
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5270"
     },
     "https": {
-      "commandName": "", // string
-      "launchBrowser": true, // bool
-      "launchUrl": "", // string
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "" // string
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": true, // bool
-      "applicationUrl": "" // string (url)
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7042;http://localhost:5270"
     },
     "IIS Express (Workflow v1)": {
-      "commandName": "", // string
-      "launchBrowser": true, // bool
-      "launchUrl": "", // string
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "", // string
+        "ASPNETCORE_ENVIRONMENT": "Production",
 
-        "OMC_ACTOR_ID": "", // guid
-        "OMC_CONTEXT_PATH": "", // string
+        "OMC_ACTOR_ID": "", //check and throw error
+        "OMC_CONTEXT_PATH": "",
 
-        "OMC_AUTH_JWT_SECRET": "", // string (secret)
-        "OMC_AUTH_JWT_ISSUER": "", // string (url)
-        "OMC_AUTH_JWT_AUDIENCE": "", // string (url)
-        "OMC_AUTH_JWT_EXPIRESINMIN": "", // number (minutes)
-        "OMC_AUTH_JWT_USERID": "", // string
-        "OMC_AUTH_JWT_USERNAME": "", // string
+        "OMC_AUTH_JWT_SECRET": "",
+        "OMC_AUTH_JWT_ISSUER": "",
+        "OMC_AUTH_JWT_AUDIENCE": "",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "",
+        "OMC_AUTH_JWT_USERID": "",
+        "OMC_AUTH_JWT_USERNAME": "",
 
-        "OMC_FEATURE_WORKFLOW_VERSION": "", // number (version)
+        "OMC_FEATURE_WORKFLOW_VERSION": "1",
 
-        "ZGW_AUTH_JWT_SECRET": "", // string (secret)
-        "ZGW_AUTH_JWT_ISSUER": "", // string
-        "ZGW_AUTH_JWT_AUDIENCE": "", // string
-        "ZGW_AUTH_JWT_EXPIRESINMIN": "", // number
-        "ZGW_AUTH_JWT_USERID": "", // string (email)
-        "ZGW_AUTH_JWT_USERNAME": "", // string (name)
+        // NOTE: In OMC Workflow v1 this will be used for OpenZaak, Besluiten, ContactMomenten, and OpenKlant 1,
+        "ZGW_AUTH_JWT_SECRET": "",
+        "ZGW_AUTH_JWT_ISSUER": "",
+        "ZGW_AUTH_JWT_AUDIENCE": "",
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "",
+        "ZGW_AUTH_JWT_USERID": "",
+        "ZGW_AUTH_JWT_USERNAME": "",
 
-        "ZGW_AUTH_KEY_OPENKLANT": "", // string (key)
-        "ZGW_AUTH_KEY_OBJECTEN": "", // string (key)
-        "ZGW_AUTH_KEY_OBJECTTYPEN": "", // string (key)
+        "ZGW_AUTH_KEY_OPENKLANT": "", // NOTE: Not required if OMC Workflow v1 is used
+        "ZGW_AUTH_KEY_OBJECTEN": "",
+        "ZGW_AUTH_KEY_OBJECTTYPEN": "",
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "", // string (url)
-        "ZGW_ENDPOINT_OPENZAAK": "", // string (url)
-        "ZGW_ENDPOINT_OPENKLANT": "", // string (url)
-        "ZGW_ENDPOINT_BESLUITEN": "", // string (url)
-        "ZGW_ENDPOINT_OBJECTEN": "", // string (url)
-        "ZGW_ENDPOINT_OBJECTTYPEN": "", // string (url)
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // string (url)
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "",
+        "ZGW_ENDPOINT_OPENZAAK": "",
+        "ZGW_ENDPOINT_OPENKLANT": "", // NOTE: In OMC Workflow v1 this path is for clients
+        "ZGW_ENDPOINT_BESLUITEN": "",
+        "ZGW_ENDPOINT_OBJECTEN": "",
+        "ZGW_ENDPOINT_OBJECTTYPEN": "",
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // NOTE: In OMC Workflow v1 this path is for register v1
 
-        "ZGW_WHITELIST_ZAAKCREATE_IDS": "", // string
-        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "", // string
-        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "", // string
-        "ZGW_WHITELIST_TASKASSIGNED_IDS": "", // string
-        "ZGW_WHITELIST_DECISIONMADE_IDS": "", // string
-        "ZGW_WHITELIST_MESSAGE_ALLOWED": "", // string (bool-as-string)
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "*",
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
 
-        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "", // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "", // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "", // number
-        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "", // guid list
-        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "",
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "",
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "",
+        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "",
 
-        "KTO_AUTH_JWT_CLIENTID": "", // string
-        "KTO_AUTH_JWT_SECRET": "", // string (secret)
-        "KTO_AUTH_JWT_SCOPE": "", // string
-        "KTO_AUTH_JWT_ISSUER": "", // string (url)
+        // Note: KTO settings, if not used must contain "-". Are used specifically voor Expoint customer satisfaction surveys
+        "KTO_AUTH_JWT_CLIENTID": "-",
+        "KTO_AUTH_JWT_SECRET": "-",
+        "KTO_AUTH_JWT_SCOPE": "-",
+        "KTO_AUTH_JWT_ISSUER": "-",
 
-        "KTO_URL": "", // string (url)
+        "KTO_URL": "-",
 
-        "NOTIFY_API_BASEURL": "", // string (url)
-        "NOTIFY_API_KEY": "", // string (key)
+        "NOTIFY_API_BASEURL": "",
+        "NOTIFY_API_KEY": "",
 
-        "NOTIFY_TEMPLATEID_DECISIONMADE": "", // guid
+        "NOTIFY_TEMPLATEID_DECISIONMADE": "",
 
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "",
 
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "", // guid
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",
 
-        "SENTRY_DSN": "", // string (dsn)
-        "SENTRY_ENVIRONMENT": "", // string
+        "SENTRY_DSN": "",
+        "SENTRY_ENVIRONMENT": "Worth Production | Workflow v1",
 
-        "KEYCLOAK_AUTHSERVERURL": "", // string
-        "KEYCLOAK_CLIENTID": "", // string
-        "KEYCLOAK_CLIENTSECRET": "", // string
-        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "", // string
+        "KEYCLOAK_AUTHSERVERURL": "https://<your-keycloak>/realms/<realm>/protocol/openid-connect",
+        "KEYCLOAK_CLIENTID": "<client-id>",
+        "KEYCLOAK_CLIENTSECRET": "<client-secret>",
+        "KEYCLOAK_TOKENEXCHANGECLIENT": "<client-making-exchange>",
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "brp-api",
 
-        "BRP_BASEURL": "", // string
-        "BRP_CLIENTCERT_PEM_PATH": "", // string
-        "BRP_CLIENTKEY_PEM_PATH": "" // string
+        "BRP_BASEURL": "",
+        "BRP_CLIENTCERT_PEM_PATH": "",
+        "BRP_CLIENTKEY_PEM_PATH": ""
       }
     },
     "IIS Express (Workflow v2)": {
-      "commandName": "", // string
-      "launchBrowser": true, // bool
-      "launchUrl": "", // string
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "", // string
+        "ASPNETCORE_ENVIRONMENT": "Development",
 
-        "OMC_ACTOR_ID": "", // guid
-        "OMC_CONTEXT_PATH": "", // string
+        "OMC_ACTOR_ID": "",
+        "OMC_CONTEXT_PATH": "",
 
-        "OMC_AUTH_JWT_SECRET": "", // string (secret)
-        "OMC_AUTH_JWT_ISSUER": "", // string (url)
-        "OMC_AUTH_JWT_AUDIENCE": "", // string (url)
-        "OMC_AUTH_JWT_EXPIRESINMIN": "", // number
-        "OMC_AUTH_JWT_USERID": "", // string
-        "OMC_AUTH_JWT_USERNAME": "", // string
+        "OMC_AUTH_JWT_SECRET": "",
+        "OMC_AUTH_JWT_ISSUER": "",
+        "OMC_AUTH_JWT_AUDIENCE": "",
+        "OMC_AUTH_JWT_EXPIRESINMIN": "",
+        "OMC_AUTH_JWT_USERID": "",
+        "OMC_AUTH_JWT_USERNAME": "",
 
-        "OMC_FEATURE_WORKFLOW_VERSION": "", // number
+        "OMC_FEATURE_WORKFLOW_VERSION": "2",
 
-        "ZGW_AUTH_JWT_SECRET": "", // string (secret)
-        "ZGW_AUTH_JWT_ISSUER": "", // string
-        "ZGW_AUTH_JWT_AUDIENCE": "", // string
-        "ZGW_AUTH_JWT_EXPIRESINMIN": "", // number
-        "ZGW_AUTH_JWT_USERID": "", // string
-        "ZGW_AUTH_JWT_USERNAME": "", // string
+        // NOTE: In OMC Workflow v2 this will be used only for OpenZaak and Besluiten
+        "ZGW_AUTH_JWT_SECRET": "",
+        "ZGW_AUTH_JWT_ISSUER": "",
+        "ZGW_AUTH_JWT_AUDIENCE": "",
+        "ZGW_AUTH_JWT_EXPIRESINMIN": "",
+        "ZGW_AUTH_JWT_USERID": "",
+        "ZGW_AUTH_JWT_USERNAME": "",
 
-        "ZGW_AUTH_KEY_OPENKLANT": "", // string (key)
-        "ZGW_AUTH_KEY_OBJECTEN": "", // string (key)
-        "ZGW_AUTH_KEY_OBJECTTYPEN": "", // string (key)
+        "ZGW_AUTH_KEY_OPENKLANT": "", // NOTE: Required if OMC Workflow v2 is used
+        "ZGW_AUTH_KEY_OBJECTEN": "",
+        "ZGW_AUTH_KEY_OBJECTTYPEN": "",
+        "ZGW_AUTH_KEY_OPENVTB": "",
 
-        "ZGW_ENDPOINT_OPENNOTIFICATIES": "", // string (url)
-        "ZGW_ENDPOINT_OPENZAAK": "", // string (url)
-        "ZGW_ENDPOINT_OPENKLANT": "", // string (url)
-        "ZGW_ENDPOINT_BESLUITEN": "", // string (url)
-        "ZGW_ENDPOINT_OBJECTEN": "", // string (url)
-        "ZGW_ENDPOINT_OBJECTTYPEN": "", // string (url)
-        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // string (url)
+        "ZGW_ENDPOINT_OPENNOTIFICATIES": "",
+        "ZGW_ENDPOINT_OPENZAAK": "",
+        "ZGW_ENDPOINT_OPENKLANT": "", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_BESLUITEN": "",
+        "ZGW_ENDPOINT_OBJECTEN": "",
+        "ZGW_ENDPOINT_OBJECTTYPEN": "",
+        "ZGW_ENDPOINT_CONTACTMOMENTEN": "", // NOTE: Both, OpenKlant 2.0 and register v2 are using path "klantinteracties"
+        "ZGW_ENDPOINT_DOCUMENTEN": "",
+        "ZGW_ENDPOINT_OPENVTB": "",
 
-        "ZGW_WHITELIST_ZAAKCREATE_IDS": "", // string
-        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "", // string
-        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "", // string
-        "ZGW_WHITELIST_TASKASSIGNED_IDS": "", // string
-        "ZGW_WHITELIST_DECISIONMADE_IDS": "", // string
-        "ZGW_WHITELIST_MESSAGE_ALLOWED": "", // string
+        "ZGW_WHITELIST_ZAAKCREATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKUPDATE_IDS": "*",
+        "ZGW_WHITELIST_ZAAKCLOSE_IDS": "*",
+        "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
+        "ZGW_WHITELIST_DECISIONMADE_IDS": "*",
+        "ZGW_WHITELIST_VTBMESSAGE_TYPES": "*",
+        "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
 
-        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "", // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "", // guid
-        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "", // number
-        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "", // guid list
-        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "", // guid
+        "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "",
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID": "",
+        "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION": "",
+        "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS": "",
+        "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID": "",
 
-        "KTO_AUTH_JWT_CLIENTID": "", // guid
-        "KTO_AUTH_JWT_SECRET": "", // string (secret)
-        "KTO_AUTH_JWT_SCOPE": "", // string
-        "KTO_AUTH_JWT_ISSUER": "", // string (url)
+        // Note: KTO settings, if not used must contain "-". Are used specifically voor Expoint customer satisfaction surveys
+        "KTO_AUTH_JWT_CLIENTID": "-",
+        "KTO_AUTH_JWT_SECRET": "-",
+        "KTO_AUTH_JWT_SCOPE": "-",
+        "KTO_AUTH_JWT_ISSUER": "-",
 
-        "KTO_URL": "", // string (url)
+        "KTO_URL": "-",
 
-        "NOTIFY_API_BASEURL": "", // string (url)
-        "NOTIFY_API_KEY": "", // string (key)
+        "NOTIFY_API_BASEURL": "",
+        "NOTIFY_API_KEY": "",
 
-        "NOTIFY_TEMPLATEID_DECISIONMADE": "", // guid
+        "NOTIFY_TEMPLATEID_DECISIONMADE": "",
 
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "", // guid
-        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "", // guid
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "",
+        "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX": "",
 
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "", // guid
-        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "", // guid
+        "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX": "",
 
-        "SENTRY_DSN": "", // string (dsn)
-        "SENTRY_ENVIRONMENT": "", // string
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE": "",
+        "NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE": "",
+        "NOTIFY_TEMPLATEID_SMS_TASKASSIGNED": "",
+        "NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED": "",
 
-        "KEYCLOAK_AUTHSERVERURL": "", // string
-        "KEYCLOAK_CLIENTID": "", // string
-        "KEYCLOAK_CLIENTSECRET": "", // string
-        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "", // string
+        "SENTRY_DSN": "",
+        "SENTRY_ENVIRONMENT": "Worth Development | Workflow v2",
 
-        "BRP_BASEURL": "", // string
-        "BRP_CLIENTCERT_PEM_PATH": "", // string
-        "BRP_CLIENTKEY_PEM_PATH": "" // string
+        "KEYCLOAK_AUTHSERVERURL": "",
+        "KEYCLOAK_CLIENTID": "",
+        "KEYCLOAK_CLIENTSECRET": "",
+        "KEYCLOAK_TOKENEXCHANGEAUDIENCE": "",
+
+        "BRP_BASEURL": "",
+        "BRP_CLIENTCERT_PEM_PATH": "",
+        "BRP_CLIENTKEY_PEM_PATH": ""
       }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   },
-  "Docker": {
-    "commandName": "", // string
-    "launchBrowser": true, // bool
-    "launchUrl": "", // string
-    "publishAllPorts": true, // bool
-    "useSSL": true // bool
-  }
-},
-  "$schema": "",                                                                        // string (url)
-  "iisSettings": { 
-    "windowsAuthentication": true,                                                      // bool
-    "anonymousAuthentication": true,                                                    // bool
-    "iisExpress": { 
-      "applicationUrl": "",                                                             // string (url)
-      "sslPort": ""                                                                     // number (port)
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:24394",
+      "sslPort": 44397
     }
   }
 }

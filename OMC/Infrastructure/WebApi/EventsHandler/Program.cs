@@ -51,15 +51,19 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO;
 using WebQueries.KTO.Interfaces;
+using WebQueries.MOBB;
+using WebQueries.MOBB.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Serialization;
 using ZgwModels.Serialization.Interfaces;
 using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
+using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
@@ -274,6 +278,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
+            builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -455,6 +460,8 @@ namespace EventsHandler
             services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
             services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
+            services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
+            services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
 
             // Feedback and telemetry
             services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));

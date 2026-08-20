@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.MOBB.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
@@ -69,6 +70,53 @@ namespace WebQueries.Register.Interfaces
             }
         }
 
+        /// <summary>
+        /// Reports to external API service that a MOBB / Berichtenbox notification of type <see cref="NotifyMethods"/>
+        /// was sent to "Notify NL" service, creating a contactmoment linked to the Bericht (VTB message) itself
+        /// rather than a Case.
+        /// </summary>
+        /// <param name="reference"><inheritdoc cref="MessageBoxNotifyReference" path="/summary"/></param>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="referenceAddress">Address like email or telephone number.</param>
+        /// <param name="messages">The messages to be used during registration of this event.</param>
+        /// <returns>
+        ///   The response from an external Web API service.
+        /// </returns>
+        /// <remarks>
+        ///   First-version draft: unlike <see cref="ReportCompletionAsync"/>, this does not call
+        ///   <see cref="IQueryContext.SetNotification"/> - there is no real <c>NotificationEvent</c> for a
+        ///   MOBB/CloudEvent-driven send. If something downstream turns out to depend on
+        ///   <c>QueryContext</c> having a notification set, this will need revisiting.
+        /// </remarks>
+        public async Task<HttpRequestResponse> ReportMessageBoxCompletionAsync(
+            MessageBoxNotifyReference reference,
+            NotifyMethods notificationMethod,
+            [UsedImplicitly] string referenceAddress,
+            params string[] messages)
+        {
+            try
+            {
+                string json = GetMessageBoxContactMomentJsonBody(reference, notificationMethod, messages);
+
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+
+                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(
+                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
+
+                return linkResponse.IsFailure
+                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse) // Throw soft error to prevent retries
+                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message.Contains("duplicate key value")
+                    ? HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API")
+                    : // For all other exceptions, just return failure
+                    HttpRequestResponse.Failure(ex.Message);
+            }
+        }
+
         #region Abstract
 
         /// <summary>
@@ -102,6 +150,20 @@ namespace WebQueries.Register.Interfaces
                 NotifyReference reference, NotifyMethods notificationMethod,
                 IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
             ;
+
+        /// <summary>
+        /// Prepares a dedicated JSON body for a MOBB / Berichtenbox contactmoment, linked to the
+        /// Bericht (VTB message) itself instead of a Case.
+        /// </summary>
+        /// <param name="reference"><inheritdoc cref="MessageBoxNotifyReference" path="/summary"/></param>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="messages">The messages.</param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetMessageBoxContactMomentJsonBody(
+            MessageBoxNotifyReference reference, NotifyMethods notificationMethod,
+            IReadOnlyList<string> messages);
 
         #endregion
     }

@@ -42,13 +42,23 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         /// <summary>
         /// Gets the <see cref="PartyResult"/>.
         /// </summary>
+        /// <param name="configuration"><inheritdoc cref="OmcConfiguration" path="/summary"/></param>
+        /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
+        /// <param name="requireDigitalAddress">
+        ///   When <see langword="true"/> (default), no usable digital address (email or phone) among any
+        ///   of the results is a hard failure - this is the only delivery option classic ZGW scenarios have.
+        ///   Callers with a non-digital fallback of their own (e.g. MOBB's postal-letter fallback) can pass
+        ///   <see langword="false"/> to instead get the first result's identity back with an empty address,
+        ///   so they can still resolve the party UUID/name and route to that fallback themselves.
+        /// </param>
         /// <returns>
         ///   The data of a single party (e.g., citizen or organization).
         /// </returns>
         /// <exception cref="HttpRequestException"/>
         public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber)
             Party(OmcConfiguration configuration,
-                string? caseIdentifier = null)
+                string? caseIdentifier = null,
+                bool requireDigitalAddress = true)
         {
             // Validation #1: Results
             if (this.Results.IsEmpty())
@@ -78,6 +88,14 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
                 {
                     return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber);
                 }
+            }
+
+            // Nobody had a usable digital address - the same condition GetMatchingContactDetails would
+            // otherwise throw on. A tolerant caller still gets the first result's identity back, with no
+            // resolved channel, so it can proceed via a fallback that doesn't need a digital address.
+            if (!requireDigitalAddress && fallbackEmailAddress.IsNullOrEmpty() && fallbackPhoneNumber.IsNullOrEmpty())
+            {
+                return (this.Results[0], DistributionChannels.Unknown, string.Empty, string.Empty);
             }
 
             // Pick any matching address
