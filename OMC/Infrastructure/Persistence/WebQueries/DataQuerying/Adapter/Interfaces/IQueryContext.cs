@@ -13,6 +13,7 @@ using WebQueries.DataSending.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
@@ -221,6 +222,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
 
         /// <inheritdoc cref="IQueryObjecten.GetMessageAsync(IQueryBase)"/>
         public Task<MessageObject> GetMessageAsync();
+
+        /// <inheritdoc cref="IQueryObjecten.GetPrintObjectAsync(IQueryBase)"/>
+        public Task<PrintObject> GetPrintObjectAsync();
 
         /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> CreateObjectAsync(string objectJsonBody);

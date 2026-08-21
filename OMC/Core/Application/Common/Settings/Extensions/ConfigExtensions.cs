@@ -166,6 +166,22 @@ namespace Common.Settings.Extensions
             }
         }
 
+        private static string? s_printAllowedEnvVarName;
+
+        /// <summary>
+        /// The "ZGW_WHITELIST_PRINTALLOWED" environment variable.
+        /// </summary>
+        public static string GetWhitelistPrintAllowedEnvVarName()
+        {
+            lock (s_padlock)
+            {
+                return s_printAllowedEnvVarName ??= ($"{nameof(OmcConfiguration.ZGW)}_" +
+                                                     $"{nameof(OmcConfiguration.ZGW.Whitelist)}_" +
+                                                     $"{nameof(OmcConfiguration.ZGW.Whitelist.Print_Allowed)}")
+                                                    .ToUpper();
+            }
+        }
+
         private static string? s_genObjectTypeEnvVarName;
 
         /// <summary>
