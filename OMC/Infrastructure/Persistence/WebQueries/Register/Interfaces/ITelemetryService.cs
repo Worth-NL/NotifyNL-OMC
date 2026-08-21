@@ -10,7 +10,9 @@ using WebQueries.Print.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
+using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -129,10 +131,15 @@ namespace WebQueries.Register.Interfaces
         ///   The response from an external Web API service.
         /// </returns>
         /// <remarks>
-        ///   Mirrors <see cref="ReportMessageBoxCompletionAsync"/> rather than <see cref="ReportCompletionAsync"/>:
-        ///   the print flow builds its own "onderwerpobject" from the triggering object's payload instead
-        ///   of from a <c>NotificationEvent</c>'s case, so there is nothing to hand
-        ///   <see cref="IQueryContext.SetNotification"/>.
+        ///   Driven by the delivery receipt rather than by the send, exactly as the e-mail and SMS paths are:
+        ///   a 201 from "Notify NL" only means the request was accepted, and a precompiled letter can still
+        ///   fail PDF validation afterwards.
+        ///   <para>
+        ///     The "onderwerpobject" is built from the triggering object's payload rather than from a
+        ///     <c>NotificationEvent</c>'s case, so there is no real notification to hand
+        ///     <see cref="IQueryContext.SetNotification"/> - but one still has to be set, because the query
+        ///     context's <c>IQueryBase</c> carries it and the registration calls dereference it.
+        ///   </para>
         /// </remarks>
         public async Task<HttpRequestResponse> ReportPrintCompletionAsync(
             PrintNotifyReference reference,
@@ -141,6 +148,16 @@ namespace WebQueries.Register.Interfaces
         {
             try
             {
+                // Same reason ReportCompletionAsync calls SetNotification: the query context's IQueryBase
+                // carries a notification that the registration calls dereference. A delivery receipt is not
+                // a NotificationEvent, so the print flow supplies the object-scenario shape it actually is.
+                this.QueryContext.SetNotification(new NotificationEvent
+                {
+                    Action = Actions.Create,
+                    Channel = Channels.Objects,
+                    Resource = Resources.Object,
+                });
+
                 string json = GetPrintContactMomentJsonBody(reference, notificationMethod, messages);
 
                 MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);

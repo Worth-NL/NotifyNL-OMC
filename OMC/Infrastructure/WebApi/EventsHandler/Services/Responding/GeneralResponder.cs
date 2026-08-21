@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.MOBB.Models;
+using WebQueries.Print.Models;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
@@ -275,6 +276,47 @@ namespace EventsHandler.Services.Responding
             using JsonDocument document = JsonDocument.Parse(decodedReference);
 
             return document.RootElement.TryGetProperty(nameof(MessageBoxNotifyReference.MessageId), out _);
+        }
+
+        /// <summary>
+        /// Determines whether the given callback's reference was built for the print (printstraat)
+        /// scenario (<see cref="PrintNotifyReference"/>) rather than the standard <see cref="NotifyReference"/>.
+        /// </summary>
+        /// <remarks>
+        ///   Same raw-JSON peek as <see cref="IsMessageBoxCallbackAsync"/>, on the "ObjectId" property that
+        ///   only <see cref="PrintNotifyReference"/> has.
+        /// </remarks>
+        internal async Task<bool> IsPrintCallbackAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            if (decodedReference.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(decodedReference);
+
+            return document.RootElement.TryGetProperty(nameof(PrintNotifyReference.ObjectId), out _);
+        }
+
+        /// <summary>
+        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback, for the
+        /// print (printstraat) scenario reference shape.
+        /// </summary>
+        /// <param name="callback">The callback to be analyzed.</param>
+        /// <returns>
+        ///   The notification data required for further processing.
+        /// </returns>
+        internal async Task<(PrintNotifyReference, NotifyMethods)> ExtractPrintCallbackDataAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            PrintNotifyReference reference = this.Serializer.Deserialize<PrintNotifyReference>(decodedReference);
+
+            NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+            return (reference, notificationMethod);
         }
 
         /// <summary>
