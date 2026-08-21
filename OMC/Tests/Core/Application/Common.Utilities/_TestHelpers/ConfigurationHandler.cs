@@ -49,6 +49,7 @@ namespace Common.Tests.Utilities._TestHelpers
         public const string TestMessageObjectTypeUuid = "9aae4a81-36c5-4fc9-958c-71ecdcdf48a7";
         public const string TestInfoObjectTypeUuid1   = "38327774-7023-4f25-9386-acb0c6f10636";
         public const string TestInfoObjectTypeUuid2   = "6468cfd4-d827-473a-8f24-114af046ce7f";
+        public const string TestPrintObjectTypeUuid  = "6f2b9e1c-8d43-4a67-9c15-2e7a3b8f4d90";
 
         // Add test values for KTO
 
@@ -112,6 +113,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_OBJECTEN",                                GetTestValue(isValid, testDomain, "https://domain") },
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                             GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_DOCUMENTEN",                              GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
@@ -121,12 +123,14 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
+                { "ZGW_WHITELIST_PRINT_ALLOWED",                          GetTestValue(isValid, testBool, "false") },  // NOTE: Mirrors MESSAGE_ALLOWED - "false" is the more useful default for other tests
 
                 { "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID",       GetTestValue(isValid, TestMessageObjectTypeUuid) },
                 { "ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION",    GetTestValue(isValid, "1") },
                 { "ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS", GetTestValue(isValid, $"{TestInfoObjectTypeUuid1}, {TestInfoObjectTypeUuid2}") },
                 { "ZGW_VARIABLE_OBJECTTYPE_KTOOBJECTTYPE_UUID",           GetTestValue(isValid, testGuid) },
+                { "ZGW_VARIABLE_OBJECTTYPE_PRINTOBJECTTYPE_UUID",         GetTestValue(isValid, TestPrintObjectTypeUuid) },  // NOTE: Deliberately not the generic testGuid, which the KTO objecttype already uses - the resolver would match that branch first
 
                 // KTO environment variables
                 { "KTO_URL",                                              GetTestValue(isValid, S_TestKtoUrl) },

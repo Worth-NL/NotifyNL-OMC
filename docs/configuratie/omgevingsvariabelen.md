@@ -82,6 +82,7 @@ Alleen zaken waarvan het zaaktype overeenkomt met de whitelist worden verwerkt. 
 | `ZGW_WHITELIST_TASKASSIGNED_IDS` | Ja | Toegestane objecttype-identificaties voor het scenario Taak toegewezen |
 | `ZGW_WHITELIST_DECISIONMADE_IDS` | Ja | Toegestane besluittype-identificaties voor het scenario Besluit genomen |
 | `ZGW_WHITELIST_MESSAGE_ALLOWED` | Ja | `true` of `false` — schakel het scenario Bericht ontvangen in of uit |
+| `ZGW_WHITELIST_PRINT_ALLOWED` | Ja | `true` of `false` — schakel het scenario Printen (printstraat) in of uit |
 
 ---
 
@@ -96,6 +97,7 @@ Deze UUID's verwijzen naar objecttype-definities in de ObjectTypen-API en zijn o
 | `ZGW_VARIABLE_OBJECTTYPE_PRODUCTREQUEST_UUID` | Nee | UUID van het productaanvraagobjecttype (toekomstig gebruik) |
 | `ZGW_VARIABLE_OBJECTTYPE_KTOBJECTTYPE_UUID` | Nee | UUID van het KTO-objecttype in ObjectTypen |
 | `ZGW_VARIABLE_OBJECTEN_MESSAGEOBJECTTYPE_VERSION` | Nee | Versie van het berichtobjecttype (standaard: `1`) |
+| `ZGW_VARIABLE_OBJECTTYPE_PRINTOBJECTTYPE_UUID` | Ja | UUID van het printobjecttype in ObjectTypen — objecten van dit type starten de printstraat-flow |
 | `ZGW_VARIABLE_OBJECTEN_TAAKOBJECTTYPE_VERSION` | Nee | Versie van het taakobjecttype (standaard: `1`) |
 
 ---
