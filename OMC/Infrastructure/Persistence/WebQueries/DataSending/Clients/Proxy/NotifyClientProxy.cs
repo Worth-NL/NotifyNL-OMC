@@ -70,6 +70,23 @@ namespace WebQueries.DataSending.Clients.Proxy
             }
         }
 
+        /// <inheritdoc cref="INotifyClient.SendPrecompiledLetterAsync(string, byte[], string?)"/>
+        async Task<NotifySendResponse> INotifyClient.SendPrecompiledLetterAsync(string reference, byte[] pdfContents, string? postage)
+        {
+            try
+            {
+                // NOTE: The client's own "postage" parameter is nullable-oblivious (it predates NRTs) and
+                // treats null as "use the service default", so passing it straight through is correct.
+                _ = await _notificationClient.SendPrecompiledLetterAsync(reference, pdfContents, postage!);
+
+                return NotifySendResponse.Success();
+            }
+            catch (NotifyClientException exception)  // On failure this method is throwing exception
+            {
+                return NotifySendResponse.Failure(exception.Message);
+            }
+        }
+
         /// <inheritdoc cref="INotifyClient.SendMessageBoxNotificationAsync"/>
         async Task<NotifySendResponse> INotifyClient.SendMessageBoxNotificationAsync(
             string recipient,
