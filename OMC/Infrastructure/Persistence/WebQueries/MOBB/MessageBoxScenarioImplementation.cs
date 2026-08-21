@@ -441,6 +441,10 @@ namespace WebQueries.MOBB
         /// </remarks>
         public async Task<HttpRequestResponse> HandleDeliveryFailureAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
         {
+            // codeql[cs/exposure-of-sensitive-information]: false positive - CodeQL's heuristic treats
+            // NotifyMethods.Email as a sensitive-data source purely because of its "Email" name.
+            // failedChannel is a channel discriminator (Mobb/Email/Letter), never an actual e-mail
+            // address, so nothing PII-bearing is written to the log here.
             _logger.LogWarning("Message {MessageId}: delivery-receipt callback reported FAILURE for channel {FailedChannel}.",
                 reference.MessageId, failedChannel);
 
@@ -457,6 +461,8 @@ namespace WebQueries.MOBB
 
             if (failedChannel != NotifyMethods.Mobb && failedChannel != NotifyMethods.Email)
             {
+                // codeql[cs/exposure-of-sensitive-information]: false positive - see the identical
+                // suppression above; failedChannel is never an actual e-mail address.
                 _logger.LogWarning(
                     "Message {MessageId}: delivery-failure callback reported an unrecognized/unsupported channel ('{FailedChannel}'); no fallback attempted.",
                     reference.MessageId, failedChannel);

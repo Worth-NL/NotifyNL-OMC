@@ -123,7 +123,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
         public Attachment[]? Attachments { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Bericht"/> struct.
+        /// Initializes a new instance of the <see cref="VtbMessage"/> struct.
         /// </summary>
         public VtbMessage()
         {
@@ -141,6 +141,9 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
             [JsonPropertyName("urn")]
             public string Urn { get; set; } = string.Empty;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="RelatedObject"/> struct.
+            /// </summary>
             public RelatedObject()
             {
             }
@@ -170,6 +173,9 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
             [JsonPropertyName("isBerichtTypeBijlage")]
             public bool IsMessageTypeAttachment { get; set; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Attachment"/> struct.
+            /// </summary>
             public Attachment()
             {
             }
