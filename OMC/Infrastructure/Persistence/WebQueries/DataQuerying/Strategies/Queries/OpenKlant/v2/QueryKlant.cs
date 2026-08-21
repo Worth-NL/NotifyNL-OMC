@@ -119,6 +119,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
+        /// <inheritdoc cref="IQueryKlant.CreateBijlageAsync(IHttpNetworkService, string)"/>
+        async Task<HttpRequestResponse> IQueryKlant.CreateBijlageAsync(IHttpNetworkService networkService, string jsonBody)
+        {
+            Uri bijlageUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/bijlagen");
+
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: bijlageUri,  // Request URL
+                jsonBody);
+        }
+
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         async Task<ContactMoment> IQueryKlant.CreateContactMomentAsync(IQueryBase queryBase, string jsonBody)
         {

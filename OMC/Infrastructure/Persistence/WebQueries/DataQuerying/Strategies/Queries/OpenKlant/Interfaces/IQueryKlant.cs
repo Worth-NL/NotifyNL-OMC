@@ -89,6 +89,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         internal Task<ContactMoment> CreateContactMomentAsync(IQueryBase queryBase, string jsonBody);
 
         /// <summary>
+        /// Attaches a "bijlage" to an existing klantcontact in "Klantcontacten" Web API service.
+        /// </summary>
+        /// <remarks>
+        ///   A separate call on purpose: "maak-klantcontact" cannot carry attachments yet (MBO-1025
+        ///   records that as requested but deferred), so the klantcontact is created first and the
+        ///   bijlage is linked to it afterwards.
+        /// </remarks>
+        /// <param name="networkService">The network service performing the request.</param>
+        /// <param name="jsonBody">The "bijlage" payload.</param>
+        internal Task<HttpRequestResponse> CreateBijlageAsync(IHttpNetworkService networkService, string jsonBody);
+
+        /// <summary>
         /// Links the <see cref="ContactMoment"/> with the <see cref="Case"/>.
         /// </summary>
         /// <param name="networkService"><inheritdoc cref="IHttpNetworkService" path="/summary"/></param>

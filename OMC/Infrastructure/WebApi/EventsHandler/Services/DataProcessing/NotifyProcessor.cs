@@ -13,9 +13,11 @@ using EventsHandler.Services.Validation.Interfaces;
 using Notify.Exceptions;
 using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
 using WebQueries.MOBB.Interfaces;
+using WebQueries.Print.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
@@ -33,6 +35,7 @@ namespace EventsHandler.Services.DataProcessing
         private readonly IScenariosResolver<INotifyScenario, NotificationEvent> _resolver;
         private readonly IKtoScenarioFactory _ktoScenarioFactory;
         private readonly IMessageBoxScenario _messageBoxScenario;
+        private readonly IPrintScenario _printScenario;
         private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
@@ -43,6 +46,7 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="resolver">The strategies resolving service.</param>
         /// <param name="ktoScenarioFactory">The strategy to send Kto</param>
         /// <param name="messageBoxScenario">The strategy to route MOBB/Berichten CloudEvents.</param>
+        /// <param name="printScenario">The strategy to print and post a pre-composed PDF letter.</param>
         /// <param name="traceEmitter">Broadcasts real-time processing steps to the dashboard.</param>
         public NotifyProcessor(
             ISerializationService serializer,
@@ -50,6 +54,7 @@ namespace EventsHandler.Services.DataProcessing
             IScenariosResolver<INotifyScenario, NotificationEvent> resolver,
             IKtoScenarioFactory ktoScenarioFactory,
             IMessageBoxScenario messageBoxScenario,
+            IPrintScenario printScenario,
             TraceEmitter traceEmitter)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
@@ -57,6 +62,7 @@ namespace EventsHandler.Services.DataProcessing
             this._resolver = resolver;
             this._ktoScenarioFactory = ktoScenarioFactory;
             this._messageBoxScenario = messageBoxScenario;
+            this._printScenario = printScenario;
             this._traceEmitter = traceEmitter;
         }
 
@@ -153,6 +159,18 @@ namespace EventsHandler.Services.DataProcessing
                         TraceContext.Emit("kto", "fail", ex.Message);
                         throw new Exception(ex.Message);
                     }
+                }
+
+                // Step 3e-bis: Special handling for the Print scenario. Like the KTO branch above, this
+                // bypasses TryGetDataAsync/ProcessDataAsync: nothing about it is template-and-channel
+                // shaped, it always posts one already-composed PDF.
+                if (scenario is PrintScenario)
+                {
+                    HttpRequestResponse printResponse = await this._printScenario.ProcessPrintAsync(notification);
+
+                    return printResponse.IsFailure
+                        ? ProcessingResult.Failure(printResponse.JsonResponse, json, details)
+                        : ProcessingResult.Success(printResponse.JsonResponse, json, details);
                 }
 
                 // Step 3f: For all other scenarios – query external data (OpenZaak, etc.)

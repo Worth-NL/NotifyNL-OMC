@@ -155,6 +155,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>
         public Task<ContactMoment> CreateContactMomentAsync(string jsonBody);
 
+        /// <inheritdoc cref="IQueryKlant.CreateBijlageAsync(IHttpNetworkService, string)"/>
+        public Task<HttpRequestResponse> CreateBijlageAsync(string jsonBody);
+
         /// <inheritdoc cref="IQueryKlant.LinkCaseToContactMomentAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> LinkCaseToContactMomentAsync(string jsonBody);
 
