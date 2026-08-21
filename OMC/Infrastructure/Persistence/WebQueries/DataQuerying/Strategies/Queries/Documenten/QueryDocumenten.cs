@@ -14,7 +14,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Documenten
     /// </summary>
     /// <remarks>
     ///   This class provides methods to retrieve document metadata (EnkelvoudigInformatieObject)
-    ///   from the Documenten API. The API endpoint is configured via <see cref="OmcConfiguration.ZGW.Endpoint.Documenten"/>.
+    ///   from the Documenten API. The API endpoint is configured via
+    ///   <see cref="Common.Settings.Configuration.OmcConfiguration.ZgwComponent.EndpointComponent.Documenten()"/>.
     /// </remarks>
     /// <seealso cref="IVersionDetails"/>
     public sealed class QueryDocumenten : IQueryDocumenten
