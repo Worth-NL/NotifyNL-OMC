@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Extensions;
 using Common.Models.Responses;
 using Common.Settings.Configuration;
 using EventsHandler.Controllers.Base;
@@ -11,6 +12,8 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
+using WebQueries.Print.Interfaces;
+using WebQueries.Print.Models;
 using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
@@ -35,6 +38,7 @@ namespace EventsHandler.Services.Responding.v2
         private readonly ITelemetryService _telemetry;
         private readonly INotifyService<NotifyData> _notifyService;
         private readonly IMessageBoxScenario _messageBoxScenario;
+        private readonly IPrintScenario _printScenario;
         private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="notifyService"></param>
         /// <param name="messageBoxScenario">Used to continue the MOBB fallback chain when a delivery-receipt callback reports failure.</param>
         /// <param name="traceEmitter">Broadcasts this callback's outcome to the dashboard, correlated back to the original trace via <see cref="NotifyReference.TraceId"/>.</param>
-        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService, IMessageBoxScenario messageBoxScenario, TraceEmitter traceEmitter)  // Dependency Injection (DI)
+        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService, IMessageBoxScenario messageBoxScenario, IPrintScenario printScenario, TraceEmitter traceEmitter)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
@@ -54,6 +58,7 @@ namespace EventsHandler.Services.Responding.v2
             this._telemetry = telemetry;
             this._notifyService = notifyService;
             this._messageBoxScenario = messageBoxScenario;
+            this._printScenario = printScenario;
             this._traceEmitter = traceEmitter;
         }
 
@@ -84,6 +89,10 @@ namespace EventsHandler.Services.Responding.v2
                     if (await IsMessageBoxCallbackAsync(callback))
                     {
                         informResult = await InformUserAboutMessageBoxStatusAsync(callback, status);
+                    }
+                    else if (await IsPrintCallbackAsync(callback))
+                    {
+                        informResult = await InformUserAboutPrintStatusAsync(callback, status);
                     }
                     else
                     {
@@ -157,6 +166,45 @@ namespace EventsHandler.Services.Responding.v2
                 messages: [
                     DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                    feedbackType == FeedbackTypes.Success ? True : False,
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                ]);
+        }
+
+        /// <summary>
+        /// Registers the contactmoment for a print (printstraat) delivery receipt and, when the letter
+        /// actually went out, removes the object that requested it.
+        /// </summary>
+        /// <remarks>
+        ///   Mirrors <see cref="InformUserAboutStatusAsync"/> - the messages are built exactly the same way,
+        ///   from the same delivery receipt and notification data - so a printed letter is recorded on the
+        ///   same terms as an e-mail or SMS. The print flow deliberately registers nothing at send time.
+        /// </remarks>
+        private async Task<HttpRequestResponse> InformUserAboutPrintStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        {
+            (PrintNotifyReference reference, NotifyMethods notificationMethod) = await ExtractPrintCallbackDataAsync(callback);
+
+            OmcController.LogApiResponse(
+                feedbackType == FeedbackTypes.Failure ? LogLevel.Warning : LogLevel.Information,
+                $"[Print callback] Object {reference.ObjectId} (party {reference.PartyId}): channel {notificationMethod} reported {feedbackType}.");
+
+            NotificationData notificationData = await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
+
+            return await _printScenario.HandleDeliveryCallbackAsync(
+                reference,
+                notificationMethod,
+                succeeded: feedbackType == FeedbackTypes.Success,
+                messages: [
+                    // The object's own "contact_onderwerp" wins: for a precompiled letter the PDF is opaque
+                    // to Notify NL, so its notification subject is the literal "Pre-compiled PDF" - useless
+                    // to a citizen reading their contactmomenten. Everything else is resolved exactly as the
+                    // e-mail and SMS paths resolve it.
+                    reference.Subject.IsNotNullOrEmpty()
+                        ? reference.Subject
+                        : DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
+                            notificationData.IsSuccess ? notificationData.Subject : string.Empty),
                     DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Body : string.Empty),
                     feedbackType == FeedbackTypes.Success ? True : False,
@@ -254,7 +302,7 @@ namespace EventsHandler.Services.Responding.v2
                 feedbackType == FeedbackTypes.Failure ? LogLevel.Warning : LogLevel.Information,
                 $"[MOBB callback] Message {reference.MessageId} (party {reference.PartyId}): channel {notificationMethod} reported {feedbackType}.");
 
-            NotificationData notificationData = await GetMessageBoxNotificationDataAsync(notificationMethod, callback.Id);
+            NotificationData notificationData = await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
 
             HttpRequestResponse result = await _telemetry.ReportMessageBoxCompletionAsync(
                 reference,
@@ -443,7 +491,11 @@ namespace EventsHandler.Services.Responding.v2
         ///   the returned "missing" organization ID has no effect beyond that log line.
         ///   </para>
         /// </remarks>
-        private async Task<NotificationData> GetMessageBoxNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
+        /// <summary>
+        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox or print),
+        /// neither of which has a real <see cref="NotifyReference"/> to hand to the notify service.
+        /// </summary>
+        private async Task<NotificationData> GetObjectScenarioNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
         {
             try
             {

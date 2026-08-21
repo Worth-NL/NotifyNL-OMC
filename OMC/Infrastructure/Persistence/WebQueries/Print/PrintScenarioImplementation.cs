@@ -1,6 +1,7 @@
-// © 2026, Worth Systems.
+﻿// © 2026, Worth Systems.
 
 using System.Text.RegularExpressions;
+using Common.Extensions;
 using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,10 @@ using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
+using ZgwModels.Serialization.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Enums.Urns;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
@@ -47,6 +50,7 @@ namespace WebQueries.Print
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
         private readonly ITelemetryService _telemetry;
+        private readonly ISerializationService _serializer;
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<PrintScenarioImplementation> _logger;
 
@@ -55,19 +59,22 @@ namespace WebQueries.Print
         /// </summary>
         /// <param name="dataQuery">Resolves an <see cref="IQueryContext"/> for fetching object/party/document data.</param>
         /// <param name="notifyClientFactory">Resolves an <see cref="INotifyClient"/> per send, keyed by object UUID.</param>
-        /// <param name="telemetry">Registers the resulting contactmoment.</param>
+        /// <param name="telemetry">Registers the resulting contactmoment, once the delivery receipt arrives.</param>
+        /// <param name="serializer">(De)serializes the reference round-tripped through Notify NL.</param>
         /// <param name="configuration">The application configuration (whitelist, endpoints).</param>
         /// <param name="logger">The logger for this scenario.</param>
         public PrintScenarioImplementation(
             IDataQueryService<NotificationEvent> dataQuery,
             IHttpClientFactory<INotifyClient, string> notifyClientFactory,
             ITelemetryService telemetry,
+            ISerializationService serializer,
             OmcConfiguration configuration,
             ILogger<PrintScenarioImplementation> logger)  // Dependency Injection (DI)
         {
             this._dataQuery = dataQuery;
             this._notifyClientFactory = notifyClientFactory;
             this._telemetry = telemetry;
+            this._serializer = serializer;
             this._configuration = configuration;
             this._logger = logger;
         }
@@ -167,12 +174,26 @@ namespace WebQueries.Print
             }
             TraceContext.Emit("documenten", "ok", $"document {documentUuid} downloaded ({pdfContents.Length} bytes)");
 
-            // Step 7: Hand the letter to "Notify NL" verbatim
+            // Step 7: Hand the letter to "Notify NL" verbatim.
+            //
+            // The reference is the whole PrintNotifyReference, compressed, rather than just the object id:
+            // everything the contactmoment needs (partij, onderwerp, onderwerpobject, document) has to
+            // survive the round trip, because by the time the delivery receipt comes back the triggering
+            // object may already be gone. Same mechanism the MOBB scenario uses.
             TraceContext.Emit("notifynl", "start", "Attempting to send precompiled letter");
             INotifyClient notifyClient = this._notifyClientFactory.GetHttpClient(objectId.ToString());
 
+            var reference = new PrintNotifyReference
+            {
+                ObjectId = objectId,
+                PartyId = party.Uri.GetGuid(),
+                Subject = printData.Subject,
+                SubjectObject = printData.SubjectObjectIdentifier,
+                AttachmentId = documentUuid
+            };
+
             NotifySendResponse sendResponse = await notifyClient.SendPrecompiledLetterAsync(
-                reference: objectId.ToString(),
+                reference: await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None),
                 pdfContents: pdfContents);
 
             if (!sendResponse.IsSuccess)
@@ -183,58 +204,73 @@ namespace WebQueries.Print
             }
             TraceContext.Emit("notifynl", "ok", "precompiled letter accepted");
 
-            // Step 8: Register what just happened. A failure here is reported but does not undo the send -
-            // the letter is already on its way, and re-sending it on a retry would post it twice.
-            var reference = new PrintNotifyReference
-            {
-                ObjectId = objectId,
-                PartyId = party.Uri.GetGuid(),
-                Subject = printData.Subject,
-                SubjectObject = printData.SubjectObjectIdentifier,
-                AttachmentId = documentUuid
-            };
+            // Deliberately nothing else here. A 201 from "Notify NL" only means the request was accepted -
+            // the PDF is validated afterwards and can still come back "validation-failed", so registering a
+            // successful contactmoment now would record a contact that never happened, and deleting the
+            // object now would destroy the only copy of what to retry. Both wait for the delivery receipt
+            // (see HandleDeliveryCallbackAsync).
+            return HttpRequestResponse.Success(
+                "Precompiled letter accepted by Notify NL. The contactmoment and object cleanup follow its delivery callback.");
+        }
 
+        /// <inheritdoc cref="IPrintScenario.HandleDeliveryCallbackAsync(PrintNotifyReference, NotifyMethods, bool, string[])"/>
+        async Task<HttpRequestResponse> IPrintScenario.HandleDeliveryCallbackAsync(
+            PrintNotifyReference reference, NotifyMethods notificationMethod, bool succeeded, string[] messages)
+        {
+            // The contactmoment is written here rather than at send time because only the delivery receipt
+            // knows whether the letter was actually accepted for printing - a synchronous 201 is followed by
+            // PDF validation that can still reject it.
             TraceContext.Emit("openklant", "start", "Attempting to register contactmoment");
+
             HttpRequestResponse registerResponse = await this._telemetry.ReportPrintCompletionAsync(
-                reference,
-                NotifyMethods.Letter,
-                printData.Subject,
-                string.Empty,
-                "true",
-                DateTime.UtcNow.ToString("O"));
+                reference, notificationMethod, messages);
 
             if (registerResponse.IsFailure)
             {
                 TraceContext.Emit("openklant", "fail", registerResponse.JsonResponse);
                 this._logger.LogError(
-                    "Print job {ObjectId}: the letter was accepted by Notify NL but registering its contactmoment failed. The object is deliberately left in place so the registration can be retried without reprinting.",
-                    objectId);
+                    "Print job {ObjectId}: registering the contactmoment for its delivery receipt failed. The object is left in place so this can be retried.",
+                    reference.ObjectId);
 
                 return HttpRequestResponse.Failure(
-                    $"Precompiled letter was sent, but registering the contactmoment failed: {registerResponse.JsonResponse}");
+                    $"Registering the print contactmoment failed: {registerResponse.JsonResponse}");
             }
             TraceContext.Emit("openklant", "ok", "contactmoment registered");
 
-            // Step 9: The object exists only to request the print, so it is removed once the print has
-            // actually been requested and recorded (MBO-1025: "Verwijderen object na printen").
-            TraceContext.Emit("objecten", "start", $"Attempting to delete print object {objectId}");
-            HttpRequestResponse deleteResponse = await queryContext.DeleteObjectAsync(objectId);
+            if (!succeeded)
+            {
+                // Kept on purpose: the object is the only record of what should have been printed, so a
+                // failed letter leaves it in place to be inspected or retried rather than silently dropped.
+                this._logger.LogWarning(
+                    "Print job {ObjectId}: Notify NL reported the letter as failed. A contactmoment recording the failure was registered and the print object was kept.",
+                    reference.ObjectId);
+
+                return HttpRequestResponse.Success(
+                    "Notify NL reported the letter as failed. The failure was registered and the print object was kept.");
+            }
+
+            // The object exists only to request the print, so it goes once the print is confirmed and
+            // recorded (MBO-1025: "Verwijderen object na printen").
+            TraceContext.Emit("objecten", "start", $"Attempting to delete print object {reference.ObjectId}");
+            HttpRequestResponse deleteResponse = await this._dataQuery
+                .From(new NotificationEvent { Action = Actions.Create, Channel = Channels.Objects, Resource = Resources.Object })
+                .DeleteObjectAsync(reference.ObjectId);
 
             if (deleteResponse.IsFailure)
             {
-                // Not fatal: the letter is printed and the contactmoment recorded, so failing the whole job
-                // here would invite a retry that prints a second copy. Left loud in the log instead.
+                // Not fatal: the letter is printed and the contactmoment recorded, so failing here would
+                // invite a retry that prints a second copy. Left loud in the log instead.
                 TraceContext.Emit("objecten", "fail", deleteResponse.JsonResponse);
                 this._logger.LogWarning(
-                    "Print job {ObjectId}: the letter was sent and registered, but the print object could not be deleted: {Reason}",
-                    objectId, deleteResponse.JsonResponse);
+                    "Print job {ObjectId}: letter delivered and registered, but the print object could not be deleted: {Reason}",
+                    reference.ObjectId, deleteResponse.JsonResponse);
 
                 return HttpRequestResponse.Success(
-                    $"Precompiled letter sent and contactmoment registered. The print object could not be deleted: {deleteResponse.JsonResponse}");
+                    $"Letter delivered and contactmoment registered. The print object could not be deleted: {deleteResponse.JsonResponse}");
             }
-            TraceContext.Emit("objecten", "ok", $"print object {objectId} deleted");
+            TraceContext.Emit("objecten", "ok", $"print object {reference.ObjectId} deleted");
 
-            return HttpRequestResponse.Success("Precompiled letter sent, contactmoment registered and print object deleted.");
+            return HttpRequestResponse.Success("Letter delivered, contactmoment registered and print object deleted.");
         }
 
         #region Helper methods
