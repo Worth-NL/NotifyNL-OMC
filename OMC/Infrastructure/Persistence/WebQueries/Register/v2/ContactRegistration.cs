@@ -9,6 +9,7 @@ using WebQueries.Print.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
+using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -60,7 +61,7 @@ namespace WebQueries.Register.v2
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(userMessageBody);
-            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToString());
+            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification) 
@@ -116,7 +117,7 @@ namespace WebQueries.Register.v2
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(userMessageBody);
-            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToString());
+            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
 
             SubjectObjectIdentifier subjectObject = reference.SubjectObject ?? new SubjectObjectIdentifier();
 
@@ -169,7 +170,7 @@ namespace WebQueries.Register.v2
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
 
             return $"{{" +
-                     $"\"kanaal\":\"{notificationMethod}\"," +              // ENG: Channel of communication (notification)
+                     $"\"kanaal\":\"{notificationMethod.ToKanaal()}\"," +              // ENG: Channel of communication (notification)
                      $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
                      $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user)
                      $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
@@ -228,7 +229,7 @@ namespace WebQueries.Register.v2
             // shared success-contactmoment step's own annotation ("meerdere outputs... duidelijk weergegeven").
             string safeSubject = JsonSerializer.Serialize($"[{BuildChannelLabel(reference, notificationMethod)}] {userMessageSubject}");
             string safeBody = JsonSerializer.Serialize(userMessageBody);
-            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToString());
+            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
