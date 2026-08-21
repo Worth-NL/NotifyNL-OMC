@@ -11,6 +11,7 @@ using WebQueries.Versioning.Interfaces;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Properties;
 
@@ -79,6 +80,32 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
                 httpClientType: HttpClientTypes.Objecten,
                 uri: taskObjectUri,
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoMessage);
+        }
+        #endregion
+
+        #region Parent (Print)
+        /// <summary>
+        /// Gets the <see cref="PrintObject"/> from "Objecten" Web API service.
+        /// </summary>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException">
+        ///   This method might fail when deserializing generic JSON response from Objects endpoint to <see cref="PrintObject"/> model.
+        /// </exception>
+        internal sealed async Task<PrintObject> GetPrintObjectAsync(IQueryBase queryBase)
+        {
+            // Request URL
+            Uri printObjectUri = queryBase.Notification.MainObjectUri;
+
+            if (printObjectUri.IsNotObject())
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_Internal_NotObjectUri);
+            }
+
+            return await queryBase.ProcessGetAsync<PrintObject>(
+                httpClientType: HttpClientTypes.Objecten,
+                uri: printObjectUri,
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPrintObject);
         }
         #endregion
         #pragma warning restore CA1822
