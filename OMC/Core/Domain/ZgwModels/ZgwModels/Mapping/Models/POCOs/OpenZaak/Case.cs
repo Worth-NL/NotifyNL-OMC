@@ -63,20 +63,45 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenZaak
         public DateOnly RegistrationDate { get; set; }
 
         /// <summary>
+        /// The date when the <see cref="Case"/> was mutated last.
+        /// </summary>
+        [JsonPropertyName("laatstGemuteerd")]
+        [JsonPropertyOrder(5)]
+        public DateTime? LatestMutationDate { get; set; }
+
+        /// <summary>
+        /// The date when the <see cref="Case"/> was opened last.
+        /// </summary>
+        [JsonPropertyName("laatstGeopend")]
+        [JsonPropertyOrder(6)]
+        public DateTime? LastOpenedDate { get; set; }
+
+        /// <summary>
+        /// The reference to the current <see cref="CaseStatus"/> in <see cref="System.Uri"/> format:
+        /// <code>
+        /// http(s)://Domain/ApiEndpoint/[UUID]
+        /// </code>
+        /// </summary>
+        [JsonRequired]
+        [JsonPropertyName("status")]
+        [JsonPropertyOrder(7)]
+        public Uri StatusUri { get; set; } = CommonValues.Default.Models.EmptyUri;
+
+        /// <summary>
         /// The result of the <see cref="Case"/> in <see cref="System.Uri"/> format:
         /// <code>
         /// http(s)://Domain/ApiEndpoint/[UUID]
         /// </code>
         /// </summary>
         [JsonPropertyName("resultaat")]
-        [JsonPropertyOrder(5)]
+        [JsonPropertyOrder(8)]
         public Uri ResultUri { [UsedImplicitly] get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Contains expanded objects requested via the `expand` query parameter.
         /// </summary>
         [JsonPropertyName("_expand")]
-        [JsonPropertyOrder(6)]
+        [JsonPropertyOrder(9)]
         public ExpandedResult? Expanded { get; set; }
 
         /// <summary>

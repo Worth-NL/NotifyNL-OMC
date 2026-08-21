@@ -28,6 +28,21 @@ namespace ZgwModels.Mapping.Enums.NotifyNL
         /// Notification type: SMS.
         /// </summary>
         [JsonPropertyName("sms")]
-        Sms = 2
+        Sms = 2,
+
+        /// <summary>
+        /// Notification type: MOBB / Berichtenbox message.
+        /// </summary>
+        /// <remarks>
+        ///   "messagebox" is the confirmed delivery-receipt <c>type</c> value NotifyNL returns for a MOBB send.
+        /// </remarks>
+        [JsonPropertyName("messagebox")]
+        Mobb = 3,
+
+        /// <summary>
+        /// Notification type: letter.
+        /// </summary>
+        [JsonPropertyName("letter")]
+        Letter = 4
     }
 }

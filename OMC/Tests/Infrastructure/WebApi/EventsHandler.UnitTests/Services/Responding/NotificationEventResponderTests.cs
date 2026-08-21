@@ -9,6 +9,7 @@ using EventsHandler.Services.Responding;
 using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 using ZgwModels.Properties;
@@ -19,6 +20,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding
     public sealed class NotificationEventResponderTests
     {
         private readonly Mock<IDetailsBuilder> _mockedBuilder = new(MockBehavior.Strict);
+        private readonly Mock<ILogger<NotificationEventResponder>> _mockedLogger = new();
 
         #region Test data
         private const string TestDescription = "Test description";
@@ -38,7 +40,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding
             (string Id, ProcessingResult Result, ProcessingStatus Status, HttpStatusCode Code, int ObjResultCode, string ObjResultName, string Description, string Content) test)
         {
             // Arrange
-            IRespondingService<ProcessingResult> responder = new NotificationEventResponder(this._mockedBuilder.Object);
+            IRespondingService<ProcessingResult> responder = new NotificationEventResponder(this._mockedBuilder.Object, this._mockedLogger.Object);
 
             // Act
             ObjectResult actualResponse = responder.GetResponse(test.Result);

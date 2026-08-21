@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+# Every job here only reads this repo via actions/checkout — releases, the helm-charts commit,
+# and the DockerHub push all authenticate with their own dedicated secrets (RELEASE_TOKEN /
+# DOCKERHUB_TOKEN), not the default GITHUB_TOKEN — so read-only is enough for all of them.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   # Don't want the tests running in parallel

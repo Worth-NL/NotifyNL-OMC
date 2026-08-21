@@ -6,12 +6,18 @@ using EventsHandler.Controllers.Base;
 using EventsHandler.Services.Responding.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Clients.Factories;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
+using WebQueries.MOBB.Interfaces;
+using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
+using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 using ZgwModels.Serialization.Interfaces;
 
@@ -28,6 +34,8 @@ namespace EventsHandler.Services.Responding.v2
         private readonly IRespondingService<ProcessingResult> _responder;
         private readonly ITelemetryService _telemetry;
         private readonly INotifyService<NotifyData> _notifyService;
+        private readonly IMessageBoxScenario _messageBoxScenario;
+        private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyCallbackResponder"/> class.
@@ -36,13 +44,17 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
         /// <param name="notifyService"></param>
-        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService)  // Dependency Injection (DI)
+        /// <param name="messageBoxScenario">Used to continue the MOBB fallback chain when a delivery-receipt callback reports failure.</param>
+        /// <param name="traceEmitter">Broadcasts this callback's outcome to the dashboard, correlated back to the original trace via <see cref="NotifyReference.TraceId"/>.</param>
+        public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService, IMessageBoxScenario messageBoxScenario, TraceEmitter traceEmitter)  // Dependency Injection (DI)
             : base(serializer)
         {
             this._configuration = configuration;
             this._responder = this;  // NOTE: Shortcut to use interface methods faster ("NotifyResponder" parent derives from "IRespondingService<T>" interface)
             this._telemetry = telemetry;
             this._notifyService = notifyService;
+            this._messageBoxScenario = messageBoxScenario;
+            this._traceEmitter = traceEmitter;
         }
 
         /// <inheritdoc cref="GeneralResponder.HandleNotifyCallbackAsync(object)"/>
@@ -67,7 +79,23 @@ namespace EventsHandler.Services.Responding.v2
 
                 if (status is FeedbackTypes.Success or FeedbackTypes.Failure)
                 {
-                    informResult = await InformUserAboutStatusAsync(callback, status);
+                    // First-version draft: MOBB/Berichtenbox callbacks carry a MessageBoxNotifyReference
+                    // instead of the standard NotifyReference, so they need their own contactmoment path.
+                    if (await IsMessageBoxCallbackAsync(callback))
+                    {
+                        informResult = await InformUserAboutMessageBoxStatusAsync(callback, status);
+                    }
+                    else
+                    {
+                        (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
+
+                        EmitChannelConfirmationTrace(reference, notificationMethod, status);
+
+                        HttpRequestResponse contactMomentResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
+                        EmitContactMomentTrace(reference, contactMomentResult);
+
+                        informResult = contactMomentResult;
+                    }
                 }
 
                 // If we have a telemetry result, base the HTTP response on that
@@ -116,9 +144,9 @@ namespace EventsHandler.Services.Responding.v2
         private const string True = "true";
         private const string False = "false";
 
-        private async Task<HttpRequestResponse> InformUserAboutStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        private async Task<HttpRequestResponse> InformUserAboutStatusAsync(
+            DeliveryReceipt callback, NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
         {
-            (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
             NotificationData notificationData = await GetNotificationDataAsync(reference, notificationMethod, callback.Id);
 
             // Register the new status of the notification (for the user)
@@ -134,6 +162,163 @@ namespace EventsHandler.Services.Responding.v2
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
+        }
+
+        /// <summary>
+        /// Resolves the dashboard trace this delivery receipt belongs to (if any — older
+        /// in-flight sends from before this correlation existed won't have a <see cref="NotifyReference.TraceId"/>)
+        /// and reports the channel-send stage's real outcome back to it — the stage that's been
+        /// sitting in "pending" since the original scenario handed off to "Notify NL" (see
+        /// EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync).
+        /// This is genuinely the moment Notify NL confirms delivery, not the synchronous send.
+        /// </summary>
+        private void EmitChannelConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
+        {
+            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            {
+                return;
+            }
+
+            string channelStage = notificationMethod switch
+            {
+                NotifyMethods.Email => "notify-email",
+                NotifyMethods.Sms => "notify-sms",
+                NotifyMethods.Letter => "notify-post",
+                _ => "kanaalresolutie"
+            };
+            string status = feedbackType == FeedbackTypes.Success ? "ok" : "fail";
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs, "confirmed by Notify NL");
+
+            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+        }
+
+        /// <summary>
+        /// Reports the "contactmoment" stage's real outcome, based on whether the write to
+        /// Contactmomenten/Klantinteracties itself succeeded — deliberately independent of the
+        /// channel-send stage's status above: Notify NL confirming delivery doesn't guarantee
+        /// the contactmoment write also succeeded, and a failed send still gets its own
+        /// "delivery failed" message registered as a (successful) contactmoment.
+        /// </summary>
+        private void EmitContactMomentTrace(NotifyReference reference, HttpRequestResponse contactMomentResult)
+        {
+            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            {
+                return;
+            }
+
+            string status = contactMomentResult.IsSuccess ? "ok" : "fail";
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs,
+                contactMomentResult.IsSuccess ? "contactmoment registered" : $"failed to register contactmoment: {contactMomentResult.JsonResponse}");
+
+            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+        }
+
+        /// <summary>
+        /// Computes how long it's been since the original scenario handed this notification off
+        /// to "Notify NL" (if that moment was recorded), appending the elapsed time to
+        /// <paramref name="outcomeText"/> for the trace's detail message.
+        /// </summary>
+        private static (long ElapsedMs, string Detail) DescribeElapsedSinceSend(long? sentAtUnixMs, string outcomeText)
+        {
+            if (sentAtUnixMs is not { } sentAt)
+            {
+                return (0, outcomeText);
+            }
+
+            long elapsedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - sentAt;
+
+            // TimeSpan's custom "mm" format is a component (0-59), not a total — formatting
+            // directly with "mm\:ss" would silently truncate any elapsed hours/days instead of
+            // rolling them into the minutes shown. TotalMinutes doesn't have that problem.
+            TimeSpan elapsed = TimeSpan.FromMilliseconds(elapsedMs);
+            return (elapsedMs, $"{outcomeText} after {(int)elapsed.TotalMinutes}:{elapsed.Seconds:D2}");
+        }
+
+        /// <summary>
+        /// MOBB / Berichtenbox counterpart of <see cref="InformUserAboutStatusAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   On a failure callback, this also continues the MOBB -> digitale-post -> letter fallback
+        ///   chain (see <see cref="IMessageBoxScenario.HandleDeliveryFailureAsync"/>) - the "(Permanent)
+        ///   Success?" / "Notificatie gelukt?" gateways in the BPMN evaluate this asynchronous delivery
+        ///   status, not the synchronous send-call response already handled when the message was first sent.
+        ///   The fallback's own outcome is logged but does not change this method's return value: the HTTP
+        ///   response for this callback still reflects whether the contactmoment registration itself
+        ///   succeeded, independent of whether a fallback send was also attempted.
+        /// </remarks>
+        private async Task<HttpRequestResponse> InformUserAboutMessageBoxStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
+        {
+            (MessageBoxNotifyReference reference, NotifyMethods notificationMethod) = await ExtractMessageBoxCallbackDataAsync(callback);
+
+            OmcController.LogApiResponse(
+                feedbackType == FeedbackTypes.Failure ? LogLevel.Warning : LogLevel.Information,
+                $"[MOBB callback] Message {reference.MessageId} (party {reference.PartyId}): channel {notificationMethod} reported {feedbackType}.");
+
+            NotificationData notificationData = await GetMessageBoxNotificationDataAsync(notificationMethod, callback.Id);
+
+            HttpRequestResponse result = await _telemetry.ReportMessageBoxCompletionAsync(
+                reference,
+                notificationMethod,
+                callback.Recipient,
+                messages: [
+                    DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                    TruncateContactMomentBody(DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty)),
+                    feedbackType == FeedbackTypes.Success ? True : False,
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                ]);
+
+            if (feedbackType == FeedbackTypes.Failure)
+            {
+                await ContinueMessageBoxFallbackAsync(reference, notificationMethod);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Caps a MOBB contactmoment's "inhoud" (content) at <see cref="MaxContactMomentBodyLength"/>
+        /// characters, regardless of source channel (MOBB/e-mail/letter).
+        /// </summary>
+        private const int MaxContactMomentBodyLength = 1000;
+
+        private static string TruncateContactMomentBody(string messageText)
+        {
+            return messageText.Length > MaxContactMomentBodyLength
+                ? messageText[..MaxContactMomentBodyLength]
+                : messageText;
+        }
+
+        /// <summary>
+        /// Attempts the next fallback channel for a MOBB Bericht after its delivery-receipt callback
+        /// reported failure, and logs the outcome. Never throws - a fallback failure must not break the
+        /// callback's own HTTP response to Notify NL.
+        /// </summary>
+        private async Task ContinueMessageBoxFallbackAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
+        {
+            try
+            {
+                HttpRequestResponse fallbackResult = await _messageBoxScenario.HandleDeliveryFailureAsync(reference, failedChannel);
+
+                OmcController.LogApiResponse(
+                    fallbackResult.IsFailure ? LogLevel.Error : LogLevel.Information,
+                    new ObjectResult(new { message = $"[MOBB fallback] {fallbackResult.JsonResponse}" })
+                    {
+                        StatusCode = fallbackResult.IsFailure
+                            ? StatusCodes.Status500InternalServerError
+                            : StatusCodes.Status201Created
+                    });
+            }
+            catch (Exception exception)
+            {
+                OmcController.LogApiResponse(
+                    LogLevel.Error,
+                    new ObjectResult(new { message = $"[MOBB fallback] Unhandled exception: {exception.Message}" })
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError
+                    });
+            }
         }
 
         private void LogContactRegistration(DeliveryReceipt callback, FeedbackTypes feedbackType)
@@ -223,8 +408,58 @@ namespace EventsHandler.Services.Responding.v2
         private async Task<NotificationData> GetNotificationDataAsync(
             NotifyReference reference, NotifyMethods notificationMethod, Guid notificationId)
         {
-            var data = new NotifyData(notificationMethod, String.Empty, Guid.Empty, [], reference);
-            return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            try
+            {
+                var data = new NotifyData(notificationMethod, String.Empty, Guid.Empty, [], reference);
+                return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            }
+            catch (Exception exception)
+            {
+                // Must not throw: EmitContactMomentTrace (called by InformUserAboutStatusAsync's
+                // caller, right after it returns) would otherwise never run, leaving the dashboard's
+                // "contactmoment" node stuck at "pending" forever for a request that already
+                // finished. Same defensive shape as the MOBB counterpart below.
+                return NotificationData.Failure(exception.Message);
+            }
+        }
+
+        /// <summary>
+        /// MOBB / Berichtenbox counterpart of <see cref="GetNotificationDataAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   <see cref="NotifyData"/> (and, transitively, <see cref="INotifyService{TPackage}.GetNotificationDataAsync"/>'s
+        ///   static <c>INotifyClient</c> cache) requires a <see cref="NotifyReference"/> wrapping a real
+        ///   <c>NotificationEvent</c>, which a MOBB/CloudEvent-driven send does not have. A throwaway, empty
+        ///   <see cref="NotificationEvent"/> is built here purely to satisfy that type requirement - it is
+        ///   never persisted or sent anywhere, only used in-memory for this one call.
+        ///   <para>
+        ///   Its <c>Channel</c> is deliberately set to <see cref="Channels.Objects"/> rather than left at the
+        ///   default <c>Unknown</c>: <see cref="NotificationEventExtensions.GetOrganizationId"/> throws for
+        ///   any channel it doesn't recognize (only <c>Cases</c>/<c>Decisions</c>/<c>Objects</c> resolve),
+        ///   and for MOBB - which never has a real "Cases"/"Decisions" channel - this would otherwise throw
+        ///   on every single call, not just an occasional cold-start. Confirmed safe: <see cref="NotificationClientFactory"/>
+        ///   only uses this value for a log line, never to select which Notify NL account/credentials are used
+        ///   (there is exactly one, configured globally via <c>NOTIFY_API_BASEURL</c>/<c>NOTIFY_API_KEY</c>), so
+        ///   the returned "missing" organization ID has no effect beyond that log line.
+        ///   </para>
+        /// </remarks>
+        private async Task<NotificationData> GetMessageBoxNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
+        {
+            try
+            {
+                var dummyReference = new NotifyReference
+                {
+                    Notification = new NotificationEvent { Channel = Channels.Objects }
+                };
+
+                var data = new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], dummyReference);
+
+                return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            }
+            catch (Exception exception)
+            {
+                return NotificationData.Failure(exception.Message);
+            }
         }
         #endregion
     }

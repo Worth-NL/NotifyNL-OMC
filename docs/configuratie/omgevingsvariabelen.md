@@ -150,6 +150,19 @@ Deze UUID's verwijzen naar objecttype-definities in de ObjectTypen-API en zijn o
 
 ---
 
+## MijnOverheid
+
+Zie [MijnOverheid](../integraties/mijnoverheid.md) voor uitleg over de integratie.
+
+| Variabele | Vereist | Beschrijving |
+|---|---|---|
+| `MIJNOVERHEID_WEBHOOK_URL` | Ja | URL van de MijnOverheid "zaak-muteren"-webhook |
+| `MIJNOVERHEID_AUTH_CLIENTID` | Ja | OAuth2 client-ID voor de MijnOverheid-tokenuitwisseling |
+| `MIJNOVERHEID_AUTH_SECRET` | Ja | OAuth2 clientgeheim voor MijnOverheid |
+| `MIJNOVERHEID_AUTH_TOKEN_ENDPOINT` | Ja | OAuth2 token-eindpunt van MijnOverheid |
+
+---
+
 ## KTO / Expoints
 
 Stel alle KTO-variabelen in op `-` als de integratie niet wordt gebruikt.

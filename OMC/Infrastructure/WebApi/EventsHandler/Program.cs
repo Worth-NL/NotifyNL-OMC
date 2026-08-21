@@ -1,4 +1,4 @@
-﻿// © 2023, Worth Systems.
+﻿// © 2023. Worth Systems.
 
 using Common.Constants;
 using Common.Extensions;
@@ -9,12 +9,14 @@ using Common.Settings.Strategy.Interfaces;
 using Common.Settings.Strategy.Manager;
 using Common.Versioning.Models;
 using EventsHandler.Controllers;
+using EventsHandler.Services.Configuration;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Responding;
@@ -36,7 +38,8 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using WebQueries.Tracing;
+using WebQueries.BRP;
 using WebQueries.DataQuerying.Adapter;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy;
@@ -51,51 +54,45 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO;
 using WebQueries.KTO.Interfaces;
+using WebQueries.MijnOverheid;
+using WebQueries.MijnOverheid.Clients;
+using WebQueries.MijnOverheid.Interfaces;
+using WebQueries.MOBB;
+using WebQueries.MOBB.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
+using ZgwModels.Mapping.Events;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Serialization;
 using ZgwModels.Serialization.Interfaces;
 using Besluiten = WebQueries.DataQuerying.Strategies.Queries.Besluiten;
+using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
 using Responder = EventsHandler.Services.Responding;
-using WebQueries.BRP;
 
 namespace EventsHandler
 {
-    /// <summary>
-    /// The entry point to the Web API application, responsible for configuring and starting its instance.
-    /// </summary>
     [ExcludeFromCodeCoverage(Justification = "This is startup class with dozens of dependencies")]
     internal static class Program
     {
-        /// <summary>
-        /// Custom simplified version of application configuration.
-        /// </summary>
-        /// <param name="args">The <see cref="Program"/> startup arguments.</param>
         internal static void Main(string[] args)
         {
             WebApplication.CreateBuilder(args)
-                .AddConfiguration()       // 1. Configuration (appsettings.json)
-                .AddExternalServices()    // 2. Microsoft .NET services
-                .AddInternalServices()    // 3. Internal OMC services
-                .ConfigureHttpPipeline()  // 4. Configure pipeline (what should happen during HTTP request-response cycle)
-                .Run();                   // 5. Start the application
+                .AddConfiguration()
+                .AddExternalServices()
+                .AddInternalServices()
+                .ConfigureHttpPipeline()
+                .Run();
         }
 
         #region Configuration
-        /// <summary>
-        /// Adding application configurations from JSON files.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
         {
-            // Configuration appsettings.json files
             const string appSettingsRootName = "appsettings";
 
             builder.Configuration.AddJsonFile($"{appSettingsRootName}.json", optional: false)
@@ -105,19 +102,26 @@ namespace EventsHandler
         }
         #endregion
 
+        private const string DashboardCorsPolicy = "Dashboard";
+
         #region Services: External (.NET)
-        /// <summary>
-        /// Registration of .NET services, used by the application.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with .NET services.</returns>
         private static WebApplicationBuilder AddExternalServices(this WebApplicationBuilder builder)
         {
-            // API Controllers
             builder.Services.AddControllers();
-
-            // Navigate directly to the endpoints from API Controllers (instead of using explicit .Map() routing in config)
             builder.Services.AddEndpointsApiExplorer();
+
+            builder.Services.AddCors(setup =>
+            {
+                setup.AddPolicy(DashboardCorsPolicy, policy =>
+                {
+                    string[] origins = (Environment.GetEnvironmentVariable(ConfigExtensions.DashboardOrigins) ?? "http://localhost:3000")
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                    policy.WithOrigins(origins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             // Authentication using JWT (JSON Web Tokens) Bearer
             builder.Services.AddAuthentication(setup =>
@@ -131,29 +135,22 @@ namespace EventsHandler
                 EncryptionContext encryptionContext = builder.Services.GetRequiredService<EncryptionContext>();
                 OmcConfiguration configuration = builder.Services.GetRequiredService<OmcConfiguration>();
 
-                // Disable some default validations, preventing the JWT token to be recognized as valid
                 setup.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Validation parameters
                     ValidIssuer = configuration.OMC.Auth.JWT.Issuer(),
                     ValidAudience = configuration.OMC.Auth.JWT.Audience(),
                     IssuerSigningKey = encryptionContext.GetSecurityKey(configuration.OMC.Auth.JWT.Secret()),
-
-                    // Validation criteria
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true
                 };
 
-                // Skip repacking user Claims into Microsoft specific objects
                 setup.MapInboundClaims = false;
             });
 
-            // Swagger UI: Configuration
             builder.Services.AddSwaggerGen(setup =>
             {
-                // Enable API documentation in Swagger UI
                 setup.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = ApiResources.Swagger_UI_Version,
@@ -161,15 +158,12 @@ namespace EventsHandler
                     Description = ApiResources.Swagger_UI_Description
                 });
 
-                // Enable [SwaggerRequestExample] filter for parameters in Swagger UI
                 setup.ExampleFilters();
 
-                // Map XML documentation from API Controllers into Swagger UI
                 string xmlDocumentationFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlDocumentationPath = Path.Combine(AppContext.BaseDirectory, xmlDocumentationFile);
                 setup.IncludeXmlComments(xmlDocumentationPath);
 
-                // Enable required JWT authentication tokens from Headers in Swagger UI
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
@@ -185,17 +179,15 @@ namespace EventsHandler
                     }
                 };
 
-                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);  // Enable authentication input (button) to provide JWT in Swagger UI
-                setup.AddSecurityRequirement(new OpenApiSecurityRequirement                // Add authentications requirements for API methods in Swagger UI
+                setup.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
                 });
             });
 
-            // Swagger UI: Examples (showing custom values of API parameters instead of the default ones)
-            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();  // NOTE: Any class which belongs to the solution
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<EventsController>();
 
-            // Add logging using Sentry SDK and external monitoring service
             builder.WebHost.UseSentry(options =>
             {
                 options.ConfigureSentryOptions(isDebugEnabled: builder.Environment.IsDevelopment());
@@ -204,88 +196,64 @@ namespace EventsHandler
             return builder;
         }
 
-        #region Sentry configuration
-        /// <summary>
-        /// Configure logging options for Sentry.
-        /// <para>
-        ///   Source: https://docs.sentry.io/platforms/dotnet/configuration/options/
-        /// </para>
-        /// </summary>
         private static void ConfigureSentryOptions(this SentryOptions options, bool isDebugEnabled)
         {
-            // Sentry Data Source Name (DSN) => where to log application events
             options.Dsn = Environment.GetEnvironmentVariable(ConfigExtensions.SentryDsn)
-                          ?? string.Empty;  // NOTE: SentrySDK will automatically reach "SENTRY_DSN" environment variable so, it's not needed to
-                                            // do this manually; however, if this variable is not existing Sentry will throw ArgumentNullException.
-                                            // The current fallback scenario is just disabling Sentry logging in case of missing DSN (no exception)
+                          ?? string.Empty;
 
-            // Informational messages are the most detailed to log
-            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug  // More detailed (more insightful but noisy) settings for logs
-                                                     : SentryLevel.Info;  // Less detailed (not affecting performance) settings for logs
-
-            // Detailed debugging logs in the console window
+            options.DiagnosticLevel = isDebugEnabled ? SentryLevel.Debug : SentryLevel.Info;
             options.Debug = isDebugEnabled;
-
-            // Enables Sentry's "Release Health" feature
             options.AutoSessionTracking = true;
-
-            // Disables the case that all threads use the same global scope ("true" for client apps, "false" for server apps)
             options.IsGlobalModeEnabled = false;
-
-            // The identifier indicating to which or on which platform / system the application is meant to run
             options.Distribution = $"{Environment.OSVersion.Platform} ({Environment.OSVersion.VersionString})";
 
-            // Fetch version from EventsHandler.Csproj and set OmcVersion.
             Version? version = Assembly.GetEntryAssembly()?.GetName().Version;
 
             if (version is not null)
                 OmcVersion.SetVersion(version.Major, version.Minor, version.Build);
 
-            // Version of the application ("OMC Web API" in this case)
             options.Release = OmcVersion.GetExpandedVersion();
-
-            // The environment of the application (Prod, Test, Dev, Staging, etc.)
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment) ??
                                   CommonValues.Default.Models.DefaultStringValue;
         }
         #endregion
-        #endregion
 
         #region Services: Internal (OMC)
-        /// <summary>
-        /// Registration of custom services, used for business logic and internal processes.
-        /// </summary>
-        /// <param name="builder">The builder of the web application (used for configuration).</param>
-        /// <returns>Partially-configured <see cref="WebApplicationBuilder"/> with custom services.</returns>
         private static WebApplicationBuilder AddInternalServices(this WebApplicationBuilder builder)
         {
-            // Configurations
             builder.Services.AddSingleton<OmcConfiguration>();
             builder.Services.RegisterLoadingStrategies();
 
-            // JWT generation
             builder.Services.RegisterEncryptionStrategy(builder);
 
-            // Business logic
             builder.Services.AddSingleton<IValidationService<NotificationEvent>, NotificationValidator>();
             builder.Services.AddSingleton<ISerializationService, SpecificSerializer>();
             builder.Services.AddScoped<IProcessingService, NotifyProcessor>();
             builder.Services.AddSingleton<ITemplatesService<TemplateResponse, NotificationEvent>, NotifyTemplatesAnalyzer>();
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
+            builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
+            builder.Services.AddScoped<CloudEventNormalizer>();
             builder.Services.AddScoped<IDataQueryService<NotificationEvent>, DataQueryService>();
             builder.Services.AddScoped<IQueryContext, QueryContext>();
-            builder.Services.RegisterOpenServices(builder);
+            builder.Services.AddScoped<ConfigurationCheckService>();
+            builder.Services.AddSingleton<ScenarioFlowService>();
+            builder.Services.AddSingleton<TraceEmitter>();
+            builder.Services.RegisterOpenServices();
 
-            // HTTP communication
             builder.Services.AddSingleton<IHttpNetworkService, HttpNetworkService>();
             builder.Services.AddSingleton<IHttpNetworkServiceKto, KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KtoHttpNetworkService>();
             builder.Services.AddHttpClient<KeycloakTokenService>();
+            // MijnOverheidClient resolves its HttpClient by name (IHttpClientFactory.CreateClient(nameof(MijnOverheidClient)))
+            // rather than the typed-client pattern used by its siblings above — the name must match exactly.
+            builder.Services.AddHttpClient(nameof(MijnOverheidClient));
+            builder.Services.AddScoped<IMijnOverheidClient, MijnOverheidClient>();
+            builder.Services.AddScoped<IMijnOverheidForwarder, MijnOverheidForwarder>();
             builder.Services.AddHttpClient<BrpClient>()
                 .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
                 {
@@ -392,12 +360,11 @@ namespace EventsHandler
 
             builder.Services.RegisterClientFactories();
 
-            // Versioning
             builder.Services.AddSingleton<OmcVersionRegister>();
             builder.Services.AddSingleton<ZgwVersionRegister>();
 
             // User Interaction
-            builder.Services.RegisterResponders(builder);
+            builder.Services.RegisterResponders();
             builder.Services.AddSingleton<IDetailsBuilder, DetailsBuilder>();
 
             return builder;
@@ -406,32 +373,26 @@ namespace EventsHandler
         #region Aggregated registrations
         private static void RegisterEncryptionStrategy(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            // Strategies
             services.AddSingleton(typeof(IJwtEncryptionStrategy),
                 builder.Configuration.IsEncryptionAsymmetric()
                     ? typeof(AsymmetricEncryptionStrategy)
                     : typeof(SymmetricEncryptionStrategy));
 
-            // Context
             services.AddSingleton<EncryptionContext>();
         }
 
         private static void RegisterLoadingStrategies(this IServiceCollection services)
         {
-            // Strategy Context (acting like loader strategy facade)
             services.AddSingleton<ILoadersContext, LoadersContext>();
 
-            // Strategies
             services.AddSingleton<AppSettingsLoader>();
             services.AddSingleton<EnvironmentLoader>();
         }
 
         private static void RegisterNotifyStrategies(this IServiceCollection services)
         {
-            // Strategy Resolver (returning dedicated scenarios' strategy)
             services.AddScoped<IScenariosResolver<INotifyScenario, NotificationEvent>, NotifyScenariosResolver>();
 
-            // Strategies
             services.AddScoped<CaseCreatedScenario>();
             services.AddScoped<CaseStatusUpdatedScenario>();
             services.AddScoped<CaseClosedScenario>();
@@ -442,81 +403,25 @@ namespace EventsHandler
             services.AddScoped<KtoScenario>();
         }
 
-        private static void RegisterOpenServices(this IServiceCollection services, WebApplicationBuilder builder)
+        // NOTE: v1 workflow versioning (OpenKlant v1, OpenZaak v1/v2 distinction, and the
+        // OMC_FEATURE_WORKFLOW_VERSION switch) was removed in 2.0.2 — this always wires up the
+        // v2 implementations directly instead of resolving a version at startup.
+        private static void RegisterOpenServices(this IServiceCollection services)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
-
             // Common query methods
             services.AddSingleton<IQueryBase, QueryBase>();
 
             // Strategies
-            services.AddSingleton(typeof(OpenZaak.Interfaces.IQueryZaak), DetermineOpenZaakVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(OpenKlant.Interfaces.IQueryKlant), DetermineOpenKlantVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(Besluiten.Interfaces.IQueryBesluiten), DetermineBesluitenVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(Objecten.Interfaces.IQueryObjecten), DetermineObjectenVersion(omcWorkflowVersion));
-            services.AddSingleton(typeof(ObjectTypen.Interfaces.IQueryObjectTypen), DetermineObjectTypenVersion(omcWorkflowVersion));
+            services.AddSingleton<OpenZaak.Interfaces.IQueryZaak, OpenZaak.QueryZaak>();
+            services.AddSingleton<OpenKlant.Interfaces.IQueryKlant, OpenKlant.v2.QueryKlant>();
+            services.AddSingleton<Besluiten.Interfaces.IQueryBesluiten, Besluiten.QueryBesluiten>();
+            services.AddSingleton<Objecten.Interfaces.IQueryObjecten, Objecten.QueryObjecten>();
+            services.AddSingleton<ObjectTypen.Interfaces.IQueryObjectTypen, ObjectTypen.QueryObjectTypen>();
+            services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
+            services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
 
             // Feedback and telemetry
-            services.AddScoped(typeof(ITelemetryService), DetermineTelemetryVersion(omcWorkflowVersion));
-
-            return;
-
-            static Type DetermineOpenZaakVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(OpenZaak.v1.QueryZaak),
-                    2 => typeof(OpenZaak.v2.QueryZaak),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenZaakUnknown)
-                };
-            }
-
-            static Type DetermineOpenKlantVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(OpenKlant.v1.QueryKlant),
-                    2 => typeof(OpenKlant.v2.QueryKlant),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionOpenKlantUnknown)
-                };
-            }
-
-            static Type DetermineBesluitenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(Besluiten.v1.QueryBesluiten),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionBesluitenUnknown)
-                };
-            }
-
-            static Type DetermineObjectenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(Objecten.v1.QueryObjecten),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionObjectenUnknown)
-                };
-            }
-
-            static Type DetermineObjectTypenVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 or 2 => typeof(ObjectTypen.v1.QueryObjectTypen),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionObjectTypenUnknown)
-                };
-            }
-
-            static Type DetermineTelemetryVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(Register.v1.ContactRegistration),
-                    2 => typeof(Register.v2.ContactRegistration),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionTelemetryUnknown)
-                };
-            }
+            services.AddScoped<ITelemetryService, Register.v2.ContactRegistration>();
         }
 
         private static void RegisterClientFactories(this IServiceCollection services)
@@ -525,39 +430,20 @@ namespace EventsHandler
             services.AddSingleton<IHttpClientFactory<INotifyClient, string>, NotificationClientFactory>();
         }
 
-        private static void RegisterResponders(this IServiceCollection services, WebApplicationBuilder builder)
+        // NOTE: v1 workflow versioning was removed in 2.0.2 — see RegisterOpenServices above.
+        private static void RegisterResponders(this IServiceCollection services)
         {
-            byte omcWorkflowVersion = builder.Services.GetRequiredService<OmcConfiguration>().OMC.Feature.Workflow_Version();
-
             services.AddSingleton<NotificationEventResponder>();
-            services.AddScoped(typeof(GeneralResponder), DetermineResponderVersion(omcWorkflowVersion));
-
-            return;
-
-            static Type DetermineResponderVersion(byte omvWorkflowVersion)
-            {
-                return omvWorkflowVersion switch
-                {
-                    1 => typeof(Responder.v1.NotifyCallbackResponder),
-                    2 => typeof(Responder.v2.NotifyCallbackResponder),
-                    _ => throw new NotImplementedException(ApiResources.ServiceResolving_ERROR_VersionNotifyResponderUnknown)
-                };
-            }
+            services.AddScoped<GeneralResponder, Responder.v2.NotifyCallbackResponder>();
         }
         #endregion
         #endregion
 
         #region HTTP Pipeline
-        /// <summary>
-        /// Configures the HTTP pipeline with middlewares.
-        /// </summary>
-        /// <param name="builder">The pre-configured <see cref="WebApplicationBuilder"/>.</param>
-        /// <returns>Configured <see cref="WebApplication"/>.</returns>
         private static WebApplication ConfigureHttpPipeline(this WebApplicationBuilder builder)
         {
             WebApplication app = builder.Build();
 
-            // Get configuration
             OmcConfiguration configuration = app.Services.GetRequiredService<OmcConfiguration>();
             string pathBase = configuration.OMC.Context.Path();
 
@@ -567,10 +453,22 @@ namespace EventsHandler
             {
                 app.Use((context, next) =>
                 {
-                    // If the request does not start with the path base, redirect
                     if (context.Request.Path.StartsWithSegments(pathBase))
                     {
                         return next();
+                    }
+
+                    // CodeQL cs/web/unvalidated-url-redirection: reject a request path starting
+                    // with "//" before it reaches Redirect() — some clients/proxies pass that
+                    // through as a literal PathString, and left unchecked it would make the
+                    // built target protocol-relative (browsers treat "//host/..." as a redirect
+                    // to a different host, same as "https://host/..."). pathBase is trusted
+                    // configuration and always prepended first, so this is otherwise always a
+                    // same-origin relative path — this closes the one way that stops being true.
+                    if (context.Request.Path.Value?.StartsWith("//") == true)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        return Task.CompletedTask;
                     }
 
                     string newPath = pathBase + context.Request.Path + context.Request.QueryString;
@@ -581,23 +479,59 @@ namespace EventsHandler
                 app.UsePathBase(pathBase);
             }
 
-            // Displaying Swagger UI as the main page of the Web API
             if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();  // Try to redirect from HTTP to HTTPS (after first HTTP call)
+            app.UseHttpsRedirection();
+
+            // Serves the statically-exported dashboard (wwwroot/status, wwwroot/status/flow,
+            // wwwroot/_next/*) baked into this image at build time — see the explicit
+            // /status and /status/flow routes below for the corresponding index.html files.
+            app.UseStaticFiles();
+
+            app.UseCors(DashboardCorsPolicy);
 
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/", () =>
+            {
+                // DASHBOARD_URL lets a future deployment point this at a separately hosted
+                // dashboard; today it's unset and the dashboard is co-hosted at /status.
+                string? dashboardUrl = Environment.GetEnvironmentVariable(ConfigExtensions.DashboardUrl);
+
+                return Results.Redirect(string.IsNullOrWhiteSpace(dashboardUrl) ? "/status" : dashboardUrl);
+            });
+
+            // Falls back to /swagger when the dashboard hasn't been built locally (e.g. plain
+            // `dotnet run`/Visual Studio F5 without ever running `npm run build` in dashboard/)
+            // so development against the API is never blocked by a missing frontend build.
+            app.MapGet("/status", () => ServeDashboardPage(app, "status", "index.html"));
+            app.MapGet("/status/flow", () => ServeDashboardPage(app, "status", "flow", "index.html"));
+
             app.MapControllers();  // Mapping actions from API controllers
 
-            app.UseSentryTracing();  // Enable Sentry to capture transactions
+            app.UseSentryTracing();
 
             return app;
+        }
+
+        private static IResult ServeDashboardPage(WebApplication app, params string[] relativePathSegments)
+        {
+            // WebRootPath is null (not just missing on disk) when wwwroot doesn't exist at all —
+            // e.g. a plain `dotnet run`/Visual Studio F5 without ever building the dashboard.
+            string? webRootPath = app.Environment.WebRootPath;
+            if (string.IsNullOrEmpty(webRootPath))
+            {
+                return Results.Redirect("/swagger");
+            }
+
+            string path = Path.Combine([webRootPath, .. relativePathSegments]);
+
+            return File.Exists(path) ? Results.File(path, "text/html") : Results.Redirect("/swagger");
         }
         #endregion
     }

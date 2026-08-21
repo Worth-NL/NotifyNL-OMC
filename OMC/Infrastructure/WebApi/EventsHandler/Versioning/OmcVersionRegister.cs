@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Settings.Configuration;
 using Common.Settings.Extensions;
 using Common.Versioning.Interfaces;
 using Common.Versioning.Models;
@@ -11,14 +10,11 @@ namespace EventsHandler.Versioning
     /// <inheritdoc cref="IVersionRegister"/>
     public sealed class OmcVersionRegister : IVersionRegister
     {
-        private readonly OmcConfiguration _configuration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="OmcVersionRegister"/> class.
         /// </summary>
-        public OmcVersionRegister(OmcConfiguration configuration)  // Dependency Injection (DI)
+        public OmcVersionRegister()  // Dependency Injection (DI)
         {
-            this._configuration = configuration;
         }
 
         /// <inheritdoc cref="IVersionRegister.GetVersion(string)"/>
@@ -32,10 +28,9 @@ namespace EventsHandler.Versioning
                 /* {0} */ ApiResources.Application_Name,
                 /* {1} */ OmcVersion.GetExpandedVersion(),
                 /* {2} */ Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment),
-                /* {3} */ this._configuration.OMC.Feature.Workflow_Version(),
- 
+
                 // ZGW (Open Services)
-                /* {4} */ componentsVersions);
+                /* {3} */ componentsVersions);
         }
     }
 }

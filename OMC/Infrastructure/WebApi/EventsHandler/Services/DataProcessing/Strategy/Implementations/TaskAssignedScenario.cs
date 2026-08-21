@@ -11,7 +11,9 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
+using WebQueries.Tracing;
 using ZgwModels.Mapping.Enums.Objecten;
+using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
@@ -48,25 +50,35 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // Setup
             this._queryContext = this.DataQuery.From(notification);
 
+            Guid taskId = notification.MainObjectUri.GetGuid();
+            TraceContext.Emit("objecten", "start", $"Attempting to retrieve taak with id {taskId}");
             this._taskData = await this._queryContext.GetTaskAsync();
+            TraceContext.Emit("objecten", "ok", $"taak with id {taskId} retrieved");
 
             // Validation #1: The task needs to have an open status
             if (this._taskData.Status != TaskStatuses.Open)
             {
+                TraceContext.Emit("taakcheck", "abort", $"task status is {this._taskData.Status}, expected {TaskStatuses.Open}");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskClosed);
             }
 
             // Validation #2: The task needs to be assigned to a person
             if (this._taskData.Identification.Type is not (IdTypes.Bsn or IdTypes.Kvk))
             {
+                TraceContext.Emit("taakcheck", "abort", $"identification type is {this._taskData.Identification.Type}");
                 throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_TaskIdTypeNotSupported);
             }
+            TraceContext.Emit("taakcheck", "ok");
 
+            // if case:
             // TODO: Will be aggregated with CaseStatusType in future
+            Guid taskCaseId = this._taskData.CaseUri.GetGuid();
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaaktype for zaak with id {taskCaseId}");
             CaseType caseType = await this._queryContext.GetLastCaseTypeAsync(  // 3. Case type
                                 await this._queryContext.GetCaseStatusesAsync(  // 2. Case statuses
                                       this._taskData.CaseUri));                 // 1. Case URI
-            
+            TraceContext.Emit("openzaak", "ok", $"zaaktype for zaak with id {taskCaseId} retrieved");
+
             // Validation #3: The case type identifier must be whitelisted
             ValidateCaseId(
                 this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().IsAllowed,
@@ -74,22 +86,28 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
             // Validation #4: The notifications must be enabled
             ValidateNotifyPermit(caseType.IsNotificationExpected);
-            
+
+            TraceContext.Emit("openzaak", "start", $"Attempting to retrieve zaak with id {taskCaseId}");
             this._case = await this._queryContext.GetCaseAsync(this._taskData.CaseUri);
+            TraceContext.Emit("openzaak", "ok", $"zaak with id {taskCaseId} retrieved");
 
             // Preparing party details
             string? bsnNumber = this._taskData.Identification.Type == IdTypes.Bsn
                 ? this._taskData.Identification.Value  // BSN number
                 : null;
 
-            return new PreparedData(
-                party: await this._queryContext.GetPartyDataAsync(
-                    caseUri: this._case.Uri,
-                    bsnNumber: bsnNumber, 
-                    caseIdentifier: this._case.Identification),
-                caseUri: this._case.Uri);
+            TraceContext.Emit("openklant", "start", $"Attempting to retrieve klant for zaak with id {taskCaseId}");
+            CommonPartyData party = await this._queryContext.GetPartyDataAsync(
+                caseUri: this._case.Uri,
+                bsnNumber: bsnNumber,
+                caseIdentifier: this._case.Identification);
+            TraceContext.Emit("openklant", "ok", $"klant for zaak with id {taskCaseId} retrieved");
+
+            return new PreparedData(party: party, caseUri: this._case.Uri);
         }
         #endregion
+
+
 
         #region Polymorphic (Email logic: template + personalization)
         /// <inheritdoc cref="BaseScenario.GetEmailTemplateId()"/>
@@ -97,16 +115,16 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             => this.Configuration.Notify.TemplateId.Email.TaskAssigned();
 
         private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
+        private static readonly Dictionary<string, object> s_emailPersonalization = [];
+        private static readonly Dictionary<string, object> s_letterPersonalization = [];
 
-        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
+        /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
             bool isValid = IsValid(this._taskData.ExpirationDate);
             string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(isValid);
-            
+
             lock (s_padlock)
             {
                 s_emailPersonalization["klant.voornaam"] = partyData.Name;
@@ -122,23 +140,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
 
                 return s_emailPersonalization;
             }
-        }
-
-        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
-        {
-            return isValid
-                ? expirationDate.ConvertToDutchDateString()  // 01-01-2001
-                : CommonValues.Default.Models.DefaultStringValue;
-        }
-
-        private static string GetExpirationDateProvided(bool isValid)
-        {
-            return isValid ? "yes" : "no";
-        }
-
-        private static bool IsValid(DateTime expirationDate)
-        {
-            return expirationDate != default;  // 0001-01-01, 00:00:00
         }
         #endregion
 
@@ -192,6 +193,25 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         #region Polymorphic (GetWhitelistEnvVarName)
         /// <inheritdoc cref="BaseScenario.GetWhitelistEnvVarName()"/>
         protected override string GetWhitelistEnvVarName() => this.Configuration.ZGW.Whitelist.TaskAssigned_IDs().ToString();
+        #endregion
+
+        #region Helper methods
+        private static string GetFormattedExpirationDate(bool isValid, DateTime expirationDate)
+        {
+            return isValid
+                ? expirationDate.ConvertToDutchDateString()  // 01-01-2001
+                : CommonValues.Default.Models.DefaultStringValue;
+        }
+
+        private static string GetExpirationDateProvided(bool isValid)
+        {
+            return isValid ? "yes" : "no";
+        }
+
+        private static bool IsValid(DateTime expirationDate)
+        {
+            return expirationDate != default;  // 0001-01-01, 00:00:00
+        }
         #endregion
     }
 }

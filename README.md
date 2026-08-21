@@ -12,3 +12,5 @@
 - [Events Handler](Documentation/OMC%20-%20Documentation.md)
 
 - [Secrets Manager](OMC/Core/Domain/SecretsManager/Readme.md)
+
+- [Dashboard](dashboard/README.md) — configuration status and scenario flow UI, statically exported and served by the API itself

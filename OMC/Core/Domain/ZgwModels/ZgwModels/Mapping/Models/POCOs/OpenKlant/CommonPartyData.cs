@@ -47,6 +47,13 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant
         public DistributionChannels DistributionChannel { get; init; }
 
         /// <summary>
+        /// Why <see cref="DistributionChannel"/> was picked over the party's other digital
+        /// addresses (e.g. linked to the case, the party's preferred address in OpenKlant, or a
+        /// fallback to the first available address of that type).
+        /// </summary>
+        public string DistributionChannelReason { get; init; }
+
+        /// <summary>
         /// The e-mail address of the party (e.g., citizen or organization).
         /// </summary>
         public string EmailAddress { get; init; }

@@ -1,0 +1,39 @@
+---
+title: OMC — Case Status Updated (Zaakstatus bijgewerkt) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=zaken / Resource=status"])
+
+    WEBHOOK --> GET_STATUS["GET CaseStatus\nOpenZaak — ResourceUri"]
+    GET_STATUS --> GET_TYPE["GET CaseStatusType\nOpenZaak — status.TypeUri"]
+    GET_TYPE --> CHK_INFORM{"IsNotificationExpected\n(informeren field)?"}
+    CHK_INFORM -- No --> AB1(["⏹ Aborted\ninformeren = false"])
+    CHK_INFORM -- Yes --> CHK_SERIAL{"StatusType.SerialNumber?"}
+    CHK_SERIAL -- "= 1" --> OTHER1["→ CaseCreatedScenario"]
+    CHK_SERIAL -- "> 1  and  IsFinalStatus" --> OTHER2["→ CaseClosedScenario"]
+    CHK_SERIAL -- "> 1  and  not final" --> SCENARIO["🔄 CaseStatusUpdatedScenario"]
+
+    SCENARIO --> WHITELIST{"Case type ID in\nZGW__Whitelist__ZaakUpdate_IDs?"}
+    WHITELIST -- No --> AB2(["⏹ Aborted\ncaseType not whitelisted"])
+    WHITELIST -- "Yes  (or wildcard *)" --> GET_CASE["GET Case\nOpenZaak — notification.MainObjectUri"]
+    GET_CASE --> GET_PARTY["GET Party data\nOpenKlant — case.Uri + case.Identification"]
+    GET_PARTY --> CHANNEL{"DistributionChannel?"}
+
+    CHANNEL -- Email --> BUILD_EMAIL["Build NotifyData — Email\ntemplate: Notify__TemplateId__Email__ZaakUpdate\npersonalisation: naam + zaak.id + zaak.omschrijving\n+ status.omschrijving"]
+    CHANNEL -- SMS --> BUILD_SMS["Build NotifyData — SMS\ntemplate: Notify__TemplateId__Sms__ZaakUpdate\n(same personalisation)"]
+    CHANNEL -- Letter --> BUILD_LETTER["Build NotifyData — Letter\ntemplate: Notify__TemplateId__Letter__ZaakUpdate\n+ full postal address + status.omschrijving"]
+    CHANNEL -- Both --> BUILD_BOTH["Build NotifyData — Email + SMS\n(two packages, sent sequentially)"]
+    CHANNEL -- "Unknown / missing" --> FAIL_CH(["🔁 Failure\nNo valid channel — retry"])
+
+    BUILD_EMAIL & BUILD_SMS & BUILD_LETTER & BUILD_BOTH --> SEND["POST to Notify NL API"]
+    SEND --> OK{"HTTP 201 Created?"}
+    OK -- No --> RETRY(["🔁 Failure\nRetry later"])
+    OK -- Yes --> SUCCESS(["✅ Success\nCitizen notified of status update"])
+
+    style WEBHOOK   fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS   fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO  fill:#1E2238,color:#fff,stroke:none
+    style AB1       fill:#dc2626,color:#fff,stroke:none
+    style AB2       fill:#dc2626,color:#fff,stroke:none
+    style FAIL_CH   fill:#f59e0b,color:#fff,stroke:none
+    style RETRY     fill:#f59e0b,color:#fff,stroke:none

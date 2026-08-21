@@ -28,6 +28,10 @@
   <ItemGroup>
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Used by Mapping/Events/CloudEventNormalizer.cs (MijnOverheid CloudEvent support) -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
 
   <!-- Resources (text / localization) -->
   <ItemGroup>

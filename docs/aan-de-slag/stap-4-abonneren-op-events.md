@@ -18,6 +18,8 @@ Abonneer voor elk kanaal op de `create`-actie (`actie`).
 
 > **Let op:** Vanwege een race condition in de ZGW-stack luistert het OMC naar `status`-resource-events op het `zaken`-kanaal in plaats van de `zaak`-resource direct. Dit is by design — abonneer niet op `resource: zaak` voor zaakscenario's.
 
+> **MijnOverheid-forwarding:** Als je ook [MijnOverheid](../integraties/mijnoverheid.md)-forwarding gebruikt, is een apart abonnement nodig met een callback naar `/Events/MijnZaken`, inclusief `resource: zaak` met de acties `read` en `destroy`. Dit is een uitzondering op de regel hierboven — die geldt alleen voor het `/Events/Listen`-abonnement.
+
 ---
 
 ## 4.2 Abonnements-eindpunt

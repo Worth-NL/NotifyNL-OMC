@@ -13,6 +13,8 @@ namespace ZgwModels.Tests.Unit.Extensions
         #region ConvertToNotifyMethod
         [TestCase(NotificationTypes.Email, NotifyMethods.Email)]
         [TestCase(NotificationTypes.Sms, NotifyMethods.Sms)]
+        [TestCase(NotificationTypes.Letter, NotifyMethods.Letter)]
+        [TestCase(NotificationTypes.Mobb, NotifyMethods.Mobb)]
         public void ConvertToNotifyMethod_ForValidEnum_ReturnsExpectedConvertedValue(NotificationTypes testStartValue, NotifyMethods expectedEndValue)
         {
             // Act
