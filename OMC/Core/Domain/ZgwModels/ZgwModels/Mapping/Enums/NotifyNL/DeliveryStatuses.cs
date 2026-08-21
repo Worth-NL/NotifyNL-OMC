@@ -148,7 +148,19 @@ namespace ZgwModels.Mapping.Enums.NotifyNL
         /// </para>
         /// </summary>
         [JsonPropertyName("technical-failure")]
-        TechnicalFailure = 11
+        TechnicalFailure = 11,
+
+        /// <summary>
+        /// Mail: The letter was accepted by the API but rejected afterwards, because the supplied PDF does
+        /// not meet the precompiled-letter specification (page size, margins, or the address block). The
+        /// letter will not be printed or dispatched, and nothing is charged for it.
+        /// <para>
+        ///   Letter-only, and only ever seen on precompiled sends - a templated letter is composed by Notify
+        ///   itself and so cannot fail this way. It arrives asynchronously: the send call itself returns 201.
+        /// </para>
+        /// </summary>
+        [JsonPropertyName("validation-failed")]
+        ValidationFailed = 12
         #endregion
     }
 }

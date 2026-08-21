@@ -17,6 +17,9 @@ namespace ZgwModels.Tests.Unit.Extensions
         [TestCase(DeliveryStatuses.PermanentFailure, FeedbackTypes.Failure)]
         [TestCase(DeliveryStatuses.TemporaryFailure, FeedbackTypes.Failure)]
         [TestCase(DeliveryStatuses.TechnicalFailure, FeedbackTypes.Failure)]
+        // Letter-only, and the one a precompiled PDF actually fails with - it has to register a
+        // failed contactmoment like any other failure, not be ignored as an unknown status.
+        [TestCase(DeliveryStatuses.ValidationFailed, FeedbackTypes.Failure)]
         // Info
         [TestCase(DeliveryStatuses.Created, FeedbackTypes.Info)]
         [TestCase(DeliveryStatuses.Sending, FeedbackTypes.Info)]
