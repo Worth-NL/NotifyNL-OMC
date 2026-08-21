@@ -9,6 +9,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations;          /
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
@@ -110,6 +111,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                     // Scenario #7: "KTO received"
                     TraceContext.SetScenario("kto");
                     return this._serviceProvider.GetRequiredService<KtoScenario>();
+                }
+
+                if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.PrintObjectType_Uuid()))
+                {
+                    // Scenario #8: "Print requested"
+                    TraceContext.SetScenario("print-requested");
+                    return this._serviceProvider.GetRequiredService<PrintScenario>();
                 }
 
                 throw new AbortedNotifyingException(

@@ -175,6 +175,10 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)
             => await this._queryKlant.CreateContactMomentAsync(this._queryBase, jsonBody);
 
+        /// <inheritdoc cref="IQueryContext.CreateBijlageAsync(string)"/>
+        async Task<HttpRequestResponse> IQueryContext.CreateBijlageAsync(string jsonBody)
+            => await this._queryKlant.CreateBijlageAsync(this._networkService, jsonBody);
+
         /// <inheritdoc cref="IQueryContext.LinkCaseToContactMomentAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.LinkCaseToContactMomentAsync(string jsonBody)
             => await this._queryKlant.LinkCaseToContactMomentAsync(this._networkService, jsonBody);

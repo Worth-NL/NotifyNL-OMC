@@ -6,6 +6,7 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.MOBB.Models;
+using WebQueries.Print.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
@@ -117,6 +118,68 @@ namespace WebQueries.Register.Interfaces
             }
         }
 
+        /// <summary>
+        /// Reports to external API service that a printed letter was handed to "Notify NL" service,
+        /// creating a contactmoment for the print job.
+        /// </summary>
+        /// <param name="reference"><inheritdoc cref="PrintNotifyReference" path="/summary"/></param>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="messages">The messages to be used during registration of this event.</param>
+        /// <returns>
+        ///   The response from an external Web API service.
+        /// </returns>
+        /// <remarks>
+        ///   Mirrors <see cref="ReportMessageBoxCompletionAsync"/> rather than <see cref="ReportCompletionAsync"/>:
+        ///   the print flow builds its own "onderwerpobject" from the triggering object's payload instead
+        ///   of from a <c>NotificationEvent</c>'s case, so there is nothing to hand
+        ///   <see cref="IQueryContext.SetNotification"/>.
+        /// </remarks>
+        public async Task<HttpRequestResponse> ReportPrintCompletionAsync(
+            PrintNotifyReference reference,
+            NotifyMethods notificationMethod,
+            params string[] messages)
+        {
+            try
+            {
+                string json = GetPrintContactMomentJsonBody(reference, notificationMethod, messages);
+
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+
+                Guid klantcontactUuid = contactMoment.ContactMoment.ReferenceUri.GetGuid();
+
+                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(this.Omc.OMC.Actor.Id(), klantcontactUuid));
+
+                if (linkResponse.IsFailure)
+                {
+                    return HttpRequestResponse.Failure(linkResponse.JsonResponse); // Throw soft error to prevent retries
+                }
+
+                // The printed PDF is attached in a second call: "maak-klantcontact" has no field for
+                // attachments (MBO-1025 - requested by Den Haag, deferred), so the klantcontact has to
+                // exist before its bijlage can point at it.
+                if (reference.AttachmentId != Guid.Empty)
+                {
+                    HttpRequestResponse bijlageResponse = await this.QueryContext.CreateBijlageAsync(
+                        GetBijlageJsonBody(klantcontactUuid, reference.AttachmentId));
+
+                    if (bijlageResponse.IsFailure)
+                    {
+                        return HttpRequestResponse.Failure(bijlageResponse.JsonResponse);
+                    }
+                }
+
+                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message.Contains("duplicate key value")
+                    ? HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API")
+                    : // For all other exceptions, just return failure
+                    HttpRequestResponse.Failure(ex.Message);
+            }
+        }
+
         #region Abstract
 
         /// <summary>
@@ -164,6 +227,29 @@ namespace WebQueries.Register.Interfaces
         string GetMessageBoxContactMomentJsonBody(
             MessageBoxNotifyReference reference, NotifyMethods notificationMethod,
             IReadOnlyList<string> messages);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body for a print ("printstraat") contactmoment.
+        /// </summary>
+        /// <param name="reference"><inheritdoc cref="PrintNotifyReference" path="/summary"/></param>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="messages">The messages.</param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetPrintContactMomentJsonBody(
+            PrintNotifyReference reference, NotifyMethods notificationMethod,
+            IReadOnlyList<string> messages);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body linking a "bijlage" to an existing klantcontact.
+        /// </summary>
+        /// <param name="klantcontactUuid">The klantcontact the attachment belongs to.</param>
+        /// <param name="documentUuid">The "enkelvoudiginformatieobject" holding the file.</param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetBijlageJsonBody(Guid klantcontactUuid, Guid documentUuid);
 
         #endregion
     }
