@@ -16,7 +16,7 @@ import {
   REGISTER_NODES,
 } from "@/lib/architecture";
 import { computeEdgeHandles, layoutGraph, LayoutResult } from "@/lib/layout";
-import { scenarioKeys } from "@/lib/tracePath";
+import { scenarioEdgeKeys, scenarioKeys } from "@/lib/tracePath";
 import { useOmcTelemetry } from "@/hooks/useOmcTelemetry";
 import { fetchScenarios, ScenarioFlow } from "@/lib/api";
 import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader";
@@ -268,6 +268,10 @@ export default function FlowPage() {
   );
 
   const usedKeys = useMemo(() => scenarioKeys(selectedFlowKey) ?? new Set<string>(), [selectedFlowKey]);
+  const usedEdgeKeys = useMemo(
+    () => scenarioEdgeKeys(selectedFlowKey) ?? new Set<string>(),
+    [selectedFlowKey],
+  );
 
   function nodeState(key: string, active: boolean): NodeState {
     if (!active) return "inactive";
@@ -335,7 +339,7 @@ export default function FlowPage() {
       EDGES.map((e, i) => {
         const sourceActive = ALL_ARCH_NODES.find((n) => n.key === e.source)?.active ?? true;
         const targetActive = ALL_ARCH_NODES.find((n) => n.key === e.target)?.active ?? true;
-        const live = sourceActive && targetActive && usedKeys.has(e.source) && usedKeys.has(e.target);
+        const live = sourceActive && targetActive && usedEdgeKeys.has(`${e.source}->${e.target}`);
         const color = EDGE_CATEGORY_COLOR[e.category];
         const handles = LAYOUT.edgeHandles[`${e.source}->${e.target}`];
 
@@ -357,7 +361,7 @@ export default function FlowPage() {
           },
         };
       }),
-    [usedKeys],
+    [usedEdgeKeys],
   );
 
   // Patches in the list of hops (if any — several simultaneous traces can each be traversing
