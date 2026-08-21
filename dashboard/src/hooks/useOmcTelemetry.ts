@@ -120,6 +120,13 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
   // The one active hop per trace that's currently live — surfaced as an array for rendering.
   const activeHopsByTraceRef = useRef<Map<string, TraceHop>>(new Map());
   const lastStageByTraceRef = useRef<Map<string, string>>(new Map());
+  // Per trace: the stage it was conceptually at right before its current run of back-to-back
+  // register calls started — register round-trips retrace all the way back here instead of
+  // unconditionally to the hub, so e.g. naturalpersoncheck -> openzaak -> naturalpersoncheck
+  // draws the same line it arrived by, and the next real hop continues from naturalpersoncheck
+  // rather than the hub picking a different, shorter edge (see the mijnzaken-gemuteerd flow's
+  // naturalpersoncheck -> zaaktypewhitelist edge for the concrete case this fixes).
+  const preRegisterStageByTraceRef = useRef<Map<string, string>>(new Map());
   const logCounterRef = useRef(0);
   const hopSeqRef = useRef(0);
 
@@ -187,6 +194,7 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
             // finished trace's last stage or queue.
             lastStageByTraceRef.current.delete(traceId);
             hopQueuesByTraceRef.current.delete(traceId);
+            preRegisterStageByTraceRef.current.delete(traceId);
           }, HOP_DELAY_MS);
           return;
         }
@@ -339,6 +347,14 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       // to the next stage via a topologically shorter route through an unrelated scenario's
       // gate (see tracePath.ts's module comment for the concrete Berichten-schakelaar case).
       const allowedKeys = scenarioKeys(event.scenario);
+
+      // Entering a register call that isn't itself a continuation of an already-in-progress run
+      // of back-to-back register calls — remember where to retrace back to once every register
+      // round-trip in this run has resolved.
+      if (event.status === "start" && REGISTER_KEYS.has(event.stage) && !REGISTER_KEYS.has(lastStage)) {
+        preRegisterStageByTraceRef.current.set(event.traceId, lastStage);
+      }
+
       const path =
         lastStage === event.stage ? [lastStage, event.stage] : findTracePath(lastStage, event.stage, allowedKeys);
       if (!path || path.length < 2) {
@@ -358,15 +374,23 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       }
 
       // Registers are never a forward stage of their own — OMC calls out and comes straight
-      // back to Output Patronen before doing anything else (see lib/architecture.ts's EDGES
-      // comment). Once a register call reaches a terminal status, queue that return leg right
-      // away instead of waiting for whatever stage happens to fire next — otherwise two calls
-      // to the same register in a row (or just a gap before the next real event) would leave
-      // the pip sitting at the register instead of visibly heading back to the hub.
+      // back before doing anything else (see lib/architecture.ts's EDGES comment). Once a
+      // register call reaches a terminal status, queue that return leg right away instead of
+      // waiting for whatever stage happens to fire next — otherwise two calls to the same
+      // register in a row (or just a gap before the next real event) would leave the pip sitting
+      // at the register instead of visibly heading back. The return retraces every line back to
+      // wherever the trace truly was before this run of register detours started (normally the
+      // hub, but e.g. naturalpersoncheck for mijnzaken-gemuteerd) rather than always stopping at
+      // the hub — so a later hop continuing on from there uses the same edge it arrived by,
+      // instead of the hub picking a different, shorter one.
       const isRegisterRoundTrip = event.status !== "start" && REGISTER_KEYS.has(event.stage);
       if (isRegisterRoundTrip) {
-        queue.push({ from: event.stage, to: PATTERN_ENGINE_KEY });
-        lastStageByTraceRef.current.set(event.traceId, PATTERN_ENGINE_KEY);
+        const returnTo = preRegisterStageByTraceRef.current.get(event.traceId) ?? PATTERN_ENGINE_KEY;
+        const returnPath = findTracePath(event.stage, returnTo, allowedKeys) ?? [event.stage, PATTERN_ENGINE_KEY];
+        for (let i = 0; i < returnPath.length - 1; i++) {
+          queue.push({ from: returnPath[i], to: returnPath[i + 1] });
+        }
+        lastStageByTraceRef.current.set(event.traceId, returnPath[returnPath.length - 1]);
       } else {
         lastStageByTraceRef.current.set(event.traceId, event.stage);
       }
