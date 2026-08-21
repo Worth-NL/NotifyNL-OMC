@@ -1,4 +1,4 @@
-// © 2026, Worth Systems.
+﻿// © 2026, Worth Systems.
 
 using ZgwModels.Enums;
 
@@ -13,7 +13,7 @@ namespace ZgwModels.Extensions
         /// Converts a <see cref="NotifyMethods"/> into the value recorded as "kanaal" on a klantcontact.
         /// </summary>
         /// <remarks>
-        ///   The enum's own name is used for every channel except letters, which are recorded as "brief":
+        ///   The enum's own name is used for every channel except letters, which are recorded as "Brief":
         ///   that is what OpenKlant is expected to hold for post. The others are left exactly as they were -
         ///   "Mobb" in particular is already the established abbreviation for MijnOverheid Berichtenbox, and
         ///   changing what live flows write into OpenKlant is not something to do in passing.
@@ -25,7 +25,7 @@ namespace ZgwModels.Extensions
         public static string ToKanaal(this NotifyMethods notifyMethod)
         {
             return notifyMethod == NotifyMethods.Letter
-                ? "brief"
+                ? "Brief"
                 : notifyMethod.ToString();
         }
     }
