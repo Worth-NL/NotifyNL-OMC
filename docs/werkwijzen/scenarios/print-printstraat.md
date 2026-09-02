@@ -103,6 +103,7 @@ Wanneer NotifyNL de afleverstatus terugmeldt op de callback:
     "data": {
       "pdfurl": "https://documenten.mijnstad.nl/api/v1/enkelvoudiginformatieobjecten/...",
       "contact_onderwerp": "Beschikking aanvraag 2026-001234",
+      "contact_hoofdOnderwerpType": "https://openzaak.mijnstad.nl/catalogi/api/v1/zaaktypen/...",
       "contact_onderwerpobjectidentificator": {
         "objectId": "...",
         "codeObjecttype": "zaak",
@@ -116,6 +117,8 @@ Wanneer NotifyNL de afleverstatus terugmeldt op de callback:
 ```
 
 `contact_onderwerp` en `contact_onderwerpobjectidentificator` worden gebruikt bij de registratie van het contactmoment (`onderwerp`/`onderwerpobject`) — als `contact_onderwerpobjectidentificator` ontbreekt, valt het OMC terug op de geconfigureerde standaardwaarden.
+
+`contact_hoofdOnderwerpType` wordt ongewijzigd doorgezet naar het klantcontact-veld `hoofdOnderwerpType`: de absolute URI van het zaaktype waartoe het onderwerpobject (normaliter de zaak) behoort. In tegenstelling tot de velden in `contact_onderwerpobjectidentificator` bestaat hiervoor geen geconfigureerde standaardwaarde — de aanroepende partij moet deze zelf aanleveren; ontbreekt het veld, dan wordt `hoofdOnderwerpType` als lege string geregistreerd.
 
 ---
 
