@@ -20,9 +20,9 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters
             return new CommonPartyData
             {
                 Uri                     = data.Party.Uri,
-                Name                    = data.Party.Identification.Details.Name,
-                SurnamePrefix           = data.Party.Identification.Details.SurnamePrefix,
-                Surname                 = data.Party.Identification.Details.Surname,
+                Name                    = data.Party.Identification?.Details.Name ?? string.Empty,
+                SurnamePrefix           = data.Party.Identification?.Details.SurnamePrefix ?? string.Empty,
+                Surname                 = data.Party.Identification?.Details.Surname ?? string.Empty,
                 DistributionChannel     = data.DistributionChannel,
                 DistributionChannelReason = data.Reason,
                 EmailAddress            = data.EmailAddress,

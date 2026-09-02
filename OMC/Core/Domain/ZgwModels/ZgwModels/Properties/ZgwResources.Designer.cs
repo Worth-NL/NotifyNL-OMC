@@ -439,6 +439,15 @@ namespace ZgwModels.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The party (citizen) could not be created in OpenKlant Web API service..
+        /// </summary>
+        public static string HttpRequest_ERROR_NoPartyCreated {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoPartyCreated", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to HTTP Request: Party results could not be retrieved from OpenKlant Web API service..
         /// </summary>
         public static string HttpRequest_ERROR_NoPartyDetails {

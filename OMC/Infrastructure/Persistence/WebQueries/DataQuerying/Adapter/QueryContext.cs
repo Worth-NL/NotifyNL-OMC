@@ -141,15 +141,15 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.GetKlantHealthCheckAsync()
             => await this._queryKlant.GetHealthCheckAsync(this._networkService);
 
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?, bool)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?, bool, bool)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier, bool requireDigitalAddress, bool createIfMissing)
         {
             // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
             if (caseUri.IsNullOrDefault())
             {
                 return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
                     ? throw new ArgumentException(QueryResources.Querying_ERROR_Internal_MissingBsnNumber)
-                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier, requireDigitalAddress: requireDigitalAddress);
+                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier, requireDigitalAddress: requireDigitalAddress, createIfMissing: createIfMissing);
             }
 
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);

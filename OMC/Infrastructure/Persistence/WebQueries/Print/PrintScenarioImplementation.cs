@@ -136,12 +136,16 @@ namespace WebQueries.Print
             // requireDigitalAddress is deliberately false: this flow posts a physical letter, so a citizen
             // with no e-mail or phone number on file is a perfectly normal recipient rather than a failure.
             // Leaving it at its default would reject exactly the people a printed letter exists for.
+            //
+            // createIfMissing is deliberately true: OMC's business flow does not guarantee a partij already
+            // exists for this citizen - a print request can be the first contact OMC ever has with them.
+            // A missing partij is created on the fly rather than aborting the notification.
             TraceContext.Emit("openklant", "start", "Attempting to retrieve klant");
             CommonPartyData party;
             try
             {
                 party = await queryContext.GetPartyDataAsync(
-                    caseUri: null, bsnNumber: bsnNumber, caseIdentifier: null, requireDigitalAddress: false);
+                    caseUri: null, bsnNumber: bsnNumber, caseIdentifier: null, requireDigitalAddress: false, createIfMissing: true);
             }
             catch (Exception exception)
             {
