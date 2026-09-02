@@ -18,6 +18,7 @@ using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
+using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
@@ -140,15 +141,15 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.GetKlantHealthCheckAsync()
             => await this._queryKlant.GetHealthCheckAsync(this._networkService);
 
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?, bool)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?, bool, bool)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier, bool requireDigitalAddress, bool createIfMissing)
         {
             // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
             if (caseUri.IsNullOrDefault())
             {
                 return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
                     ? throw new ArgumentException(QueryResources.Querying_ERROR_Internal_MissingBsnNumber)
-                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier, requireDigitalAddress: requireDigitalAddress);
+                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier, requireDigitalAddress: requireDigitalAddress, createIfMissing: createIfMissing);
             }
 
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
@@ -173,6 +174,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)
             => await this._queryKlant.CreateContactMomentAsync(this._queryBase, jsonBody);
+
+        /// <inheritdoc cref="IQueryContext.CreateBijlageAsync(string)"/>
+        async Task<HttpRequestResponse> IQueryContext.CreateBijlageAsync(string jsonBody)
+            => await this._queryKlant.CreateBijlageAsync(this._networkService, jsonBody);
 
         /// <inheritdoc cref="IQueryContext.LinkCaseToContactMomentAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.LinkCaseToContactMomentAsync(string jsonBody)
@@ -225,6 +230,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.GetMessageAsync()"/>
         Task<MessageObject> IQueryContext.GetMessageAsync()
             => this._queryObjecten.GetMessageAsync(this._queryBase);
+
+        /// <inheritdoc cref="IQueryContext.GetPrintObjectAsync()"/>
+        Task<PrintObject> IQueryContext.GetPrintObjectAsync()
+            => this._queryObjecten.GetPrintObjectAsync(this._queryBase);
 
         /// <inheritdoc cref="IQueryContext.CreateObjectAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.CreateObjectAsync(string objectJsonBody)

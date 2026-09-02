@@ -62,6 +62,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.PermanentFailure, "permanent-failure")]
         [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.TemporaryFailure, "temporary-failure")]
         [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.TechnicalFailure, "technical-failure")]
+        [TestCase(typeof(DeliveryStatuses), DeliveryStatuses.ValidationFailed, "validation-failed")]
         public void JsonSerializer_CustomEnumSerialization_FromEnglishEnum_ToDutchJson(Type testEnumType, int testEnumValue, string expectedJsonValue)
         {
             // Arrange
@@ -124,6 +125,7 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase("permanent-failure", typeof(DeliveryStatuses), DeliveryStatuses.PermanentFailure)]
         [TestCase("temporary-failure", typeof(DeliveryStatuses), DeliveryStatuses.TemporaryFailure)]
         [TestCase("technical-failure", typeof(DeliveryStatuses), DeliveryStatuses.TechnicalFailure)]
+        [TestCase("validation-failed", typeof(DeliveryStatuses), DeliveryStatuses.ValidationFailed)]
         public void JsonSerializer_CustomEnumSerialization_FromDutchJson_ToEnglishEnum(string testJsonValue, Type testEnumType, int expectedEnumValue)
         {
             // Act

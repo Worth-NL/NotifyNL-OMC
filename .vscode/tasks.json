@@ -4,10 +4,11 @@
     {
       "label": "build",
       "command": "dotnet",
+      "group": "build",
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/NotifyNL.sln",
+        "${workspaceFolder}/OMC.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -19,7 +20,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/NotifyNL.sln",
+        "${workspaceFolder}/OMC.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -33,7 +34,20 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/NotifyNL.sln"
+        "${workspaceFolder}/OMC/Infrastructure/WebApi/EventsHandler/EventsHandler.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test",
+      "command": "dotnet",
+      "group": "test",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/OMC.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
       "problemMatcher": "$msCompile"
     }

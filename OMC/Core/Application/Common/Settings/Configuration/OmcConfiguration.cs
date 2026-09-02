@@ -340,6 +340,31 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string CodeRegister_Bericht()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
+
+                    // These two identify the "bijlage" attached to a klantcontact, which points at an
+                    // "enkelvoudiginformatieobject" in the Documenten API rather than at a zaak.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Bijlage()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Bijlage));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Bijlage()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bijlage));
+
+                    // These two identify the "partijIdentificator" attached when OMC creates a missing
+                    // "partij" (citizen) in OpenKlant on the fly - confirmed against OpenKlant's own
+                    // OpenAPI schema (CodeObjecttypeEnum/CodeRegisterEnum), unlike the "_Bericht" pair above.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Partij()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Partij));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Partij()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Partij));
                 }
 
                 /// <summary>
@@ -955,6 +980,11 @@ namespace Common.Settings.Configuration
                 public bool Message_Allowed()
                     => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Message_Allowed));
 
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public bool Print_Allowed()
+                    => GetCachedValue<bool>(this._loadersContext, this._currentPath, nameof(Print_Allowed));
+
                 #region Helper methods
                 /// <summary>
                 /// Returns cached <see cref="IDs"/> or creates a new one.
@@ -1134,6 +1164,17 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid KtoObjectType_Uuid()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(KtoObjectType_Uuid));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    /// <remarks>
+                    ///   The objecttype whose objects carry a pre-composed PDF to be printed and posted
+                    ///   (the SZW "printstraat" flow). Unlike <see cref="MessageObjectType_Uuid"/> this one
+                    ///   is deliberately not version-pinned - the payload is a flat set of fields, so a new
+                    ///   objecttype version that only adds fields stays readable.
+                    /// </remarks>
+                    [Config]
+                    public Guid PrintObjectType_Uuid()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(PrintObjectType_Uuid));
                 }
             }
         }

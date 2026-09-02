@@ -1,4 +1,4 @@
-// © 2026, Worth Systems.
+﻿// © 2026, Worth Systems.
 
 using Common.Extensions;
 using Common.Settings.Configuration;
@@ -13,6 +13,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
+using WebQueries.Print.Interfaces;
 using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
@@ -30,6 +31,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
         private Mock<ITelemetryService> _mockedTelemetry = null!;
         private Mock<INotifyService<NotifyData>> _mockedNotifyService = null!;
         private Mock<IMessageBoxScenario> _mockedMessageBoxScenario = null!;
+        private Mock<IPrintScenario> _mockedPrintScenario = null!;
         private TraceEmitter _traceEmitter = null!;
 
         private GeneralResponder _responder = null!;
@@ -41,6 +43,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
             this._mockedTelemetry = new Mock<ITelemetryService>(MockBehavior.Strict);
             this._mockedNotifyService = new Mock<INotifyService<NotifyData>>(MockBehavior.Strict);
             this._mockedMessageBoxScenario = new Mock<IMessageBoxScenario>(MockBehavior.Strict);
+            this._mockedPrintScenario = new Mock<IPrintScenario>(MockBehavior.Strict);
 
             this._mockedNotifyService
                 .Setup(mock => mock.GetNotificationDataAsync(It.IsAny<NotifyData>(), It.IsAny<Guid>()))
@@ -61,6 +64,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
                 this._mockedTelemetry.Object,
                 this._mockedNotifyService.Object,
                 this._mockedMessageBoxScenario.Object,
+                this._mockedPrintScenario.Object,
                 this._traceEmitter);
         }
 

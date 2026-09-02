@@ -8,6 +8,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +59,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             serviceCollection.AddSingleton(new TaskAssignedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new DecisionMadeScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new MessageReceivedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new PrintScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new KtoScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new NotImplementedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
@@ -265,6 +267,20 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
 
             // Assert
             Assert.That(actualResult, Is.TypeOf<KtoScenario>());
+        }
+
+        [Test]
+        public async Task DetermineScenarioAsync_PrintScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetObjectNotification(_omcConfiguration.ZGW.Variable.ObjectType.PrintObjectType_Uuid().ToString());
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<PrintScenario>());
         }
 
         [Test]

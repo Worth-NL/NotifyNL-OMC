@@ -13,10 +13,12 @@ using EventsHandler.Services.Configuration;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
+using Sentry;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Responding;
@@ -59,6 +61,8 @@ using WebQueries.MijnOverheid.Clients;
 using WebQueries.MijnOverheid.Interfaces;
 using WebQueries.MOBB;
 using WebQueries.MOBB.Interfaces;
+using WebQueries.Print;
+using WebQueries.Print.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Events;
@@ -234,6 +238,7 @@ namespace EventsHandler
             builder.Services.AddSingleton<INotifyService<NotifyData>, NotifyService>();
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
+            builder.Services.AddScoped<IPrintScenario, PrintScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -401,6 +406,7 @@ namespace EventsHandler
             services.AddScoped<MessageReceivedScenario>();
             services.AddScoped<NotImplementedScenario>();
             services.AddScoped<KtoScenario>();
+            services.AddScoped<PrintScenario>();
         }
 
         // NOTE: v1 workflow versioning (OpenKlant v1, OpenZaak v1/v2 distinction, and the

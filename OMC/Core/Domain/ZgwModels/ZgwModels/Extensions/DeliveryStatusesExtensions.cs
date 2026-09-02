@@ -33,7 +33,8 @@ namespace ZgwModels.Extensions
 
                 DeliveryStatuses.PermanentFailure or
                 DeliveryStatuses.TemporaryFailure or
-                DeliveryStatuses.TechnicalFailure => FeedbackTypes.Failure,
+                DeliveryStatuses.TechnicalFailure or
+                DeliveryStatuses.ValidationFailed => FeedbackTypes.Failure,
 
                 // FAILURE: Return fallback enum B
                 _ => FeedbackTypes.Info
