@@ -62,15 +62,17 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(userMessageBody);
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
+            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.Notification.ResourceUri.AbsoluteUri);
 
             return $"{{\"klantcontact\":{{" +
-                   $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification) 
+                   $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
-                   $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user) 
+                   $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
-                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +                                  // Fixed: interpolated variable with ISO 8601 format
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +                                 // Fixed: interpolated variable with ISO 8601 format
+                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The specific resource (e.g. status) the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
@@ -118,6 +120,7 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(userMessageBody);
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
+            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl.AbsoluteUri);
 
             SubjectObjectIdentifier subjectObject = reference.SubjectObject ?? new SubjectObjectIdentifier();
 
@@ -136,7 +139,8 @@ namespace WebQueries.Register.v2
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
-                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The print-request object the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +

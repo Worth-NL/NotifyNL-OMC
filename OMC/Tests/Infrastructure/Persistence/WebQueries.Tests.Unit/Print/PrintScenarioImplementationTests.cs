@@ -322,6 +322,32 @@ namespace WebQueries.Tests.Unit.Print
                     mock => mock.GetPartyDataAsync(null, TestBsn, null, false), Times.Once);
             });
         }
+
+        [Test]
+        public async Task ProcessPrintAsync_HappyPath_ReferenceCarriesOriginalResourceUrl()
+        {
+            // Arrange: GZAC relates its own print-request process to the contactmoment via this URL, so
+            // it has to round-trip through the compressed reference all the way to the delivery receipt.
+            IPrintScenario scenario = GetAllowedScenario();
+            SetupPrintObject(GetPrintData());
+            SetupParty();
+            SetupDocument();
+            SetupSuccessfulSend();
+
+            PrintNotifyReference capturedReference = default;
+            this._mockedSerializer
+                .Setup(mock => mock.Serialize(It.IsAny<PrintNotifyReference>()))
+                .Callback<PrintNotifyReference>(r => capturedReference = r)
+                .Returns("test-reference");
+
+            NotificationEvent notification = GetNotification();
+
+            // Act
+            await scenario.ProcessPrintAsync(notification);
+
+            // Assert
+            Assert.That(capturedReference.OriginalResourceUrl, Is.EqualTo(notification.MainObjectUri));
+        }
         #endregion
 
         #region Delivery callback

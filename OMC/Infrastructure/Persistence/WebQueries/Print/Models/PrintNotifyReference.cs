@@ -1,6 +1,7 @@
 // © 2026, Worth Systems.
 
 using System.Text.Json.Serialization;
+using Common.Constants;
 using ZgwModels.Mapping.Models.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 
@@ -53,6 +54,16 @@ namespace WebQueries.Print.Models
         [JsonInclude]
         [JsonPropertyOrder(4)]
         public Guid AttachmentId { get; set; } = Guid.Empty;
+
+        /// <summary>
+        /// The absolute URI of the "Objecten" object that triggered this print job (i.e. the
+        /// notification's own "hoofdObject") - registered on the klantcontact's "metadata" so that
+        /// external systems (e.g. GZAC) can relate the contactmoment back to the print request.
+        /// </summary>
+        [JsonRequired]
+        [JsonInclude]
+        [JsonPropertyOrder(5)]
+        public Uri OriginalResourceUrl { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PrintNotifyReference"/> struct.
