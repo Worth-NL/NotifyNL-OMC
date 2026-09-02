@@ -58,6 +58,18 @@ namespace ZgwModels.Mapping.Models.POCOs.Objecten.Print
         public string BetrokkeneUrn { get; [UsedImplicitly] set; } = string.Empty;
 
         /// <summary>
+        /// The absolute URI of the zaaktype that the "onderwerpobjectidentificator" object (normally the
+        /// zaak) belongs to, to register as the klantcontact's "hoofdOnderwerpType".
+        /// </summary>
+        /// <remarks>
+        ///   OMC never resolves or fetches this URI - it is opaque to OMC and forwarded verbatim to
+        ///   OpenKlant, so unlike <c>PdfUri</c> it needs no domain validation.
+        /// </remarks>
+        [JsonPropertyName("contact_hoofdOnderwerpType")]
+        [JsonPropertyOrder(4)]
+        public Uri? SubjectObjectTypeUri { get; [UsedImplicitly] set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PrintData"/> struct.
         /// </summary>
         public PrintData()

@@ -121,6 +121,7 @@ namespace WebQueries.Register.v2
             string safeBody = JsonSerializer.Serialize(userMessageBody);
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl.AbsoluteUri);
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(reference.SubjectObjectTypeUri?.AbsoluteUri ?? string.Empty);
 
             SubjectObjectIdentifier subjectObject = reference.SubjectObject ?? new SubjectObjectIdentifier();
 
@@ -140,6 +141,7 @@ namespace WebQueries.Register.v2
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The zaaktype of the onderwerpobject, supplied by the caller
                    $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The print-request object the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +

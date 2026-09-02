@@ -189,6 +189,7 @@ namespace WebQueries.Print
                 PartyId = party.Uri.GetGuid(),
                 Subject = printData.Subject,
                 SubjectObject = printData.SubjectObjectIdentifier,
+                SubjectObjectTypeUri = printData.SubjectObjectTypeUri,
                 AttachmentId = documentUuid,
                 OriginalResourceUrl = notification.MainObjectUri
             };

@@ -214,6 +214,50 @@ namespace WebQueries.Tests.Unit.Register.v2
                     "\"metadata\":{\"originalResourceUrl\":\"https://objecten.test/api/v2/objects/55555555-5555-5555-5555-555555555555\"}"));
             });
         }
+
+        [Test]
+        public void GetPrintContactMomentJsonBody_SubjectObjectTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange: "contact_hoofdOnderwerpType" identifies the zaaktype of the onderwerpobject and has
+            // no configured fallback - it is registered verbatim as the klantcontact's "hoofdOnderwerpType".
+            var reference = new PrintNotifyReference
+            {
+                PartyId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                SubjectObjectTypeUri = new Uri("https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666")
+            };
+
+            // Act
+            string actualResult = CreateService().GetPrintContactMomentJsonBody(reference, NotifyMethods.Letter, []);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666\""));
+            });
+        }
+
+        [Test]
+        public void GetPrintContactMomentJsonBody_SubjectObjectTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Arrange: unlike "onderwerpobjectidentificator", there is no sensible tenant-wide default for
+            // a case-specific zaaktype URI - an omitted value is registered as an empty string, not defaulted.
+            var reference = new PrintNotifyReference
+            {
+                PartyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+            };
+
+            // Act
+            string actualResult = CreateService().GetPrintContactMomentJsonBody(reference, NotifyMethods.Letter, []);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+            });
+        }
         #endregion
 
         #region GetNewCreateContactMomentJsonBody
