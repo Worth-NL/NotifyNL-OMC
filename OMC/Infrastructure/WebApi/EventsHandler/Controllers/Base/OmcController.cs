@@ -6,6 +6,7 @@ using EventsHandler.Attributes.Versioning;
 using EventsHandler.Constants;
 using EventsHandler.Properties;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace EventsHandler.Controllers.Base
 {
