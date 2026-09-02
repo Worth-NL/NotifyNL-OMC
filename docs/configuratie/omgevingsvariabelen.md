@@ -53,6 +53,7 @@ Alle OMC-configuratie kan worden ingesteld via omgevingsvariabelen. Dit is de aa
 | `ZGW_AUTH_KEY_OPENKLANT` | Ja (v2) | API-sleutel voor OpenKlant (vereist voor werkwijze v2) |
 | `ZGW_AUTH_KEY_OBJECTEN` | Ja | API-sleutel voor de Objecten-API |
 | `ZGW_AUTH_KEY_OBJECTTYPEN` | Ja | API-sleutel voor de ObjectTypen-API |
+| `ZGW_AUTH_KEY_OPENVTB` | Ja | API-sleutel voor OpenVTB (Berichtenbox/MOBB-brontrigger) — `HttpNetworkService` bouwt bij het opstarten een HttpClient voor elke `HttpClientTypes`-waarde, dus dit is ook vereist wanneer MOBB niet gebruikt wordt |
 
 ---
 
@@ -67,6 +68,8 @@ Alle OMC-configuratie kan worden ingesteld via omgevingsvariabelen. Dit is de aa
 | `ZGW_ENDPOINT_OBJECTEN` | Ja | Basis-URL van de Objecten API |
 | `ZGW_ENDPOINT_OBJECTTYPEN` | Ja | Basis-URL van de ObjectTypen API |
 | `ZGW_ENDPOINT_CONTACTMOMENTEN` | Ja | Basis-URL van de Contactmomenten API |
+| `ZGW_ENDPOINT_DOCUMENTEN` | Ja | Basis-URL van de Documenten API (OpenZaak) — gebruikt door de printstraat-flow om de PDF op te halen; de `pdfurl` uit het printobject moet dezelfde origin hebben (SSRF-check) |
+| `ZGW_ENDPOINT_OPENVTB` | Ja | Basis-URL van OpenVTB (Berichtenbox/MOBB-brontrigger) — zie `ZGW_AUTH_KEY_OPENVTB` hierboven voor waarom dit ook vereist is wanneer MOBB niet gebruikt wordt |
 
 ---
 

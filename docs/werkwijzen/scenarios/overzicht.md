@@ -47,6 +47,7 @@ Placeholders volgen de naamgevingsconventie `((object.veldnaam))`, waarbij de ve
 | [Taak toegewezen](taak-toegewezen.md) | `objecten` | taakobjecttype |
 | [Besluit genomen](besluit-genomen.md) | `besluiten` | `besluit` |
 | [Bericht ontvangen](bericht-ontvangen.md) | `objecten` | berichtobjecttype |
+| [Print (printstraat)](print-printstraat.md) | `objecten` | printobjecttype |
 | [Producten](producten.md) | — | In ontwikkeling |
 
 ---
