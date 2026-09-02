@@ -66,6 +66,14 @@ namespace WebQueries.Print.Models
         public Uri OriginalResourceUrl { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
+        /// The zaaktype URI supplied on the object's "contact_hoofdOnderwerpType", if any, registered on
+        /// the klantcontact as "hoofdOnderwerpType".
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyOrder(6)]
+        public Uri? SubjectObjectTypeUri { get; set; } = null;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PrintNotifyReference"/> struct.
         /// </summary>
         public PrintNotifyReference()

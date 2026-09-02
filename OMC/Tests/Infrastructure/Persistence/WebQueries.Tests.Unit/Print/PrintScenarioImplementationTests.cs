@@ -348,6 +348,31 @@ namespace WebQueries.Tests.Unit.Print
             // Assert
             Assert.That(capturedReference.OriginalResourceUrl, Is.EqualTo(notification.MainObjectUri));
         }
+
+        [Test]
+        public async Task ProcessPrintAsync_HappyPath_ReferenceCarriesSubjectObjectTypeUri()
+        {
+            // Arrange: "contact_hoofdOnderwerpType" identifies the zaaktype of the onderwerpobject and has
+            // to survive the round trip to the delivery receipt the same way "contact_onderwerp" does.
+            var subjectObjectTypeUri = new Uri("https://openzaak.test/catalogi/api/v1/zaaktypen/55555555-5555-5555-5555-555555555555");
+            IPrintScenario scenario = GetAllowedScenario();
+            SetupPrintObject(GetPrintData(subjectObjectTypeUri: subjectObjectTypeUri));
+            SetupParty();
+            SetupDocument();
+            SetupSuccessfulSend();
+
+            PrintNotifyReference capturedReference = default;
+            this._mockedSerializer
+                .Setup(mock => mock.Serialize(It.IsAny<PrintNotifyReference>()))
+                .Callback<PrintNotifyReference>(r => capturedReference = r)
+                .Returns("test-reference");
+
+            // Act
+            await scenario.ProcessPrintAsync(GetNotification());
+
+            // Assert
+            Assert.That(capturedReference.SubjectObjectTypeUri, Is.EqualTo(subjectObjectTypeUri));
+        }
         #endregion
 
         #region Delivery callback
@@ -494,7 +519,8 @@ namespace WebQueries.Tests.Unit.Print
             Uri? pdfUri = null,
             string? betrokkeneUrn = null,
             bool includeSubjectObject = true,
-            bool omitPdfUri = false)
+            bool omitPdfUri = false,
+            Uri? subjectObjectTypeUri = null)
         {
             return new PrintData
             {
@@ -509,7 +535,8 @@ namespace WebQueries.Tests.Unit.Print
                         CodeRegister = "openzaak",
                         CodeSoortObjectId = "uuid"
                     }
-                    : null
+                    : null,
+                SubjectObjectTypeUri = subjectObjectTypeUri
             };
         }
 
