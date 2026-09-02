@@ -48,6 +48,7 @@ Placeholders volgen de naamgevingsconventie `((object.veldnaam))`, waarbij de ve
 | [Besluit genomen](besluit-genomen.md) | `besluiten` | `besluit` |
 | [Bericht ontvangen](bericht-ontvangen.md) | `objecten` | berichtobjecttype |
 | [Print (printstraat)](print-printstraat.md) | `objecten` | printobjecttype |
+| [Berichtenbox (MOBB)](berichtenbox-mobb.md) | — | CloudEvent `nl.overheid.berichten.bericht-gepubliceerd` |
 | [Producten](producten.md) | — | In ontwikkeling |
 
 ---
