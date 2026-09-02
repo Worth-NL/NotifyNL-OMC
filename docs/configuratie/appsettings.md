@@ -31,7 +31,9 @@ Alleen de `Network`-, `Encryption`- en `Variables`-secties worden daadwerkelijk 
       "CodeObjectType_Bericht": "bericht",
       "CodeRegister_Bericht": "open-vtb",
       "CodeObjectType_Bijlage": "enkelvoudiginformatieobject",
-      "CodeRegister_Bijlage": "open-zaak"
+      "CodeRegister_Bijlage": "open-zaak",
+      "CodeObjectType_Partij": "natuurlijk_persoon",
+      "CodeRegister_Partij": "brp"
     },
     "UxMessages": {
       "SMS_Success_Subject": "",

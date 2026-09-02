@@ -61,6 +61,8 @@ De `pdfurl` in het printobject wordt geleverd door de aanleverende partij en is 
 
 Het OMC zoekt de partij op via OpenKlant aan de hand van de BSN. Anders dan bij de overige scenario's is een digitaal adres (e-mail/telefoon) **niet vereist** — een burger zonder e-mailadres of telefoonnummer is voor een fysieke brief een normale ontvanger.
 
+Het printscenario garandeert niet dat er al een partij voor deze burger bestaat in OpenKlant — een printverzoek kan het eerste contact zijn dat het OMC ooit met deze burger heeft. Bestaat de partij nog niet, dan maakt het OMC deze zelf aan (kale partij, `soortPartij: persoon`, uitsluitend voorzien van de BSN-`partijIdentificator` — geen naam, adres of digitaal adres, omdat het OMC op dit punt geen van die gegevens heeft) en zoekt vervolgens opnieuw op. Dit voorkomt de eerdere harde 412-mislukking wanneer de partij ontbrak.
+
 ### Stap 6 — PDF downloaden
 
 Het OMC haalt de daadwerkelijke bestandsinhoud op bij de gevalideerde `pdfurl`.
@@ -135,5 +137,8 @@ Niet van toepassing. Dit scenario stelt zelf geen inhoud samen — de PDF *is* d
 | `ZGW_WHITELIST_PRINT_ALLOWED` | `true`/`false` — schakelt dit scenario in of uit |
 | `ZGW_VARIABLE_OBJECTTYPE_PRINTOBJECTTYPE_UUID` | UUID van het printobjecttype in ObjectTypen |
 | `ZGW_ENDPOINT_DOCUMENTEN` | Basis-URL van de Documenten API — `pdfurl` moet hier exact op de origin van overeenkomen |
+| `VARIABLES_PARTIJIDENTIFICATOR` | `codeSoortObjectId` van de BSN-partijIdentificator, zowel bij het opzoeken als (indien nodig) het aanmaken van de partij (standaard: `bsn`) |
+| `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PARTIJ` | `codeObjecttype` gebruikt bij het aanmaken van een ontbrekende partij (standaard: `natuurlijk_persoon`) |
+| `VARIABLES_OPENKLANT_CODEREGISTER_PARTIJ` | `codeRegister` gebruikt bij het aanmaken van een ontbrekende partij (standaard: `brp`) |
 
 Zie [Omgevingsvariabelen](../../configuratie/omgevingsvariabelen.md) voor de volledige lijst.

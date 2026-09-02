@@ -36,9 +36,9 @@ Sturen de resolutie van de betrokken partij (burger/organisatie) en het bijbehor
 | `VARIABLES_EMAILOMSCHRIJVINGGENERIEK` | Nee | OpenKlant digitaal-adres-typeomschrijving die als e-mailadres wordt herkend (standaard: `Email`) |
 | `VARIABLES_TELEFOONOMSCHRIJVINGGENERIEK` | Nee | OpenKlant digitaal-adres-typeomschrijving die als telefoonnummer wordt herkend (standaard: `Telefoon`) |
 
-### AppSettings — Variabelen — OpenKlant (onderwerpobject-koppeling)
+### AppSettings — Variabelen — OpenKlant (onderwerpobject-koppeling / partij-aanmaak)
 
-Constanten die worden ingevuld in de `onderwerpobject`/`bijlage`-koppeling van een klantcontact.
+Constanten die worden ingevuld in de `onderwerpobject`/`bijlage`-koppeling van een klantcontact, en (de laatste twee) bij het aanmaken van een ontbrekende partij in OpenKlant.
 
 | Variabele | Vereist | Beschrijving |
 |---|---|---|
@@ -49,6 +49,8 @@ Constanten die worden ingevuld in de `onderwerpobject`/`bijlage`-koppeling van e
 | `VARIABLES_OPENKLANT_CODEREGISTER_BERICHT` | Nee | `codeRegister` voor de MOBB/Berichtenbox-koppeling (standaard: `open-vtb`) |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BIJLAGE` | Nee | `codeObjecttype` voor een klantcontact-bijlage die naar een informatieobject in de Documenten-API verwijst (standaard: `enkelvoudiginformatieobject`) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BIJLAGE` | Nee | `codeRegister` voor een klantcontact-bijlage (standaard: `open-zaak`) — pas dit aan wanneer het documentregister afwijkt, bijvoorbeeld `nld:denhaag:zaken-main:drc` |
+| `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PARTIJ` | Nee | `codeObjecttype` gebruikt bij het aanmaken van een ontbrekende partij (burger) in OpenKlant voor de Print/MOBB-flows (standaard: `natuurlijk_persoon`) |
+| `VARIABLES_OPENKLANT_CODEREGISTER_PARTIJ` | Nee | `codeRegister` gebruikt bij het aanmaken van een ontbrekende partij in OpenKlant (standaard: `brp`) |
 
 ### AppSettings — Variabelen — UxMessages
 
