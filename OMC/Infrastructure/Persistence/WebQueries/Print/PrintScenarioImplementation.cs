@@ -189,7 +189,8 @@ namespace WebQueries.Print
                 PartyId = party.Uri.GetGuid(),
                 Subject = printData.Subject,
                 SubjectObject = printData.SubjectObjectIdentifier,
-                AttachmentId = documentUuid
+                AttachmentId = documentUuid,
+                OriginalResourceUrl = notification.MainObjectUri
             };
 
             NotifySendResponse sendResponse = await notifyClient.SendPrecompiledLetterAsync(

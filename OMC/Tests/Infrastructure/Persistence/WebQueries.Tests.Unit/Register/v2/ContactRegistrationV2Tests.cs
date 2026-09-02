@@ -192,6 +192,59 @@ namespace WebQueries.Tests.Unit.Register.v2
             // Assert
             Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
         }
+
+        [Test]
+        public void GetPrintContactMomentJsonBody_IncludesOriginalResourceUrlInMetadata()
+        {
+            // Arrange: GZAC relates its own print-request process to the contactmoment via this URL.
+            var reference = new PrintNotifyReference
+            {
+                PartyId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                OriginalResourceUrl = new Uri("https://objecten.test/api/v2/objects/55555555-5555-5555-5555-555555555555")
+            };
+
+            // Act
+            string actualResult = CreateService().GetPrintContactMomentJsonBody(reference, NotifyMethods.Letter, []);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"metadata\":{\"originalResourceUrl\":\"https://objecten.test/api/v2/objects/55555555-5555-5555-5555-555555555555\"}"));
+            });
+        }
+        #endregion
+
+        #region GetNewCreateContactMomentJsonBody
+        [Test]
+        public void GetNewCreateContactMomentJsonBody_IncludesOriginalResourceUrlInMetadata()
+        {
+            // Arrange: e.g. for a case-status-update notification, this is the specific status URI -
+            // distinct from the case URI already linked via onderwerpobject/reference.CaseId.
+            var reference = new NotifyReference
+            {
+                CaseId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                PartyId = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Notification = new NotificationEvent
+                {
+                    ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/66666666-6666-6666-6666-666666666666")
+                }
+            };
+
+            // Act: real callers (NotifyCallbackResponder) always pass 4 messages, the 3rd being the
+            // "true"/"false" success flag - matching that shape here rather than an unrealistic empty list.
+            string actualResult = CreateService().GetNewCreateContactMomentJsonBody(
+                reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"metadata\":{\"originalResourceUrl\":\"https://openzaak.test/zaken/api/v1/statussen/66666666-6666-6666-6666-666666666666\"}"));
+            });
+        }
         #endregion
 
         #region IVersionDetails
