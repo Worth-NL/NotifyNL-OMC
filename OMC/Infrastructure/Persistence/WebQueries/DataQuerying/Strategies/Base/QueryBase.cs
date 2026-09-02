@@ -1,5 +1,6 @@
 ﻿// © 2024, Worth Systems.
 
+using Sentry;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
