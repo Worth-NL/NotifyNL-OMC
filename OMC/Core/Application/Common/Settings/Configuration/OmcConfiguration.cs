@@ -352,6 +352,19 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string CodeRegister_Bijlage()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bijlage));
+
+                    // These two identify the "partijIdentificator" attached when OMC creates a missing
+                    // "partij" (citizen) in OpenKlant on the fly - confirmed against OpenKlant's own
+                    // OpenAPI schema (CodeObjecttypeEnum/CodeRegisterEnum), unlike the "_Bericht" pair above.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Partij()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Partij));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Partij()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Partij));
                 }
 
                 /// <summary>

@@ -244,6 +244,9 @@
   <data name="HttpRequest_ERROR_NoPrintObject" xml:space="preserve">
     <value>HTTP Request: The print job (object) could not be retrieved from Objecten Web API service.</value>
   </data>
+  <data name="HttpRequest_ERROR_NoPartyCreated" xml:space="preserve">
+    <value>HTTP Request: The party (citizen) could not be created in OpenKlant Web API service.</value>
+  </data>
   <data name="HttpRequest_ERROR_NoPartyDetails" xml:space="preserve">
     <value>HTTP Request: Party results could not be retrieved from OpenKlant Web API service.</value>
   </data>

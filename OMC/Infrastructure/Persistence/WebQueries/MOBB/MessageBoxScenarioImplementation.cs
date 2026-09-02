@@ -152,7 +152,10 @@ namespace WebQueries.MOBB
             // requireDigitalAddress: false - unlike classic ZGW scenarios (email/SMS only), MOBB has a postal
             // letter fallback for parties with zero digital addresses on file, so that must not be a hard
             // failure here; the party's identity is still resolved, just with an empty email/phone.
-            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false);
+            //
+            // createIfMissing: true - OMC's business flow does not guarantee a partij already exists for
+            // this citizen, so a missing one is created on the fly rather than dropping the message.
+            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false, createIfMissing: true);
             Guid partyId = partyData.Uri.GetGuid();
 
             _logger.LogDebug("Message {MessageId}: resolved recipient BSN (length {BsnLength}) to OpenKlant party {PartyId}.",
@@ -532,9 +535,10 @@ namespace WebQueries.MOBB
                 throw new InvalidOperationException("Recipient is not a citizen (BSN not found in RecipientUrn).");
             }
 
-            // requireDigitalAddress: false - see the matching comment in ProcessCloudEventAsync; this
-            // callback-triggered re-resolution can also end up at the letter fallback.
-            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false);
+            // requireDigitalAddress: false / createIfMissing: true - see the matching comment in
+            // ProcessCloudEventAsync; this callback-triggered re-resolution can also end up at the letter
+            // fallback, and can equally be the first time OMC has resolved this citizen's partij.
+            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false, createIfMissing: true);
 
             return (queryContext, messageData, recipientBsn, partyData);
         }

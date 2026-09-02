@@ -33,10 +33,14 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         public DigitalAddressShort? PreferredDigitalAddress { get; set; }
 
         /// <inheritdoc cref="PartyIdentification"/>
-        [JsonRequired]
+        /// <remarks>
+        ///   OpenKlant returns this as <see langword="null"/> for a party with no contact name set - e.g.
+        ///   one OMC created on the fly with only a BSN identifier attached - so it is not
+        ///   <c>[JsonRequired]</c>.
+        /// </remarks>
         [JsonPropertyName("partijIdentificatie")]
         [JsonPropertyOrder(2)]
-        public PartyIdentification Identification { get; set; }
+        public PartyIdentification? Identification { get; set; }
 
         /// <inheritdoc cref="v2.Expansion"/>
         [JsonRequired]

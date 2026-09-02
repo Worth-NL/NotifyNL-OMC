@@ -136,7 +136,7 @@ namespace WebQueries.Tests.Unit.MOBB
         private void SetUpPartyData(CommonPartyData partyData)
         {
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false))
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true))
                 .ReturnsAsync(partyData);
         }
         #endregion

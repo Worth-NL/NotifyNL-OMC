@@ -177,7 +177,7 @@ namespace WebQueries.Tests.Unit.Print
             });
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataAsync(It.IsAny<Uri?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<bool>()),
+                mock => mock.GetPartyDataAsync(It.IsAny<Uri?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -209,7 +209,7 @@ namespace WebQueries.Tests.Unit.Print
             SetupPrintObject(GetPrintData());
 
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false))
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true))
                 .ThrowsAsync(new HttpRequestException("Party not found"));
 
             // Act
@@ -319,7 +319,7 @@ namespace WebQueries.Tests.Unit.Print
                 // A postal letter must not demand a digital address: a citizen with no e-mail or phone
                 // number on file is exactly who a printed letter is for.
                 this._mockedQueryContext.Verify(
-                    mock => mock.GetPartyDataAsync(null, TestBsn, null, false), Times.Once);
+                    mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true), Times.Once);
             });
         }
 
@@ -550,7 +550,7 @@ namespace WebQueries.Tests.Unit.Print
         private void SetupParty()
         {
             this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false))
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true))
                 .ReturnsAsync(new CommonPartyData { Uri = s_partyUri });
         }
 

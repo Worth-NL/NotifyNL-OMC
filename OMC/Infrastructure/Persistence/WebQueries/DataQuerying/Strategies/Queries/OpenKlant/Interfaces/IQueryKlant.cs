@@ -39,14 +39,19 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
         ///   Ignored by the "OpenKlant" (1.0) implementation.
         /// </param>
+        /// <param name="createIfMissing">
+        ///   When <see langword="true"/>, a citizen party that does not yet exist in OpenKlant is created on
+        ///   the fly (with only the BSN identifier attached - no name/address, since none is available at
+        ///   this point) instead of the lookup failing.
+        /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="KeyNotFoundException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
-        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier = null, bool requireDigitalAddress = true);
+        internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier = null, bool requireDigitalAddress = true, bool createIfMissing = false);
 
         /// <summary>
-        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
+        /// <inheritdoc cref="TryGetPartyDataAsync(IQueryBase, string, string?, bool, bool)"/>
         /// </summary>
         /// <remarks>
         ///   The method used to obtain company data.

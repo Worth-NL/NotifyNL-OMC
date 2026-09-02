@@ -37,6 +37,7 @@
 
   <!-- Exposition to internal members -->
   <ItemGroup>
+    <InternalsVisibleTo Include="OMC.ZgwModels.Tests.Unit" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

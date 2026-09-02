@@ -108,7 +108,7 @@ namespace Common.Tests.Utilities._TestHelpers
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },
-                { "ZGW_ENDPOINT_OPENKLANT",                               GetTestValue(isValid, testDomain, "http://domain") },
+                { "ZGW_ENDPOINT_OPENKLANT",                               GetTestValue(isValid, "https://test.domain/api/v1", "http://domain") },  // NOTE: unlike other endpoints, QueryKlant (party creation) builds a real Uri from this value directly, so it needs a scheme
                 { "ZGW_ENDPOINT_BESLUITEN",                               GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OBJECTEN",                                GetTestValue(isValid, testDomain, "https://domain") },
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                             GetTestValue(isValid, testDomain) },

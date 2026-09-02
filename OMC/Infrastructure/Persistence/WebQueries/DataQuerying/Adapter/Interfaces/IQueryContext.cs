@@ -123,7 +123,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         public Task<HttpRequestResponse> GetKlantHealthCheckAsync();
 
         /// <summary>
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool, bool)"/>
         /// </summary>
         /// <remarks>
         ///   Simpler usage doesn't require providing BSN number first, but it produces an additional
@@ -147,7 +147,12 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
         ///   Only honored on the citizen (BSN-based) lookup path; the case-role/organization path is unaffected.
         /// </param>
-        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null, bool requireDigitalAddress = true);
+        /// <param name="createIfMissing">
+        ///   When <see langword="true"/>, a citizen party that does not yet exist in OpenKlant is created on
+        ///   the fly instead of the lookup failing. Only honored on the citizen (BSN-based) lookup path; the
+        ///   case-role/organization path is unaffected.
+        /// </param>
+        public Task<CommonPartyData> GetPartyDataAsync(Uri? caseUri, string? bsnNumber = null, string? caseIdentifier = null, bool requireDigitalAddress = true, bool createIfMissing = false);
 
         /// <inheritdoc cref="IQueryKlant.CreateNewContactMomentAsync(IQueryBase, string)"/>
         public Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody);
