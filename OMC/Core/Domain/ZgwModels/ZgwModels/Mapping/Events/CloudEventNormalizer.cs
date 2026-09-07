@@ -181,9 +181,16 @@ namespace ZgwModels.Mapping.Events
                 return null;
             }
 
-            // Extract UUID (last segment)
-            string caseUuid = caseUri.Segments.Last();
-            if (string.IsNullOrWhiteSpace(caseUuid))
+            // Extract the UUID. Segments.Last() alone is not enough: for a URL with a trailing slash it
+            // returns "/", which passes an IsNullOrWhiteSpace check and would end up as the CloudEvent's
+            // Subject, only to be dropped later by MijnOverheidForwarder's Guid.TryParse with nothing but
+            // a warning. Take the last non-empty segment and require it to actually be a UUID, so a
+            // malformed 'hoofdObject' is rejected here with a reason instead of silently going missing.
+            string? caseUuid = caseUri.Segments
+                .Select(segment => segment.Trim('/'))
+                .LastOrDefault(segment => !string.IsNullOrWhiteSpace(segment));
+
+            if (caseUuid == null || !Guid.TryParse(caseUuid, out _))
             {
                 reason = $"Could not extract a UUID from 'hoofdObject' ({caseUri}). Received: {payload}";
                 _logger.LogWarning("{Reason}", reason);

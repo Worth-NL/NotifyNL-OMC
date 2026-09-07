@@ -16,7 +16,10 @@ namespace WebQueries.MijnOverheid.Clients
     /// </summary>
     public class MijnOverheidClient : IMijnOverheidClient
     {
-        private readonly HttpClient _httpClient;
+        // The factory is held rather than a single resolved HttpClient: this client is a singleton (so its
+        // token cache below actually survives between requests), and pinning one HttpClient for the whole
+        // application lifetime would defeat IHttpClientFactory's handler rotation and leave it with stale DNS.
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<MijnOverheidClient> _logger;
 
         // Token caching
@@ -33,8 +36,8 @@ namespace WebQueries.MijnOverheid.Clients
             IHttpClientFactory httpClientFactory,
             ILogger<MijnOverheidClient> logger)
         {
-            // Use a named client (recommended) – replace "MijnOverheidClient" with your actual client name if configured.
-            _httpClient = httpClientFactory.CreateClient(nameof(MijnOverheidClient));
+            // Named client (registered in Program.AddInternalServices as AddHttpClient(nameof(MijnOverheidClient))).
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -88,7 +91,8 @@ namespace WebQueries.MijnOverheid.Clients
 
             try
             {
-                HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+                HttpClient httpClient = _httpClientFactory.CreateClient(nameof(MijnOverheidClient));
+                HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (response.IsSuccessStatusCode)
@@ -172,7 +176,8 @@ namespace WebQueries.MijnOverheid.Clients
                 request.Content = new FormUrlEncodedContent(
                     new[] { new KeyValuePair<string, string>("grant_type", "client_credentials") });
 
-                HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+                HttpClient httpClient = _httpClientFactory.CreateClient(nameof(MijnOverheidClient));
+                HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)

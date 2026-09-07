@@ -146,17 +146,22 @@ namespace WebQueries.MijnOverheid
                 return null;
             }
 
+            // Applies to every 'geopend' forward, including the first-open branch below: whether the
+            // initiator is a natural person has nothing to do with whether laatstGeopend happens to be
+            // populated yet, and gating only the second branch let an organisation-initiated case through
+            // on its first open and filtered the very same case on every later one. HandleMutatedAsync
+            // checks unconditionally for the same reason.
+            if (!await VerifyNaturalPersonWithTraceAsync(queryContext, caseUri, caseData.Identification, "'geopend' event"))
+            {
+                return null;
+            }
+
             // If the case has no LatestOpenedDate, this is the first open – forward.
             if (!caseData.LastOpenedDate.HasValue)
             {
                 _logger.LogDebug("Case {CaseId} has no LatestOpenedDate; forwarding 'geopend' event.", caseData.Identification);
                 OutgoingCloudEvent outgoing = CreateOutgoingEvent(cloudEvent);
                 return await SendAndTraceAsync(outgoing);
-            }
-
-            if (!await VerifyNaturalPersonWithTraceAsync(queryContext, caseUri, caseData.Identification, "'geopend' event"))
-            {
-                return null;
             }
 
             // Compare event time with the case's LatestOpenedDate
