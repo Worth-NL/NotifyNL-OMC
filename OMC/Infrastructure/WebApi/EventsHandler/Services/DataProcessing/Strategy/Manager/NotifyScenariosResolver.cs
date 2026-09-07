@@ -5,12 +5,14 @@ using Common.Settings.Extensions;
 using EventsHandler.Exceptions;
 using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
-using EventsHandler.Services.DataProcessing.Strategy.Implementations;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations;          // added
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.Tracing;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -25,13 +27,10 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
         private readonly IServiceProvider _serviceProvider;
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotifyScenariosResolver"/> nested class.
-        /// </summary>
         public NotifyScenariosResolver(
             OmcConfiguration configuration,
             IServiceProvider serviceProvider,
-            IDataQueryService<NotificationEvent> dataQuery)  // Dependency Injection (DI)
+            IDataQueryService<NotificationEvent> dataQuery)
         {
             this._configuration = configuration;
             this._serviceProvider = serviceProvider;
@@ -45,25 +44,46 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
             if (IsCaseScenario(model))
             {
                 IQueryContext queryContext = this._dataQuery.From(model);
-                CaseStatus caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
-                CaseStatusType currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+
+                Guid statusId = model.ResourceUri.GetGuid();
+                TraceContext.Emit("openzaak", "start", $"Attempting to retrieve status with id {statusId}");
+                CaseStatus caseStatus;
+                CaseStatusType currentCaseStatusType;
+                try
+                {
+                    caseStatus = await queryContext.GetCaseStatusAsync(model.ResourceUri);
+                    currentCaseStatusType = await queryContext.GetCaseStatusTypeAsync(caseStatus.TypeUri);
+                }
+                catch (Exception exception)
+                {
+                    TraceContext.Emit("openzaak", "fail", exception.Message);
+                    throw;
+                }
+                TraceContext.Emit("openzaak", "ok", $"status with id {statusId} retrieved");
 
                 if (!currentCaseStatusType.IsNotificationExpected)
                 {
+                    TraceContext.Emit("informerencheck", "abort", $"status type {currentCaseStatusType.Identification} has \"informeren\" set to false");
                     throw new AbortedNotifyingException(ApiResources.Processing_ABORT_DoNotSendNotification_Informeren);
                 }
+                TraceContext.Emit("informerencheck", "ok", $"status type {currentCaseStatusType.Identification} has \"informeren\" set to true");
 
-                // Scenario #1: "Case created"
                 if (currentCaseStatusType.SerialNumber == 1)
                 {
+                    TraceContext.SetScenario("case-created");
                     return (this._serviceProvider.GetRequiredService<CaseCreatedScenario>()).SetCaseStatusType(currentCaseStatusType);
                 }
 
-                return !currentCaseStatusType.IsFinalStatus
+                if (!currentCaseStatusType.IsFinalStatus)
+                {
                     // Scenario #2: "Case status updated"
-                    ? (this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()).SetCaseStatusType(currentCaseStatusType)
-                    // Scenario #3: "Case finished"
-                    : (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
+                    TraceContext.SetScenario("case-updated");
+                    return (this._serviceProvider.GetRequiredService<CaseStatusUpdatedScenario>()).SetCaseStatusType(currentCaseStatusType);
+                }
+
+                // Scenario #3: "Case finished"
+                TraceContext.SetScenario("case-closed");
+                return (this._serviceProvider.GetRequiredService<CaseClosedScenario>()).SetCaseStatusType(currentCaseStatusType);
             }
 
             // Object scenarios
@@ -74,18 +94,21 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.TaskObjectType_Uuid()))
                 {
                     // Scenario #4: "Task assigned"
+                    TraceContext.SetScenario("task-assigned");
                     return this._serviceProvider.GetRequiredService<TaskAssignedScenario>();
                 }
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()))
                 {
                     // Scenario #6: "Message received"
+                    TraceContext.SetScenario("message-received");
                     return this._serviceProvider.GetRequiredService<MessageReceivedScenario>();
                 }
 
                 if (objectTypeId.Equals(this._configuration.ZGW.Variable.ObjectType.KtoObjectType_Uuid()))
                 {
                     // Scenario #7: "KTO received"
+                    TraceContext.SetScenario("kto");
                     return this._serviceProvider.GetRequiredService<KtoScenario>();
                 }
 
@@ -95,64 +118,69 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                         /* {1} */ ConfigExtensions.GetGenericVariableObjectTypeEnvVarName()));
             }
 
-            // Scenario #5: "Decision made"
+            // Decision scenarios
             if (IsDecisionScenario(model))
             {
+                TraceContext.SetScenario("decision-made");
                 return this._serviceProvider.GetRequiredService<DecisionMadeScenario>();
             }
 
-            // No matching scenario. There is no clear instruction what to do with the received Notification
+            // Message scenario (MOBB forwarding)
+            if (IsMessageScenario(model))
+            {
+                return this._serviceProvider.GetRequiredService<MessageBoxScenario>();
+            }
+
+            // No matching scenario
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
 
         #region Filters
-        /// <summary>
-        /// OMC is meant to process <see cref="NotificationEvent"/>s with certain characteristics (determining the workflow).
-        /// </summary>
-        /// <remarks>
-        ///   This check is verifying whether case scenarios would be processed.
-        /// </remarks>
+
         private static bool IsCaseScenario(NotificationEvent notification)
         {
             return notification is
             {
-                Action:   Actions.Create,
-                Channel:  Channels.Cases,
+                Action: Actions.Create,
+                Channel: Channels.Cases,
                 Resource: Resources.Status
             };
         }
 
-        /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
-        /// </summary>
-        /// <remarks>
-        ///   This check is verifying whether task scenarios would be processed.
-        /// </remarks>
         private static bool IsObjectScenario(NotificationEvent notification)
         {
             return notification is
             {
-                Action:   Actions.Create,
-                Channel:  Channels.Objects,
+                Action: Actions.Create,
+                Channel: Channels.Objects,
                 Resource: Resources.Object
             };
         }
 
-        /// <summary>
-        ///   <inheritdoc cref="IsCaseScenario(NotificationEvent)"/>
-        /// </summary>
-        /// <remarks>
-        ///   This check is verifying whether decision scenarios would be processed.
-        /// </remarks>
         private static bool IsDecisionScenario(NotificationEvent notification)
         {
             return notification is
             {
-                Action:   Actions.Create,
-                Channel:  Channels.Decisions,
+                Action: Actions.Create,
+                Channel: Channels.Decisions,
                 Resource: Resources.Decision
             };
         }
+
+        /// <summary>
+        /// Determines whether the notification corresponds to the "Message" scenario
+        /// (forwarding to MOBB / OpenVTB).
+        /// </summary>
+        private static bool IsMessageScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action: Actions.Create,
+                Channel: Channels.Messages,   // Adjust to actual enum value if different
+                Resource: Resources.Message    // Adjust to actual enum value if different
+            };
+        }
+
         #endregion
     }
 }

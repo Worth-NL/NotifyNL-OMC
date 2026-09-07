@@ -129,7 +129,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         {
             // Arrange
             var configuration = ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act & Assert
             Assert.That(configuration.PostGuard, Is.Not.Null);
@@ -142,7 +142,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         {
             // Arrange
             var configuration = ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act
             string apiKey = configuration.PostGuard.API.Key();
@@ -156,7 +156,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         {
             // Arrange
             var configuration = ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act
             string pkgUrl = configuration.PostGuard.API.PkgUrl();
@@ -170,7 +170,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         {
             // Arrange
             var configuration = ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act
             string cryptifyUrl = configuration.PostGuard.API.CryptifyUrl();
@@ -184,7 +184,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         {
             // Arrange
             var configuration = ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1);
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
             // Act
             Guid templateId = configuration.PostGuard.TemplateId.SendPostGuardPdf();
@@ -197,7 +197,7 @@ namespace EventsHandler.Tests.Unit.Controllers
         public void TestsCleanup()
         {
             ConfigurationHandler.GetOmcConfigurationWith(
-                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v1).Dispose();
+                ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2).Dispose();
         }
         #endregion
     }

@@ -83,5 +83,15 @@ namespace WebQueries.DataSending.Clients.Enums
         /// </remarks>
         Telemetry_Klantinteracties = 42,
         #endregion
+
+        #region OpenVtb (values: 51-60)
+        /// <summary>
+        /// The <see cref="HttpClient"/> used to obtain data from "OpenVtb".
+        /// </summary>
+        /// <remarks>
+        /// Authorization: Static Api key.
+        /// </remarks>
+        OpenVtb = 51
+        #endregion
     }
 }

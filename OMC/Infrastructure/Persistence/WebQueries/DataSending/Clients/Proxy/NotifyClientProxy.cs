@@ -5,6 +5,7 @@ using Notify.Exceptions;
 using Notify.Models;
 using Notify.Models.Responses;
 using System.Diagnostics.CodeAnalysis;
+
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
 
@@ -54,12 +55,12 @@ namespace WebQueries.DataSending.Clients.Proxy
             }
         }
 
-        /// <inheritdoc cref="INotifyClient.SendLetterAsync(string, Dictionary{string, object}, string)"/>
-        async Task<NotifySendResponse> INotifyClient.SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference)
+        /// <inheritdoc cref="INotifyClient.SendLetterAsync(string, Dictionary{string, object}, string, IEnumerable{string}?)"/>
+        async Task<NotifySendResponse> INotifyClient.SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference, IEnumerable<string>? attachments)
         {
             try
             {
-                _ = await _notificationClient.SendLetterAsync(templateId, personalization, reference);
+                _ = await _notificationClient.SendLetterAsync(templateId, personalization, reference, attachments: attachments);
 
                 return NotifySendResponse.Success();
             }
@@ -67,6 +68,33 @@ namespace WebQueries.DataSending.Clients.Proxy
             {
                 return NotifySendResponse.Failure(exception.Message);
             }
+        }
+
+        /// <inheritdoc cref="INotifyClient.SendMessageBoxNotificationAsync"/>
+        async Task<NotifySendResponse> INotifyClient.SendMessageBoxNotificationAsync(
+            string recipient,
+            string message,
+            string messageType,
+            string subject,
+            IEnumerable<Attachment> attachments,
+            string reference)
+        {
+            try
+            {
+                _ = await _notificationClient.SendMessageBoxNotificationAsync(
+                    recipient, message, messageType, subject, attachments, reference);
+
+                return NotifySendResponse.Success();
+            }
+            catch (NotifyClientException exception)
+            {
+                return NotifySendResponse.Failure(exception.Message);
+            }
+            // TODO (flagged, not fixed): the underlying GovukNotify client's own argument validation
+            // (recipient/message/messageType/subject/attachment length+count checks) throws a plain
+            // ArgumentException, not NotifyClientException, so an invalid messageType/oversized field
+            // would propagate as an unhandled exception here rather than a graceful NotifySendResponse.Failure.
+            // Pre-existing gap, not introduced by this change - see WebQueries.MOBB.MessageBoxScenarioImplementation.
         }
 
         /// <inheritdoc cref="INotifyClient.GenerateTemplatePreviewAsync(string, Dictionary{string, object})"/>

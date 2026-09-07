@@ -69,7 +69,7 @@ namespace Common.Tests.Utilities._TestHelpers
         /// <summary>
         /// Gets the mocked <see cref="EnvironmentLoader"/>.
         /// </summary>
-        private static EnvironmentLoader GetEnvironmentLoader(byte omcWorkflow, bool isValid = true)
+        private static EnvironmentLoader GetEnvironmentLoader(byte _, bool isValid = true)
         {
             var mockedEnvironmentReader = new Mock<IEnvironment>();
 
@@ -92,8 +92,6 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "OMC_AUTH_JWT_USERID",                                  GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_USERNAME",                                GetTestValue(isValid, testString) },
 
-                { "OMC_FEATURE_WORKFLOW_VERSION",                         $"{omcWorkflow}" },
-
                 // ZGW environment variables
                 { "ZGW_AUTH_JWT_SECRET",                                  GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_JWT_ISSUER",                                  GetTestValue(isValid, testString) },
@@ -105,6 +103,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_AUTH_KEY_OPENKLANT",                               GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTEN",                                GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTTYPEN",                             GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENVTB",                                 GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },
@@ -113,12 +112,14 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_OBJECTEN",                                GetTestValue(isValid, testDomain, "https://domain") },
                 { "ZGW_ENDPOINT_OBJECTTYPEN",                             GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
+                { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKCLOSE_IDS",                          GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
+                { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
 
                 { "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID",          GetTestValue(isValid, TestTaskObjectTypeUuid) },
@@ -141,6 +142,9 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE",                    GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED",                 GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED",              GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",                   GetTestValue(isValid, testGuid) },
+
+                { "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX",                  GetTestValue(isValid, testGuid) },
 
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE",                     GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKUPDATE",                     GetTestValue(isValid, testGuid) },
@@ -251,7 +255,7 @@ namespace Common.Tests.Utilities._TestHelpers
             serviceCollection.AddSingleton<ILoadingService>(loaderTypes switch
             {
                 LoaderTypes.AppSettings => GetAppSettingsLoader(),
-                LoaderTypes.Environment => GetEnvironmentLoader(1),
+                LoaderTypes.Environment => GetEnvironmentLoader(2),
 
                 _ => throw new ArgumentException($"Not supported loader type: {loaderTypes}")
             });
@@ -309,12 +313,7 @@ namespace Common.Tests.Utilities._TestHelpers
             InvalidAppSettings,
 
             /// <summary>
-            /// Not existing appsettings.json | valid environment variables (OMC workflow v1).
-            /// </summary>
-            ValidEnvironment_v1,
-
-            /// <summary>
-            /// Not existing appsettings.json | valid environment variables (OMC workflow v2).
+            /// Not existing appsettings.json | valid environment variables.
             /// </summary>
             ValidEnvironment_v2,
 
@@ -324,22 +323,12 @@ namespace Common.Tests.Utilities._TestHelpers
             InvalidEnvironment,
 
             /// <summary>
-            /// Not existing appsettings.json | invalid environment variables (OMC workflow v1).
-            /// </summary>
-            InvalidEnvironment_v1,
-
-            /// <summary>
-            /// Not existing appsettings.json | invalid environment variables (OMC workflow v2).
+            /// Not existing appsettings.json | invalid environment variables.
             /// </summary>
             InvalidEnvironment_v2,
 
             /// <summary>
-            /// Valid appsettings.json | valid environment variables (OMC workflow v1).
-            /// </summary>
-            BothValid_v1,
-
-            /// <summary>
-            /// Valid appsettings.json | valid environment variables (OMC workflow v2).
+            /// Valid appsettings.json | valid environment variables.
             /// </summary>
             BothValid_v2,
 
@@ -349,12 +338,7 @@ namespace Common.Tests.Utilities._TestHelpers
             BothInvalid,
 
             /// <summary>
-            /// Invalid appsettings.json | invalid environment variables (OMC workflow v1).
-            /// </summary>
-            BothInvalid_v1,
-
-            /// <summary>
-            /// Invalid appsettings.json | invalid environment variables (OMC workflow v2).
+            /// Invalid appsettings.json | invalid environment variables.
             /// </summary>
             BothInvalid_v2,
 
@@ -368,15 +352,11 @@ namespace Common.Tests.Utilities._TestHelpers
         {
             { TestLoaderTypesSetup.ValidAppSettings,               GetOmcConfiguration(TestLoaderTypesSetup.ValidAppSettings)               },
             { TestLoaderTypesSetup.InvalidAppSettings,             GetOmcConfiguration(TestLoaderTypesSetup.InvalidAppSettings)             },
-            { TestLoaderTypesSetup.ValidEnvironment_v1,            GetOmcConfiguration(TestLoaderTypesSetup.ValidEnvironment_v1)            },
             { TestLoaderTypesSetup.ValidEnvironment_v2,            GetOmcConfiguration(TestLoaderTypesSetup.ValidEnvironment_v2)            },
             { TestLoaderTypesSetup.InvalidEnvironment,             GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment)             },
-            { TestLoaderTypesSetup.InvalidEnvironment_v1,          GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v1)          },
             { TestLoaderTypesSetup.InvalidEnvironment_v2,          GetOmcConfiguration(TestLoaderTypesSetup.InvalidEnvironment_v2)          },
-            { TestLoaderTypesSetup.BothValid_v1,                   GetOmcConfiguration(TestLoaderTypesSetup.BothValid_v1)                   },
             { TestLoaderTypesSetup.BothValid_v2,                   GetOmcConfiguration(TestLoaderTypesSetup.BothValid_v2)                   },
             { TestLoaderTypesSetup.BothInvalid,                    GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid)                    },
-            { TestLoaderTypesSetup.BothInvalid_v1,                 GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid_v1)                 },
             { TestLoaderTypesSetup.BothInvalid_v2,                 GetOmcConfiguration(TestLoaderTypesSetup.BothInvalid_v2)                 },
             { TestLoaderTypesSetup.EnvVar_Overloading_AppSettings, GetOmcConfiguration(TestLoaderTypesSetup.EnvVar_Overloading_AppSettings) }
         };
@@ -399,11 +379,6 @@ namespace Common.Tests.Utilities._TestHelpers
                     // Not existing environment variables
                     break;
 
-                case TestLoaderTypesSetup.ValidEnvironment_v1:
-                    // Not existing appsettings.json
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
-                    break;
-
                 case TestLoaderTypesSetup.ValidEnvironment_v2:
                     // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true));
@@ -414,19 +389,9 @@ namespace Common.Tests.Utilities._TestHelpers
                     serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
                     break;
 
-                case TestLoaderTypesSetup.InvalidEnvironment_v1:
-                    // Not existing appsettings.json
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
-                    break;
-
                 case TestLoaderTypesSetup.InvalidEnvironment_v2:
                     // Not existing appsettings.json
                     serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: false));
-                    break;
-
-                case TestLoaderTypesSetup.BothValid_v1:
-                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: true));
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: true));
                     break;
 
                 case TestLoaderTypesSetup.BothValid_v2:
@@ -438,11 +403,6 @@ namespace Common.Tests.Utilities._TestHelpers
                 case TestLoaderTypesSetup.BothInvalid:
                     serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
                     serviceCollection.AddSingleton(GetEnvironmentLoader(0, isValid: false));
-                    break;
-
-                case TestLoaderTypesSetup.BothInvalid_v1:
-                    serviceCollection.AddSingleton(GetAppSettingsLoader(isValid: false));
-                    serviceCollection.AddSingleton(GetEnvironmentLoader(1, isValid: false));
                     break;
 
                 case TestLoaderTypesSetup.BothInvalid_v2:

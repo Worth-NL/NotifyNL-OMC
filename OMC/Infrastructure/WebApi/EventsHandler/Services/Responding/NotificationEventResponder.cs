@@ -15,6 +15,7 @@ using EventsHandler.Services.Responding.Interfaces;
 using EventsHandler.Services.Responding.Results.Builder.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace EventsHandler.Services.Responding
@@ -27,13 +28,15 @@ namespace EventsHandler.Services.Responding
         private const string HttpRequestErrorMessage = "HTTP Request";
 
         private readonly IDetailsBuilder _detailsBuilder;
+        private readonly ILogger<NotificationEventResponder> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationEventResponder"/> class.
         /// </summary>
-        public NotificationEventResponder(IDetailsBuilder builder)  // Dependency Injection (DI)
+        public NotificationEventResponder(IDetailsBuilder builder, ILogger<NotificationEventResponder> logger)  // Dependency Injection (DI)
         {
             this._detailsBuilder = builder;
+            this._logger = logger;
         }
 
         #region IRespondingService
@@ -54,6 +57,8 @@ namespace EventsHandler.Services.Responding
         /// <inheritdoc cref="IRespondingService.GetExceptionResponse(string)"/>
         ObjectResult IRespondingService.GetExceptionResponse(string errorMessage)
         {
+            _logger.LogWarning("422 Unprocessable Entity — notification could not be processed: {ErrorMessage}", errorMessage);
+
             try
             {
                 // JSON serialization issues
