@@ -1,3 +1,16 @@
+## 2.2.0
+
+- Adds the print (printstraat) scenario: sends a pre-generated PDF letter triggered from an Objecten API object, registers the contactmoment from the delivery callback, and deletes the object afterwards
+- Adds precompiled-letter sending to the Notify client, and records letters on the klantcontact as kanaal "brief"
+- Treats Notify's validation-failed letter status as a delivery failure rather than a success
+- Creates a missing OpenKlant partij on the fly instead of failing with a hard 412
+- Threads the print request's originating object URL and the onderwerpobject's zaaktype onto its klantcontact
+- Fixes a semaphore leak in HttpNetworkService: a failed HTTP call never released its permit, so repeated failures could exhaust the shared throttle and hang every subsequent outbound call until restart
+- Fixes the MijnZaken "zaak geopend" filter so the natural-person check applies to a case's first opening too, instead of only once laatstGeopend is populated
+- Rejects a MijnZaken hoofdObject whose last path segment is not a UUID, instead of deriving a "/" subject that was silently dropped further downstream
+- Reports the MOBB scenario's permanent drops (empty message text, recipient without a BSN, message type not whitelisted) as a no-op success rather than a failure, so Open VTB no longer redelivers a Bericht that can never succeed
+- Registers MessageBoxScenario in DI; a "berichten" notification threw instead of being handled
+
 ## 2.1.0
 
 - Adds a "MijnZaken" endpoint that normalizes incoming ZGW CloudEvents/NotificationEvents and forwards them to MijnOverheid, with whitelist and natural-person filtering
