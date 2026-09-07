@@ -138,7 +138,11 @@ namespace WebQueries.MOBB
             if (string.IsNullOrWhiteSpace(messageData.MessageText))
             {
                 _logger.LogWarning("Message {MessageId}: text is empty/missing; dropping (no fallback).", messageUuid);
-                return HttpRequestResponse.Failure("Message text is empty or missing.");
+
+                // Reported as a (no-op) success, like the non-actionable CloudEvent type above: this is a
+                // permanent condition, so a Failure here would surface as HTTP 412 and make Open VTB
+                // redeliver the same Bericht forever. Only genuinely retryable problems return Failure.
+                return HttpRequestResponse.Success("Dropped: message text is empty or missing.");
             }
 
             // Step 6: Resolve the recipient's BSN and OpenKlant party - needed regardless of MOBB vs. fallback
@@ -146,7 +150,9 @@ namespace WebQueries.MOBB
             if (recipientBsn == null)
             {
                 _logger.LogWarning("Message {MessageId}: recipient is not a citizen (no BSN in RecipientUrn); dropping (no fallback).", messageUuid);
-                return HttpRequestResponse.Failure("Recipient is not a citizen (BSN not found in RecipientUrn).");
+
+                // Permanent condition - see the comment on the empty-text drop above.
+                return HttpRequestResponse.Success("Dropped: recipient is not a citizen (BSN not found in RecipientUrn).");
             }
 
             // requireDigitalAddress: false - unlike classic ZGW scenarios (email/SMS only), MOBB has a postal
@@ -168,7 +174,11 @@ namespace WebQueries.MOBB
             {
                 _logger.LogWarning("Message {MessageId}: rejected by whitelist (MessageType '{MessageType}'); dropping (no fallback).",
                     messageUuid, messageType);
-                return HttpRequestResponse.Failure($"MessageType '{messageType}' not allowed by whitelist.");
+
+                // Permanent condition - see the comment on the empty-text drop above. This mirrors the classic
+                // ZGW scenarios, where a whitelist rejection raises AbortedNotifyingException (HTTP 206), not a
+                // failure; that exception type lives in the EventsHandler assembly and cannot be used here.
+                return HttpRequestResponse.Success($"Dropped: MessageType '{messageType}' not allowed by whitelist.");
             }
 
             // Step 8: MOBB? - if not eligible, fall back to digitale post (email) or a letter
