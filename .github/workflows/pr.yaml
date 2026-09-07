@@ -233,5 +233,5 @@ jobs:
 
       - run: |
           helm version
-          helm upgrade --install omc notifynl-omc-nodep/ -n ${{ vars.NAMESPACE }} --reuse-values --set image.tag=${{ needs.build.outputs.tag }} --wait --timeout 300s
+          helm upgrade --install omc notifynl-omc-nodep/ -n ${{ vars.NAMESPACE }} --reset-then-reuse-values --set image.tag=${{ needs.build.outputs.tag }} --wait
         name: Deploy chart
