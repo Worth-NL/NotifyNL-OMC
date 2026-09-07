@@ -5,9 +5,11 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Besluiten.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.Documenten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.KTO.Interfaces;
@@ -18,8 +20,10 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
+using ZgwModels.Mapping.Models.POCOs.OpenZaak.Documents;
 
 namespace WebQueries.DataQuerying.Adapter
 {
@@ -36,6 +40,8 @@ namespace WebQueries.DataQuerying.Adapter
         private readonly IQueryBesluiten _queryBesluiten;      // Decision API microservice
         private readonly IQueryObjecten _queryObjecten;        // Object API microservice
         private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
+        private readonly IQueryVtb _queryVtb;                  // Vtb API microservice
+        private readonly IQueryDocumenten _queryDocumenten;    // Documenten API microservice
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -48,7 +54,7 @@ namespace WebQueries.DataQuerying.Adapter
             IQueryKlant queryKlant,
             IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
-            IQueryObjectTypen queryObjectTypen)  // Dependency Injection (DI)
+            IQueryObjectTypen queryObjectTypen, IQueryVtb queryVtb, IQueryDocumenten queryDocumenten)  // Dependency Injection (DI)
         {
             // Composition
             this._networkService = networkService;
@@ -59,6 +65,8 @@ namespace WebQueries.DataQuerying.Adapter
             this._queryBesluiten = queryBesluiten;
             this._queryObjecten = queryObjecten;
             this._queryObjectTypen = queryObjectTypen;
+            this._queryVtb = queryVtb;
+            _queryDocumenten = queryDocumenten;
         }
 
         #region IQueryBase
@@ -121,6 +129,10 @@ namespace WebQueries.DataQuerying.Adapter
             // 1b. Use the provided case URI to retrieve the case type URI from CaseDetails
             return await this._queryZaak.TryGetCaseTypeUriAsync(this._queryBase, caseUri);
         }
+
+        /// <inheritdoc cref="IQueryContext.CheckIfInitiatorIsNaturalPersonAsync(Uri)"/>
+        async Task<bool> IQueryContext.CheckIfInitiatorIsNaturalPersonAsync(Uri caseUri)
+            => await this._queryZaak.CheckIfInitiatorIsNaturalPersonAsync(this._queryBase, caseUri);
         #endregion
 
         #region IQueryKlant
@@ -128,15 +140,15 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.GetKlantHealthCheckAsync()
             => await this._queryKlant.GetHealthCheckAsync(this._networkService);
 
-        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?)"/>
-        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier)
+        /// <inheritdoc cref="IQueryContext.GetPartyDataAsync(Uri?, string?, string?, bool)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataAsync(Uri? caseUri, string? bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
         {
             // Case #1: Case URI was not provided, which means for 100% the citizen data are requested
             if (caseUri.IsNullOrDefault())
             {
                 return bsnNumber.IsNullOrEmpty()  // But wouldn't be able to be retrieved if the BSN number is missing
                     ? throw new ArgumentException(QueryResources.Querying_ERROR_Internal_MissingBsnNumber)
-                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier);
+                    : await this._queryKlant.TryGetPartyDataAsync(this._queryBase, bsnNumber, caseIdentifier: caseIdentifier, requireDigitalAddress: requireDigitalAddress);
             }
 
             CaseRole caseRole = await this._queryZaak.GetCaseRoleAsync(this._queryBase, caseUri);
@@ -241,6 +253,28 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.SendKtoAsync"/>
         async Task<HttpRequestResponse> IQueryContext.SendKtoAsync(string body)
             => await this._networkServiceKto.PostAsync(body);
+        #endregion
+
+        #region IQueryVtb
+        /// <inheritdoc cref="IQueryContext.GetVtbMessageAsync(Uri)"/>
+        async Task<VtbMessage> IQueryContext.GetVtbMessageAsync(Uri vtbMessageUri)
+        {
+            return await this._queryVtb.TryGetVtbMessageAsync(this._queryBase, vtbMessageUri);
+        }
+        #endregion
+
+        #region IQueryDocumenten
+        /// <inheritdoc cref="IQueryContext.GetDocumentAsync(Guid)"/>
+        async Task<SingularInformationObject> IQueryContext.GetDocumentAsync(Guid documentUuid)
+        {
+            return await this._queryDocumenten.TryGetDocumentAsync(this._queryBase, documentUuid);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetDocumentContentAsync(Uri)"/>
+        async Task<string> IQueryContext.GetDocumentContentAsync(Uri contentUri)
+        {
+            return await this._queryDocumenten.TryGetDocumentContentAsync(this._queryBase, contentUri);
+        }
         #endregion
     }
 }

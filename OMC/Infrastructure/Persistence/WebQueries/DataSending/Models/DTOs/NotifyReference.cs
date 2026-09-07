@@ -37,6 +37,45 @@ namespace WebQueries.DataSending.Models.DTOs
         public Guid PartyId { get; set; } = Guid.Empty;
 
         /// <summary>
+        /// The boolean flag indicating if it was sent to Logius Message Box.
+        /// </summary>
+        /// <remarks>
+        ///   Deliberately not [JsonRequired]: this reference gets gzip-compressed and handed to
+        ///   "Notify NL", which echoes it back later — on its own schedule — as the "reference" on
+        ///   a delivery-confirmation callback. A reference minted before a deploy that adds a new
+        ///   required field would fail to deserialize on that later callback, turning a real,
+        ///   successfully-processed notification into a 500 with no contactmoment registered.
+        /// </remarks>
+        [JsonInclude]
+        [JsonPropertyOrder(3)]
+        public bool Mobb { get; set; } = false;
+
+        /// <summary>
+        /// The boolean flag indicating if a notification was sent successfully.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyOrder(4)]
+        public bool Notified { get; set; } = false;
+
+        /// <summary>
+        /// The dashboard trace this notification belongs to, if any — carried through opaquely
+        /// (never interpreted by "Notify NL" itself) so its later delivery confirmation
+        /// callback can still be attributed to the same trace, even though that callback
+        /// arrives on a separate, later request with no other link back to this one.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyOrder(5)]
+        public string? TraceId { get; set; }
+
+        /// <summary>
+        /// Unix milliseconds when this notification was handed off to "Notify NL", used to work
+        /// out how long a later delivery confirmation took to arrive.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyOrder(6)]
+        public long? SentAtUnixMs { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.
         /// </summary>
         public NotifyReference()

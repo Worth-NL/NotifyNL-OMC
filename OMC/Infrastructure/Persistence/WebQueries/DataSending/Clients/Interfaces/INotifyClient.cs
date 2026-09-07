@@ -1,5 +1,6 @@
 ﻿// © 2023, Worth Systems.
 
+using Notify.Models;
 using WebQueries.DataSending.Models.Reponses;
 
 namespace WebQueries.DataSending.Clients.Interfaces
@@ -60,7 +61,42 @@ namespace WebQueries.DataSending.Clients.Interfaces
         ///   A unique identifier you can create if you need to. This reference
         ///   identifies a single unique notification or a batch of notifications.
         /// </param>
-        public Task<NotifySendResponse> SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference);
+        /// <param name="attachments">
+        ///   The base64-encoded contents of 1 to 2 attachments to include with the letter, or <see langword="null"/>
+        ///   for no attachments.
+        /// </param>
+        public Task<NotifySendResponse> SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference, IEnumerable<string>? attachments = null);
+
+        /// <summary>
+        /// Sends a message to a user's digital message box (e.g., Berichtenbox) asynchronously.
+        /// </summary>
+        /// <param name="recipient">
+        ///   The recipient's unique identifier (such as a BSN or other user key) to deliver the message to.
+        /// </param>
+        /// <param name="message">
+        ///   The main content or body of the message.
+        /// </param>
+        /// <param name="messageType">
+        ///   The type of the message, as reported by OpenVTB.
+        /// </param>
+        /// <param name="subject">
+        ///   The subject line or title of the message.
+        /// </param>
+        /// <param name="attachments">
+        ///   The collection of attachments (base64-encoded file content and filename) to include with the
+        ///   message. 0 to 2 attachments are allowed.
+        /// </param>
+        /// <param name="reference">
+        ///   A unique identifier you can create if you need to. This reference
+        ///   identifies a single unique notification or a batch of notifications.
+        /// </param>
+        public Task<NotifySendResponse> SendMessageBoxNotificationAsync(
+            string recipient,
+            string message,
+            string messageType,
+            string subject,
+            IEnumerable<Attachment> attachments,
+            string reference);
 
         /// <summary>
         /// Generates a preview version of a template.

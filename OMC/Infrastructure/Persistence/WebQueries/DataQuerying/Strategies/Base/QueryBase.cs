@@ -51,6 +51,19 @@ namespace WebQueries.DataQuerying.Strategies.Base
 
             return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
         }
+
+        /// <inheritdoc cref="IQueryBase.ProcessGetBinaryAsBase64Async(HttpClientTypes, Uri, string)"/>
+        async Task<string> IQueryBase.ProcessGetBinaryAsBase64Async(HttpClientTypes httpClientType, Uri uri, string fallbackErrorMessage)
+        {
+            HttpRequestResponse response = await this._networkService.GetBinaryAsBase64Async(httpClientType, uri);
+
+            LogToSentry($"GET (binary) {uri} | Success: {response.IsSuccess}",
+                response.IsSuccess ? SentryLevel.Info : SentryLevel.Error);
+
+            return response.IsSuccess
+                ? response.JsonResponse
+                : throw new HttpRequestException(GetMessage(response.JsonResponse, uri, fallbackErrorMessage));
+        }
         #endregion
 
         #region Helper methods

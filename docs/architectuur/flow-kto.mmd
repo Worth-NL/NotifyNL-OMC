@@ -1,0 +1,31 @@
+---
+title: OMC — Customer Satisfaction (KTO) scenario flow
+---
+flowchart TD
+    WEBHOOK(["📨 OpenNotificaties webhook\nAction=Create / Channel=objecten / Resource=object"])
+
+    WEBHOOK --> CHK_TYPE{"notification.Attributes\n.ObjectTypeUri UUID?"}
+    CHK_TYPE -- "= KtoObjectType_Uuid" --> SCENARIO["⭐ KtoScenario"]
+    CHK_TYPE -- Other --> OTHER["→ Task / Message / Abort"]
+
+    SCENARIO --> FACTORY["KtoScenarioFactory.Create()\nBuilds KTO HTTP client with\nOAuth2 client-credentials token"]
+
+    FACTORY --> GET_TOKEN["GET OAuth2 token\nKTO__Auth__JWT__Issuer\nClient ID + Secret → access_token"]
+
+    GET_TOKEN --> CHK_TOKEN{"Token acquired?"}
+    CHK_TOKEN -- No --> FAIL_TOKEN(["🔁 Failure\nCannot authenticate with KTO provider"])
+
+    CHK_TOKEN -- Yes --> SEND_KTO["POST to KTO provider\nKTO__Url\nnotification payload + access_token"]
+
+    SEND_KTO --> OK{"HTTP 2xx response?"}
+    OK -- No --> RETRY(["🔁 Failure\nKTO provider returned error — retry"])
+    OK -- Yes --> SUCCESS(["✅ Success\nCustomer satisfaction survey triggered\nat KTO provider (e.g. Expoints)"])
+
+    NOTE["Note: KTO is handled entirely outside the\nnormal Notify NL pipeline. NotifyProcessor\ndetects KtoScenario and branches early —\nno OpenKlant lookup, no template, no\nDistributionChannel routing."]
+
+    style WEBHOOK     fill:#FF7A59,color:#fff,stroke:none
+    style SUCCESS     fill:#16a34a,color:#fff,stroke:none
+    style SCENARIO    fill:#1E2238,color:#fff,stroke:none
+    style FAIL_TOKEN  fill:#dc2626,color:#fff,stroke:none
+    style RETRY       fill:#f59e0b,color:#fff,stroke:none
+    style NOTE        fill:#fff3cd,stroke:#ffc107,color:#333

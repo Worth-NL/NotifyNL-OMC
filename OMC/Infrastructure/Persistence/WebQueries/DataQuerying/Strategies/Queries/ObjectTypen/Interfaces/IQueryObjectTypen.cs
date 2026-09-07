@@ -1,6 +1,5 @@
 ﻿// © 2024, Worth Systems.
 
-using Common.Extensions;
 using Common.Settings.Configuration;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Clients.Enums;
@@ -40,7 +39,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
                        $"\"data\":{{" +
                          $"{dataJson}" +
                        $"}}," +
-                       $"\"startAt\":\"{DateTime.UtcNow.ConvertToDutchDateString()}\"" +
+                       $"\"startAt\":\"{DateTime.UtcNow:yyyy-MM-dd}\"" +
                      $"}}" +
                    $"}}";
         }

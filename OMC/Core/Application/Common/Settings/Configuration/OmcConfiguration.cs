@@ -326,6 +326,20 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string CodeObjectTypeId()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectTypeId));
+
+                    // TODO (first-version, unconfirmed): these two are placeholders for the MOBB/Berichtenbox
+                    // contactmoment "onderwerpobject" - unlike "zaak"/"open-zaak" above, a Bericht object type
+                    // has not actually been registered/confirmed in OpenKlant yet. Get real values from whoever
+                    // manages OpenKlant's registered object types before relying on these.
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Bericht));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Bericht()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
                 }
 
                 /// <summary>
@@ -520,10 +534,6 @@ namespace Common.Settings.Configuration
             [Config]
             public AuthenticationComponent Auth { get; }
 
-            /// <inheritdoc cref="FeatureComponent"/>
-            [Config]
-            public FeatureComponent Feature { get; }
-
             /// <inheritdoc cref="ContextComponent"/>
             [Config]
             public ContextComponent Context { get; }
@@ -531,6 +541,7 @@ namespace Common.Settings.Configuration
             /// <inheritdoc cref="ActorComponent"/>
             [Config]
             public ActorComponent Actor { get; }
+
             /// <summary>
             /// Initializes a new instance of the <see cref="OmcComponent"/> class.
             /// </summary>
@@ -539,7 +550,6 @@ namespace Common.Settings.Configuration
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
 
                 this.Auth = new AuthenticationComponent(loadersContext, parentName);
-                this.Feature = new FeatureComponent(loadersContext, parentName);
                 this.Context = new ContextComponent(loadersContext, parentName);
                 this.Actor = new ActorComponent(loadersContext, parentName);
             }
@@ -613,29 +623,6 @@ namespace Common.Settings.Configuration
             }
 
             /// <summary>
-            /// The "Feature" part of the settings.
-            /// </summary>
-            public sealed record FeatureComponent
-            {
-                private readonly ILoadersContext _loadersContext;
-                private readonly string _currentPath;
-
-                /// <summary>
-                /// Initializes a new instance of the <see cref="FeatureComponent"/> class.
-                /// </summary>
-                public FeatureComponent(ILoadersContext loadersContext, string parentPath)
-                {
-                    this._loadersContext = loadersContext;
-                    this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Feature));
-                }
-
-                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
-                [Config]
-                public byte Workflow_Version()
-                    => GetCachedValue<byte>(this._loadersContext, this._currentPath, nameof(Workflow_Version));
-            }
-
-            /// <summary>
             /// The "Context" part of the settings.
             /// </summary>
             public sealed record ContextComponent
@@ -704,18 +691,29 @@ namespace Common.Settings.Configuration
             [Config]
             public VariableComponent Variable { get; }
 
+            private ILoadersContext _loadersContext;
+
+            private string _currentPath;
             /// <summary>
             /// Initializes a new instance of the <see cref="ZgwComponent"/> class.
             /// </summary>
             public ZgwComponent(IServiceProvider serviceProvider, string parentName, OmcConfiguration configuration)
             {
                 ILoadersContext loadersContext = GetLoader(serviceProvider, LoaderTypes.Environment);
-
+                _loadersContext = loadersContext;
+                _currentPath = parentName;
                 this.Auth = new AuthenticationComponent(loadersContext, parentName, configuration);
                 this.Endpoint = new EndpointComponent(loadersContext, parentName);
                 this.Whitelist = new WhitelistComponent(loadersContext, parentName);
                 this.Variable = new VariableComponent(loadersContext, parentName);
             }
+
+            /// <summary>
+            /// Gets the ZGW URN (OIN/RSIN) identifier.
+            /// </summary>
+            [Config]
+            public string Urn()
+                => GetCachedValue(_loadersContext, _currentPath, nameof(Urn));
 
             /// <summary>
             /// The "Authentication" part of the settings.
@@ -811,8 +809,7 @@ namespace Common.Settings.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
                     public string OpenKlant()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant),
-                           disableValidation: this._configuration.OMC.Feature.Workflow_Version() == 1);  // NOTE: OMC Workflow v1 is not using API Key for OpenKlant
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenKlant));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     [Config]
@@ -823,6 +820,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string ObjectTypen()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string OpenVtb()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
                 }
             }
 
@@ -865,6 +867,11 @@ namespace Common.Settings.Configuration
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 [Config]
+                public string Documenten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Documenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
                 public string Objecten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(Objecten));
 
@@ -877,6 +884,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string ContactMomenten()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string OpenVtb()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
             }
 
             /// <summary>
@@ -929,6 +941,11 @@ namespace Common.Settings.Configuration
                 public IDs DecisionMade_IDs()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(DecisionMade_IDs));
 
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public IDs VtbMessage_Types()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(VtbMessage_Types));
+
                 // --------------
                 // Flags (simple)
                 // --------------
@@ -970,6 +987,16 @@ namespace Common.Settings.Configuration
                     public int Count { get; }
 
                     /// <summary>
+                    /// Whether the wildcard <c>*</c> is configured, meaning all case types are allowed.
+                    /// </summary>
+                    public bool IsWildcard { get; }
+
+                    /// <summary>
+                    /// The configured case type IDs. Empty when <see cref="IsWildcard"/> is <see langword="true"/>.
+                    /// </summary>
+                    public IReadOnlyList<string> Values { get; }
+
+                    /// <summary>
                     /// Initializes a new instance of the <see cref="IDs"/> class.
                     /// </summary>
                     public IDs(ILoadingService loadersContext, string currentPath, string nodeName)
@@ -987,6 +1014,8 @@ namespace Common.Settings.Configuration
                             if (caseTypeIds.Contains(Wildcard))
                             {
                                 this._isEverythingAllowed = true;
+                                this.IsWildcard = true;
+                                this.Values = Array.Empty<string>();
 
                                 return;  // NOTE: Initializing collection of Case Type IDs is not necessary, because everything is allowed anyway
                             }
@@ -996,6 +1025,8 @@ namespace Common.Settings.Configuration
                                 s_allWhitelistedCaseTypeIds.Add(ComposeID(this._finalPath, id));
                             }
                         }
+
+                        this.Values = Array.AsReadOnly(caseTypeIds);
                     }
 
                     /// <summary>
@@ -1199,6 +1230,26 @@ namespace Common.Settings.Configuration
                     => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(DecisionMade));
 
                 /// <summary>
+                /// The template ID for the MOBB letter fallback.
+                /// </summary>
+                /// <remarks>
+                ///   NOTE: Deliberately does NOT go through <see cref="LetterComponent"/> - its constructor
+                ///   has a pre-existing bug (builds its settings path from <c>nameof(Sms)</c> instead of
+                ///   <c>nameof(Letter)</c>), so every accessor on it actually resolves an SMS env var. Fixing
+                ///   that bug affects 5 unrelated live scenarios' letter channel and needs ops coordination
+                ///   across environments, so it is deliberately left alone here. This accessor instead builds
+                ///   its own, correctly-named "Letter" path node directly, resolving
+                ///   <c>NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX</c> - matching the same nesting convention already
+                ///   used by <see cref="EmailComponent.MessageBox"/> (<c>NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX</c>).
+                /// </remarks>
+                [Config]
+                public Guid MessageBoxLetter()
+                {
+                    string letterPath = this._loadersContext.GetPathWithNode(this._currentPath, nameof(Letter));
+                    return GetCachedUuidValue(this._loadersContext, letterPath, nameof(EmailComponent.MessageBox));
+                }
+
+                /// <summary>
                 /// The "Email" part of the settings.
                 /// </summary>
                 public sealed record EmailComponent
@@ -1239,6 +1290,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>
@@ -1282,6 +1338,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageReceived()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid MessageBox()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
                 }
 
                 /// <summary>
@@ -1689,9 +1750,6 @@ namespace Common.Settings.Configuration
             // OMC | Authorization | JWT
             TryGetConfigurations(ref counter, methodNames, omcConfiguration.Auth.JWT);
 
-            // OMC | Features
-            TryGetConfigurations(ref counter, methodNames, omcConfiguration.Feature);
-                
             var zgwConfiguration = configuration.ZGW;
 
             // ZGW | Authorization | JWT

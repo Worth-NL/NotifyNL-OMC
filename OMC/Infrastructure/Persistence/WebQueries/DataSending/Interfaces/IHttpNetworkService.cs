@@ -41,5 +41,16 @@ namespace WebQueries.DataSending.Interfaces
         ///   The <see langword="string"/> Empty.
         /// </returns>
         internal Task<HttpRequestResponse> DeleteAsync(HttpClientTypes httpClientType, Uri uri);
+
+        /// <summary>
+        /// Sends a <see cref="HttpMethod.Get"/> request expecting a raw binary response body (e.g., a
+        /// Documenten API download link), reading it as bytes rather than text, and returns it Base64-encoded.
+        /// </summary>
+        /// <param name="httpClientType">The type of the specialized <see cref="HttpClient"/>.</param>
+        /// <param name="uri">The URI to be used with <see cref="HttpMethod.Get"/> request.</param>
+        /// <returns>
+        ///   The Base64-encoded content, wrapped the same way as the other HTTP methods here.
+        /// </returns>
+        internal Task<HttpRequestResponse> GetBinaryAsBase64Async(HttpClientTypes httpClientType, Uri uri);
     }
 }

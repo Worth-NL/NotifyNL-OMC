@@ -33,6 +33,12 @@ namespace ZgwModels.Enums
         /// Communication method: Letter.
         /// </summary>
         [JsonPropertyName("letter")]
-        Letter = 4
+        Letter = 4,
+
+        /// <summary>
+        /// Communication method: MOBB / Berichtenbox.
+        /// </summary>
+        [JsonPropertyName("mobb")]
+        Mobb = 5
     }
 }

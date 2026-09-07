@@ -14,6 +14,26 @@ Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenm
 | `resource` | `status` |
 | `actie` | `create` |
 
+### Voorbeeld payload
+
+```json
+{
+  "actie": "create",
+  "kanaal": "zaken",
+  "resource": "status",
+  "kenmerken": {
+    "zaaktype": "https://openzaak.mijnstad.nl/catalogi/api/v1/zaaktypen/11111111-1111-1111-1111-111111111111",
+    "bronorganisatie": "123456789",
+    "vertrouwelijkheidaanduiding": "openbaar"
+  },
+  "hoofdObject": "https://openzaak.mijnstad.nl/zaken/api/v1/zaken/22222222-2222-2222-2222-222222222222",
+  "resourceUrl": "https://openzaak.mijnstad.nl/zaken/api/v1/statussen/55555555-5555-5555-5555-555555555555",
+  "aanmaakdatum": "2026-01-15T10:30:00Z"
+}
+```
+
+> Dit payload-formaat is identiek voor alle drie zaakscenario's ([Zaak aangemaakt](zaak-aangemaakt.md), [Zaak gewijzigd](zaak-gewijzigd.md), [Zaak afgesloten](zaak-afgesloten.md)). Het OMC bepaalt welk scenario van toepassing is aan de hand van het opgehaalde statustype (`volgnummer`/`isEindstatus`), niet aan de hand van het event zelf.
+
 ---
 
 ## Sequence diagram
