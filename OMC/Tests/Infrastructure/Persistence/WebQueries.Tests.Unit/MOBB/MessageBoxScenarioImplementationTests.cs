@@ -230,7 +230,7 @@ namespace WebQueries.Tests.Unit.MOBB
         }
 
         [Test]
-        public async Task ProcessCloudEventAsync_EmptyMessageText_ReturnsFailure()
+        public async Task ProcessCloudEventAsync_EmptyMessageText_IsDropped_ReturnsSuccess()
         {
             // Arrange
             SetUpVtbMessage(BuildVtbMessage(messageText: "   "));
@@ -241,13 +241,14 @@ namespace WebQueries.Tests.Unit.MOBB
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.JsonResponse, Does.Contain("Message text"));
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("Dropped"));
+                Assert.That(result.JsonResponse, Does.Contain("message text"));
             });
         }
 
         [Test]
-        public async Task ProcessCloudEventAsync_NoBsnInRecipientUrn_ReturnsFailure()
+        public async Task ProcessCloudEventAsync_NoBsnInRecipientUrn_IsDropped_ReturnsSuccess()
         {
             // Arrange
             SetUpVtbMessage(BuildVtbMessage(recipientUrn: "urn:nld:no-bsn-here"));
@@ -258,13 +259,14 @@ namespace WebQueries.Tests.Unit.MOBB
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("Dropped"));
                 Assert.That(result.JsonResponse, Does.Contain("BSN"));
             });
         }
 
         [Test]
-        public async Task ProcessCloudEventAsync_NullMessageType_RejectedByWhitelistGate_ReturnsFailure()
+        public async Task ProcessCloudEventAsync_NullMessageType_RejectedByWhitelistGate_IsDropped_ReturnsSuccess()
         {
             // Arrange
             SetUpVtbMessage(BuildVtbMessage(messageType: null!));
@@ -276,7 +278,8 @@ namespace WebQueries.Tests.Unit.MOBB
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("Dropped"));
                 Assert.That(result.JsonResponse, Does.Contain("whitelist"));
             });
         }

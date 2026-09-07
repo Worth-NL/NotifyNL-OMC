@@ -99,7 +99,9 @@ namespace EventsHandler.Services.DataProcessing
                         HttpRequestResponse response = await _messageBoxScenario.ProcessCloudEventAsync(jsonElement);
                         return response.IsFailure
                             ? ProcessingResult.Failure(response.JsonResponse, json, details)
-                            : ProcessingResult.Success("CloudEvent processed via MessageBoxScenario", json, details);
+                            // Carry the scenario's own message through, so a deliberate drop ("Dropped: ...")
+                            // stays visible in the response and logs instead of reading as a normal send.
+                            : ProcessingResult.Success(response.JsonResponse, json, details);
                     }
                     else
                     {

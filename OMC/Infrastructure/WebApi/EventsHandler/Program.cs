@@ -18,6 +18,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
@@ -257,7 +258,9 @@ namespace EventsHandler
             // MijnOverheidClient resolves its HttpClient by name (IHttpClientFactory.CreateClient(nameof(MijnOverheidClient)))
             // rather than the typed-client pattern used by its siblings above — the name must match exactly.
             builder.Services.AddHttpClient(nameof(MijnOverheidClient));
-            builder.Services.AddScoped<IMijnOverheidClient, MijnOverheidClient>();
+            // Singleton, not scoped: MijnOverheidClient caches its OAuth2 access token in instance state,
+            // which a per-request instance would throw away, forcing a token round trip on every event.
+            builder.Services.AddSingleton<IMijnOverheidClient, MijnOverheidClient>();
             builder.Services.AddScoped<IMijnOverheidForwarder, MijnOverheidForwarder>();
             builder.Services.AddHttpClient<BrpClient>()
                 .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
@@ -404,6 +407,9 @@ namespace EventsHandler
             services.AddScoped<TaskAssignedScenario>();
             services.AddScoped<DecisionMadeScenario>();
             services.AddScoped<MessageReceivedScenario>();
+            // Resolved by NotifyScenariosResolver.IsMessageScenario via GetRequiredService, so it must be
+            // registered here - without it a "berichten" notification throws instead of being handled.
+            services.AddScoped<MessageBoxScenario>();
             services.AddScoped<NotImplementedScenario>();
             services.AddScoped<KtoScenario>();
             services.AddScoped<PrintScenario>();
