@@ -35,6 +35,7 @@
   * [Taak toegewezen](werkwijzen/scenarios/taak-toegewezen.md)
   * [Besluit genomen](werkwijzen/scenarios/besluit-genomen.md)
   * [Bericht ontvangen](werkwijzen/scenarios/bericht-ontvangen.md)
+  * [Print (printstraat)](werkwijzen/scenarios/print-printstraat.md)
   * [Producten (in ontwikkeling)](werkwijzen/scenarios/producten.md)
 
 ## Architectuur

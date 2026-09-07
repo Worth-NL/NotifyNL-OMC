@@ -10,20 +10,23 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/EventsHandler/Api/EventsHandler/bin/Debug/net7.0/NotifyNL.EventsHandler.dll",
+      "program": "${workspaceFolder}/OMC/Infrastructure/WebApi/EventsHandler/bin/Debug/net10.0/OMC.EventsHandler.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/EventsHandler/Api/EventsHandler",
+      "cwd": "${workspaceFolder}/OMC/Infrastructure/WebApi/EventsHandler",
       "stopAtEntry": false,
       // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
       "serverReadyAction": {
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       },
+      // OMC_*/ZGW_* config comes entirely from env vars (see OmcConfiguration.cs) — the
+      // container doesn't inject /workspace/.env itself (omc-dev has no env_file:
+      // directive, by design, since generate-local-env.sh only renders it after the
+      // container exists), so without this the app throws on startup looking for
+      // OMC_FEATURE_WORKFLOW_VERSION and everything after it.
+      "envFile": "${workspaceFolder}/../.env",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "sourceFileMap": {
-        "/Views": "${workspaceFolder}/Views"
       }
     },
     {

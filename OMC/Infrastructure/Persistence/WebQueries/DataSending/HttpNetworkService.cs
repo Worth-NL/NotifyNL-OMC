@@ -224,9 +224,12 @@ namespace WebQueries.DataSending
         private async Task<HttpRequestResponse> ExecuteCallAsync(
             HttpClientTypes httpClientType, Uri uri, HttpMethod httpMethod, HttpContent? body = default)
         {
+            bool semaphoreAcquired = false;
+
             try
             {
                 await _semaphore.WaitAsync();
+                semaphoreAcquired = true;
                 HttpClient client = ResolveClient(httpClientType);
 
                 HttpResponseMessage result = httpMethod switch
@@ -243,8 +246,6 @@ namespace WebQueries.DataSending
                     _ => throw new NotSupportedException($"HTTP method '{httpMethod}' is not supported.")
                 };
 
-                _semaphore.Release();
-
                 string responseContent = await result.Content.ReadAsStringAsync();
                 return result.IsSuccessStatusCode
                     ? HttpRequestResponse.Success(responseContent)
@@ -253,6 +254,13 @@ namespace WebQueries.DataSending
             catch (Exception exception)
             {
                 return HttpRequestResponse.Failure(exception.Message);
+            }
+            finally
+            {
+                if (semaphoreAcquired)
+                {
+                    _semaphore.Release();
+                }
             }
         }
 
@@ -264,9 +272,12 @@ namespace WebQueries.DataSending
         /// </summary>
         private async Task<HttpRequestResponse> ExecuteBinaryCallAsync(HttpClientTypes httpClientType, Uri uri)
         {
+            bool semaphoreAcquired = false;
+
             try
             {
                 await _semaphore.WaitAsync();
+                semaphoreAcquired = true;
                 HttpClient client = ResolveClient(httpClientType);
 
                 // The client's default "Accept: application/json" (set for every client by RegularHttpClientFactory)
@@ -279,8 +290,6 @@ namespace WebQueries.DataSending
 
                 HttpResponseMessage result = await client.SendAsync(request);
 
-                _semaphore.Release();
-
                 if (!result.IsSuccessStatusCode)
                 {
                     return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
@@ -292,6 +301,13 @@ namespace WebQueries.DataSending
             catch (Exception exception)
             {
                 return HttpRequestResponse.Failure(exception.Message);
+            }
+            finally
+            {
+                if (semaphoreAcquired)
+                {
+                    _semaphore.Release();
+                }
             }
         }
         #endregion

@@ -1,6 +1,8 @@
 ﻿// © 2024, Worth Systems.
 
+using Common.Extensions;
 using Common.Settings.Configuration;
+using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
@@ -38,14 +40,14 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         }
 
         #region Polymorphic (Party data)
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool)"/>
-        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier, bool requireDigitalAddress)
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, string, string?, bool, bool)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataAsync(IQueryBase queryBase, string bsnNumber, string? caseIdentifier, bool requireDigitalAddress, bool createIfMissing)
         {
             if (string.IsNullOrEmpty(bsnNumber))
             {
                 throw new ArgumentException(QueryResources.Querying_ERROR_MissingBsnNumber_FromInitiatorRole);
             }
-            
+
             // Predefined URL components
             string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
 
@@ -57,10 +59,64 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             // Request URL
             Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
 
-            return (await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand))  // Many party results
+            PartyResults results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);  // Many party results
+
+            if (createIfMissing && results.Results.IsEmpty())
+            {
+                // The party doesn't exist yet in OpenKlant - OMC's business flow doesn't guarantee one was
+                // ever created for this citizen before this lookup (e.g. a print request can be the first
+                // contact OMC ever has with them). Create a bare party carrying only the BSN identifier,
+                // then re-run the exact same lookup: the fresh party has no digital addresses, so it falls
+                // through PartyResults.Party's existing "no digital address on file" fallback unchanged.
+                await CreatePartyAsync(queryBase, ((IQueryKlant)this).Configuration, partiesEndpoint, partyIdentifier, bsnNumber);
+
+                results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);
+            }
+
+            return results
                 .Party(((IQueryKlant)this).Configuration,
                     caseIdentifier, requireDigitalAddress)  // Single determined party result
                 .ConvertToUnified();
+        }
+
+        /// <summary>
+        /// Creates a new "persoon" party in "OpenKlant" Web API service, carrying only the BSN identifier
+        /// needed to make it findable by the lookup that triggered its creation - no name, address, or
+        /// digital address is set, since none of that is available to OMC at this point.
+        /// </summary>
+        private static async Task CreatePartyAsync(IQueryBase queryBase, OmcConfiguration configuration, string partiesEndpoint, string codeSoortObjectId, string bsnNumber)
+        {
+            string codeObjectType = configuration.AppSettings.Variables.OpenKlant.CodeObjectType_Partij();
+            string codeRegister = configuration.AppSettings.Variables.OpenKlant.CodeRegister_Partij();
+
+            string jsonBody = GetCreatePartyJsonBody(codeObjectType, codeSoortObjectId, codeRegister, bsnNumber);
+
+            await queryBase.ProcessPostAsync<PartyCreationResult>(
+                httpClientType: HttpClientTypes.OpenKlant_v2,
+                uri: new Uri(partiesEndpoint),  // Request URL
+                jsonBody,
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyCreated);
+        }
+
+        /// <summary>
+        /// Builds the JSON body creating a "persoon" party with a single BSN <c>partijIdentificator</c>,
+        /// atomically, in one request - confirmed against the live "OpenKlant" instance to both create the
+        /// party and make it immediately findable by the same query that triggered its creation.
+        /// </summary>
+        private static string GetCreatePartyJsonBody(string codeObjectType, string codeSoortObjectId, string codeRegister, string bsnNumber)
+        {
+            string safeCodeObjectType = JsonSerializer.Serialize(codeObjectType);
+            string safeCodeSoortObjectId = JsonSerializer.Serialize(codeSoortObjectId);
+            string safeCodeRegister = JsonSerializer.Serialize(codeRegister);
+            string safeBsnNumber = JsonSerializer.Serialize(bsnNumber);
+
+            return $"{{\"soortPartij\":\"persoon\",\"indicatieActief\":true," +
+                   $"\"partijIdentificatoren\":[{{\"partijIdentificator\":{{" +
+                   $"\"codeObjecttype\":{safeCodeObjectType}," +
+                   $"\"codeSoortObjectId\":{safeCodeSoortObjectId}," +
+                   $"\"codeRegister\":{safeCodeRegister}," +
+                   $"\"objectId\":{safeBsnNumber}" +
+                   $"}}}}]}}";
         }
 
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataAsync(IQueryBase, Uri, string?)"/>
@@ -117,6 +173,18 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 uri: klantContactMomentUri,  // Request URL
                 jsonBody,
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
+        }
+
+        /// <inheritdoc cref="IQueryKlant.CreateBijlageAsync(IHttpNetworkService, string)"/>
+        async Task<HttpRequestResponse> IQueryKlant.CreateBijlageAsync(IHttpNetworkService networkService, string jsonBody)
+        {
+            Uri bijlageUri = new($"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/bijlagen");
+
+            // Sending the request
+            return await networkService.PostAsync(
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: bijlageUri,  // Request URL
+                jsonBody);
         }
 
         /// <inheritdoc cref="IQueryKlant.CreateContactMomentAsync(IQueryBase, string)"/>

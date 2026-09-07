@@ -68,6 +68,26 @@ namespace WebQueries.DataSending.Clients.Interfaces
         public Task<NotifySendResponse> SendLetterAsync(string templateId, Dictionary<string, object> personalization, string reference, IEnumerable<string>? attachments = null);
 
         /// <summary>
+        /// Sends an already fully composed letter (a "precompiled" letter) asynchronously.
+        /// </summary>
+        /// <remarks>
+        ///   Unlike <see cref="SendLetterAsync"/>, nothing is composed from a template here - the supplied
+        ///   PDF <em>is</em> the letter, printed verbatim, which is what the "zonder oplegger" (no cover
+        ///   sheet) requirement demands. Consequently the recipient's address is not passed separately: it
+        ///   has to already sit in the PDF's own address window, and "Notify NL" reads it from there.
+        /// </remarks>
+        /// <param name="reference">
+        ///   A unique identifier you can create if you need to. This reference
+        ///   identifies a single unique notification or a batch of notifications.
+        /// </param>
+        /// <param name="pdfContents">The raw bytes of the PDF to be printed and posted.</param>
+        /// <param name="postage">
+        ///   The postage class - "first", "second" or "economy", or <see langword="null"/> to let
+        ///   "Notify NL" apply its own default ("second").
+        /// </param>
+        public Task<NotifySendResponse> SendPrecompiledLetterAsync(string reference, byte[] pdfContents, string? postage = null);
+
+        /// <summary>
         /// Sends a message to a user's digital message box (e.g., Berichtenbox) asynchronously.
         /// </summary>
         /// <param name="recipient">
