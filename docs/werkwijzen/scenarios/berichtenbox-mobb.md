@@ -42,11 +42,11 @@ Het OMC leest het Bericht-UUID uit `subject` en haalt het volledige bericht op b
 
 ### Stap 2 — Berichttekst-check
 
-Is `berichtTekst` leeg of ontbrekend, dan wordt het bericht zonder verdere verwerking (en zonder terugval) verworpen.
+Is `berichtTekst` leeg of ontbrekend, dan wordt het bericht zonder verdere verwerking (en zonder terugval) verworpen. Net als bij het niet-actiegevende event-type hierboven levert dit een **2xx** op en geen fout: de situatie is permanent, dus Open VTB moet het bericht niet opnieuw aanbieden. De reden staat in de responsbody (`Dropped: ...`) en wordt als waarschuwing gelogd.
 
 ### Stap 3 — Ontvanger-BSN ontleden
 
-`ontvanger` moet een BSN-draagbare URN zijn (bevat een `:bsn:XXXXXXXXX`-segment). Alleen BSN wordt op dit moment ondersteund; een andere of onherkenbare URN breekt de verwerking af zonder terugval.
+`ontvanger` moet een BSN-draagbare URN zijn (bevat een `:bsn:XXXXXXXXX`-segment). Alleen BSN wordt op dit moment ondersteund; een andere of onherkenbare URN breekt de verwerking af zonder terugval — ook dit is permanent en levert dus een 2xx met `Dropped: ...` op.
 
 ### Stap 4 — Klant/partij opzoeken
 
@@ -60,7 +60,7 @@ Ook dit scenario garandeert niet dat er al een partij voor deze burger bestaat i
 ZGW_WHITELIST_VTBMESSAGE_TYPES bevat berichtType, of staat op *
 ```
 
-Deze check geldt **ongeacht kanaal** — ook een terugval naar e-mail of brief wordt tegengehouden als het berichttype niet is toegestaan. Net als bij de overige zaaktype-whitelists in het OMC betekent een **lege** waarde dat *niets* wordt toegestaan (niet "alles"): zonder deze variabele expliciet te zetten (naar `*` of een kommagescheiden lijst van berichttypes) verwerkt dit scenario dus geen enkel bericht.
+Deze check geldt **ongeacht kanaal** — ook een terugval naar e-mail of brief wordt tegengehouden als het berichttype niet is toegestaan. Een afwijzing door de whitelist is, net als bij de zaaktype-whitelists van de overige scenario's, geen fout maar een bewuste afbreking: 2xx met `Dropped: ...`, dus geen herlevering. Net als bij de overige zaaktype-whitelists in het OMC betekent een **lege** waarde dat *niets* wordt toegestaan (niet "alles"): zonder deze variabele expliciet te zetten (naar `*` of een kommagescheiden lijst van berichttypes) verwerkt dit scenario dus geen enkel bericht.
 
 ### Stap 6 — MOBB-geschiktheid
 

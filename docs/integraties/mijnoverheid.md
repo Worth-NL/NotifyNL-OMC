@@ -15,14 +15,14 @@ Het OMC ondersteunt het doorsturen van relevante zaakgebeurtenissen naar MijnOve
 
 | Filter | Zaak gemuteerd | Zaak geopend | Zaak verwijderd |
 |---|:---:|:---:|:---:|
-| Initiator is natuurlijk persoon | ✅ | ✅ (alleen als de zaak al eerder geopend is geweest) | — |
+| Initiator is natuurlijk persoon | ✅ | ✅ | — |
 | Statustype heeft `informeren = true` | ✅ | — | — |
 | Zaaktype staat op de whitelist | ✅ | — | — |
 | Gebeurtenis niet verouderd (t.o.v. `laatstGemuteerd`/`laatstGeopend`) | ✅ | ✅ | — |
 
 **Zaak verwijderd** wordt altijd direct doorgestuurd, zonder enige filtering — een zaak die verwijderd is, hoeft niet eerst opgehaald te worden.
 
-**Zaak geopend** slaat de initiator- en verouderd-check over als de zaak nog geen eerdere `laatstGeopend`-datum heeft (de eerste keer openen wordt altijd doorgestuurd).
+**Zaak geopend** slaat de verouderd-check over als de zaak nog geen eerdere `laatstGeopend`-datum heeft — de eerste keer openen is per definitie niet verouderd. De initiator-check geldt wél altijd: of de initiator een natuurlijk persoon is, staat los van de vraag of `laatstGeopend` al gevuld is. (Tot en met 2.1.0 werd ook die check overgeslagen bij een eerste opening, waardoor een zaak met een niet-natuurlijke initiator de eerste keer wél werd doorgestuurd en daarna niet meer.)
 
 ---
 
@@ -97,6 +97,8 @@ Het eindpunt accepteert daarnaast ook rechtstreekse CloudEvent-payloads (met een
 ```
 
 > Bij `zaak geopend` en `zaak verwijderd` zijn `hoofdObject` en `resourceUrl` gelijk — er is geen apart substatusobject zoals bij `zaak gemuteerd`.
+
+> `hoofdObject` moet eindigen op het zaak-UUID; dat laatste padsegment wordt de `subject` van het CloudEvent. Een afsluitende slash is toegestaan (die wordt genegeerd), maar levert het pad geen geldige UUID op, dan wordt de payload afgewezen met `400 Bad Request` en een toelichting. Tot en met 2.1.0 leidde dat tot een `subject` van `/` en werd de gebeurtenis verderop stilzwijgend genegeerd.
 
 ### Voorbeeld payload (rechtstreeks CloudEvent-formaat)
 

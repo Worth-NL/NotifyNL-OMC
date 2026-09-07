@@ -2,6 +2,20 @@
 
 ---
 
+## v2.2.0
+
+- [Printstraat-scenario](../werkwijzen/scenarios/print-printstraat.md) toegevoegd: een vooraf gegenereerde PDF-brief wordt verstuurd op basis van een object uit de Objecten API, het contactmoment wordt geregistreerd vanuit de afleverstatus-callback en het object wordt daarna verwijderd
+- Ondersteuning voor het versturen van voorgecompileerde brieven toegevoegd aan de Notify-client; brieven worden op het klantcontact vastgelegd met kanaal "brief"
+- Een `validation-failed`-status van Notify voor een brief geldt nu als mislukte aflevering in plaats van als succes
+- Een ontbrekende OpenKlant-partij wordt nu ter plekke aangemaakt in plaats van af te breken met een harde 412
+- Semaphore-lek in `HttpNetworkService` verholpen: een mislukte HTTP-aanroep gaf zijn plek in de gedeelde begrenzer nooit vrij. Genoeg mislukkingen achter elkaar putten die begrenzer uit, waarna elke volgende uitgaande aanroep blijft hangen tot een herstart
+- De natuurlijk-persoonfilter bij [MijnOverheid](../integraties/mijnoverheid.md) "zaak geopend" geldt nu ook bij de eerste opening van een zaak, in plaats van pas zodra `laatstGeopend` gevuld is
+- Een `hoofdObject` waarvan het laatste padsegment geen UUID is, wordt nu afgewezen met een toelichting; voorheen leverde dat een `subject` van `/` op die verderop stilzwijgend werd genegeerd
+- De permanente afbrekingen van het [Berichtenbox-scenario](../werkwijzen/scenarios/berichtenbox-mobb.md) (lege berichttekst, ontvanger zonder BSN, berichttype niet op de whitelist) worden gerapporteerd als een no-op succes in plaats van als fout, zodat Open VTB een bericht dat nooit kan slagen niet blijft herleveren
+- `MessageBoxScenario` is geregistreerd in de DI-container; een notificatie op het kanaal `berichten` liep voorheen op een fout in plaats van te worden afgehandeld
+
+---
+
 ## v2.1.0
 
 - [MijnOverheid](../integraties/mijnoverheid.md)-integratie toegevoegd: het eindpunt `POST /Events/MijnZaken` normaliseert inkomende ZGW CloudEvents/NotificationEvents en stuurt relevante zaakgebeurtenissen door naar MijnOverheid, met whitelist- en natuurlijk-persoonfiltering
