@@ -13,7 +13,7 @@ Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenm
 | `kanaal` | `objecten` |
 | `resource` | `object` |
 | `actie` | `create` |
-| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_TAAK_UUID` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID` |
 
 Het OMC haalt het objecttype-UUID uit de `objectType`-URL in het event en vergelijkt dit met de geconfigureerde waarde. Als het niet overeenkomt, wordt het event genegeerd.
 
@@ -93,7 +93,7 @@ Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template e
 
 | Conditie | Waarde |
 |---|---|
-| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_TAAK_UUID` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID` |
 | `taak.status` | `open` |
 | `taak.identificatie.type` | `bsn` of `kvk` |
 | `zaaktype.informeren` | `true` |
@@ -148,8 +148,7 @@ Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template e
 
 | Variabele | Beschrijving |
 |---|---|
-| `ZGW_VARIABLE_OBJECTTYPE_TAAK_UUID` | UUID van het taakobjecttype in ObjectTypen |
-| `ZGW_VARIABLE_OBJECTEN_TAAKOBJECTTYPE_VERSION` | Versie van het taakobjecttype (standaard: `1`) |
+| `ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID` | UUID van het taakobjecttype in ObjectTypen |
 | `ZGW_WHITELIST_TASKASSIGNED_IDS` | Kommagescheiden lijst van toegestane zaaktype-identificaties, of `*` |
 | `NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED` | NotifyNL template-UUID voor e-mail |
 | `NOTIFY_TEMPLATEID_SMS_TASKASSIGNED` | NotifyNL template-UUID voor sms |
