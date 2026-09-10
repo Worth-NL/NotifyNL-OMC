@@ -13,7 +13,7 @@ Het OMC activeert dit scenario wanneer een event binnenkomt met de volgende kenm
 | `kanaal` | `objecten` |
 | `resource` | `object` |
 | `actie` | `create` |
-| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID` |
 
 Het OMC haalt het objecttype-UUID uit de `objectType`-URL in het event en vergelijkt dit met de geconfigureerde waarde. Als het niet overeenkomt, wordt het event genegeerd.
 
@@ -73,7 +73,7 @@ Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template. 
 | Conditie | Waarde |
 |---|---|
 | `ZGW_WHITELIST_MESSAGE_ALLOWED` | `true` |
-| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` |
+| `objectType` UUID | Overeenkomstig `ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID` |
 | `bericht.identificatie.type` | `bsn` |
 | Burger heeft contactgegevens | E-mail of telefoonnummer in OpenKlant |
 
@@ -115,8 +115,8 @@ Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template. 
 | Variabele | Beschrijving |
 |---|---|
 | `ZGW_WHITELIST_MESSAGE_ALLOWED` | `true` of `false` — schakel het scenario in of uit |
-| `ZGW_VARIABLE_OBJECTTYPE_MESSAGE_UUID` | UUID van het berichtobjecttype in ObjectTypen |
-| `ZGW_VARIABLE_OBJECTEN_MESSAGEOBJECTTYPE_VERSION` | Versie van het berichtobjecttype (standaard: `1`) |
+| `ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_UUID` | UUID van het berichtobjecttype in ObjectTypen |
+| `ZGW_VARIABLE_OBJECTTYPE_MESSAGEOBJECTTYPE_VERSION` | Versie van het berichtobjecttype (standaard: `1`) |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED` | NotifyNL template-UUID voor e-mail |
 | `NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED` | NotifyNL template-UUID voor sms |
 | `NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED` | NotifyNL template-UUID voor brief |

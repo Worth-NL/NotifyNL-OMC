@@ -2,6 +2,15 @@
 
 ---
 
+## v2.2.1
+
+- Brieven worden niet meer verstuurd met het sms-template: `LetterComponent`
+- Een briefnotificatie waarvan de templatevariabele niet is ingesteld geeft nu een `412` en wordt door Open Notificaties opnieuw aangeboden; Het OMC start ook zonder de brieftemplates gewoon op, en e-mail, sms, Berichtenbox en printstraat zijn niet geraakt — zie [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md)
+- Omgevingsvariabelen in de documentatie gecorrigeerd: de integratiepagina's voor [BRP / Haal Centraal](../integraties/brp-haalcentraal.md), [KTO / Expoints](../integraties/kto-expoints.md) en [PostGuard](../integraties/postguard.md) beschreven variabelen die de code nooit uitleest, waardoor inrichten volgens die pagina's een stilzwijgend halve deployment opleverde. Ook de scenario- en architectuurpagina's waren afgedreven op objecttype-, template- en HTTP-poolingnamen
+- Het KTO-scenario wordt niet aangestuurd door "Zaak afgesloten" en kent geen koppeling van zaaktypen aan enquêtes; de werkelijke werking (een object uit de Objecten API) is nu beschreven
+
+---
+
 ## v2.2.0
 
 - [Printstraat-scenario](../werkwijzen/scenarios/print-printstraat.md) toegevoegd: een vooraf gegenereerde PDF-brief wordt verstuurd op basis van een object uit de Objecten API, het contactmoment wordt geregistreerd vanuit de afleverstatus-callback en het object wordt daarna verwijderd
