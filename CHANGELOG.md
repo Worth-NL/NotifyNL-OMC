@@ -1,3 +1,10 @@
+## 2.2.1
+
+- Fixes letter notifications being sent with the SMS template: `LetterComponent`
+- A letter notification whose template variable is unset now returns 412 and is redelivered by Open Notificaties, The service still starts without the letter templates, and e-mail, SMS, Berichtenbox and printstraat are unaffected
+- Corrects environment variable names throughout the documentation: the BRP/Haal Centraal, KTO/Expoints and PostGuard integration pages documented variables the code never reads, so provisioning from them produced a silently degraded deployment. Scenario and architecture pages had drifted on objecttype, template and HTTP-pooling names
+- Builds warning-free again: VSTHRD200 is disabled for test code, where the test naming convention makes an "Async" suffix noise, and two missing XML param tags were added to the `NotifyCallbackResponder` constructor
+
 ## 2.2.0
 
 - Adds the print (printstraat) scenario: sends a pre-generated PDF letter triggered from an Objecten API object, registers the contactmoment from the delivery callback, and deletes the object afterwards
