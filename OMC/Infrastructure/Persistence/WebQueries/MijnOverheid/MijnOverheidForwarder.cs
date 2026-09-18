@@ -285,7 +285,10 @@ namespace WebQueries.MijnOverheid
 
             _logger.LogDebug("Mutation event for case {CaseId} passed filters ({Scenario}) and timestamp check. Forwarding.", caseData.Identification, scenarioName);
 
-            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent, latestMutationUtc);
+            // The outgoing Time must reflect when the status was actually set (datumStatusGezet),
+            // not the OMC's own processing time (cloudEvent.Time) or the case's laatstGemuteerd.
+            DateTime statusSetUtc = AsUtc(caseStatus.Created);
+            OutgoingCloudEvent outgoingEvent = CreateOutgoingEvent(cloudEvent, statusSetUtc);
             return await SendAndTraceAsync(outgoingEvent);
         }
 

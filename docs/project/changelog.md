@@ -2,6 +2,12 @@
 
 ---
 
+## v2.2.1
+
+- De uitgaande CloudEvent van het [MijnZaken](../integraties/mijnoverheid.md) "zaak gemuteerd"-scenario gebruikt nu `datumStatusGezet` van de status als `time`, in plaats van de eigen verwerkingstijd van het OMC (of `laatstGemuteerd` van de zaak)
+
+---
+
 ## v2.2.0
 
 - [Printstraat-scenario](../werkwijzen/scenarios/print-printstraat.md) toegevoegd: een vooraf gegenereerde PDF-brief wordt verstuurd op basis van een object uit de Objecten API, het contactmoment wordt geregistreerd vanuit de afleverstatus-callback en het object wordt daarna verwijderd
