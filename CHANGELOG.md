@@ -1,3 +1,7 @@
+## 2.2.1
+
+- Fixes the MijnZaken "zaak gemuteerd" outgoing CloudEvent to use the status's datumStatusGezet as its time, instead of the OMC's own processing time (or the case's laatstGemuteerd)
+
 ## 2.2.0
 
 - Adds the print (printstraat) scenario: sends a pre-generated PDF letter triggered from an Objecten API object, registers the contactmoment from the delivery callback, and deletes the object afterwards
