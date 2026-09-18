@@ -28,10 +28,12 @@ Stel alle PostGuard-variabelen in op `-` als de integratie niet wordt gebruikt.
 
 | Variabele | Beschrijving |
 |---|---|
-| `POSTGUARD_BASE_URL` | Basis-URL van de PostGuard-dienst |
-| `POSTGUARD_ACCESS_TOKEN` | Toegangstoken voor de PostGuard API |
-| `POSTGUARD_SENDER_EMAIL` | E-mailadres van de afzender voor PostGuard-berichten |
-| `POSTGUARD_SENDER_NAME` | Naam van de afzender voor PostGuard-berichten |
+| `POSTGUARD_API_KEY` | API-sleutel voor de PostGuard-dienst |
+| `POSTGUARD_API_PKGURL` | URL van de PostGuard "pkg"-dienst |
+| `POSTGUARD_API_CRYPTIFYURL` | URL van de PostGuard "cryptify"-dienst |
+| `POSTGUARD_TEMPLATEID_SENDPOSTGUARDPDF` | Template-UUID voor het versturen van een vooraf samengestelde PDF via PostGuard |
+
+Zie [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md) voor de volledige lijst.
 
 ---
 

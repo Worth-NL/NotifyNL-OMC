@@ -18,21 +18,28 @@ Als de BRP-integratie is ingeschakeld, haalt het OMC de volgende gegevens op:
 
 ---
 
+## Endpoint
+
+| Variabele | Beschrijving |
+|---|---|
+| `BRP_BASEURL` | Basis-URL van de BRP / WS Gateway-dienst — vereist wanneer de BRP-integratie gebruikt wordt |
+
+---
+
 ## Tweelaagse beveiliging
 
 De BRP-verbinding vereist twee beveiligingslagen:
 
 ### Laag 1 — Keycloak OAuth2-tokenuitwisseling
 
-Het OMC wisselt zijn credentials in bij Keycloak voor een toegangstoken dat geldig is voor de BRP API.
+Het OMC haalt eerst met `client_credentials` een service-token op bij Keycloak en wisselt dat vervolgens in voor een token dat geldig is voor de BRP-audience (`urn:ietf:params:oauth:grant-type:token-exchange`).
 
 | Variabele | Beschrijving |
 |---|---|
-| `BRP_AUTH_CLIENTID` | OAuth2 client ID geregistreerd in Keycloak |
-| `BRP_AUTH_CLIENTSECRET` | OAuth2 clientgeheim |
-| `BRP_AUTH_SCOPE` | OAuth2 scope(s) voor BRP-toegang |
-| `BRP_AUTH_REDIRECTURI` | Redirect-URI geregistreerd in Keycloak |
-| `BRP_AUTH_TOKENENDPOINT` | Keycloak token-eindpunt URL |
+| `KEYCLOAK_AUTHSERVERURL` | Basis-URL van de Keycloak-autorisatieserver — het OMC voegt hier zelf `/token` aan toe |
+| `KEYCLOAK_CLIENTID` | OAuth2 client ID geregistreerd in Keycloak |
+| `KEYCLOAK_CLIENTSECRET` | OAuth2 clientgeheim |
+| `KEYCLOAK_TOKENEXCHANGEAUDIENCE` | Doelgroep (audience) van het uitgewisselde token (standaard: `haalcentraal`) |
 
 ### Laag 2 — Mutuele TLS (mTLS)
 
@@ -40,8 +47,12 @@ De BRP API vereist dat het OMC een clientcertificaat presenteert bij elke aanroe
 
 | Variabele | Beschrijving |
 |---|---|
-| `BRP_MTLS_CERTIFICATE` | Base64-gecodeerd PEM-clientcertificaat |
-| `BRP_MTLS_KEY` | Base64-gecodeerde PEM-privésleutel |
+| `BRP_CLIENTCERT_PEM_PATH` | Bestandspad naar het PEM-gecodeerde clientcertificaat |
+| `BRP_CLIENTKEY_PEM_PATH` | Bestandspad naar de PEM-gecodeerde private key |
+
+> Dit zijn **bestandspaden**, geen base64-blobs: het OMC leest beide bestanden van schijf en combineert ze met `X509Certificate2.CreateFromPem`. Ontbreken de variabelen of de bestanden, dan start het OMC gewoon op — maar zijn BRP-aanroepen niet beschikbaar.
+
+Zie [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md) voor de volledige lijst.
 
 ---
 
