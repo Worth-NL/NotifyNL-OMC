@@ -72,6 +72,7 @@
         "ZGW_WHITELIST_TASKASSIGNED_IDS": "*",
         "ZGW_WHITELIST_DECISIONMADE_IDS": "blabla, bloebloe",
         "ZGW_WHITELIST_VTBMESSAGE_TYPES": "*",
+        "ZGW_WHITELIST_PRODUCTCREATE_IDS": "*", // NOTE: Open Product producttype codes, not case type identifications
         "ZGW_WHITELIST_MESSAGE_ALLOWED": "true",
 
         "ZGW_VARIABLE_OBJECTTYPE_TASKOBJECTTYPE_UUID": "0236e468-2ad8-43d6-a723-219cb22acb37",

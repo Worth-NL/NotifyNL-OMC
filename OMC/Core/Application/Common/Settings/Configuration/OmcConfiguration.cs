@@ -981,6 +981,16 @@ namespace Common.Settings.Configuration
                 public IDs VtbMessage_Types()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(VtbMessage_Types));
 
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                /// <remarks>
+                ///   NOTE: Unlike the whitelists above, the allowed values are "Open Product" producttype
+                ///   codes (e.g. "PARKEERVERGUNNING-A"), not case type identifications. The "_IDs" suffix is
+                ///   kept for consistency with the other whitelists and with the environment variable naming.
+                /// </remarks>
+                [Config]
+                public IDs ProductCreate_IDs()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(ProductCreate_IDs));
+
                 // --------------
                 // Flags (simple)
                 // --------------

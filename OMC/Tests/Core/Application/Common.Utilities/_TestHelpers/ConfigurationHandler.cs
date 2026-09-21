@@ -124,6 +124,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
+                { "ZGW_WHITELIST_PRODUCTCREATE_IDS",                      GetTestValue(isValid, testArray) },  // NOTE: Open Product producttype codes, not case type identifications
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
                 { "ZGW_WHITELIST_PRINT_ALLOWED",                          GetTestValue(isValid, testBool, "false") },  // NOTE: Mirrors MESSAGE_ALLOWED - "false" is the more useful default for other tests
 

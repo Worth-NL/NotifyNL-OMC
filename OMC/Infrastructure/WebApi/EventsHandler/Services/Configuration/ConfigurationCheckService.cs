@@ -37,7 +37,8 @@ namespace EventsHandler.Services.Configuration
             return OmcAuthChecks().Count() + ZgwAuthChecks().Count() + EndpointChecks().Count() + NotifyConfigChecks().Count()
                 + ConnectivityCheckCount
                 + CaseCreatedChecks().Count() + CaseUpdatedChecks().Count() + CaseClosedChecks().Count()
-                + TaskAssignedChecks().Count() + MessageReceivedChecks().Count() + DecisionMadeChecks().Count() + KtoChecks().Count();
+                + TaskAssignedChecks().Count() + MessageReceivedChecks().Count() + DecisionMadeChecks().Count()
+                + ProductCreatedChecks().Count() + KtoChecks().Count();
         }
 
         /// <summary>Streams check results as they complete.</summary>
@@ -83,6 +84,7 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in TaskAssignedChecks())     yield return r;
             foreach (var r in MessageReceivedChecks())  yield return r;
             foreach (var r in DecisionMadeChecks())     yield return r;
+            foreach (var r in ProductCreatedChecks())   yield return r;
             foreach (var r in KtoChecks())              yield return r;
         }
 
@@ -187,6 +189,12 @@ namespace EventsHandler.Services.Configuration
             yield return Whitelist(g, ic, "Allowed case types",        () => config.ZGW.Whitelist.DecisionMade_IDs(),                     "ZGW__Whitelist__DecisionMade_IDs");
             yield return UuidSet(g,  ic, "Decision info object types", () => config.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids(), "ZGW__Variable__ObjectType__DecisionInfoObjectType_Uuids");
             yield return Uuid(g,     ic, "Notification template",      () => config.Notify.TemplateId.DecisionMade(),                      "Notify__TemplateId__DecisionMade");
+        }
+
+        private IEnumerable<CheckResult> ProductCreatedChecks()
+        {
+            const string g = "Product Created (Product aangemaakt)", ic = "📦";
+            yield return Whitelist(g, ic, "Allowed product type codes", () => config.ZGW.Whitelist.ProductCreate_IDs(), "ZGW__Whitelist__ProductCreate_IDs");
         }
 
         private IEnumerable<CheckResult> KtoChecks()
