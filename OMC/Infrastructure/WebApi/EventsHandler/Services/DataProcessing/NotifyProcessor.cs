@@ -14,10 +14,12 @@ using Notify.Exceptions;
 using System.Text.Json;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.KTO.Interfaces;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
+using WebQueries.Producten.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
@@ -36,6 +38,7 @@ namespace EventsHandler.Services.DataProcessing
         private readonly IKtoScenarioFactory _ktoScenarioFactory;
         private readonly IMessageBoxScenario _messageBoxScenario;
         private readonly IPrintScenario _printScenario;
+        private readonly IProductScenario _productScenario;
         private readonly TraceEmitter _traceEmitter;
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace EventsHandler.Services.DataProcessing
         /// <param name="ktoScenarioFactory">The strategy to send Kto</param>
         /// <param name="messageBoxScenario">The strategy to route MOBB/Berichten CloudEvents.</param>
         /// <param name="printScenario">The strategy to print and post a pre-composed PDF letter.</param>
+        /// <param name="productScenario">The strategy to notify the owners of a newly created product.</param>
         /// <param name="traceEmitter">Broadcasts real-time processing steps to the dashboard.</param>
         public NotifyProcessor(
             ISerializationService serializer,
@@ -55,6 +59,7 @@ namespace EventsHandler.Services.DataProcessing
             IKtoScenarioFactory ktoScenarioFactory,
             IMessageBoxScenario messageBoxScenario,
             IPrintScenario printScenario,
+            IProductScenario productScenario,
             TraceEmitter traceEmitter)  // Dependency Injection (DI)
         {
             this._serializer = serializer;
@@ -63,6 +68,7 @@ namespace EventsHandler.Services.DataProcessing
             this._ktoScenarioFactory = ktoScenarioFactory;
             this._messageBoxScenario = messageBoxScenario;
             this._printScenario = printScenario;
+            this._productScenario = productScenario;
             this._traceEmitter = traceEmitter;
         }
 
@@ -173,6 +179,18 @@ namespace EventsHandler.Services.DataProcessing
                     return printResponse.IsFailure
                         ? ProcessingResult.Failure(printResponse.JsonResponse, json, details)
                         : ProcessingResult.Success(printResponse.JsonResponse, json, details);
+                }
+
+                // Step 3e-ter: Special handling for the Product scenario. Same reason as the two branches
+                // above: a created product notifies every "eigenaar" it has and always by e-mail, so
+                // neither TryGetDataAsync's single party nor its channel-from-preference switch applies.
+                if (scenario is ProductCreatedScenario)
+                {
+                    HttpRequestResponse productResponse = await this._productScenario.ProcessProductAsync(notification);
+
+                    return productResponse.IsFailure
+                        ? ProcessingResult.Failure(productResponse.JsonResponse, json, details)
+                        : ProcessingResult.Success(productResponse.JsonResponse, json, details);
                 }
 
                 // Step 3f: For all other scenarios – query external data (OpenZaak, etc.)

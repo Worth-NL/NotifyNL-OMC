@@ -41,5 +41,11 @@ namespace ZgwModels.Mapping.Enums.NotificatieApi
         /// </summary>
         [JsonPropertyName("berichten")]
         Messages = 4,
+
+        /// <summary>
+        /// Products channel, published by "Open Product".
+        /// </summary>
+        [JsonPropertyName("producten")]
+        Products = 5,
     }
 }

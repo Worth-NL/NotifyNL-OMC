@@ -18,6 +18,7 @@ using WebQueries.DataSending.Models.DTOs;
 using WebQueries.KTO.Interfaces;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
+using WebQueries.Producten.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
@@ -38,6 +39,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
         private Mock<IMessageBoxScenario> _mockedMessageBoxScenario = null!;
         private Mock<IPrintScenario> _mockedPrintScenario = null!;
 
+        private Mock<IProductScenario> _mockedProductScenario = null!;
         private IProcessingService _processor = null!;
 
         [OneTimeSetUp]
@@ -49,9 +51,10 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             this._mockedKtoScenarioFactory = new Mock<IKtoScenarioFactory>(MockBehavior.Strict);
             this._mockedMessageBoxScenario = new Mock<IMessageBoxScenario>(MockBehavior.Strict);
             this._mockedPrintScenario = new Mock<IPrintScenario>(MockBehavior.Strict);
+            this._mockedProductScenario = new Mock<IProductScenario>(MockBehavior.Strict);
 
             // TraceEmitter is real (not mocked): a pure in-memory, no-op-when-unsubscribed broadcaster — nothing to fake.
-            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object, this._mockedMessageBoxScenario.Object, this._mockedPrintScenario.Object, new TraceEmitter());
+            this._processor = new NotifyProcessor(this._mockedSerializer.Object, this._mockedValidator.Object, this._mockedResolver.Object, this._mockedKtoScenarioFactory.Object, this._mockedMessageBoxScenario.Object, this._mockedPrintScenario.Object, this._mockedProductScenario.Object, new TraceEmitter());
         }
 
         [SetUp]

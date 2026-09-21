@@ -9,6 +9,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +62,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
             serviceCollection.AddSingleton(new MessageReceivedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new PrintScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new KtoScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
+            serviceCollection.AddSingleton(new ProductCreatedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
             serviceCollection.AddSingleton(new NotImplementedScenario(this._omcConfiguration, this._mockedDataQuery.Object, this._mockedNotifyService.Object));
 
             this._serviceProvider = serviceCollection.BuildServiceProvider();
@@ -224,6 +226,38 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
         }
 
         [Test]
+        public async Task DetermineScenarioAsync_ProductScenario_ReturnsExpectedScenario()
+        {
+            // Arrange
+            NotificationEvent testNotification = GetProductNotification();
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<ProductCreatedScenario>());
+        }
+
+        [TestCase(Actions.Update)]
+        [TestCase(Actions.Destroy)]
+        public async Task DetermineScenarioAsync_ProductScenario_NonCreateAction_ReturnsNotImplementedScenario(Actions action)
+        {
+            // NOTE: "Open Product" publishes create, update and destroy on the same channel. Only a created
+            //       product is in scope, so the other two must not reach the product scenario.
+
+            // Arrange
+            NotificationEvent testNotification = GetProductNotification(action);
+            IScenariosResolver<INotifyScenario, NotificationEvent> scenariosResolver = GetScenariosResolver();
+
+            // Act
+            INotifyScenario actualResult = await scenariosResolver.DetermineScenarioAsync(testNotification);
+
+            // Assert
+            Assert.That(actualResult, Is.TypeOf<NotImplementedScenario>());
+        }
+
+        [Test]
         public async Task DetermineScenarioAsync_MessageReceivedScenario_ReturnsExpectedScenario()
         {
             // Arrange
@@ -338,6 +372,16 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Manager
                 {
                     ObjectTypeUri = new Uri($"https://objecttypen.test.denhaag.opengem.nl/api/v2/objecttypes/{testGuid}")
                 }
+            };
+        }
+
+        private static NotificationEvent GetProductNotification(Actions action = Actions.Create)
+        {
+            return new NotificationEvent
+            {
+                Action = action,
+                Channel = Channels.Products,
+                Resource = Resources.Product
             };
         }
 

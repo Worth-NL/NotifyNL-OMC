@@ -104,6 +104,29 @@ namespace EventsHandler.Tests.Unit.Services.Validation
         }
 
         [Test]
+        public void Validate_ForProductNotification_ReturnsInconsistentStatus_WithoutThrowing()
+        {
+            // NOTE: EventAttributes.Properties indexes a dictionary that has an entry per channel, and
+            //       indexing it with a channel that was never added throws KeyNotFoundException here,
+            //       before the resolver ever sees the notification. This is the regression guard for that.
+            //
+            //       Inconsistent rather than valid is the expected outcome: "Open Product" publishes its
+            //       product type as kenmerken that EventAttributes deliberately does not map, so they land
+            //       in its extension data. NotifyProcessor only rejects ERROR_Invalid, so the notification
+            //       still goes on to be processed.
+
+            // Arrange
+            NotificationEvent testModel = NotificationEventHandler.GetNotification_Real_ProductCreatedScenario()
+                .Deserialized();
+
+            // Act
+            HealthCheck actualResult = this._validator!.Validate(ref testModel);
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(HealthCheck.OK_Inconsistent));
+        }
+
+        [Test]
         public void Validate_ForNotification_Valid_ReturnsOkStatus()
         {
             // Arrange
