@@ -13,6 +13,7 @@ using WebQueries.Producten;
 using WebQueries.Producten.Interfaces;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
 namespace WebQueries.Tests.Unit.Producten
@@ -35,6 +36,10 @@ namespace WebQueries.Tests.Unit.Producten
         // ZGW_WHITELIST_PRODUCTCREATE_IDS is "1, 2, 3" in the test configuration.
         private const string WhitelistedProductTypeCode = "1";
         private const string BlockedProductTypeCode = "9";
+
+        private const string TestBsn = "999990019";
+        private const string TestKvk = "12345678";
+        private const string TestVestigingsnummer = "000012345678";
         #endregion
 
         [OneTimeSetUp]
@@ -90,6 +95,24 @@ namespace WebQueries.Tests.Unit.Producten
             => this._mockedQueryContext
                 .Setup(mock => mock.GetProductAsync(s_productUri))
                 .ReturnsAsync(product);
+
+        private static Product GetProductWithOwners(params Eigenaar[] owners)
+        {
+            Product product = GetProduct();
+            product.Owners = [.. owners];
+
+            return product;
+        }
+
+        private void SetupPartyFound(string codeSoortObjectId, string objectId)
+            => this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, null, false))
+                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = "test@example.com" });
+
+        private void SetupPartyMissing(string codeSoortObjectId, string objectId)
+            => this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, null, false))
+                .ThrowsAsync(new HttpRequestException("No party results"));
         #endregion
 
         [Test]
@@ -133,17 +156,158 @@ namespace WebQueries.Tests.Unit.Producten
         [Test]
         public void ProcessProductAsync_ProductFound_ReadsItFromTheNotificationsResourceUrl()
         {
-            // NOTE: Only the fetch and the gates are asserted here - everything past them lands in the
-            //       follow-up commits and still throws NotImplementedException.
+            // NOTE: Only the fetch, the gates and the owner resolution are asserted here - everything past
+            //       them lands in the follow-up commits and still throws NotImplementedException.
 
             // Arrange
-            SetupProduct(GetProduct());
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
 
             // Act & Assert
             Assert.ThrowsAsync<NotImplementedException>(
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
             this._mockedQueryContext.Verify(mock => mock.GetProductAsync(s_productUri), Times.Once);
+        }
+
+
+        [Test]
+        public void ProcessProductAsync_BsnOwner_ResolvesThePartyOnTheBsnIdentificator()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, null, false), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_KvkOwner_ResolvesThePartyOnTheKvkIdentificator()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { KvkNumber = TestKvk }));
+            SetupPartyFound("kvk", TestKvk);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_KvkOwnerWithVestigingsnummer_StillResolvesOnTheKvkNumberAlone()
+        {
+            // NOTE: V1 does not narrow to a branch. OpenKlant finds a vestiging by combining
+            //       subIdentificatorVan__ with partijIdentificator__, which is a second query path this
+            //       does not implement yet.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Eigenaar { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
+            SetupPartyFound("kvk", TestKvk);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_EveryOwnerResolves_ResolvesThemAll()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Eigenaar { BsnNumber = TestBsn },
+                new Eigenaar { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyFound("kvk", TestKvk);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                this._mockedQueryContext.Verify(
+                    mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, null, false), Times.Once);
+                this._mockedQueryContext.Verify(
+                    mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+            });
+        }
+
+        [Test]
+        public void ProcessProductAsync_OneOwnerHasNoParty_AbortsWithoutNotifyingTheOthers()
+        {
+            // NOTE: The all-or-nothing rule. The first owner resolves perfectly well and is still not
+            //       notified, because a failure OMC cannot attach to a party is a failure it cannot record.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Eigenaar { BsnNumber = TestBsn },
+                new Eigenaar { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyMissing("kvk", TestKvk);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("no partij"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerWithOnlyAKlantnummer_Aborts()
+        {
+            // NOTE: OpenKlant matches a customer number only through a filter its own schema marks
+            //       deprecated, so V1 treats such an owner as unresolvable rather than guessing.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { CustomerNumber = "K-12345" }));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("no BSN or KVK"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductWithoutOwners_Aborts()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners());
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("no eigenaren"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerResolutionFailure_NeverPutsTheIdentifierInTheReason()
+        {
+            // NOTE: A BSN is personal data and the reason travels into traces and logs. Only the kind of
+            //       identificator belongs there, never its value.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyMissing("bsn", TestBsn);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Not.Contain(TestBsn));
         }
 
         [Test]

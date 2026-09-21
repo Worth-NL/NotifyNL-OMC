@@ -178,6 +178,15 @@ namespace WebQueries.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error: Both the party identificator kind and its value are expected..
+        /// </summary>
+        public static string Querying_ERROR_MissingPartyIdentifier {
+            get {
+                return ResourceManager.GetString("Querying_ERROR_MissingPartyIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The registration of details about successfully processed notification was completed..
         /// </summary>
         public static string Registering_SUCCESS_NotificationSentToNotifyNL {

@@ -12,6 +12,7 @@ using WebQueries.Producten.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
 namespace WebQueries.Producten
@@ -19,6 +20,16 @@ namespace WebQueries.Producten
     /// <inheritdoc cref="IProductScenario"/>
     public sealed class ProductScenarioImplementation : IProductScenario
     {
+        /// <summary>
+        /// The "codeSoortObjectId" OpenKlant stores a citizen's BSN under.
+        /// </summary>
+        private const string CodeSoortObjectIdBsn = "bsn";
+
+        /// <summary>
+        /// The "codeSoortObjectId" OpenKlant stores an organization's KVK number under.
+        /// </summary>
+        private const string CodeSoortObjectIdKvk = "kvk";
+
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<ProductScenarioImplementation> _logger;
@@ -53,10 +64,106 @@ namespace WebQueries.Producten
             // Step 3: An unpublished product is not shown to its owners, so it is not announced to them either
             ValidateProductIsPublished(product);
 
-            // TODO: The per-owner party lookup and the fire-and-forget send with its contactmomenten land
-            //       in the follow-up commits for Worth-NL/notifynl#114 - #116.
+            // Step 4: Every owner has to resolve to a party before anyone is notified
+            IReadOnlyList<CommonPartyData> parties = await ResolveOwnersAsync(queryContext, product);
+
+            // TODO: The fire-and-forget send with its contactmomenten lands in the follow-up commits for
+            //       Worth-NL/notifynl#115 - #116.
             throw new NotImplementedException();
         }
+
+        #region Owners
+        /// <summary>
+        /// Resolves the party behind every owner of the product.
+        /// </summary>
+        /// <remarks>
+        ///   All or nothing: one owner that cannot be resolved stops the whole notification, and nobody is
+        ///   notified. Sending to the others and recording the odd one out is not an option, because the
+        ///   record OMC would write is a klantcontact with a "betrokkene" - and the one thing missing here
+        ///   is precisely the party that field names. Aborting keeps every failure that is reported later
+        ///   attached to a party that actually exists.
+        ///   <para>
+        ///     Digital addresses are not required yet. Whether an owner can actually be reached is decided
+        ///     during delivery, where a party with no e-mail address becomes a failed contactmoment rather
+        ///     than a reason to drop the whole product.
+        ///   </para>
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">The product has no owners, or one of them did not resolve.</exception>
+        private async Task<IReadOnlyList<CommonPartyData>> ResolveOwnersAsync(IQueryContext queryContext, Product product)
+        {
+            if (product.Owners.IsEmpty())
+            {
+                const string reason = "Product has no eigenaren to notify.";
+
+                TraceContext.Emit("openklant", "abort", reason);
+                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);
+
+                throw new ProcessingAbortedException(reason);
+            }
+
+            TraceContext.Emit("openklant", "start", $"Attempting to resolve {product.Owners.Count} eigenaar(s)");
+
+            List<CommonPartyData> parties = new(product.Owners.Count);
+
+            for (int index = 0; index < product.Owners.Count; index++)
+            {
+                parties.Add(await ResolveOwnerAsync(queryContext, product, product.Owners[index], index));
+            }
+
+            TraceContext.Emit("openklant", "ok", $"{parties.Count} eigenaar(s) resolved to a partij");
+
+            return parties;
+        }
+
+        /// <summary>
+        /// Resolves the party behind a single owner.
+        /// </summary>
+        /// <exception cref="ProcessingAbortedException">The owner carries no usable identifier, or has no party.</exception>
+        private async Task<CommonPartyData> ResolveOwnerAsync(
+            IQueryContext queryContext, Product product, Eigenaar owner, int index)
+        {
+            // "Open Product" validates that an owner carries either a BSN (and/or a customer number) or a
+            // KVK number, never both, so these two branches cannot both apply. BSN is still checked first,
+            // so that an owner carrying both because that rule ever loosens resolves as a citizen.
+            (string codeSoortObjectId, string objectId) = owner switch
+            {
+                { BsnNumber.Length: > 0 } => (CodeSoortObjectIdBsn, owner.BsnNumber),
+                { KvkNumber.Length: > 0 } => (CodeSoortObjectIdKvk, owner.KvkNumber),
+
+                _ => (string.Empty, string.Empty)
+            };
+
+            if (codeSoortObjectId.Length == 0)
+            {
+                // A customer number is the remaining possibility. OpenKlant only matches it through a
+                // filter its own schema marks deprecated, so V1 does not chase it.
+                string reason = $"Eigenaar {index + 1} of {product.Owners.Count} carries no BSN or KVK number.";
+
+                TraceContext.Emit("openklant", "abort", reason);
+                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);
+
+                throw new ProcessingAbortedException(reason);
+            }
+
+            try
+            {
+                // The digital address is resolved here too, but not required: see ResolveOwnersAsync.
+                return await queryContext.GetPartyDataByIdentifierAsync(
+                    codeSoortObjectId, objectId, reference: null, requireDigitalAddress: false);
+            }
+            catch (Exception exception) when (exception is HttpRequestException or KeyNotFoundException)
+            {
+                // The identifier itself is never traced or logged - it is a BSN or a KVK number.
+                string reason =
+                    $"Eigenaar {index + 1} of {product.Owners.Count} ({codeSoortObjectId}) has no partij in OpenKlant.";
+
+                TraceContext.Emit("openklant", "abort", reason);
+                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);
+
+                throw new ProcessingAbortedException(reason, exception);
+            }
+        }
+        #endregion
 
         #region Validation
         /// <summary>

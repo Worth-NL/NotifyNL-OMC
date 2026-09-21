@@ -297,6 +297,11 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <returns>The deserialized product data.</returns>
         Task<Product> GetProductAsync(Uri productUri);
 
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool)"/>
+        Task<CommonPartyData> GetPartyDataByIdentifierAsync(
+            string codeSoortObjectId, string objectId,
+            string? reference = null, bool requireDigitalAddress = true);
+
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         Task<HttpRequestResponse> GetProductenHealthCheckAsync();
         #endregion

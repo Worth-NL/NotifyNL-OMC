@@ -298,6 +298,14 @@ namespace WebQueries.DataQuerying.Adapter
             return await this._queryProducten.GetProductAsync(this._queryBase, productUri);
         }
 
+        /// <inheritdoc cref="IQueryContext.GetPartyDataByIdentifierAsync(string, string, string?, bool)"/>
+        async Task<CommonPartyData> IQueryContext.GetPartyDataByIdentifierAsync(
+            string codeSoortObjectId, string objectId, string? reference, bool requireDigitalAddress)
+        {
+            return await this._queryKlant.TryGetPartyDataByIdentifierAsync(
+                this._queryBase, codeSoortObjectId, objectId, reference, requireDigitalAddress);
+        }
+
         /// <inheritdoc cref="IQueryContext.GetProductenHealthCheckAsync()"/>
         async Task<HttpRequestResponse> IQueryContext.GetProductenHealthCheckAsync()
             => await this._queryProducten.GetHealthCheckAsync(this._networkService);
