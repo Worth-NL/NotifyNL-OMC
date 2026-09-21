@@ -9,6 +9,7 @@ using WebQueries.DataQuerying.Strategies.Queries.Documenten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenProducten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
@@ -21,6 +22,7 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
@@ -43,6 +45,7 @@ namespace WebQueries.DataQuerying.Adapter
         private readonly IQueryObjectTypen _queryObjectTypen;  // ObjectType API microservice
         private readonly IQueryVtb _queryVtb;                  // Vtb API microservice
         private readonly IQueryDocumenten _queryDocumenten;    // Documenten API microservice
+        private readonly IQueryProducten _queryProducten;      // Open Product API microservice
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext"/> nested class.
@@ -55,7 +58,8 @@ namespace WebQueries.DataQuerying.Adapter
             IQueryKlant queryKlant,
             IQueryBesluiten queryBesluiten,
             IQueryObjecten queryObjecten,
-            IQueryObjectTypen queryObjectTypen, IQueryVtb queryVtb, IQueryDocumenten queryDocumenten)  // Dependency Injection (DI)
+            IQueryObjectTypen queryObjectTypen, IQueryVtb queryVtb, IQueryDocumenten queryDocumenten,
+            IQueryProducten queryProducten)  // Dependency Injection (DI)
         {
             // Composition
             this._networkService = networkService;
@@ -68,6 +72,7 @@ namespace WebQueries.DataQuerying.Adapter
             this._queryObjectTypen = queryObjectTypen;
             this._queryVtb = queryVtb;
             _queryDocumenten = queryDocumenten;
+            this._queryProducten = queryProducten;
         }
 
         #region IQueryBase
@@ -284,6 +289,18 @@ namespace WebQueries.DataQuerying.Adapter
         {
             return await this._queryDocumenten.TryGetDocumentContentAsync(this._queryBase, contentUri);
         }
+        #endregion
+
+        #region IQueryProducten
+        /// <inheritdoc cref="IQueryContext.GetProductAsync(Uri)"/>
+        async Task<Product> IQueryContext.GetProductAsync(Uri productUri)
+        {
+            return await this._queryProducten.GetProductAsync(this._queryBase, productUri);
+        }
+
+        /// <inheritdoc cref="IQueryContext.GetProductenHealthCheckAsync()"/>
+        async Task<HttpRequestResponse> IQueryContext.GetProductenHealthCheckAsync()
+            => await this._queryProducten.GetHealthCheckAsync(this._networkService);
         #endregion
     }
 }

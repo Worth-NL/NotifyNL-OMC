@@ -11,6 +11,7 @@ using WebQueries.DataQuerying.Strategies.Queries.Documenten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
+using WebQueries.DataQuerying.Strategies.Queries.OpenProducten.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenZaak.Interfaces;
 using WebQueries.DataSending.Interfaces;
@@ -47,7 +48,8 @@ namespace WebQueries.Tests.Unit.DataQuerying.Adapter
                 new Mock<IQueryObjecten>(MockBehavior.Strict).Object,
                 new Mock<IQueryObjectTypen>(MockBehavior.Strict).Object,
                 new Mock<IQueryVtb>(MockBehavior.Strict).Object,
-                new Mock<IQueryDocumenten>(MockBehavior.Strict).Object);
+                new Mock<IQueryDocumenten>(MockBehavior.Strict).Object,
+                new Mock<IQueryProducten>(MockBehavior.Strict).Object);
         }
 
         [Test]

@@ -850,6 +850,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string OpenVtb()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string OpenProducten()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
                 }
             }
 
@@ -914,6 +919,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string OpenVtb()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string OpenProducten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
             }
 
             /// <summary>

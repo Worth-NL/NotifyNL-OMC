@@ -121,6 +121,10 @@ namespace WebQueries.DataSending
             // Added: OpenVtb client using static API key
             this._httpClients.TryAdd(HttpClientTypes.OpenVtb, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenVtb)), contentCrs]));
+
+            // NOTE: "Open Product" is not a geo-aware ZGW service, so it gets no Content-Crs header.
+            this._httpClients.TryAdd(HttpClientTypes.OpenProducten, this._httpClientFactory
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenProducten))]));  // API Key
         }
 
         /// <summary>
@@ -142,7 +146,8 @@ namespace WebQueries.DataSending
                 HttpClientTypes.Objecten or
                 HttpClientTypes.ObjectTypen or
                 HttpClientTypes.Telemetry_Klantinteracties or
-                HttpClientTypes.OpenVtb
+                HttpClientTypes.OpenVtb or
+                HttpClientTypes.OpenProducten
                     => this._httpClients[httpClientType],
 
                 _ => throw new ArgumentException(
@@ -210,6 +215,9 @@ namespace WebQueries.DataSending
 
                 HttpClientTypes.OpenVtb
                     => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenVtb()}",
+
+                HttpClientTypes.OpenProducten
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenProducten()}",
 
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")

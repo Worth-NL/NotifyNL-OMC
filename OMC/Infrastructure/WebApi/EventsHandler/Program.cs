@@ -75,6 +75,7 @@ using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenProducten = WebQueries.DataQuerying.Strategies.Queries.OpenProducten;
 using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
@@ -431,6 +432,7 @@ namespace EventsHandler
             services.AddSingleton<ObjectTypen.Interfaces.IQueryObjectTypen, ObjectTypen.QueryObjectTypen>();
             services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
             services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
+            services.AddSingleton<OpenProducten.Interfaces.IQueryProducten, OpenProducten.QueryProducten>();
 
             // Feedback and telemetry
             services.AddScoped<ITelemetryService, Register.v2.ContactRegistration>();

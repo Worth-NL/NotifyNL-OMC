@@ -105,6 +105,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_AUTH_KEY_OBJECTEN",                                GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTTYPEN",                             GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OPENVTB",                                 GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENPRODUCTEN",                           GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },
@@ -115,6 +116,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_DOCUMENTEN",                              GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
+                { "ZGW_ENDPOINT_OPENPRODUCTEN",                           GetTestValue(isValid, "https://test.domain/producten/api/v1") },  // NOTE: like OpenVtb, the product health check builds a real Uri from this value, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                         GetTestValue(isValid, testArray) },

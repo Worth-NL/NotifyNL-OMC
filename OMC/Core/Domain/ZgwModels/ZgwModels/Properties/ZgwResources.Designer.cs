@@ -437,7 +437,16 @@ namespace ZgwModels.Properties {
                 return ResourceManager.GetString("HttpRequest_ERROR_NoPrintObject", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Request: The product could not be retrieved from Open Product Web API service..
+        /// </summary>
+        public static string HttpRequest_ERROR_NoProduct {
+            get {
+                return ResourceManager.GetString("HttpRequest_ERROR_NoProduct", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to HTTP Request: The party (citizen) could not be created in OpenKlant Web API service..
         /// </summary>
