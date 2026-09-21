@@ -32,7 +32,7 @@ De verbinding met BRP/Haal Centraal vereist wederzijdse TLS-authenticatie (mTLS)
 
 - Het OMC presenteert een clientcertificaat bij elke BRP-aanroep
 - De BRP-server valideert dit certificaat
-- Certificaat en privésleutel worden via omgevingsvariabelen (`BRP_MTLS_CERTIFICATE`, `BRP_MTLS_KEY`) aangeboden als base64-gecodeerde PEM
+- Certificaat en privésleutel worden als PEM-bestanden op schijf aangeboden; de paden ernaartoe komen uit de omgevingsvariabelen (`BRP_CLIENTCERT_PEM_PATH`, `BRP_CLIENTKEY_PEM_PATH`)
 
 ---
 

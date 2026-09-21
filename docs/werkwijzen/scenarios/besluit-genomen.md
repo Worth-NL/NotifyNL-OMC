@@ -168,6 +168,4 @@ Het OMC verstuurt de notificatie via NotifyNL en slaat daarna een object op in d
 | Variabele | Beschrijving |
 |---|---|
 | `ZGW_WHITELIST_DECISIONMADE_IDS` | Kommagescheiden lijst van toegestane besluittype-identificaties, of `*` |
-| `NOTIFY_TEMPLATEID_EMAIL_DECISIONMADE` | NotifyNL template-UUID voor e-mail |
-| `NOTIFY_TEMPLATEID_SMS_DECISIONMADE` | NotifyNL template-UUID voor sms |
-| `NOTIFY_TEMPLATEID_LETTER_DECISIONMADE` | NotifyNL template-UUID voor brief |
+| `NOTIFY_TEMPLATEID_DECISIONMADE` | NotifyNL template-UUID voor dit scenario — Besluit genomen kent één template voor alle kanalen, niet één per kanaal |

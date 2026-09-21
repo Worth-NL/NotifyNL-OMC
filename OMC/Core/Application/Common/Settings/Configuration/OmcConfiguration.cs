@@ -1352,7 +1352,7 @@ namespace Common.Settings.Configuration
                     public LetterComponent(ILoadersContext loadersContext, string parentPath)
                     {
                         this._loadersContext = loadersContext;
-                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Sms));
+                        this._currentPath = loadersContext.GetPathWithNode(parentPath, nameof(Letter));
                     }
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>

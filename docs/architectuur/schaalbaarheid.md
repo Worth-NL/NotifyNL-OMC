@@ -22,8 +22,9 @@ Het OMC hergebruikt HTTP-verbindingen naar ZGW-diensten via `IHttpClientFactory`
 
 | Variabele | Standaard | Beschrijving |
 |---|---|---|
-| `OMC_HTTP_CONNECTIONLIFETIMEMINUTES` | `15` | Levensduur van HTTP-verbindingen in minuten |
-| `OMC_HTTP_MAXCONNECTIONSPERSERVER` | `100` | Maximum aantal verbindingen per host |
+| `NETWORK_CONNECTIONLIFETIMEINSECONDS` | `90` | Levensduur van gepoolde HTTP-verbindingen in seconden (`PooledConnectionLifetime`) |
+| `NETWORK_HTTPREQUESTTIMEOUTINSECONDS` | `60` | Time-out per HTTP-aanroep in seconden |
+| `NETWORK_HTTPREQUESTSSIMULTANEOUSNUMBER` | `20` | Maximum aantal gelijktijdige uitgaande HTTP-aanroepen |
 
 ---
 
