@@ -9,9 +9,11 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.Exceptions;
 using WebQueries.Producten.Interfaces;
+using WebQueries.Producten.Models;
 using WebQueries.Tracing;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
@@ -29,6 +31,15 @@ namespace WebQueries.Producten
         /// The "codeSoortObjectId" OpenKlant stores an organization's KVK number under.
         /// </summary>
         private const string CodeSoortObjectIdKvk = "kvk";
+
+        /// <summary>
+        /// The "referentie" marking the digital address a party chose for portal correspondence.
+        /// </summary>
+        /// <remarks>
+        ///   A product notification has no per-product address of its own to prefer, so the party's portal
+        ///   preference is what it uses.
+        /// </remarks>
+        private const string PortaalvoorkeurReference = "portaalvoorkeur";
 
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly OmcConfiguration _configuration;
@@ -65,7 +76,7 @@ namespace WebQueries.Producten
             ValidateProductIsPublished(product);
 
             // Step 4: Every owner has to resolve to a party before anyone is notified
-            IReadOnlyList<CommonPartyData> parties = await ResolveOwnersAsync(queryContext, product);
+            IReadOnlyList<ProductRecipient> recipients = await ResolveOwnersAsync(queryContext, product);
 
             // TODO: The fire-and-forget send with its contactmomenten lands in the follow-up commits for
             //       Worth-NL/notifynl#115 - #116.
@@ -89,7 +100,7 @@ namespace WebQueries.Producten
         ///   </para>
         /// </remarks>
         /// <exception cref="ProcessingAbortedException">The product has no owners, or one of them did not resolve.</exception>
-        private async Task<IReadOnlyList<CommonPartyData>> ResolveOwnersAsync(IQueryContext queryContext, Product product)
+        private async Task<IReadOnlyList<ProductRecipient>> ResolveOwnersAsync(IQueryContext queryContext, Product product)
         {
             if (product.Owners.IsEmpty())
             {
@@ -103,16 +114,36 @@ namespace WebQueries.Producten
 
             TraceContext.Emit("openklant", "start", $"Attempting to resolve {product.Owners.Count} eigenaar(s)");
 
-            List<CommonPartyData> parties = new(product.Owners.Count);
+            List<ProductRecipient> recipients = new(product.Owners.Count);
 
             for (int index = 0; index < product.Owners.Count; index++)
             {
-                parties.Add(await ResolveOwnerAsync(queryContext, product, product.Owners[index], index));
+                CommonPartyData party = await ResolveOwnerAsync(queryContext, product, product.Owners[index], index);
+
+                recipients.Add(new ProductRecipient
+                {
+                    Party = party,
+
+                    // Only e-mail in V1, and the lookup was restricted to that channel, so this is either
+                    // an e-mail address or nothing - never a phone number.
+                    EmailAddress = party.EmailAddress ?? string.Empty
+                });
             }
 
-            TraceContext.Emit("openklant", "ok", $"{parties.Count} eigenaar(s) resolved to a partij");
+            int reachable = recipients.Count(recipient => recipient.IsReachable);
 
-            return parties;
+            TraceContext.Emit("openklant", "ok",
+                $"{recipients.Count} eigenaar(s) resolved to a partij, {reachable} with an e-mail address");
+
+            if (reachable < recipients.Count)
+            {
+                // Not a reason to stop - these become failed contactmomenten during delivery.
+                this._logger.LogInformation(
+                    "{Unreachable} of {Total} eigenaren of product {ProductId} have no e-mail address on file.",
+                    recipients.Count - reachable, recipients.Count, product.Id);
+            }
+
+            return recipients;
         }
 
         /// <summary>
@@ -148,8 +179,20 @@ namespace WebQueries.Producten
             try
             {
                 // The digital address is resolved here too, but not required: see ResolveOwnersAsync.
+                //
+                // Passing the reference makes an address whose "referentie" is "portaalvoorkeur" win
+                // outright, falling back to the party's own preferred address and then to any e-mail it
+                // has. That is the precedence a product notification wants, and it is already implemented
+                // by PartyResults - see its IsPreferredFound.
+                //
+                // Restricting the channel matters as much as the reference does. Without it, a party whose
+                // preferred address happens to be a phone number reads as having no e-mail at all: the
+                // search settles on that address and never reaches the e-mail behind it, so an owner who
+                // could have been notified is recorded as unreachable instead.
                 return await queryContext.GetPartyDataByIdentifierAsync(
-                    codeSoortObjectId, objectId, reference: null, requireDigitalAddress: false);
+                    codeSoortObjectId, objectId,
+                    reference: PortaalvoorkeurReference, requireDigitalAddress: false,
+                    requiredChannel: DistributionChannels.Email);
             }
             catch (Exception exception) when (exception is HttpRequestException or KeyNotFoundException)
             {

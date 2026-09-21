@@ -15,6 +15,7 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
@@ -297,10 +298,11 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <returns>The deserialized product data.</returns>
         Task<Product> GetProductAsync(Uri productUri);
 
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
         Task<CommonPartyData> GetPartyDataByIdentifierAsync(
             string codeSoortObjectId, string objectId,
-            string? reference = null, bool requireDigitalAddress = true);
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
 
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         Task<HttpRequestResponse> GetProductenHealthCheckAsync();

@@ -13,6 +13,7 @@ using WebQueries.Producten;
 using WebQueries.Producten.Interfaces;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
@@ -40,6 +41,9 @@ namespace WebQueries.Tests.Unit.Producten
         private const string TestBsn = "999990019";
         private const string TestKvk = "12345678";
         private const string TestVestigingsnummer = "000012345678";
+
+        // The "referentie" the scenario asks OpenKlant to prefer.
+        private const string Portaalvoorkeur = "portaalvoorkeur";
         #endregion
 
         [OneTimeSetUp]
@@ -104,14 +108,15 @@ namespace WebQueries.Tests.Unit.Producten
             return product;
         }
 
-        private void SetupPartyFound(string codeSoortObjectId, string objectId)
+        private void SetupPartyFound(
+            string codeSoortObjectId, string objectId, string emailAddress = "test@example.com")
             => this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, null, false))
-                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = "test@example.com" });
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = emailAddress });
 
         private void SetupPartyMissing(string codeSoortObjectId, string objectId)
             => this._mockedQueryContext
-                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, null, false))
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
                 .ThrowsAsync(new HttpRequestException("No party results"));
         #endregion
 
@@ -183,7 +188,7 @@ namespace WebQueries.Tests.Unit.Producten
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, null, false), Times.Once);
+                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
         }
 
         [Test]
@@ -198,7 +203,7 @@ namespace WebQueries.Tests.Unit.Producten
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
         }
 
         [Test]
@@ -218,7 +223,7 @@ namespace WebQueries.Tests.Unit.Producten
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
         }
 
         [Test]
@@ -238,9 +243,9 @@ namespace WebQueries.Tests.Unit.Producten
             Assert.Multiple(() =>
             {
                 this._mockedQueryContext.Verify(
-                    mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, null, false), Times.Once);
+                    mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
                 this._mockedQueryContext.Verify(
-                    mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, null, false), Times.Once);
+                    mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
             });
         }
 
@@ -308,6 +313,78 @@ namespace WebQueries.Tests.Unit.Producten
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
             Assert.That(exception!.Message, Does.Not.Contain(TestBsn));
+        }
+
+
+        [Test]
+        public void ProcessProductAsync_OwnerLookup_AsksOpenKlantToPreferThePortaalvoorkeurAddress()
+        {
+            // NOTE: PartyResults treats a matching "referentie" as an outright win over the party's own
+            //       preferred address, which is the precedence a product notification wants. Pinned here
+            //       because passing the wrong reference fails silently - a usable address is still found,
+            //       just not the one the party nominated for portal correspondence.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, "portaalvoorkeur", false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerLookup_RestrictsTheSearchToEmailAddresses()
+        {
+            // NOTE: Without the restriction, a party whose preferred address is a phone number reads as
+            //       having no e-mail: PartyResults settles on the preferred address and never reaches the
+            //       e-mail behind it. Only e-mail is deliverable here, so the phone must not be considered
+            //       at all rather than be considered and discarded.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync(
+                    "bsn", TestBsn, "portaalvoorkeur", false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerWithoutAnEmailAddress_StillGetsPastResolution()
+        {
+            // NOTE: The counterpart of the all-or-nothing party rule. A missing party stops everything; a
+            //       missing address does not, because it can be recorded against the party that was found.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Eigenaar { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn, emailAddress: string.Empty);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+        }
+
+        [Test]
+        public void ProcessProductAsync_SomeOwnersReachableAndSomeNot_StillGetsPastResolution()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Eigenaar { BsnNumber = TestBsn },
+                new Eigenaar { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyFound("kvk", TestKvk, emailAddress: string.Empty);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
         }
 
         [Test]

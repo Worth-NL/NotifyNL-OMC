@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
 using WebQueries.Versioning.Interfaces;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -85,12 +86,16 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <param name="requireDigitalAddress">
         ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
         /// </param>
+        /// <param name="requiredChannel">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requiredChannel']"/>
+        /// </param>
         /// <exception cref="ArgumentException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> TryGetPartyDataByIdentifierAsync(
             IQueryBase queryBase, string codeSoortObjectId, string objectId,
-            string? reference = null, bool requireDigitalAddress = true);
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
         #endregion
 
         #region Abstract (Telemetry)

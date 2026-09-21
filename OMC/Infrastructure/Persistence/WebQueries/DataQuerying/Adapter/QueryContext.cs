@@ -21,6 +21,7 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
@@ -300,10 +301,11 @@ namespace WebQueries.DataQuerying.Adapter
 
         /// <inheritdoc cref="IQueryContext.GetPartyDataByIdentifierAsync(string, string, string?, bool)"/>
         async Task<CommonPartyData> IQueryContext.GetPartyDataByIdentifierAsync(
-            string codeSoortObjectId, string objectId, string? reference, bool requireDigitalAddress)
+            string codeSoortObjectId, string objectId, string? reference,
+            bool requireDigitalAddress, DistributionChannels? requiredChannel)
         {
             return await this._queryKlant.TryGetPartyDataByIdentifierAsync(
-                this._queryBase, codeSoortObjectId, objectId, reference, requireDigitalAddress);
+                this._queryBase, codeSoortObjectId, objectId, reference, requireDigitalAddress, requiredChannel);
         }
 
         /// <inheritdoc cref="IQueryContext.GetProductenHealthCheckAsync()"/>

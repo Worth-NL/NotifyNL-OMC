@@ -11,6 +11,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
@@ -79,7 +80,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataByIdentifierAsync(
             IQueryBase queryBase, string codeSoortObjectId, string objectId,
-            string? reference, bool requireDigitalAddress)
+            string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
         {
             if (string.IsNullOrWhiteSpace(codeSoortObjectId) || string.IsNullOrWhiteSpace(objectId))
             {
@@ -92,7 +93,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 GetPartiesByIdentifierUri(partiesEndpoint, codeSoortObjectId, objectId));
 
             return results
-                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress)
+                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
                 .ConvertToUnified();
         }
 
