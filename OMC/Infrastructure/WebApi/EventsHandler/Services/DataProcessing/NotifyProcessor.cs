@@ -16,6 +16,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.Exceptions;
 using WebQueries.KTO.Interfaces;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
@@ -262,6 +263,8 @@ namespace EventsHandler.Services.DataProcessing
                 JsonException => ProcessingResult.Skipped(exception.Message, json, details),
                 NotImplementedException => ProcessingResult.Skipped(ApiResources.Processing_ERROR_Scenario_NotImplemented, json, details),
                 AbortedNotifyingException => ProcessingResult.Aborted(exception.Message, json, details),
+                // The WebQueries-layer counterpart, thrown by scenarios that cannot reference this project.
+                ProcessingAbortedException => ProcessingResult.Aborted(exception.Message, json, details),
                 NotifyClientException => ProcessingResult.Failure(
                     string.Format(ApiResources.Processing_ERROR_Exception_Notify, exception.Message), json, details),
                 _ => ProcessingResult.Failure(

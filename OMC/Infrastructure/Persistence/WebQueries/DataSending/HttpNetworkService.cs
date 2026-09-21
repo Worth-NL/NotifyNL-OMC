@@ -256,8 +256,8 @@ namespace WebQueries.DataSending
 
                 string responseContent = await result.Content.ReadAsStringAsync();
                 return result.IsSuccessStatusCode
-                    ? HttpRequestResponse.Success(responseContent)
-                    : HttpRequestResponse.Failure(responseContent);
+                    ? HttpRequestResponse.Success(responseContent, result.StatusCode)
+                    : HttpRequestResponse.Failure(responseContent, result.StatusCode);
             }
             catch (Exception exception)
             {
@@ -300,11 +300,11 @@ namespace WebQueries.DataSending
 
                 if (!result.IsSuccessStatusCode)
                 {
-                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
+                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync(), result.StatusCode);
                 }
 
                 byte[] responseBytes = await result.Content.ReadAsByteArrayAsync();
-                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes));
+                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes), result.StatusCode);
             }
             catch (Exception exception)
             {
