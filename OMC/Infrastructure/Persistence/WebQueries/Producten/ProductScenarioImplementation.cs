@@ -1,4 +1,4 @@
-// © 2026, Worth Systems.
+﻿// © 2026, Worth Systems.
 
 using Common.Extensions;
 using Common.Settings.Configuration;
@@ -44,13 +44,77 @@ namespace WebQueries.Producten
         {
             IQueryContext queryContext = this._dataQuery.From(notification);
 
+            // Step 1: Read the product the notification reported
             Product product = await GetProductAsync(queryContext, notification);
 
-            // TODO: The whitelist and gepubliceerd gates, the per-owner party lookup, and the
-            //       fire-and-forget send with its contactmomenten land in the follow-up commits for
-            //       Worth-NL/notifynl#113 - #116.
+            // Step 2: Only configured product types may notify anyone
+            ValidateProductTypeIsWhitelisted(product);
+
+            // Step 3: An unpublished product is not shown to its owners, so it is not announced to them either
+            ValidateProductIsPublished(product);
+
+            // TODO: The per-owner party lookup and the fire-and-forget send with its contactmomenten land
+            //       in the follow-up commits for Worth-NL/notifynl#114 - #116.
             throw new NotImplementedException();
         }
+
+        #region Validation
+        /// <summary>
+        /// Rejects a product whose type is not on the whitelist.
+        /// </summary>
+        /// <remarks>
+        ///   Matched on the product type's code rather than on an "identificatie": "Open Product" has no
+        ///   such field, and the code is both unique per product type and readable in configuration.
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">The product type is not whitelisted.</exception>
+        private void ValidateProductTypeIsWhitelisted(Product product)
+        {
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
+            var whitelistedIDs = this._configuration.ZGW.Whitelist.ProductCreate_IDs();
+            #pragma warning restore IDE0008
+
+            string productTypeCode = product.ProductType.Code;
+
+            if (!whitelistedIDs.IsAllowed(productTypeCode))
+            {
+                // NOTE: IDs.ToString() resolves to the environment variable name, so whoever reads this
+                //       knows which setting to change - the same contract BaseScenario.ValidateCaseId uses.
+                string reason = $"Product type \"{productTypeCode}\" is not whitelisted in {whitelistedIDs}.";
+
+                TraceContext.Emit("producttypewhitelist", "abort", reason);
+                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.",
+                    reason, product.Id);
+
+                throw new ProcessingAbortedException(reason);
+            }
+
+            TraceContext.Emit("producttypewhitelist", "ok", $"product type \"{productTypeCode}\" is whitelisted");
+        }
+
+        /// <summary>
+        /// Rejects a product that is not published.
+        /// </summary>
+        /// <remarks>
+        ///   "gepubliceerd" is read from the product, not from its product type: a published type can still
+        ///   hold products that are not meant to be shown yet.
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">The product is not published.</exception>
+        private void ValidateProductIsPublished(Product product)
+        {
+            if (!product.IsPublished)
+            {
+                const string reason = "Product is not published (gepubliceerd is false).";
+
+                TraceContext.Emit("productgepubliceerd", "abort", reason);
+                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.",
+                    reason, product.Id);
+
+                throw new ProcessingAbortedException(reason);
+            }
+
+            TraceContext.Emit("productgepubliceerd", "ok", "product is published");
+        }
+        #endregion
 
         #region Helper methods
         /// <summary>
