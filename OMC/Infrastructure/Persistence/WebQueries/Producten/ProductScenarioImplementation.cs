@@ -7,6 +7,12 @@ using System.Net;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Register.Interfaces;
+using ZgwModels.Enums;
+using WebQueries.DataSending.Clients.Factories.Interfaces;
+using WebQueries.DataSending.Clients.Interfaces;
+using ZgwModels.Serialization.Interfaces;
 using WebQueries.Exceptions;
 using WebQueries.Producten.Interfaces;
 using WebQueries.Producten.Models;
@@ -42,6 +48,9 @@ namespace WebQueries.Producten
         private const string PortaalvoorkeurReference = "portaalvoorkeur";
 
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
+        private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
+        private readonly ISerializationService _serializer;
+        private readonly ITelemetryService _telemetry;
         private readonly OmcConfiguration _configuration;
         private readonly ILogger<ProductScenarioImplementation> _logger;
 
@@ -49,14 +58,23 @@ namespace WebQueries.Producten
         /// Initializes a new instance of the <see cref="ProductScenarioImplementation"/> class.
         /// </summary>
         /// <param name="dataQuery">Resolves an <see cref="IQueryContext"/> for fetching product and party data.</param>
-        /// <param name="configuration">The application configuration (whitelist, endpoints).</param>
+        /// <param name="notifyClientFactory">Resolves an <see cref="INotifyClient"/> to send with.</param>
+        /// <param name="serializer">Serializes the reference round-tripped through "Notify NL".</param>
+        /// <param name="telemetry">Registers the contactmoment for an owner who could not be notified.</param>
+        /// <param name="configuration">The application configuration (whitelist, endpoints, templates).</param>
         /// <param name="logger">The logger for this scenario.</param>
         public ProductScenarioImplementation(
             IDataQueryService<NotificationEvent> dataQuery,
+            IHttpClientFactory<INotifyClient, string> notifyClientFactory,
+            ISerializationService serializer,
+            ITelemetryService telemetry,
             OmcConfiguration configuration,
             ILogger<ProductScenarioImplementation> logger)  // Dependency Injection (DI)
         {
             this._dataQuery = dataQuery;
+            this._notifyClientFactory = notifyClientFactory;
+            this._serializer = serializer;
+            this._telemetry = telemetry;
             this._configuration = configuration;
             this._logger = logger;
         }
@@ -78,10 +96,198 @@ namespace WebQueries.Producten
             // Step 4: Every owner has to resolve to a party before anyone is notified
             IReadOnlyList<ProductRecipient> recipients = await ResolveOwnersAsync(queryContext, product);
 
-            // TODO: The fire-and-forget send with its contactmomenten lands in the follow-up commits for
-            //       Worth-NL/notifynl#115 - #116.
-            throw new NotImplementedException();
+            // Step 5: Everything that decides whether this notification can be honoured has now been
+            // checked, so the answer is settled here. The sending still happens on this call, but nothing
+            // about the answer depends on how it goes - what delivery can report, it reports as a
+            // contactmoment, and the status below is the same either way.
+            await DeliverAsync(product, recipients);
+
+            return HttpRequestResponse.Success(
+                $"Product {product.Id} accepted; notifying {recipients.Count} eigenaar(s).");
         }
+
+        #region Delivery
+        /// <summary>
+        /// Notifies every owner of an already-validated product, and registers what happened to each.
+        /// </summary>
+        /// <remarks>
+        ///   The answer to this notification is settled before this runs, so nothing here may throw its
+        ///   way out: a delivery that fails is a failed contactmoment, never a different status code.
+        ///   <para>
+        ///     One owner failing does not stop the rest either - validating every party up front is what
+        ///     bought the ability to record each failure on its own.
+        ///   </para>
+        /// </remarks>
+        private async Task DeliverAsync(Product product, IReadOnlyList<ProductRecipient> recipients)
+        {
+            int sent = 0;
+
+            try
+            {
+                Guid templateId = this._configuration.Notify.TemplateId.Email.ProductCreated();
+
+                foreach (ProductRecipient recipient in recipients)
+                {
+                    if (await DeliverToAsync(product, recipient, templateId))
+                    {
+                        sent++;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                // Both the send and the registration of a failure handle their own exceptions, so in
+                // practice only reading the template setting can land here - and then for every owner at
+                // once. It is caught all the same: the notification has been accepted by this point, and
+                // nothing that happens here is allowed to say otherwise.
+                TraceContext.Emit("productbezorging", "fail", exception.Message);
+
+                this._logger.LogError(exception,
+                    "Delivering the notifications for product {ProductId} failed.", product.Id);
+
+                return;
+            }
+
+            TraceContext.Emit(
+                "productbezorging", sent == recipients.Count ? "ok" : "fail",
+                $"{sent} of {recipients.Count} eigenaar(s) handed to \"Notify NL\"");
+        }
+
+        /// <summary>
+        /// Notifies one owner, or records why it could not.
+        /// </summary>
+        /// <returns><see langword="true"/> when "Notify NL" accepted the notification.</returns>
+        private async Task<bool> DeliverToAsync(Product product, ProductRecipient recipient, Guid templateId)
+        {
+            ProductNotifyReference reference = new()
+            {
+                ProductId = product.Id,
+                PartyId = recipient.Party.Uri.GetGuid(),
+                ProductName = product.Name,
+                ProductTypeCode = product.ProductType.Code,
+                OriginalResourceUrl = product.Uri?.AbsoluteUri ?? string.Empty,
+
+                // Read from the ambient trace rather than passed in: delivery runs on the same call chain
+                // as the notification that started it, so this is that notification's own trace.
+                TraceId = TraceContext.CurrentTraceId,
+                SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            };
+
+            if (!recipient.IsReachable)
+            {
+                await RegisterFailureAsync(reference,
+                    "Er is geen e-mailadres bekend om deze notificatie naar te versturen.");
+
+                return false;
+            }
+
+            NotifySendResponse response;
+            try
+            {
+                // Sent through the client directly rather than through INotifyService, whose reference is
+                // typed as NotifyReference and so cannot carry this one. Without the reference reaching
+                // "Notify NL", the delivery receipt comes back unrecognisable and the contactmoment for a
+                // notification that did arrive would never be written. Same reason the print flow does it.
+                INotifyClient notifyClient = this._notifyClientFactory.GetHttpClient(product.Id.ToString());
+
+                response = await notifyClient.SendEmailAsync(
+                    emailAddress: recipient.EmailAddress,
+                    templateId: templateId.ToString(),
+                    personalization: GetPersonalization(product, recipient.Party),
+                    reference: await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None));
+            }
+            catch (Exception exception)
+            {
+                // A throw here is the same outcome as a refusal, and it must not stop the other owners.
+                await RegisterFailureAsync(reference, exception.Message);
+
+                return false;
+            }
+
+            if (response.IsFailure)
+            {
+                await RegisterFailureAsync(reference, response.Error);
+
+                return false;
+            }
+
+            // Nothing is registered on success. "Notify NL" accepting the request is not delivery, and the
+            // contactmoment is written from the delivery receipt - the same way every other channel does
+            // it, and the reason a receipt that never arrives leaves no contactmoment claiming otherwise.
+            this._logger.LogInformation(
+                "Notification for product {ProductId} sent to one eigenaar, awaiting delivery confirmation.",
+                product.Id);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Records an owner OMC could not notify, against that owner's party.
+        /// </summary>
+        /// <remarks>
+        ///   These never reach "Notify NL", so no delivery receipt is coming and nothing can fetch back
+        ///   what was rendered. The configured failure wording stands in for it, the same wording the
+        ///   e-mail and SMS scenarios use when a receipt reports a failure.
+        /// </remarks>
+        private async Task RegisterFailureAsync(ProductNotifyReference reference, string reason)
+        {
+            this._logger.LogWarning(
+                "Could not notify an eigenaar of product {ProductId}: {Reason}", reference.ProductId, reason);
+
+            try
+            {
+                HttpRequestResponse response = await this._telemetry.ReportProductCompletionAsync(
+                    reference,
+                    NotifyMethods.Email,
+                    messages:
+                    [
+                        this._configuration.AppSettings.Variables.UxMessages.Email_Failure_Subject(),
+                        this._configuration.AppSettings.Variables.UxMessages.Email_Failure_Body(),
+                        "false",
+                        DateTime.Now.ToString("O")
+                    ]);
+
+                if (response.IsFailure)
+                {
+                    // The notification is already lost; losing its record as well is worth an error, but
+                    // there is nobody left to report it to.
+                    this._logger.LogError(
+                        "Registering the failed contactmoment for product {ProductId} also failed: {Error}",
+                        reference.ProductId, response.JsonResponse);
+                }
+            }
+            catch (Exception exception)
+            {
+                // A register that throws rather than reporting a failure is the same outcome, and this one
+                // owner's record is not worth the remaining owners' notifications.
+                this._logger.LogError(exception,
+                    "Registering the failed contactmoment for product {ProductId} also failed.",
+                    reference.ProductId);
+            }
+        }
+
+        /// <summary>
+        /// Builds the template personalization for one owner.
+        /// </summary>
+        /// <remarks>
+        ///   A fresh dictionary per recipient, deliberately. The other scenarios hand back a shared static
+        ///   one guarded by a lock that covers writing it but not the caller's reading of it, which is
+        ///   survivable for a single recipient and is not for a fan-out.
+        /// </remarks>
+        private static Dictionary<string, object> GetPersonalization(Product product, CommonPartyData party)
+        {
+            return new Dictionary<string, object>
+            {
+                ["klant.voornaam"] = party.Name,
+                ["klant.voorvoegselAchternaam"] = party.SurnamePrefix,
+                ["klant.achternaam"] = party.Surname,
+
+                ["producttype.naam"] = product.ProductType.Name,
+                ["product.naam"] = product.Name,
+                ["product.status"] = product.Status
+            };
+        }
+        #endregion
 
         #region Owners
         /// <summary>
@@ -126,7 +332,7 @@ namespace WebQueries.Producten
 
                     // Only e-mail in V1, and the lookup was restricted to that channel, so this is either
                     // an e-mail address or nothing - never a phone number.
-                    EmailAddress = party.EmailAddress ?? string.Empty
+                    EmailAddress = party.EmailAddress
                 });
             }
 
@@ -151,7 +357,7 @@ namespace WebQueries.Producten
         /// </summary>
         /// <exception cref="ProcessingAbortedException">The owner carries no usable identifier, or has no party.</exception>
         private async Task<CommonPartyData> ResolveOwnerAsync(
-            IQueryContext queryContext, Product product, Eigenaar owner, int index)
+            IQueryContext queryContext, Product product, Owner owner, int index)
         {
             // "Open Product" validates that an owner carries either a BSN (and/or a customer number) or a
             // KVK number, never both, so these two branches cannot both apply. BSN is still checked first,
@@ -168,7 +374,7 @@ namespace WebQueries.Producten
             {
                 // A customer number is the remaining possibility. OpenKlant only matches it through a
                 // filter its own schema marks deprecated, so V1 does not chase it.
-                string reason = $"Eigenaar {index + 1} of {product.Owners.Count} carries no BSN or KVK number.";
+                string reason = $"Owner {index + 1} of {product.Owners.Count} carries no BSN or KVK number.";
 
                 TraceContext.Emit("openklant", "abort", reason);
                 this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);
@@ -198,7 +404,7 @@ namespace WebQueries.Producten
             {
                 // The identifier itself is never traced or logged - it is a BSN or a KVK number.
                 string reason =
-                    $"Eigenaar {index + 1} of {product.Owners.Count} ({codeSoortObjectId}) has no partij in OpenKlant.";
+                    $"Owner {index + 1} of {product.Owners.Count} ({codeSoortObjectId}) has no partij in OpenKlant.";
 
                 TraceContext.Emit("openklant", "abort", reason);
                 this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);

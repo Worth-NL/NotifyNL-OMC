@@ -341,6 +341,16 @@ namespace Common.Settings.Configuration
                     public string CodeRegister_Bericht()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
 
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Product()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Product));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Product()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Product));
+
                     // These two identify the "bijlage" attached to a klantcontact, which points at an
                     // "enkelvoudiginformatieobject" in the Documenten API rather than at a zaak.
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -1356,6 +1366,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageBox()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ProductCreated()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ProductCreated));
                 }
 
                 /// <summary>

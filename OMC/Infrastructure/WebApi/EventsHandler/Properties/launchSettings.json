@@ -1,4 +1,4 @@
-{
+﻿{
   "profiles": {
     "http": {
       "commandName": "Project",
@@ -100,6 +100,7 @@
         "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED": "7113162a-ac53-4935-bc27-4381f6a08adf",
         "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED": "89bef33b-f6fe-4f8f-87e7-29ce41b8b329",
         "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX": "",
+        "NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED": "",
 
         "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX": "",
 

@@ -83,7 +83,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenProducten
                     Name = "verhuurvergunning: straatweg 14",
                     IsPublished = true,
                     ProductType = new NestedProductType { Code = "PARKEERVERGUNNING-A", Name = "Parkeervergunning" },
-                    Owners = [new Eigenaar { BsnNumber = "999990019" }]
+                    Owners = [new Owner { BsnNumber = "999990019" }]
                 });
 
             // Act

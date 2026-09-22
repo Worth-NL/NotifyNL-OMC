@@ -68,7 +68,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenProducten
         /// </summary>
         [JsonPropertyName("eigenaren")]
         [JsonPropertyOrder(5)]
-        public List<Eigenaar> Owners { get; set; } = [];
+        public List<Owner> Owners { get; set; } = [];
 
         /// <summary>
         /// The status of the product, e.g. "initieel", "gereed", "actief".

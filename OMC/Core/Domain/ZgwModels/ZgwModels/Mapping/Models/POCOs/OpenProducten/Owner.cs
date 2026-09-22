@@ -22,7 +22,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenProducten
     ///   </para>
     /// </remarks>
     /// <seealso cref="IJsonSerializable" />
-    public struct Eigenaar : IJsonSerializable
+    public struct Owner : IJsonSerializable
     {
         /// <summary>
         /// The UUID / GUID of the owner row inside "Open Product". Not an "OpenKlant" party identifier.
@@ -60,9 +60,9 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenProducten
         public string CustomerNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Eigenaar"/> struct.
+        /// Initializes a new instance of the <see cref="Owner"/> struct.
         /// </summary>
-        public Eigenaar()
+        public Owner()
         {
         }
     }
