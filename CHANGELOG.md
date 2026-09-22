@@ -1,3 +1,13 @@
+## 2.3.0
+
+- Adds the "product aangemaakt" scenario: a `producten`/`product`/`create` event from Open Product is fetched, checked against a product type whitelist, and e-mailed to every eigenaar of the product
+- Adds an Open Producten client (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), including its masked-key, endpoint and connectivity rows on the status page
+- Adds `ZGW_WHITELIST_PRODUCTCREATE_IDS`, matched on the product type's `code` — Open Product has no `identificatie` field to whitelist on
+- Resolves each eigenaar to an OpenKlant partij on its BSN or KVK number; an eigenaar's own UUID is Open Product's primary key and has no relation to OpenKlant
+- Prefers the digital address a partij marked `portaalvoorkeur`, and restricts the address search to e-mail, so a partij whose preferred address is a phone number is no longer read as having no e-mail at all
+- Registers a failed contactmoment per eigenaar who could not be notified; successful ones are written from the Notify NL afleverstatus callback, as with the other channels
+- Notifies every eigenaar only once the product, its type, its publication state and all of its eigenaren have been validated — a failure in any of those notifies nobody
+
 ## 2.2.1
 
 - Fixes the MijnZaken "zaak gemuteerd" outgoing CloudEvent to use the status's datumStatusGezet as its time, instead of the OMC's own processing time (or the case's laatstGemuteerd)

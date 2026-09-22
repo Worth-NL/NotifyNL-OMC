@@ -14,6 +14,7 @@ Het OMC integreert met de Nederlandse ZGW (Zaakgericht Werken) standaard, gedefi
 | **Open Klant** | Contactgegevens burgers, digitale adressen | API-sleutel (v2) |
 | **Objecten** | Taken, berichten, KTO-objecten | API-sleutel |
 | **ObjectTypen** | Objecttype-definities | API-sleutel |
+| **Open Product** | Producten en producttypen, inclusief de eigenaren van een product | API-sleutel |
 | **Contactmomenten / Klantinteracties** | Aflevergeschiedenis terugschrijven | JWT (uitgaand) |
 
 ---
