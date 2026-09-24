@@ -91,7 +91,17 @@ namespace WebQueries.DataSending.Clients.Enums
         /// <remarks>
         /// Authorization: Static Api key.
         /// </remarks>
-        OpenVtb = 51
+        OpenVtb = 51,
+        #endregion
+
+        #region OpenProducten (values: 61-70)
+        /// <summary>
+        /// The <see cref="HttpClient"/> used to obtain data from "Open Product".
+        /// </summary>
+        /// <remarks>
+        /// Authorization: Static Api key.
+        /// </remarks>
+        OpenProducten = 61
         #endregion
     }
 }

@@ -6,6 +6,7 @@ using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
@@ -47,6 +48,31 @@ namespace WebQueries.Register.v2
             this.QueryContext = queryContext;
             Omc = omc;
         }
+
+        // TODO: Collapse the five Get*ContactMomentJsonBody builders onto one.
+        //
+        // They emit the same document. The klantcontact core, the betrokkene block, the positional
+        // messages[] contract and the four-field onderwerpobjectidentificator are identical in all of
+        // them; what actually varies is the objectId source, two configuration keys, whether
+        // hoofdOnderwerpType is emitted, where originalResourceUrl comes from, and MOBB prefixing its
+        // subject with a channel label. That is a small record passed to one builder, not five copies.
+        //
+        // The copies have already drifted, and none of it was decided:
+        //  - print, MOBB and product escape their values with JsonSerializer; the zaak and v1 bodies
+        //    interpolate configuration straight into hand-written quotes, so a quote or backslash in
+        //    VARIABLES_OPENKLANT_* silently produces malformed JSON
+        //  - indicatieContactGelukt is emitted unquoted and defaults to "true" in print and product, and
+        //    to string.Empty in the zaak body - which is invalid JSON whenever messages has fewer than
+        //    three entries (unreachable today only because its single caller always passes four)
+        //  - objectId is nullable in the zaak body (Guid? CaseId) and un-fallbacked in print, so both can
+        //    register a klantcontact against an empty object id
+        //
+        // Each new scenario copies whichever neighbour it landed next to and inherits that neighbour's
+        // accidents, so this gets worse per scenario rather than staying flat.
+        //
+        // Order matters when picking this up: only GetPrintContactMomentJsonBody has tests. Characterise
+        // the other four first, or unifying them quietly changes what every existing scenario writes to
+        // OpenKlant.
 
         #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
@@ -182,6 +208,61 @@ namespace WebQueries.Register.v2
                      $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
                      $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
                      $"\"vertrouwelijk\":false" +                           // ENG: Confidentiality (of the notification)
+                   $"}}";
+        }
+
+        /// <inheritdoc cref="ITelemetryService.GetProductContactMomentJsonBody(ProductNotifyReference, NotifyMethods, IReadOnlyList{string})"/>
+        /// <remarks>
+        ///   The product is the "onderwerpobject", so unlike the case scenarios there is no zaak here at
+        ///   all. Its codes come from configuration rather than from the payload - nothing outside OMC
+        ///   states them for a product, unlike the print flow where the writing party does.
+        /// </remarks>
+        string ITelemetryService.GetProductContactMomentJsonBody(
+            ProductNotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
+        {
+            string userMessageSubject = messages.Count > 0 ? messages[0] : reference.ProductName;
+            string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;
+            string isSuccessfullySent = messages.Count > 2 ? messages[2] : "true";
+            DateTime sentAt = messages.Count > 3 && DateTime.TryParse(messages[3], out DateTime parsedDate)
+                ? parsedDate
+                : DateTime.Now;
+
+            // Escape string values safely
+            string safeSubject = JsonSerializer.Serialize(userMessageSubject);
+            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
+            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl);
+            string safeObjectId = JsonSerializer.Serialize(reference.ProductId.ToString());
+            string safeCodeObjectType = JsonSerializer.Serialize(
+                this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType_Product());
+            string safeCodeRegister = JsonSerializer.Serialize(
+                this._configuration.AppSettings.Variables.OpenKlant.CodeRegister_Product());
+            string safeCodeSoortObjectId = JsonSerializer.Serialize(
+                this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId());
+
+            return $"{{\"klantcontact\":{{" +
+                   $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
+                   $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
+                   $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
+                   $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
+                   $"\"vertrouwelijk\":true," +
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The product the triggering notification was about
+                   $"}}," +
+                   $"\"betrokkene\":{{" +
+                   $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
+                   $"\"rol\":\"klant\"," +
+                   $"\"initiator\":true" +
+                   $"}}," +
+                   $"\"onderwerpobject\":{{" +
+                   $"\"onderwerpobjectidentificator\":{{" +
+                   $"\"objectId\":{safeObjectId}," +
+                   $"\"codeObjecttype\":{safeCodeObjectType}," +
+                   $"\"codeRegister\":{safeCodeRegister}," +
+                   $"\"codeSoortObjectId\":{safeCodeSoortObjectId}" +
+                   $"}}" +
+                   $"}}" +
                    $"}}";
         }
 

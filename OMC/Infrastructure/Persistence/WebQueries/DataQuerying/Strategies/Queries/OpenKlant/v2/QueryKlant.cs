@@ -11,6 +11,7 @@ using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
@@ -52,12 +53,9 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
 
             string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
-            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
-            string partyObjectIdParameter = $"&partijIdentificator__objectId={bsnNumber}";
-            const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            Uri partiesByTypeAndIdWithExpand = GetPartiesByIdentifierUri(partiesEndpoint, partyIdentifier, bsnNumber);
 
             PartyResults results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);  // Many party results
 
@@ -77,6 +75,43 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 .Party(((IQueryKlant)this).Configuration,
                     caseIdentifier, requireDigitalAddress)  // Single determined party result
                 .ConvertToUnified();
+        }
+
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataByIdentifierAsync(
+            IQueryBase queryBase, string codeSoortObjectId, string objectId,
+            string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
+        {
+            if (string.IsNullOrWhiteSpace(codeSoortObjectId) || string.IsNullOrWhiteSpace(objectId))
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_MissingPartyIdentifier);
+            }
+
+            string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
+
+            PartyResults results = await GetPartyResultsV2Async(queryBase,
+                GetPartiesByIdentifierUri(partiesEndpoint, codeSoortObjectId, objectId));
+
+            return results
+                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
+                .ConvertToUnified();
+        }
+
+        /// <summary>
+        /// Builds the "/partijen" search URL for a single party identificator, expanding the digital
+        /// addresses so the caller does not need a second round trip to read them.
+        /// </summary>
+        /// <remarks>
+        ///   Both values are escaped. They reach here from an external system - a task payload or a
+        ///   product's owner - so they are not assumed to be URL-safe.
+        /// </remarks>
+        private static Uri GetPartiesByIdentifierUri(string partiesEndpoint, string codeSoortObjectId, string objectId)
+        {
+            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={Uri.EscapeDataString(codeSoortObjectId)}";
+            string partyObjectIdParameter = $"&partijIdentificator__objectId={Uri.EscapeDataString(objectId)}";
+            const string expandParameter = "&expand=digitaleAdressen";
+
+            return new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
         }
 
         /// <summary>

@@ -341,6 +341,16 @@ namespace Common.Settings.Configuration
                     public string CodeRegister_Bericht()
                         => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Bericht));
 
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeObjectType_Product()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeObjectType_Product));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string CodeRegister_Product()
+                        => GetCachedValue(this._fallbackContextWrapper, nameof(CodeRegister_Product));
+
                     // These two identify the "bijlage" attached to a klantcontact, which points at an
                     // "enkelvoudiginformatieobject" in the Documenten API rather than at a zaak.
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
@@ -850,6 +860,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public string OpenVtb()
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public string OpenProducten()
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
                 }
             }
 
@@ -914,6 +929,11 @@ namespace Common.Settings.Configuration
                 [Config]
                 public string OpenVtb()
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                [Config]
+                public string OpenProducten()
+                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
             }
 
             /// <summary>
@@ -970,6 +990,16 @@ namespace Common.Settings.Configuration
                 [Config]
                 public IDs VtbMessage_Types()
                     => GetIDs(this._loadersContext, this._currentPath, nameof(VtbMessage_Types));
+
+                /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                /// <remarks>
+                ///   NOTE: Unlike the whitelists above, the allowed values are "Open Product" producttype
+                ///   codes (e.g. "PARKEERVERGUNNING-A"), not case type identifications. The "_IDs" suffix is
+                ///   kept for consistency with the other whitelists and with the environment variable naming.
+                /// </remarks>
+                [Config]
+                public IDs ProductCreate_IDs()
+                    => GetIDs(this._loadersContext, this._currentPath, nameof(ProductCreate_IDs));
 
                 // --------------
                 // Flags (simple)
@@ -1336,6 +1366,11 @@ namespace Common.Settings.Configuration
                     [Config]
                     public Guid MessageBox()
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
+
+                    /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    [Config]
+                    public Guid ProductCreated()
+                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ProductCreated));
                 }
 
                 /// <summary>

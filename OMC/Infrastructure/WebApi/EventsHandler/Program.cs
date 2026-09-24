@@ -20,6 +20,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using EventsHandler.Services.DataProcessing.Strategy.Manager;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Responding;
@@ -64,6 +65,8 @@ using WebQueries.MOBB;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print;
 using WebQueries.Print.Interfaces;
+using WebQueries.Producten;
+using WebQueries.Producten.Interfaces;
 using WebQueries.Register.Interfaces;
 using WebQueries.Versioning;
 using ZgwModels.Mapping.Events;
@@ -75,6 +78,7 @@ using Documenten = WebQueries.DataQuerying.Strategies.Queries.Documenten;
 using Objecten = WebQueries.DataQuerying.Strategies.Queries.Objecten;
 using ObjectTypen = WebQueries.DataQuerying.Strategies.Queries.ObjectTypen;
 using OpenKlant = WebQueries.DataQuerying.Strategies.Queries.OpenKlant;
+using OpenProducten = WebQueries.DataQuerying.Strategies.Queries.OpenProducten;
 using OpenVtb = WebQueries.DataQuerying.Strategies.Queries.OpenVtb;
 using OpenZaak = WebQueries.DataQuerying.Strategies.Queries.OpenZaak;
 using Register = WebQueries.Register;
@@ -240,6 +244,7 @@ namespace EventsHandler
             builder.Services.AddScoped<IKtoScenarioFactory, KtoScenarioFactory>();
             builder.Services.AddScoped<IMessageBoxScenario, MessageBoxScenarioImplementation>();
             builder.Services.AddScoped<IPrintScenario, PrintScenarioImplementation>();
+            builder.Services.AddScoped<IProductScenario, ProductScenarioImplementation>();
             builder.Services.RegisterNotifyStrategies();
 
             // Domain queries and resources
@@ -413,6 +418,9 @@ namespace EventsHandler
             services.AddScoped<NotImplementedScenario>();
             services.AddScoped<KtoScenario>();
             services.AddScoped<PrintScenario>();
+            // Resolved by NotifyScenariosResolver.IsProductScenario via GetRequiredService, so it must be
+            // registered here too - see the MessageBoxScenario note above.
+            services.AddScoped<ProductCreatedScenario>();
         }
 
         // NOTE: v1 workflow versioning (OpenKlant v1, OpenZaak v1/v2 distinction, and the
@@ -431,6 +439,7 @@ namespace EventsHandler
             services.AddSingleton<ObjectTypen.Interfaces.IQueryObjectTypen, ObjectTypen.QueryObjectTypen>();
             services.AddSingleton<OpenVtb.Interfaces.IQueryVtb, OpenVtb.QueryVtb>();
             services.AddSingleton<Documenten.Interfaces.IQueryDocumenten, Documenten.QueryDocumenten>();
+            services.AddSingleton<OpenProducten.Interfaces.IQueryProducten, OpenProducten.QueryProducten>();
 
             // Feedback and telemetry
             services.AddScoped<ITelemetryService, Register.v2.ContactRegistration>();

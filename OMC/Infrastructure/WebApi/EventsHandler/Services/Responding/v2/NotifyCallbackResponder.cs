@@ -14,6 +14,7 @@ using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
@@ -93,6 +94,10 @@ namespace EventsHandler.Services.Responding.v2
                     else if (await IsPrintCallbackAsync(callback))
                     {
                         informResult = await InformUserAboutPrintStatusAsync(callback, status);
+                    }
+                    else if (await IsProductCallbackAsync(callback))
+                    {
+                        informResult = await InformUserAboutProductStatusAsync(callback, status);
                     }
                     else
                     {
@@ -280,6 +285,62 @@ namespace EventsHandler.Services.Responding.v2
             // rolling them into the minutes shown. TotalMinutes doesn't have that problem.
             TimeSpan elapsed = TimeSpan.FromMilliseconds(elapsedMs);
             return (elapsedMs, $"{outcomeText} after {(int)elapsed.TotalMinutes}:{elapsed.Seconds:D2}");
+        }
+
+        /// <summary>
+        /// "Product created" counterpart of <see cref="InformUserAboutStatusAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   The messages are built the same way, from what "Notify NL" actually rendered rather than from
+        ///   what OMC asked it to render, so the contactmoment records what the owner really received.
+        ///   <para>
+        ///     Only receipts reach here. An owner with no address, or a send "Notify NL" refused, never
+        ///     produced one and was registered at delivery time instead.
+        ///   </para>
+        /// </remarks>
+        private async Task<HttpRequestResponse> InformUserAboutProductStatusAsync(
+            DeliveryReceipt callback, FeedbackTypes feedbackType)
+        {
+            (ProductNotifyReference reference, NotifyMethods notificationMethod) =
+                await ExtractProductCallbackDataAsync(callback);
+
+            NotificationData notificationData =
+                await GetProductNotificationDataAsync(notificationMethod, callback.Id);
+
+            return await _telemetry.ReportProductCompletionAsync(
+                reference,
+                notificationMethod,
+                messages:
+                [
+                    DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                    feedbackType == FeedbackTypes.Success ? True : False,
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                ]);
+        }
+
+        /// <summary>
+        /// "Product created" counterpart of <see cref="GetNotificationDataAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   Same defensive shape as its siblings: this must not throw, or the trace node for the
+        ///   contactmoment would stay pending forever for a request that already finished.
+        /// </remarks>
+        private async Task<NotificationData> GetProductNotificationDataAsync(
+            NotifyMethods notificationMethod, Guid notificationId)
+        {
+            try
+            {
+                var data = new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], default);
+
+                return await this._notifyService.GetNotificationDataAsync(data, notificationId);
+            }
+            catch (Exception exception)
+            {
+                return NotificationData.Failure(exception.Message);
+            }
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
 using WebQueries.Versioning.Interfaces;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
@@ -64,6 +65,37 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<CommonPartyData> TryGetPartyDataAsync(IQueryBase queryBase, Uri involvedPartyUri, string? caseIdentifier = null);
+
+        /// <summary>
+        /// Gets the details of a specific party by an arbitrary party identificator, rather than by the one
+        /// kind of identificator this deployment is configured for.
+        /// </summary>
+        /// <remarks>
+        ///   <see cref="TryGetPartyDataAsync(IQueryBase, string, string?, bool, bool)"/> always searches on
+        ///   the globally configured "PartijIdentificator", so a single deployment can look parties up by
+        ///   BSN or by KVK, never by both. A product's owners can be either, decided per owner, so they need
+        ///   to say which kind of identificator they carry.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="codeSoortObjectId">The kind of identificator to search on, e.g. "bsn" or "kvk".</param>
+        /// <param name="objectId">The identificator's value.</param>
+        /// <param name="reference">
+        ///   Selects the digital address whose "referentie" matches it, in preference to the party's own
+        ///   preferred address.
+        /// </param>
+        /// <param name="requireDigitalAddress">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        /// </param>
+        /// <param name="requiredChannel">
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requiredChannel']"/>
+        /// </param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CommonPartyData> TryGetPartyDataByIdentifierAsync(
+            IQueryBase queryBase, string codeSoortObjectId, string objectId,
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
         #endregion
 
         #region Abstract (Telemetry)

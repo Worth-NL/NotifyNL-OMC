@@ -22,14 +22,14 @@ namespace EventsHandler.Services.Configuration
     public sealed class ConfigurationCheckService(OmcConfiguration config, IQueryContext queryContext)
     {
         /// <summary>
-        /// The 5 connectivity checks are the only group not safely re-countable here: they're
+        /// The 6 connectivity checks are the only group not safely re-countable here: they're
         /// real HTTP calls, so re-running them just to count them would double every outbound
         /// request. Every other group below is a pure, side-effect-free read of already-loaded
         /// config, so its count is derived by actually calling it — including the conditional
         /// "Message Received" group — rather than hand-mirrored as a second number that can
         /// silently drift from what <see cref="RunChecksAsync"/> actually yields.
         /// </summary>
-        private const int ConnectivityCheckCount = 5; // OpenZaak, OpenKlant, OpenBesluiten, Objecten, ObjectTypen — see RunChecksAsync
+        private const int ConnectivityCheckCount = 6; // OpenZaak, OpenKlant, OpenBesluiten, Objecten, ObjectTypen, OpenProducten — see RunChecksAsync
 
         /// <summary>The exact number of checks <see cref="RunChecksAsync"/> will emit, so consumers don't have to guess.</summary>
         public int GetExpectedTotal()
@@ -37,7 +37,8 @@ namespace EventsHandler.Services.Configuration
             return OmcAuthChecks().Count() + ZgwAuthChecks().Count() + EndpointChecks().Count() + NotifyConfigChecks().Count()
                 + ConnectivityCheckCount
                 + CaseCreatedChecks().Count() + CaseUpdatedChecks().Count() + CaseClosedChecks().Count()
-                + TaskAssignedChecks().Count() + MessageReceivedChecks().Count() + DecisionMadeChecks().Count() + KtoChecks().Count();
+                + TaskAssignedChecks().Count() + MessageReceivedChecks().Count() + DecisionMadeChecks().Count()
+                + ProductCreatedChecks().Count() + KtoChecks().Count();
         }
 
         /// <summary>Streams check results as they complete.</summary>
@@ -48,7 +49,7 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in EndpointChecks())         yield return r;
             foreach (var r in NotifyConfigChecks())     yield return r;
 
-            // Five independent HTTP round trips — started together so total latency is the
+            // Six independent HTTP round trips — started together so total latency is the
             // slowest single check, not their sum (previously awaited one at a time, so one slow
             // or timing-out service delayed every check after it, not just its own).
             Task<CheckResult> openZaakCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenZaak",
@@ -66,12 +67,16 @@ namespace EventsHandler.Services.Configuration
             Task<CheckResult> objectTypenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "ObjectTypen",
                 () => queryContext.GetObjectTypenHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__ObjectTypen, ZGW__Auth__Key__ObjectTypen");
+            Task<CheckResult> openProductenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenProducten",
+                () => queryContext.GetProductenHealthCheckAsync(), ct,
+                hint: "ZGW__Endpoint__OpenProducten, ZGW__Auth__Key__OpenProducten");
 
             yield return await openZaakCheck;
             yield return await openKlantCheck;
             yield return await besluitenCheck;
             yield return await objectenCheck;
             yield return await objectTypenCheck;
+            yield return await openProductenCheck;
 
             foreach (var r in CaseCreatedChecks())      yield return r;
             foreach (var r in CaseUpdatedChecks())      yield return r;
@@ -79,6 +84,7 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in TaskAssignedChecks())     yield return r;
             foreach (var r in MessageReceivedChecks())  yield return r;
             foreach (var r in DecisionMadeChecks())     yield return r;
+            foreach (var r in ProductCreatedChecks())   yield return r;
             foreach (var r in KtoChecks())              yield return r;
         }
 
@@ -102,6 +108,7 @@ namespace EventsHandler.Services.Configuration
             yield return Masked(g, ic, "OpenKlant API Key",   () => config.ZGW.Auth.Key.OpenKlant(),   "ZGW__Auth__Key__OpenKlant");
             yield return Masked(g, ic, "Objecten API Key",    () => config.ZGW.Auth.Key.Objecten(),    "ZGW__Auth__Key__Objecten");
             yield return Masked(g, ic, "ObjectTypen API Key", () => config.ZGW.Auth.Key.ObjectTypen(), "ZGW__Auth__Key__ObjectTypen");
+            yield return Masked(g, ic, "OpenProducten API Key", () => config.ZGW.Auth.Key.OpenProducten(), "ZGW__Auth__Key__OpenProducten");
         }
 
         private IEnumerable<CheckResult> EndpointChecks()
@@ -113,6 +120,7 @@ namespace EventsHandler.Services.Configuration
             yield return Show(g, ic, "Besluiten",        () => config.ZGW.Endpoint.Besluiten(),        "ZGW__Endpoint__Besluiten");
             yield return Show(g, ic, "Objecten",         () => config.ZGW.Endpoint.Objecten(),         "ZGW__Endpoint__Objecten");
             yield return Show(g, ic, "ObjectTypen",      () => config.ZGW.Endpoint.ObjectTypen(),      "ZGW__Endpoint__ObjectTypen");
+            yield return Show(g, ic, "OpenProducten",    () => config.ZGW.Endpoint.OpenProducten(),    "ZGW__Endpoint__OpenProducten");
         }
 
         private IEnumerable<CheckResult> NotifyConfigChecks()
@@ -181,6 +189,12 @@ namespace EventsHandler.Services.Configuration
             yield return Whitelist(g, ic, "Allowed case types",        () => config.ZGW.Whitelist.DecisionMade_IDs(),                     "ZGW__Whitelist__DecisionMade_IDs");
             yield return UuidSet(g,  ic, "Decision info object types", () => config.ZGW.Variable.ObjectType.DecisionInfoObjectType_Uuids(), "ZGW__Variable__ObjectType__DecisionInfoObjectType_Uuids");
             yield return Uuid(g,     ic, "Notification template",      () => config.Notify.TemplateId.DecisionMade(),                      "Notify__TemplateId__DecisionMade");
+        }
+
+        private IEnumerable<CheckResult> ProductCreatedChecks()
+        {
+            const string g = "Product Created (Product aangemaakt)", ic = "📦";
+            yield return Whitelist(g, ic, "Allowed product type codes", () => config.ZGW.Whitelist.ProductCreate_IDs(), "ZGW__Whitelist__ProductCreate_IDs");
         }
 
         private IEnumerable<CheckResult> KtoChecks()

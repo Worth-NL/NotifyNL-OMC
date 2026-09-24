@@ -7,6 +7,7 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
@@ -197,6 +198,60 @@ namespace WebQueries.Register.Interfaces
             }
         }
 
+        /// <summary>
+        /// Registers the contactmoment for one owner of a created product.
+        /// </summary>
+        /// <remarks>
+        ///   Used for both outcomes. A delivered notification is registered from its delivery receipt, the
+        ///   same way the e-mail and SMS scenarios do it; an owner who could not be reached at all, or
+        ///   whose send "Notify NL" refused, is registered straight away, because no receipt is ever coming
+        ///   for those.
+        ///   <para>
+        ///     The klantcontact hangs off the party, and the product is its "onderwerpobject" - no zaak is
+        ///     involved anywhere in this flow.
+        ///   </para>
+        /// </remarks>
+        /// <param name="reference">The reference identifying the product and the owner's party.</param>
+        /// <param name="notificationMethod">The channel this reports on.</param>
+        /// <param name="messages">Subject, body, whether contact succeeded, and when - built by the caller.</param>
+        /// <returns>An HTTP response wrapper indicating success or failure.</returns>
+        public async Task<HttpRequestResponse> ReportProductCompletionAsync(
+            ProductNotifyReference reference,
+            NotifyMethods notificationMethod,
+            params string[] messages)
+        {
+            try
+            {
+                // Same reason ReportCompletionAsync and ReportPrintCompletionAsync do this: the query
+                // context's IQueryBase carries a notification that the registration calls dereference, and
+                // a delivery receipt is not one. The product flow supplies the shape it actually is.
+                this.QueryContext.SetNotification(new NotificationEvent
+                {
+                    Action = Actions.Create,
+                    Channel = Channels.Products,
+                    Resource = Resources.Product,
+                });
+
+                string json = GetProductContactMomentJsonBody(reference, notificationMethod, messages);
+
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+
+                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(
+                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
+
+                return linkResponse.IsFailure
+                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse)
+                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+            }
+            catch (Exception exception)
+            {
+                return exception.Message.Contains("duplicate key value")
+                    ? HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API")
+                    : HttpRequestResponse.Failure(exception.Message);
+            }
+        }
+
         #region Abstract
 
         /// <summary>
@@ -256,6 +311,19 @@ namespace WebQueries.Register.Interfaces
         /// </returns>
         string GetPrintContactMomentJsonBody(
             PrintNotifyReference reference, NotifyMethods notificationMethod,
+            IReadOnlyList<string> messages);
+
+        /// <summary>
+        /// Prepares a dedicated JSON body for one owner of a created product.
+        /// </summary>
+        /// <param name="reference"><inheritdoc cref="ProductNotifyReference" path="/summary"/></param>
+        /// <param name="notificationMethod">The notification method.</param>
+        /// <param name="messages">The messages.</param>
+        /// <returns>
+        ///   The JSON content for HTTP Request Body.
+        /// </returns>
+        string GetProductContactMomentJsonBody(
+            ProductNotifyReference reference, NotifyMethods notificationMethod,
             IReadOnlyList<string> messages);
 
         /// <summary>

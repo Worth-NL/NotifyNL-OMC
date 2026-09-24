@@ -47,6 +47,8 @@ Constanten die worden ingevuld in de `onderwerpobject`/`bijlage`-koppeling van e
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPEID` | Nee | `codeSoortObjectId` voor de koppeling naar een zaak (standaard: `uuid`) |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT` | Nee | `codeObjecttype` voor de MOBB/Berichtenbox-koppeling (standaard: `bericht` — placeholder, nog niet bevestigd in OpenKlant) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BERICHT` | Nee | `codeRegister` voor de MOBB/Berichtenbox-koppeling (standaard: `open-vtb`) |
+| `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PRODUCT` | Nee | `codeObjecttype` voor de koppeling naar een product (standaard: `product` — placeholder, nog niet bevestigd in OpenKlant) |
+| `VARIABLES_OPENKLANT_CODEREGISTER_PRODUCT` | Nee | `codeRegister` voor de koppeling naar een product (standaard: `open-product` — placeholder, nog niet bevestigd in OpenKlant) |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BIJLAGE` | Nee | `codeObjecttype` voor een klantcontact-bijlage die naar een informatieobject in de Documenten-API verwijst (standaard: `enkelvoudiginformatieobject`) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BIJLAGE` | Nee | `codeRegister` voor een klantcontact-bijlage (standaard: `open-zaak`) — pas dit aan wanneer het documentregister afwijkt, bijvoorbeeld `nld:denhaag:zaken-main:drc` |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PARTIJ` | Nee | `codeObjecttype` gebruikt bij het aanmaken van een ontbrekende partij (burger) in OpenKlant voor de Print/MOBB-flows (standaard: `natuurlijk_persoon`) |
@@ -138,6 +140,7 @@ Burgergerichte fallback-tekst per kanaal en uitkomst, gebruikt wanneer de daadwe
 | `ZGW_AUTH_KEY_OPENKLANT` | Ja (v2) | API-sleutel voor OpenKlant (vereist voor werkwijze v2) |
 | `ZGW_AUTH_KEY_OBJECTEN` | Ja | API-sleutel voor de Objecten-API |
 | `ZGW_AUTH_KEY_OBJECTTYPEN` | Ja | API-sleutel voor de ObjectTypen-API |
+| `ZGW_AUTH_KEY_OPENPRODUCTEN` | Ja | API-sleutel voor Open Product (scenario Product aangemaakt) — net als `ZGW_AUTH_KEY_OPENVTB` hieronder ook vereist wanneer het scenario niet gebruikt wordt |
 | `ZGW_AUTH_KEY_OPENVTB` | Ja | API-sleutel voor OpenVTB (Berichtenbox/MOBB-brontrigger) — `HttpNetworkService` bouwt bij het opstarten een HttpClient voor elke `HttpClientTypes`-waarde, dus dit is ook vereist wanneer MOBB niet gebruikt wordt |
 
 ---
@@ -154,6 +157,7 @@ Burgergerichte fallback-tekst per kanaal en uitkomst, gebruikt wanneer de daadwe
 | `ZGW_ENDPOINT_OBJECTTYPEN` | Ja | Basis-URL van de ObjectTypen API |
 | `ZGW_ENDPOINT_CONTACTMOMENTEN` | Ja | Basis-URL van de Contactmomenten API |
 | `ZGW_ENDPOINT_DOCUMENTEN` | Ja | Basis-URL van de Documenten API (OpenZaak) — gebruikt door de printstraat-flow om de PDF op te halen; de `pdfurl` uit het printobject moet dezelfde origin hebben (SSRF-check) |
+| `ZGW_ENDPOINT_OPENPRODUCTEN` | Ja | Basis-URL van de Open Producten API, inclusief pad — bijv. `https://openproduct.mijnstad.nl/producten/api/v1` |
 | `ZGW_ENDPOINT_OPENVTB` | Ja | Basis-URL van OpenVTB (Berichtenbox/MOBB-brontrigger) — zie `ZGW_AUTH_KEY_OPENVTB` hierboven voor waarom dit ook vereist is wanneer MOBB niet gebruikt wordt |
 
 ---
@@ -172,6 +176,7 @@ Alleen zaken waarvan het zaaktype overeenkomt met de whitelist worden verwerkt. 
 | `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Nee | Toegestane berichttypes voor de MOBB/Berichtenbox-flow |
 | `ZGW_WHITELIST_MESSAGE_ALLOWED` | Ja | `true` of `false` — schakel het scenario Bericht ontvangen in of uit |
 | `ZGW_WHITELIST_PRINT_ALLOWED` | Ja | `true` of `false` — schakel het scenario Printen (printstraat) in of uit |
+| `ZGW_WHITELIST_PRODUCTCREATE_IDS` | Ja | Toegestane **producttype-codes** voor het scenario Product aangemaakt (`*` = alle). Let op: dit zijn `producttype.code`-waarden uit Open Product, geen zaaktype-identificaties — Open Product kent geen `identificatie`-veld |
 
 ---
 
@@ -221,6 +226,7 @@ Het scenario Besluit genomen genereert alleen een template-preview (voor de Obje
 | `NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED` | Nee* | Template-UUID voor taak toegewezen via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED` | Nee* | Template-UUID voor bericht ontvangen via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | Nee* | Template-UUID voor de MOBB/Berichtenbox-fallback via e-mail |
+| `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` | Ja, indien het scenario Product aangemaakt gebruikt wordt | Template-UUID voor product aangemaakt via e-mail — dit scenario kent geen sms- of brief-variant |
 
 ---
 
