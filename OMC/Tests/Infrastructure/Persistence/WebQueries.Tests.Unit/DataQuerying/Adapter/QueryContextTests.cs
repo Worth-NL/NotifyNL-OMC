@@ -53,7 +53,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Adapter
         }
 
         [Test]
-        public async Task GetPartyDataAsync_CaseUriNull_CreateIfMissingTrue_PassesThroughToQueryKlant()
+        public async Task GetPartyDataAsync_CaseUriNull_CreateIfMissingTrue_PassesThroughToQueryKlantAsync()
         {
             // Arrange
             this._mockedQueryKlant
@@ -71,7 +71,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Adapter
         }
 
         [Test]
-        public async Task GetPartyDataAsync_CaseUriNull_CreateIfMissingFalse_PassesThroughAsFalse()
+        public async Task GetPartyDataAsync_CaseUriNull_CreateIfMissingFalse_PassesThroughAsFalseAsync()
         {
             // Arrange: regression guard - the default-false path behaves exactly as it did before this feature.
             this._mockedQueryKlant
@@ -89,7 +89,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Adapter
         }
 
         [Test]
-        public async Task GetPartyDataAsync_CaseUriProvided_InvolvedPartyMissing_CreateIfMissingNotHonored()
+        public async Task GetPartyDataAsync_CaseUriProvided_InvolvedPartyMissing_CreateIfMissingNotHonoredAsync()
         {
             // Arrange: a case-linked citizen lookup (no direct "betrokkene" party URI on the case role) still
             // falls back to a BSN-based OpenKlant lookup - but createIfMissing must NOT reach it, proving the
@@ -116,7 +116,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Adapter
         }
 
         [Test]
-        public async Task GetPartyDataAsync_CaseUriProvided_InvolvedPartyPresent_UsesUriOverload_CreateIfMissingHasNoEffect()
+        public async Task GetPartyDataAsync_CaseUriProvided_InvolvedPartyPresent_UsesUriOverload_CreateIfMissingHasNoEffectAsync()
         {
             // Arrange: when the case role carries a direct "betrokkene" party URI, resolution goes through
             // the Uri-keyed IQueryKlant overload entirely - which has no createIfMissing parameter at all.

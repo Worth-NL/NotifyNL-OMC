@@ -299,7 +299,7 @@ namespace WebQueries.DataQuerying.Adapter
             return await this._queryProducten.GetProductAsync(this._queryBase, productUri);
         }
 
-        /// <inheritdoc cref="IQueryContext.GetPartyDataByIdentifierAsync(string, string, string?, bool)"/>
+        /// <inheritdoc cref="IQueryContext.GetPartyDataByIdentifierAsync(string, string, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)"/>
         async Task<CommonPartyData> IQueryContext.GetPartyDataByIdentifierAsync(
             string codeSoortObjectId, string objectId, string? reference,
             bool requireDigitalAddress, DistributionChannels? requiredChannel)

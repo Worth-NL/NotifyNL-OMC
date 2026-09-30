@@ -199,7 +199,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_ProductFound_ReadsItFromTheNotificationsResourceUrl()
+        public async Task ProcessProductAsync_ProductFound_ReadsItFromTheNotificationsResourceUrlAsync()
         {
             // Arrange
             SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
@@ -215,7 +215,7 @@ namespace WebQueries.Tests.Unit.Producten
 
 
         [Test]
-        public async Task ProcessProductAsync_BsnOwner_ResolvesThePartyOnTheBsnIdentificator()
+        public async Task ProcessProductAsync_BsnOwner_ResolvesThePartyOnTheBsnIdentificatorAsync()
         {
             // Arrange
             SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
@@ -231,7 +231,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_KvkOwner_ResolvesThePartyOnTheKvkIdentificator()
+        public async Task ProcessProductAsync_KvkOwner_ResolvesThePartyOnTheKvkIdentificatorAsync()
         {
             // Arrange
             SetupProduct(GetProductWithOwners(new Owner { KvkNumber = TestKvk }));
@@ -247,7 +247,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_KvkOwnerWithVestigingsnummer_StillResolvesOnTheKvkNumberAlone()
+        public async Task ProcessProductAsync_KvkOwnerWithVestigingsnummer_StillResolvesOnTheKvkNumberAloneAsync()
         {
             // NOTE: V1 does not narrow to a branch. OpenKlant finds a vestiging by combining
             //       subIdentificatorVan__ with partijIdentificator__, which is a second query path this
@@ -268,7 +268,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_EveryOwnerResolves_ResolvesThemAll()
+        public async Task ProcessProductAsync_EveryOwnerResolves_ResolvesThemAllAsync()
         {
             // Arrange
             SetupProduct(GetProductWithOwners(
@@ -359,7 +359,7 @@ namespace WebQueries.Tests.Unit.Producten
 
 
         [Test]
-        public async Task ProcessProductAsync_OwnerLookup_AsksOpenKlantToPreferThePortaalvoorkeurAddress()
+        public async Task ProcessProductAsync_OwnerLookup_AsksOpenKlantToPreferThePortaalvoorkeurAddressAsync()
         {
             // NOTE: PartyResults treats a matching "referentie" as an outright win over the party's own
             //       preferred address, which is the precedence a product notification wants. Pinned here
@@ -380,7 +380,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_OwnerLookup_RestrictsTheSearchToEmailAddresses()
+        public async Task ProcessProductAsync_OwnerLookup_RestrictsTheSearchToEmailAddressesAsync()
         {
             // NOTE: Without the restriction, a party whose preferred address is a phone number reads as
             //       having no e-mail: PartyResults settles on the preferred address and never reaches the
@@ -402,7 +402,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_OwnerWithoutAnEmailAddress_StillGetsPastResolution()
+        public async Task ProcessProductAsync_OwnerWithoutAnEmailAddress_StillGetsPastResolutionAsync()
         {
             // NOTE: The counterpart of the all-or-nothing party rule. A missing party stops everything; a
             //       missing address does not, because it can be recorded against the party that was found.
@@ -418,7 +418,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_SomeOwnersReachableAndSomeNot_StillGetsPastResolution()
+        public async Task ProcessProductAsync_SomeOwnersReachableAndSomeNot_StillGetsPastResolutionAsync()
         {
             // Arrange
             SetupProduct(GetProductWithOwners(

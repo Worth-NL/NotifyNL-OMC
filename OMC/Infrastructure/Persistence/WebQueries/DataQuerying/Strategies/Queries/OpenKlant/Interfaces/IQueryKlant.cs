@@ -37,7 +37,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <param name="bsnNumber">The BSN (Citizen Service Number) to get citizen party.</param>
         /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
         /// <param name="requireDigitalAddress">
-        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requireDigitalAddress']"/>
         ///   Ignored by the "OpenKlant" (1.0) implementation.
         /// </param>
         /// <param name="createIfMissing">
@@ -84,7 +84,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         ///   preferred address.
         /// </param>
         /// <param name="requireDigitalAddress">
-        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requireDigitalAddress']"/>
         /// </param>
         /// <param name="requiredChannel">
         ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requiredChannel']"/>

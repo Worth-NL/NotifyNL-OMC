@@ -188,7 +188,7 @@ namespace WebQueries.Tests.Unit.Producten
         #endregion
 
         [Test]
-        public async Task ProcessProductAsync_ReachableOwner_SendsAndRegistersNothingYet()
+        public async Task ProcessProductAsync_ReachableOwner_SendsAndRegistersNothingYetAsync()
         {
             // NOTE: "Notify NL" accepting the request is not delivery. The contactmoment is written from
             //       the delivery receipt, so writing one here would claim a contact that may never happen.
@@ -211,7 +211,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_ReachableOwner_SendsTheProductReferenceToNotify()
+        public async Task ProcessProductAsync_ReachableOwner_SendsTheProductReferenceToNotifyAsync()
         {
             // NOTE: The reference is the only state that survives to the delivery receipt. Without it the
             //       receipt comes back unrecognisable, the callback responder cannot tell it is a product,
@@ -256,7 +256,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_UnreachableOwner_RegistersAFailedContactMomentWithoutSending()
+        public async Task ProcessProductAsync_UnreachableOwner_RegistersAFailedContactMomentWithoutSendingAsync()
         {
             // Arrange
             SetupProductWithOwners(string.Empty);
@@ -282,7 +282,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_SendRefused_RegistersAFailedContactMomentAndStillReportsSuccess()
+        public async Task ProcessProductAsync_SendRefused_RegistersAFailedContactMomentAndStillReportsSuccessAsync()
         {
             // NOTE: The status was settled before the first send went out. "Notify NL" refusing one is
             //       reported as a contactmoment; reporting it as a failed notification instead would have
@@ -312,7 +312,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_SendThrows_StillNotifiesTheRemainingOwners()
+        public async Task ProcessProductAsync_SendThrows_StillNotifiesTheRemainingOwnersAsync()
         {
             // NOTE: One owner is not allowed to take the others down with it. The whole reason parties are
             //       validated up front is that every failure from here on can be recorded per owner.
@@ -341,7 +341,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_RegisteringTheFailureThrows_StillReportsSuccess()
+        public async Task ProcessProductAsync_RegisteringTheFailureThrows_StillReportsSuccessAsync()
         {
             // NOTE: Nothing the delivery runs into may escape. Losing the record of a notification that
             //       failed is bad; turning it into a non-2xx is worse, because the notification is then
@@ -370,7 +370,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_MixedOwners_SendsToTheReachableAndRecordsTheRest()
+        public async Task ProcessProductAsync_MixedOwners_SendsToTheReachableAndRecordsTheRestAsync()
         {
             // Arrange
             SetupProductWithOwners("jane@example.com", string.Empty);
@@ -391,7 +391,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_ReachableOwner_PersonalizesWithTheProductAndTheParty()
+        public async Task ProcessProductAsync_ReachableOwner_PersonalizesWithTheProductAndThePartyAsync()
         {
             // Arrange
             SetupProductWithOwners("jane@example.com");
@@ -421,7 +421,7 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_TwoOwners_BuildsAPersonalizationDictionaryPerOwner()
+        public async Task ProcessProductAsync_TwoOwners_BuildsAPersonalizationDictionaryPerOwnerAsync()
         {
             // NOTE: The other scenarios hand back a shared static dictionary guarded by a lock that covers
             //       writing it but not the reading of it by the caller. Survivable for one recipient; for

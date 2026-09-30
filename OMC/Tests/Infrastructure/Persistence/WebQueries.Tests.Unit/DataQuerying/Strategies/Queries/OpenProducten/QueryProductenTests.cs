@@ -45,7 +45,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenProducten
         }
 
         [Test]
-        public async Task GetProductAsync_ValidUri_QueriesOpenProductenWithThatUri()
+        public async Task GetProductAsync_ValidUri_QueriesOpenProductenWithThatUriAsync()
         {
             // Arrange
             Uri? capturedUri = null;
@@ -70,7 +70,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenProducten
         }
 
         [Test]
-        public async Task GetProductAsync_Response_MapsTheNestedProductTypeWithoutASecondRequest()
+        public async Task GetProductAsync_Response_MapsTheNestedProductTypeWithoutASecondRequestAsync()
         {
             // Arrange
             // NOTE: "Open Product" embeds the whole product type in the product response, so the product
@@ -103,7 +103,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenProducten
         }
 
         [Test]
-        public async Task GetHealthCheckAsync_CallsTheProductenCollectionOfTheConfiguredDomain()
+        public async Task GetHealthCheckAsync_CallsTheProductenCollectionOfTheConfiguredDomainAsync()
         {
             // Arrange
             Mock<IHttpNetworkService> mockedNetworkService = new(MockBehavior.Strict);

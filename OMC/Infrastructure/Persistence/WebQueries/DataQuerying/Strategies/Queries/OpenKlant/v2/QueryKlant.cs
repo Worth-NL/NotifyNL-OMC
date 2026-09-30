@@ -77,7 +77,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 .ConvertToUnified();
         }
 
-        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool)"/>
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
         async Task<CommonPartyData> IQueryKlant.TryGetPartyDataByIdentifierAsync(
             IQueryBase queryBase, string codeSoortObjectId, string objectId,
             string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
