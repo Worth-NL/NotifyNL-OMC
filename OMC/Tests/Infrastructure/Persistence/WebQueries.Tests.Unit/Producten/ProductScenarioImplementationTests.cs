@@ -235,7 +235,7 @@ namespace WebQueries.Tests.Unit.Producten
         {
             // Arrange
             SetupProduct(GetProductWithOwners(new Owner { KvkNumber = TestKvk }));
-            SetupPartyFound("kvk", TestKvk);
+            SetupPartyFound("kvk_nummer", TestKvk);
 
             // Act & Assert
             HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
@@ -243,7 +243,7 @@ namespace WebQueries.Tests.Unit.Producten
             Assert.That(response.IsSuccess, Is.True);
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+                mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
         }
 
         [Test]
@@ -256,7 +256,7 @@ namespace WebQueries.Tests.Unit.Producten
             // Arrange
             SetupProduct(GetProductWithOwners(
                 new Owner { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
-            SetupPartyFound("kvk", TestKvk);
+            SetupPartyFound("kvk_nummer", TestKvk);
 
             // Act & Assert
             HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
@@ -264,7 +264,7 @@ namespace WebQueries.Tests.Unit.Producten
             Assert.That(response.IsSuccess, Is.True);
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+                mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
         }
 
         [Test]
@@ -275,7 +275,7 @@ namespace WebQueries.Tests.Unit.Producten
                 new Owner { BsnNumber = TestBsn },
                 new Owner { KvkNumber = TestKvk }));
             SetupPartyFound("bsn", TestBsn);
-            SetupPartyFound("kvk", TestKvk);
+            SetupPartyFound("kvk_nummer", TestKvk);
 
             // Act & Assert
             HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
@@ -287,7 +287,7 @@ namespace WebQueries.Tests.Unit.Producten
                 this._mockedQueryContext.Verify(
                     mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
                 this._mockedQueryContext.Verify(
-                    mock => mock.GetPartyDataByIdentifierAsync("kvk", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+                    mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
             });
         }
 
@@ -302,7 +302,7 @@ namespace WebQueries.Tests.Unit.Producten
                 new Owner { BsnNumber = TestBsn },
                 new Owner { KvkNumber = TestKvk }));
             SetupPartyFound("bsn", TestBsn);
-            SetupPartyMissing("kvk", TestKvk);
+            SetupPartyMissing("kvk_nummer", TestKvk);
 
             // Act & Assert
             ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
@@ -425,7 +425,7 @@ namespace WebQueries.Tests.Unit.Producten
                 new Owner { BsnNumber = TestBsn },
                 new Owner { KvkNumber = TestKvk }));
             SetupPartyFound("bsn", TestBsn);
-            SetupPartyFound("kvk", TestKvk, emailAddress: string.Empty);
+            SetupPartyFound("kvk_nummer", TestKvk, emailAddress: string.Empty);
 
             // Act & Assert
             HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());

@@ -304,8 +304,12 @@ namespace EventsHandler.Services.Responding.v2
             (ProductNotifyReference reference, NotifyMethods notificationMethod) =
                 await ExtractProductCallbackDataAsync(callback);
 
+            // A product notification has no NotifyReference of its own to hand to the notify service, and
+            // resolving the client from a default one throws while the cached client is still empty - which
+            // silently swapped the rendered e-mail for the generic fallback text on the first receipt after
+            // a start. The object-driven scenarios already have the shape that avoids it.
             NotificationData notificationData =
-                await GetProductNotificationDataAsync(notificationMethod, callback.Id);
+                await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
 
             return await _telemetry.ReportProductCompletionAsync(
                 reference,
@@ -319,28 +323,6 @@ namespace EventsHandler.Services.Responding.v2
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
-        }
-
-        /// <summary>
-        /// "Product created" counterpart of <see cref="GetNotificationDataAsync"/>.
-        /// </summary>
-        /// <remarks>
-        ///   Same defensive shape as its siblings: this must not throw, or the trace node for the
-        ///   contactmoment would stay pending forever for a request that already finished.
-        /// </remarks>
-        private async Task<NotificationData> GetProductNotificationDataAsync(
-            NotifyMethods notificationMethod, Guid notificationId)
-        {
-            try
-            {
-                var data = new NotifyData(notificationMethod, string.Empty, Guid.Empty, [], default);
-
-                return await this._notifyService.GetNotificationDataAsync(data, notificationId);
-            }
-            catch (Exception exception)
-            {
-                return NotificationData.Failure(exception.Message);
-            }
         }
 
         /// <summary>
@@ -553,8 +535,8 @@ namespace EventsHandler.Services.Responding.v2
         ///   </para>
         /// </remarks>
         /// <summary>
-        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox or print),
-        /// neither of which has a real <see cref="NotifyReference"/> to hand to the notify service.
+        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox, print or
+        /// product created), none of which has a real <see cref="NotifyReference"/> to hand to the notify service.
         /// </summary>
         private async Task<NotificationData> GetObjectScenarioNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
         {

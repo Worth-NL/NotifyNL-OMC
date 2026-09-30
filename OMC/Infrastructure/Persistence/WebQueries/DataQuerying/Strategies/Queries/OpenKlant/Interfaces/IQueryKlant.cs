@@ -77,7 +77,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         ///   to say which kind of identificator they carry.
         /// </remarks>
         /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
-        /// <param name="codeSoortObjectId">The kind of identificator to search on, e.g. "bsn" or "kvk".</param>
+        /// <param name="codeSoortObjectId">The kind of identificator to search on, e.g. "bsn" or "kvk_nummer".</param>
         /// <param name="objectId">The identificator's value.</param>
         /// <param name="reference">
         ///   Selects the digital address whose "referentie" matches it, in preference to the party's own

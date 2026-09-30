@@ -36,7 +36,7 @@ namespace WebQueries.Producten
         /// <summary>
         /// The "codeSoortObjectId" OpenKlant stores an organization's KVK number under.
         /// </summary>
-        private const string CodeSoortObjectIdKvk = "kvk";
+        private const string CodeSoortObjectIdKvk = "kvk_nummer";
 
         /// <summary>
         /// The "referentie" marking the digital address a party chose for portal correspondence.

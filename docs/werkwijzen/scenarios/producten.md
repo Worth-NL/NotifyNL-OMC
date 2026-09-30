@@ -78,7 +78,7 @@ Voor elke eigenaar in `product.eigenaren` zoekt het OMC de bijbehorende partij o
 | Veld op de eigenaar | `codeSoortObjectId` |
 |---|---|
 | `bsn` | `bsn` |
-| `kvk_nummer` | `kvk` |
+| `kvk_nummer` | `kvk_nummer` |
 
 Open Product bewaakt zelf dat een eigenaar óf een BSN (eventueel met klantnummer) óf een KVK-nummer heeft, nooit beide.
 
