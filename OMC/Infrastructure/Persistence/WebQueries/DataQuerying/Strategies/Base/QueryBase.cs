@@ -39,7 +39,7 @@ namespace WebQueries.DataQuerying.Strategies.Base
             LogToSentry($"GET {uri} | Success: {response.IsSuccess} | Response: {response.JsonResponse}",
                 response.IsSuccess ? SentryLevel.Info : SentryLevel.Error);
 
-            return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, response, uri, fallbackErrorMessage);
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessPostAsync{TModel}(HttpClientTypes, Uri, string, string)"/>
@@ -50,7 +50,7 @@ namespace WebQueries.DataQuerying.Strategies.Base
             LogToSentry($"POST {uri} | Success: {response.IsSuccess} | Response: {response.JsonResponse}",
                 response.IsSuccess ? SentryLevel.Info : SentryLevel.Error);
 
-            return GetApiResult<TModel>(httpClientType, response.IsSuccess, response.JsonResponse, uri, fallbackErrorMessage);
+            return GetApiResult<TModel>(httpClientType, response, uri, fallbackErrorMessage);
         }
 
         /// <inheritdoc cref="IQueryBase.ProcessGetBinaryAsBase64Async(HttpClientTypes, Uri, string)"/>
@@ -68,21 +68,27 @@ namespace WebQueries.DataQuerying.Strategies.Base
         #endregion
 
         #region Helper methods
-        private TModel GetApiResult<TModel>(HttpClientTypes httpClientType, bool isSuccess, string jsonResult, Uri uri, string fallbackErrorMessage)
+        private TModel GetApiResult<TModel>(HttpClientTypes httpClientType, HttpRequestResponse response, Uri uri, string fallbackErrorMessage)
             where TModel : struct, IJsonSerializable
         {
-                return isSuccess
-                    ? this._serializer.Deserialize<TModel>(jsonResult)
+                return response.IsSuccess
+                    ? this._serializer.Deserialize<TModel>(response.JsonResponse)
 
                     // Logging errors
                     : httpClientType is HttpClientTypes.Telemetry_Contactmomenten
                         or HttpClientTypes.Telemetry_Klantinteracties
 
                         // Soft error: HTTP Status Code 206
-                        ? throw new TelemetryException(GetMessage(jsonResult, uri, fallbackErrorMessage))
+                        ? throw new TelemetryException(GetMessage(response.JsonResponse, uri, fallbackErrorMessage))
 
                         // Hard error: HTTP Status Code 400
-                        : throw new HttpRequestException(GetMessage(jsonResult, uri, fallbackErrorMessage));
+                        //
+                        // NOTE: The status the service replied with is carried on the exception so callers can
+                        // tell a resource that is not there from a service that could not be reached. Without
+                        // it the two are indistinguishable, and one of them ends up either retried forever or
+                        // dropped forever.
+                        : throw new HttpRequestException(
+                            GetMessage(response.JsonResponse, uri, fallbackErrorMessage), null, response.StatusCode);
         }
 
         private static string GetMessage(string jsonResult, Uri uri, string fallbackErrorMessage)

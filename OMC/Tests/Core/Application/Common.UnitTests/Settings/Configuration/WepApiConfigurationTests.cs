@@ -179,6 +179,44 @@ namespace Common.Tests.Unit.Settings.Configuration
             });
         }
 
+        [TestCase("1", true)]
+        [TestCase("9", false)]
+        [TestCase("", false)]
+        public void IsAllowed_InEnvironmentMode_ForSpecificProductTypeCode_ReturnsExpectedResult(string productTypeCode, bool expectedResult)
+        {
+            // Arrange
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
+            var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ProductCreate_IDs();
+            #pragma warning restore IDE00008
+            bool isAllowed = whitelistedIDs.IsAllowed(productTypeCode);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(whitelistedIDs.Count, Is.EqualTo(3));
+                Assert.That(isAllowed, Is.EqualTo(expectedResult));
+            });
+        }
+
+        [Test]
+        public void ProductCreate_IDs_InEnvironmentMode_ResolvesTheExpectedEnvironmentVariableName()
+        {
+            // NOTE: The name is reported back to the caller when a notification is rejected, so it has to
+            //       match the variable operators actually set - see BaseScenario.ValidateCaseId.
+
+            // Arrange
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act
+            string envVarName = s_testConfiguration.ZGW.Whitelist.ProductCreate_IDs().ToString();
+
+            // Assert
+            Assert.That(envVarName, Is.EqualTo("ZGW_WHITELIST_PRODUCTCREATE_IDS"));
+        }
+
         [Test]
         public void OpenKlant_InEnvironmentMode_ApiKeyIsRequired()
         {

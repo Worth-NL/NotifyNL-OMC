@@ -388,6 +388,79 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
                 Assert.That(actualReason, Does.Contain("preferred"));
             });
         }
+        [Test]
+        public void Party_WithRequiredChannel_Email_SkipsAPreferredPhone_AndReturnsTheEmailBehindIt()
+        {
+            // NOTE: The counterpart of
+            //       Party_ForSingle_ExistingResult_With_MatchingPreferredAddress_ReturnsExpectedResult_Email_Phone,
+            //       which asserts the default behaviour on this very same party: the preferred phone wins
+            //       and the e-mail comes back empty. A caller that can only send e-mail would read that as
+            //       "no address on file" and never notify someone it could have reached.
+
+            // Arrange
+            var partyId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Email_Phone(this._validAppSettingsConfiguration, partyId, addressId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act
+            (_, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, _)
+                = testPartyResults.Party(this._validAppSettingsConfiguration,
+                    caseIdentifier: null, requireDigitalAddress: true, requiredChannel: DistributionChannels.Email);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Email));
+                Assert.That(actualEmailAddress, Is.EqualTo($"second_{TestEmail}"));
+                Assert.That(actualPhoneNumber, Is.Empty);
+            });
+        }
+
+        [Test]
+        public void Party_WithRequiredChannel_Email_ButOnlyPhonesOnFile_ThrowsHttpRequestException()
+        {
+            // NOTE: Restricting the channel must not invent an address. A party reachable only by phone is
+            //       unreachable to an e-mail-only caller, and has to read as such.
+
+            // Arrange
+            var testId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Phone(this._validAppSettingsConfiguration, testId, testId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act & Assert
+            Assert.Throws<HttpRequestException>(() =>
+                testPartyResults.Party(this._validAppSettingsConfiguration,
+                    caseIdentifier: null, requireDigitalAddress: true, requiredChannel: DistributionChannels.Email));
+        }
+
+        [Test]
+        public void Party_WithoutRequiredChannel_KeepsFollowingThePartysOwnPreference()
+        {
+            // NOTE: The default has to stay exactly as it was - the classic ZGW scenarios deliver on
+            //       whichever channel the party prefers, and must not start being filtered.
+
+            // Arrange
+            var partyId = Guid.NewGuid();
+            var addressId = Guid.NewGuid();
+
+            PartyResult testParty = GetTestPartyResult_Email_Phone(this._validAppSettingsConfiguration, partyId, addressId);
+            PartyResults testPartyResults = GetTestPartyResults(testParty);
+
+            // Act
+            (_, DistributionChannels actualDistChannel, string actualEmailAddress, string actualPhoneNumber, _)
+                = testPartyResults.Party(this._validAppSettingsConfiguration);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualDistChannel, Is.EqualTo(DistributionChannels.Sms));
+                Assert.That(actualEmailAddress, Is.Empty);
+                Assert.That(actualPhoneNumber, Is.EqualTo($"second_{TestPhone}"));
+            });
+        }
         #endregion
 
         #region Helper methods

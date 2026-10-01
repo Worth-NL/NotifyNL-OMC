@@ -54,6 +54,25 @@ namespace ZgwModels.Mapping.Models.POCOs.NotificatieApi
                     nameof(ObjectTypeUri),
                     // Exclude orphans
                     nameof(this.Orphans)));
+
+                // Products
+                //
+                // NOTE: Every mapped property is excluded, leaving no required attribute for this channel.
+                // "Open Product" publishes its product type as "kenmerken" (producttype.uuid, .code and
+                // .uniforme_product_naam), but a property declared here and then not matched is a hard
+                // validation failure, whereas an unmapped key only lands in Orphans and is reported as an
+                // inconsistency the notification still survives. The product type OMC actually acts on is
+                // read from the fetched product itself, which is authoritative, so nothing is lost by
+                // letting the kenmerken fall through.
+                s_properties.TryAdd(Channels.Products, new PropertiesMetadata(this,
+                    // Exclude cases
+                    nameof(CaseTypeUri), nameof(SourceOrganization), nameof(ConfidentialityNotice),
+                    // Exclude objects
+                    nameof(ObjectTypeUri),
+                    // Exclude decisions
+                    nameof(DecisionTypeUri), nameof(ResponsibleOrganization),
+                    // Exclude orphans
+                    nameof(this.Orphans)));
             }
 
             return s_properties[channel];

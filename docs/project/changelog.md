@@ -2,6 +2,17 @@
 
 ---
 
+## v2.3.0
+
+- Voegt het scenario [Product aangemaakt](../werkwijzen/scenarios/producten.md) toe: een `producten`/`product`/`create`-event uit Open Product wordt opgehaald, getoetst aan een producttype-whitelist en per e-mail verstuurd aan elke eigenaar van het product
+- Voegt een Open Producten-client toe (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), inclusief sleutel-, endpoint- en connectiviteitsregels op de statuspagina
+- Voegt `ZGW_WHITELIST_PRODUCTCREATE_IDS` toe, getoetst op de `code` van het producttype — Open Product kent geen `identificatie`-veld om op te whitelisten
+- Zoekt per eigenaar de partij op in OpenKlant via BSN of KVK-nummer; de eigen UUID van een eigenaar is de primaire sleutel van Open Product en heeft geen relatie met OpenKlant
+- Geeft voorrang aan het digitale adres dat een partij als `portaalvoorkeur` heeft gemarkeerd, en beperkt de adreszoektocht tot e-mail — een partij met een telefoonnummer als voorkeursadres wordt daardoor niet langer gelezen als "geen e-mailadres bekend"
+- Vermeldt de reden in het mislukte contactmoment (`Reden: …`): geen e-mailadres bekend, een weigering of fout van NotifyNL, of de bezorgstatus van een mislukte afleverstatus. Een mislukt contactmoment heeft een partij nodig, dus een eigenaar zonder partij beëindigt de hele notificatie nog steeds met een `206`
+- Registreert een mislukt contactmoment per eigenaar die niet bereikt kon worden; geslaagde contactmomenten worden zoals bij de andere kanalen vanuit de NotifyNL-afleverstatuscallback geschreven
+- Verstuurt pas nadat het product, het producttype, de publicatiestatus én alle eigenaren zijn gevalideerd — mislukt een van die controles, dan wordt niemand genotificeerd
+
 ## v2.2.2
 
 - Brieven worden niet meer verstuurd met het sms-template: `LetterComponent`

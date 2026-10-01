@@ -14,12 +14,14 @@ using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Enums.NotifyNL;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 using ZgwModels.Serialization.Interfaces;
@@ -94,6 +96,10 @@ namespace EventsHandler.Services.Responding.v2
                     else if (await IsPrintCallbackAsync(callback))
                     {
                         informResult = await InformUserAboutPrintStatusAsync(callback, status);
+                    }
+                    else if (await IsProductCallbackAsync(callback))
+                    {
+                        informResult = await InformUserAboutProductStatusAsync(callback, status);
                     }
                     else
                     {
@@ -281,6 +287,74 @@ namespace EventsHandler.Services.Responding.v2
             // rolling them into the minutes shown. TotalMinutes doesn't have that problem.
             TimeSpan elapsed = TimeSpan.FromMilliseconds(elapsedMs);
             return (elapsedMs, $"{outcomeText} after {(int)elapsed.TotalMinutes}:{elapsed.Seconds:D2}");
+        }
+
+        /// <summary>
+        /// "Product created" counterpart of <see cref="InformUserAboutStatusAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   The messages are built the same way, from what "Notify NL" actually rendered rather than from
+        ///   what OMC asked it to render, so the contactmoment records what the owner really received.
+        ///   <para>
+        ///     Only receipts reach here. An owner with no address, or a send "Notify NL" refused, never
+        ///     produced one and was registered at delivery time instead.
+        ///   </para>
+        /// </remarks>
+        private async Task<HttpRequestResponse> InformUserAboutProductStatusAsync(
+            DeliveryReceipt callback, FeedbackTypes feedbackType)
+        {
+            (ProductNotifyReference reference, NotifyMethods notificationMethod) =
+                await ExtractProductCallbackDataAsync(callback);
+
+            // A product notification has no NotifyReference of its own to hand to the notify service, and
+            // resolving the client from a default one throws while the cached client is still empty - which
+            // silently swapped the rendered e-mail for the generic fallback text on the first receipt after
+            // a start. The object-driven scenarios already have the shape that avoids it.
+            NotificationData notificationData =
+                await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
+
+            return await _telemetry.ReportProductCompletionAsync(
+                reference,
+                notificationMethod,
+                messages:
+                [
+                    DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                    AppendFailureReason(
+                        DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                            notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                        feedbackType, callback.Status),
+                    feedbackType == FeedbackTypes.Success ? True : False,
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                ]);
+        }
+
+        /// <summary>
+        /// Appends why "Notify NL" could not deliver, to the contactmoment of a failed delivery.
+        /// </summary>
+        /// <remarks>
+        ///   The status is the only reason a delivery receipt carries. Without it, a mailbox that does not exist
+        ///   and a mailbox that was temporarily full both read as the same generic failure.
+        /// </remarks>
+        private static string AppendFailureReason(string body, FeedbackTypes feedbackType, DeliveryStatuses status)
+        {
+            if (feedbackType != FeedbackTypes.Failure)
+            {
+                return body;
+            }
+
+            string reason = status switch
+            {
+                DeliveryStatuses.PermanentFailure => "het e-mailadres bestaat niet of kan niet worden bereikt (permanente fout)",
+                DeliveryStatuses.TemporaryFailure => "de mailbox was tijdelijk niet bereikbaar (tijdelijke fout)",
+                DeliveryStatuses.TechnicalFailure => "er is een technische fout opgetreden bij het versturen",
+                DeliveryStatuses.ValidationFailed => "de notificatie is door NotifyNL afgekeurd (validatiefout)",
+                _ => $"bezorgstatus: {status}"
+            };
+
+            return string.IsNullOrWhiteSpace(body)
+                ? $"Reden: {reason}"
+                : $"{body}\n\nReden: {reason}";
         }
 
         /// <summary>
@@ -493,8 +567,8 @@ namespace EventsHandler.Services.Responding.v2
         ///   </para>
         /// </remarks>
         /// <summary>
-        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox or print),
-        /// neither of which has a real <see cref="NotifyReference"/> to hand to the notify service.
+        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox, print or
+        /// product created), none of which has a real <see cref="NotifyReference"/> to hand to the notify service.
         /// </summary>
         private async Task<NotificationData> GetObjectScenarioNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
         {

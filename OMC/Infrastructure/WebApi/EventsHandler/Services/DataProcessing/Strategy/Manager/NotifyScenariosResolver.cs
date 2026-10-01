@@ -10,6 +10,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Kto;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.MessageBox;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Print;
+using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataQuerying.Proxy.Interfaces;
@@ -139,6 +140,13 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 return this._serviceProvider.GetRequiredService<MessageBoxScenario>();
             }
 
+            // Product scenario
+            if (IsProductScenario(model))
+            {
+                TraceContext.SetScenario("product-created");
+                return this._serviceProvider.GetRequiredService<ProductCreatedScenario>();
+            }
+
             // No matching scenario
             return this._serviceProvider.GetRequiredService<NotImplementedScenario>();
         }
@@ -186,6 +194,24 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Manager
                 Action: Actions.Create,
                 Channel: Channels.Messages,   // Adjust to actual enum value if different
                 Resource: Resources.Message    // Adjust to actual enum value if different
+            };
+        }
+
+        /// <summary>
+        /// Determines whether the notification corresponds to the "Product created" scenario.
+        /// </summary>
+        /// <remarks>
+        ///   "Open Product" publishes on its own channel rather than as an object in the "Objecten" Web API
+        ///   service, so this is a plain channel/resource match like the case and decision filters, not a
+        ///   lookup against a configured objecttype UUID.
+        /// </remarks>
+        private static bool IsProductScenario(NotificationEvent notification)
+        {
+            return notification is
+            {
+                Action: Actions.Create,
+                Channel: Channels.Products,
+                Resource: Resources.Product
             };
         }
 

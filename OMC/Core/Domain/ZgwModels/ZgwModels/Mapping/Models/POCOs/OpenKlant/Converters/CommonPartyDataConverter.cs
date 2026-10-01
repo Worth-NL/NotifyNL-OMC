@@ -22,13 +22,25 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters
                 Uri                     = data.Party.Uri,
                 Name                    = data.Party.Identification?.Details.Name ?? string.Empty,
                 SurnamePrefix           = data.Party.Identification?.Details.SurnamePrefix ?? string.Empty,
-                Surname                 = data.Party.Identification?.Details.Surname ?? string.Empty,
+                Surname                 = GetSurname(data.Party),
                 DistributionChannel     = data.DistributionChannel,
                 DistributionChannelReason = data.Reason,
                 EmailAddress            = data.EmailAddress,
                 TelephoneNumber         = data.PhoneNumber,
                 Gender                  = data.Party.SubjectIdentification.Gender
             };
+        }
+
+        // NOTE: An organization has no surname, only a name. It goes where a surname does, so the existing
+        //       "Beste ((klant.voornaam)) ((klant.voorvoegselAchternaam)) ((klant.achternaam))" salutation
+        //       reads correctly for a company instead of leaving it blank.
+        private static string GetSurname(v2.PartyResult party)
+        {
+            string surname = party.Identification?.Details.Surname ?? string.Empty;
+
+            return surname.Length > 0
+                ? surname
+                : party.Identification?.OrganizationName ?? string.Empty;
         }
     }
 }
