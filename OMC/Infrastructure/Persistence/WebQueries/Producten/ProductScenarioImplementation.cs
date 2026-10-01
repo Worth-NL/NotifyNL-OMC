@@ -242,7 +242,7 @@ namespace WebQueries.Producten
                     messages:
                     [
                         this._configuration.AppSettings.Variables.UxMessages.Email_Failure_Subject(),
-                        this._configuration.AppSettings.Variables.UxMessages.Email_Failure_Body(),
+                        AppendReason(this._configuration.AppSettings.Variables.UxMessages.Email_Failure_Body(), reason),
                         "false",
                         DateTime.Now.ToString("O")
                     ]);
@@ -264,6 +264,30 @@ namespace WebQueries.Producten
                     "Registering the failed contactmoment for product {ProductId} also failed.",
                     reference.ProductId);
             }
+        }
+
+        /// <summary>
+        /// Appends the reason a notification failed to the configured failure wording.
+        /// </summary>
+        /// <remarks>
+        ///   The reason is what makes a failed contactmoment useful to whoever reads it: without it, an owner with
+        ///   no e-mail address, a refused send and a thrown exception all read the same. It is kept short, because
+        ///   it can carry the text of an exception or of an error from "Notify NL".
+        /// </remarks>
+        private static string AppendReason(string failureBody, string reason)
+        {
+            const int maxReasonLength = 300;
+
+            string trimmedReason = reason.Trim();
+
+            if (trimmedReason.Length > maxReasonLength)
+            {
+                trimmedReason = $"{trimmedReason[..maxReasonLength]}…";
+            }
+
+            return string.IsNullOrWhiteSpace(failureBody)
+                ? $"Reden: {trimmedReason}"
+                : $"{failureBody}\n\nReden: {trimmedReason}";
         }
 
         /// <summary>

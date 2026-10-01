@@ -5,6 +5,7 @@
 - Adds `ZGW_WHITELIST_PRODUCTCREATE_IDS`, matched on the product type's `code` — Open Product has no `identificatie` field to whitelist on
 - Resolves each eigenaar to an OpenKlant partij on its BSN or KVK number; an eigenaar's own UUID is Open Product's primary key and has no relation to OpenKlant
 - Prefers the digital address a partij marked `portaalvoorkeur`, and restricts the address search to e-mail, so a partij whose preferred address is a phone number is no longer read as having no e-mail at all
+- States the reason in the failed contactmoment (`Reden: …`): no e-mail address on file, a refusal or error from Notify NL, or the delivery status of a failed receipt. A failed contactmoment needs a partij, so an owner without one still ends the whole notification with a 206
 - Registers a failed contactmoment per eigenaar who could not be notified; successful ones are written from the Notify NL afleverstatus callback, as with the other channels
 - Notifies every eigenaar only once the product, its type, its publication state and all of its eigenaren have been validated — a failure in any of those notifies nobody
 

@@ -326,5 +326,44 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
                     It.IsAny<ProductNotifyReference>(), NotifyMethods.Email, It.IsAny<string[]>()), Times.Once);
             });
         }
+
+        [TestCase(DeliveryStatuses.PermanentFailure, "bestaat niet")]
+        [TestCase(DeliveryStatuses.TemporaryFailure, "tijdelijk")]
+        [TestCase(DeliveryStatuses.TechnicalFailure, "technische fout")]
+        public async Task HandleNotifyCallbackAsync_ProductCallback_FailedDelivery_StatesTheReasonInTheContactMomentAsync(
+            DeliveryStatuses failureStatus, string expectedReasonFragment)
+        {
+            // Arrange
+            Guid productId = Guid.Parse("55555555-5555-5555-5555-555555555555");
+            string compressedProductReference =
+                $"{{\"ProductId\":\"{productId}\"}}".CompressGZipAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<DeliveryReceipt>(It.IsAny<object>()))
+                .Returns(BuildDeliveryReceipt(compressedProductReference, failureStatus, NotificationTypes.Email));
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<ProductNotifyReference>(It.IsAny<object>()))
+                .Returns(new ProductNotifyReference { ProductId = productId, PartyId = s_partyId });
+
+            this._mockedNotifyService
+                .Setup(mock => mock.GetNotificationDataAsync(It.IsAny<NotifyData>(), It.IsAny<Guid>()))
+                .ReturnsAsync(NotificationData.Failure("not needed for this test"));
+
+            this._mockedTelemetry
+                .Setup(mock => mock.ReportProductCompletionAsync(
+                    It.IsAny<ProductNotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string[]>()))
+                .ReturnsAsync(HttpRequestResponse.Success("contactmoment created"));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert
+            this._mockedTelemetry.Verify(mock => mock.ReportProductCompletionAsync(
+                It.IsAny<ProductNotifyReference>(), NotifyMethods.Email,
+                It.Is<string[]>(messages => messages[2] == "false"
+                                            && messages[1].Contains("Reden:")
+                                            && messages[1].Contains(expectedReasonFragment))), Times.Once);
+        }
     }
 }

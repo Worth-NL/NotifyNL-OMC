@@ -21,6 +21,7 @@ using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Enums.NotifyNL;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 using ZgwModels.Serialization.Interfaces;
@@ -319,11 +320,41 @@ namespace EventsHandler.Services.Responding.v2
                 [
                     DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Subject : string.Empty),
-                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
-                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                    AppendFailureReason(
+                        DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                            notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                        feedbackType, callback.Status),
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
+        }
+
+        /// <summary>
+        /// Appends why "Notify NL" could not deliver, to the contactmoment of a failed delivery.
+        /// </summary>
+        /// <remarks>
+        ///   The status is the only reason a delivery receipt carries. Without it, a mailbox that does not exist
+        ///   and a mailbox that was temporarily full both read as the same generic failure.
+        /// </remarks>
+        private static string AppendFailureReason(string body, FeedbackTypes feedbackType, DeliveryStatuses status)
+        {
+            if (feedbackType != FeedbackTypes.Failure)
+            {
+                return body;
+            }
+
+            string reason = status switch
+            {
+                DeliveryStatuses.PermanentFailure => "het e-mailadres bestaat niet of kan niet worden bereikt (permanente fout)",
+                DeliveryStatuses.TemporaryFailure => "de mailbox was tijdelijk niet bereikbaar (tijdelijke fout)",
+                DeliveryStatuses.TechnicalFailure => "er is een technische fout opgetreden bij het versturen",
+                DeliveryStatuses.ValidationFailed => "de notificatie is door NotifyNL afgekeurd (validatiefout)",
+                _ => $"bezorgstatus: {status}"
+            };
+
+            return string.IsNullOrWhiteSpace(body)
+                ? $"Reden: {reason}"
+                : $"{body}\n\nReden: {reason}";
         }
 
         /// <summary>

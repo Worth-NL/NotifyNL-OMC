@@ -278,6 +278,11 @@ namespace WebQueries.Tests.Unit.Producten
                     It.Is<ProductNotifyReference>(reference => reference.ProductId == s_productId),
                     NotifyMethods.Email,
                     It.Is<string[]>(messages => messages[2] == "false")), Times.Once);
+
+                // The contactmoment says why, not only that it failed
+                this._mockedTelemetry.Verify(mock => mock.ReportProductCompletionAsync(
+                    It.IsAny<ProductNotifyReference>(), NotifyMethods.Email,
+                    It.Is<string[]>(messages => messages[1].Contains("Reden: Er is geen e-mailadres bekend"))), Times.Once);
             });
         }
 
@@ -308,6 +313,11 @@ namespace WebQueries.Tests.Unit.Producten
                 this._mockedTelemetry.Verify(mock => mock.ReportProductCompletionAsync(
                     It.IsAny<ProductNotifyReference>(), NotifyMethods.Email,
                     It.Is<string[]>(messages => messages[2] == "false")), Times.Once);
+
+                // What "Notify NL" refused with ends up in the contactmoment
+                this._mockedTelemetry.Verify(mock => mock.ReportProductCompletionAsync(
+                    It.IsAny<ProductNotifyReference>(), NotifyMethods.Email,
+                    It.Is<string[]>(messages => messages[1].Contains("Reden: Template not found"))), Times.Once);
             });
         }
 

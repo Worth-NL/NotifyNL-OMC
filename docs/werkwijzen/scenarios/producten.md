@@ -110,9 +110,10 @@ Er wordt één klantcontact per eigenaar geregistreerd, elk met een eigen `betro
 
 | Uitkomst | Wanneer geregistreerd | Inhoud |
 |---|---|---|
-| Geen e-mailadres bekend | Direct | Mislukt contactmoment, met de `VARIABLES_UXMESSAGES_EMAIL_FAILURE_*`-teksten |
-| NotifyNL weigerde de verzending of gaf een fout | Direct | Mislukt contactmoment, idem |
-| Verzending geaccepteerd | Later, vanuit de afleverstatus-callback | Onderwerp en inhoud worden met het notificatie-ID teruggehaald bij NotifyNL, zodat wordt vastgelegd wat de eigenaar daadwerkelijk ontvangen heeft |
+| Geen e-mailadres bekend | Direct | Mislukt contactmoment, met de `VARIABLES_UXMESSAGES_EMAIL_FAILURE_*`-teksten, gevolgd door de regel `Reden: Er is geen e-mailadres bekend om deze notificatie naar te versturen.` |
+| NotifyNL weigerde de verzending of gaf een fout | Direct | Mislukt contactmoment, idem, met de foutmelding van NotifyNL (of van de uitzondering) als `Reden:` |
+| Verzending geaccepteerd, maar niet afgeleverd (permanente, tijdelijke of technische fout) | Later, vanuit de afleverstatus-callback | Mislukt contactmoment met de `VARIABLES_UXMESSAGES_EMAIL_FAILURE_*`-teksten en de `Reden:` die bij de bezorgstatus hoort |
+| Verzending geaccepteerd en afgeleverd | Later, vanuit de afleverstatus-callback | Onderwerp en inhoud worden met het notificatie-ID teruggehaald bij NotifyNL, zodat wordt vastgelegd wat de eigenaar daadwerkelijk ontvangen heeft |
 
 De twee directe mislukkingen bereiken NotifyNL nooit, dus daarvoor komt geen callback en is er niets om terug te halen — vandaar de terugval op de geconfigureerde UxMessages-teksten.
 
