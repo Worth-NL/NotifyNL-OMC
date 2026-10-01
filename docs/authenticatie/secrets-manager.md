@@ -87,6 +87,6 @@ string token = generator.GenerateToken();
 | Eigenschap | Symmetrisch (HS256) | Asymmetrisch (RS256) |
 |---|---|---|
 | Geheim type | Gedeeld geheim | RSA privésleutel + publieke sleutel |
-| Configuratie | `OMC_AUTH_JWT_SECRET` | `OMC_AUTH_JWT_PRIVATEKEYPATH` |
+| Configuratie | `OMC_AUTH_JWT_SECRET` | `ENCRYPTION_ISASYMMETRIC=true`; de privésleutel wordt gelezen uit het vaste bestand `private_key` in de werkmap — het pad is niet configureerbaar |
 | Aanbevolen voor | Intern/enkel-omgeving gebruik | Productie, multi-tenant |
 | Sleutelrotatie | Één geheim bijwerken | Privésleutel bijwerken, publieke sleutel verspreiden |
