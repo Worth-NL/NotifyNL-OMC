@@ -218,3 +218,13 @@ dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.IDE0079.severity = none
 dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.IDE0305.severity = none
+
+######################
+# Test projects      #
+######################
+[OMC/Tests/**/*.cs]
+
+# Test methods follow the "Method_Condition_ExpectedResult" naming convention.
+# An "Async" suffix would break that convention without adding any clarity,
+# and these methods are never awaited by production code.
+dotnet_diagnostic.VSTHRD200.severity = none

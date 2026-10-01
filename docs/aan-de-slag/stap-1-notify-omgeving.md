@@ -39,8 +39,7 @@ Het OMC gebruikt één template per scenario per kanaal. Ga naar **Templates** i
 | Zaak afgesloten | Sms | `NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE` |
 | Taak toegewezen | E-mail | `NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED` |
 | Taak toegewezen | Sms | `NOTIFY_TEMPLATEID_SMS_TASKASSIGNED` |
-| Besluit genomen | E-mail | `NOTIFY_TEMPLATEID_EMAIL_DECISIONMADE` |
-| Besluit genomen | Sms | `NOTIFY_TEMPLATEID_SMS_DECISIONMADE` |
+| Besluit genomen | Alle kanalen | `NOTIFY_TEMPLATEID_DECISIONMADE` |
 | Bericht ontvangen | E-mail | `NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED` |
 | Bericht ontvangen | Sms | `NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED` |
 

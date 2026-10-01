@@ -148,6 +148,11 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED",              GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",                   GetTestValue(isValid, testGuid) },
 
+                { "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE",                  GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_LETTER_ZAAKUPDATE",                  GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE",                   GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED",                GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED",             GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX",                  GetTestValue(isValid, testGuid) },
 
                 { "NOTIFY_TEMPLATEID_SMS_ZAAKCREATE",                     GetTestValue(isValid, testGuid) },

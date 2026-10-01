@@ -47,8 +47,9 @@ namespace EventsHandler.Services.Responding.v2
         /// <param name="configuration">The configuration of the application.</param>
         /// <param name="serializer">The input de(serializing) service.</param>
         /// <param name="telemetry">The telemetry service registering API events.</param>
-        /// <param name="notifyService"></param>
+        /// <param name="notifyService">Fetches the original notification back from "Notify NL" by its id, so the delivery receipt can be recorded against what was actually sent.</param>
         /// <param name="messageBoxScenario">Used to continue the MOBB fallback chain when a delivery-receipt callback reports failure.</param>
+        /// <param name="printScenario">Completes a print ("printstraat") delivery receipt: registers the contactmoment and removes the triggering object once the letter went out.</param>
         /// <param name="traceEmitter">Broadcasts this callback's outcome to the dashboard, correlated back to the original trace via <see cref="NotifyReference.TraceId"/>.</param>
         public NotifyCallbackResponder(OmcConfiguration configuration, ISerializationService serializer, ITelemetryService telemetry, INotifyService<NotifyData> notifyService, IMessageBoxScenario messageBoxScenario, IPrintScenario printScenario, TraceEmitter traceEmitter)  // Dependency Injection (DI)
             : base(serializer)
