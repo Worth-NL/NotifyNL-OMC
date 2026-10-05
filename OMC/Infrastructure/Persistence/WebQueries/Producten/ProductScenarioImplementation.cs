@@ -134,6 +134,9 @@ namespace WebQueries.Producten
         /// </remarks>
         private async Task DeliverAsync(Product product, IReadOnlyList<ProductRecipient> recipients, Guid templateId)
         {
+            // NOTE: Registering a failed contactmoment overwrites the notification on the shared (scoped) query
+            //       context with an empty stand-in. Nothing below reads that context, so this is harmless - but
+            //       any lookup that needs the triggering notification has to happen before this point.
             int sent = 0;
 
             try
