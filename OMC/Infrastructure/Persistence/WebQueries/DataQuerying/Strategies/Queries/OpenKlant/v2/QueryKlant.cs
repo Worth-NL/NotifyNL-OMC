@@ -135,7 +135,7 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// Reports a search that "OpenKlant" answered without any party, naming what was searched on.
         /// </summary>
         /// <remarks>
-        ///   <see cref="PartyResults.Party"/> would throw on empty results as well, but cannot say which kind of
+        ///   <see cref="PartyResults.Party(OmcConfiguration, string?, bool, DistributionChannels?)"/> would throw on empty results as well, but cannot say which kind of
         ///   identificator was used - and that is what tells whoever reads the reason which register to correct.
         /// </remarks>
         /// <exception cref="PartyNotFoundException"/>
