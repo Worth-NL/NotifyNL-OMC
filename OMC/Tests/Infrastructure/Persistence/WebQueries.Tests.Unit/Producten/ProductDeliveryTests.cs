@@ -53,7 +53,7 @@ namespace WebQueries.Tests.Unit.Producten
 
         #region Test data
         private static readonly Guid s_productId = Guid.Parse("da0df49a-cd71-4e24-9bae-5be8b01f2c36");
-        private static readonly Uri s_productUri = new($"https://openproduct.test/producten/api/v1/producten/{s_productId}");
+        private static readonly Uri s_productUri = new($"https://test.domain/producten/api/v1/producten/{s_productId}");
         private static readonly Uri s_partyUri = new("https://openklant.test/partijen/22222222-2222-2222-2222-222222222222");
 
         // ZGW_WHITELIST_PRODUCTCREATE_IDS is "1, 2, 3" in the test configuration.

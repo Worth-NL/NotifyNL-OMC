@@ -44,7 +44,7 @@ namespace WebQueries.Tests.Unit.Producten
         private static readonly Guid s_productId = Guid.Parse("da0df49a-cd71-4e24-9bae-5be8b01f2c36");
 
         private static readonly Uri s_productUri =
-            new($"https://openproduct.test/producten/api/v1/producten/{s_productId}");
+            new($"https://test.domain/producten/api/v1/producten/{s_productId}");
 
         // ZGW_WHITELIST_PRODUCTCREATE_IDS is "1, 2, 3" in the test configuration.
         private const string WhitelistedProductTypeCode = "1";
@@ -160,6 +160,34 @@ namespace WebQueries.Tests.Unit.Producten
                 .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
                 .ThrowsAsync(new PartyNotFoundException("No party results"));
         #endregion
+
+        [TestCase("https://attacker.example/producten/api/v1/producten/")]  // Foreign host
+        [TestCase("http://test.domain/producten/api/v1/producten/")]        // Same host, downgraded scheme
+        [TestCase("https://test.domain:8443/producten/api/v1/producten/")]  // Same host, other port
+        public void ProcessProductAsync_ProductUrlNotOnConfiguredOpenProduct_FailsWithoutFetchingIt(string productUrlBase)
+        {
+            // NOTE: Fetching the URL sends the Open Product API key along, so a notification must not be able to
+            //       point OMC at another origin. The strict query context has no setup for GetProductAsync, so
+            //       any attempt to fetch would fail this test with a MockException instead.
+
+            // Arrange
+            Uri foreignUri = new($"{productUrlBase}{s_productId}");
+
+            NotificationEvent notification = new()
+            {
+                Action = Actions.Create,
+                Channel = Channels.Products,
+                Resource = Resources.Product,
+                MainObjectUri = foreignUri,
+                ResourceUri = foreignUri
+            };
+
+            // Act & Assert
+            InvalidOperationException? exception = Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await this._scenario.ProcessProductAsync(notification));
+
+            Assert.That(exception!.Message, Does.Contain("ZGW_ENDPOINT_OPENPRODUCTEN"));
+        }
 
         [Test]
         public void ProcessProductAsync_ProductGone_ThrowsProcessingAborted_SoTheNotificationIsNotRedelivered()

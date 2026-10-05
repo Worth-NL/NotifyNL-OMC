@@ -570,6 +570,47 @@ namespace WebQueries.Producten
 
         #region Helper methods
         /// <summary>
+        /// Refuses a product URL that does not point at the configured "Open Product".
+        /// </summary>
+        /// <remarks>
+        ///   The URL comes from the notification, and fetching it sends the "Open Product" API key along. Without
+        ///   this check, anyone able to get a notification accepted could have that key sent to a host of their
+        ///   choosing. Same origin rule as the print flow applies to its "pdfurl".
+        ///   <para>
+        ///     A failure rather than an abort: the likeliest cause is a configured endpoint whose host differs
+        ///     from the one "Open Product" publishes (e.g. internal vs. public name), which has to be noticed.
+        ///   </para>
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">The URL is not on the configured "Open Product" origin.</exception>
+        private void ValidateProductUriIsOpenProducten(Uri productUri)
+        {
+            string configuredEndpoint = this._configuration.ZGW.Endpoint.OpenProducten();
+
+            bool isSameOrigin =
+                productUri.IsAbsoluteUri &&
+                Uri.TryCreate(
+                    configuredEndpoint.Contains("://", StringComparison.Ordinal) ? configuredEndpoint : $"https://{configuredEndpoint}",
+                    UriKind.Absolute, out Uri? openProductenUri) &&
+                string.Equals(productUri.Scheme, openProductenUri.Scheme, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(productUri.Host, openProductenUri.Host, StringComparison.OrdinalIgnoreCase) &&
+                productUri.Port == openProductenUri.Port;
+
+            if (isSameOrigin)
+            {
+                return;
+            }
+
+            string reason =
+                $"The product URL host \"{(productUri.IsAbsoluteUri ? productUri.Host : productUri.ToString())}\" is not " +
+                $"the configured Open Product (ZGW_ENDPOINT_OPENPRODUCTEN); refusing to fetch it.";
+
+            TraceContext.Emit("openproduct", "fail", reason);
+            this._logger.LogWarning("{Reason}", reason);
+
+            throw new InvalidOperationException(reason);
+        }
+
+        /// <summary>
         /// Reads the product the notification reported, and the product type embedded in it.
         /// </summary>
         /// <remarks>
@@ -583,6 +624,9 @@ namespace WebQueries.Producten
         private async Task<Product> GetProductAsync(IQueryContext queryContext, NotificationEvent notification)
         {
             Guid productId = notification.ResourceUri.GetGuid();
+
+            ValidateProductUriIsOpenProducten(notification.ResourceUri);
+
             TraceContext.Emit("openproduct", "start", $"Attempting to retrieve product with id {productId}");
 
             Product product;

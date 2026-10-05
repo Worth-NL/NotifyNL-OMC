@@ -56,7 +56,7 @@ De verwerking valt uiteen in twee fasen met verschillende foutafhandeling.
 
 ### Stap 1 — Product ophalen
 
-Het OMC haalt het product op bij `resourceUrl` uit de Open Producten API.
+Het OMC haalt het product op bij `resourceUrl` uit de Open Producten API. Die URL moet op dezelfde host (schema, host en poort) staan als `ZGW_ENDPOINT_OPENPRODUCTEN`; anders weigert het OMC hem op te vragen, zodat de API-sleutel nooit naar een andere host gaat. Dat levert een `412` op — meestal is de oorzaak een endpoint dat met een andere hostnaam is ingesteld dan Open Product in zijn events gebruikt.
 
 Het `producttype` zit **volledig genest** in het antwoord (`uuid`, `code`, `naam`, `uniforme_product_naam`, `gepubliceerd`); er is dus geen tweede aanroep nodig om het producttype op te halen.
 
@@ -144,6 +144,7 @@ De twee directe mislukkingen bereiken NotifyNL nooit, dus daarvoor komt geen cal
 | Een eigenaar heeft geen BSN of KVK-nummer | `206 Partial Content` | Nee |
 | Een eigenaar heeft geen partij in OpenKlant | `206 Partial Content` | Nee |
 | Open Product of OpenKlant onbereikbaar of foutief tijdens fase 1 | `412 Precondition Failed` | Ja |
+| `resourceUrl` staat niet op de host van `ZGW_ENDPOINT_OPENPRODUCTEN` | `412 Precondition Failed` | Ja |
 | `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` ontbreekt voor een product dat verstuurd zou worden | `412 Precondition Failed` | Ja |
 | Verzending of registratie mislukt in fase 2 | `202 Accepted` | Nee — vastgelegd als mislukt contactmoment |
 
