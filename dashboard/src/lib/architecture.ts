@@ -54,6 +54,7 @@ export const FILTER_NODES: ArchitectureNode[] = [
   { key: "mijnzaken-staleness", name: "Verouderd-check", subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd", active: true },
   { key: "producttypewhitelist", name: "Producttype whitelist", subtitle: "producttype.code — ZGW_WHITELIST_PRODUCTCREATE_IDS", active: true },
   { key: "productgepubliceerd", name: "Publicatiecheck", subtitle: "product.gepubliceerd", active: true },
+  { key: "productbezorging", name: "Productbezorging", subtitle: "Per eigenaar e-mailen — mislukt → contactmoment", active: true },
 ];
 
 // "Letter"/"Both" branches exist in BaseScenario's DistributionChannel switch, but the live
@@ -126,7 +127,11 @@ export const EDGES: FlowEdge[] = [
   // kanaalresolutie: every eigenaar is notified by e-mail, so there is no channel to resolve.
   { source: PATTERN_ENGINE_KEY, target: "producttypewhitelist", category: "producten" },
   { source: "producttypewhitelist", target: "productgepubliceerd", category: "producten" },
-  { source: "productgepubliceerd", target: "notify-email", category: "producten" },
+  { source: "productgepubliceerd", target: "productbezorging", category: "producten" },
+  { source: "productbezorging", target: "notify-email", category: "producten" },
+  // An eigenaar who cannot be reached (no e-mail address, or a send Notify NL refuses) is
+  // registered as a failed contactmoment straight away — no delivery receipt is coming for it.
+  { source: "productbezorging", target: "contactmoment", category: "bevestiging" },
 
   { source: "taakcheck", target: "zaaktypewhitelist", category: "taken" },
   { source: "documentcheck", target: "zaaktypewhitelist", category: "besluiten" },
@@ -282,9 +287,10 @@ export const FLOW_OPTIONS: FlowOption[] = [
     inputs: ["opennotificaties"],
     // Real order in ProductScenarioImplementation.ProcessProductAsync: fetch the product from
     // Open Product, the producttype whitelist, the gepubliceerd check, then one OpenKlant
-    // lookup per eigenaar. Always e-mail, so no kanaalresolutie.
+    // lookup per eigenaar, then the delivery fan-out ("productbezorging"). Always e-mail, so no
+    // kanaalresolutie.
     registers: ["openproduct", "openklant"],
-    filters: ["producttypewhitelist", "productgepubliceerd"],
+    filters: ["producttypewhitelist", "productgepubliceerd", "productbezorging"],
     channels: ["notify-email"],
     confirmations: ["contactmoment"],
   },
