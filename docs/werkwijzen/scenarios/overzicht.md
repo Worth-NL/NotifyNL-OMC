@@ -17,6 +17,20 @@ Het OMC verwerkt events van de NotificatiesAPI en bepaalt voor elk event welk no
 
 ---
 
+## Partij niet gevonden
+
+Vindt het OMC in OpenKlant geen partij bij het BSN, KVK-nummer of de partij-id die het opzoekt, dan wordt het event in **elk** scenario afgebroken met `206 Partial Content` en **niet** opnieuw aangeboden door Open Notificaties: opnieuw proberen lost ontbrekende gegevens niet op. De reden in het antwoord noemt het soort identificator, bijvoorbeeld:
+
+> No partij found in OpenKlant for this BSN (partijIdentificator "bsn"). Nobody was notified.
+
+Het BSN of KVK-nummer zelf staat nooit in de reden, logs of traces. Een partij-id (uuid) wel — dat is geen persoonsgegeven.
+
+Dit geldt alleen wanneer OpenKlant daadwerkelijk antwoordt dat de partij er niet is. Is OpenKlant onbereikbaar, of antwoordt het met een andere fout, dan blijft het een mislukking (`412`) en biedt Open Notificaties het event opnieuw aan.
+
+De print- en Berichtenbox-flows maken een ontbrekende partij zelf aan; daar treedt dit alleen op als de partij ook na het aanmaken niet gevonden wordt.
+
+---
+
 ## Adresselectie
 
 Het OMC bepaalt het contactkanaal en -adres in de volgende volgorde:

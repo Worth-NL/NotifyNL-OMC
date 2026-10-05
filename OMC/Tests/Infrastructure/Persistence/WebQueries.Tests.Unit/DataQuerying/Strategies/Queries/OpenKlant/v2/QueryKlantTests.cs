@@ -3,6 +3,7 @@
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using Moq;
+using System.Net;
 using NUnit.Framework;
 using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
@@ -221,5 +222,77 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenKlant.v2
                 Assert.That(capturedJsonBody, Does.Contain($"\"objectId\":\"{TestBsn}\""));
             });
         }
+
+        #region Party not found
+        [TestCase("bsn", "BSN")]
+        [TestCase("kvk_nummer", "KVK number")]
+        public void TryGetPartyDataByIdentifierAsync_EmptyResults_ThrowsPartyNotFound_NamingTheIdentifierKind(
+            string codeSoortObjectId, string expectedKind)
+        {
+            // Arrange
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResults>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .ReturnsAsync(GetEmptyPartyResults());
+
+            // Act & Assert
+            PartyNotFoundException? exception = Assert.ThrowsAsync<PartyNotFoundException>(() =>
+                this._queryKlant.TryGetPartyDataByIdentifierAsync(this._mockedQueryBase.Object, codeSoortObjectId, "12345678"));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.IdentifierKind, Is.EqualTo(codeSoortObjectId));
+                Assert.That(exception.Message, Does.Contain($"No partij found in OpenKlant for this {expectedKind}"));
+
+                // The value itself is personal data (a BSN) and must never reach the message.
+                Assert.That(exception.Message, Does.Not.Contain("12345678"));
+            });
+        }
+
+        [Test]
+        public void TryGetPartyDataAsync_ByPartyUri_NotFound_ThrowsPartyNotFound_NamingThePartyId()
+        {
+            // NOTE: The case role path: the zaak points at a partij by its URL, and OpenKlant answers 404.
+
+            // Arrange
+            Guid partyId = Guid.NewGuid();
+            Uri partyUri = new($"https://openklant.test/klantinteracties/api/v1/partijen/{partyId}");
+
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResult>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .ThrowsAsync(new HttpRequestException("Not found", null, HttpStatusCode.NotFound));
+
+            // Act & Assert
+            PartyNotFoundException? exception = Assert.ThrowsAsync<PartyNotFoundException>(() =>
+                this._queryKlant.TryGetPartyDataAsync(this._mockedQueryBase.Object, partyUri));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.IdentifierKind, Is.EqualTo("uuid"));
+                Assert.That(exception.Message, Does.Contain(partyId.ToString()));
+            });
+        }
+
+        [TestCase(HttpStatusCode.InternalServerError)]
+        [TestCase(HttpStatusCode.Unauthorized)]
+        [TestCase(null)]
+        public void TryGetPartyDataAsync_ByPartyUri_OpenKlantUnreachable_IsNotReportedAsPartyNotFound(HttpStatusCode? statusCode)
+        {
+            // NOTE: Only a 404 means the partij is not there. Anything else is OpenKlant failing, which has to
+            //       stay a plain failure so the notification is retried.
+
+            // Arrange
+            Uri partyUri = new($"https://openklant.test/klantinteracties/api/v1/partijen/{Guid.NewGuid()}");
+
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResult>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .ThrowsAsync(new HttpRequestException("Boom", null, statusCode));
+
+            // Act & Assert
+            HttpRequestException? exception = Assert.ThrowsAsync<HttpRequestException>(() =>
+                this._queryKlant.TryGetPartyDataAsync(this._mockedQueryBase.Object, partyUri));
+
+            Assert.That(exception, Is.Not.InstanceOf<PartyNotFoundException>());
+        }
+        #endregion
     }
 }

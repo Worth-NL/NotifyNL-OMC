@@ -2,6 +2,7 @@
 
 using Common.Extensions;
 using Common.Settings.Configuration;
+using System.Net;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
@@ -10,6 +11,7 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
+using ZgwModels.Exceptions;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
@@ -71,6 +73,8 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);
             }
 
+            ThrowIfNoParty(results, partyIdentifier);
+
             return results
                 .Party(((IQueryKlant)this).Configuration,
                     caseIdentifier, requireDigitalAddress)  // Single determined party result
@@ -92,9 +96,27 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             PartyResults results = await GetPartyResultsV2Async(queryBase,
                 GetPartiesByIdentifierUri(partiesEndpoint, codeSoortObjectId, objectId));
 
+            ThrowIfNoParty(results, codeSoortObjectId);
+
             return results
                 .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
                 .ConvertToUnified();
+        }
+
+        /// <summary>
+        /// Reports a search that "OpenKlant" answered without any party, naming what was searched on.
+        /// </summary>
+        /// <remarks>
+        ///   <see cref="PartyResults.Party"/> would throw on empty results as well, but cannot say which kind of
+        ///   identificator was used - and that is what tells whoever reads the reason which register to correct.
+        /// </remarks>
+        /// <exception cref="PartyNotFoundException"/>
+        private static void ThrowIfNoParty(PartyResults results, string codeSoortObjectId)
+        {
+            if (results.Results.IsEmpty())
+            {
+                throw PartyNotFoundException.ForIdentifier(codeSoortObjectId);
+            }
         }
 
         /// <summary>
@@ -169,8 +191,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             // Request URL
             Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
 
+            PartyResult partyResult;
+            try
+            {
+                partyResult = await GetPartyResultV2Async(queryBase, partiesWithExpand);
+            }
+            catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+            {
+                // The case role points at a party that is not (or no longer) there. Absent data, like an
+                // empty search result above - unlike any other status, which stays a failure to retry.
+                throw PartyNotFoundException.ForPartyId(involvedPartyUri.GetGuid(), exception);
+            }
+
             return PartyResults.Party(  // Single determined party result
-                    partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
+                    partyResult: partyResult,
                     configuration: ((IQueryKlant)this).Configuration,
                     caseIdentifier: caseIdentifier)
                 .ConvertToUnified();

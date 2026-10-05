@@ -17,6 +17,7 @@ using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Serialization.Interfaces;
 using ZgwModels.Enums;
+using ZgwModels.Exceptions;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Enums.Urns;
@@ -146,6 +147,13 @@ namespace WebQueries.Print
             {
                 party = await queryContext.GetPartyDataAsync(
                     caseUri: null, bsnNumber: bsnNumber, caseIdentifier: null, requireDigitalAddress: false, createIfMissing: true);
+            }
+            catch (PartyNotFoundException exception)
+            {
+                // Only reachable when the partij is still missing after creating it. Absent data, so it is
+                // left to NotifyProcessor to abort (206) the same way every other scenario does.
+                TraceContext.Emit("openklant", "abort", exception.Message);
+                throw;
             }
             catch (Exception exception)
             {

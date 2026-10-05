@@ -22,6 +22,7 @@ using WebQueries.Producten.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
+using ZgwModels.Exceptions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Properties;
 using ZgwModels.Serialization.Interfaces;
@@ -216,6 +217,62 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
                     .Replace("{0}", nameof(HttpRequestException) + $" | {TestExceptionMessage}")
                     .Replace("{1}", s_validNotification)));
             });
+        }
+
+        [Test]
+        public async Task ProcessAsync_PartyNotFound_ReturnsProcessingResult_Aborted()
+        {
+            // NOTE: A partij that does not exist for the BSN, KVK number or id looked up is absent data, not an
+            //       outage. Every scenario reports it as aborted (206) so Open Notificaties does not redeliver it.
+
+            // Arrange
+            PartyNotFoundException partyNotFound = PartyNotFoundException.ForIdentifier("bsn");
+
+            var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
+            mockedNotifyScenario
+                .Setup(mock => mock.TryGetDataAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ThrowsAsync(partyNotFound);
+
+            this._mockedResolver
+                .Setup(mock => mock.DetermineScenarioAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(mockedNotifyScenario.Object);
+
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Aborted));
+                Assert.That(result.Description, Does.Contain("No partij found in OpenKlant for this BSN"));
+            });
+        }
+
+        [Test]
+        public async Task ProcessAsync_OpenKlantUnreachable_WhileGettingData_ReturnsProcessingResult_Failure()
+        {
+            // NOTE: The counterpart of the test above: a plain HttpRequestException is OpenKlant (or another
+            //       service) failing, and has to stay a failure so the notification is retried.
+
+            // Arrange
+            var mockedNotifyScenario = new Mock<INotifyScenario>(MockBehavior.Strict);
+            mockedNotifyScenario
+                .Setup(mock => mock.TryGetDataAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ThrowsAsync(new HttpRequestException(TestExceptionMessage));
+
+            this._mockedResolver
+                .Setup(mock => mock.DetermineScenarioAsync(
+                    It.IsAny<NotificationEvent>()))
+                .ReturnsAsync(mockedNotifyScenario.Object);
+
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(s_validNotification);
+
+            // Assert
+            Assert.That(result.Status, Is.EqualTo(ProcessingStatus.Failure));
         }
 
         [Test]

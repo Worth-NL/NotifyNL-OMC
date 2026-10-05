@@ -19,7 +19,7 @@ Het primaire eindpunt dat events ontvangt van Open Notificaties.
 |---|---|
 | `200 OK` | Event verwerkt (inclusief overgeslagen events) |
 | `202 Accepted` | Event ontvangen, wordt asynchroon verwerkt |
-| `206 Partial Content` | Testping van Open Notificaties — verwacht gedrag |
+| `206 Partial Content` | Event bewust niet verwerkt en **niet** opnieuw aanbieden: een testping van Open Notificaties (verwacht gedrag), of een event dat niet tot een notificatie leidt — bijv. zaaktype/producttype niet op de whitelist, of geen partij in OpenKlant voor het BSN, KVK-nummer of de partij-id. De reden staat in het antwoord |
 | `400 Bad Request` | Ongeldig event-formaat |
 | `401 Unauthorized` | Ontbrekend of ongeldig JWT-token |
 

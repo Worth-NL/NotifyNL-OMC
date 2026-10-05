@@ -22,6 +22,7 @@ using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
 using WebQueries.Producten.Interfaces;
 using WebQueries.Tracing;
+using ZgwModels.Exceptions;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -265,6 +266,10 @@ namespace EventsHandler.Services.DataProcessing
                 AbortedNotifyingException => ProcessingResult.Aborted(exception.Message, json, details),
                 // The WebQueries-layer counterpart, thrown by scenarios that cannot reference this project.
                 ProcessingAbortedException => ProcessingResult.Aborted(exception.Message, json, details),
+                // A partij that does not exist for the BSN, KVK number or id looked up. Retrying cannot conjure
+                // it up, so this aborts (206) in every scenario rather than failing into endless redelivery.
+                // Must stay above any HttpRequestException arm: it is one, and an outage must still fail.
+                PartyNotFoundException => ProcessingResult.Aborted(exception.Message, json, details),
                 NotifyClientException => ProcessingResult.Failure(
                     string.Format(ApiResources.Processing_ERROR_Exception_Notify, exception.Message), json, details),
                 _ => ProcessingResult.Failure(
