@@ -226,6 +226,40 @@ namespace Common.Tests.Unit.Settings.Configuration
             // Act & Assert
             Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
         }
+
+        [Test]
+        public void OpenProducten_InEnvironmentMode_NotSet_IsOptional_AndReportsAsNotConfigured()
+        {
+            // NOTE: Deployments without "Open Product" must keep working, so none of its settings may throw
+            //       when absent. The "invalid" setup leaves every environment variable unset.
+
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.OpenProducten(), Is.Empty);
+                Assert.That(configuration.ZGW.Auth.Key.OpenProducten(), Is.Empty);
+                Assert.That(configuration.Notify.TemplateId.Email.ProductCreated(), Is.EqualTo(Guid.Empty));
+                Assert.That(configuration.ZGW.Whitelist.ProductCreate_IDs().Count, Is.Zero);
+                Assert.That(configuration.ZGW.Endpoint.IsOpenProductenConfigured(), Is.False);
+            });
+        }
+
+        [Test]
+        public void OpenProducten_InEnvironmentMode_Set_ReportsAsConfigured()
+        {
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.IsOpenProductenConfigured(), Is.True);
+                Assert.That(configuration.Notify.TemplateId.Email.ProductCreated(), Is.Not.EqualTo(Guid.Empty));
+            });
+        }
         #endregion
 
         #region FallbackContextWrapper

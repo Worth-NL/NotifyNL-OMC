@@ -862,9 +862,13 @@ namespace Common.Settings.Configuration
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    /// <remarks>
+                    ///   Optional: empty when not set. Only needed when "Open Product" is used - see
+                    ///   <see cref="EndpointComponent.IsOpenProductenConfigured"/>.
+                    /// </remarks>
                     [Config]
                     public string OpenProducten()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenProducten), disableValidation: true);
                 }
             }
 
@@ -931,9 +935,23 @@ namespace Common.Settings.Configuration
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                /// <remarks>
+                ///   Optional: empty when not set. Leaving it out switches the "Product created" scenario off,
+                ///   so deployments without "Open Product" need none of its settings.
+                /// </remarks>
                 [Config]
                 public string OpenProducten()
-                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenProducten));
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenProducten), disableValidation: true);
+
+                /// <summary>
+                /// Whether "Open Product" is used by this deployment at all.
+                /// </summary>
+                /// <remarks>
+                ///   Decided by <see cref="OpenProducten"/> alone: the endpoint is the one setting that cannot
+                ///   be meaningfully defaulted, so its presence is what opts a deployment in.
+                /// </remarks>
+                public bool IsOpenProductenConfigured()
+                    => !string.IsNullOrWhiteSpace(OpenProducten());
             }
 
             /// <summary>
@@ -1368,9 +1386,12 @@ namespace Common.Settings.Configuration
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    /// <remarks>
+                    ///   Optional: <see cref="Guid.Empty"/> when not set. Only needed when "Open Product" is used.
+                    /// </remarks>
                     [Config]
                     public Guid ProductCreated()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(ProductCreated));
+                        => GetCachedOptionalUuidValue(this._loadersContext, this._currentPath, nameof(ProductCreated));
                 }
 
                 /// <summary>
@@ -1683,6 +1704,27 @@ namespace Common.Settings.Configuration
                 // Validation happens once during initial loading, before caching the value
                 GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: false)  // Validate not empty (if validation is enabled)
                     .GetValidGuid());
+        }
+
+        /// <summary>
+        /// Retrieves cached GUID value (in correct format), or <see cref="Guid.Empty"/> when it is not set.
+        /// </summary>
+        /// <remarks>
+        /// Validation: only of the format, and only when a value is set
+        /// </remarks>
+        private static Guid GetCachedOptionalUuidValue(ILoadingService loadersContext, string currentPath, string nodeName)
+        {
+            return s_cachedGuids.GetOrAdd(
+                currentPath + nodeName,
+                // Validation happens once during initial loading, before caching the value
+                _ =>
+                {
+                    string value = GetValue<string>(loadersContext, currentPath, nodeName, disableValidation: true);
+
+                    return string.IsNullOrWhiteSpace(value)
+                        ? Guid.Empty
+                        : value.GetValidGuid();  // A value that is set but malformed is still an error
+                });
         }
 
         /// <summary>

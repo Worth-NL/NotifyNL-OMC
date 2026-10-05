@@ -67,9 +67,13 @@ namespace EventsHandler.Services.Configuration
             Task<CheckResult> objectTypenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "ObjectTypen",
                 () => queryContext.GetObjectTypenHealthCheckAsync(), ct,
                 hint: "ZGW__Endpoint__ObjectTypen, ZGW__Auth__Key__ObjectTypen");
-            Task<CheckResult> openProductenCheck = ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenProducten",
-                () => queryContext.GetProductenHealthCheckAsync(), ct,
-                hint: "ZGW__Endpoint__OpenProducten, ZGW__Auth__Key__OpenProducten");
+            // Open Product is optional: without an endpoint there is nothing to reach, so no call is made at all.
+            Task<CheckResult> openProductenCheck = IsOpenProductenConfigured()
+                ? ConnectivityCheckAsync("Service Connectivity", "🔗", "OpenProducten",
+                    () => queryContext.GetProductenHealthCheckAsync(), ct,
+                    hint: "ZGW__Endpoint__OpenProducten, ZGW__Auth__Key__OpenProducten")
+                : Task.FromResult(new CheckResult("Service Connectivity", "🔗", "OpenProducten", true,
+                    "skipped — Open Product is not configured (optional)"));
 
             yield return await openZaakCheck;
             yield return await openKlantCheck;
@@ -108,7 +112,9 @@ namespace EventsHandler.Services.Configuration
             yield return Masked(g, ic, "OpenKlant API Key",   () => config.ZGW.Auth.Key.OpenKlant(),   "ZGW__Auth__Key__OpenKlant");
             yield return Masked(g, ic, "Objecten API Key",    () => config.ZGW.Auth.Key.Objecten(),    "ZGW__Auth__Key__Objecten");
             yield return Masked(g, ic, "ObjectTypen API Key", () => config.ZGW.Auth.Key.ObjectTypen(), "ZGW__Auth__Key__ObjectTypen");
-            yield return Masked(g, ic, "OpenProducten API Key", () => config.ZGW.Auth.Key.OpenProducten(), "ZGW__Auth__Key__OpenProducten");
+            yield return IsOpenProductenConfigured()
+                ? Masked(g, ic, "OpenProducten API Key", () => config.ZGW.Auth.Key.OpenProducten(), "ZGW__Auth__Key__OpenProducten")
+                : new CheckResult(g, ic, "OpenProducten API Key", true, "(optional, not set)");
         }
 
         private IEnumerable<CheckResult> EndpointChecks()
@@ -120,7 +126,7 @@ namespace EventsHandler.Services.Configuration
             yield return Show(g, ic, "Besluiten",        () => config.ZGW.Endpoint.Besluiten(),        "ZGW__Endpoint__Besluiten");
             yield return Show(g, ic, "Objecten",         () => config.ZGW.Endpoint.Objecten(),         "ZGW__Endpoint__Objecten");
             yield return Show(g, ic, "ObjectTypen",      () => config.ZGW.Endpoint.ObjectTypen(),      "ZGW__Endpoint__ObjectTypen");
-            yield return Show(g, ic, "OpenProducten",    () => config.ZGW.Endpoint.OpenProducten(),    "ZGW__Endpoint__OpenProducten");
+            yield return Option(g, ic, "OpenProducten",  () => config.ZGW.Endpoint.OpenProducten(),    "ZGW__Endpoint__OpenProducten");
         }
 
         private IEnumerable<CheckResult> NotifyConfigChecks()
@@ -194,7 +200,24 @@ namespace EventsHandler.Services.Configuration
         private IEnumerable<CheckResult> ProductCreatedChecks()
         {
             const string g = "Product Created (Product aangemaakt)", ic = "📦";
+
+            // Same shape as "Message Received": a scenario a deployment has not opted into is reported as
+            // switched off, not as a column of missing settings.
+            if (!IsOpenProductenConfigured())
+            {
+                yield return new CheckResult(g, ic, "Open Product", true,
+                    "disabled — set ZGW__Endpoint__OpenProducten to enable this scenario");
+                yield break;
+            }
+
+            yield return new CheckResult(g, ic, "Open Product", true, "enabled");
             yield return Whitelist(g, ic, "Allowed product type codes", () => config.ZGW.Whitelist.ProductCreate_IDs(), "ZGW__Whitelist__ProductCreate_IDs");
+            yield return Uuid(g,      ic, "Email notification template", () => config.Notify.TemplateId.Email.ProductCreated(), "Notify__TemplateId__Email__ProductCreated");
+        }
+
+        private bool IsOpenProductenConfigured()
+        {
+            try { return config.ZGW.Endpoint.IsOpenProductenConfigured(); } catch { return false; }
         }
 
         private IEnumerable<CheckResult> KtoChecks()

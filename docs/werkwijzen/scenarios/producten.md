@@ -4,6 +4,13 @@ Dit scenario wordt geactiveerd wanneer in **Open Product** een product wordt aan
 
 Het wijkt op twee punten af van de overige scenario's. Er is geen zaak bij betrokken — het onderwerp van de notificatie is het product zelf — en er is niet één ontvanger maar een onbekend aantal: een product kan meerdere eigenaren hebben, en die krijgen allemaal een eigen e-mail en een eigen contactmoment. Er is geen sms- of briefvariant; het kanaal is altijd e-mail.
 
+## Inschakelen
+
+Het scenario is **optioneel**. Een OMC zonder Open Product werkt zonder enige Open Product-variabele.
+
+- **Uit (standaard):** `ZGW_ENDPOINT_OPENPRODUCTEN` is leeg. Het OMC maakt dan geen enkele aanroep naar Open Product; de statuspagina toont het scenario als *disabled* en slaat de connectiviteitscontrole over. Komt er toch een `producten`-event binnen (bijvoorbeeld door een achtergebleven abonnement), dan wordt dat afgebroken met `206` en niet opnieuw aangeboden.
+- **Aan:** stel `ZGW_ENDPOINT_OPENPRODUCTEN` in, samen met `ZGW_AUTH_KEY_OPENPRODUCTEN`, `ZGW_WHITELIST_PRODUCTCREATE_IDS` en `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED`. Zonder whitelist wordt elk product afgebroken (`206`, de reden noemt de variabele); ontbreekt het template terwijl een product wél door de controles komt, dan is dat een configuratiefout en volgt `412`, zodat het event na herstel opnieuw kan worden aangeboden.
+
 ---
 
 ## Triggercondities
@@ -129,6 +136,7 @@ De twee directe mislukkingen bereiken NotifyNL nooit, dus daarvoor komt geen cal
 | Situatie | Statuscode | Herlevering door Open Notificaties |
 |---|---|---|
 | Alle controles geslaagd | `202 Accepted` | Nee |
+| Open Product niet geconfigureerd (`ZGW_ENDPOINT_OPENPRODUCTEN` leeg) | `206 Partial Content` | Nee |
 | Product bestaat niet meer (404 bij Open Product) | `206 Partial Content` | Nee |
 | Producttype niet op de whitelist | `206 Partial Content` | Nee |
 | Product niet gepubliceerd | `206 Partial Content` | Nee |
@@ -136,6 +144,7 @@ De twee directe mislukkingen bereiken NotifyNL nooit, dus daarvoor komt geen cal
 | Een eigenaar heeft geen BSN of KVK-nummer | `206 Partial Content` | Nee |
 | Een eigenaar heeft geen partij in OpenKlant | `206 Partial Content` | Nee |
 | Open Product of OpenKlant onbereikbaar of foutief tijdens fase 1 | `412 Precondition Failed` | Ja |
+| `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` ontbreekt voor een product dat verstuurd zou worden | `412 Precondition Failed` | Ja |
 | Verzending of registratie mislukt in fase 2 | `202 Accepted` | Nee — vastgelegd als mislukt contactmoment |
 
 De laatste regel is de belangrijkste: **een eigenaar zonder e-mailadres, of een verzending die NotifyNL weigert, levert nog steeds een `202` op.** Heeft een product drie eigenaren die alle drie een partij hebben maar geen van drieën een e-mailadres, dan is dat een `202` met drie mislukte contactmomenten.
@@ -146,7 +155,7 @@ De laatste regel is de belangrijkste: **een eigenaar zonder e-mailadres, of een 
 
 | Conditie | Waarde |
 |---|---|
-| `ZGW_ENDPOINT_OPENPRODUCTEN` / `ZGW_AUTH_KEY_OPENPRODUCTEN` | Ingesteld — het OMC bouwt bij het opstarten voor elke bekende dienst een HTTP-client, dus deze zijn ook vereist als het scenario niet gebruikt wordt |
+| `ZGW_ENDPOINT_OPENPRODUCTEN` / `ZGW_AUTH_KEY_OPENPRODUCTEN` | Ingesteld — een lege `ZGW_ENDPOINT_OPENPRODUCTEN` schakelt het scenario uit (zie [Inschakelen](#inschakelen)) |
 | `ZGW_WHITELIST_PRODUCTCREATE_IDS` | `*` of een kommagescheiden lijst van producttype-codes |
 | `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` | UUID van een bestaand e-mailtemplate in NotifyNL |
 | `product.gepubliceerd` | `true` |
@@ -210,7 +219,7 @@ Elke eigenaar krijgt zijn eigen set waarden; er wordt geen personalisatie tussen
 
 | Variabele | Beschrijving |
 |---|---|
-| `ZGW_ENDPOINT_OPENPRODUCTEN` | Basis-URL van de Open Producten API, inclusief pad — bijv. `https://openproduct.mijnstad.nl/producten/api/v1` |
+| `ZGW_ENDPOINT_OPENPRODUCTEN` | Basis-URL van de Open Producten API, inclusief pad — bijv. `https://openproduct.mijnstad.nl/producten/api/v1`. Leeg = scenario uit |
 | `ZGW_AUTH_KEY_OPENPRODUCTEN` | API-sleutel voor Open Product (`Authorization: Token <sleutel>`) |
 | `ZGW_WHITELIST_PRODUCTCREATE_IDS` | Toegestane producttype-codes (`*` = alle) |
 | `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` | Template-UUID voor de e-mail aan de eigenaar |

@@ -6,6 +6,7 @@
 
 - Voegt het scenario [Product aangemaakt](../werkwijzen/scenarios/producten.md) toe: een `producten`/`product`/`create`-event uit Open Product wordt opgehaald, getoetst aan een producttype-whitelist en per e-mail verstuurd aan elke eigenaar van het product
 - Voegt een Open Producten-client toe (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), inclusief sleutel-, endpoint- en connectiviteitsregels op de statuspagina
+- Open Product is optioneel: alle nieuwe variabelen mogen leeg blijven, en een lege `ZGW_ENDPOINT_OPENPRODUCTEN` schakelt het scenario uit (de statuspagina toont het als uitgeschakeld, product-events worden afgebroken met `206`). Bestaande installaties hoeven bij het upgraden niets aan hun configuratie te veranderen
 - Voegt `ZGW_WHITELIST_PRODUCTCREATE_IDS` toe, getoetst op de `code` van het producttype — Open Product kent geen `identificatie`-veld om op te whitelisten
 - Zoekt per eigenaar de partij op in OpenKlant via BSN of KVK-nummer; de eigen UUID van een eigenaar is de primaire sleutel van Open Product en heeft geen relatie met OpenKlant
 - Geeft voorrang aan het digitale adres dat een partij als `portaalvoorkeur` heeft gemarkeerd, en beperkt de adreszoektocht tot e-mail — een partij met een telefoonnummer als voorkeursadres wordt daardoor niet langer gelezen als "geen e-mailadres bekend"

@@ -83,6 +83,9 @@ namespace WebQueries.Producten
         /// <inheritdoc cref="IProductScenario.ProcessProductAsync(NotificationEvent)"/>
         async Task<HttpRequestResponse> IProductScenario.ProcessProductAsync(NotificationEvent notification)
         {
+            // Step 0: A deployment without "Open Product" has switched this scenario off
+            ValidateOpenProductenIsConfigured();
+
             IQueryContext queryContext = this._dataQuery.From(notification);
 
             // Step 1: Read the product the notification reported
@@ -94,14 +97,19 @@ namespace WebQueries.Producten
             // Step 3: An unpublished product is not shown to its owners, so it is not announced to them either
             ValidateProductIsPublished(product);
 
-            // Step 4: Every owner has to resolve to a party before anyone is notified
+            // Step 4: A product that is going to be announced needs a template to announce it with. Checked
+            // before anyone is resolved or notified, so a missing one fails the whole notification (and is
+            // retried) instead of quietly turning into a failed contactmoment per owner.
+            Guid templateId = GetTemplateId();
+
+            // Step 5: Every owner has to resolve to a party before anyone is notified
             IReadOnlyList<ProductRecipient> recipients = await ResolveOwnersAsync(queryContext, product);
 
-            // Step 5: Everything that decides whether this notification can be honoured has now been
+            // Step 6: Everything that decides whether this notification can be honoured has now been
             // checked, so the answer is settled here. The sending still happens on this call, but nothing
             // about the answer depends on how it goes - what delivery can report, it reports as a
             // contactmoment, and the status below is the same either way.
-            await DeliverAsync(product, recipients);
+            await DeliverAsync(product, recipients, templateId);
 
             return HttpRequestResponse.Success(
                 $"Product {product.Id} accepted; notifying {recipients.Count} eigenaar(s).");
@@ -119,14 +127,12 @@ namespace WebQueries.Producten
         ///     bought the ability to record each failure on its own.
         ///   </para>
         /// </remarks>
-        private async Task DeliverAsync(Product product, IReadOnlyList<ProductRecipient> recipients)
+        private async Task DeliverAsync(Product product, IReadOnlyList<ProductRecipient> recipients, Guid templateId)
         {
             int sent = 0;
 
             try
             {
-                Guid templateId = this._configuration.Notify.TemplateId.Email.ProductCreated();
-
                 foreach (ProductRecipient recipient in recipients)
                 {
                     if (await DeliverToAsync(product, recipient, templateId))
@@ -137,10 +143,9 @@ namespace WebQueries.Producten
             }
             catch (Exception exception)
             {
-                // Both the send and the registration of a failure handle their own exceptions, so in
-                // practice only reading the template setting can land here - and then for every owner at
-                // once. It is caught all the same: the notification has been accepted by this point, and
-                // nothing that happens here is allowed to say otherwise.
+                // Both the send and the registration of a failure handle their own exceptions, so nothing is
+                // expected to land here. It is caught all the same: the notification has been accepted by
+                // this point, and nothing that happens here is allowed to say otherwise.
                 TraceContext.Emit("productbezorging", "fail", exception.Message);
 
                 this._logger.LogError(exception,
@@ -453,6 +458,59 @@ namespace WebQueries.Producten
         #endregion
 
         #region Validation
+        /// <summary>
+        /// Rejects every product notification when this deployment does not use "Open Product".
+        /// </summary>
+        /// <remarks>
+        ///   "Open Product" is optional, and leaving its endpoint unset is how a deployment opts out. That is a
+        ///   decision, not a defect, so an event that arrives anyway (e.g. a subscription to the "producten"
+        ///   kanaal left in place) is aborted rather than failed: retrying it would only fail the same way.
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">"Open Product" is not configured.</exception>
+        private void ValidateOpenProductenIsConfigured()
+        {
+            if (this._configuration.ZGW.Endpoint.IsOpenProductenConfigured())
+            {
+                return;
+            }
+
+            const string reason =
+                "Open Product is not configured (ZGW_ENDPOINT_OPENPRODUCTEN is not set), " +
+                "so the \"Product created\" scenario is disabled.";
+
+            TraceContext.Emit("openproduct", "abort", reason);
+            this._logger.LogInformation("{Reason} Notification dropped without notifying anyone.", reason);
+
+            throw new ProcessingAbortedException(reason);
+        }
+
+        /// <summary>
+        /// Reads the e-mail template a product announcement is sent with.
+        /// </summary>
+        /// <remarks>
+        ///   The setting is optional for deployments that do not use "Open Product", but one that does and has
+        ///   whitelisted a product type cannot do without it. That is a misconfiguration, so it fails - and is
+        ///   retried - rather than being aborted like a product that simply should not be announced.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">No template is configured.</exception>
+        private Guid GetTemplateId()
+        {
+            Guid templateId = this._configuration.Notify.TemplateId.Email.ProductCreated();
+
+            if (templateId != Guid.Empty)
+            {
+                return templateId;
+            }
+
+            const string reason =
+                "No e-mail template is configured for the \"Product created\" scenario " +
+                "(NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED is not set).";
+
+            TraceContext.Emit("productbezorging", "fail", reason);
+
+            throw new InvalidOperationException(reason);
+        }
+
         /// <summary>
         /// Rejects a product whose type is not on the whitelist.
         /// </summary>
