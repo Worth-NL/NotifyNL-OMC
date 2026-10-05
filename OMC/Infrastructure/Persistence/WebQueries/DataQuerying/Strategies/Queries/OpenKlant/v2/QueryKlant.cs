@@ -103,6 +103,34 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 .ConvertToUnified();
         }
 
+        /// <inheritdoc cref="IQueryKlant.TryGetBranchPartyDataAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetBranchPartyDataAsync(
+            IQueryBase queryBase, string kvkNumber, string branchNumber,
+            string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
+        {
+            if (string.IsNullOrWhiteSpace(kvkNumber) || string.IsNullOrWhiteSpace(branchNumber))
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_MissingPartyIdentifier);
+            }
+
+            string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
+
+            // A vestiging is its own partij, identified by its vestigingsnummer scoped under the KVK number of
+            // the organisation it belongs to ("subIdentificatorVan"). Both are needed to pin it down.
+            PartyResults results = await GetPartyResultsV2Async(queryBase,
+                GetPartiesByIdentifierUri(partiesEndpoint, CodeSoortObjectIdBranch, branchNumber,
+                    parentCodeSoortObjectId: CodeSoortObjectIdKvk, parentObjectId: kvkNumber));
+
+            ThrowIfNoParty(results, CodeSoortObjectIdBranch);
+
+            return results
+                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
+                .ConvertToUnified();
+        }
+
+        private const string CodeSoortObjectIdKvk = "kvk_nummer";
+        private const string CodeSoortObjectIdBranch = "vestigingsnummer";
+
         /// <summary>
         /// Reports a search that "OpenKlant" answered without any party, naming what was searched on.
         /// </summary>
@@ -124,16 +152,26 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
         /// addresses so the caller does not need a second round trip to read them.
         /// </summary>
         /// <remarks>
-        ///   Both values are escaped. They reach here from an external system - a task payload or a
+        ///   All values are escaped. They reach here from an external system - a task payload or a
         ///   product's owner - so they are not assumed to be URL-safe.
+        ///   <para>
+        ///     The parent pair narrows the search to an identificator scoped under another one, i.e. a
+        ///     vestigingsnummer under its KVK number. The "subIdentificatorVan__" filters exist since
+        ///     "OpenKlant" 2.16.0.
+        ///   </para>
         /// </remarks>
-        private static Uri GetPartiesByIdentifierUri(string partiesEndpoint, string codeSoortObjectId, string objectId)
+        private static Uri GetPartiesByIdentifierUri(string partiesEndpoint, string codeSoortObjectId, string objectId,
+            string? parentCodeSoortObjectId = null, string? parentObjectId = null)
         {
             string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={Uri.EscapeDataString(codeSoortObjectId)}";
             string partyObjectIdParameter = $"&partijIdentificator__objectId={Uri.EscapeDataString(objectId)}";
+            string parentParameters = parentCodeSoortObjectId is null || parentObjectId is null
+                ? string.Empty
+                : $"&subIdentificatorVan__codeSoortObjectId={Uri.EscapeDataString(parentCodeSoortObjectId)}" +
+                  $"&subIdentificatorVan__objectId={Uri.EscapeDataString(parentObjectId)}";
             const string expandParameter = "&expand=digitaleAdressen";
 
-            return new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            return new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{parentParameters}{expandParameter}");
         }
 
         /// <summary>

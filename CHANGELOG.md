@@ -2,6 +2,7 @@
 
 - Adds the "product aangemaakt" scenario: a `producten`/`product`/`create` event from Open Product is fetched, checked against a product type whitelist, and e-mailed to every eigenaar of the product
 - Organisations are now addressed by their name: when a partij has no surname, the organisation name fills `((klant.achternaam))`, so "Beste ((klant.voornaam)) ((klant.voorvoegselAchternaam)) ((klant.achternaam))" reads "Beste <bedrijfsnaam>" instead of "Beste " in every scenario
+- An eigenaar with a `vestigingsnummer` is resolved to that vestiging in OpenKlant (`vestigingsnummer` scoped under its `kvk_nummer` via `subIdentificatorVan`), instead of to the organisation. Requires OpenKlant 2.16.0 or later
 - Adds an Open Producten client (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), including its masked-key, endpoint and connectivity rows on the status page
 - Open Product is optional: every new variable may be left unset, and an empty `ZGW_ENDPOINT_OPENPRODUCTEN` switches the scenario off (status page shows it as disabled, product events are dropped with a 206). Existing deployments need no configuration changes to upgrade
 - Adds `ZGW_WHITELIST_PRODUCTCREATE_IDS`, matched on the product type's `code` — Open Product has no `identificatie` field to whitelist on

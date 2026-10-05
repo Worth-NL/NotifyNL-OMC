@@ -40,6 +40,11 @@ namespace WebQueries.Producten
         private const string CodeSoortObjectIdKvk = "kvk_nummer";
 
         /// <summary>
+        /// The "codeSoortObjectId" OpenKlant stores a vestiging's vestigingsnummer under, scoped to its KVK number.
+        /// </summary>
+        private const string CodeSoortObjectIdBranch = "vestigingsnummer";
+
+        /// <summary>
         /// The "referentie" marking the digital address a party chose for portal correspondence.
         /// </summary>
         /// <remarks>
@@ -391,14 +396,18 @@ namespace WebQueries.Producten
             IQueryContext queryContext, Product product, Owner owner, int index)
         {
             // "Open Product" validates that an owner carries either a BSN (and/or a customer number) or a
-            // KVK number, never both, so these two branches cannot both apply. BSN is still checked first,
-            // so that an owner carrying both because that rule ever loosens resolves as a citizen.
-            (string codeSoortObjectId, string objectId) = owner switch
+            // KVK number, never both, so these branches cannot both apply. BSN is still checked first, so
+            // that an owner carrying both because that rule ever loosens resolves as a citizen.
+            //
+            // A KVK number with a vestigingsnummer means that specific vestiging, which OpenKlant keeps as a
+            // partij of its own; a KVK number alone means the organisation itself.
+            string codeSoortObjectId = owner switch
             {
-                { BsnNumber.Length: > 0 } => (CodeSoortObjectIdBsn, owner.BsnNumber),
-                { KvkNumber.Length: > 0 } => (CodeSoortObjectIdKvk, owner.KvkNumber),
+                { BsnNumber.Length: > 0 } => CodeSoortObjectIdBsn,
+                { KvkNumber.Length: > 0, BranchNumber.Length: > 0 } => CodeSoortObjectIdBranch,
+                { KvkNumber.Length: > 0 } => CodeSoortObjectIdKvk,
 
-                _ => (string.Empty, string.Empty)
+                _ => string.Empty
             };
 
             if (codeSoortObjectId.Length == 0)
@@ -426,10 +435,23 @@ namespace WebQueries.Producten
                 // preferred address happens to be a phone number reads as having no e-mail at all: the
                 // search settles on that address and never reaches the e-mail behind it, so an owner who
                 // could have been notified is recorded as unreachable instead.
-                return await queryContext.GetPartyDataByIdentifierAsync(
-                    codeSoortObjectId, objectId,
-                    reference: PortaalvoorkeurReference, requireDigitalAddress: false,
-                    requiredChannel: DistributionChannels.Email);
+                return codeSoortObjectId switch
+                {
+                    CodeSoortObjectIdBsn => await queryContext.GetPartyDataByIdentifierAsync(
+                        CodeSoortObjectIdBsn, owner.BsnNumber,
+                        reference: PortaalvoorkeurReference, requireDigitalAddress: false,
+                        requiredChannel: DistributionChannels.Email),
+
+                    CodeSoortObjectIdBranch => await queryContext.GetBranchPartyDataAsync(
+                        owner.KvkNumber, owner.BranchNumber,
+                        reference: PortaalvoorkeurReference, requireDigitalAddress: false,
+                        requiredChannel: DistributionChannels.Email),
+
+                    _ => await queryContext.GetPartyDataByIdentifierAsync(
+                        CodeSoortObjectIdKvk, owner.KvkNumber,
+                        reference: PortaalvoorkeurReference, requireDigitalAddress: false,
+                        requiredChannel: DistributionChannels.Email)
+                };
             }
             // Only a party that is genuinely not there aborts. OpenKlant being down, timing out or refusing
             // the call is a plain HttpRequestException and is left to propagate as a failure, so the sender
@@ -438,7 +460,12 @@ namespace WebQueries.Producten
             {
                 // The identifier itself is never traced or logged - it is a BSN or a KVK number. Its kind is,
                 // so whoever reads the reason knows which register to correct.
-                string identifierKind = codeSoortObjectId == CodeSoortObjectIdBsn ? "BSN" : "KVK number";
+                string identifierKind = codeSoortObjectId switch
+                {
+                    CodeSoortObjectIdBsn => "BSN",
+                    CodeSoortObjectIdBranch => "vestigingsnummer (under its KVK number)",
+                    _ => "KVK number"
+                };
 
                 string reason =
                     $"No partij found in OpenKlant for the {identifierKind} of owner {index + 1} of " +

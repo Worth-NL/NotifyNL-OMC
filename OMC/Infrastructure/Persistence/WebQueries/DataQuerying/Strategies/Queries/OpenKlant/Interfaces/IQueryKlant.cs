@@ -96,6 +96,28 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
             IQueryBase queryBase, string codeSoortObjectId, string objectId,
             string? reference = null, bool requireDigitalAddress = true,
             DistributionChannels? requiredChannel = null);
+
+        /// <summary>
+        /// Gets the details of a specific vestiging (branch) of an organisation: the party whose vestigingsnummer
+        /// is registered under the given KVK number.
+        /// </summary>
+        /// <remarks>
+        ///   A KVK number alone finds the organisation itself (see <see cref="TryGetPartyDataByIdentifierAsync"/>).
+        ///   Requires "OpenKlant" 2.16.0 or later, which added the "subIdentificatorVan__" filters.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="kvkNumber">The KVK number of the organisation the vestiging belongs to.</param>
+        /// <param name="branchNumber">The vestigingsnummer.</param>
+        /// <param name="reference"><inheritdoc cref="TryGetPartyDataByIdentifierAsync" path="/param[@name='reference']"/></param>
+        /// <param name="requireDigitalAddress"><inheritdoc cref="TryGetPartyDataByIdentifierAsync" path="/param[@name='requireDigitalAddress']"/></param>
+        /// <param name="requiredChannel"><inheritdoc cref="TryGetPartyDataByIdentifierAsync" path="/param[@name='requiredChannel']"/></param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<CommonPartyData> TryGetBranchPartyDataAsync(
+            IQueryBase queryBase, string kvkNumber, string branchNumber,
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
         #endregion
 
         #region Abstract (Telemetry)

@@ -308,6 +308,15 @@ namespace WebQueries.DataQuerying.Adapter
                 this._queryBase, codeSoortObjectId, objectId, reference, requireDigitalAddress, requiredChannel);
         }
 
+        /// <inheritdoc cref="IQueryContext.GetBranchPartyDataAsync(string, string, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)"/>
+        async Task<CommonPartyData> IQueryContext.GetBranchPartyDataAsync(
+            string kvkNumber, string branchNumber, string? reference,
+            bool requireDigitalAddress, DistributionChannels? requiredChannel)
+        {
+            return await this._queryKlant.TryGetBranchPartyDataAsync(
+                this._queryBase, kvkNumber, branchNumber, reference, requireDigitalAddress, requiredChannel);
+        }
+
         /// <inheritdoc cref="IQueryContext.GetProductenHealthCheckAsync()"/>
         async Task<HttpRequestResponse> IQueryContext.GetProductenHealthCheckAsync()
             => await this._queryProducten.GetHealthCheckAsync(this._networkService);

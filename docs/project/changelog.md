@@ -6,6 +6,7 @@
 
 - Voegt het scenario [Product aangemaakt](../werkwijzen/scenarios/producten.md) toe: een `producten`/`product`/`create`-event uit Open Product wordt opgehaald, getoetst aan een producttype-whitelist en per e-mail verstuurd aan elke eigenaar van het product
 - Organisaties worden nu bij naam aangesproken: heeft een partij geen achternaam, dan vult de organisatienaam `((klant.achternaam))`, zodat "Beste ((klant.voornaam)) ((klant.voorvoegselAchternaam)) ((klant.achternaam))" in elk scenario "Beste <bedrijfsnaam>" wordt in plaats van "Beste "
+- Een eigenaar met een `vestigingsnummer` wordt in OpenKlant gekoppeld aan díe vestiging (`vestigingsnummer` onder het `kvk_nummer` via `subIdentificatorVan`) in plaats van aan de organisatie. Vereist OpenKlant 2.16.0 of hoger
 - Voegt een Open Producten-client toe (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), inclusief sleutel-, endpoint- en connectiviteitsregels op de statuspagina
 - Open Product is optioneel: alle nieuwe variabelen mogen leeg blijven, en een lege `ZGW_ENDPOINT_OPENPRODUCTEN` schakelt het scenario uit (de statuspagina toont het als uitgeschakeld, product-events worden afgebroken met `206`). Bestaande installaties hoeven bij het upgraden niets aan hun configuratie te veranderen
 - Voegt `ZGW_WHITELIST_PRODUCTCREATE_IDS` toe, getoetst op de `code` van het producttype — Open Product kent geen `identificatie`-veld om op te whitelisten

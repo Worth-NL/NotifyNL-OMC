@@ -223,6 +223,78 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenKlant.v2
             });
         }
 
+        #region Vestiging
+        [Test]
+        public async Task TryGetBranchPartyDataAsync_SearchesTheVestigingsnummerScopedUnderItsKvkNumber()
+        {
+            // NOTE: A vestigingsnummer is only unique under its KVK number, so both have to be in the query:
+            //       the vestiging as the partijIdentificator, its organisation as the subIdentificatorVan.
+
+            // Arrange
+            const string kvkNumber = "12345678";
+            const string branchNumber = "000012345678";
+            Uri partyUri = new($"https://openklant.test/klantinteracties/api/v1/partijen/{Guid.NewGuid()}");
+            Uri? requestedUri = null;
+
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResults>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .Callback<HttpClientTypes, Uri, string>((_, uri, _) => requestedUri = uri)
+                .ReturnsAsync(GetSingleBareParty(partyUri));
+
+            // Act
+            await this._queryKlant.TryGetBranchPartyDataAsync(
+                this._mockedQueryBase.Object, kvkNumber, branchNumber, requireDigitalAddress: false);
+
+            // Assert
+            string query = requestedUri!.Query;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(query, Does.Contain("partijIdentificator__codeSoortObjectId=vestigingsnummer"));
+                Assert.That(query, Does.Contain($"partijIdentificator__objectId={branchNumber}"));
+                Assert.That(query, Does.Contain("subIdentificatorVan__codeSoortObjectId=kvk_nummer"));
+                Assert.That(query, Does.Contain($"subIdentificatorVan__objectId={kvkNumber}"));
+            });
+        }
+
+        [Test]
+        public void TryGetBranchPartyDataAsync_EmptyResults_ThrowsPartyNotFound_NamingTheVestigingsnummer()
+        {
+            // Arrange
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResults>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .ReturnsAsync(GetEmptyPartyResults());
+
+            // Act & Assert
+            PartyNotFoundException? exception = Assert.ThrowsAsync<PartyNotFoundException>(() =>
+                this._queryKlant.TryGetBranchPartyDataAsync(this._mockedQueryBase.Object, "12345678", "000012345678"));
+
+            Assert.That(exception!.IdentifierKind, Is.EqualTo("vestigingsnummer"));
+        }
+
+        [Test]
+        public async Task TryGetPartyDataByIdentifierAsync_KvkNumberAlone_DoesNotScopeTheSearch()
+        {
+            // NOTE: A KVK number on its own finds the organisation, which carries no subIdentificatorVan.
+
+            // Arrange
+            Uri partyUri = new($"https://openklant.test/klantinteracties/api/v1/partijen/{Guid.NewGuid()}");
+            Uri? requestedUri = null;
+
+            this._mockedQueryBase
+                .Setup(mock => mock.ProcessGetAsync<PartyResults>(HttpClientTypes.OpenKlant_v2, It.IsAny<Uri>(), It.IsAny<string>()))
+                .Callback<HttpClientTypes, Uri, string>((_, uri, _) => requestedUri = uri)
+                .ReturnsAsync(GetSingleBareParty(partyUri));
+
+            // Act
+            await this._queryKlant.TryGetPartyDataByIdentifierAsync(
+                this._mockedQueryBase.Object, "kvk_nummer", "12345678", requireDigitalAddress: false);
+
+            // Assert
+            Assert.That(requestedUri!.Query, Does.Not.Contain("subIdentificatorVan"));
+        }
+        #endregion
+
         #region Party not found
         [TestCase("bsn", "BSN")]
         [TestCase("kvk_nummer", "KVK number")]

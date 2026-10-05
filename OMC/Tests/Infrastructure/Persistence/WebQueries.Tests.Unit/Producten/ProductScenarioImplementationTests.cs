@@ -276,16 +276,18 @@ namespace WebQueries.Tests.Unit.Producten
         }
 
         [Test]
-        public async Task ProcessProductAsync_KvkOwnerWithVestigingsnummer_StillResolvesOnTheKvkNumberAloneAsync()
+        public async Task ProcessProductAsync_KvkOwnerWithVestigingsnummer_ResolvesThatVestigingAsync()
         {
-            // NOTE: V1 does not narrow to a branch. OpenKlant finds a vestiging by combining
-            //       subIdentificatorVan__ with partijIdentificator__, which is a second query path this
-            //       does not implement yet.
+            // NOTE: A vestiging is a partij of its own in OpenKlant, so an owner naming one is notified at that
+            //       vestiging - not at the organisation its KVK number alone would find.
 
             // Arrange
             SetupProduct(GetProductWithOwners(
                 new Owner { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
-            SetupPartyFound("kvk_nummer", TestKvk);
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = "vestiging@example.com" });
 
             // Act & Assert
             HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
@@ -293,7 +295,33 @@ namespace WebQueries.Tests.Unit.Producten
             Assert.That(response.IsSuccess, Is.True);
 
             this._mockedQueryContext.Verify(
-                mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+                mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_VestigingWithoutPartij_AbortsNamingTheVestigingsnummer()
+        {
+            // NOTE: No silent fallback to the organisation: the owner is that vestiging, so a vestiging missing
+            //       from OpenKlant is missing data like any other partij (206), and the reason says which kind.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(PartyNotFoundException.ForIdentifier("vestigingsnummer"));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Contain("vestigingsnummer"));
+                Assert.That(exception.Message, Does.Not.Contain(TestVestigingsnummer));
+                Assert.That(exception.Message, Does.Not.Contain(TestKvk));
+            });
         }
 
         [Test]

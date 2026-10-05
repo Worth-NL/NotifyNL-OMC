@@ -82,15 +82,16 @@ product.gepubliceerd == true
 
 Voor elke eigenaar in `product.eigenaren` zoekt het OMC de bijbehorende partij op in OpenKlant, via `partijIdentificator`:
 
-| Veld op de eigenaar | `codeSoortObjectId` |
+| Veld op de eigenaar | Opzoeking in OpenKlant |
 |---|---|
-| `bsn` | `bsn` |
-| `kvk_nummer` | `kvk_nummer` |
+| `bsn` | `partijIdentificator` `bsn` |
+| `kvk_nummer` | `partijIdentificator` `kvk_nummer` — de organisatie zelf |
+| `kvk_nummer` + `vestigingsnummer` | `partijIdentificator` `vestigingsnummer`, met `subIdentificatorVan` `kvk_nummer` — die specifieke vestiging |
 
 Open Product bewaakt zelf dat een eigenaar óf een BSN (eventueel met klantnummer) óf een KVK-nummer heeft, nooit beide.
 
 - `klantnummer` wordt **niet** ondersteund: OpenKlant kan daar alleen op filteren via een filter dat in het eigen schema als `deprecated` is gemarkeerd.
-- `vestigingsnummer` wordt genegeerd — er wordt opgezocht op het KVK-nummer alleen.
+- Een vestiging is in OpenKlant een eigen partij: haar `vestigingsnummer` is alleen uniek binnen het KVK-nummer waar het onder valt (`subIdentificatorVan`). Heeft een eigenaar een `vestigingsnummer`, dan wordt díe vestiging genotificeerd; staat ze niet in OpenKlant, dan volgt `206` — er wordt niet teruggevallen op de organisatie. Hiervoor is **OpenKlant 2.16.0 of hoger** nodig (de `subIdentificatorVan__`-filters).
 - De `uuid` van een eigenaar is de primaire sleutel van Open Product zelf en heeft **geen** relatie met OpenKlant; die kan dus niet gebruikt worden om de partij te vinden.
 
 Deze stap is **alles-of-niets**: resolveert één van de drie eigenaren niet, dan wordt er aan niemand iets verstuurd. Dat is geen striktheid om de striktheid — een mislukking wordt vastgelegd als klantcontact met een `betrokkene.wasPartij`, en juist de partij die daar ingevuld moet worden ontbreekt in dit geval. Het OMC maakt hier bewust géén ontbrekende partij aan (anders dan de printstraat-flow). Door hier af te breken heeft elke mislukking die later nog gemeld wordt, per definitie een bestaande partij om aan te hangen.

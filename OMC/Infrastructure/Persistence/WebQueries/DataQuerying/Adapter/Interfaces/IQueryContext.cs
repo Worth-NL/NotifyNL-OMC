@@ -304,6 +304,12 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
             string? reference = null, bool requireDigitalAddress = true,
             DistributionChannels? requiredChannel = null);
 
+        /// <inheritdoc cref="IQueryKlant.TryGetBranchPartyDataAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        Task<CommonPartyData> GetBranchPartyDataAsync(
+            string kvkNumber, string branchNumber,
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
+
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         Task<HttpRequestResponse> GetProductenHealthCheckAsync();
         #endregion
