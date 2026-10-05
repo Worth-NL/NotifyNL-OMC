@@ -230,5 +230,3 @@ Elke eigenaar krijgt zijn eigen set waarden; er wordt geen personalisatie tussen
 | `VARIABLES_UXMESSAGES_EMAIL_FAILURE_BODY` | Terugvalinhoud bij een mislukt contactmoment |
 
 Zie [Omgevingsvariabelen](../../configuratie/omgevingsvariabelen.md) voor de volledige lijst.
-
-> ⚠️ **Nog te bevestigen:** `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PRODUCT` en `VARIABLES_OPENKLANT_CODEREGISTER_PRODUCT` hebben voorlopige standaardwaarden. Het objecttype "product" is nog niet bevestigd geregistreerd in OpenKlant — stem de waarden af met de beheerder van het OpenKlant-objecttyperegister voordat dit scenario in productie gaat. Hetzelfde geldt voor het `_BERICHT`-paar van de MOBB-flow.

@@ -105,10 +105,10 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
-                        EmitChannelConfirmationTrace(reference, notificationMethod, status);
+                        EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, status);
 
                         HttpRequestResponse contactMomentResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
-                        EmitContactMomentTrace(reference, contactMomentResult);
+                        EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
 
                         informResult = contactMomentResult;
                     }
@@ -227,9 +227,9 @@ namespace EventsHandler.Services.Responding.v2
         /// EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync).
         /// This is genuinely the moment Notify NL confirms delivery, not the synchronous send.
         /// </summary>
-        private void EmitChannelConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
+        private void EmitChannelConfirmationTrace(string? traceId, long? sentAtUnixMs, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
         {
-            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            if (string.IsNullOrEmpty(traceId) || !this._traceEmitter.HasSubscribers)
             {
                 return;
             }
@@ -242,9 +242,9 @@ namespace EventsHandler.Services.Responding.v2
                 _ => "kanaalresolutie"
             };
             string status = feedbackType == FeedbackTypes.Success ? "ok" : "fail";
-            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs, "confirmed by Notify NL");
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(sentAtUnixMs, "confirmed by Notify NL");
 
-            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+            this._traceEmitter.Emit(new TraceEvent(traceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
         }
 
         /// <summary>
@@ -254,18 +254,18 @@ namespace EventsHandler.Services.Responding.v2
         /// the contactmoment write also succeeded, and a failed send still gets its own
         /// "delivery failed" message registered as a (successful) contactmoment.
         /// </summary>
-        private void EmitContactMomentTrace(NotifyReference reference, HttpRequestResponse contactMomentResult)
+        private void EmitContactMomentTrace(string? traceId, long? sentAtUnixMs, HttpRequestResponse contactMomentResult)
         {
-            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            if (string.IsNullOrEmpty(traceId) || !this._traceEmitter.HasSubscribers)
             {
                 return;
             }
 
             string status = contactMomentResult.IsSuccess ? "ok" : "fail";
-            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs,
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(sentAtUnixMs,
                 contactMomentResult.IsSuccess ? "contactmoment registered" : $"failed to register contactmoment: {contactMomentResult.JsonResponse}");
 
-            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+            this._traceEmitter.Emit(new TraceEvent(traceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
         }
 
         /// <summary>
@@ -306,6 +306,10 @@ namespace EventsHandler.Services.Responding.v2
             (ProductNotifyReference reference, NotifyMethods notificationMethod) =
                 await ExtractProductCallbackDataAsync(callback);
 
+            // The product reference carries the same trace correlation as a NotifyReference, so a receipt
+            // closes its dashboard trace the same way the classic scenarios' receipts do.
+            EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, feedbackType);
+
             // A product notification has no NotifyReference of its own to hand to the notify service, and
             // resolving the client from a default one throws while the cached client is still empty - which
             // silently swapped the rendered e-mail for the generic fallback text on the first receipt after
@@ -313,7 +317,7 @@ namespace EventsHandler.Services.Responding.v2
             NotificationData notificationData =
                 await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
 
-            return await _telemetry.ReportProductCompletionAsync(
+            HttpRequestResponse contactMomentResult = await _telemetry.ReportProductCompletionAsync(
                 reference,
                 notificationMethod,
                 messages:
@@ -327,6 +331,10 @@ namespace EventsHandler.Services.Responding.v2
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
+
+            EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
+
+            return contactMomentResult;
         }
 
         /// <summary>

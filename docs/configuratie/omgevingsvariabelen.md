@@ -47,8 +47,8 @@ Constanten die worden ingevuld in de `onderwerpobject`/`bijlage`-koppeling van e
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPEID` | Nee | `codeSoortObjectId` voor de koppeling naar een zaak (standaard: `uuid`) |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT` | Nee | `codeObjecttype` voor de MOBB/Berichtenbox-koppeling (standaard: `bericht` — placeholder, nog niet bevestigd in OpenKlant) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BERICHT` | Nee | `codeRegister` voor de MOBB/Berichtenbox-koppeling (standaard: `open-vtb`) |
-| `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PRODUCT` | Nee | `codeObjecttype` voor de koppeling naar een product (standaard: `product` — placeholder, nog niet bevestigd in OpenKlant) |
-| `VARIABLES_OPENKLANT_CODEREGISTER_PRODUCT` | Nee | `codeRegister` voor de koppeling naar een product (standaard: `open-product` — placeholder, nog niet bevestigd in OpenKlant) |
+| `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PRODUCT` | Nee | `codeObjecttype` voor de koppeling naar een product (standaard: `product`) |
+| `VARIABLES_OPENKLANT_CODEREGISTER_PRODUCT` | Nee | `codeRegister` voor de koppeling naar een product (standaard: `open-product`) |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BIJLAGE` | Nee | `codeObjecttype` voor een klantcontact-bijlage die naar een informatieobject in de Documenten-API verwijst (standaard: `enkelvoudiginformatieobject`) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BIJLAGE` | Nee | `codeRegister` voor een klantcontact-bijlage (standaard: `open-zaak`) — pas dit aan wanneer het documentregister afwijkt, bijvoorbeeld `nld:denhaag:zaken-main:drc` |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PARTIJ` | Nee | `codeObjecttype` gebruikt bij het aanmaken van een ontbrekende partij (burger) in OpenKlant voor de Print/MOBB-flows (standaard: `natuurlijk_persoon`) |
