@@ -3,6 +3,7 @@
 using Common.Extensions;
 using Common.Settings.Configuration;
 using System.Text.Json.Serialization;
+using ZgwModels.Exceptions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.Interfaces;
 using ZgwModels.Properties;
@@ -65,6 +66,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         /// <returns>
         ///   The data of a single party (e.g., citizen or organization).
         /// </returns>
+        /// <exception cref="PartyNotFoundException">No party matched the search.</exception>
         /// <exception cref="HttpRequestException"/>
         public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber, string Reason)
             Party(OmcConfiguration configuration,
@@ -75,7 +77,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             // Validation #1: Results
             if (this.Results.IsEmpty())
             {
-                throw new HttpRequestException(ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
+                throw new PartyNotFoundException(ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
             PartyResult fallbackEmailOwningParty = default;

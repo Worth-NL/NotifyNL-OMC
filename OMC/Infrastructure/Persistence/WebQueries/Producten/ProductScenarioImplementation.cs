@@ -17,6 +17,7 @@ using WebQueries.Exceptions;
 using WebQueries.Producten.Interfaces;
 using WebQueries.Producten.Models;
 using WebQueries.Tracing;
+using ZgwModels.Exceptions;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Enums.OpenKlant;
@@ -380,6 +381,7 @@ namespace WebQueries.Producten
         /// Resolves the party behind a single owner.
         /// </summary>
         /// <exception cref="ProcessingAbortedException">The owner carries no usable identifier, or has no party.</exception>
+        /// <exception cref="HttpRequestException">"OpenKlant" could not be reached or refused the call; the sender retries.</exception>
         private async Task<CommonPartyData> ResolveOwnerAsync(
             IQueryContext queryContext, Product product, Owner owner, int index)
         {
@@ -424,16 +426,28 @@ namespace WebQueries.Producten
                     reference: PortaalvoorkeurReference, requireDigitalAddress: false,
                     requiredChannel: DistributionChannels.Email);
             }
-            catch (Exception exception) when (exception is HttpRequestException or KeyNotFoundException)
+            // Only a party that is genuinely not there aborts. OpenKlant being down, timing out or refusing
+            // the call is a plain HttpRequestException and is left to propagate as a failure, so the sender
+            // retries it - an outage must not be mistaken for missing data and dropped for good.
+            catch (PartyNotFoundException exception)
             {
-                // The identifier itself is never traced or logged - it is a BSN or a KVK number.
+                // The identifier itself is never traced or logged - it is a BSN or a KVK number. Its kind is,
+                // so whoever reads the reason knows which register to correct.
+                string identifierKind = codeSoortObjectId == CodeSoortObjectIdBsn ? "BSN" : "KVK number";
+
                 string reason =
-                    $"Owner {index + 1} of {product.Owners.Count} ({codeSoortObjectId}) has no partij in OpenKlant.";
+                    $"No partij found in OpenKlant for the {identifierKind} of owner {index + 1} of " +
+                    $"{product.Owners.Count} of product {product.Id} (partijIdentificator \"{codeSoortObjectId}\").";
 
                 TraceContext.Emit("openklant", "abort", reason);
-                this._logger.LogInformation("{Reason} Product {ProductId} was not notified about.", reason, product.Id);
+                this._logger.LogWarning("{Reason} Nobody was notified about this product.", reason);
 
                 throw new ProcessingAbortedException(reason, exception);
+            }
+            catch (Exception exception)
+            {
+                TraceContext.Emit("openklant", "fail", exception.Message);
+                throw;
             }
         }
         #endregion

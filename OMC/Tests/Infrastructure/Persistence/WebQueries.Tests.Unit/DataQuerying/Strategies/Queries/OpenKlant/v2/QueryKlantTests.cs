@@ -8,6 +8,7 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces;
 using WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2;
 using WebQueries.DataSending.Clients.Enums;
+using ZgwModels.Exceptions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
@@ -65,7 +66,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenKlant.v2
         #endregion
 
         [Test]
-        public async Task TryGetPartyDataAsync_CreateIfMissingFalse_EmptyResults_ThrowsHttpRequestException_WithoutPosting()
+        public async Task TryGetPartyDataAsync_CreateIfMissingFalse_EmptyResults_ThrowsPartyNotFoundException_WithoutPosting()
         {
             // Arrange
             this._mockedQueryBase
@@ -73,7 +74,7 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Queries.OpenKlant.v2
                 .ReturnsAsync(GetEmptyPartyResults());
 
             // Act & Assert
-            Assert.ThrowsAsync<HttpRequestException>(() =>
+            Assert.ThrowsAsync<PartyNotFoundException>(() =>
                 this._queryKlant.TryGetPartyDataAsync(this._mockedQueryBase.Object, TestBsn, requireDigitalAddress: false, createIfMissing: false));
 
             this._mockedQueryBase.Verify(

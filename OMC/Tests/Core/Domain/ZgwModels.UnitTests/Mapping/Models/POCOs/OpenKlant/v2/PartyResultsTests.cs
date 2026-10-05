@@ -3,6 +3,7 @@
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
 using NUnit.Framework;
+using ZgwModels.Exceptions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZgwModels.Properties;
@@ -31,13 +32,14 @@ namespace ZgwModels.Tests.Unit.Mapping.Models.POCOs.OpenKlant.v2
 
         #region Party (processing multiple roles)
         [Test]
-        public void Party_ForMany_MissingResults_ThrowsHttpRequestException()
+        public void Party_ForMany_MissingResults_ThrowsPartyNotFoundException()
         {
             // Arrange
             var partyResults = new PartyResults();  // Empty "Results" inside
 
             // Act & Assert
-            AssertThrows<HttpRequestException>(this._emptyConfiguration, partyResults, ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
+            // NOTE: Its own type, so a caller can tell an absent party from an unreachable "OpenKlant".
+            AssertThrows<PartyNotFoundException>(this._emptyConfiguration, partyResults, ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
         }
 
         [Test]

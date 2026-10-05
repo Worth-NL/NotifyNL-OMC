@@ -17,6 +17,7 @@ using WebQueries.Producten;
 using WebQueries.Producten.Models;
 using WebQueries.Register.Interfaces;
 using ZgwModels.Enums;
+using ZgwModels.Exceptions;
 using ZgwModels.Serialization.Interfaces;
 using WebQueries.Producten.Interfaces;
 using ZgwModels.Mapping.Enums.NotificatieApi;
@@ -157,7 +158,7 @@ namespace WebQueries.Tests.Unit.Producten
         private void SetupPartyMissing(string codeSoortObjectId, string objectId)
             => this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
-                .ThrowsAsync(new HttpRequestException("No party results"));
+                .ThrowsAsync(new PartyNotFoundException("No party results"));
         #endregion
 
         [Test]
@@ -308,7 +309,74 @@ namespace WebQueries.Tests.Unit.Producten
             ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
                 async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
 
-            Assert.That(exception!.Message, Does.Contain("no partij"));
+            Assert.That(exception!.Message, Does.Contain("No partij found"));
+        }
+
+        [TestCase("bsn", "BSN")]
+        [TestCase("kvk_nummer", "KVK number")]
+        public void ProcessProductAsync_OwnerHasNoParty_ReasonNamesTheIdentifierKindAndTheProduct(
+            string codeSoortObjectId, string expectedKind)
+        {
+            // NOTE: Missing data is fixed in a register, not by retrying, so the reason has to say which
+            //       register and which product - otherwise nobody can act on the 206.
+
+            // Arrange
+            Owner owner = codeSoortObjectId == "bsn"
+                ? new Owner { BsnNumber = TestBsn }
+                : new Owner { KvkNumber = TestKvk };
+
+            SetupProduct(GetProductWithOwners(owner));
+            SetupPartyMissing(codeSoortObjectId, codeSoortObjectId == "bsn" ? TestBsn : TestKvk);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Contain($"No partij found in OpenKlant for the {expectedKind}"));
+                Assert.That(exception.Message, Does.Contain(s_productId.ToString()));
+            });
+        }
+
+        [TestCase(HttpStatusCode.InternalServerError)]
+        [TestCase(HttpStatusCode.Unauthorized)]
+        [TestCase(null)]
+        public void ProcessProductAsync_OpenKlantUnreachable_RethrowsSoTheNotificationIsRedelivered(HttpStatusCode? statusCode)
+        {
+            // NOTE: The counterpart of the missing-party tests above. An OpenKlant outage also surfaces as an
+            //       HttpRequestException, but the partij may well exist, so it has to stay a failure and be
+            //       retried. Aborting it would drop the product for good on a transient error. A null status
+            //       is the "no answer at all" case - a timeout or a DNS failure.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(new HttpRequestException("Boom", null, statusCode));
+
+            // Act & Assert
+            Assert.ThrowsAsync<HttpRequestException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ConfigurationMissingDuringOwnerLookup_IsNotReportedAsAMissingPartij()
+        {
+            // NOTE: KeyNotFoundException comes from a missing configuration key. That is a deployment problem,
+            //       not absent data, so it must not be turned into "no partij found" and dropped.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(new KeyNotFoundException("ZGW_ENDPOINT_OPENKLANT"));
+
+            // Act & Assert
+            Assert.ThrowsAsync<KeyNotFoundException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
         }
 
         [Test]

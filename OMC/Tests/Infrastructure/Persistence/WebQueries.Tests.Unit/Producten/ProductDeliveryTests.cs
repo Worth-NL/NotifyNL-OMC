@@ -18,6 +18,7 @@ using WebQueries.Producten.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
+using ZgwModels.Exceptions;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Mapping.Enums.OpenKlant;
@@ -488,7 +489,7 @@ namespace WebQueries.Tests.Unit.Producten
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataByIdentifierAsync(
                     "bsn", "999990099", Portaalvoorkeur, false, DistributionChannels.Email))
-                .ThrowsAsync(new HttpRequestException("No party results"));
+                .ThrowsAsync(new PartyNotFoundException("No party results"));
 
             // Act & Assert
             Assert.ThrowsAsync<ProcessingAbortedException>(

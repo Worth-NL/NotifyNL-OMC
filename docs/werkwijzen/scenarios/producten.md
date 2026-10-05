@@ -88,6 +88,11 @@ Open Product bewaakt zelf dat een eigenaar óf een BSN (eventueel met klantnumme
 
 Deze stap is **alles-of-niets**: resolveert één van de drie eigenaren niet, dan wordt er aan niemand iets verstuurd. Dat is geen striktheid om de striktheid — een mislukking wordt vastgelegd als klantcontact met een `betrokkene.wasPartij`, en juist de partij die daar ingevuld moet worden ontbreekt in dit geval. Het OMC maakt hier bewust géén ontbrekende partij aan (anders dan de printstraat-flow). Door hier af te breken heeft elke mislukking die later nog gemeld wordt, per definitie een bestaande partij om aan te hangen.
 
+Het OMC maakt daarbij onderscheid tussen **ontbrekende gegevens** en **een storing**:
+
+- Geeft OpenKlant antwoord, maar zonder partij, dan wordt afgebroken met `206` en biedt Open Notificaties het event niet opnieuw aan — opnieuw proberen lost ontbrekende gegevens niet op. De reden noemt het soort identificator en het product, bijvoorbeeld: *No partij found in OpenKlant for the KVK number of owner 2 of 2 of product …*. Het BSN of KVK-nummer zelf komt nooit in de reden, logs of traces.
+- Is OpenKlant niet bereikbaar, of antwoordt het met een fout, dan blijft het een mislukking (`412`) en wordt het event opnieuw aangeboden. De partij kan immers best bestaan.
+
 **Adresselectie.** Bij dezelfde opzoeking bepaalt het OMC ook het e-mailadres, met deze voorrang:
 
 1. een digitaal adres met `referentie` = `portaalvoorkeur`;
