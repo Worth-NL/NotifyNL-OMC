@@ -1,0 +1,608 @@
+﻿// © 2026, Worth Systems.
+
+using Common.Settings.Configuration;
+using Common.Tests.Utilities._TestHelpers;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using NUnit.Framework;
+using System.Net;
+using WebQueries.DataQuerying.Adapter.Interfaces;
+using WebQueries.DataQuerying.Proxy.Interfaces;
+using WebQueries.Exceptions;
+using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.DataSending.Clients.Factories.Interfaces;
+using WebQueries.DataSending.Clients.Interfaces;
+using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Producten;
+using WebQueries.Producten.Models;
+using WebQueries.Register.Interfaces;
+using ZgwModels.Enums;
+using ZgwModels.Exceptions;
+using ZgwModels.Serialization.Interfaces;
+using WebQueries.Producten.Interfaces;
+using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
+using ZgwModels.Mapping.Enums.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenProducten;
+
+namespace WebQueries.Tests.Unit.Producten
+{
+    [TestFixture]
+    public sealed class ProductScenarioImplementationTests
+    {
+        private Mock<IDataQueryService<NotificationEvent>> _mockedDataQuery = null!;
+        private Mock<IQueryContext> _mockedQueryContext = null!;
+        private Mock<INotifyClient> _mockedNotifyClient = null!;
+        private Mock<IHttpClientFactory<INotifyClient, string>> _mockedNotifyClientFactory = null!;
+        private Mock<ITelemetryService> _mockedTelemetry = null!;
+
+        private OmcConfiguration _configuration = null!;
+        private IProductScenario _scenario = null!;
+
+        #region Test data
+        private static readonly Guid s_productId = Guid.Parse("da0df49a-cd71-4e24-9bae-5be8b01f2c36");
+
+        private static readonly Uri s_productUri =
+            new($"https://test.domain/producten/api/v1/producten/{s_productId}");
+
+        // ZGW_WHITELIST_PRODUCTCREATE_IDS is "1, 2, 3" in the test configuration.
+        private const string WhitelistedProductTypeCode = "1";
+        private const string BlockedProductTypeCode = "9";
+
+        private const string TestBsn = "999990019";
+        private const string TestKvk = "12345678";
+        private const string TestVestigingsnummer = "000012345678";
+
+        // The "referentie" the scenario asks OpenKlant to prefer.
+        private const string Portaalvoorkeur = "portaalvoorkeur";
+        #endregion
+
+        [OneTimeSetUp]
+        public void SetupTests()
+        {
+            this._configuration = ConfigurationHandler.GetOmcConfigurationWith(
+                ConfigurationHandler.TestLoaderTypesSetup.BothValid_v2);
+        }
+
+        [SetUp]
+        public void ResetMocks()
+        {
+            this._mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            this._mockedDataQuery = new Mock<IDataQueryService<NotificationEvent>>(MockBehavior.Strict);
+            this._mockedDataQuery
+                .Setup(mock => mock.From(It.IsAny<NotificationEvent>()))
+                .Returns(this._mockedQueryContext.Object);
+
+            // Sending is part of the same call now, so the gates below only reach their own assertions
+            // once a working delivery is in place behind them. It is exercised in ProductDeliveryTests;
+            // here it just has to not get in the way.
+            this._mockedNotifyClient = new Mock<INotifyClient>(MockBehavior.Strict);
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendEmailAsync(
+                    It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            this._mockedNotifyClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
+            this._mockedNotifyClientFactory
+                .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
+                .Returns(this._mockedNotifyClient.Object);
+
+            Mock<ISerializationService> mockedSerializer = new(MockBehavior.Strict);
+            mockedSerializer
+                .Setup(mock => mock.Serialize(It.IsAny<ProductNotifyReference>()))
+                .Returns("{}");
+
+            this._mockedTelemetry = new Mock<ITelemetryService>(MockBehavior.Strict);
+            this._mockedTelemetry
+                .Setup(mock => mock.ReportProductCompletionAsync(
+                    It.IsAny<ProductNotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string[]>()))
+                .ReturnsAsync(HttpRequestResponse.Success(string.Empty));
+
+            this._scenario = new ProductScenarioImplementation(
+                this._mockedDataQuery.Object,
+                this._mockedNotifyClientFactory.Object,
+                mockedSerializer.Object,
+                this._mockedTelemetry.Object,
+                this._configuration,
+                NullLogger<ProductScenarioImplementation>.Instance);
+        }
+
+        [OneTimeTearDown]
+        public void CleanUpTests()
+        {
+            this._configuration.Dispose();
+        }
+
+        #region Helper methods
+        private static NotificationEvent GetProductNotification()
+            => new()
+            {
+                Action = Actions.Create,
+                Channel = Channels.Products,
+                Resource = Resources.Product,
+                MainObjectUri = s_productUri,
+                ResourceUri = s_productUri
+            };
+
+        private static Product GetProduct(
+            string productTypeCode = WhitelistedProductTypeCode, bool isPublished = true)
+            => new()
+            {
+                Id = s_productId,
+                Name = "verhuurvergunning: straatweg 14",
+                IsPublished = isPublished,
+                ProductType = new NestedProductType { Code = productTypeCode, Name = "Parkeervergunning" }
+            };
+
+        private void SetupProduct(Product product)
+            => this._mockedQueryContext
+                .Setup(mock => mock.GetProductAsync(s_productUri))
+                .ReturnsAsync(product);
+
+        private static Product GetProductWithOwners(params Owner[] owners)
+        {
+            Product product = GetProduct();
+            product.Owners = [.. owners];
+
+            return product;
+        }
+
+        private void SetupPartyFound(
+            string codeSoortObjectId, string objectId, string emailAddress = "test@example.com")
+            => this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = emailAddress });
+
+        private void SetupPartyMissing(string codeSoortObjectId, string objectId)
+            => this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync(codeSoortObjectId, objectId, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(new PartyNotFoundException("No party results"));
+        #endregion
+
+        [TestCase("https://attacker.example/producten/api/v1/producten/")]  // Foreign host
+        [TestCase("http://test.domain/producten/api/v1/producten/")]        // Same host, downgraded scheme
+        [TestCase("https://test.domain:8443/producten/api/v1/producten/")]  // Same host, other port
+        public void ProcessProductAsync_ProductUrlNotOnConfiguredOpenProduct_FailsWithoutFetchingIt(string productUrlBase)
+        {
+            // NOTE: Fetching the URL sends the Open Product API key along, so a notification must not be able to
+            //       point OMC at another origin. The strict query context has no setup for GetProductAsync, so
+            //       any attempt to fetch would fail this test with a MockException instead.
+
+            // Arrange
+            Uri foreignUri = new($"{productUrlBase}{s_productId}");
+
+            NotificationEvent notification = new()
+            {
+                Action = Actions.Create,
+                Channel = Channels.Products,
+                Resource = Resources.Product,
+                MainObjectUri = foreignUri,
+                ResourceUri = foreignUri
+            };
+
+            // Act & Assert
+            InvalidOperationException? exception = Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await this._scenario.ProcessProductAsync(notification));
+
+            Assert.That(exception!.Message, Does.Contain("ZGW_ENDPOINT_OPENPRODUCTEN"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductGone_ThrowsProcessingAborted_SoTheNotificationIsNotRedelivered()
+        {
+            // NOTE: 404 means "Open Product" deleted the product between publishing the notification and
+            //       OMC getting to it. Redelivering that could never succeed, so it has to abort (206)
+            //       rather than fail (412).
+
+            // Arrange
+            this._mockedQueryContext
+                .Setup(mock => mock.GetProductAsync(s_productUri))
+                .ThrowsAsync(new HttpRequestException("Not found", null, HttpStatusCode.NotFound));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain(s_productId.ToString()));
+        }
+
+        [TestCase(HttpStatusCode.InternalServerError)]
+        [TestCase(HttpStatusCode.Unauthorized)]
+        [TestCase(null)]
+        public void ProcessProductAsync_OpenProductUnreachable_RethrowsSoTheNotificationIsRedelivered(HttpStatusCode? statusCode)
+        {
+            // NOTE: The mirror image of the test above. A service that could not be reached or refused the
+            //       call has to stay a failure, otherwise a transient outage silently drops the product for
+            //       good. A null status is the "no answer at all" case - a timeout or a DNS failure.
+
+            // Arrange
+            this._mockedQueryContext
+                .Setup(mock => mock.GetProductAsync(s_productUri))
+                .ThrowsAsync(new HttpRequestException("Boom", null, statusCode));
+
+            // Act & Assert
+            Assert.ThrowsAsync<HttpRequestException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_ProductFound_ReadsItFromTheNotificationsResourceUrlAsync()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(mock => mock.GetProductAsync(s_productUri), Times.Once);
+        }
+
+
+        [Test]
+        public async Task ProcessProductAsync_BsnOwner_ResolvesThePartyOnTheBsnIdentificatorAsync()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_KvkOwner_ResolvesThePartyOnTheKvkIdentificatorAsync()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { KvkNumber = TestKvk }));
+            SetupPartyFound("kvk_nummer", TestKvk);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_KvkOwnerWithVestigingsnummer_ResolvesThatVestigingAsync()
+        {
+            // NOTE: A vestiging is a partij of its own in OpenKlant, so an owner naming one is notified at that
+            //       vestiging - not at the organisation its KVK number alone would find.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ReturnsAsync(new CommonPartyData { Name = "Test", EmailAddress = "vestiging@example.com" });
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public void ProcessProductAsync_VestigingWithoutPartij_AbortsNamingTheVestigingsnummer()
+        {
+            // NOTE: No silent fallback to the organisation: the owner is that vestiging, so a vestiging missing
+            //       from OpenKlant is missing data like any other partij (206), and the reason says which kind.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { KvkNumber = TestKvk, BranchNumber = TestVestigingsnummer }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetBranchPartyDataAsync(TestKvk, TestVestigingsnummer, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(PartyNotFoundException.ForIdentifier("vestigingsnummer"));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Contain("vestigingsnummer"));
+                Assert.That(exception.Message, Does.Not.Contain(TestVestigingsnummer));
+                Assert.That(exception.Message, Does.Not.Contain(TestKvk));
+            });
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_EveryOwnerResolves_ResolvesThemAllAsync()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { BsnNumber = TestBsn },
+                new Owner { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyFound("kvk_nummer", TestKvk);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            Assert.Multiple(() =>
+            {
+                this._mockedQueryContext.Verify(
+                    mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+                this._mockedQueryContext.Verify(
+                    mock => mock.GetPartyDataByIdentifierAsync("kvk_nummer", TestKvk, Portaalvoorkeur, false, DistributionChannels.Email), Times.Once);
+            });
+        }
+
+        [Test]
+        public void ProcessProductAsync_OneOwnerHasNoParty_AbortsWithoutNotifyingTheOthers()
+        {
+            // NOTE: The all-or-nothing rule. The first owner resolves perfectly well and is still not
+            //       notified, because a failure OMC cannot attach to a party is a failure it cannot record.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { BsnNumber = TestBsn },
+                new Owner { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyMissing("kvk_nummer", TestKvk);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("No partij found"));
+        }
+
+        [TestCase("bsn", "BSN")]
+        [TestCase("kvk_nummer", "KVK number")]
+        public void ProcessProductAsync_OwnerHasNoParty_ReasonNamesTheIdentifierKindAndTheProduct(
+            string codeSoortObjectId, string expectedKind)
+        {
+            // NOTE: Missing data is fixed in a register, not by retrying, so the reason has to say which
+            //       register and which product - otherwise nobody can act on the 206.
+
+            // Arrange
+            Owner owner = codeSoortObjectId == "bsn"
+                ? new Owner { BsnNumber = TestBsn }
+                : new Owner { KvkNumber = TestKvk };
+
+            SetupProduct(GetProductWithOwners(owner));
+            SetupPartyMissing(codeSoortObjectId, codeSoortObjectId == "bsn" ? TestBsn : TestKvk);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Contain($"No partij found in OpenKlant for the {expectedKind}"));
+                Assert.That(exception.Message, Does.Contain(s_productId.ToString()));
+            });
+        }
+
+        [TestCase(HttpStatusCode.InternalServerError)]
+        [TestCase(HttpStatusCode.Unauthorized)]
+        [TestCase(null)]
+        public void ProcessProductAsync_OpenKlantUnreachable_RethrowsSoTheNotificationIsRedelivered(HttpStatusCode? statusCode)
+        {
+            // NOTE: The counterpart of the missing-party tests above. An OpenKlant outage also surfaces as an
+            //       HttpRequestException, but the partij may well exist, so it has to stay a failure and be
+            //       retried. Aborting it would drop the product for good on a transient error. A null status
+            //       is the "no answer at all" case - a timeout or a DNS failure.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(new HttpRequestException("Boom", null, statusCode));
+
+            // Act & Assert
+            Assert.ThrowsAsync<HttpRequestException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ConfigurationMissingDuringOwnerLookup_IsNotReportedAsAMissingPartij()
+        {
+            // NOTE: KeyNotFoundException comes from a missing configuration key. That is a deployment problem,
+            //       not absent data, so it must not be turned into "no partij found" and dropped.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, Portaalvoorkeur, false, DistributionChannels.Email))
+                .ThrowsAsync(new KeyNotFoundException("ZGW_ENDPOINT_OPENKLANT"));
+
+            // Act & Assert
+            Assert.ThrowsAsync<KeyNotFoundException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerWithOnlyAKlantnummer_Aborts()
+        {
+            // NOTE: OpenKlant matches a customer number only through a filter its own schema marks
+            //       deprecated, so V1 treats such an owner as unresolvable rather than guessing.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { CustomerNumber = "K-12345" }));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("no BSN or KVK"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductWithoutOwners_Aborts()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners());
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("no eigenaren"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_OwnerResolutionFailure_NeverPutsTheIdentifierInTheReason()
+        {
+            // NOTE: A BSN is personal data and the reason travels into traces and logs. Only the kind of
+            //       identificator belongs there, never its value.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyMissing("bsn", TestBsn);
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Not.Contain(TestBsn));
+        }
+
+
+        [Test]
+        public async Task ProcessProductAsync_OwnerLookup_AsksOpenKlantToPreferThePortaalvoorkeurAddressAsync()
+        {
+            // NOTE: PartyResults treats a matching "referentie" as an outright win over the party's own
+            //       preferred address, which is the precedence a product notification wants. Pinned here
+            //       because passing the wrong reference fails silently - a usable address is still found,
+            //       just not the one the party nominated for portal correspondence.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync("bsn", TestBsn, "portaalvoorkeur", false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_OwnerLookup_RestrictsTheSearchToEmailAddressesAsync()
+        {
+            // NOTE: Without the restriction, a party whose preferred address is a phone number reads as
+            //       having no e-mail: PartyResults settles on the preferred address and never reaches the
+            //       e-mail behind it. Only e-mail is deliverable here, so the phone must not be considered
+            //       at all rather than be considered and discarded.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+
+            this._mockedQueryContext.Verify(
+                mock => mock.GetPartyDataByIdentifierAsync(
+                    "bsn", TestBsn, "portaalvoorkeur", false, DistributionChannels.Email), Times.Once);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_OwnerWithoutAnEmailAddress_StillGetsPastResolutionAsync()
+        {
+            // NOTE: The counterpart of the all-or-nothing party rule. A missing party stops everything; a
+            //       missing address does not, because it can be recorded against the party that was found.
+
+            // Arrange
+            SetupProduct(GetProductWithOwners(new Owner { BsnNumber = TestBsn }));
+            SetupPartyFound("bsn", TestBsn, emailAddress: string.Empty);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_SomeOwnersReachableAndSomeNot_StillGetsPastResolutionAsync()
+        {
+            // Arrange
+            SetupProduct(GetProductWithOwners(
+                new Owner { BsnNumber = TestBsn },
+                new Owner { KvkNumber = TestKvk }));
+            SetupPartyFound("bsn", TestBsn);
+            SetupPartyFound("kvk_nummer", TestKvk, emailAddress: string.Empty);
+
+            // Act & Assert
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            Assert.That(response.IsSuccess, Is.True);
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductTypeNotWhitelisted_ThrowsProcessingAborted_NamingTheSetting()
+        {
+            // Arrange
+            SetupProduct(GetProduct(productTypeCode: BlockedProductTypeCode));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Contain(BlockedProductTypeCode));
+
+                // The reason has to name the setting to change, not just say "not whitelisted".
+                Assert.That(exception.Message, Does.Contain("ZGW_WHITELIST_PRODUCTCREATE_IDS"));
+            });
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductNotPublished_ThrowsProcessingAborted()
+        {
+            // Arrange
+            SetupProduct(GetProduct(isPublished: false));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("gepubliceerd"));
+        }
+
+        [Test]
+        public void ProcessProductAsync_ProductTypeNotWhitelisted_AndNotPublished_ReportsTheWhitelistFirst()
+        {
+            // NOTE: Both gates reject this product. The whitelist runs first so the reported reason is the
+            //       one an operator can act on, rather than a property of the product itself.
+
+            // Arrange
+            SetupProduct(GetProduct(productTypeCode: BlockedProductTypeCode, isPublished: false));
+
+            // Act & Assert
+            ProcessingAbortedException? exception = Assert.ThrowsAsync<ProcessingAbortedException>(
+                async () => await this._scenario.ProcessProductAsync(GetProductNotification()));
+
+            Assert.That(exception!.Message, Does.Contain("not whitelisted"));
+        }
+    }
+}

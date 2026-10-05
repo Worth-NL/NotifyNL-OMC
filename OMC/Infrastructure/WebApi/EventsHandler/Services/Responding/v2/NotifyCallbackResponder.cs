@@ -14,12 +14,14 @@ using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using WebQueries.MOBB.Models;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Enums.NotificatieApi;
+using ZgwModels.Mapping.Enums.NotifyNL;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
 using ZgwModels.Serialization.Interfaces;
@@ -95,14 +97,18 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         informResult = await InformUserAboutPrintStatusAsync(callback, status);
                     }
+                    else if (await IsProductCallbackAsync(callback))
+                    {
+                        informResult = await InformUserAboutProductStatusAsync(callback, status);
+                    }
                     else
                     {
                         (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
-                        EmitChannelConfirmationTrace(reference, notificationMethod, status);
+                        EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, status);
 
                         HttpRequestResponse contactMomentResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
-                        EmitContactMomentTrace(reference, contactMomentResult);
+                        EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
 
                         informResult = contactMomentResult;
                     }
@@ -221,9 +227,9 @@ namespace EventsHandler.Services.Responding.v2
         /// EventsHandler.Services.DataProcessing.Strategy.Base.BaseScenario.ProcessDataAsync).
         /// This is genuinely the moment Notify NL confirms delivery, not the synchronous send.
         /// </summary>
-        private void EmitChannelConfirmationTrace(NotifyReference reference, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
+        private void EmitChannelConfirmationTrace(string? traceId, long? sentAtUnixMs, NotifyMethods notificationMethod, FeedbackTypes feedbackType)
         {
-            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            if (string.IsNullOrEmpty(traceId) || !this._traceEmitter.HasSubscribers)
             {
                 return;
             }
@@ -236,9 +242,9 @@ namespace EventsHandler.Services.Responding.v2
                 _ => "kanaalresolutie"
             };
             string status = feedbackType == FeedbackTypes.Success ? "ok" : "fail";
-            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs, "confirmed by Notify NL");
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(sentAtUnixMs, "confirmed by Notify NL");
 
-            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+            this._traceEmitter.Emit(new TraceEvent(traceId, channelStage, status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
         }
 
         /// <summary>
@@ -248,18 +254,18 @@ namespace EventsHandler.Services.Responding.v2
         /// the contactmoment write also succeeded, and a failed send still gets its own
         /// "delivery failed" message registered as a (successful) contactmoment.
         /// </summary>
-        private void EmitContactMomentTrace(NotifyReference reference, HttpRequestResponse contactMomentResult)
+        private void EmitContactMomentTrace(string? traceId, long? sentAtUnixMs, HttpRequestResponse contactMomentResult)
         {
-            if (string.IsNullOrEmpty(reference.TraceId) || !this._traceEmitter.HasSubscribers)
+            if (string.IsNullOrEmpty(traceId) || !this._traceEmitter.HasSubscribers)
             {
                 return;
             }
 
             string status = contactMomentResult.IsSuccess ? "ok" : "fail";
-            (long elapsedMs, string detail) = DescribeElapsedSinceSend(reference.SentAtUnixMs,
+            (long elapsedMs, string detail) = DescribeElapsedSinceSend(sentAtUnixMs,
                 contactMomentResult.IsSuccess ? "contactmoment registered" : $"failed to register contactmoment: {contactMomentResult.JsonResponse}");
 
-            this._traceEmitter.Emit(new TraceEvent(reference.TraceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
+            this._traceEmitter.Emit(new TraceEvent(traceId, "contactmoment", status, Scenario: null, Detail: detail, ElapsedMs: elapsedMs));
         }
 
         /// <summary>
@@ -281,6 +287,82 @@ namespace EventsHandler.Services.Responding.v2
             // rolling them into the minutes shown. TotalMinutes doesn't have that problem.
             TimeSpan elapsed = TimeSpan.FromMilliseconds(elapsedMs);
             return (elapsedMs, $"{outcomeText} after {(int)elapsed.TotalMinutes}:{elapsed.Seconds:D2}");
+        }
+
+        /// <summary>
+        /// "Product created" counterpart of <see cref="InformUserAboutStatusAsync"/>.
+        /// </summary>
+        /// <remarks>
+        ///   The messages are built the same way, from what "Notify NL" actually rendered rather than from
+        ///   what OMC asked it to render, so the contactmoment records what the owner really received.
+        ///   <para>
+        ///     Only receipts reach here. An owner with no address, or a send "Notify NL" refused, never
+        ///     produced one and was registered at delivery time instead.
+        ///   </para>
+        /// </remarks>
+        private async Task<HttpRequestResponse> InformUserAboutProductStatusAsync(
+            DeliveryReceipt callback, FeedbackTypes feedbackType)
+        {
+            (ProductNotifyReference reference, NotifyMethods notificationMethod) =
+                await ExtractProductCallbackDataAsync(callback);
+
+            // The product reference carries the same trace correlation as a NotifyReference, so a receipt
+            // closes its dashboard trace the same way the classic scenarios' receipts do.
+            EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, feedbackType);
+
+            // A product notification has no NotifyReference of its own to hand to the notify service, and
+            // resolving the client from a default one throws while the cached client is still empty - which
+            // silently swapped the rendered e-mail for the generic fallback text on the first receipt after
+            // a start. The object-driven scenarios already have the shape that avoids it.
+            NotificationData notificationData =
+                await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
+
+            HttpRequestResponse contactMomentResult = await _telemetry.ReportProductCompletionAsync(
+                reference,
+                notificationMethod,
+                messages:
+                [
+                    DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Subject : string.Empty),
+                    AppendFailureReason(
+                        DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                            notificationData.IsSuccess ? notificationData.Body : string.Empty),
+                        feedbackType, callback.Status),
+                    feedbackType == FeedbackTypes.Success ? True : False,
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                ]);
+
+            EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
+
+            return contactMomentResult;
+        }
+
+        /// <summary>
+        /// Appends why "Notify NL" could not deliver, to the contactmoment of a failed delivery.
+        /// </summary>
+        /// <remarks>
+        ///   The status is the only reason a delivery receipt carries. Without it, a mailbox that does not exist
+        ///   and a mailbox that was temporarily full both read as the same generic failure.
+        /// </remarks>
+        private static string AppendFailureReason(string body, FeedbackTypes feedbackType, DeliveryStatuses status)
+        {
+            if (feedbackType != FeedbackTypes.Failure)
+            {
+                return body;
+            }
+
+            string reason = status switch
+            {
+                DeliveryStatuses.PermanentFailure => "het e-mailadres bestaat niet of kan niet worden bereikt (permanente fout)",
+                DeliveryStatuses.TemporaryFailure => "de mailbox was tijdelijk niet bereikbaar (tijdelijke fout)",
+                DeliveryStatuses.TechnicalFailure => "er is een technische fout opgetreden bij het versturen",
+                DeliveryStatuses.ValidationFailed => "de notificatie is door NotifyNL afgekeurd (validatiefout)",
+                _ => $"bezorgstatus: {status}"
+            };
+
+            return string.IsNullOrWhiteSpace(body)
+                ? $"Reden: {reason}"
+                : $"{body}\n\nReden: {reason}";
         }
 
         /// <summary>
@@ -493,8 +575,8 @@ namespace EventsHandler.Services.Responding.v2
         ///   </para>
         /// </remarks>
         /// <summary>
-        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox or print),
-        /// neither of which has a real <see cref="NotifyReference"/> to hand to the notify service.
+        /// Fetches the notification data for an object-driven scenario (MOBB/Berichtenbox, print or
+        /// product created), none of which has a real <see cref="NotifyReference"/> to hand to the notify service.
         /// </summary>
         private async Task<NotificationData> GetObjectScenarioNotificationDataAsync(NotifyMethods notificationMethod, Guid notificationId)
         {

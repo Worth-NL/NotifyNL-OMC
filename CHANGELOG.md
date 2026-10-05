@@ -1,3 +1,18 @@
+## 2.3.0
+
+- Adds the "product aangemaakt" scenario: a `producten`/`product`/`create` event from Open Product is fetched, checked against a product type whitelist, and e-mailed to every eigenaar of the product
+- Organisations are now addressed by their name: when a partij has no surname, the organisation name fills `((klant.achternaam))`, so "Beste ((klant.voornaam)) ((klant.voorvoegselAchternaam)) ((klant.achternaam))" reads "Beste <bedrijfsnaam>" instead of "Beste " in every scenario
+- An eigenaar with a `vestigingsnummer` is resolved to that vestiging in OpenKlant (`vestigingsnummer` scoped under its `kvk_nummer` via `subIdentificatorVan`), instead of to the organisation. Requires OpenKlant 2.16.0 or later
+- Adds an Open Producten client (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), including its masked-key, endpoint and connectivity rows on the status page
+- Open Product is optional: every new variable may be left unset, and an empty `ZGW_ENDPOINT_OPENPRODUCTEN` switches the scenario off (status page shows it as disabled, product events are dropped with a 206). Existing deployments need no configuration changes to upgrade
+- Adds `ZGW_WHITELIST_PRODUCTCREATE_IDS`, matched on the product type's `code` — Open Product has no `identificatie` field to whitelist on
+- Resolves each eigenaar to an OpenKlant partij on its BSN or KVK number; an eigenaar's own UUID is Open Product's primary key and has no relation to OpenKlant
+- Prefers the digital address a partij marked `portaalvoorkeur`, and restricts the address search to e-mail, so a partij whose preferred address is a phone number is no longer read as having no e-mail at all
+- States the reason in the failed contactmoment (`Reden: …`): no e-mail address on file, a refusal or error from Notify NL, or the delivery status of a failed receipt. A failed contactmoment needs a partij, so an owner without one still ends the whole notification with a 206
+- Registers a failed contactmoment per eigenaar who could not be notified; successful ones are written from the Notify NL afleverstatus callback, as with the other channels
+- A partij that OpenKlant reports as not existing - for a BSN, KVK number or partij id - now aborts the notification with a 206 in every scenario, with a reason naming the kind of identifier (never its value). Previously the zaak scenarios answered 412, so Open Notificaties kept redelivering an event that could never succeed. OpenKlant being unreachable or erroring still answers 412 and is retried
+- Notifies every eigenaar only once the product, its type, its publication state and all of its eigenaren have been validated — a failure in any of those notifies nobody
+
 ## 2.2.2
 
 - Fixes letter notifications being sent with the SMS template: `LetterComponent`

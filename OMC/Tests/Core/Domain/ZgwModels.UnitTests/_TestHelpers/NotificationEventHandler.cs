@@ -221,6 +221,34 @@ namespace ZgwModels.Tests.Unit._TestHelpers
             return jsonPayload;
         }
 
+        /// <summary>
+        /// A notification as "Open Product" publishes it when a product is created.
+        /// </summary>
+        /// <remarks>
+        ///   NOTE: The "kenmerken" keys are dotted and snake_cased, exactly as "Open Product" declares them
+        ///   in its kanaal. None of them is mapped onto EventAttributes, so they land in its extension data
+        ///   and are reported as an inconsistency the notification still survives - see EventAttributes.
+        /// </remarks>
+        public static string GetNotification_Real_ProductCreatedScenario()
+        {
+            const string jsonPayload =
+                $"{{" +
+                  $"\"actie\": \"create\", " +
+                  $"\"kanaal\": \"producten\", " +
+                  $"\"resource\": \"product\", " +
+                  $"\"kenmerken\": {{" +
+                    $"\"producttype.uuid\": \"497f6eca-6276-4993-bfeb-53cbbbba6f08\", " +
+                    $"\"producttype.code\": \"PARKEERVERGUNNING-A\", " +
+                    $"\"producttype.uniforme_product_naam\": \"parkeervergunning\"" +
+                  $"}}, " +
+                  $"\"hoofdObject\": \"https://openproduct.test.notifynl.nl/producten/api/v1/producten/da0df49a-cd71-4e24-9bae-5be8b01f2c36\", " +
+                  $"\"resourceUrl\": \"https://openproduct.test.notifynl.nl/producten/api/v1/producten/da0df49a-cd71-4e24-9bae-5be8b01f2c36\", " +
+                  $"\"aanmaakdatum\": \"2026-09-21T10:15:04.005Z\"" +
+                $"}}";
+
+            return jsonPayload;
+        }
+
         public static string GetNotification_Real_DecisionMadeScenario_TheHague()
         {
             const string jsonPayload =

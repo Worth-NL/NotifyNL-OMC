@@ -92,6 +92,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "OMC_AUTH_JWT_EXPIRESINMIN",                            GetTestValue(isValid, testUshort) },
                 { "OMC_AUTH_JWT_USERID",                                  GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_USERNAME",                                GetTestValue(isValid, testString) },
+                { "OMC_ACTOR_ID",                                         GetTestValue(isValid, testGuid) },
 
                 // ZGW environment variables
                 { "ZGW_AUTH_JWT_SECRET",                                  GetTestValue(isValid, testString) },
@@ -105,6 +106,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_AUTH_KEY_OBJECTEN",                                GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OBJECTTYPEN",                             GetTestValue(isValid, testString) },
                 { "ZGW_AUTH_KEY_OPENVTB",                                 GetTestValue(isValid, testString) },
+                { "ZGW_AUTH_KEY_OPENPRODUCTEN",                           GetTestValue(isValid, testString) },
 
                 { "ZGW_ENDPOINT_OPENNOTIFICATIES",                        GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENZAAK",                                GetTestValue(isValid, testDomain, " ") },
@@ -115,6 +117,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_ENDPOINT_CONTACTMOMENTEN",                         GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_DOCUMENTEN",                              GetTestValue(isValid, testDomain) },
                 { "ZGW_ENDPOINT_OPENVTB",                                 GetTestValue(isValid, "https://test.domain/api/v1") },  // NOTE: unlike other endpoints, MessageBoxScenarioImplementation builds a real Uri from this value directly, so it needs a scheme
+                { "ZGW_ENDPOINT_OPENPRODUCTEN",                           GetTestValue(isValid, "https://test.domain/producten/api/v1") },  // NOTE: like OpenVtb, the product health check builds a real Uri from this value, so it needs a scheme
 
                 { "ZGW_WHITELIST_ZAAKCREATE_IDS",                         GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_ZAAKUPDATE_IDS",                         GetTestValue(isValid, testArray) },
@@ -122,6 +125,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "ZGW_WHITELIST_TASKASSIGNED_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_DECISIONMADE_IDS",                       GetTestValue(isValid, testArray) },
                 { "ZGW_WHITELIST_VTBMESSAGE_TYPES",                       GetTestValue(isValid, "*") },  // NOTE: Everything is allowed
+                { "ZGW_WHITELIST_PRODUCTCREATE_IDS",                      GetTestValue(isValid, testArray) },  // NOTE: Open Product producttype codes, not case type identifications
                 { "ZGW_WHITELIST_MESSAGE_ALLOWED",                        GetTestValue(isValid, testBool, "false") },  // NOTE: Could be also empty string, but "false" value is more useful for other tests
                 { "ZGW_WHITELIST_PRINT_ALLOWED",                          GetTestValue(isValid, testBool, "false") },  // NOTE: Mirrors MESSAGE_ALLOWED - "false" is the more useful default for other tests
 
@@ -146,6 +150,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE",                    GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED",                 GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED",              GetTestValue(isValid, testGuid) },
+                { "NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED",               GetTestValue(isValid, testGuid) },
                 { "NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",                   GetTestValue(isValid, testGuid) },
 
                 { "NOTIFY_TEMPLATEID_LETTER_ZAAKCREATE",                  GetTestValue(isValid, testGuid) },

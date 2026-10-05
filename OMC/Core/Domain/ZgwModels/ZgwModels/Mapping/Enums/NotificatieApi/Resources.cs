@@ -46,6 +46,12 @@ namespace ZgwModels.Mapping.Enums.NotificatieApi
         /// The "message" resource.
         /// </summary>
         [JsonPropertyName("bericht")]
-        Message = 5
+        Message = 5,
+
+        /// <summary>
+        /// The "product" resource.
+        /// </summary>
+        [JsonPropertyName("product")]
+        Product = 6
     }
 }

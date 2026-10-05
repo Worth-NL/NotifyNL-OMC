@@ -2,6 +2,7 @@
 
 using Common.Extensions;
 using Common.Settings.Configuration;
+using System.Net;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataQuerying.Strategies.Interfaces;
@@ -10,7 +11,9 @@ using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Properties;
 using WebQueries.Versioning.Interfaces;
+using ZgwModels.Exceptions;
 using ZgwModels.Extensions;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.Converters;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
@@ -52,12 +55,9 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
 
             string partyIdentifier = ((IQueryKlant)this).Configuration.AppSettings.Variables.PartyIdentifier();
-            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={partyIdentifier}";
-            string partyObjectIdParameter = $"&partijIdentificator__objectId={bsnNumber}";
-            const string expandParameter = "&expand=digitaleAdressen";
 
             // Request URL
-            Uri partiesByTypeAndIdWithExpand = new($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{expandParameter}");
+            Uri partiesByTypeAndIdWithExpand = GetPartiesByIdentifierUri(partiesEndpoint, partyIdentifier, bsnNumber);
 
             PartyResults results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);  // Many party results
 
@@ -73,10 +73,105 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 results = await GetPartyResultsV2Async(queryBase, partiesByTypeAndIdWithExpand);
             }
 
+            ThrowIfNoParty(results, partyIdentifier);
+
             return results
                 .Party(((IQueryKlant)this).Configuration,
                     caseIdentifier, requireDigitalAddress)  // Single determined party result
                 .ConvertToUnified();
+        }
+
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetPartyDataByIdentifierAsync(
+            IQueryBase queryBase, string codeSoortObjectId, string objectId,
+            string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
+        {
+            if (string.IsNullOrWhiteSpace(codeSoortObjectId) || string.IsNullOrWhiteSpace(objectId))
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_MissingPartyIdentifier);
+            }
+
+            string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
+
+            PartyResults results = await GetPartyResultsV2Async(queryBase,
+                GetPartiesByIdentifierUri(partiesEndpoint, codeSoortObjectId, objectId));
+
+            ThrowIfNoParty(results, codeSoortObjectId);
+
+            return results
+                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
+                .ConvertToUnified();
+        }
+
+        /// <inheritdoc cref="IQueryKlant.TryGetBranchPartyDataAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        async Task<CommonPartyData> IQueryKlant.TryGetBranchPartyDataAsync(
+            IQueryBase queryBase, string kvkNumber, string branchNumber,
+            string? reference, bool requireDigitalAddress, DistributionChannels? requiredChannel)
+        {
+            if (string.IsNullOrWhiteSpace(kvkNumber) || string.IsNullOrWhiteSpace(branchNumber))
+            {
+                throw new ArgumentException(QueryResources.Querying_ERROR_MissingPartyIdentifier);
+            }
+
+            string partiesEndpoint = $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/partijen";
+
+            // A vestiging is its own partij, identified by its vestigingsnummer scoped under the KVK number of
+            // the organisation it belongs to ("subIdentificatorVan"). Both are needed to pin it down.
+            PartyResults results = await GetPartyResultsV2Async(queryBase,
+                GetPartiesByIdentifierUri(partiesEndpoint, CodeSoortObjectIdBranch, branchNumber,
+                    parentCodeSoortObjectId: CodeSoortObjectIdKvk, parentObjectId: kvkNumber));
+
+            ThrowIfNoParty(results, CodeSoortObjectIdBranch);
+
+            return results
+                .Party(((IQueryKlant)this).Configuration, reference, requireDigitalAddress, requiredChannel)
+                .ConvertToUnified();
+        }
+
+        private const string CodeSoortObjectIdKvk = "kvk_nummer";
+        private const string CodeSoortObjectIdBranch = "vestigingsnummer";
+
+        /// <summary>
+        /// Reports a search that "OpenKlant" answered without any party, naming what was searched on.
+        /// </summary>
+        /// <remarks>
+        ///   <see cref="PartyResults.Party(OmcConfiguration, string?, bool, DistributionChannels?)"/> would throw on empty results as well, but cannot say which kind of
+        ///   identificator was used - and that is what tells whoever reads the reason which register to correct.
+        /// </remarks>
+        /// <exception cref="PartyNotFoundException"/>
+        private static void ThrowIfNoParty(PartyResults results, string codeSoortObjectId)
+        {
+            if (results.Results.IsEmpty())
+            {
+                throw PartyNotFoundException.ForIdentifier(codeSoortObjectId);
+            }
+        }
+
+        /// <summary>
+        /// Builds the "/partijen" search URL for a single party identificator, expanding the digital
+        /// addresses so the caller does not need a second round trip to read them.
+        /// </summary>
+        /// <remarks>
+        ///   All values are escaped. They reach here from an external system - a task payload or a
+        ///   product's owner - so they are not assumed to be URL-safe.
+        ///   <para>
+        ///     The parent pair narrows the search to an identificator scoped under another one, i.e. a
+        ///     vestigingsnummer under its KVK number. The "subIdentificatorVan__" filters exist since
+        ///     "OpenKlant" 2.16.0.
+        ///   </para>
+        /// </remarks>
+        private static Uri GetPartiesByIdentifierUri(string partiesEndpoint, string codeSoortObjectId, string objectId,
+            string? parentCodeSoortObjectId = null, string? parentObjectId = null)
+        {
+            string partyCodeTypeParameter = $"?partijIdentificator__codeSoortObjectId={Uri.EscapeDataString(codeSoortObjectId)}";
+            string partyObjectIdParameter = $"&partijIdentificator__objectId={Uri.EscapeDataString(objectId)}";
+            string parentParameters = parentCodeSoortObjectId is null || parentObjectId is null
+                ? string.Empty
+                : $"&subIdentificatorVan__codeSoortObjectId={Uri.EscapeDataString(parentCodeSoortObjectId)}" +
+                  $"&subIdentificatorVan__objectId={Uri.EscapeDataString(parentObjectId)}";
+            const string expandParameter = "&expand=digitaleAdressen";
+
+            return new Uri($"{partiesEndpoint}{partyCodeTypeParameter}{partyObjectIdParameter}{parentParameters}{expandParameter}");
         }
 
         /// <summary>
@@ -134,8 +229,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
             // Request URL
             Uri partiesWithExpand = new($"{involvedPartyUri}{expandParameter}");
 
+            PartyResult partyResult;
+            try
+            {
+                partyResult = await GetPartyResultV2Async(queryBase, partiesWithExpand);
+            }
+            catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+            {
+                // The case role points at a party that is not (or no longer) there. Absent data, like an
+                // empty search result above - unlike any other status, which stays a failure to retry.
+                throw PartyNotFoundException.ForPartyId(involvedPartyUri.GetGuid(), exception);
+            }
+
             return PartyResults.Party(  // Single determined party result
-                    partyResult: await GetPartyResultV2Async(queryBase, partiesWithExpand),
+                    partyResult: partyResult,
                     configuration: ((IQueryKlant)this).Configuration,
                     caseIdentifier: caseIdentifier)
                 .ConvertToUnified();

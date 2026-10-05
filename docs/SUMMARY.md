@@ -36,7 +36,8 @@
   * [Besluit genomen](werkwijzen/scenarios/besluit-genomen.md)
   * [Bericht ontvangen](werkwijzen/scenarios/bericht-ontvangen.md)
   * [Print (printstraat)](werkwijzen/scenarios/print-printstraat.md)
-  * [Producten (in ontwikkeling)](werkwijzen/scenarios/producten.md)
+  * [Berichtenbox (MOBB)](werkwijzen/scenarios/berichtenbox-mobb.md)
+  * [Product aangemaakt](werkwijzen/scenarios/producten.md)
 
 ## Architectuur
 

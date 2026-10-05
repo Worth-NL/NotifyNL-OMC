@@ -121,6 +121,10 @@ namespace WebQueries.DataSending
             // Added: OpenVtb client using static API key
             this._httpClients.TryAdd(HttpClientTypes.OpenVtb, this._httpClientFactory
                 .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenVtb)), contentCrs]));
+
+            // NOTE: "Open Product" is not a geo-aware ZGW service, so it gets no Content-Crs header.
+            this._httpClients.TryAdd(HttpClientTypes.OpenProducten, this._httpClientFactory
+                .GetHttpClient([(authorizeHeader, AuthorizeWithStaticApiKey(HttpClientTypes.OpenProducten))]));  // API Key
         }
 
         /// <summary>
@@ -142,7 +146,8 @@ namespace WebQueries.DataSending
                 HttpClientTypes.Objecten or
                 HttpClientTypes.ObjectTypen or
                 HttpClientTypes.Telemetry_Klantinteracties or
-                HttpClientTypes.OpenVtb
+                HttpClientTypes.OpenVtb or
+                HttpClientTypes.OpenProducten
                     => this._httpClients[httpClientType],
 
                 _ => throw new ArgumentException(
@@ -211,6 +216,9 @@ namespace WebQueries.DataSending
                 HttpClientTypes.OpenVtb
                     => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenVtb()}",
 
+                HttpClientTypes.OpenProducten
+                    => $"{CommonValues.Default.Authorization.Token} {this._configuration.ZGW.Auth.Key.OpenProducten()}",
+
                 _ => throw new ArgumentException(
                     $"{QueryResources.Authorization_ERROR_HttpClientTypeNotSuported} {httpClientType}")
             };
@@ -248,8 +256,8 @@ namespace WebQueries.DataSending
 
                 string responseContent = await result.Content.ReadAsStringAsync();
                 return result.IsSuccessStatusCode
-                    ? HttpRequestResponse.Success(responseContent)
-                    : HttpRequestResponse.Failure(responseContent);
+                    ? HttpRequestResponse.Success(responseContent, result.StatusCode)
+                    : HttpRequestResponse.Failure(responseContent, result.StatusCode);
             }
             catch (Exception exception)
             {
@@ -292,11 +300,11 @@ namespace WebQueries.DataSending
 
                 if (!result.IsSuccessStatusCode)
                 {
-                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync());
+                    return HttpRequestResponse.Failure(await result.Content.ReadAsStringAsync(), result.StatusCode);
                 }
 
                 byte[] responseBytes = await result.Content.ReadAsByteArrayAsync();
-                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes));
+                return HttpRequestResponse.Success(Convert.ToBase64String(responseBytes), result.StatusCode);
             }
             catch (Exception exception)
             {

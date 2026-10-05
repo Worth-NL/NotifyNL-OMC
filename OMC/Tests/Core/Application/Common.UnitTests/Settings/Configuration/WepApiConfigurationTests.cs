@@ -179,6 +179,44 @@ namespace Common.Tests.Unit.Settings.Configuration
             });
         }
 
+        [TestCase("1", true)]
+        [TestCase("9", false)]
+        [TestCase("", false)]
+        public void IsAllowed_InEnvironmentMode_ForSpecificProductTypeCode_ReturnsExpectedResult(string productTypeCode, bool expectedResult)
+        {
+            // Arrange
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act
+            #pragma warning disable IDE0008  // Using "explicit types" wouldn't help with readability of the code
+            var whitelistedIDs = s_testConfiguration.ZGW.Whitelist.ProductCreate_IDs();
+            #pragma warning restore IDE00008
+            bool isAllowed = whitelistedIDs.IsAllowed(productTypeCode);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(whitelistedIDs.Count, Is.EqualTo(3));
+                Assert.That(isAllowed, Is.EqualTo(expectedResult));
+            });
+        }
+
+        [Test]
+        public void ProductCreate_IDs_InEnvironmentMode_ResolvesTheExpectedEnvironmentVariableName()
+        {
+            // NOTE: The name is reported back to the caller when a notification is rejected, so it has to
+            //       match the variable operators actually set - see BaseScenario.ValidateCaseId.
+
+            // Arrange
+            s_testConfiguration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act
+            string envVarName = s_testConfiguration.ZGW.Whitelist.ProductCreate_IDs().ToString();
+
+            // Assert
+            Assert.That(envVarName, Is.EqualTo("ZGW_WHITELIST_PRODUCTCREATE_IDS"));
+        }
+
         [Test]
         public void OpenKlant_InEnvironmentMode_ApiKeyIsRequired()
         {
@@ -187,6 +225,40 @@ namespace Common.Tests.Unit.Settings.Configuration
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => configuration.ZGW.Auth.Key.OpenKlant());
+        }
+
+        [Test]
+        public void OpenProducten_InEnvironmentMode_NotSet_IsOptional_AndReportsAsNotConfigured()
+        {
+            // NOTE: Deployments without "Open Product" must keep working, so none of its settings may throw
+            //       when absent. The "invalid" setup leaves every environment variable unset.
+
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.OpenProducten(), Is.Empty);
+                Assert.That(configuration.ZGW.Auth.Key.OpenProducten(), Is.Empty);
+                Assert.That(configuration.Notify.TemplateId.Email.ProductCreated(), Is.EqualTo(Guid.Empty));
+                Assert.That(configuration.ZGW.Whitelist.ProductCreate_IDs().Count, Is.Zero);
+                Assert.That(configuration.ZGW.Endpoint.IsOpenProductenConfigured(), Is.False);
+            });
+        }
+
+        [Test]
+        public void OpenProducten_InEnvironmentMode_Set_ReportsAsConfigured()
+        {
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.IsOpenProductenConfigured(), Is.True);
+                Assert.That(configuration.Notify.TemplateId.Email.ProductCreated(), Is.Not.EqualTo(Guid.Empty));
+            });
         }
         #endregion
 

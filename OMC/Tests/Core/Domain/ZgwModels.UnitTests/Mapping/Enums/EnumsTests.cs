@@ -23,6 +23,8 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase(typeof(Channels), Channels.Cases, "zaken")]
         [TestCase(typeof(Channels), Channels.Objects, "objecten")]
         [TestCase(typeof(Channels), Channels.Decisions, "besluiten")]
+        [TestCase(typeof(Channels), Channels.Messages, "berichten")]
+        [TestCase(typeof(Channels), Channels.Products, "producten")]
         // NotificatieApi: Privacy notices
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.Confidential, "vertrouwelijk")]
         [TestCase(typeof(PrivacyNotices), PrivacyNotices.NonConfidential, "openbaar")]
@@ -31,6 +33,8 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase(typeof(Resources), Resources.Status, "status")]
         [TestCase(typeof(Resources), Resources.Object, "object")]
         [TestCase(typeof(Resources), Resources.Decision, "besluitinformatieobject")]
+        [TestCase(typeof(Resources), Resources.Message, "bericht")]
+        [TestCase(typeof(Resources), Resources.Product, "product")]
         // OpenKlant: Distribution channels
         [TestCase(typeof(DistributionChannels), DistributionChannels.None, "geen")]
         [TestCase(typeof(DistributionChannels), DistributionChannels.Email, "email")]
@@ -86,6 +90,8 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase("zaken", typeof(Channels), Channels.Cases)]
         [TestCase("objecten", typeof(Channels), Channels.Objects)]
         [TestCase("besluiten", typeof(Channels), Channels.Decisions)]
+        [TestCase("berichten", typeof(Channels), Channels.Messages)]
+        [TestCase("producten", typeof(Channels), Channels.Products)]
         // NotificatieApi: Privacy notices
         [TestCase("vertrouwelijk", typeof(PrivacyNotices), PrivacyNotices.Confidential)]
         [TestCase("openbaar", typeof(PrivacyNotices), PrivacyNotices.NonConfidential)]
@@ -94,6 +100,8 @@ namespace ZgwModels.Tests.Unit.Mapping.Enums
         [TestCase("status", typeof(Resources), Resources.Status)]
         [TestCase("object", typeof(Resources), Resources.Object)]
         [TestCase("besluitinformatieobject", typeof(Resources), Resources.Decision)]
+        [TestCase("bericht", typeof(Resources), Resources.Message)]
+        [TestCase("product", typeof(Resources), Resources.Product)]
         // OpenKlant: Distribution channels
         [TestCase("geen", typeof(DistributionChannels), DistributionChannels.None)]
         [TestCase("email", typeof(DistributionChannels), DistributionChannels.Email)]

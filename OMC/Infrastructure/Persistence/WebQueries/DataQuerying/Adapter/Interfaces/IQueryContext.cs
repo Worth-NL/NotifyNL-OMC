@@ -15,7 +15,9 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.KTO;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Message;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
+using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak.Decision;
@@ -144,7 +146,7 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <param name="bsnNumber">The BSN (Citizen Service Number), when already known.</param>
         /// <param name="caseIdentifier">The Case identifier used to select the digital address with the highest priority if match is found.</param>
         /// <param name="requireDigitalAddress">
-        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool)" path="/param[@name='requireDigitalAddress']"/>
+        ///   <inheritdoc cref="ZgwModels.Mapping.Models.POCOs.OpenKlant.v2.PartyResults.Party(Common.Settings.Configuration.OmcConfiguration, string?, bool, ZgwModels.Mapping.Enums.OpenKlant.DistributionChannels?)" path="/param[@name='requireDigitalAddress']"/>
         ///   Only honored on the citizen (BSN-based) lookup path; the case-role/organization path is unaffected.
         /// </param>
         /// <param name="createIfMissing">
@@ -283,6 +285,33 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// </param>
         /// <returns>The Base64-encoded file content.</returns>
         Task<string> GetDocumentContentAsync(Uri contentUri);
+        #endregion
+
+        #region IQueryProducten
+        /// <summary>
+        /// Gets a product from the "Open Product" API by its URI.
+        /// </summary>
+        /// <remarks>
+        ///   The product embeds its whole product type, so this single call also resolves the product type.
+        /// </remarks>
+        /// <param name="productUri">The URI of the product to retrieve.</param>
+        /// <returns>The deserialized product data.</returns>
+        Task<Product> GetProductAsync(Uri productUri);
+
+        /// <inheritdoc cref="IQueryKlant.TryGetPartyDataByIdentifierAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        Task<CommonPartyData> GetPartyDataByIdentifierAsync(
+            string codeSoortObjectId, string objectId,
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
+
+        /// <inheritdoc cref="IQueryKlant.TryGetBranchPartyDataAsync(IQueryBase, string, string, string?, bool, DistributionChannels?)"/>
+        Task<CommonPartyData> GetBranchPartyDataAsync(
+            string kvkNumber, string branchNumber,
+            string? reference = null, bool requireDigitalAddress = true,
+            DistributionChannels? requiredChannel = null);
+
+        /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
+        Task<HttpRequestResponse> GetProductenHealthCheckAsync();
         #endregion
     }
 }

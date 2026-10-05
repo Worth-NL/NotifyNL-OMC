@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
+using WebQueries.Producten.Models;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotifyNL;
@@ -298,6 +299,48 @@ namespace EventsHandler.Services.Responding
             using JsonDocument document = JsonDocument.Parse(decodedReference);
 
             return document.RootElement.TryGetProperty(nameof(PrintNotifyReference.ObjectId), out _);
+        }
+
+        /// <summary>
+        /// Determines whether the given callback's reference was built for the "Product created" scenario
+        /// (<see cref="ProductNotifyReference"/>) rather than the standard <see cref="NotifyReference"/>.
+        /// </summary>
+        /// <remarks>
+        ///   Same raw-JSON peek as <see cref="IsMessageBoxCallbackAsync"/>, on the "ProductId" property
+        ///   that only <see cref="ProductNotifyReference"/> has. That is also why that reference must not
+        ///   declare an "ObjectId" or a "MessageId" of its own.
+        /// </remarks>
+        internal async Task<bool> IsProductCallbackAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            if (decodedReference.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(decodedReference);
+
+            return document.RootElement.TryGetProperty(nameof(ProductNotifyReference.ProductId), out _);
+        }
+
+        /// <summary>
+        /// Extracts the notification data from received <see cref="DeliveryReceipt"/> callback, for the
+        /// "Product created" scenario reference shape.
+        /// </summary>
+        /// <param name="callback">The callback to be analyzed.</param>
+        /// <returns>
+        ///   The notification data required for further processing.
+        /// </returns>
+        internal async Task<(ProductNotifyReference, NotifyMethods)> ExtractProductCallbackDataAsync(DeliveryReceipt callback)
+        {
+            string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
+
+            ProductNotifyReference reference = this.Serializer.Deserialize<ProductNotifyReference>(decodedReference);
+
+            NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
+
+            return (reference, notificationMethod);
         }
 
         /// <summary>

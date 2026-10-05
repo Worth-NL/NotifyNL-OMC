@@ -2,6 +2,21 @@
 
 ---
 
+## v2.3.0
+
+- Voegt het scenario [Product aangemaakt](../werkwijzen/scenarios/producten.md) toe: een `producten`/`product`/`create`-event uit Open Product wordt opgehaald, getoetst aan een producttype-whitelist en per e-mail verstuurd aan elke eigenaar van het product
+- Organisaties worden nu bij naam aangesproken: heeft een partij geen achternaam, dan vult de organisatienaam `((klant.achternaam))`, zodat "Beste ((klant.voornaam)) ((klant.voorvoegselAchternaam)) ((klant.achternaam))" in elk scenario "Beste <bedrijfsnaam>" wordt in plaats van "Beste "
+- Een eigenaar met een `vestigingsnummer` wordt in OpenKlant gekoppeld aan díe vestiging (`vestigingsnummer` onder het `kvk_nummer` via `subIdentificatorVan`) in plaats van aan de organisatie. Vereist OpenKlant 2.16.0 of hoger
+- Voegt een Open Producten-client toe (`ZGW_ENDPOINT_OPENPRODUCTEN`, `ZGW_AUTH_KEY_OPENPRODUCTEN`), inclusief sleutel-, endpoint- en connectiviteitsregels op de statuspagina
+- Open Product is optioneel: alle nieuwe variabelen mogen leeg blijven, en een lege `ZGW_ENDPOINT_OPENPRODUCTEN` schakelt het scenario uit (de statuspagina toont het als uitgeschakeld, product-events worden afgebroken met `206`). Bestaande installaties hoeven bij het upgraden niets aan hun configuratie te veranderen
+- Voegt `ZGW_WHITELIST_PRODUCTCREATE_IDS` toe, getoetst op de `code` van het producttype — Open Product kent geen `identificatie`-veld om op te whitelisten
+- Zoekt per eigenaar de partij op in OpenKlant via BSN of KVK-nummer; de eigen UUID van een eigenaar is de primaire sleutel van Open Product en heeft geen relatie met OpenKlant
+- Geeft voorrang aan het digitale adres dat een partij als `portaalvoorkeur` heeft gemarkeerd, en beperkt de adreszoektocht tot e-mail — een partij met een telefoonnummer als voorkeursadres wordt daardoor niet langer gelezen als "geen e-mailadres bekend"
+- Vermeldt de reden in het mislukte contactmoment (`Reden: …`): geen e-mailadres bekend, een weigering of fout van NotifyNL, of de bezorgstatus van een mislukte afleverstatus. Een mislukt contactmoment heeft een partij nodig, dus een eigenaar zonder partij beëindigt de hele notificatie nog steeds met een `206`
+- Registreert een mislukt contactmoment per eigenaar die niet bereikt kon worden; geslaagde contactmomenten worden zoals bij de andere kanalen vanuit de NotifyNL-afleverstatuscallback geschreven
+- Een partij die volgens OpenKlant niet bestaat — voor een BSN, KVK-nummer of partij-id — breekt de notificatie nu in elk scenario af met `206`, met een reden die het soort identificator noemt (nooit de waarde). Voorheen antwoordden de zaakscenario's met `412`, waardoor Open Notificaties een event bleef aanbieden dat nooit kon slagen. Is OpenKlant onbereikbaar of foutief, dan blijft het `412` en wordt het opnieuw aangeboden
+- Verstuurt pas nadat het product, het producttype, de publicatiestatus én alle eigenaren zijn gevalideerd — mislukt een van die controles, dan wordt niemand genotificeerd
+
 ## v2.2.2
 
 - Brieven worden niet meer verstuurd met het sms-template: `LetterComponent`

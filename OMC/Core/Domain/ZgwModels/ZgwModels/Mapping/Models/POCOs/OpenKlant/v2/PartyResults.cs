@@ -3,6 +3,7 @@
 using Common.Extensions;
 using Common.Settings.Configuration;
 using System.Text.Json.Serialization;
+using ZgwModels.Exceptions;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.Interfaces;
 using ZgwModels.Properties;
@@ -51,19 +52,32 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         ///   <see langword="false"/> to instead get the first result's identity back with an empty address,
         ///   so they can still resolve the party UUID/name and route to that fallback themselves.
         /// </param>
+        /// <param name="requiredChannel">
+        ///   When set, only digital addresses of that channel are considered at all, so an address of any
+        ///   other channel can neither be selected nor block one that could have been. Scenarios that can
+        ///   only deliver one way need this: without it, a party whose preferred address is a phone number
+        ///   reads as having no e-mail, because the search stops at the preferred address and never reaches
+        ///   the e-mail behind it.
+        ///   <para>
+        ///     Leave it unset (default) to consider every channel, which is what the classic ZGW scenarios
+        ///     want - they follow whichever channel the party prefers.
+        ///   </para>
+        /// </param>
         /// <returns>
         ///   The data of a single party (e.g., citizen or organization).
         /// </returns>
+        /// <exception cref="PartyNotFoundException">No party matched the search.</exception>
         /// <exception cref="HttpRequestException"/>
         public readonly (PartyResult, DistributionChannels, string EmailAddress, string PhoneNumber, string Reason)
             Party(OmcConfiguration configuration,
                 string? caseIdentifier = null,
-                bool requireDigitalAddress = true)
+                bool requireDigitalAddress = true,
+                DistributionChannels? requiredChannel = null)
         {
             // Validation #1: Results
             if (this.Results.IsEmpty())
             {
-                throw new HttpRequestException(ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
+                throw new PartyNotFoundException(ZgwResources.HttpRequest_ERROR_EmptyPartiesResults);
             }
 
             PartyResult fallbackEmailOwningParty = default;
@@ -85,7 +99,7 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
                 // Determine which address is preferred
                 if (IsPreferredFound(configuration, partyResult,
                         ref fallbackEmailOwningParty, ref fallbackPhoneOwningParty, ref distributionChannel,
-                        ref fallbackEmailAddress, ref fallbackPhoneNumber, ref reason, caseIdentifier))
+                        ref fallbackEmailAddress, ref fallbackPhoneNumber, ref reason, caseIdentifier, requiredChannel))
                 {
                     return (partyResult, distributionChannel, fallbackEmailAddress, fallbackPhoneNumber, reason);
                 }
@@ -154,7 +168,8 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
             ref string fallbackEmailAddress,
             ref string fallbackPhoneNumber,
             ref string reason,
-            string? caseIdentifier = null)
+            string? caseIdentifier = null,
+            DistributionChannels? requiredChannel = null)
         {
             Guid? prefDigitalAddressId = party.PreferredDigitalAddress?.Id;
             bool
@@ -168,6 +183,14 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
 
                 // Skip invalid distribution channels
                 if (tempDistributionChannel == DistributionChannels.Unknown)
+                {
+                    continue;
+                }
+
+                // Skip channels the caller cannot deliver on. Deliberately before every other check, so an
+                // address of the wrong channel cannot win on "referentie" or on being the party's preferred
+                // one, and cannot stop the loop from reaching an address the caller can actually use.
+                if (requiredChannel != null && tempDistributionChannel != requiredChannel)
                 {
                     continue;
                 }
