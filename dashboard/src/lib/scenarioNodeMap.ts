@@ -8,4 +8,5 @@ export const SCENARIO_NODE_MAP: Record<string, string> = {
   msg_received: "message-received",
   decision_made: "decision-made",
   kto: "kto",
+  product_created: "product-created",
 };

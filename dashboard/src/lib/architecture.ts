@@ -26,6 +26,7 @@ export const REGISTER_NODES: ArchitectureNode[] = [
   { key: "besluiten", name: "BesluitenAPI (OpenZaak)", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
   { key: "brp", name: "BRP", subtitle: "Haal Centraal — persoonsgegevens", version: "v2.2", active: true },
   { key: "kto", name: "KTO", subtitle: "Klanttevredenheidsonderzoek (Expoints)", active: true },
+  { key: "openproduct", name: "ProductenAPI (Open Product)", subtitle: "Producten, producttypen en eigenaren", version: "v1.7", active: true },
   { key: "documentstore", name: "DocumentAPI (OpenZaak)", subtitle: "Centrale documentopslag", active: false },
   { key: "profielservice", name: "ProfielService (MoZa)", subtitle: "Voorkeuren per burger", active: false },
   { key: "vtb", name: "BerichtenAPI (OpenVTB)", subtitle: "Verificatie toegangsbeheer", active: false },
@@ -51,6 +52,8 @@ export const FILTER_NODES: ArchitectureNode[] = [
   { key: "documentcheck", name: "Documentstatus & vertrouwelijkheid", subtitle: "Definitief + niet-vertrouwelijk", active: true },
   { key: "naturalpersoncheck", name: "Natuurlijk persoon-check", subtitle: "CheckIfInitiatorIsNaturalPersonAsync — MijnZaken", active: true },
   { key: "mijnzaken-staleness", name: "Verouderd-check", subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd", active: true },
+  { key: "producttypewhitelist", name: "Producttype whitelist", subtitle: "producttype.code — ZGW_WHITELIST_PRODUCTCREATE_IDS", active: true },
+  { key: "productgepubliceerd", name: "Publicatiecheck", subtitle: "product.gepubliceerd", active: true },
 ];
 
 // "Letter"/"Both" branches exist in BaseScenario's DistributionChannel switch, but the live
@@ -118,6 +121,12 @@ export const EDGES: FlowEdge[] = [
   { source: PATTERN_ENGINE_KEY, target: "taakcheck", category: "taken" },
   { source: PATTERN_ENGINE_KEY, target: "documentcheck", category: "besluiten" },
   { source: PATTERN_ENGINE_KEY, target: "berichtenschakelaar", category: "producten" },
+
+  // Product created (ProductScenarioImplementation) has its own two gates and no
+  // kanaalresolutie: every eigenaar is notified by e-mail, so there is no channel to resolve.
+  { source: PATTERN_ENGINE_KEY, target: "producttypewhitelist", category: "producten" },
+  { source: "producttypewhitelist", target: "productgepubliceerd", category: "producten" },
+  { source: "productgepubliceerd", target: "notify-email", category: "producten" },
 
   { source: "taakcheck", target: "zaaktypewhitelist", category: "taken" },
   { source: "documentcheck", target: "zaaktypewhitelist", category: "besluiten" },
@@ -264,6 +273,19 @@ export const FLOW_OPTIONS: FlowOption[] = [
     // actual Notify NL send, hence channels: [] below (nothing ever lights up downstream).
     filters: ["documentcheck", "zaaktypewhitelist", "informerencheck", "kanaalresolutie"],
     channels: [],
+    confirmations: ["contactmoment"],
+  },
+  {
+    key: "product-created",
+    name: "Product Created",
+    nl: "Product aangemaakt",
+    inputs: ["opennotificaties"],
+    // Real order in ProductScenarioImplementation.ProcessProductAsync: fetch the product from
+    // Open Product, the producttype whitelist, the gepubliceerd check, then one OpenKlant
+    // lookup per eigenaar. Always e-mail, so no kanaalresolutie.
+    registers: ["openproduct", "openklant"],
+    filters: ["producttypewhitelist", "productgepubliceerd"],
+    channels: ["notify-email"],
     confirmations: ["contactmoment"],
   },
   {
