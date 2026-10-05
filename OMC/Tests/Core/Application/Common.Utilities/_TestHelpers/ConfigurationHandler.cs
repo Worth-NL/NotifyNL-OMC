@@ -92,6 +92,7 @@ namespace Common.Tests.Utilities._TestHelpers
                 { "OMC_AUTH_JWT_EXPIRESINMIN",                            GetTestValue(isValid, testUshort) },
                 { "OMC_AUTH_JWT_USERID",                                  GetTestValue(isValid, testString) },
                 { "OMC_AUTH_JWT_USERNAME",                                GetTestValue(isValid, testString) },
+                { "OMC_ACTOR_ID",                                         GetTestValue(isValid, testGuid) },
 
                 // ZGW environment variables
                 { "ZGW_AUTH_JWT_SECRET",                                  GetTestValue(isValid, testString) },

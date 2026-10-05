@@ -15,6 +15,7 @@ using WebQueries.DataSending.Models.Reponses;
 using WebQueries.Print;
 using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
+using ZgwModels.Exceptions;
 using ZgwModels.Serialization.Interfaces;
 using WebQueries.Register.Interfaces;
 using ZgwModels.Enums;
@@ -221,6 +222,28 @@ namespace WebQueries.Tests.Unit.Print
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.JsonResponse, Does.Contain("could not be resolved"));
             });
+
+            this._mockedNotifyClient.Verify(
+                mock => mock.SendPrecompiledLetterAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string?>()),
+                Times.Never);
+        }
+
+        [Test]
+        public void ProcessPrintAsync_PartyStillMissingAfterCreation_PropagatesPartyNotFound_SoItIsAborted()
+        {
+            // NOTE: Unlike an OpenKlant failure (above), a partij that does not exist is absent data. It must reach
+            //       NotifyProcessor as PartyNotFoundException so print aborts (206) like every other scenario.
+
+            // Arrange
+            IPrintScenario scenario = GetAllowedScenario();
+            SetupPrintObject(GetPrintData());
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true))
+                .ThrowsAsync(PartyNotFoundException.ForIdentifier("bsn"));
+
+            // Act & Assert
+            Assert.ThrowsAsync<PartyNotFoundException>(async () => await scenario.ProcessPrintAsync(GetNotification()));
 
             this._mockedNotifyClient.Verify(
                 mock => mock.SendPrecompiledLetterAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string?>()),
