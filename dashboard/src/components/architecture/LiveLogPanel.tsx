@@ -14,7 +14,7 @@ export function isError(status: TraceLogLine["status"]): boolean {
 
 export function LiveLogPanel({ log, connected }: { log: TraceLogLine[]; connected: boolean }) {
   return (
-    <div className="rounded-lg border border-arch-border bg-arch-surface">
+    <div className="flex h-80 shrink-0 flex-col overflow-hidden rounded-lg border border-arch-border bg-arch-surface lg:h-auto lg:w-[26rem]">
       <div className="flex items-center justify-between border-b border-arch-border px-4 py-2">
         <span className="text-[0.72rem] font-bold text-arch-ink">Live trace-log</span>
         <span className="flex items-center gap-1.5 text-[0.65rem] font-medium text-arch-muted">
@@ -23,12 +23,12 @@ export function LiveLogPanel({ log, connected }: { log: TraceLogLine[]; connecte
         </span>
       </div>
 
-      <div className="max-h-56 overflow-y-auto px-4 py-2 font-mono text-[0.68rem] leading-relaxed">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2 font-mono text-[0.68rem] leading-relaxed">
         {log.length === 0 ? (
           <p className="py-4 text-center text-arch-faint">
             {connected
               ? "Verbonden — wachtend op een binnenkomende notificatie…"
-              : "Start een trace om live verkeer te volgen."}
+              : "Verbinden met de trace-stream…"}
           </p>
         ) : (
           log.map((line) => (

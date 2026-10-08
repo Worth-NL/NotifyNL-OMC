@@ -30,8 +30,6 @@ import {
 import { scenarioEdgeKeys, scenarioKeys } from "@/lib/tracePath";
 import { useOmcTelemetry } from "@/hooks/useOmcTelemetry";
 import { fetchScenarios, ScenarioFlow } from "@/lib/api";
-import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader";
-import { MetricsBar } from "@/components/architecture/MetricsBar";
 import { ConnectionLegend } from "@/components/architecture/ConnectionLegend";
 import { NodeState } from "@/components/architecture/NodeCard";
 import { ColumnLabelNode, FlowNode, OmcFlowNode } from "@/components/architecture/FlowNode";
@@ -205,8 +203,6 @@ function FitViewOnReady() {
 
 export default function FlowPage() {
   const [selectedFlowKey, setSelectedFlowKey] = useState("all");
-  const [environment, setEnvironment] = useState<"productie" | "test">("productie");
-  const [isTracing, setIsTracing] = useState(false);
   const [scenarios, setScenarios] = useState<ScenarioFlow[]>([]);
   const [diagramOpen, setDiagramOpen] = useState(false);
   const [logModalNodeKey, setLogModalNodeKey] = useState<string | null>(null);
@@ -220,7 +216,7 @@ export default function FlowPage() {
   );
   const layout = useMemo(() => computeLayout(isVisible), [isVisible]);
 
-  const telemetry = useOmcTelemetry(isTracing);
+  const telemetry = useOmcTelemetry();
 
   useEffect(() => {
     let cancelled = false;
@@ -253,11 +249,6 @@ export default function FlowPage() {
   function nodeState(key: string, active: boolean): NodeState {
     if (!active) return "inactive";
     return usedKeys.has(key) ? "highlighted" : "dimmed";
-  }
-
-  function reset() {
-    setSelectedFlowKey("all");
-    setIsTracing(false);
   }
 
   const nodes: Node[] = useMemo(() => {
@@ -392,7 +383,7 @@ export default function FlowPage() {
   }, [baseEdges, activeHops]);
 
   return (
-    <div className="min-h-screen bg-arch-bg">
+    <div className="flex min-h-screen flex-col bg-arch-bg lg:h-screen">
       <nav className="flex h-12 items-center justify-between border-b border-arch-border bg-arch-surface px-6">
         <Link href="/status" className="text-[0.72rem] font-semibold text-arch-muted hover:text-arch-ink">
           ← Configuratiestatus
@@ -402,76 +393,50 @@ export default function FlowPage() {
         </span>
       </nav>
 
-      <div className="flex flex-col gap-4 px-6 py-6">
-        <ArchitectureHeader
-          isTracing={isTracing}
-          onToggleTrace={() => setIsTracing((t) => !t)}
-          onReset={reset}
-        />
-
-        <MetricsBar
-          environment={environment}
-          onEnvironmentChange={setEnvironment}
-          load={telemetry.load}
-          avgHandlingMs={telemetry.avgHandlingMs}
-          throughputPerSec={telemetry.throughputPerSec}
-          sparkline={telemetry.sparkline}
-        />
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <ConnectionLegend />
-          <label className="flex cursor-pointer items-center gap-2 text-[0.68rem] text-arch-muted">
-            <input
-              type="checkbox"
-              checked={showPlanned}
-              onChange={(e) => setShowPlanned(e.target.checked)}
-              className="accent-arch-teal"
-            />
-            Toon geplande koppelingen (nog geen client)
-          </label>
-        </div>
-
-        <div
-          className="w-full overflow-hidden rounded-lg border border-arch-border bg-arch-surface"
-          style={{ height: 900 }}
-        >
-          <ReactFlowProvider>
-            <ReactFlow
-              nodes={flowNodes}
-              onNodesChange={onNodesChange}
-              edges={edges}
-              nodeTypes={NODE_TYPES}
-              edgeTypes={EDGE_TYPES}
-              nodesDraggable={false}
-              nodesConnectable={false}
-              elementsSelectable={false}
-              panOnDrag
-              panOnScroll
-              panOnScrollMode={PanOnScrollMode.Free}
-              zoomOnScroll={false}
-              zoomOnPinch
-              zoomOnDoubleClick
-              minZoom={0.15}
-              maxZoom={1.5}
-              proOptions={{ hideAttribution: true }}
-            >
-              <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
-              <Controls showInteractive={false} position="top-right" />
-              <FitViewOnReady key={showPlanned ? "planned" : "live"} />
-            </ReactFlow>
-          </ReactFlowProvider>
+      <div className="flex flex-1 flex-col gap-4 p-4 lg:min-h-0 lg:flex-row">
+        <div className="flex h-[75vh] flex-col overflow-hidden rounded-lg border border-arch-border bg-arch-surface lg:h-auto lg:min-w-0 lg:flex-1">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-arch-border px-4 py-2">
+            <ConnectionLegend />
+            <label className="flex cursor-pointer items-center gap-2 text-[0.68rem] text-arch-muted">
+              <input
+                type="checkbox"
+                checked={showPlanned}
+                onChange={(e) => setShowPlanned(e.target.checked)}
+                className="accent-arch-teal"
+              />
+              Toon geplande koppelingen
+            </label>
+          </div>
+          <div className="min-h-0 flex-1">
+            <ReactFlowProvider>
+              <ReactFlow
+                nodes={flowNodes}
+                onNodesChange={onNodesChange}
+                edges={edges}
+                nodeTypes={NODE_TYPES}
+                edgeTypes={EDGE_TYPES}
+                nodesDraggable={false}
+                nodesConnectable={false}
+                elementsSelectable={false}
+                panOnDrag
+                panOnScroll
+                panOnScrollMode={PanOnScrollMode.Free}
+                zoomOnScroll={false}
+                zoomOnPinch
+                zoomOnDoubleClick
+                minZoom={0.15}
+                maxZoom={1.5}
+                proOptions={{ hideAttribution: true }}
+              >
+                <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
+                <Controls showInteractive={false} position="top-right" />
+                <FitViewOnReady key={showPlanned ? "planned" : "live"} />
+              </ReactFlow>
+            </ReactFlowProvider>
+          </div>
         </div>
 
         <LiveLogPanel log={telemetry.log} connected={telemetry.connected} />
-
-        <p className="text-[0.68rem] text-arch-faint">
-          Selecteer een flow in het OMC-blok: de controles van die flow lichten op, en
-          registers, uitvoer en bevestigingen die de flow niet gebruikt dimmen. Klik een controle
-          voor wat die controleert en het log, of een kaart voor het log ervan. Gestippelde
-          kaarten (via &ldquo;Toon geplande koppelingen&rdquo;) zijn nog niet aangesloten. Klik het
-          diagram-icoon voor de beslisboom van de flow, of &ldquo;Trace starten&rdquo; om een echte
-          notificatie live te volgen.
-        </p>
       </div>
 
       <DiagramModal scenario={diagramOpen ? activeDiagram : null} onClose={() => setDiagramOpen(false)} />

@@ -55,28 +55,6 @@ const MAX_LOG_LINES = 150;
 // comes back in this long, give up rather than leave that trace's state open forever.
 const CONFIRM_TIMEOUT_MS = 15 * 60 * 1000;
 
-// "notify-*" only ever reaches "ok"/"fail" via the async /Confirm callback now (see
-// BaseScenario.ProcessDataAsync — the synchronous send only ever emits "pending"), and
-// "contactmoment" only exists as that confirmation's follow-up — so both are keyed off real
-// wall-clock delivery time (seconds to several minutes), not OMC's own processing time. Kept
-// out of "Gem. afhandeltijd" so that figure keeps meaning "how fast OMC's own pipeline ran"
-// rather than jumping to minutes for any trace that actually sends a channel message.
-function isAsyncConfirmationEvent(event: TraceEvent): boolean {
-  return (
-    event.stage === "contactmoment" ||
-    (CHANNEL_KEYS.has(event.stage) && (event.status === "ok" || event.status === "fail"))
-  );
-}
-
-// How the numeric metrics are derived from real events — no simulation, no database:
-const THROUGHPUT_WINDOW_MS = 10_000; // "messages/sec" = events seen in the last 10s / 10
-const TICK_MS = 2500; // how often throughput/load/sparkline recompute
-const SPARKLINE_LENGTH = 24; // 24 * 2.5s = the last minute
-const MAX_DURATION_SAMPLES = 20; // rolling window for the average-handling-time figure
-// "Load" has no real backing metric (no CPU/queue-depth signal is exposed) — it's a proxy
-// scaled against an assumed ceiling of events/sec, not a literal server load measurement.
-const LOAD_CEILING_EVENTS_PER_SEC = 5;
-
 export interface OmcTelemetry {
   connected: boolean;
   /** One entry per trace currently mid-playback — several notifications arriving close
@@ -91,21 +69,14 @@ export interface OmcTelemetry {
   totalProcessed: number;
   /** Per-node-key count of real events touching it, since this page was opened. */
   nodeThroughput: Record<string, number>;
-  throughputPerSec: number;
-  avgHandlingMs: number;
-  load: number;
-  sparkline: number[];
 }
 
 /**
- * The single real-time data source for the architecture page. Connects to
- * /status/trace/stream once, for as long as this hook stays mounted, and derives every number
- * it returns from genuine events — nothing here is simulated or backed by a database.
- * `tracingActive` only toggles whether the edge-flow/log replay is shown; the underlying
- * connection and counters (throughput, load, totals) keep running regardless, so they reflect
- * activity "since this page was opened" even while the visual trace is paused.
+ * The single real-time data source for the flow page. Connects to /status/trace/stream once,
+ * for as long as this hook stays mounted, and replays every real event on the diagram and in
+ * the log — nothing here is simulated or backed by a database.
  */
-export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
+export function useOmcTelemetry(): OmcTelemetry {
   const [connected, setConnected] = useState(false);
   const [activeHops, setActiveHops] = useState<TraceHop[]>([]);
   const [activeSteps, setActiveSteps] = useState<string[]>([]);
@@ -113,15 +84,6 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
   const [log, setLog] = useState<TraceLogLine[]>([]);
   const [totalProcessed, setTotalProcessed] = useState(0);
   const [nodeThroughput, setNodeThroughput] = useState<Record<string, number>>({});
-  const [throughputPerSec, setThroughputPerSec] = useState(0);
-  const [avgHandlingMs, setAvgHandlingMs] = useState(0);
-  const [load, setLoad] = useState(0);
-  const [sparkline, setSparkline] = useState<number[]>([]);
-
-  const tracingActiveRef = useRef(tracingActive);
-  useEffect(() => {
-    tracingActiveRef.current = tracingActive;
-  });
 
   // Each trace gets its own queue and its own play loop, so several notifications arriving
   // close together each pace out on their own timeline instead of all serializing onto one
@@ -149,15 +111,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
 
   const seenTraceIdsRef = useRef<Set<string>>(new Set());
   const nodeThroughputRef = useRef<Record<string, number>>({});
-  const eventTimestampsRef = useRef<number[]>([]);
-  const durationSamplesRef = useRef<number[]>([]);
-  // Each trace's own last-seen elapsedMs, keyed by traceId (insertion order == arrival order of
-  // each trace's first event) — a single shared "current trace" ref can't represent several
-  // traces in flight at once without one trace's value stomping another's.
-  const lastElapsedByTraceRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
+    const confirmTimeouts = confirmTimeoutsRef.current;
     const source = new EventSource(TRACE_STREAM_URL);
 
     source.addEventListener("ready", () => {
@@ -293,28 +250,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
         return;
       }
 
-      // Real counters — always updated, regardless of whether the visual trace is switched on.
+      // Real counters.
       if (!seenTraceIdsRef.current.has(event.traceId)) {
         seenTraceIdsRef.current.add(event.traceId);
         setTotalProcessed(seenTraceIdsRef.current.size);
-
-        // A new trace just started — bank the OLDEST still-tracked trace's own last-known
-        // elapsed time as one real "handling time" sample (not whatever trace happened to send
-        // the most recent event, which could be an unrelated trace still mid-flight).
-        const oldestEntry = lastElapsedByTraceRef.current.entries().next();
-        if (!oldestEntry.done) {
-          const [finishedTraceId, finishedElapsedMs] = oldestEntry.value;
-          lastElapsedByTraceRef.current.delete(finishedTraceId);
-          durationSamplesRef.current = [...durationSamplesRef.current, finishedElapsedMs].slice(
-            -MAX_DURATION_SAMPLES,
-          );
-          const avg =
-            durationSamplesRef.current.reduce((sum, ms) => sum + ms, 0) / durationSamplesRef.current.length;
-          setAvgHandlingMs(Math.round(avg));
-        }
-      }
-      if (!isAsyncConfirmationEvent(event)) {
-        lastElapsedByTraceRef.current.set(event.traceId, event.elapsedMs);
       }
 
       nodeThroughputRef.current = {
@@ -322,10 +261,6 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
         [event.stage]: (nodeThroughputRef.current[event.stage] ?? 0) + 1,
       };
       setNodeThroughput(nodeThroughputRef.current);
-
-      eventTimestampsRef.current.push(Date.now());
-
-      if (!tracingActiveRef.current) return; // counted above; skip the visual replay work
 
       const logLine: TraceLogLine = {
         id: `${event.traceId}-${logCounterRef.current++}`,
@@ -436,48 +371,13 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       playQueueForTrace(event.traceId);
     };
 
-    const tick = setInterval(() => {
-      const now = Date.now();
-      eventTimestampsRef.current = eventTimestampsRef.current.filter((t) => now - t < THROUGHPUT_WINDOW_MS);
-      const rate = eventTimestampsRef.current.length / (THROUGHPUT_WINDOW_MS / 1000);
-      setThroughputPerSec(Math.round(rate * 10) / 10);
-
-      const loadPct = Math.min(100, Math.round((rate / LOAD_CEILING_EVENTS_PER_SEC) * 100));
-      setLoad(loadPct);
-      setSparkline((prev) => [...prev, loadPct].slice(-SPARKLINE_LENGTH));
-    }, TICK_MS);
-
     return () => {
       cancelled = true;
-      clearInterval(tick);
       source.close();
-      confirmTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      confirmTimeoutsRef.current.clear();
+      confirmTimeouts.forEach((timeout) => clearTimeout(timeout));
+      confirmTimeouts.clear();
     };
-    // Connects once for the page's lifetime — intentionally not re-run when `tracingActive`
-    // changes; that flag is only read (via the ref above) inside the already-open connection.
   }, []);
-
-  // Clears only the *visual* replay state when tracing is switched off — the real counters
-  // above (totalProcessed, nodeThroughput, throughputPerSec, load, sparkline) are untouched,
-  // since they represent activity since the page loaded, not since tracing was turned on.
-  useEffect(() => {
-    if (!tracingActive) return;
-    return () => {
-      hopQueuesByTraceRef.current = new Map();
-      playingTracesRef.current = new Set();
-      activeHopsByTraceRef.current = new Map();
-      activeStepByTraceRef.current = new Map();
-      lastStageByTraceRef.current = new Map();
-      pendingConfirmTracesRef.current = new Set();
-      confirmTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      confirmTimeoutsRef.current = new Map();
-      setActiveHops([]);
-      setActiveSteps([]);
-      setLog([]);
-      setVisitedKeys(new Set());
-    };
-  }, [tracingActive]);
 
   return {
     connected,
@@ -487,9 +387,5 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
     log,
     totalProcessed,
     nodeThroughput,
-    throughputPerSec,
-    avgHandlingMs,
-    load,
-    sparkline,
   };
 }
