@@ -1,10 +1,10 @@
-const CONNECTION_TYPES: { label: string; color: string }[] = [
-  { label: "producten", color: "var(--color-arch-indigo)" },
-  { label: "zaken", color: "var(--color-arch-blue)" },
-  { label: "taken", color: "var(--color-arch-amber)" },
-  { label: "besluiten", color: "var(--color-arch-emerald)" },
-  { label: "verrijking", color: "var(--color-arch-teal)" },
-  { label: "bevestiging", color: "var(--color-arch-violet)" },
+import { EDGE_CATEGORY_COLOR, EdgeCategory } from "@/lib/architecture";
+
+const CONNECTION_TYPES: { label: string; category: EdgeCategory }[] = [
+  { label: "invoer", category: "invoer" },
+  { label: "registers (heen en terug)", category: "verrijking" },
+  { label: "uitvoer", category: "uitvoer" },
+  { label: "bevestiging", category: "bevestiging" },
 ];
 
 export function ConnectionLegend() {
@@ -12,7 +12,7 @@ export function ConnectionLegend() {
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.68rem] text-arch-muted">
       {CONNECTION_TYPES.map((c) => (
         <span key={c.label} className="flex items-center gap-1.5">
-          <span className="h-0.5 w-4 rounded-full" style={{ background: c.color }} />
+          <span className="h-0.5 w-4 rounded-full" style={{ background: EDGE_CATEGORY_COLOR[c.category] }} />
           {c.label}
         </span>
       ))}
@@ -21,8 +21,12 @@ export function ConnectionLegend() {
         actief
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="h-1.5 w-1.5 rounded-full bg-arch-faint" />
-        inactief
+        <span className="h-3 w-4 rounded-sm border border-dashed border-arch-faint" />
+        nog geen client
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-3 w-4 rounded-sm border border-arch-border opacity-50" />
+        gedimd: deze flow gebruikt het niet
       </span>
     </div>
   );

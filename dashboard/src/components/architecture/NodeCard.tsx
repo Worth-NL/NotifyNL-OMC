@@ -11,11 +11,15 @@ export function NodeCard({
   state,
   throughput,
   onClick,
+  height,
 }: {
   node: ArchitectureNode;
   state: NodeState;
   throughput?: number;
   onClick?: () => void;
+  /** Fixed card height, so a row of cards lines up whatever their text; the name and subtitle
+   * are clamped to two lines each and the status row sits at the bottom. */
+  height?: number;
 }) {
   const isInactive = state === "inactive";
   const isDimmed = state === "dimmed";
@@ -24,7 +28,9 @@ export function NodeCard({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full rounded-lg border bg-arch-surface p-3 text-left transition-all duration-200 ${
+      title={height ? `${node.name} — ${node.subtitle}` : undefined}
+      style={height ? { height } : undefined}
+      className={`flex w-full flex-col rounded-lg border bg-arch-surface p-3 text-left transition-all duration-200 ${
         onClick ? "cursor-pointer hover:border-arch-teal/60" : ""
       } ${
         isInactive
@@ -35,7 +41,7 @@ export function NodeCard({
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className={`text-[0.8rem] font-semibold ${isInactive ? "text-arch-faint" : "text-arch-ink"}`}>
+        <span className={`line-clamp-2 text-[0.8rem] font-semibold ${isInactive ? "text-arch-faint" : "text-arch-ink"}`}>
           {node.name}
         </span>
         {node.version && (
@@ -44,8 +50,8 @@ export function NodeCard({
           </span>
         )}
       </div>
-      <p className="mt-0.5 text-[0.68rem] leading-snug text-arch-muted">{node.subtitle}</p>
-      <div className="mt-2 flex items-center justify-between">
+      <p className={`mt-0.5 text-[0.68rem] leading-snug text-arch-muted ${height ? "line-clamp-2" : ""}`}>{node.subtitle}</p>
+      <div className={`flex items-center justify-between ${height ? "mt-auto pt-2" : "mt-2"}`}>
         <span className="flex items-center gap-1.5 text-[0.68rem] font-medium">
           <span
             className={`h-1.5 w-1.5 rounded-full ${isInactive ? "bg-arch-faint" : "bg-arch-green"}`}

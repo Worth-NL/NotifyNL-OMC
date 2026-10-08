@@ -205,6 +205,9 @@ jobs:
           file: OMC/Infrastructure/WebApi/EventsHandler/Dockerfile
           push: true
           tags: worthnl/notifynl-omc:${{ env.TAG }}
+          # PR images go to the test environment, which runs the status dashboard
+          build-args: |
+            BUILD_DASHBOARD=true
         name: Docker build and push ${{ env.TAG }}
 
     outputs:

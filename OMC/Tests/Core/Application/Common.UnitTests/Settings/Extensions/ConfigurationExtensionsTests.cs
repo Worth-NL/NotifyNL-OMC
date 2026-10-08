@@ -180,5 +180,28 @@ namespace Common.Tests.Unit.Settings.Extensions
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
         #endregion
+
+        #region IsSwitchedOn
+        [TestCase("true")]
+        [TestCase("TRUE")]
+        [TestCase(" True ")]
+        [TestCase("1")]
+        public void IsSwitchedOn_ExplicitlyOn_ReturnsTrue(string value)
+        {
+            Assert.That(ConfigExtensions.IsSwitchedOn(value), Is.True);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("false")]
+        [TestCase("0")]
+        [TestCase("yes")]
+        [TestCase("on")]
+        public void IsSwitchedOn_UnsetOrAnythingElse_ReturnsFalse(string? value)
+        {
+            Assert.That(ConfigExtensions.IsSwitchedOn(value), Is.False);
+        }
+        #endregion
     }
 }

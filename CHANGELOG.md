@@ -1,3 +1,17 @@
+## 2.3.1
+
+- Redesigns the `/status/flow` dashboard after the OMC3 "Stroom" view: fixed columns (Invoer → OMC → Uitvoer → Afleverbevestiging) with the registers in one row underneath, instead of an auto-laid-out graph whose lines crossed more with every scenario
+- Merges Output Patronen and the checks into one OMC block: pick a flow and its row of checks lights up, in the order the scenario runs them, while registers and outputs it doesn't use are dimmed
+- Clicking a check shows what it checks, where it is configured, what happens when it fails (206, 412 or skipped) and where it lives in the code, above its log
+- Adds the Printstraat and Berichtenbox (MOBB) flows to the dashboard, with Printstraat and Logius Berichtenbox as outputs and the BerichtenAPI (OpenVTB) and DocumentenAPI as registers
+- Traces the Berichtenbox (MOBB) flow: every check and every fallback (Berichtenbox → e-mail → letter via BRP) now shows up in the live trace. Previously a Bericht left no trace at all
+- Calmer live trace: one dot per message that runs each line once. Steps that don't move the dot no longer take a full second, and the dot no longer restarts at every step, which made one message look like several
+- Integrations that don't exist yet are hidden behind "Toon geplande koppelingen"; the Dagre layout dependency is removed
+- The flow page is just the diagram with the live trace log beside it: the trace runs as soon as the page opens, and the introduction, the metrics bar (environment toggle, load, handling time, sparkline) and the trace/reset buttons are gone
+- **The status dashboard is now opt-in.** Its pages and APIs (`/status`, `/status/flow`, `/status/scenarios`, `/status/stream`, `/status/trace/stream`) have no authentication, so they are only served with `DASHBOARD_ENABLED=true` and answer 404 otherwise. The Docker image only contains the dashboard when built with `--build-arg BUILD_DASHBOARD=true`. Environments that use the dashboard need both
+- Keeps personal data out of the live trace stream: a failed register call's message carries the request URI (for an OpenKlant party search, with the BSN or KVK number in it) and the response body. Every trace detail is now scrubbed on its way out: no URI or response body, no query strings, long digit runs masked, length capped
+- Updates the dashboard to Next.js 16.4.0 and pins KaTeX (pulled in by Mermaid) to 0.18.2 or later, clearing the critical and low npm audit findings in its runtime dependencies
+
 ## 2.3.0
 
 - Adds the "product aangemaakt" scenario: a `producten`/`product`/`create` event from Open Product is fetched, checked against a product type whitelist, and e-mailed to every eigenaar of the product

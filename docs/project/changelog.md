@@ -2,6 +2,20 @@
 
 ---
 
+## v2.3.1
+
+- Herontwerpt het dashboard `/status/flow` naar de "Stroom"-weergave van OMC3: vaste kolommen (Invoer → OMC → Uitvoer → Afleverbevestiging) met de registers in één rij eronder, in plaats van een automatisch geplaatste graaf waarvan de lijnen met elk scenario meer kruisten
+- Voegt Output Patronen en de controles samen tot één OMC-blok: kies een flow en de controles van die flow lichten op, in de volgorde waarin het scenario ze uitvoert; registers en uitvoer die de flow niet gebruikt dimmen
+- Een klik op een controle toont wat er gecontroleerd wordt, waar het is ingesteld, wat er gebeurt als het niet klopt (206, 412 of overgeslagen) en waar het in de code staat, met het log eronder
+- Voegt de flows Printstraat en Berichtenbox (MOBB) toe aan het dashboard, met Printstraat en Logius Berichtenbox als uitvoer en de BerichtenAPI (OpenVTB) en DocumentenAPI als registers
+- Traceert de Berichtenbox-flow (MOBB): elke controle en elke terugval (Berichtenbox → e-mail → brief via BRP) is nu te volgen in de live trace. Voorheen liet een bericht helemaal geen trace achter
+- Rustigere live trace: één bolletje per bericht dat elke lijn één keer doorloopt. Stappen waarbij het bolletje niet beweegt duren geen volle seconde meer, en het bolletje begint niet meer bij elke stap opnieuw, waardoor één bericht eruitzag als meerdere
+- Koppelingen die nog niet bestaan staan achter "Toon geplande koppelingen"; de afhankelijkheid van de Dagre-layout is verwijderd
+- De flowpagina is alleen nog het diagram met de live trace-log ernaast: de trace loopt zodra de pagina open is, en de introductietekst, de metriekbalk (omgevingsschakelaar, belasting, afhandeltijd, sparkline) en de trace- en herstelknop zijn weg
+- **Het statusdashboard is nu opt-in.** De pagina's en API's (`/status`, `/status/flow`, `/status/scenarios`, `/status/stream`, `/status/trace/stream`) hebben geen authenticatie, dus ze worden alleen geserveerd met `DASHBOARD_ENABLED=true` en geven anders `404`. De Docker-image bevat het dashboard alleen als hij gebouwd is met `--build-arg BUILD_DASHBOARD=true`. Omgevingen die het dashboard gebruiken hebben beide nodig
+- Houdt persoonsgegevens uit de live trace-stream: de foutmelding van een mislukte registercall bevat de request-URI (bij een partij-zoekactie in OpenKlant met het BSN of KVK-nummer erin) en de response body. Elk trace-detail wordt nu opgeschoond voordat het de stream in gaat: geen URI of response body, geen querystrings, lange cijferreeksen gemaskeerd, lengte begrensd
+- Werkt het dashboard bij naar Next.js 16.4.0 en zet KaTeX (via Mermaid) vast op 0.18.2 of hoger, waarmee de critical- en low-meldingen van npm audit in de runtime-dependencies zijn opgelost
+
 ## v2.3.0
 
 - Voegt het scenario [Product aangemaakt](../werkwijzen/scenarios/producten.md) toe: een `producten`/`product`/`create`-event uit Open Product wordt opgehaald, getoetst aan een producttype-whitelist en per e-mail verstuurd aan elke eigenaar van het product

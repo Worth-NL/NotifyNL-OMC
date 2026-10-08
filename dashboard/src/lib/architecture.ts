@@ -10,6 +10,21 @@ export interface ArchitectureNode {
   version?: string;
   /** Real, wired-up OMC integration vs. a placeholder from the design reference. */
   active: boolean;
+  /** Compact label, for where the full name doesn't fit (the check blocks in the OMC block). */
+  short?: string;
+  /** What a check checks, shown when it is clicked. Only checks have it. */
+  details?: CheckDetails;
+}
+
+export interface CheckDetails {
+  /** What is checked, in plain language. */
+  what: string;
+  /** Where it is configured: an env var, or the register field it reads. */
+  config: string;
+  /** What happens when it does not pass, including the HTTP status Open Notificaties gets. */
+  onFail: string;
+  /** Where it lives in the code. */
+  source: string;
 }
 
 export const INPUT_NODES: ArchitectureNode[] = [
@@ -25,51 +40,254 @@ export const REGISTER_NODES: ArchitectureNode[] = [
   { key: "objecttypen", name: "ObjectTypen", subtitle: "Schema's voor Objecten API", version: "v1.1", active: true },
   { key: "besluiten", name: "BesluitenAPI (OpenZaak)", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
   { key: "brp", name: "BRP", subtitle: "Haal Centraal — persoonsgegevens", version: "v2.2", active: true },
-  { key: "kto", name: "KTO", subtitle: "Klanttevredenheidsonderzoek (Expoints)", active: true },
   { key: "openproduct", name: "ProductenAPI (Open Product)", subtitle: "Producten, producttypen en eigenaren", version: "v1.7", active: true },
-  { key: "documentstore", name: "DocumentAPI (OpenZaak)", subtitle: "Centrale documentopslag", active: false },
+  { key: "documenten", name: "DocumentenAPI", subtitle: "Documenten en hun inhoud (pdf, bijlagen)", active: true },
   { key: "profielservice", name: "ProfielService (MoZa)", subtitle: "Voorkeuren per burger", active: false },
-  { key: "vtb", name: "BerichtenAPI (OpenVTB)", subtitle: "Verificatie toegangsbeheer", active: false },
+  { key: "vtb", name: "BerichtenAPI (OpenVTB)", subtitle: "Berichten voor de Berichtenbox", active: true },
 ];
 
-// Replaces a generic 3-node guess ("Kanaal keuze" / "Privacy filter" / "Notificatie filter")
-// with the gates that actually exist in the C# source, verified per scenario:
-//   - "Privacy filter" as GDPR/consent never existed in the main 7-scenario pipeline — the one
-//     natural-person check in the codebase (CheckIfInitiatorIsNaturalPersonAsync) belongs to
-//     the separate /MijnZaken forwarding pipeline (naturalpersoncheck below), not these 7.
-//   - "Notificatie filter" (dedup/throttle) has zero basis in code — no send-log, no
-//     "already notified" check anywhere in the repo.
-// See BaseScenario.cs, and each ScenarioXyz.cs's PrepareDataAsync, for the real gates below.
-// naturalpersoncheck/mijnzaken-staleness are MijnZaken-only (MijnOverheidForwarder.cs) — not
-// used by any of the 7 main scenarios, same relationship taakcheck/documentcheck already have
-// with the shared chain: a scenario-family's own pre-check that feeds into it.
-export const FILTER_NODES: ArchitectureNode[] = [
-  { key: "zaaktypewhitelist", name: "Zaaktype whitelist", subtitle: "ValidateCaseId — per-scenario env var", active: true },
-  { key: "informerencheck", name: "Informeren-check", subtitle: "IsNotificationExpected", active: true },
-  { key: "kanaalresolutie", name: "Kanaalresolutie", subtitle: "OpenKlant adres/voorkeur — e-mail of sms", active: true },
-  { key: "berichtenschakelaar", name: "Berichten-schakelaar", subtitle: "Globale aan/uit-vlag — geen per-zaaktype whitelist", active: true },
-  { key: "taakcheck", name: "Taak- & ID-typecheck", subtitle: "Taak open + BSN/KVK", active: true },
-  { key: "documentcheck", name: "Documentstatus & vertrouwelijkheid", subtitle: "Definitief + niet-vertrouwelijk", active: true },
-  { key: "naturalpersoncheck", name: "Natuurlijk persoon-check", subtitle: "CheckIfInitiatorIsNaturalPersonAsync — MijnZaken", active: true },
-  { key: "mijnzaken-staleness", name: "Verouderd-check", subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd", active: true },
-  { key: "producttypewhitelist", name: "Producttype whitelist", subtitle: "producttype.code — ZGW_WHITELIST_PRODUCTCREATE_IDS", active: true },
-  { key: "productgepubliceerd", name: "Publicatiecheck", subtitle: "product.gepubliceerd", active: true },
-  { key: "productbezorging", name: "Productbezorging", subtitle: "Per eigenaar e-mailen — mislukt → contactmoment", active: true },
+// The checks each scenario runs before it sends anything, verified against the C# source (see
+// BaseScenario.cs and each scenario's PrepareDataAsync). They are not nodes of their own in the
+// diagram: they are blocks inside the OMC block, one row per flow in the order that flow runs
+// them (see FlowOption.filters). That keeps the diagram the same shape however many scenarios
+// exist, which a separate node per check could not (each new scenario added another lane of
+// crossing lines). Their keys are still the trace stages the backend emits, so a live trace
+// lights up the matching block, and every check keeps its own log next to its explanation.
+//   - naturalpersoncheck/mijnzaken-staleness are MijnZaken-only (MijnOverheidForwarder.cs).
+//   - producttypewhitelist/productgepubliceerd/productbezorging are Product created only
+//     (ProductScenarioImplementation.cs).
+export const CHECK_NODES: ArchitectureNode[] = [
+  {
+    key: "zaaktypewhitelist", name: "Zaaktype whitelist", short: "Zaaktype whitelist", active: true,
+    subtitle: "ValidateCaseId — per-scenario env var",
+    details: {
+      what: "Staat het zaaktype (de identificatie uit de catalogus) op de whitelist van dit scenario? Een * staat alles toe.",
+      config: "ZGW_WHITELIST_ZAAKCREATE_IDS, _ZAAKUPDATE_IDS, _ZAAKCLOSE_IDS, _TASKASSIGNED_IDS of _DECISIONMADE_IDS — per scenario",
+      onFail: "Afgebroken (206): er wordt niets verstuurd en Open Notificaties biedt het event niet opnieuw aan. De reden noemt de env var.",
+      source: "BaseScenario.ValidateCaseId",
+    },
+  },
+  {
+    key: "informerencheck", name: "Informeren-check", short: "Informeren", active: true,
+    subtitle: "IsNotificationExpected",
+    details: {
+      what: "Staat \"informeren\" aan op het statustype (zaakscenario's) of zaaktype? Alleen dan wil de gemeente dat de burger bericht krijgt.",
+      config: "Het veld informeren op het statustype/zaaktype in de OpenZaak-catalogus",
+      onFail: "Afgebroken (206): bewust niet versturen, geen herlevering.",
+      source: "NotifyScenariosResolver, BaseScenario.ValidateNotifyPermit",
+    },
+  },
+  {
+    key: "kanaalresolutie", name: "Kanaalresolutie", short: "Kanaal", active: true,
+    subtitle: "OpenKlant adres/voorkeur — e-mail of sms",
+    details: {
+      what: "Kiest e-mail of sms op basis van de digitale adressen van de partij in OpenKlant: eerst een adres waarvan de referentie gelijk is aan de zaak, dan het voorkeursadres, dan het eerste bruikbare adres.",
+      config: "Digitale adressen en voorkeursDigitaalAdres van de partij in OpenKlant",
+      onFail: "Mislukt (412) als er geen bruikbaar adres is; bestaat de partij niet, dan afgebroken (206).",
+      source: "BaseScenario.TryGetDataAsync, PartyResults.Party",
+    },
+  },
+  {
+    key: "berichtenschakelaar", name: "Berichten-schakelaar", short: "Berichten aan/uit", active: true,
+    subtitle: "Globale aan/uit-vlag — geen per-zaaktype whitelist",
+    details: {
+      what: "Staat het scenario Bericht ontvangen aan? Eén vlag voor alle berichten, geen whitelist per type.",
+      config: "ZGW_WHITELIST_MESSAGE_ALLOWED (true/false)",
+      onFail: "Afgebroken (206): de reden noemt de env var.",
+      source: "MessageReceivedScenario.PrepareDataAsync",
+    },
+  },
+  {
+    key: "taakcheck", name: "Taak- & ID-typecheck", short: "Taak & ID-type", active: true,
+    subtitle: "Taak open + BSN/KVK",
+    details: {
+      what: "Is de taak nog open, en is de ontvanger geïdentificeerd met een BSN of KVK-nummer?",
+      config: "De taak in de Objecten API (status en identificatie)",
+      onFail: "Afgebroken (206): een gesloten taak of een ander identificatietype krijgt geen bericht.",
+      source: "TaskAssignedScenario.PrepareDataAsync",
+    },
+  },
+  {
+    key: "documentcheck", name: "Documentcheck", short: "Documentcheck", active: true,
+    subtitle: "Besluitdocument definitief/openbaar · pdfurl in eigen Documenten API",
+    details: {
+      what: "Besluit genomen: is het besluitdocument van een toegestaan informatieobjecttype, definitief en openbaar (niet vertrouwelijk)? Printstraat: wijst de pdfurl naar een document in de geconfigureerde Documenten API (zelfde schema, host en poort)?",
+      config: "Besluit: ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS · Printstraat: ZGW_ENDPOINT_DOCUMENTEN",
+      onFail: "Besluit genomen: afgebroken (206), de reden noemt wat niet klopt. Printstraat: mislukt (412).",
+      source: "DecisionMadeScenario.PrepareDataAsync, PrintScenarioImplementation.TryResolveDocumentUuid",
+    },
+  },
+  {
+    key: "printschakelaar", name: "Printen aan/uit", short: "Printen aan/uit", active: true,
+    subtitle: "Globale aan/uit-vlag voor de printstraat",
+    details: {
+      what: "Staat printen aan voor deze omgeving? Eén vlag voor alle printopdrachten.",
+      config: "ZGW_WHITELIST_PRINT_ALLOWED (true/false)",
+      onFail: "Mislukt (412): de reden noemt de env var.",
+      source: "PrintScenarioImplementation.ProcessPrintAsync (stap 1)",
+    },
+  },
+  {
+    key: "betrokkeneurn", name: "BSN in betrokkene-URN", short: "BSN in URN", active: true,
+    subtitle: "contact_betrokkene_urn moet een BSN dragen",
+    details: {
+      what: "Bevat contact_betrokkene_urn in het print-object een BSN? Alleen een BSN kan nu worden opgezocht; KVK volgt later.",
+      config: "contact_betrokkene_urn in het print-object (Objecten API)",
+      onFail: "Mislukt (412): de reden noemt welk soort URN het was.",
+      source: "PrintScenarioImplementation.TryResolveBsn",
+    },
+  },
+  {
+    key: "vtbcloudeventtype", name: "CloudEvent-type", short: "Gepubliceerd-event", active: true,
+    subtitle: "Alleen nl.overheid.berichten.bericht-gepubliceerd",
+    details: {
+      what: "Is het CloudEvent een bericht-gepubliceerd? Alleen dan staat het bericht echt klaar. Een bericht-geregistreerd (of een toekomstig type) wordt genegeerd.",
+      config: "Vast in de code: nl.overheid.berichten.bericht-gepubliceerd",
+      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open VTB biedt het niet opnieuw aan.",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 0)",
+    },
+  },
+  {
+    key: "vtbberichtid", name: "Bericht-ID", short: "Bericht-ID", active: true,
+    subtitle: "subject van het CloudEvent is een bericht-UUID",
+    details: {
+      what: "Heeft het CloudEvent een subject, en is dat een geldige UUID? Daarmee wordt het bericht bij Open VTB opgehaald.",
+      config: "subject van het CloudEvent",
+      onFail: "Mislukt (412).",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 1)",
+    },
+  },
+  {
+    key: "vtbberichttekst", name: "Berichttekst", short: "Berichttekst", active: true,
+    subtitle: "Het opgehaalde bericht heeft tekst",
+    details: {
+      what: "Heeft het bericht uit Open VTB een tekst? Een leeg bericht wordt niet verstuurd, ook niet via een terugval.",
+      config: "Het bericht in Open VTB",
+      onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus geen herlevering (opnieuw proberen verandert niets).",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 5)",
+    },
+  },
+  {
+    key: "vtbontvanger", name: "Ontvanger is burger", short: "Ontvanger is burger", active: true,
+    subtitle: "BSN in de ontvanger-URN",
+    details: {
+      what: "Draagt de ontvanger-URN van het bericht een BSN? Alleen burgers kunnen een bericht in de Berichtenbox krijgen.",
+      config: "De ontvanger (URN) van het bericht in Open VTB",
+      onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus geen herlevering.",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 6)",
+    },
+  },
+  {
+    key: "vtbberichttype", name: "Berichttype whitelist", short: "Berichttype whitelist", active: true,
+    subtitle: "Berichttype van het Open VTB-bericht",
+    details: {
+      what: "Staat het berichttype van het Open VTB-bericht op de whitelist? Geldt voor de Berichtenbox én de terugval.",
+      config: "ZGW_WHITELIST_VTBMESSAGE_TYPES",
+      onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 7)",
+    },
+  },
+  {
+    key: "mobbgeschiktheid", name: "Berichtenbox of terugval", short: "Berichtenbox of terugval", active: true,
+    subtitle: "isInMijnOverheidBerichtenbox → Berichtenbox, anders e-mail of brief",
+    details: {
+      what: "Hoort het bericht in de MijnOverheid Berichtenbox? Zo ja: naar de Berichtenbox. Zo nee: terugval naar digitale post (e-mail), en zonder e-mailadres een brief naar het adres uit de BRP.",
+      config: "Het bericht in Open VTB; BRP voor het briefadres",
+      onFail: "Geen afkeuring: deze stap kiest alleen het kanaal. Weigert Notify NL de Berichtenbox-verzending, dan volgt dezelfde terugval.",
+      source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 8), SendDigitalePostFallbackAsync",
+    },
+  },
+  {
+    key: "mobbemailadres", name: "E-mailadres bekend", short: "E-mailadres bekend", active: true,
+    subtitle: "Terugval 1: digitale post per e-mail",
+    details: {
+      what: "Heeft de partij een e-mailadres in OpenKlant? Dan gaat het bericht als digitale post per e-mail. Zo niet, of weigert Notify NL die e-mail, dan volgt een brief.",
+      config: "Digitale adressen van de partij in OpenKlant · NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",
+      onFail: "Geen afkeuring: terugval naar een brief.",
+      source: "MessageBoxScenarioImplementation.SendDigitalePostFallbackAsync",
+    },
+  },
+  {
+    key: "brpadres", name: "Bruikbaar BRP-adres", short: "BRP-adres", active: true,
+    subtitle: "Terugval 2: brief naar het adres uit de BRP",
+    details: {
+      what: "Geeft de BRP een bruikbaar adres voor de ontvanger? Dat is nodig voor de brief, het laatste kanaal. Het adres wordt nooit gelogd of bewaard.",
+      config: "BRP (Haal Centraal) · NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX",
+      onFail: "Mislukt (412): er is geen kanaal meer over.",
+      source: "MessageBoxScenarioImplementation.SendLetterFallbackAsync",
+    },
+  },
+  {
+    key: "naturalpersoncheck", name: "Natuurlijk persoon-check", short: "Natuurlijk persoon", active: true,
+    subtitle: "CheckIfInitiatorIsNaturalPersonAsync — MijnZaken",
+    details: {
+      what: "Is de initiator van de zaak een natuurlijk persoon? Alleen burgers krijgen MijnZaken-berichten.",
+      config: "De rol initiator van de zaak in OpenZaak",
+      onFail: "Overgeslagen: het event wordt niet doorgestuurd naar MijnOverheid.",
+      source: "MijnOverheidForwarder.VerifyNaturalPersonWithTraceAsync",
+    },
+  },
+  {
+    key: "mijnzaken-staleness", name: "Verouderd-check", short: "Verouderd", active: true,
+    subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd",
+    details: {
+      what: "Is het event niet ouder dan de laatste wijziging (laatstGemuteerd) of opening (laatstGeopend) van de zaak? Zo komt een oud event nooit over een nieuwere stand heen.",
+      config: "laatstGemuteerd / laatstGeopend op de zaak in OpenZaak",
+      onFail: "Overgeslagen: het verouderde event wordt niet doorgestuurd.",
+      source: "MijnOverheidForwarder.HandleMutatedAsync / HandleOpenedAsync",
+    },
+  },
+  {
+    key: "producttypewhitelist", name: "Producttype whitelist", short: "Producttype whitelist", active: true,
+    subtitle: "producttype.code — ZGW_WHITELIST_PRODUCTCREATE_IDS",
+    details: {
+      what: "Staat de code van het producttype (uit het opgehaalde product, niet uit de kenmerken) op de whitelist? Een * staat alles toe.",
+      config: "ZGW_WHITELIST_PRODUCTCREATE_IDS",
+      onFail: "Afgebroken (206): de reden noemt de producttype-code en de env var.",
+      source: "ProductScenarioImplementation.ValidateProductTypeIsWhitelisted",
+    },
+  },
+  {
+    key: "productgepubliceerd", name: "Publicatiecheck", short: "Gepubliceerd", active: true,
+    subtitle: "product.gepubliceerd",
+    details: {
+      what: "Is het product gepubliceerd? Een product dat (nog) niet getoond wordt, wordt ook niet aangekondigd.",
+      config: "Het veld gepubliceerd op het product in Open Product",
+      onFail: "Afgebroken (206).",
+      source: "ProductScenarioImplementation.ValidateProductIsPublished",
+    },
+  },
+  {
+    key: "productbezorging", name: "Productbezorging", short: "Bezorging", active: true,
+    subtitle: "Per eigenaar e-mailen — mislukt → contactmoment",
+    details: {
+      what: "Stuurt elke eigenaar een eigen e-mail. Pas nadat alle eigenaren een partij hebben: een eigenaar zonder e-mailadres, of een verzending die Notify NL weigert, wordt een mislukt contactmoment.",
+      config: "NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED",
+      onFail: "De notificatie slaagt (202); per eigenaar wordt de mislukking als contactmoment vastgelegd. Ontbreekt het template: mislukt (412).",
+      source: "ProductScenarioImplementation.DeliverAsync",
+    },
+  },
 ];
+
+export const CHECK_KEYS = new Set(CHECK_NODES.map((s) => s.key));
 
 // "Letter"/"Both" branches exist in BaseScenario's DistributionChannel switch, but the live
 // OpenKlant v2 integration (PartyResults.DetermineDistributionChannel) never returns them —
 // only Email/Sms are reachable in production, so Notify Post stays wired but never "live" for
 // any real flow. PostGuard is not part of this pipeline at all: it's a manual test endpoint
 // (TestNotifyController) never invoked by NotifyProcessor or any scenario — marked inactive.
+// KTO sits here rather than among the registers: OMC hands the survey off to it, the same way
+// it hands a message to Notify NL (matches the OMC3 "Stroom" design).
 export const CHANNEL_NODES: ArchitectureNode[] = [
   { key: "notify-email", name: "Notify E-mail", subtitle: "Notify NL — e-mail", active: true },
   { key: "notify-sms", name: "Notify SMS", subtitle: "Notify NL — sms", active: true },
-  { key: "notify-post", name: "Notify Post", subtitle: "Notify NL — brief (nooit bereikt door live OpenKlant-data)", active: true },
-  { key: "postguard", name: "PostGuard", subtitle: "Handmatig testendpoint — geen scenario roept dit aan", active: false },
-  { key: "berichtenbox", name: "Notify Berichtenbox", subtitle: "MijnOverheid berichtenbox", active: false },
-  { key: "lokale-berichtenbox", name: "Lokale Berichtenbox", subtitle: "Gemeentelijk portaal", active: false },
+  { key: "notify-post", name: "Notify Post", subtitle: "Notify NL — brief", active: true },
+  { key: "printstraat", name: "Printstraat", subtitle: "Notify NL — kant-en-klare brief (pdf)", active: true },
+  { key: "berichtenbox", name: "Logius Berichtenbox", subtitle: "MijnOverheid Berichtenbox — via Notify NL", active: true },
   { key: "logius-mijnzaken", name: "Logius MijnZaken", subtitle: "CloudEvent — MijnOverheid burgerportaal", active: true },
+  { key: "kto", name: "KTO", subtitle: "Klanttevredenheidsonderzoek (Expoints)", active: true },
+  { key: "postguard", name: "PostGuard", subtitle: "Handmatig testendpoint — geen scenario roept dit aan", active: false },
+  { key: "lokale-berichtenbox", name: "Lokale Berichtenbox", subtitle: "Gemeentelijk portaal", active: false },
 ];
 
 export const CONFIRMATION_NODES: ArchitectureNode[] = [
@@ -80,14 +298,16 @@ export const CONFIRMATION_NODES: ArchitectureNode[] = [
 
 export const PATTERN_ENGINE_KEY = "output-patronen";
 
-export type EdgeCategory = "producten" | "zaken" | "taken" | "besluiten" | "verrijking" | "bevestiging";
+/** Trace stages the backend names differently from the card they belong to. The print flow
+ * reports its hand-off to Notify NL as "notifynl"; on the diagram that is the Printstraat. */
+export const STAGE_ALIASES: Record<string, string> = { notifynl: "printstraat" };
+
+export type EdgeCategory = "invoer" | "verrijking" | "uitvoer" | "bevestiging";
 
 export const EDGE_CATEGORY_COLOR: Record<EdgeCategory, string> = {
-  producten: "var(--color-arch-indigo)",
-  zaken: "var(--color-arch-blue)",
-  taken: "var(--color-arch-amber)",
-  besluiten: "var(--color-arch-emerald)",
+  invoer: "var(--color-arch-blue)",
   verrijking: "var(--color-arch-teal)",
+  uitvoer: "var(--color-arch-indigo)",
   bevestiging: "var(--color-arch-violet)",
 };
 
@@ -97,92 +317,25 @@ export interface FlowEdge {
   category: EdgeCategory;
 }
 
-// The static architecture graph — always the same shape, regardless of selected flow.
-// Which edges appear "live" (vs. dimmed) is derived at render time from whether both
-// endpoints are used by the currently selected FlowOption.
+// The static diagram — always the same shape, regardless of the selected flow. Which edges are
+// "live" (vs. dimmed) is derived per flow in tracePath.ts.
 //
-// Registers are never a pipeline stage of their own — OMC is the sole hub that calls each
-// register and gets a response back before continuing, so every register edge is a round
-// trip to/from Output Patronen (rendered below it), not a forward hop to Kanaal keuze.
+// Everything runs through OMC: inputs feed it, it calls each register and gets a response back
+// before continuing (a round trip, drawn downward to the register row), it runs the flow's
+// checks (blocks inside the OMC block — see CHECK_NODES), and hands what passes to an output,
+// which reports back as a contactmoment.
 export const EDGES: FlowEdge[] = [
-  { source: "opennotificaties", target: PATTERN_ENGINE_KEY, category: "zaken" },
-  { source: "oneground", target: PATTERN_ENGINE_KEY, category: "zaken" },
-  { source: "mendix", target: PATTERN_ENGINE_KEY, category: "producten" },
-
+  ...INPUT_NODES.map((n) => ({ source: n.key, target: PATTERN_ENGINE_KEY, category: "invoer" as const })),
   ...REGISTER_NODES.map((n) => ({ source: PATTERN_ENGINE_KEY, target: n.key, category: "verrijking" as const })),
-
-  // Four real entry points into the filter stage, one per scenario family. Task's and
-  // Decision's own checks run BEFORE the shared zaaktype whitelist in the real code
-  // (TaskAssignedScenario/DecisionMadeScenario check their own things first, then call
-  // ValidateCaseId), so they feed into it rather than branching off it. Case scenarios and
-  // Message Received have no scenario-unique gate, so they enter the shared chain directly
-  // (Message Received skips the whitelist/informeren chain entirely — its one gate is a
-  // global flag, not a per-case-type check).
-  { source: PATTERN_ENGINE_KEY, target: "zaaktypewhitelist", category: "producten" },
-  { source: PATTERN_ENGINE_KEY, target: "taakcheck", category: "taken" },
-  { source: PATTERN_ENGINE_KEY, target: "documentcheck", category: "besluiten" },
-  { source: PATTERN_ENGINE_KEY, target: "berichtenschakelaar", category: "producten" },
-
-  // Product created (ProductScenarioImplementation) has its own two gates and no
-  // kanaalresolutie: every eigenaar is notified by e-mail, so there is no channel to resolve.
-  { source: PATTERN_ENGINE_KEY, target: "producttypewhitelist", category: "producten" },
-  { source: "producttypewhitelist", target: "productgepubliceerd", category: "producten" },
-  { source: "productgepubliceerd", target: "productbezorging", category: "producten" },
-  { source: "productbezorging", target: "notify-email", category: "producten" },
-  // An eigenaar who cannot be reached (no e-mail address, or a send Notify NL refuses) is
-  // registered as a failed contactmoment straight away — no delivery receipt is coming for it.
-  { source: "productbezorging", target: "contactmoment", category: "bevestiging" },
-
-  { source: "taakcheck", target: "zaaktypewhitelist", category: "taken" },
-  { source: "documentcheck", target: "zaaktypewhitelist", category: "besluiten" },
-
-  { source: "zaaktypewhitelist", target: "informerencheck", category: "producten" },
-  { source: "informerencheck", target: "kanaalresolutie", category: "producten" },
-  { source: "berichtenschakelaar", target: "kanaalresolutie", category: "producten" },
-
-  // Only Email/Sms are ever actually selected by the live OpenKlant integration (see
-  // CHANNEL_NODES comment) — Notify Post stays reachable in the diagram since the code path
-  // is real, it just never lights up for any concrete flow (not in any FlowOption.channels).
-  { source: "kanaalresolutie", target: "notify-email", category: "producten" },
-  { source: "kanaalresolutie", target: "notify-sms", category: "producten" },
-  { source: "kanaalresolutie", target: "notify-post", category: "producten" },
-  // Berichtenbox/Lokale Berichtenbox are aspirational (active: false) — never real sends —
-  // but still need an edge into the main graph, or Dagre treats {berichtenbox, archief} and
-  // {lokale-berichtenbox, contactherstel} as disconnected components with nothing else
-  // anchoring them, and dumps them off in a corner unrelated to the rest of Uitvoer.
-  { source: "kanaalresolutie", target: "berichtenbox", category: "producten" },
-  { source: "kanaalresolutie", target: "lokale-berichtenbox", category: "producten" },
+  ...CHANNEL_NODES.map((n) => ({ source: PATTERN_ENGINE_KEY, target: n.key, category: "uitvoer" as const })),
 
   { source: "notify-email", target: "contactmoment", category: "bevestiging" },
   { source: "notify-sms", target: "contactmoment", category: "bevestiging" },
   { source: "notify-post", target: "contactmoment", category: "bevestiging" },
   { source: "postguard", target: "contactmoment", category: "bevestiging" },
-  { source: "berichtenbox", target: "archief", category: "bevestiging" },
+  { source: "berichtenbox", target: "contactmoment", category: "bevestiging" },
+  { source: "printstraat", target: "contactmoment", category: "bevestiging" },
   { source: "lokale-berichtenbox", target: "contactherstel", category: "bevestiging" },
-
-  // MijnZaken (MijnOverheidForwarder.cs) — a separate pipeline from the 7 above, entered via
-  // Oneground instead of Open Notificaties, with its own filter chain and a single fixed
-  // channel (no kanaalresolutie — there's only one destination, so nothing to resolve) and no
-  // confirmation step (the chain ends at the MijnOverheid POST response, no contactmoment write-
-  // back). "Zaak verwijderd" skips fetching case data entirely and forwards unconditionally, so
-  // it needs its own hub → channel shortcut. "Zaak geopend" has a first-open shortcut (no prior
-  // laatstGeopend to compare against) that skips straight to the channel too, but doesn't need a
-  // dedicated edge for it — hub → naturalpersoncheck → Verouderd-check already reaches it in two
-  // hops.
-  //
-  // naturalpersoncheck → zaaktypewhitelist: same intervening-openzaak-hop situation as
-  // taakcheck/documentcheck above (HandleMutatedAsync's real emit order is naturalpersoncheck →
-  // openzaak (status + status type fetch) → zaaktypewhitelist), and drawn direct for the same
-  // reason those are — the register↔hub round trip is already implied, this edge is the
-  // filter-chain shape the dashboard shows.
-  { source: PATTERN_ENGINE_KEY, target: "naturalpersoncheck", category: "zaken" },
-  { source: "naturalpersoncheck", target: "zaaktypewhitelist", category: "zaken" },
-  { source: "informerencheck", target: "mijnzaken-staleness", category: "zaken" },
-  // Also needed directly for "Zaak geopend" (mijnzaken-geopend), whose filter chain is just
-  // naturalpersoncheck → mijnzaken-staleness with no whitelist/informeren step in between.
-  { source: "naturalpersoncheck", target: "mijnzaken-staleness", category: "zaken" },
-  { source: "mijnzaken-staleness", target: "logius-mijnzaken", category: "zaken" },
-  { source: PATTERN_ENGINE_KEY, target: "logius-mijnzaken", category: "zaken" },
 ];
 
 export interface FlowOption {
@@ -195,6 +348,7 @@ export interface FlowOption {
    * both would show as "live" for every flow. */
   inputs: string[];
   registers: string[];
+  /** CHECK_NODES keys, in the order this flow runs them. */
   filters: string[];
   channels: string[];
   confirmations: string[];
@@ -207,7 +361,7 @@ export const FLOW_OPTIONS: FlowOption[] = [
     nl: "Volledig overzicht",
     inputs: INPUT_NODES.map((n) => n.key),
     registers: REGISTER_NODES.map((n) => n.key),
-    filters: FILTER_NODES.map((n) => n.key),
+    filters: CHECK_NODES.map((n) => n.key),
     channels: CHANNEL_NODES.map((n) => n.key),
     confirmations: CONFIRMATION_NODES.map((n) => n.key),
   },
@@ -295,13 +449,48 @@ export const FLOW_OPTIONS: FlowOption[] = [
     confirmations: ["contactmoment"],
   },
   {
+    key: "print-requested",
+    name: "Print Requested",
+    nl: "Printstraat",
+    inputs: ["opennotificaties"],
+    // Real order in PrintScenarioImplementation.ProcessPrintAsync: printschakelaar, read the print
+    // object, the pdfurl check, the BSN in the betrokkene-URN, the partij, the pdf itself, then
+    // the precompiled letter to Notify NL.
+    registers: ["objecten", "openklant", "documenten"],
+    filters: ["printschakelaar", "documentcheck", "betrokkeneurn"],
+    channels: ["printstraat"],
+    confirmations: ["contactmoment"],
+  },
+  {
+    // Open VTB's "bericht gepubliceerd" CloudEvent, delivered via Open Notificaties like every other
+    // event. The longest flow: Berichtenbox, then digitale post (e-mail), then a letter to the BRP
+    // address — each traced as it happens.
+    key: "message-box",
+    name: "Berichtenbox (MOBB)",
+    nl: "Bericht in Berichtenbox",
+    inputs: ["opennotificaties"],
+    registers: ["vtb", "openklant", "documenten", "brp"],
+    filters: [
+      "vtbcloudeventtype",
+      "vtbberichtid",
+      "vtbberichttekst",
+      "vtbontvanger",
+      "vtbberichttype",
+      "mobbgeschiktheid",
+      "mobbemailadres",
+      "brpadres",
+    ],
+    channels: ["berichtenbox", "notify-email", "notify-post"],
+    confirmations: ["contactmoment"],
+  },
+  {
     key: "kto",
     name: "Customer Satisfaction (KTO)",
     nl: "Klanttevredenheidsonderzoek",
     inputs: ["opennotificaties"],
-    registers: ["kto"],
+    registers: ["objecten"],
     filters: [],
-    channels: [],
+    channels: ["kto"],
     confirmations: [],
   },
   {
@@ -345,5 +534,4 @@ export const FLOW_OPTIONS: FlowOption[] = [
   },
 ];
 
-// Node positions are no longer hand-placed here — see lib/layout.ts, which runs Dagre's
-// graph layout algorithm over EDGES to get crossing-minimized positions automatically.
+// Node positions live in status/flow/page.tsx (computeLayout): a fixed grid, not auto-placed.

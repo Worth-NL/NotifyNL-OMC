@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { TRACE_STREAM_URL, TraceEvent } from "@/lib/api";
 import { findTracePath, scenarioKeys } from "@/lib/tracePath";
-import { CHANNEL_NODES, PATTERN_ENGINE_KEY, REGISTER_NODES } from "@/lib/architecture";
+import { CHANNEL_NODES, CHECK_KEYS, PATTERN_ENGINE_KEY, REGISTER_NODES, STAGE_ALIASES } from "@/lib/architecture";
 
 const REGISTER_KEYS = new Set(REGISTER_NODES.map((n) => n.key));
 const CHANNEL_KEYS = new Set(CHANNEL_NODES.map((n) => n.key));
@@ -32,14 +32,21 @@ interface PlannedHop {
   to: string;
   /** Attached to a hop's final leg — committed to the log/visited-set on arrival. */
   commit?: TraceLogLine;
+  /** The check this hop arrives at, when its event was a check rather than a node. */
+  step?: string;
 }
 
 // Real steps arrive within milliseconds of each other — far too fast for a human to see move.
 // This is the artificial per-hop pace for the edge-flow/log replay, independent of how fast
-// the real pipeline actually ran (each event still carries its own real elapsedMs). Deliberately
-// generous — kept well longer than TrafficEdge's 0.7s glide so each hop finishes with a brief
-// pause before the next one starts, rather than one glide cutting the previous off.
-const HOP_DELAY_MS = 1000;
+// the real pipeline actually ran (each event still carries its own real elapsedMs). A hop along
+// a line is kept a little longer than TrafficEdge's 0.7s glide, so each glide finishes before
+// the next one starts.
+const HOP_DELAY_MS = 900;
+// A step that doesn't move the dot (a check lighting up, a status change on the same node) only
+// needs to be readable, not travelled. Pacing those like a full hop made one Bericht take 20s+
+// to replay, so the next one started before it finished and a single message looked like several
+// dots at once.
+const STEP_DELAY_MS = 350;
 const MAX_LOG_LINES = 150;
 // A channel-send ball waits at notify-email/sms/post for the real "Notify NL" delivery
 // confirmation (see BaseScenario.ProcessDataAsync's "pending" status + NotifyCallbackResponder)
@@ -48,69 +55,35 @@ const MAX_LOG_LINES = 150;
 // comes back in this long, give up rather than leave that trace's state open forever.
 const CONFIRM_TIMEOUT_MS = 15 * 60 * 1000;
 
-// "notify-*" only ever reaches "ok"/"fail" via the async /Confirm callback now (see
-// BaseScenario.ProcessDataAsync — the synchronous send only ever emits "pending"), and
-// "contactmoment" only exists as that confirmation's follow-up — so both are keyed off real
-// wall-clock delivery time (seconds to several minutes), not OMC's own processing time. Kept
-// out of "Gem. afhandeltijd" so that figure keeps meaning "how fast OMC's own pipeline ran"
-// rather than jumping to minutes for any trace that actually sends a channel message.
-function isAsyncConfirmationEvent(event: TraceEvent): boolean {
-  return (
-    event.stage === "contactmoment" ||
-    (CHANNEL_KEYS.has(event.stage) && (event.status === "ok" || event.status === "fail"))
-  );
-}
-
-// How the numeric metrics are derived from real events — no simulation, no database:
-const THROUGHPUT_WINDOW_MS = 10_000; // "messages/sec" = events seen in the last 10s / 10
-const TICK_MS = 2500; // how often throughput/load/sparkline recompute
-const SPARKLINE_LENGTH = 24; // 24 * 2.5s = the last minute
-const MAX_DURATION_SAMPLES = 20; // rolling window for the average-handling-time figure
-// "Load" has no real backing metric (no CPU/queue-depth signal is exposed) — it's a proxy
-// scaled against an assumed ceiling of events/sec, not a literal server load measurement.
-const LOAD_CEILING_EVENTS_PER_SEC = 5;
-
 export interface OmcTelemetry {
   connected: boolean;
   /** One entry per trace currently mid-playback — several notifications arriving close
    * together animate independently and simultaneously, each on its own pace. */
   activeHops: TraceHop[];
+  /** The check (CHECK_NODES key) each in-flight trace is currently at, if any — checks are
+   * blocks inside the OMC block rather than nodes, so they light up there instead. */
+  activeSteps: string[];
   visitedKeys: Set<string>;
   log: TraceLogLine[];
   /** Distinct notifications seen since this page was opened. */
   totalProcessed: number;
   /** Per-node-key count of real events touching it, since this page was opened. */
   nodeThroughput: Record<string, number>;
-  throughputPerSec: number;
-  avgHandlingMs: number;
-  load: number;
-  sparkline: number[];
 }
 
 /**
- * The single real-time data source for the architecture page. Connects to
- * /status/trace/stream once, for as long as this hook stays mounted, and derives every number
- * it returns from genuine events — nothing here is simulated or backed by a database.
- * `tracingActive` only toggles whether the edge-flow/log replay is shown; the underlying
- * connection and counters (throughput, load, totals) keep running regardless, so they reflect
- * activity "since this page was opened" even while the visual trace is paused.
+ * The single real-time data source for the flow page. Connects to /status/trace/stream once,
+ * for as long as this hook stays mounted, and replays every real event on the diagram and in
+ * the log — nothing here is simulated or backed by a database.
  */
-export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
+export function useOmcTelemetry(): OmcTelemetry {
   const [connected, setConnected] = useState(false);
   const [activeHops, setActiveHops] = useState<TraceHop[]>([]);
+  const [activeSteps, setActiveSteps] = useState<string[]>([]);
   const [visitedKeys, setVisitedKeys] = useState<Set<string>>(new Set());
   const [log, setLog] = useState<TraceLogLine[]>([]);
   const [totalProcessed, setTotalProcessed] = useState(0);
   const [nodeThroughput, setNodeThroughput] = useState<Record<string, number>>({});
-  const [throughputPerSec, setThroughputPerSec] = useState(0);
-  const [avgHandlingMs, setAvgHandlingMs] = useState(0);
-  const [load, setLoad] = useState(0);
-  const [sparkline, setSparkline] = useState<number[]>([]);
-
-  const tracingActiveRef = useRef(tracingActive);
-  useEffect(() => {
-    tracingActiveRef.current = tracingActive;
-  });
 
   // Each trace gets its own queue and its own play loop, so several notifications arriving
   // close together each pace out on their own timeline instead of all serializing onto one
@@ -119,6 +92,7 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
   const playingTracesRef = useRef<Set<string>>(new Set());
   // The one active hop per trace that's currently live — surfaced as an array for rendering.
   const activeHopsByTraceRef = useRef<Map<string, TraceHop>>(new Map());
+  const activeStepByTraceRef = useRef<Map<string, string>>(new Map());
   const lastStageByTraceRef = useRef<Map<string, string>>(new Map());
   // Per trace: the stage it was conceptually at right before its current run of back-to-back
   // register calls started — register round-trips retrace all the way back here instead of
@@ -137,15 +111,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
 
   const seenTraceIdsRef = useRef<Set<string>>(new Set());
   const nodeThroughputRef = useRef<Record<string, number>>({});
-  const eventTimestampsRef = useRef<number[]>([]);
-  const durationSamplesRef = useRef<number[]>([]);
-  // Each trace's own last-seen elapsedMs, keyed by traceId (insertion order == arrival order of
-  // each trace's first event) — a single shared "current trace" ref can't represent several
-  // traces in flight at once without one trace's value stomping another's.
-  const lastElapsedByTraceRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
+    const confirmTimeouts = confirmTimeoutsRef.current;
     const source = new EventSource(TRACE_STREAM_URL);
 
     source.addEventListener("ready", () => {
@@ -157,6 +126,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
 
     function publishActiveHops() {
       setActiveHops(Array.from(activeHopsByTraceRef.current.values()));
+    }
+
+    function publishActiveSteps() {
+      setActiveSteps(Array.from(new Set(activeStepByTraceRef.current.values())));
     }
 
     function playQueueForTrace(traceId: string) {
@@ -185,6 +158,8 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
             if (playingTracesRef.current.has(traceId)) return;
             activeHopsByTraceRef.current.delete(traceId);
             publishActiveHops();
+            activeStepByTraceRef.current.delete(traceId);
+            publishActiveSteps();
 
             // This trace's per-trace working state (which stage it last visited, its now-empty
             // hop queue) is done being useful — free it. Without this, a dashboard tab left open
@@ -214,6 +189,15 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
           publishActiveHops();
         }
 
+        // A check lights up its block in the OMC block for as long as the trace stays there;
+        // moving on to any other node (a register, an output) leaves it.
+        if (hop.step) {
+          activeStepByTraceRef.current.set(traceId, hop.step);
+          publishActiveSteps();
+        } else if (hop.to !== PATTERN_ENGINE_KEY && activeStepByTraceRef.current.delete(traceId)) {
+          publishActiveSteps();
+        }
+
         setVisitedKeys((prev) => {
           const next = new Set(prev);
           next.add(hop.to);
@@ -224,7 +208,7 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
           setLog((prev) => [line, ...prev].slice(0, MAX_LOG_LINES));
         }
 
-        setTimeout(step, HOP_DELAY_MS);
+        setTimeout(step, hop.from === hop.to ? STEP_DELAY_MS : HOP_DELAY_MS);
       };
 
       step();
@@ -251,38 +235,25 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
 
       activeHopsByTraceRef.current.delete(traceId);
       publishActiveHops();
+      activeStepByTraceRef.current.delete(traceId);
+      publishActiveSteps();
     }
 
     source.onmessage = (message) => {
       let event: TraceEvent;
       try {
-        event = JSON.parse(message.data);
+        const raw: TraceEvent = JSON.parse(message.data);
+        // Stages the backend names differently from their card (e.g. the print flow's "notifynl"
+        // is the Printstraat card) are mapped once here, so counts, log and dot all agree.
+        event = { ...raw, stage: STAGE_ALIASES[raw.stage] ?? raw.stage };
       } catch {
         return;
       }
 
-      // Real counters — always updated, regardless of whether the visual trace is switched on.
+      // Real counters.
       if (!seenTraceIdsRef.current.has(event.traceId)) {
         seenTraceIdsRef.current.add(event.traceId);
         setTotalProcessed(seenTraceIdsRef.current.size);
-
-        // A new trace just started — bank the OLDEST still-tracked trace's own last-known
-        // elapsed time as one real "handling time" sample (not whatever trace happened to send
-        // the most recent event, which could be an unrelated trace still mid-flight).
-        const oldestEntry = lastElapsedByTraceRef.current.entries().next();
-        if (!oldestEntry.done) {
-          const [finishedTraceId, finishedElapsedMs] = oldestEntry.value;
-          lastElapsedByTraceRef.current.delete(finishedTraceId);
-          durationSamplesRef.current = [...durationSamplesRef.current, finishedElapsedMs].slice(
-            -MAX_DURATION_SAMPLES,
-          );
-          const avg =
-            durationSamplesRef.current.reduce((sum, ms) => sum + ms, 0) / durationSamplesRef.current.length;
-          setAvgHandlingMs(Math.round(avg));
-        }
-      }
-      if (!isAsyncConfirmationEvent(event)) {
-        lastElapsedByTraceRef.current.set(event.traceId, event.elapsedMs);
       }
 
       nodeThroughputRef.current = {
@@ -290,10 +261,6 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
         [event.stage]: (nodeThroughputRef.current[event.stage] ?? 0) + 1,
       };
       setNodeThroughput(nodeThroughputRef.current);
-
-      eventTimestampsRef.current.push(Date.now());
-
-      if (!tracingActiveRef.current) return; // counted above; skip the visual replay work
 
       const logLine: TraceLogLine = {
         id: `${event.traceId}-${logCounterRef.current++}`,
@@ -332,12 +299,17 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       const queue = hopQueuesByTraceRef.current.get(event.traceId) ?? [];
       hopQueuesByTraceRef.current.set(event.traceId, queue);
 
+      // A check is a block inside the OMC block, not a node of its own: the dot goes to (or
+      // stays on) OMC, and the block itself lights up. Its log line keeps the real stage.
+      const step = CHECK_KEYS.has(event.stage) ? event.stage : undefined;
+      const graphStage = step ? PATTERN_ENGINE_KEY : event.stage;
+
       const lastStage = lastStageByTraceRef.current.get(event.traceId);
 
       if (!lastStage) {
         // First step of a new trace — nothing to animate a hop from yet, just record it.
-        lastStageByTraceRef.current.set(event.traceId, event.stage);
-        queue.push({ from: event.stage, to: event.stage, commit: logLine });
+        lastStageByTraceRef.current.set(event.traceId, graphStage);
+        queue.push({ from: graphStage, to: graphStage, commit: logLine, step });
         playQueueForTrace(event.traceId);
         return;
       }
@@ -356,10 +328,10 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
       }
 
       const path =
-        lastStage === event.stage ? [lastStage, event.stage] : findTracePath(lastStage, event.stage, allowedKeys);
+        lastStage === graphStage ? [lastStage, graphStage] : findTracePath(lastStage, graphStage, allowedKeys);
       if (!path || path.length < 2) {
-        lastStageByTraceRef.current.set(event.traceId, event.stage);
-        queue.push({ from: event.stage, to: event.stage, commit: logLine });
+        lastStageByTraceRef.current.set(event.traceId, graphStage);
+        queue.push({ from: graphStage, to: graphStage, commit: logLine, step });
         playQueueForTrace(event.traceId);
         return;
       }
@@ -370,6 +342,7 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
           from: path[i],
           to: path[i + 1],
           commit: isLastLeg ? logLine : undefined,
+          step: isLastLeg ? step : undefined,
         });
       }
 
@@ -392,63 +365,27 @@ export function useOmcTelemetry(tracingActive: boolean): OmcTelemetry {
         }
         lastStageByTraceRef.current.set(event.traceId, returnPath[returnPath.length - 1]);
       } else {
-        lastStageByTraceRef.current.set(event.traceId, event.stage);
+        lastStageByTraceRef.current.set(event.traceId, graphStage);
       }
 
       playQueueForTrace(event.traceId);
     };
 
-    const tick = setInterval(() => {
-      const now = Date.now();
-      eventTimestampsRef.current = eventTimestampsRef.current.filter((t) => now - t < THROUGHPUT_WINDOW_MS);
-      const rate = eventTimestampsRef.current.length / (THROUGHPUT_WINDOW_MS / 1000);
-      setThroughputPerSec(Math.round(rate * 10) / 10);
-
-      const loadPct = Math.min(100, Math.round((rate / LOAD_CEILING_EVENTS_PER_SEC) * 100));
-      setLoad(loadPct);
-      setSparkline((prev) => [...prev, loadPct].slice(-SPARKLINE_LENGTH));
-    }, TICK_MS);
-
     return () => {
       cancelled = true;
-      clearInterval(tick);
       source.close();
-      confirmTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      confirmTimeoutsRef.current.clear();
+      confirmTimeouts.forEach((timeout) => clearTimeout(timeout));
+      confirmTimeouts.clear();
     };
-    // Connects once for the page's lifetime — intentionally not re-run when `tracingActive`
-    // changes; that flag is only read (via the ref above) inside the already-open connection.
   }, []);
-
-  // Clears only the *visual* replay state when tracing is switched off — the real counters
-  // above (totalProcessed, nodeThroughput, throughputPerSec, load, sparkline) are untouched,
-  // since they represent activity since the page loaded, not since tracing was turned on.
-  useEffect(() => {
-    if (!tracingActive) return;
-    return () => {
-      hopQueuesByTraceRef.current = new Map();
-      playingTracesRef.current = new Set();
-      activeHopsByTraceRef.current = new Map();
-      lastStageByTraceRef.current = new Map();
-      pendingConfirmTracesRef.current = new Set();
-      confirmTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      confirmTimeoutsRef.current = new Map();
-      setActiveHops([]);
-      setLog([]);
-      setVisitedKeys(new Set());
-    };
-  }, [tracingActive]);
 
   return {
     connected,
     activeHops,
+    activeSteps,
     visitedKeys,
     log,
     totalProcessed,
     nodeThroughput,
-    throughputPerSec,
-    avgHandlingMs,
-    load,
-    sparkline,
   };
 }

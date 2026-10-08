@@ -101,6 +101,33 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static string DashboardUrl => "DASHBOARD_URL";
 
+        /// <summary>
+        /// Switches the status dashboard on, provided via the "DASHBOARD_ENABLED" environment variable.
+        /// </summary>
+        /// <remarks>
+        ///   Off unless set to "true" (or "1"). The dashboard pages and their APIs, including the live
+        ///   trace stream, are served without authentication, so an environment only exposes them when
+        ///   it asks to — a new or forgotten deployment stays closed.
+        /// </remarks>
+        public static string DashboardEnabled => "DASHBOARD_ENABLED";
+
+        /// <summary>
+        /// Whether <see cref="DashboardEnabled"/> is switched on for this environment.
+        /// </summary>
+        public static bool IsDashboardEnabled()
+            => IsSwitchedOn(Environment.GetEnvironmentVariable(DashboardEnabled));
+
+        /// <summary>
+        /// Reads an on/off environment value: "true" or "1" (case-insensitive, surrounding spaces
+        /// ignored) is on, anything else — including unset — is off.
+        /// </summary>
+        public static bool IsSwitchedOn(string? value)
+        {
+            string trimmed = value?.Trim() ?? string.Empty;
+
+            return trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) || trimmed == "1";
+        }
+
         private static string? s_openZaakDomainEnvVarName;
 
         private static string? s_ktoUrlValue;

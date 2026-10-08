@@ -122,7 +122,9 @@ namespace WebQueries.Tracing
                 Stage: stage,
                 Status: status,
                 Scenario: state.Scenario,
-                Detail: detail,
+                // The stream is unauthenticated: every detail is scrubbed of anything personal on its
+                // way out (see TraceDetailSanitizer), whatever the call site passed in.
+                Detail: TraceDetailSanitizer.Sanitize(detail),
                 ElapsedMs: state.Stopwatch.ElapsedMilliseconds));
         }
 
@@ -134,9 +136,9 @@ namespace WebQueries.Tracing
         /// Call from the outermost catch block around notification processing.
         /// </summary>
         /// <param name="detail">
-        /// The exception message explaining why processing failed — the same text already
-        /// returned to the API caller in the response body, so surfacing it here doesn't
-        /// disclose anything beyond what already crosses the system boundary.
+        /// The exception message explaining why processing failed. It is scrubbed before it reaches
+        /// the stream (see <see cref="TraceDetailSanitizer"/>): unlike the API response, which only
+        /// goes back to the authenticated caller, the trace stream is open to anyone.
         /// </param>
         public static void EmitPendingFailure(string? detail = null)
         {
