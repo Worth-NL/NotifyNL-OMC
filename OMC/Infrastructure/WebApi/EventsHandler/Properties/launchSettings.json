@@ -5,7 +5,8 @@
       "launchBrowser": true,
       "launchUrl": "status",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DASHBOARD_ENABLED": "true"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5270"
@@ -15,7 +16,8 @@
       "launchBrowser": true,
       "launchUrl": "status",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DASHBOARD_ENABLED": "true"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7042;http://localhost:5270"
@@ -26,6 +28,7 @@
       "launchUrl": "status",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "DASHBOARD_ENABLED": "true",
 
         "OMC_ACTOR_ID": "",
         "OMC_CONTEXT_PATH": "",

@@ -1,5 +1,6 @@
 // © 2024, Worth Systems.
 
+using EventsHandler.Attributes.Dashboard;
 using EventsHandler.Services.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -12,9 +13,11 @@ namespace EventsHandler.Controllers
 {
     /// <summary>
     /// Serves configuration health-check and scenario flow data consumed by the standalone dashboard frontend.
-    /// No authentication required — values of secrets are never exposed.
+    /// No authentication required — values of secrets are never exposed. Only served when the dashboard
+    /// is switched on with DASHBOARD_ENABLED; otherwise every endpoint here answers 404.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [DashboardEnabled]
     public sealed class ConfigurationStatusController : ControllerBase
     {
         private static readonly JsonSerializerOptions s_jsonOptions = new()

@@ -508,30 +508,42 @@ namespace EventsHandler
 
             app.UseHttpsRedirection();
 
+            // The status dashboard is opt-in (DASHBOARD_ENABLED): its pages and APIs, including the
+            // live trace stream, are served without authentication. With it off, none of it is mapped
+            // and its API endpoints answer 404 (see DashboardEnabledAttribute).
+            bool isDashboardEnabled = ConfigExtensions.IsDashboardEnabled();
+
             // Serves the statically-exported dashboard (wwwroot/status, wwwroot/status/flow,
             // wwwroot/_next/*) baked into this image at build time — see the explicit
             // /status and /status/flow routes below for the corresponding index.html files.
-            app.UseStaticFiles();
+            // wwwroot holds nothing but the dashboard, so with the dashboard off it isn't served at all.
+            if (isDashboardEnabled)
+            {
+                app.UseStaticFiles();
+            }
 
             app.UseCors(DashboardCorsPolicy);
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapGet("/", () =>
+            if (isDashboardEnabled)
             {
-                // DASHBOARD_URL lets a future deployment point this at a separately hosted
-                // dashboard; today it's unset and the dashboard is co-hosted at /status.
-                string? dashboardUrl = Environment.GetEnvironmentVariable(ConfigExtensions.DashboardUrl);
+                app.MapGet("/", () =>
+                {
+                    // DASHBOARD_URL lets a future deployment point this at a separately hosted
+                    // dashboard; today it's unset and the dashboard is co-hosted at /status.
+                    string? dashboardUrl = Environment.GetEnvironmentVariable(ConfigExtensions.DashboardUrl);
 
-                return Results.Redirect(string.IsNullOrWhiteSpace(dashboardUrl) ? "/status" : dashboardUrl);
-            });
+                    return Results.Redirect(string.IsNullOrWhiteSpace(dashboardUrl) ? "/status" : dashboardUrl);
+                });
 
-            // Falls back to /swagger when the dashboard hasn't been built locally (e.g. plain
-            // `dotnet run`/Visual Studio F5 without ever running `npm run build` in dashboard/)
-            // so development against the API is never blocked by a missing frontend build.
-            app.MapGet("/status", () => ServeDashboardPage(app, "status", "index.html"));
-            app.MapGet("/status/flow", () => ServeDashboardPage(app, "status", "flow", "index.html"));
+                // Falls back to /swagger when the dashboard hasn't been built locally (e.g. plain
+                // `dotnet run`/Visual Studio F5 without ever running `npm run build` in dashboard/)
+                // so development against the API is never blocked by a missing frontend build.
+                app.MapGet("/status", () => ServeDashboardPage(app, "status", "index.html"));
+                app.MapGet("/status/flow", () => ServeDashboardPage(app, "status", "flow", "index.html"));
+            }
 
             app.MapControllers();  // Mapping actions from API controllers
 

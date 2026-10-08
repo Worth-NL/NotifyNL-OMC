@@ -7,6 +7,8 @@
 - Traces the Berichtenbox (MOBB) flow: every check and every fallback (Berichtenbox → e-mail → letter via BRP) now shows up in the live trace. Previously a Bericht left no trace at all
 - Calmer live trace: one dot per message that runs each line once. Steps that don't move the dot no longer take a full second, and the dot no longer restarts at every step, which made one message look like several
 - Integrations that don't exist yet are hidden behind "Toon geplande koppelingen"; the Dagre layout dependency is removed
+- **The status dashboard is now opt-in.** Its pages and APIs (`/status`, `/status/flow`, `/status/scenarios`, `/status/stream`, `/status/trace/stream`) have no authentication, so they are only served with `DASHBOARD_ENABLED=true` and answer 404 otherwise. The Docker image only contains the dashboard when built with `--build-arg BUILD_DASHBOARD=true`. Environments that use the dashboard need both
+- Keeps personal data out of the live trace stream: a failed register call's message carries the request URI (for an OpenKlant party search, with the BSN or KVK number in it) and the response body. Every trace detail is now scrubbed on its way out: no URI or response body, no query strings, long digit runs masked, length capped
 
 ## 2.3.0
 

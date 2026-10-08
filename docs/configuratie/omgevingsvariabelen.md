@@ -322,8 +322,11 @@ Stel alle PostGuard-variabelen in op `-` als de integratie niet wordt gebruikt.
 
 ## Dashboard
 
+Het statusdashboard (`/status`, `/status/flow`) en zijn API's, inclusief de live trace-stream, draaien zonder authenticatie. Daarom staan ze standaard **uit**: zet `DASHBOARD_ENABLED` op `true` om ze te serveren; staat het uit, dan geven die paden `404`. De Docker-image bevat het dashboard alleen als hij gebouwd is met `--build-arg BUILD_DASHBOARD=true`.
+
 | Variabele | Vereist | Beschrijving |
 |---|---|---|
+| `DASHBOARD_ENABLED` | Nee | `true` (of `1`) schakelt het statusdashboard en zijn API's in. Leeg of iets anders: uit (standaard) |
 | `DASHBOARD_ORIGINS` | Nee | Toegestane CORS-origins voor het dashboard (standaard: `http://localhost:3000`) |
 | `DASHBOARD_URL` | Nee | Redirect-doel voor de root (`/`) |
 
