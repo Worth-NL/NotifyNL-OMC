@@ -15,6 +15,7 @@ using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.MOBB.Models;
+using WebQueries.Tracing;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
@@ -101,12 +102,15 @@ namespace WebQueries.MOBB
                 _logger.LogInformation(
                     "MOBB CloudEvent type '{CloudEventType}' does not require action (only '{ExpectedType}' does); skipping.",
                     cloudEventType, BerichtGepubliceerdType);
+                TraceContext.Emit("vtbcloudeventtype", "abort", $"CloudEvent type '{cloudEventType}' does not require action");
                 return HttpRequestResponse.Success($"CloudEvent type '{cloudEventType}' does not require action.");
             }
+            TraceContext.Emit("vtbcloudeventtype", "ok", cloudEventType);
 
             // Step 1: Extract the UUID from the CloudEvent 'subject' field
             if (!cloudEvent.TryGetProperty("subject", out JsonElement subjectElement))
             {
+                TraceContext.Emit("vtbberichtid", "fail", "CloudEvent has no subject");
                 return HttpRequestResponse.Failure("CloudEvent missing 'subject' property.");
             }
 
@@ -114,8 +118,10 @@ namespace WebQueries.MOBB
             if (string.IsNullOrEmpty(subject) || !Guid.TryParse(subject, out Guid messageUuid))
             {
                 _logger.LogWarning("MOBB CloudEvent had a missing/invalid 'subject' (expected a message UUID).");
+                TraceContext.Emit("vtbberichtid", "fail", "subject is not a bericht UUID");
                 return HttpRequestResponse.Failure($"Invalid UUID in 'subject': '{subject}'");
             }
+            TraceContext.Emit("vtbberichtid", "ok", $"bericht {messageUuid}");
 
             _logger.LogInformation("Message {MessageId}: processing MOBB CloudEvent.", messageUuid);
 
@@ -133,11 +139,24 @@ namespace WebQueries.MOBB
             Uri messageUri = new($"{baseUrl}/berichten/{messageUuid:D}");
 
             // Step 5: Fetch the VtbMessage using the context
-            VtbMessage messageData = await queryContext.GetVtbMessageAsync(messageUri);
+            TraceContext.Emit("vtb", "start", $"Attempting to retrieve bericht {messageUuid}");
+            VtbMessage messageData;
+            try
+            {
+                messageData = await queryContext.GetVtbMessageAsync(messageUri);
+            }
+            catch (Exception exception)
+            {
+                TraceContext.Emit("vtb", "fail", exception.Message);
+                throw;
+            }
+
+            TraceContext.Emit("vtb", "ok", $"bericht {messageUuid} retrieved");
 
             if (string.IsNullOrWhiteSpace(messageData.MessageText))
             {
                 _logger.LogWarning("Message {MessageId}: text is empty/missing; dropping (no fallback).", messageUuid);
+                TraceContext.Emit("vtbberichttekst", "abort", "bericht has no text");
 
                 // Reported as a (no-op) success, like the non-actionable CloudEvent type above: this is a
                 // permanent condition, so a Failure here would surface as HTTP 412 and make Open VTB
@@ -145,11 +164,14 @@ namespace WebQueries.MOBB
                 return HttpRequestResponse.Success("Dropped: message text is empty or missing.");
             }
 
+            TraceContext.Emit("vtbberichttekst", "ok", "bericht has text");
+
             // Step 6: Resolve the recipient's BSN and OpenKlant party - needed regardless of MOBB vs. fallback
             string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
             if (recipientBsn == null)
             {
                 _logger.LogWarning("Message {MessageId}: recipient is not a citizen (no BSN in RecipientUrn); dropping (no fallback).", messageUuid);
+                TraceContext.Emit("vtbontvanger", "abort", "recipient is not a citizen (no BSN in the recipient URN)");
 
                 // Permanent condition - see the comment on the empty-text drop above.
                 return HttpRequestResponse.Success("Dropped: recipient is not a citizen (BSN not found in RecipientUrn).");
@@ -161,8 +183,21 @@ namespace WebQueries.MOBB
             //
             // createIfMissing: true - OMC's business flow does not guarantee a partij already exists for
             // this citizen, so a missing one is created on the fly rather than dropping the message.
-            CommonPartyData partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false, createIfMissing: true);
+            TraceContext.Emit("vtbontvanger", "ok", "recipient URN carries a BSN");
+
+            TraceContext.Emit("openklant", "start", "Attempting to retrieve klant");
+            CommonPartyData partyData;
+            try
+            {
+                partyData = await queryContext.GetPartyDataAsync(caseUri: null, bsnNumber: recipientBsn, requireDigitalAddress: false, createIfMissing: true);
+            }
+            catch (Exception exception)
+            {
+                TraceContext.Emit("openklant", "fail", exception.Message);
+                throw;
+            }
             Guid partyId = partyData.Uri.GetGuid();
+            TraceContext.Emit("openklant", "ok", "klant retrieved");
 
             _logger.LogDebug("Message {MessageId}: resolved recipient BSN (length {BsnLength}) to OpenKlant party {PartyId}.",
                 messageUuid, recipientBsn.Length, partyId);
@@ -174,6 +209,7 @@ namespace WebQueries.MOBB
             {
                 _logger.LogWarning("Message {MessageId}: rejected by whitelist (MessageType '{MessageType}'); dropping (no fallback).",
                     messageUuid, messageType);
+                TraceContext.Emit("vtbberichttype", "abort", $"berichttype '{messageType}' is not whitelisted");
 
                 // Permanent condition - see the comment on the empty-text drop above. This mirrors the classic
                 // ZGW scenarios, where a whitelist rejection raises AbortedNotifyingException (HTTP 206), not a
@@ -181,7 +217,12 @@ namespace WebQueries.MOBB
                 return HttpRequestResponse.Success($"Dropped: MessageType '{messageType}' not allowed by whitelist.");
             }
 
+            TraceContext.Emit("vtbberichttype", "ok", $"berichttype '{messageType}' is whitelisted");
+
             // Step 8: MOBB? - if not eligible, fall back to digitale post (email) or a letter
+            TraceContext.Emit("mobbgeschiktheid", "ok", messageData.IsInMyGovernmentMessageBox
+                ? "bericht is for the Berichtenbox"
+                : "not for the Berichtenbox; falling back to digitale post or a letter");
             if (!messageData.IsInMyGovernmentMessageBox)
             {
                 _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
@@ -192,7 +233,7 @@ namespace WebQueries.MOBB
             string modifiedMessageText = $"{messageData.MessageText}{HardcodedMessagePostfix}";
 
             // Step 10: Fetch attachments (maximum 2) as SingularInformationObject
-            List<SingularInformationObject> documents = await FetchAttachmentsAsync(queryContext, messageData.Attachments);
+            List<SingularInformationObject> documents = await FetchAttachmentsWithTraceAsync(queryContext, messageData.Attachments);
 
             // Step 11: Build the request payload for NotifyNL/MOBB
             var notifyAttachments = documents
@@ -227,6 +268,7 @@ namespace WebQueries.MOBB
                 // "technical failure" (a failed-attempt contactmoment IS created) - NotifySendResponse doesn't
                 // expose enough detail to tell these apart yet. This draft does not create a separate
                 // "failed MOBB attempt" contactmoment at all; it just falls through to the fallback chain.
+                TraceContext.Emit("berichtenbox", "fail", $"rejected by Notify NL, falling back: {sendResponse.Error}");
                 _logger.LogWarning(
                     "Message {MessageId}: MOBB send REJECTED synchronously ({Error}); falling back to digitale-post/letter. " +
                     "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
@@ -235,6 +277,7 @@ namespace WebQueries.MOBB
             }
 
             _logger.LogInformation("Message {MessageId}: MOBB send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
+            TraceContext.Emit("berichtenbox", "ok", "accepted by Notify NL");
 
             return HttpRequestResponse.Success(
                 $"Message forwarded to MOBB. UUID: {messageUuid}, Documents: {notifyAttachments.Count}");
@@ -253,8 +296,11 @@ namespace WebQueries.MOBB
             {
                 // BPMN: the digitale-post eligibility gateway ("Nee, geen digitale post") -> straight to letter.
                 _logger.LogInformation("Message {MessageId}: no email address on file; going straight to letter fallback.", messageUuid);
+                TraceContext.Emit("mobbemailadres", "abort", "no e-mail address on file; falling back to a letter");
                 return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: false);
             }
+
+            TraceContext.Emit("mobbemailadres", "ok", "e-mail address on file");
 
             Dictionary<string, object> personalization = new()
             {
@@ -277,6 +323,7 @@ namespace WebQueries.MOBB
             {
                 // BPMN: the email delivery-outcome gateway ("Notificatie gelukt?") -> "Nee" -> the
                 // email-failure contactmoment step (flag "Was notificatie") -> falls through to letter.
+                TraceContext.Emit("notify-email", "fail", $"rejected by Notify NL, falling back to a letter: {sendResponse.Error}");
                 _logger.LogWarning(
                     "Message {MessageId}: digitale-post (email) send REJECTED synchronously ({Error}); falling back to letter. " +
                     "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
@@ -285,6 +332,7 @@ namespace WebQueries.MOBB
             }
 
             _logger.LogInformation("Message {MessageId}: digitale-post (email) send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
+            TraceContext.Emit("notify-email", "ok", "digitale post accepted by Notify NL");
 
             return HttpRequestResponse.Success("Digitale post (email) notification sent.");
         }
@@ -322,6 +370,7 @@ namespace WebQueries.MOBB
 
             Adressering? adressering;
 
+            TraceContext.Emit("brp", "start", "Attempting to retrieve the address for the letter");
             try
             {
                 // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
@@ -336,9 +385,11 @@ namespace WebQueries.MOBB
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
+                TraceContext.Emit("brp", "fail", exception.Message);
                 return HttpRequestResponse.Failure(
                     $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
             }
+            TraceContext.Emit("brp", "ok", "person retrieved");
 
             // NOTE: Never include actual BRP field values (name, address lines, etc.) in a returned
             // message - BRP data must only ever be processed in memory, never logged or stored, and
@@ -346,12 +397,16 @@ namespace WebQueries.MOBB
             if (adressering is not { Adresregel1: not (null or "") })
             {
                 _logger.LogWarning("Message {MessageId}: BRP returned no usable address; cannot send a letter.", messageUuid);
+                TraceContext.Emit("brpadres", "fail", "no usable address; no channel left");
                 return HttpRequestResponse.Failure("BRP returned no usable address for this recipient; cannot send a letter.");
             }
 
+            // The address itself is never traced - BRP data stays in memory only.
+            TraceContext.Emit("brpadres", "ok", "usable address");
+
             // Reuse the same attachment-fetching helper the MOBB send path uses (Step 10); a letter can
             // carry the same base64 file content, just without the {file, filename} shape MOBB uses.
-            List<SingularInformationObject> documents = await FetchAttachmentsAsync(queryContext, messageData.Attachments);
+            List<SingularInformationObject> documents = await FetchAttachmentsWithTraceAsync(queryContext, messageData.Attachments);
             List<string> attachmentContents = documents
                 .Where(document => !string.IsNullOrEmpty(document.Content))
                 .Select(document => document.Content!)
@@ -377,10 +432,12 @@ namespace WebQueries.MOBB
                 _logger.LogWarning(
                     "Message {MessageId}: letter send REJECTED synchronously ({Error}); no further fallback channel exists for this Bericht.",
                     messageUuid, sendResponse.Error);
+                TraceContext.Emit("notify-post", "fail", $"rejected by Notify NL, no fallback left: {sendResponse.Error}");
                 return HttpRequestResponse.Failure($"Letter send rejected: {sendResponse.Error}");
             }
 
             _logger.LogInformation("Message {MessageId}: letter send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
+            TraceContext.Emit("notify-post", "ok", "letter accepted by Notify NL");
 
             return HttpRequestResponse.Success($"Letter notification sent. Attachments: {attachmentContents.Count}");
         }
@@ -590,6 +647,26 @@ namespace WebQueries.MOBB
         /// <param name="queryContext">The query context for retrieving document metadata.</param>
         /// <param name="attachments">The list of attachments from the VTB message.</param>
         /// <returns>A list of <see cref="SingularInformationObject"/> containing document metadata.</returns>
+        /// <summary>
+        /// <see cref="FetchAttachmentsAsync"/>, traced as a call to the Documenten API — only when the
+        /// Bericht has attachments at all, so a Bericht without any doesn't show a call that never happens.
+        /// </summary>
+        private async Task<List<SingularInformationObject>> FetchAttachmentsWithTraceAsync(
+            IQueryContext queryContext,
+            VtbMessage.Attachment[]? attachments)
+        {
+            if (attachments is not { Length: > 0 })
+            {
+                return [];
+            }
+
+            TraceContext.Emit("documenten", "start", $"Attempting to retrieve {attachments.Length} attachment(s)");
+            List<SingularInformationObject> documents = await FetchAttachmentsAsync(queryContext, attachments);
+            TraceContext.Emit("documenten", "ok", $"{documents.Count} attachment(s) retrieved");
+
+            return documents;
+        }
+
         private async Task<List<SingularInformationObject>> FetchAttachmentsAsync(
             IQueryContext queryContext,
             VtbMessage.Attachment[]? attachments)

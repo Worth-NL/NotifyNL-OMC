@@ -2,20 +2,31 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Background, BackgroundVariant, Controls, PanOnScrollMode, ReactFlow, ReactFlowProvider, Edge, Node, useReactFlow } from "@xyflow/react";
+import {
+  Background,
+  BackgroundVariant,
+  Controls,
+  PanOnScrollMode,
+  ReactFlow,
+  ReactFlowProvider,
+  Edge,
+  Node,
+  useNodesState,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import {
+  ArchitectureNode,
   CHANNEL_NODES,
+  CHECK_NODES,
   CONFIRMATION_NODES,
   EDGES,
   EDGE_CATEGORY_COLOR,
-  FILTER_NODES,
   FLOW_OPTIONS,
   INPUT_NODES,
   PATTERN_ENGINE_KEY,
   REGISTER_NODES,
 } from "@/lib/architecture";
-import { computeEdgeHandles, layoutGraph, LayoutResult } from "@/lib/layout";
 import { scenarioEdgeKeys, scenarioKeys } from "@/lib/tracePath";
 import { useOmcTelemetry } from "@/hooks/useOmcTelemetry";
 import { fetchScenarios, ScenarioFlow } from "@/lib/api";
@@ -23,7 +34,8 @@ import { ArchitectureHeader } from "@/components/architecture/ArchitectureHeader
 import { MetricsBar } from "@/components/architecture/MetricsBar";
 import { ConnectionLegend } from "@/components/architecture/ConnectionLegend";
 import { NodeState } from "@/components/architecture/NodeCard";
-import { ColumnLabelNode, FlowNode, PatternEngineFlowNode } from "@/components/architecture/FlowNode";
+import { ColumnLabelNode, FlowNode, OmcFlowNode } from "@/components/architecture/FlowNode";
+import { CheckRow, OMC_PANEL_WIDTH, omcPanelHeight } from "@/components/architecture/OmcPanel";
 import { TrafficEdge, TrafficEdgeData } from "@/components/architecture/TrafficEdge";
 import { DiagramModal } from "@/components/architecture/DiagramModal";
 import { LiveLogPanel } from "@/components/architecture/LiveLogPanel";
@@ -33,199 +45,155 @@ import { NodeLogModal } from "@/components/architecture/NodeLogModal";
 // top-level routing-overview diagram instead.
 const OVERVIEW_DIAGRAM_KEY = "routing";
 
-const ALL_ARCH_NODES = [...INPUT_NODES, ...REGISTER_NODES, ...FILTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
+// Nodes drawn as cards. Individual checks are not among them: they are blocks inside the OMC
+// block (see CHECK_NODES), but they keep their explanation and log, so the modal opens either.
+const GRAPH_NODES = [...INPUT_NODES, ...REGISTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
+const LOGGABLE_NODES = [...GRAPH_NODES, ...CHECK_NODES];
 
-const NODE_TYPES = { flowNode: FlowNode, patternEngine: PatternEngineFlowNode, columnLabel: ColumnLabelNode };
+const NODE_TYPES = { flowNode: FlowNode, omc: OmcFlowNode, columnLabel: ColumnLabelNode };
 const EDGE_TYPES = { traffic: TrafficEdge };
+
+// One row per distinct check chain, in FLOW_OPTIONS order. Flows that run exactly the same
+// checks (Zaak aangemaakt / bijgewerkt / afgesloten) share a row rather than repeating it.
+const CHECK_ROWS: CheckRow[] = (() => {
+  const rows = new Map<string, CheckRow>();
+  for (const flow of FLOW_OPTIONS) {
+    if (flow.key === "all") continue;
+    const signature = flow.filters.join(">");
+    const existing = rows.get(signature);
+    if (existing) {
+      existing.flowKeys.push(flow.key);
+      existing.label = `${existing.label} · ${flow.nl}`;
+      continue;
+    }
+    rows.set(signature, {
+      label: flow.nl,
+      flowKeys: [flow.key],
+      checks: flow.filters
+        .map((key) => CHECK_NODES.find((c) => c.key === key))
+        .filter((c): c is ArchitectureNode => c !== undefined),
+    });
+  }
+  return [...rows.values()];
+})();
+
+// ── Layout ───────────────────────────────────────────────────────────────────────────────
+// A strict grid, like the OMC3 "Stroom" view: fixed columns left to right (Invoer → OMC →
+// Uitvoer → Afleverbevestiging), every column centred on the same horizontal line, and the
+// registers in a row underneath, each a round trip from OMC's bottom edge. Nothing is
+// auto-placed, so adding a scenario only adds a row of checks to the OMC block.
 
 const CARD_WIDTH = 220;
 const CARD_HEIGHT = 108;
-const PATTERN_ENGINE_WIDTH = 260;
-const PATTERN_ENGINE_HEIGHT = 340;
-
-// The main chain (Invoer -> Output Patronen -> Kanaal keuze -> filters -> Uitvoer ->
-// Afleverbevestiging) is a real left-to-right pipeline, so Dagre lays it out. Registers are
-// excluded from that pass entirely — OMC calls each one and gets a response back, they're
-// never a forward hop — and are placed by hand in a row directly below Output Patronen, with
-// edges dropping straight from its bottom edge (see EDGES comment in lib/architecture.ts).
-const MAIN_CHAIN_NODES = [...INPUT_NODES, ...FILTER_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES];
-const MAIN_CHAIN_KEYS = new Set<string>([...MAIN_CHAIN_NODES.map((n) => n.key), PATTERN_ENGINE_KEY]);
-const MAIN_CHAIN_EDGES = EDGES.filter((e) => MAIN_CHAIN_KEYS.has(e.source) && MAIN_CHAIN_KEYS.has(e.target));
-
-const MAIN_CHAIN_LAYOUT_NODES = [
-  ...MAIN_CHAIN_NODES.map((n) => ({ id: n.key, width: CARD_WIDTH, height: CARD_HEIGHT })),
-  { id: PATTERN_ENGINE_KEY, width: PATTERN_ENGINE_WIDTH, height: PATTERN_ENGINE_HEIGHT },
-];
-
-const mainLayoutAuto = layoutGraph(MAIN_CHAIN_LAYOUT_NODES, MAIN_CHAIN_EDGES);
-
-// Dagre's own crossing-minimized ranks are a fine starting point for X (rank/column), but its
-// within-rank Y-ordering doesn't line up Zaaktype whitelist / Informeren-check / Kanaalresolutie
-// into the single straight chain they conceptually are — and is sensitive enough to unrelated
-// edges elsewhere in the graph that adding the MijnZaken nodes once visibly knocked Taak- &
-// ID-typecheck to a distant, unrelated position despite none of its own edges changing. Rather
-// than patch a growing number of individual within-rank positions after each new addition, the
-// whole "Kanaal & filters" column is laid out by hand as a fixed 4-row grid on one uniform row
-// gap, reusing only Dagre's X per column (rank spacing is the one thing it gets right):
-//   Row -2: Berichten-schakelaar   (Message Received's own gate; feeds Kanaalresolutie)
-//   Row -1: Taak-check             (Task Assigned's own pre-check, feeds Zaaktype whitelist)
-//   Row  0: Documentstatus -> Zaaktype whitelist -> Informeren-check -> Kanaalresolutie
-//           (the shared chain itself, dead straight)
-//   Row +1: Natuurlijk persoon-check -> Verouderd-check
-//           (MijnZaken's own lane — Natuurlijk persoon-check plays the same "own pre-check"
-//           role as Taak-check, just feeding a same-row neighbor instead of the shared
-//           whitelist; Verouderd-check also takes a short drop-in from Informeren-check
-//           directly above it, mirroring how Kanaalresolutie takes one from
-//           Berichten-schakelaar two rows above *it*)
-// Every edge into/out of this grid is forced to enter/exit left/right below, never top/bottom —
-// registers are the one deliberate exception to that (see the register loop further down),
-// since their round-trip-from-the-hub relationship really is vertical, not a forward hop.
-const FILTER_COL1_X = mainLayoutAuto.positions.documentcheck.x; // taakcheck / documentcheck / naturalpersoncheck
-const FILTER_COL2_X = mainLayoutAuto.positions.zaaktypewhitelist.x;
-const FILTER_COL3_X = mainLayoutAuto.positions.informerencheck.x;
-const FILTER_COL4_X = mainLayoutAuto.positions.kanaalresolutie.x; // kanaalresolutie / mijnzaken-staleness
-
-const FILTER_ROW_GAP = CARD_HEIGHT + 24; // one consistent gap, reused for every row transition below
-const FILTER_ROW_Y = mainLayoutAuto.positions.documentcheck.y;
-const FILTER_ROW_ABOVE2_Y = FILTER_ROW_Y - 2 * FILTER_ROW_GAP;
-const FILTER_ROW_ABOVE_Y = FILTER_ROW_Y - FILTER_ROW_GAP;
-const FILTER_ROW_BELOW_Y = FILTER_ROW_Y + FILTER_ROW_GAP;
-
-const filterPositionOverrides: LayoutResult["positions"] = {
-  berichtenschakelaar: { x: FILTER_COL1_X, y: FILTER_ROW_ABOVE2_Y },
-  taakcheck: { x: FILTER_COL1_X, y: FILTER_ROW_ABOVE_Y },
-  documentcheck: { x: FILTER_COL1_X, y: FILTER_ROW_Y },
-  zaaktypewhitelist: { x: FILTER_COL2_X, y: FILTER_ROW_Y },
-  informerencheck: { x: FILTER_COL3_X, y: FILTER_ROW_Y },
-  kanaalresolutie: { x: FILTER_COL4_X, y: FILTER_ROW_Y },
-  naturalpersoncheck: { x: FILTER_COL1_X, y: FILTER_ROW_BELOW_Y },
-  "mijnzaken-staleness": { x: FILTER_COL4_X, y: FILTER_ROW_BELOW_Y },
-};
-
-// Uitvoer column, same hand-placed-grid treatment: Dagre free-orders these (several, like
-// PostGuard, have no real inbound edge in this pipeline at all — see CHANNEL_NODES comment — so
-// it has nothing but its outgoing edge to rank by), which is what put Logius MijnZaken at the
-// very top of the stack instead of next to the other "not really live" channels it belongs
-// with. Stacked by hand instead, one column, uniform gap, Logius MijnZaken directly under
-// PostGuard. Anchored on notify-email's Dagre X/top, the one channel guaranteed a normal inbound
-// rank (fed from Kanaalresolutie) to anchor off.
-const CHANNEL_STACK_ORDER = [
-  "notify-email",
-  "notify-sms",
-  "notify-post",
-  "postguard",
-  "logius-mijnzaken",
-  "berichtenbox",
-  "lokale-berichtenbox",
-];
-const channelPositionOverrides: LayoutResult["positions"] = {};
-CHANNEL_STACK_ORDER.forEach((key, i) => {
-  channelPositionOverrides[key] = {
-    x: mainLayoutAuto.positions["notify-email"].x,
-    y: FILTER_ROW_ABOVE2_Y + i * FILTER_ROW_GAP,
-  };
-});
-
-// All hand-placed positions merged before computing handles even once — computing handles from
-// the filter grid alone (before the channel stack existed) previously left several channel
-// edges' dx/dy stale, which is exactly what re-introduces an accidental top/bottom pick once a
-// target moves further away vertically than it was when handles were last computed.
-const mainPositions = { ...mainLayoutAuto.positions, ...filterPositionOverrides, ...channelPositionOverrides };
-const mainEdgeHandles = computeEdgeHandles(mainPositions, MAIN_CHAIN_LAYOUT_NODES, MAIN_CHAIN_EDGES);
-
-// Force left/right on every edge touching a hand-placed node above — rather than trust the auto
-// dx/dy heuristic to land on the same choice as spacing keeps changing — everywhere except the
-// register round-trips below, which are deliberately top/bottom (see the register loop further
-// down): registers are a real vertical round trip through the hub, not a forward hop.
-const FORCE_LR_EDGES: [string, string][] = [
-  [PATTERN_ENGINE_KEY, "berichtenschakelaar"],
-  [PATTERN_ENGINE_KEY, "taakcheck"],
-  [PATTERN_ENGINE_KEY, "documentcheck"],
-  [PATTERN_ENGINE_KEY, "naturalpersoncheck"],
-  [PATTERN_ENGINE_KEY, "zaaktypewhitelist"],
-  ["taakcheck", "zaaktypewhitelist"],
-  ["documentcheck", "zaaktypewhitelist"],
-  ["naturalpersoncheck", "zaaktypewhitelist"],
-  ["zaaktypewhitelist", "informerencheck"],
-  ["informerencheck", "kanaalresolutie"],
-  ["berichtenschakelaar", "kanaalresolutie"],
-  ["informerencheck", "mijnzaken-staleness"],
-  ["naturalpersoncheck", "mijnzaken-staleness"],
-  ["mijnzaken-staleness", "logius-mijnzaken"],
-  [PATTERN_ENGINE_KEY, "logius-mijnzaken"],
-  ["kanaalresolutie", "notify-email"],
-  ["kanaalresolutie", "notify-sms"],
-  ["kanaalresolutie", "notify-post"],
-  ["kanaalresolutie", "berichtenbox"],
-  ["kanaalresolutie", "lokale-berichtenbox"],
-  ["notify-email", "contactmoment"],
-  ["notify-sms", "contactmoment"],
-  ["notify-post", "contactmoment"],
-  ["postguard", "contactmoment"],
-  ["berichtenbox", "archief"],
-  ["lokale-berichtenbox", "contactherstel"],
-];
-for (const [source, target] of FORCE_LR_EDGES) {
-  mainEdgeHandles[`${source}->${target}`] = { sourceHandle: "right", targetHandle: "left" };
-}
-
-const mainLayout: LayoutResult = {
-  positions: mainPositions,
-  edgeHandles: mainEdgeHandles,
-};
-
+const ROW_GAP = 16;
+const COLUMN_GAP = 110;
 const REGISTER_GAP_X = 20;
-const REGISTER_ROW_GAP_Y = 100;
-const REGISTER_ROW_SPACING_Y = 24;
-const REGISTER_MAX_PER_ROW = 5;
-const patternPos = mainLayout.positions[PATTERN_ENGINE_KEY];
-const registerFirstRowY = patternPos.y + PATTERN_ENGINE_HEIGHT + REGISTER_ROW_GAP_Y;
+const REGISTER_TOP_GAP = 110;
+const REGISTER_MAX_PER_ROW = 10;
+// Every register card is this tall, whatever its text, so the row lines up (see NodeCard).
+const REGISTER_CARD_HEIGHT = 124;
+const LABEL_OFFSET_Y = 34;
 
-const registerRows: (typeof REGISTER_NODES)[number][][] = [];
-for (let i = 0; i < REGISTER_NODES.length; i += REGISTER_MAX_PER_ROW) {
-  registerRows.push(REGISTER_NODES.slice(i, i + REGISTER_MAX_PER_ROW));
+const OMC_PANEL_HEIGHT = omcPanelHeight(CHECK_ROWS);
+
+const X_INPUT = 0;
+const X_OMC = X_INPUT + CARD_WIDTH + COLUMN_GAP;
+const X_OUTPUT = X_OMC + OMC_PANEL_WIDTH + COLUMN_GAP;
+const X_CONFIRMATION = X_OUTPUT + CARD_WIDTH + COLUMN_GAP;
+// The register row spans the whole pipeline, from the Invoer column to Afleverbevestiging.
+const GRID_WIDTH = X_CONFIRMATION + CARD_WIDTH - X_INPUT;
+
+type Position = { x: number; y: number };
+
+/** Top of each card in a column of `count`, centred on the line every column shares. */
+function stackedYs(count: number, centerY: number): number[] {
+  const height = count * CARD_HEIGHT + (count - 1) * ROW_GAP;
+  const top = centerY - height / 2;
+  return Array.from({ length: count }, (_, i) => top + i * (CARD_HEIGHT + ROW_GAP));
 }
 
-const registerPositions: LayoutResult["positions"] = {};
-const registerEdgeHandles: LayoutResult["edgeHandles"] = {};
-let registerLabelX = Infinity;
-registerRows.forEach((row, rowIndex) => {
-  const rowWidth = row.length * CARD_WIDTH + (row.length - 1) * REGISTER_GAP_X;
-  const rowStartX = patternPos.x + PATTERN_ENGINE_WIDTH / 2 - rowWidth / 2;
-  const rowY = registerFirstRowY + rowIndex * (CARD_HEIGHT + REGISTER_ROW_SPACING_Y);
-  registerLabelX = Math.min(registerLabelX, rowStartX);
-  row.forEach((n, i) => {
-    registerPositions[n.key] = { x: rowStartX + i * (CARD_WIDTH + REGISTER_GAP_X), y: rowY };
-    registerEdgeHandles[`${PATTERN_ENGINE_KEY}->${n.key}`] = { sourceHandle: "bottom", targetHandle: "top" };
-  });
-});
+interface Layout {
+  positions: Record<string, Position>;
+  /** Card widths that differ from CARD_WIDTH (the register row). */
+  widths: Record<string, number>;
+  /** Fixed card heights (the register row). */
+  heights: Record<string, number>;
+  labels: { label: string; x: number; y: number }[];
+}
 
-const LAYOUT: LayoutResult = {
-  positions: { ...mainLayout.positions, ...registerPositions },
-  edgeHandles: { ...mainLayout.edgeHandles, ...registerEdgeHandles },
-};
+function computeLayout(visible: (n: ArchitectureNode) => boolean): Layout {
+  const centerY = OMC_PANEL_HEIGHT / 2;
+  const positions: Record<string, Position> = { [PATTERN_ENGINE_KEY]: { x: X_OMC, y: 0 } };
+  const widths: Record<string, number> = {};
+  const heights: Record<string, number> = {};
 
-const COLUMN_GROUPS: { label: string; keys: string[] }[] = [
-  { label: "Invoer", keys: INPUT_NODES.map((n) => n.key) },
-  { label: "Verwerking", keys: [PATTERN_ENGINE_KEY] },
-  { label: "Kanaal & filters", keys: FILTER_NODES.map((n) => n.key) },
-  { label: "Uitvoer", keys: CHANNEL_NODES.map((n) => n.key) },
-  { label: "Afleverbevestiging", keys: CONFIRMATION_NODES.map((n) => n.key) },
-];
+  const inputs = INPUT_NODES.filter(visible);
+  stackedYs(inputs.length, centerY).forEach((y, i) => (positions[inputs[i].key] = { x: X_INPUT, y }));
 
-const COLUMN_LABELS = [
-  ...COLUMN_GROUPS.map((g) => ({
-    label: g.label,
-    x: Math.min(...g.keys.map((k) => LAYOUT.positions[k].x)),
-    y: Math.min(...g.keys.map((k) => LAYOUT.positions[k].y)) - 40,
-  })),
-  { label: "Registers", x: registerLabelX, y: registerFirstRowY - 40 },
-];
+  const outputs = CHANNEL_NODES.filter(visible);
+  stackedYs(outputs.length, centerY).forEach((y, i) => (positions[outputs[i].key] = { x: X_OUTPUT, y }));
+
+  // Each confirmation sits level with the middle of what feeds it, so its edges fan in evenly.
+  const feeders: Record<string, string[]> = {
+    contactmoment: ["notify-email", "notify-sms", "notify-post", "printstraat", "berichtenbox"],
+    contactherstel: ["lokale-berichtenbox"],
+  };
+  for (const confirmation of CONFIRMATION_NODES.filter(visible)) {
+    const ys = (feeders[confirmation.key] ?? []).map((k) => positions[k]?.y).filter((y) => y !== undefined);
+    const y = ys.length > 0 ? ys[Math.floor(ys.length / 2)] : centerY - CARD_HEIGHT / 2;
+    positions[confirmation.key] = { x: X_CONFIRMATION, y };
+  }
+
+  const columnBottom = Math.max(
+    OMC_PANEL_HEIGHT,
+    ...[...inputs, ...outputs].map((n) => positions[n.key].y + CARD_HEIGHT),
+  );
+  const registerTop = columnBottom + REGISTER_TOP_GAP;
+
+  // One row across the full width of the pipeline (like OMC3's invoerclients row), so every
+  // round trip drops straight down from the engine without weaving between cards. Only with
+  // the planned integrations shown does it need a second, equally wide row.
+  const registers = REGISTER_NODES.filter(visible);
+  const rowCount = Math.max(1, Math.ceil(registers.length / REGISTER_MAX_PER_ROW));
+  const perRow = Math.ceil(registers.length / rowCount);
+  const registerWidth = (GRID_WIDTH - (perRow - 1) * REGISTER_GAP_X) / perRow;
+  for (let row = 0; row < rowCount; row++) {
+    registers.slice(row * perRow, (row + 1) * perRow).forEach((n, i) => {
+      positions[n.key] = {
+        x: X_INPUT + i * (registerWidth + REGISTER_GAP_X),
+        y: registerTop + row * (REGISTER_CARD_HEIGHT + 2 * ROW_GAP),
+      };
+      widths[n.key] = registerWidth;
+      heights[n.key] = REGISTER_CARD_HEIGHT;
+    });
+  }
+
+  const columnTop = (nodes: ArchitectureNode[]) => Math.min(...nodes.map((n) => positions[n.key].y));
+  const confirmations = CONFIRMATION_NODES.filter(visible);
+
+  const labels = [
+    { label: "Invoer", x: X_INPUT, y: columnTop(inputs) - LABEL_OFFSET_Y },
+    { label: "Verwerking", x: X_OMC, y: -LABEL_OFFSET_Y },
+    { label: "Uitvoer", x: X_OUTPUT, y: columnTop(outputs) - LABEL_OFFSET_Y },
+    { label: "Afleverbevestiging", x: X_CONFIRMATION, y: columnTop(confirmations) - LABEL_OFFSET_Y },
+    { label: "Registers — heen en terug", x: X_INPUT, y: registerTop - LABEL_OFFSET_Y },
+  ];
+
+  return { positions, widths, heights, labels };
+}
+
+/** Pipeline edges run left to right; OMC's register calls drop out of its bottom edge. */
+function edgeHandles(source: string, target: string) {
+  return source === PATTERN_ENGINE_KEY && REGISTER_NODES.some((n) => n.key === target)
+    ? { sourceHandle: "bottom", targetHandle: "top" }
+    : { sourceHandle: "right", targetHandle: "left" };
+}
 
 // `fitView` (the boolean prop) only ever runs once, synchronously at mount — if the
 // container hasn't settled into its final size yet (e.g. still animating in, or a class
 // hasn't been applied by the time React Flow first measures), the fit is wrong and never
-// recalculated. Re-running it imperatively next frame is the standard fix.
+// recalculated. Re-running it imperatively next frame is the standard fix. Remounted (via its
+// `key`) whenever the visible set changes, so the diagram re-fits after the toggle.
 function FitViewOnReady() {
   const { fitView } = useReactFlow();
   useEffect(() => {
@@ -242,6 +210,15 @@ export default function FlowPage() {
   const [scenarios, setScenarios] = useState<ScenarioFlow[]>([]);
   const [diagramOpen, setDiagramOpen] = useState(false);
   const [logModalNodeKey, setLogModalNodeKey] = useState<string | null>(null);
+  // Integrations that don't exist yet ("nog geen client") are hidden by default — they are
+  // design placeholders, and showing them doubled the diagram without saying anything real.
+  const [showPlanned, setShowPlanned] = useState(false);
+
+  const isVisible = useMemo(
+    () => (n: ArchitectureNode) => n.active || showPlanned,
+    [showPlanned],
+  );
+  const layout = useMemo(() => computeLayout(isVisible), [isVisible]);
 
   const telemetry = useOmcTelemetry(isTracing);
 
@@ -263,7 +240,7 @@ export default function FlowPage() {
   }, [scenarios, selectedFlowKey]);
 
   const logModalNode = useMemo(
-    () => ALL_ARCH_NODES.find((n) => n.key === logModalNodeKey) ?? null,
+    () => LOGGABLE_NODES.find((n) => n.key === logModalNodeKey) ?? null,
     [logModalNodeKey],
   );
 
@@ -284,12 +261,14 @@ export default function FlowPage() {
   }
 
   const nodes: Node[] = useMemo(() => {
-    const cardNodes: Node[] = ALL_ARCH_NODES.map((n) => ({
+    const cardNodes: Node[] = GRAPH_NODES.filter(isVisible).map((n) => ({
       id: n.key,
       type: "flowNode",
-      position: LAYOUT.positions[n.key],
+      position: layout.positions[n.key],
       data: {
         node: n,
+        width: layout.widths[n.key],
+        height: layout.heights[n.key],
         state: nodeState(n.key, n.active),
         throughput: telemetry.nodeThroughput[n.key],
         onClick: () => setLogModalNodeKey(n.key),
@@ -298,10 +277,10 @@ export default function FlowPage() {
       selectable: false,
     }));
 
-    const patternEngineNode: Node = {
+    const omcNode: Node = {
       id: PATTERN_ENGINE_KEY,
-      type: "patternEngine",
-      position: LAYOUT.positions[PATTERN_ENGINE_KEY],
+      type: "omc",
+      position: layout.positions[PATTERN_ENGINE_KEY],
       data: {
         flows: FLOW_OPTIONS,
         selectedKey: selectedFlowKey,
@@ -309,12 +288,16 @@ export default function FlowPage() {
         totalProcessed: telemetry.totalProcessed,
         onViewDiagram: () => setDiagramOpen(true),
         diagramAvailable: activeDiagram !== null,
+        rows: CHECK_ROWS,
+        activeChecks: telemetry.activeSteps,
+        throughput: telemetry.nodeThroughput,
+        onCheckClick: (key: string) => setLogModalNodeKey(key),
       },
       draggable: false,
       selectable: false,
     };
 
-    const labelNodes: Node[] = COLUMN_LABELS.map((c) => ({
+    const labelNodes: Node[] = layout.labels.map((c) => ({
       id: `label-${c.label}`,
       type: "columnLabel",
       position: { x: c.x, y: c.y },
@@ -323,9 +306,25 @@ export default function FlowPage() {
       selectable: false,
     }));
 
-    return [...labelNodes, ...cardNodes, patternEngineNode];
+    return [...labelNodes, ...cardNodes, omcNode];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFlowKey, telemetry.nodeThroughput, telemetry.totalProcessed, usedKeys, activeDiagram]);
+  }, [selectedFlowKey, telemetry.nodeThroughput, telemetry.totalProcessed, telemetry.activeSteps, usedKeys, activeDiagram, layout, isVisible]);
+
+  // React Flow measures each node once and keeps that on its own copy. Handing it brand-new node
+  // objects (which `nodes` above does on every trace step, as counters and lit checks change)
+  // without those measurements makes it measure again, and edges aren't drawn until it has — so
+  // every edge, and the dot travelling on one, blinked out and restarted from the beginning of its
+  // line on each step. That read as several dots per message. Merging updates into the nodes it
+  // already measured (via onNodesChange) keeps the measurements, and the dot runs once.
+  const [flowNodes, setFlowNodes, onNodesChange] = useNodesState<Node>([]);
+  useEffect(() => {
+    setFlowNodes((previous) =>
+      nodes.map((node) => {
+        const measured = previous.find((p) => p.id === node.id);
+        return measured ? { ...measured, ...node, measured: measured.measured } : node;
+      }),
+    );
+  }, [nodes, setFlowNodes]);
 
   const activeHops = telemetry.activeHops;
 
@@ -336,12 +335,16 @@ export default function FlowPage() {
   // enough main-thread churn to visibly disrupt the traveling dot's SMIL timing.
   const baseEdges: Edge[] = useMemo(
     () =>
-      EDGES.map((e, i) => {
-        const sourceActive = ALL_ARCH_NODES.find((n) => n.key === e.source)?.active ?? true;
-        const targetActive = ALL_ARCH_NODES.find((n) => n.key === e.target)?.active ?? true;
+      EDGES.filter((e) => {
+        const source = GRAPH_NODES.find((n) => n.key === e.source);
+        const target = GRAPH_NODES.find((n) => n.key === e.target);
+        return (!source || isVisible(source)) && (!target || isVisible(target));
+      }).map((e, i) => {
+        const sourceActive = GRAPH_NODES.find((n) => n.key === e.source)?.active ?? true;
+        const targetActive = GRAPH_NODES.find((n) => n.key === e.target)?.active ?? true;
         const live = sourceActive && targetActive && usedEdgeKeys.has(`${e.source}->${e.target}`);
         const color = EDGE_CATEGORY_COLOR[e.category];
-        const handles = LAYOUT.edgeHandles[`${e.source}->${e.target}`];
+        const handles = edgeHandles(e.source, e.target);
 
         const data: TrafficEdgeData = { liveColor: color };
 
@@ -361,7 +364,7 @@ export default function FlowPage() {
           },
         };
       }),
-    [usedEdgeKeys],
+    [usedEdgeKeys, isVisible],
   );
 
   // Patches in the list of hops (if any — several simultaneous traces can each be traversing
@@ -415,7 +418,18 @@ export default function FlowPage() {
           sparkline={telemetry.sparkline}
         />
 
-        <ConnectionLegend />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <ConnectionLegend />
+          <label className="flex cursor-pointer items-center gap-2 text-[0.68rem] text-arch-muted">
+            <input
+              type="checkbox"
+              checked={showPlanned}
+              onChange={(e) => setShowPlanned(e.target.checked)}
+              className="accent-arch-teal"
+            />
+            Toon geplande koppelingen (nog geen client)
+          </label>
+        </div>
 
         <div
           className="w-full overflow-hidden rounded-lg border border-arch-border bg-arch-surface"
@@ -423,7 +437,8 @@ export default function FlowPage() {
         >
           <ReactFlowProvider>
             <ReactFlow
-              nodes={nodes}
+              nodes={flowNodes}
+              onNodesChange={onNodesChange}
               edges={edges}
               nodeTypes={NODE_TYPES}
               edgeTypes={EDGE_TYPES}
@@ -441,8 +456,8 @@ export default function FlowPage() {
               proOptions={{ hideAttribution: true }}
             >
               <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-arch-border)" />
-              <Controls showInteractive={false} />
-              <FitViewOnReady />
+              <Controls showInteractive={false} position="top-right" />
+              <FitViewOnReady key={showPlanned ? "planned" : "live"} />
             </ReactFlow>
           </ReactFlowProvider>
         </div>
@@ -450,12 +465,12 @@ export default function FlowPage() {
         <LiveLogPanel log={telemetry.log} connected={telemetry.connected} />
 
         <p className="text-[0.68rem] text-arch-faint">
-          Selecteer een flow in het paneel &ldquo;Output Patronen&rdquo; om te zien welke
-          registers, kanalen en bevestigingen die flow daadwerkelijk gebruikt — niet-gebruikte
-          onderdelen dimmen. Grijze, gestippelde kaarten zijn nog niet aangesloten op een echte
-          OMC-integratie. Klik het diagram-icoon om de beslisboom van de geselecteerde flow te
-          bekijken. Klik &ldquo;Trace starten&rdquo; om een echte binnenkomende notificatie live
-          door het systeem te volgen.
+          Selecteer een flow in het OMC-blok: de controles van die flow lichten op, en
+          registers, uitvoer en bevestigingen die de flow niet gebruikt dimmen. Klik een controle
+          voor wat die controleert en het log, of een kaart voor het log ervan. Gestippelde
+          kaarten (via &ldquo;Toon geplande koppelingen&rdquo;) zijn nog niet aangesloten. Klik het
+          diagram-icoon voor de beslisboom van de flow, of &ldquo;Trace starten&rdquo; om een echte
+          notificatie live te volgen.
         </p>
       </div>
 

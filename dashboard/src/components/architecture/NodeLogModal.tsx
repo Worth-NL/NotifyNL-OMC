@@ -53,6 +53,19 @@ export function NodeLogModal({
           </button>
         </div>
 
+        {node.details && (
+          <dl className="grid grid-cols-[7.5rem_1fr] gap-x-4 gap-y-2 border-b border-arch-border bg-arch-bg px-5 py-4 text-[0.74rem] leading-snug">
+            <dt className="font-semibold text-arch-muted">Controleert</dt>
+            <dd className="text-arch-ink">{node.details.what}</dd>
+            <dt className="font-semibold text-arch-muted">Instelling</dt>
+            <dd className="font-mono text-[0.7rem] text-arch-ink">{node.details.config}</dd>
+            <dt className="font-semibold text-arch-muted">Als het niet klopt</dt>
+            <dd className="text-arch-ink">{node.details.onFail}</dd>
+            <dt className="font-semibold text-arch-muted">In de code</dt>
+            <dd className="font-mono text-[0.7rem] text-arch-muted">{node.details.source}</dd>
+          </dl>
+        )}
+
         <div className="flex-1 overflow-y-auto px-5 py-3 font-mono text-[0.68rem] leading-relaxed">
           {lines.length === 0 ? (
             <p className="py-6 text-center text-arch-faint">

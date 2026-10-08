@@ -103,6 +103,13 @@ namespace EventsHandler.Services.DataProcessing
                     // requires action is decided inside MessageBoxScenario, not here – this is only domain routing.
                     if (cloudEventType.StartsWith("nl.overheid.berichten.", StringComparison.OrdinalIgnoreCase))
                     {
+                        // Traced like a ZGW notification, so the dashboard can follow a Bericht through its
+                        // whole fallback chain. It arrives via Open Notificaties like every other event.
+                        TraceContext.Start(this._traceEmitter);
+                        TraceContext.SetScenario("message-box");
+                        TraceContext.Emit("opennotificaties", "ok", cloudEventType);
+                        TraceContext.Emit("output-patronen", "ok");
+
                         // Pass the entire CloudEvent (jsonElement) to the scenario
                         HttpRequestResponse response = await _messageBoxScenario.ProcessCloudEventAsync(jsonElement);
                         return response.IsFailure
