@@ -1,71 +1,44 @@
-# URN-mapping en registratie-instanties
+# URN-mapping en meerdere registraties
 
-> **Status: ontwerpvoorstel.** Dit document beschrijft hoe het OMC URN's gaat herkennen, omzetten naar URL's en daarbij per bron de juiste credentials kiest. Het is nog niet geïmplementeerd; namen van instellingen en klassen kunnen nog wijzigen.
+Status: voorstel, nog niet gebouwd. Namen van instellingen en klassen kunnen nog veranderen.
 
----
+## Waarom
 
-## Achtergrond
-
-Registraties (Open Zaak, OpenVTB, Open Producten, Open Klant, …) gaan steeds vaker naar elkaar verwijzen met een **URN** in plaats van een URL. Het algemene formaat volgens de afspraken binnen het Platform voor Dienstverlening is:
+Registraties gaan steeds vaker naar elkaar verwijzen met een URN in plaats van een URL. Het formaat dat binnen het Platform voor Dienstverlening is afgesproken ziet er zo uit:
 
 ```
 urn:nld:<organisatie>:<systeem>:<resource>:<attribuut>:<identificatie>
 ```
 
-Bijvoorbeeld:
+Bijvoorbeeld `urn:nld:denhaag:zaken-sociaal:zaak:uuid:3df59f4f-ffa0-4caf-8a15-eeb19afffa52`.
 
-```
-urn:nld:denhaag:zaken-sociaal:zaak:uuid:3df59f4f-ffa0-4caf-8a15-eeb19afffa52
-```
+Zo'n URN zegt wel wát iets is, maar niet waar het staat. En de OMC moet die dingen wel ophalen: de zaak bij een taak, het document bij een besluit, het product bij een notificatie. Voor elke URN moeten we dus kunnen uitzoeken bij welke registratie hij hoort, wat de URL is en met welke credentials we daar binnenkomen.
 
-Een URN zegt *wat* een object is, maar niet *waar* het staat. Het OMC moet die objecten wel ophalen (een zaak bij een taak, een document bij een besluit, een product bij een notificatie). Daarvoor moet het OMC weten:
+Daar komt bij dat een gemeente van elke registratie meer dan één installatie kan hebben. Denk aan twee zaaksystemen die allebei zaken in hetzelfde veld van een taak zetten. De OMC kan nu per registratie maar één endpoint en één set credentials aan (`ZGW_ENDPOINT_*` en `ZGW_AUTH_*`), dus dat gaat niet meer werken.
 
-1. bij welke instantie van welke registratie een URN hoort;
-2. op welke URL het object daar te vinden is;
-3. met welke credentials het OMC die instantie mag bevragen.
-
-Daarnaast geldt: **elke registratie kan meerdere instanties hebben.** Een gemeente kan bijvoorbeeld twee zaaksystemen hebben die allebei zaken aanleveren in hetzelfde veld van een taak of bericht. Het OMC kan nu per registratie maar één endpoint en één set credentials gebruiken (`ZGW_ENDPOINT_*` / `ZGW_AUTH_*`); dat volstaat dan niet meer.
-
-In de praktijk is de URN-notatie bovendien nog niet uniform. Den Haag gebruikt bijvoorbeeld een extra componentsegment (`urn:nld:denhaag:zaken-main:zrc:zaak:uuid:…`), en voor BSN's zijn zowel `urn:nld:brp:bsn:nummer:…` als `urn:nld:overheid:brp:np:bsn:…` in omloop. Het OMC moet daarom niet één vaste URN-indeling afdwingen, maar per gemeente configureerbaar zijn.
-
----
+En de URN's zelf zijn ook nog niet overal hetzelfde. Den Haag zet er bijvoorbeeld een extra stuk voor het component in (`urn:nld:denhaag:zaken-main:zrc:zaak:uuid:…`), en voor BSN's komen we zowel `urn:nld:brp:bsn:nummer:…` als `urn:nld:overheid:brp:np:bsn:…` tegen. Vervelend, maar het is niet anders. We moeten het daarom per gemeente kunnen instellen, in plaats van één vaste indeling af te dwingen.
 
 ## Uitgangspunten
 
-| # | Uitgangspunt |
-|---|---|
-| 1 | **Het API-pad per registratietype is vast.** Alleen de locatie (schema, host en eventueel een pad-prefix) verschilt per instantie. Dit is een eis aan klanten: een Open Zaak-instantie biedt de Zaken API altijd aan op `<basis>/zaken/api/v1`. |
-| 2 | **Elke registratie kan meerdere instanties hebben.** Instanties worden dynamisch geregistreerd in configuratie, niet in code. |
-| 3 | **Elke URN die het OMC tegenkomt, probeert het te mappen naar een URL.** Dat zal maar af en toe lukken; een URN die niet te mappen is, is een normale uitkomst en geen crash. |
-| 4 | **Credentials horen bij een instantie** en worden in dezelfde configuratie geregeld. Geheime waarden staan nooit in een ConfigMap. |
-| 5 | **Achterwaarts compatibel.** Installaties zonder de nieuwe configuratie werken ongewijzigd met de bestaande `ZGW_ENDPOINT_*`- en `ZGW_AUTH_*`-variabelen. |
+- Het API-pad is per soort registratie altijd hetzelfde. Alleen waar een registratie staat verschilt. Dat is een eis aan onze klanten: een Open Zaak biedt de Zaken API altijd aan op `<basis-URL>/zaken/api/v1`.
+- Van elke registratie kunnen meerdere installaties bestaan. Die leggen we vast in configuratie, niet in code.
+- Elke URN die we tegenkomen proberen we om te zetten naar een URL. Dat gaat vaak niet lukken, en dat is prima. Het is een normale uitkomst en geen crash.
+- Credentials horen bij een installatie en staan in dezelfde configuratie. Geheime waarden komen nooit in een ConfigMap.
+- Wie niets verandert, merkt niets. Zonder de nieuwe configuratie werkt alles zoals nu.
 
----
-
-## Begrippen
-
-| Begrip | Betekenis |
-|---|---|
-| **Registratietype** | Het soort registratie, bijvoorbeeld `openzaak` of `openklant`. Het type bepaalt welke API's een instantie aanbiedt en op welke vaste paden. |
-| **API** | Eén ZGW-API binnen een registratie, bijvoorbeeld `zaken`, `catalogi` of `klantinteracties`. |
-| **Instantie** | Eén concrete installatie van een registratietype, met een eigen basis-URL en eigen credentials. |
-| **URN-prefix** | Het begin van een URN dat aangeeft dat het object bij een bepaalde instantie hoort, bijvoorbeeld `urn:nld:denhaag:zaken-main`. |
-| **Referentie** | Een waarde in een veld die naar een object verwijst: een URL óf een URN. |
-
----
+Een paar woorden die hieronder steeds terugkomen. Een type is het soort registratie, zoals `openzaak` of `openklant`. Het type bepaalt welke API's er zijn en op welke paden. Een instantie is één concrete installatie van zo'n type, met een eigen basis-URL en eigen credentials. Een URN-prefix is het begin van een URN dat bij een instantie hoort, zoals `urn:nld:denhaag:zaken-main`. En een referentie is een waarde in een veld die naar iets anders verwijst, een URL of een URN.
 
 ## Configuratie
 
-### Instellingen
+De OMC leest de instanties uit `OMC_INSTANCES_PATH`. Dat mag één YAML-bestand zijn of een map met YAML-bestanden, die dan op alfabetische volgorde worden ingelezen. Staat deze variabele niet, dan gebruikt de OMC gewoon de bestaande `ZGW_ENDPOINT_*` en `ZGW_AUTH_*`.
 
-| Variabele | Verplicht | Beschrijving |
-|---|---|---|
-| `OMC_INSTANCES_PATH` | Nee | Pad naar een YAML-bestand of een map met YAML-bestanden (`*.yaml`, `*.yml`, alfabetisch ingelezen). Niet gezet: het OMC gebruikt de bestaande `ZGW_ENDPOINT_*`/`ZGW_AUTH_*` (zie [Achterwaartse compatibiliteit](#achterwaartse-compatibiliteit)). |
-| `OMC_SECRETS_PATH` | Ja, als `OMC_INSTANCES_PATH` gezet is | Map waarin elk secret als los bestand staat, zoals Kubernetes een Secret als volume mount. `secret:<naam>` in de configuratie verwijst naar het bestand `<OMC_SECRETS_PATH>/<naam>`. |
+Daarnaast is er `OMC_SECRETS_PATH`. Dat is een map waarin elk secret als los bestand staat, precies zoals Kubernetes een Secret als volume mount. In de configuratie verwijs je naar een secret met `secret:<naam>`, en de OMC leest dan het bestand `<OMC_SECRETS_PATH>/<naam>`.
 
-Het bestand of de map wordt één keer bij het opstarten ingelezen en gevalideerd.
+Alles wordt één keer bij het opstarten ingelezen en gecontroleerd.
 
-### Volledig voorbeeld
+### Voorbeeld
+
+Zo zou het er voor Den Haag uit kunnen zien, met twee zaaksystemen en een losse Documenten API:
 
 ```yaml
 version: 1
@@ -81,7 +54,6 @@ instances:
     auth:
       type: jwt
       issuer: "notifynl-omc"
-      clientId: "notifynl-omc"
       userId: "omc"
       userName: "NotifyNL OMC"
       secret: "secret:openzaak-main-jwt"
@@ -96,13 +68,12 @@ instances:
       - "urn:nld:denhaag:zaken-sociaal"
     auth:
       type: jwt
-      issuer: "notifynl-omc"
-      clientId: "notifynl-omc-sociaal"
+      issuer: "notifynl-omc-sociaal"
       secret: "secret:openzaak-sociaal-jwt"
     links:
       klantinteracties: openklant-main
 
-  # Losse Documenten API (DRC) op een andere host
+  # Losse Documenten API op een andere host
   - id: dms
     type: documenten
     baseUrl: "https://dms.denhaag.nl"
@@ -111,13 +82,11 @@ instances:
     auth:
       type: jwt
       issuer: "notifynl-omc"
-      clientId: "notifynl-omc"
       secret: "secret:dms-jwt"
 
   - id: openklant-main
     type: openklant
     baseUrl: "https://openklant.denhaag.nl"
-    default: true
     auth:
       type: apiKey
       key: "secret:openklant-main-key"
@@ -125,36 +94,11 @@ instances:
   - id: openvtb-main
     type: openvtb
     baseUrl: "https://openvtb-zgw.denhaag.nl"
-    default: true
     urnPrefixes:
       - "urn:nld:denhaag:vtb"
     auth:
       type: apiKey
       key: "secret:openvtb-main-key"
-
-  - id: openproducten-main
-    type: openproducten
-    baseUrl: "https://openproduct-zgw.denhaag.nl"
-    default: true
-    urnPrefixes:
-      - "urn:nld:denhaag:producten-main"
-    auth:
-      type: apiKey
-      key: "secret:openproducten-main-key"
-
-  - id: objecten-main
-    type: objecten
-    baseUrl: "https://objecten.denhaag.nl"
-    auth:
-      type: apiKey
-      key: "secret:objecten-main-key"
-
-  - id: objecttypen-main
-    type: objecttypen
-    baseUrl: "https://objecttypen.denhaag.nl"
-    auth:
-      type: apiKey
-      key: "secret:objecttypen-main-key"
 
   - id: opennotificaties-main
     type: opennotificaties
@@ -162,169 +106,119 @@ instances:
     auth:
       type: jwt
       issuer: "notifynl-omc"
-      clientId: "notifynl-omc"
-      secret: "secret:openzaak-main-jwt"   # zelfde secret mag door meerdere instanties gebruikt worden
+      secret: "secret:openzaak-main-jwt"   # hetzelfde secret mag bij meer instanties
+
+  # Objecten, Objecttypen en Open Producten gaan op dezelfde manier
 ```
 
-### Velden
+### Wat je per instantie opgeeft
 
-| Veld | Verplicht | Beschrijving |
-|---|---|---|
-| `id` | Ja | Unieke naam van de instantie. Wordt gebruikt in `links`, logging en het dashboard. |
-| `type` | Ja | Registratietype, zie [Registratietypen en vaste paden](#registratietypen-en-vaste-paden). |
-| `baseUrl` | Ja | Basis-URL van de instantie, **zonder** het API-pad. Mag een pad-prefix bevatten als de instantie achter een gateway staat (bijvoorbeeld `https://api.gemeente.nl/openzaak`). |
-| `default` | Nee | Of dit de standaardinstantie is voor de API's van dit type. Zie [Calls zonder referentie](#calls-zonder-referentie). |
-| `urnPrefixes` | Nee | URN-prefixen die bij deze instantie horen. Zonder prefixen worden URN's nooit naar deze instantie gemapt; URL's wel. De eerste prefix wordt gebruikt bij het omzetten van een URL naar een URN. |
-| `auth` | Ja | Hoe het OMC zich bij deze instantie aanmeldt, zie hieronder. |
-| `links` | Nee | Per API welke andere instantie hoort bij objecten uit deze instantie, bijvoorbeeld welke Open Klant hoort bij een zaaksysteem. Sleutel = API-naam, waarde = instantie-`id`. |
+- `id` is een unieke naam. Die gebruiken we in `links`, in de logs en in het dashboard.
+- `type` is het soort registratie, zie de vaste paden hieronder.
+- `baseUrl` is waar de instantie staat, zonder het API-pad. Een pad-prefix mag wel, bijvoorbeeld als de instantie achter een gateway hangt (`https://api.gemeente.nl/openzaak`).
+- `default` zegt of dit de standaard is voor de API's van dit type. Is er van een API maar één instantie, dan is die vanzelf de standaard.
+- `urnPrefixes` zijn de URN's die bij deze instantie horen. Zonder prefixen koppelen we nooit een URN aan deze instantie, URL's wel. De eerste prefix gebruiken we als we zelf een URN moeten maken.
+- `links` zegt welke andere instantie bij objecten uit deze instantie hoort, bijvoorbeeld welke Open Klant bij een zaaksysteem hoort.
+- `auth` zegt hoe we inloggen.
 
-### Authenticatie
+Voor `auth` zijn er twee smaken. `jwt` werkt zoals we het nu bij Open Zaak doen: je geeft een `issuer` op (in Open Zaak is dat de client-ID) en eventueel `audience`, `userId`, `userName` en `expiresInMin`, plus het `secret`. `apiKey` werkt zoals nu bij Open Klant, Objecten, OpenVTB en Open Producten, met de header `Authorization: Token <key>`, en heeft alleen een `key`. Voor lokaal ontwikkelen is er ook nog `none`.
 
-| `type` | Velden | Header |
-|---|---|---|
-| `jwt` | `secret` (geheim), `issuer`, `clientId`, optioneel `userId`, `userName`, `audience`, `expiresInMin` | `Authorization: Bearer <JWT>`, zoals nu voor Open Zaak |
-| `apiKey` | `key` (geheim) | `Authorization: Token <key>`, zoals nu voor Open Klant, Objecten, OpenVTB en Open Producten |
-| `none` | — | Geen; alleen bedoeld voor lokale ontwikkeling |
+Alleen `secret` en `key` zijn echt geheim, en daar accepteren we alleen een verwijzing als `secret:<naam>`. Een letterlijke waarde weigeren we, zodat niemand per ongeluk een sleutel in een ConfigMap of in git zet. De rest is niet geheim en staat gewoon in de config.
 
-Alleen `secret` en `key` zijn geheim. Deze velden accepteren **uitsluitend** een verwijzing in de vorm `secret:<naam>`; een letterlijke waarde wordt geweigerd. Zo kan een sleutel nooit per ongeluk in een ConfigMap of in git terechtkomen.
+We lezen secrets pas bij gebruik uit het bestand, met een korte cache. Kubernetes ververst een gemounte Secret vanzelf, dus je kunt een sleutel roteren zonder de OMC te herstarten. Mount dan wel de hele map en niet met `subPath`, want dan ververst hij niet.
 
-Secrets worden bij gebruik uit het bestand gelezen (met een korte cache). Kubernetes ververst een gemounte Secret automatisch, dus een credential kan geroteerd worden zonder herstart, mits de map gemount wordt en niet met `subPath`.
+### Controle bij het opstarten
 
-### Validatie bij het opstarten
+Bij het opstarten controleren we de hele configuratie. Klopt er iets niet, dan start de OMC niet en krijg je alle fouten in één keer te zien, met het bestand en de instantie erbij. We kijken onder andere naar dubbele id's, onbekende types, een `baseUrl` die geen goede URL is of al op een API-pad eindigt, `secret:`-verwijzingen zonder bestand, letterlijke secrets, `links` naar instanties die niet bestaan of die API niet hebben, URN-prefixen die bij twee instanties staan, en API's met meerdere instanties waar niet precies één standaard tussen zit.
 
-De configuratie wordt bij het opstarten volledig ingelezen en gecontroleerd. Bij een fout start het OMC niet en meldt het alle gevonden fouten in één keer, met het bestand en de instantie erbij:
+## Vaste paden
 
-* dubbele `id`'s;
-* onbekend `type` of onbekend `auth.type`;
-* `baseUrl` ontbreekt, is geen absolute `http(s)`-URL, of eindigt al op een vast API-pad;
-* een `secret:`-verwijzing waarvoor geen niet-leeg bestand bestaat in `OMC_SECRETS_PATH`;
-* een letterlijke waarde in `secret` of `key`;
-* `links` die naar een onbekende instantie verwijzen, of naar een instantie die de genoemde API niet aanbiedt;
-* dezelfde URN-prefix bij meer dan één instantie;
-* twee instanties met dezelfde `baseUrl` en een overlappende API;
-* een API met meerdere instanties waarvan er niet precies één `default: true` heeft.
+De paden staan in de code en zijn voor elke instantie van een type hetzelfde. In de configuratie staat alleen de basis-URL.
 
----
-
-## Registratietypen en vaste paden
-
-De paden staan in code en zijn per type gelijk voor iedere instantie. De configuratie bevat alleen de basis-URL.
-
-| Type | API | Vast pad | Resources (in URN) |
+| Type | API | Pad | Resources in een URN |
 |---|---|---|---|
-| `openzaak` | `zaken` | `/zaken/api/v1` | `zaak`, `status`, `rol`, `resultaat`, `zaakinformatieobject` |
-| | `catalogi` | `/catalogi/api/v1` | `zaaktype`, `statustype`, `resultaattype`, `roltype`, `informatieobjecttype`, `besluittype` |
-| | `documenten` | `/documenten/api/v1` | `enkelvoudiginformatieobject` |
-| | `besluiten` | `/besluiten/api/v1` | `besluit`, `besluitinformatieobject` |
-| `zaken`, `catalogi`, `documenten`, `besluiten` | één van de vier hierboven | idem | idem |
-| `openklant` | `klantinteracties` | `/klantinteracties/api/v1` | `partij`, `betrokkene`, `klantcontact` |
-| `objecten` | `objecten` | `/api/v2` | `object` |
-| `objecttypen` | `objecttypen` | `/api/v2` *(te bevestigen, zie open punten)* | `objecttype` |
-| `openvtb` | `taken` | `/taken/api/v1` | `externetaak` |
-| | `berichten` | `/berichten/api/v1` | `bericht` |
-| | `verzoeken` | `/verzoeken/api/v1` *(te bevestigen)* | `verzoek`, `verzoektype` |
-| `openproducten` | `producten` | `/producten/api/v1` | `product`, `producttype` |
-| `opennotificaties` | `notificaties` | `/api/v1` | — |
+| `openzaak` | zaken | `/zaken/api/v1` | zaak, status, rol, resultaat, zaakinformatieobject |
+| | catalogi | `/catalogi/api/v1` | zaaktype, statustype, resultaattype, roltype, informatieobjecttype, besluittype |
+| | documenten | `/documenten/api/v1` | enkelvoudiginformatieobject |
+| | besluiten | `/besluiten/api/v1` | besluit, besluitinformatieobject |
+| `openklant` | klantinteracties | `/klantinteracties/api/v1` | partij, betrokkene, klantcontact |
+| `objecten` | objecten | `/api/v2` | object |
+| `objecttypen` | objecttypen | `/api/v2` (nog bevestigen) | objecttype |
+| `openvtb` | taken | `/taken/api/v1` | externetaak |
+| | berichten | `/berichten/api/v1` | bericht |
+| | verzoeken | `/verzoeken/api/v1` (nog bevestigen) | verzoek, verzoektype |
+| `openproducten` | producten | `/producten/api/v1` | product, producttype |
+| `opennotificaties` | notificaties | `/api/v1` | |
 
-`openzaak` is een verkorte notatie voor een instantie die alle vier de Open Zaak-API's op dezelfde basis-URL aanbiedt. Draait bijvoorbeeld de Documenten API elders, dan wordt die als eigen instantie met `type: documenten` geregistreerd (zie `dms` in het voorbeeld).
+`openzaak` is een afkorting voor een instantie die alle vier de Open Zaak-API's op dezelfde basis-URL heeft. Staat bijvoorbeeld de Documenten API ergens anders, dan registreer je die apart met `type: documenten` (zoals `dms` in het voorbeeld). Dat kan ook met `zaken`, `catalogi` en `besluiten`.
 
-De koppeling van resource naar collectie (`zaak` → `/zaken`, `enkelvoudiginformatieobject` → `/enkelvoudiginformatieobjecten`, `externetaak` → `/externetaken`, …) staat ook in code.
+Welke collectie bij een resource hoort (`zaak` hoort bij `/zaken`, `externetaak` bij `/externetaken`) staat ook in de code.
 
----
+## Hoe we een referentie oplossen
 
-## Resolutie
+Alles loopt via één onderdeel, de instance registry. De code die iets ophaalt zegt alleen wat ze verwacht, bijvoorbeeld een zaak. De registry zoekt uit waar dat staat en met welke credentials we het ophalen.
 
-Alle referenties lopen via één component, de **instance registry**. De aanroepende code geeft alleen aan *wat* ze verwacht (bijvoorbeeld een zaak); de registry bepaalt *waar* het object staat en *met welke credentials* het opgehaald wordt.
+### Van URN naar URL
 
-### URN → URL
+Eerst zoeken we de instantie. De langste URN-prefix die past wint. Een prefix moet wel bij een `:` ophouden, dus `urn:nld:denhaag:zaken` past niet op `urn:nld:denhaag:zaken-main:…`. Hoofdletters maken niet uit, behalve in de identificatie zelf.
 
-1. **Instantie bepalen.** De langste URN-prefix uit `urnPrefixes` die overeenkomt, wint. Een prefix moet op een segmentgrens eindigen (`urn:nld:denhaag:zaken` matcht dus niet op `urn:nld:denhaag:zaken-main:…`). De vergelijking is niet hoofdlettergevoelig; de identificatie zelf wordt ongewijzigd overgenomen.
-2. **Resource vinden.** In de rest van de URN wordt het eerste segment gezocht dat een bekende resource is van een API die deze instantie aanbiedt. Segmenten daarvoor, zoals het componentsegment `zrc` of `ztc` bij Den Haag, worden overgeslagen.
-3. **Attribuut en identificatie.** Na de resource volgt `<attribuut>:<identificatie>`. Staat er maar één segment, dan wordt `uuid` als attribuut aangenomen.
-4. **URL opbouwen.**
-   * Bij attribuut `uuid` wordt de URL direct opgebouwd: `<baseUrl><vast pad>/<collectie>/<uuid>`.
-   * Bij een ander attribuut voert het OMC een vaste zoekvraag uit op die instantie (zie de tabel hieronder). Ook deze zoekvragen staan in code, niet in configuratie.
+Daarna zoeken we in de rest van de URN het eerste stuk dat een resource is die deze instantie kent. Wat daarvoor staat, zoals `zrc` of `ztc` bij Den Haag, slaan we over. Na de resource komt het attribuut en dan de identificatie. Staat er maar één stuk na de resource, dan gaan we uit van `uuid`.
 
-Voorbeelden met de configuratie hierboven:
+Bij een `uuid` bouwen we de URL gewoon op: basis-URL, vast pad, collectie en uuid. Bij een ander attribuut doen we een vaste zoekvraag op die instantie. Voorlopig zijn dat er twee: een zaak op zaaknummer (`GET /zaken/api/v1/zaken?identificatie=…`) en een zaaktype op identificatie (`GET /catalogi/api/v1/zaaktypen?identificatie=…`). Let wel op dat een zaak-identificatie alleen uniek is binnen een bronorganisatie. Komt er meer dan één zaak terug, dan noemen we de URN meerduidig. Van een zaaktype kunnen meerdere versies dezelfde identificatie hebben, en dan pakken we de versie die nu geldt. De uitkomst van zo'n zoekvraag bewaren we even, zodat we niet bij elke stap opnieuw zoeken.
 
-| URN | Instantie | URL |
-|---|---|---|
-| `urn:nld:denhaag:zaken-main:zrc:zaak:uuid:3df59f4f-…` | `openzaak-main` | `https://openzaak-zgw.denhaag.nl/zaken/api/v1/zaken/3df59f4f-…` |
-| `urn:nld:denhaag:zaken-sociaal:zaak:3df59f4f-…` | `openzaak-sociaal` | `https://zaken-sociaal.denhaag.nl/zaken/api/v1/zaken/3df59f4f-…` |
-| `urn:nld:denhaag:zaken-main:ztc:zaaktype:uuid:7c1e…` | `openzaak-main` | `https://openzaak-zgw.denhaag.nl/catalogi/api/v1/zaaktypen/7c1e…` |
-| `urn:nld:denhaag:vtb:taken:externetaak:uuid:a12b…` | `openvtb-main` | `https://openvtb-zgw.denhaag.nl/taken/api/v1/externetaken/a12b…` |
-| `urn:nld:denhaag:zaken-main:zrc:zaak:zaaknummer:ZAAK-2026-0001` | `openzaak-main` | via zoekvraag, zie hieronder |
-| `urn:nld:rotterdam:zaken:zaak:uuid:…` | — | niet te mappen: geen instantie met deze prefix |
-| `urn:nld:denhaag:vtb:verzoeken:verzoek:uuid:…` | `openvtb-main` | alleen als `verzoeken` als API van OpenVTB wordt ondersteund |
-
-Ondersteunde attributen anders dan `uuid`:
-
-| Resource | Attribuut | Zoekvraag | Bijzonderheden |
-|---|---|---|---|
-| `zaak` | `zaaknummer`, `identificatie` | `GET /zaken/api/v1/zaken?identificatie=<id>` | `identificatie` is alleen uniek binnen een bronorganisatie. Meer dan één resultaat geeft *meerduidig*. |
-| `zaaktype` | `identificatie` | `GET /catalogi/api/v1/zaaktypen?identificatie=<id>` | Meerdere versies kunnen dezelfde identificatie hebben; de op dit moment geldige versie wordt gekozen. |
-
-Uitkomsten van zoekvragen worden kort gecachet, zodat dezelfde URN binnen één verwerking niet steeds opnieuw opgezocht wordt.
-
-### URL → instantie
-
-Ook gewone URL's lopen via de registry. De instantie is die met de langste `baseUrl` die een prefix van de URL is. Dit geldt ook voor URL's die het OMC uit responses volgt (zaak → zaaktype → statustype, zaak → documenten). Die komen zo automatisch bij de juiste instantie en credentials uit, ook als bijvoorbeeld de Catalogi API op een andere host staat dan de Zaken API.
-
-Een URL die bij geen enkele instantie hoort, wordt **niet** opgehaald. Credentials gaan dus nooit naar een host die niet geregistreerd is. Dit vervangt en veralgemeniseert de bestaande SSRF-controle in de [printstraat](../werkwijzen/scenarios/print-printstraat.md), waar de `pdfurl` op de origin van `ZGW_ENDPOINT_DOCUMENTEN` moet wijzen.
-
-### URL → URN
-
-Waar het OMC zelf een verwijzing wegschrijft (bijvoorbeeld de onderwerpobject-identificator van een klantcontact in Open Klant, of kenmerken in een uitgaand CloudEvent), kan het een URL omzetten naar een URN:
+Met de config van hierboven gaat dat zo:
 
 ```
-<eerste urnPrefix van de instantie>:<resource>:uuid:<uuid>
+urn:nld:denhaag:zaken-main:zrc:zaak:uuid:3df5…
+  -> https://openzaak-zgw.denhaag.nl/zaken/api/v1/zaken/3df5…
+
+urn:nld:denhaag:zaken-sociaal:zaak:3df5…
+  -> https://zaken-sociaal.denhaag.nl/zaken/api/v1/zaken/3df5…
+
+urn:nld:denhaag:zaken-main:ztc:zaaktype:uuid:7c1e…
+  -> https://openzaak-zgw.denhaag.nl/catalogi/api/v1/zaaktypen/7c1e…
+
+urn:nld:denhaag:vtb:taken:externetaak:uuid:a12b…
+  -> https://openvtb-zgw.denhaag.nl/taken/api/v1/externetaken/a12b…
+
+urn:nld:denhaag:zaken-main:zrc:zaak:zaaknummer:ZAAK-2026-0001
+  -> zoekvraag op openzaak-main
+
+urn:nld:rotterdam:zaken:zaak:uuid:…
+  -> lukt niet, geen instantie met deze prefix
 ```
 
-Bijvoorbeeld `https://zaken-sociaal.denhaag.nl/zaken/api/v1/zaken/3df59f4f-…` → `urn:nld:denhaag:zaken-sociaal:zaak:uuid:3df59f4f-…`.
+### Van URL naar instantie
 
-Dat lukt alleen voor instanties met minstens één URN-prefix. Zonder prefix schrijft het OMC de URL weg, zoals nu.
+Ook gewone URL's gaan via de registry. Een URL hoort bij de instantie met de langste `baseUrl` die erop past. Dat geldt ook voor URL's die we uit antwoorden volgen, zoals van zaak naar zaaktype naar statustype, of van zaak naar documenten. Die komen zo vanzelf bij de goede instantie en credentials uit, ook als de Catalogi API op een andere host staat dan de Zaken API.
 
-> **Let op:** de URN die het OMC schrijft volgt altijd `<prefix>:<resource>:uuid:<id>`. Wil een gemeente het componentsegment (`zrc`, `ztc`) behouden, dan neemt ze dat op in de prefix per instantie. Dat werkt alleen als één instantie één component bedient.
+Een URL die bij geen enkele instantie hoort, halen we niet op. Onze credentials gaan dus nooit naar een host die we niet kennen. Dat vervangt de controle die we nu al in de [printstraat](../werkwijzen/scenarios/print-printstraat.md) hebben, waar de `pdfurl` naar `ZGW_ENDPOINT_DOCUMENTEN` moet wijzen, en trekt die door naar alles.
+
+### Van URL naar URN
+
+Als we zelf een verwijzing wegschrijven, bijvoorbeeld bij een klantcontact in Open Klant of in een CloudEvent dat we versturen, kunnen we een URL omzetten naar een URN. Dat wordt dan `<eerste urnPrefix>:<resource>:uuid:<uuid>`. Bijvoorbeeld `https://zaken-sociaal.denhaag.nl/zaken/api/v1/zaken/3df5…` wordt `urn:nld:denhaag:zaken-sociaal:zaak:uuid:3df5…`. Heeft een instantie geen URN-prefix, dan schrijven we gewoon de URL weg, zoals nu.
+
+Wil een gemeente het componentstuk (`zrc`, `ztc`) in haar URN's houden, dan zet ze dat in de prefix. Dat werkt alleen als een instantie maar één component bedient.
 
 ### Calls zonder referentie
 
-Een deel van de calls heeft geen URN of URL om op te resolven: zoeken (bijvoorbeeld een partij op BSN in Open Klant), objecten aanmaken, en het opnieuw opbouwen van een zaak-URL uit alleen een UUID. Voor die calls kiest de registry een instantie in deze volgorde:
+Soms hebben we niets om op te lossen. Bijvoorbeeld als we een partij op BSN zoeken in Open Klant, iets aanmaken, of een zaak-URL opnieuw moeten opbouwen uit alleen een UUID. Dan kiest de registry een instantie in deze volgorde. Eerst de huidige instantie, als die de API heeft. De huidige instantie is die van het `hoofdObject` van de notificatie waar we mee bezig zijn, dus een zaak uit `openzaak-sociaal` haalt zijn zaaktype en statussen ook daar op. Daarna kijken we naar de `links` van de huidige instantie. En anders nemen we de standaard voor die API. Omdat we bij het opstarten afdwingen dat er per API precies één standaard is, komt hier altijd precies één instantie uit.
 
-1. **De huidige instantie**, als die de benodigde API aanbiedt. De huidige instantie is die van het `hoofdObject` van de notificatie die verwerkt wordt. Een zaak uit `openzaak-sociaal` haalt zijn zaaktype en statussen dus ook daar op.
-2. **Een link** vanuit de huidige instantie: `links.klantinteracties` van `openzaak-sociaal` wijst naar `openklant-main`.
-3. **De standaardinstantie** voor die API. Heeft een API maar één instantie, dan is die automatisch de standaard.
+### Als een URN niet lukt
 
-Omdat de configuratie bij het opstarten afdwingt dat er per API precies één standaard is, levert deze volgorde altijd precies één instantie op.
+Dat gaat regelmatig gebeuren, en dat is geen probleem. Gaat het om iets wat we er alleen bij willen hebben, zoals de naam van een document of de omschrijving van een zaaktype voor in een template, dan slaan we het over, loggen we het en gaan we verder met de notificatie.
 
-### Als een URN niet te mappen is
+Gaat het om iets wat we echt nodig hebben, zoals de zaak waar een taak bij hoort, dan is dat een blijvende fout. Opnieuw proberen heeft geen zin, want dat verandert niets aan de configuratie. De fout staat dan in het dashboard, met de URN en de reden. Die reden is een van deze: de URN klopt niet (`OngeldigeUrn`), er is geen instantie met die prefix (`GeenInstantie`), de instantie kent die resource niet (`ResourceNietOndersteund`), we hebben geen zoekvraag voor dat attribuut (`AttribuutNietOndersteund`), de zoekvraag vond niets (`NietGevonden`) of de zoekvraag vond meer dan één ding (`Meerduidig`).
 
-Dat zal regelmatig gebeuren, en het OMC behandelt het als een gewone uitkomst:
+De URN zelf houden we wel altijd bij de hand. In een zaaknummer-URN staat het zaaknummer al, dus dat kan in een template ook zonder dat we de zaak ophalen. En het dashboard telt per prefix hoe vaak een URN niet lukte, zodat een gemeente ziet welke instantie ze nog moet toevoegen.
 
-* **Optionele gegevens** (bijvoorbeeld de naam van een document of de omschrijving van een zaaktype voor in een template) worden overgeslagen. De notificatie wordt verder verwerkt en het OMC logt een informatieve melding.
-* **Verplichte gegevens** (bijvoorbeeld de zaak waar een taak bij hoort, als het scenario die nodig heeft) leveren een **permanente** fout op. Het OMC probeert de notificatie niet opnieuw, want opnieuw proberen verandert niets aan de configuratie. De fout is zichtbaar in het dashboard met de URN en de reden.
-* **De geparste URN blijft beschikbaar.** Een `zaaknummer`-URN bevat het zaaknummer al, dus dat kan in een template gebruikt worden zonder de zaak op te halen.
-* **Telling per prefix.** Het dashboard toont hoe vaak URN's met een bepaalde prefix niet te mappen waren. Zo ziet een gemeente welke instantie ze nog moet registreren.
-
-Mogelijke redenen:
-
-| Reden | Betekenis |
-|---|---|
-| `OngeldigeUrn` | De waarde begint met `urn:` maar heeft geen bruikbare opbouw. |
-| `GeenInstantie` | Geen enkele instantie heeft een passende URN-prefix. |
-| `ResourceNietOndersteund` | De instantie biedt geen API aan voor deze resource. |
-| `AttribuutNietOndersteund` | Voor dit attribuut bestaat geen zoekvraag (bijvoorbeeld `zaak:kenmerk:…`). |
-| `NietGevonden` | De zoekvraag leverde geen resultaat op. |
-| `Meerduidig` | De zoekvraag leverde meer dan één resultaat op. |
-
-BSN- en KvK-URN's (`urn:nld:bsn:nummer:…`, `urn:nld:hr:kvk:nummer:…`) zijn geen verwijzingen naar een registratie-instantie en vallen buiten deze mapping. Die worden zoals nu door `BetrokkeneUrn` afgehandeld.
-
----
+BSN- en KvK-URN's zoals `urn:nld:bsn:nummer:…` en `urn:nld:hr:kvk:nummer:…` verwijzen niet naar een registratie en vallen hier buiten. Die handelt `BetrokkeneUrn` af, net als nu.
 
 ## Aanleveren via de Helm-chart
 
-De chart [`notifynl-omc`](https://github.com/Worth-NL/helm-charts) gebruikt `dh-lib`, dat `configMaps`, `secrets`, `volumes` en `volumeMounts` al uit de values rendert. Er is dus geen wijziging in de chart nodig.
+De chart [`notifynl-omc`](https://github.com/Worth-NL/helm-charts) gebruikt `dh-lib`, en die kan `configMaps`, `secrets`, `volumes` en `volumeMounts` al uit de values maken. Aan de chart hoeft dus niets te veranderen.
 
-### Configuratie als ConfigMap, secrets als Secret
+De instanties zet je in een ConfigMap en de sleutels in een Secret:
 
 ```yaml
 env:
@@ -342,12 +236,10 @@ configMaps:
           - id: openzaak-main
             type: openzaak
             baseUrl: "https://openzaak-zgw.denhaag.nl"
-            default: true
             urnPrefixes: ["urn:nld:denhaag:zaken-main"]
             auth:
               type: jwt
               issuer: "notifynl-omc"
-              clientId: "notifynl-omc"
               secret: "secret:openzaak-main-jwt"
       20-klant.yaml: |
         version: 1
@@ -375,7 +267,7 @@ volumeMounts:
     readOnly: true
 ```
 
-De Secret `omc-instance-secrets` bevat één sleutel per `secret:`-verwijzing:
+In de Secret staat per `secret:`-verwijzing één sleutel:
 
 ```yaml
 apiVersion: v1
@@ -388,15 +280,9 @@ stringData:
   openklant-main-key: "<api-key>"
 ```
 
-Een extra zaaksysteem toevoegen betekent: één blok in de configuratie en één sleutel in de Secret. Er komen geen nieuwe omgevingsvariabelen bij en de chart blijft ongewijzigd.
+Een zaaksysteem erbij betekent dus één blok in de config en één sleutel in de Secret. Geen nieuwe omgevingsvariabelen en niets aan de chart.
 
-### Waar de Secret vandaan kan komen
-
-Voor het OMC maakt het niet uit hoe de bestanden in `OMC_SECRETS_PATH` terechtkomen:
-
-* **Een eigen Secret**, beheerd door de gemeente (bijvoorbeeld via sealed-secrets of GitOps), zoals hierboven.
-* **dh-lib `secrets`** in de values.
-* **Azure Key Vault via `syncAKV`**, met één Key Vault-object per sleutel. Dat levert één Kubernetes-Secret per sleutel op; die worden met een `projected`-volume in één map samengevoegd:
+Waar die Secret vandaan komt maakt voor de OMC niet uit. Je kunt hem zelf beheren (met sealed-secrets of GitOps bijvoorbeeld), hem via de `secrets` van dh-lib in de values zetten, of per sleutel uit Azure Key Vault halen met `syncAKV`. In dat laatste geval krijg je per sleutel een eigen Kubernetes-Secret, en die voeg je met een `projected`-volume samen in één map:
 
 ```yaml
 volumes:
@@ -411,72 +297,87 @@ volumes:
             items: [{ key: secret, path: openklant-main-key }]
 ```
 
-### Configuratie als los bestand aanleveren
-
-Een gemeente kan de configuratie ook als los bestand bijhouden en meegeven bij de installatie:
+Je kunt de config ook als los bestand bijhouden en meegeven bij de installatie:
 
 ```bash
 helm upgrade --install omc worth-nl/notifynl-omc -f values.yaml --set-file "configMaps.instances.data.instances\.yaml=./denhaag-instances.yaml"
 ```
 
-### Herstart bij wijzigingen
-
-De configuratie wordt alleen bij het opstarten ingelezen. Zet een checksum van de configuratie als pod-annotatie, zodat pods herstarten zodra de configuratie verandert:
+De config lezen we alleen bij het opstarten. Zet daarom een checksum als pod-annotatie, dan herstart de pod vanzelf als de config verandert. Voor de secrets hoeft dat niet, die lezen we bij gebruik opnieuw.
 
 ```yaml
 podAnnotations:
   checksum/instances: '{{ .Values.configMaps.instances | toYaml | sha256sum }}'
 ```
 
-Secrets hoeven niet in de checksum: die worden bij gebruik opnieuw gelezen.
+## Bestaande installaties
 
----
+Staat `OMC_INSTANCES_PATH` niet, dan maakt de OMC bij het opstarten zelf per API een instantie uit de bestaande variabelen. De basis-URL krijgen we door het vaste pad van `ZGW_ENDPOINT_*` af te halen, dus `https://openzaak.mijnstad.nl/zaken/api/v1` wordt `https://openzaak.mijnstad.nl`. Eindigt een endpoint niet op het pad dat we verwachten, dan krijg je een waarschuwing en gebruiken we de waarde zoals hij is. De credentials komen dan gewoon uit `ZGW_AUTH_JWT_*` en `ZGW_AUTH_KEY_*`.
 
-## Achterwaartse compatibiliteit
+Staat `OMC_INSTANCES_PATH` wel, dan negeren we `ZGW_ENDPOINT_*` en `ZGW_AUTH_*`. Staan ze er toch nog, dan zeggen we dat bij het opstarten, zodat er nooit twee bronnen door elkaar lopen.
 
-* **`OMC_INSTANCES_PATH` niet gezet:** het OMC bouwt bij het opstarten zelf één instantie per API uit de bestaande variabelen. De basis-URL ontstaat door het vaste pad van `ZGW_ENDPOINT_*` af te halen (`https://openzaak.mijnstad.nl/zaken/api/v1` → `https://openzaak.mijnstad.nl`). Eindigt een endpoint niet op het verwachte pad, dan geeft het OMC een waarschuwing en gebruikt het de waarde zoals die is. Credentials komen uit `ZGW_AUTH_JWT_*` en `ZGW_AUTH_KEY_*`. Voor bestaande installaties verandert er niets.
-* **`OMC_INSTANCES_PATH` wel gezet:** `ZGW_ENDPOINT_*` en `ZGW_AUTH_*` worden genegeerd. Zijn ze toch gezet, dan meldt het OMC dat bij het opstarten, zodat er nooit twee bronnen naast elkaar gelden.
-* **Buiten deze wijziging:** `OMC_AUTH_JWT_*` (authenticatie van inkomende calls naar het OMC zelf) en de instellingen van NotifyNL, KTO en PostGuard. Dat zijn geen ZGW-registraties.
+`OMC_AUTH_JWT_*` (voor calls naar de OMC zelf) en de instellingen voor NotifyNL, KTO en PostGuard blijven zoals ze zijn. Dat zijn geen ZGW-registraties.
 
----
+## Wat er in de code verandert
 
-## Impact op de code
+Voor de ontwikkelaars, met namen die nog kunnen veranderen.
 
-Bedoeld voor ontwikkelaars; de genoemde namen zijn een voorstel.
+- Er komt een `IInstanceRegistry` met `TryResolveAsync(reference, context)` voor URN's en URL's, `TryGetUrn(url, out urn)` voor de andere kant op, en `GetInstance(api, context)` voor calls zonder referentie. Die wordt bij het opstarten gebouwd uit de config of uit de oude variabelen.
+- `HttpNetworkService` maakt en bewaart HTTP-clients per instantie in plaats van per `HttpClientTypes`. De auth-header komt van de instantie.
+- `QueryBase` laat elke referentie eerst door de registry oplossen en gebruikt dan de client van die instantie. Het `HttpClientTypes`-argument kan daar weg, of blijft hooguit voor telemetry.
+- `IDomain.GetDomain()` (32 aanroepen) wordt `GetInstance(api, context)`: basis-URL van de gekozen instantie plus het vaste pad.
+- Een `ResolutionContext` houdt de huidige instantie bij, afgeleid van het `hoofdObject`. Die hoort bij de verwerking van één notificatie, net als `IQueryBase.Notification`.
+- De checks in `UriExtensions` (`IsNotCase`, `IsNotCaseType` enzovoort) kijken naar het pad en werken niet op URN's. Die gaan werken op de opgeloste referentie of op de resource uit de URN. `RecreateCaseUri` gebruikt de registry in plaats van `ZGW_ENDPOINT_OPENZAAK`.
+- .NET's `Uri` slikt `urn:` als absolute URI, dus de modellen kunnen waarschijnlijk `Uri` blijven. Dat moeten we nog checken met `UriJsonConverter`.
+- Er komt een `UnresolvableReferenceException` voor een URN die we echt nodig hebben maar niet kunnen oplossen. Die proberen we niet opnieuw en die komt met reden in het dashboard.
+- Open Klant (de onderwerpobject-identificator en `ContactMoment.ReferenceUri`) en de CloudEvents die we versturen gebruiken `TryGetUrn`.
+- De SSRF-check op `pdfurl` in de printstraat wordt "de URL hoort bij een bekende instantie met de Documenten API".
+- `ConfigurationCheckService` en het dashboard laten de instanties zien (zonder secrets) en tellen de URN's die niet lukten.
 
-| Onderdeel | Wijziging |
-|---|---|
-| **`IInstanceRegistry`** (nieuw) | `TryResolveAsync(string reference, ResolutionContext context)` voor URN's en URL's; `TryGetUrn(Uri url, out string urn)`; `GetInstance(ApiType api, ResolutionContext context)` voor calls zonder referentie. Wordt bij het opstarten gebouwd uit de configuratie of uit de legacy-variabelen. |
-| **`HttpNetworkService`** | HTTP-clients worden per instantie-`id` aangemaakt en gecachet in plaats van per `HttpClientTypes`. De auth-header komt uit de instantie. |
-| **`QueryBase`** (`ProcessGetAsync`, `ProcessPostAsync`, `ProcessGetBinaryAsBase64Async`) | Accepteert een referentie, laat die resolven door de registry en gebruikt de client van de gevonden instantie. Het `HttpClientTypes`-argument verdwijnt of blijft hooguit als hint voor telemetry. |
-| **`IDomain.GetDomain()`** (32 aanroepen) | Wordt `GetInstance(api, context)`: de basis-URL komt van de gekozen instantie plus het vaste pad. |
-| **`ResolutionContext`** | Houdt de huidige instantie bij (afgeleid van het `hoofdObject`). Hoort bij de verwerking van één notificatie, net als `IQueryBase.Notification`. |
-| **`UriExtensions`** | `IsNotCase`, `IsNotCaseType` en verwante controles kijken naar het pad en werken niet op URN's. Ze werken voortaan op de geresolvede referentie of op de resource uit de URN. `RecreateCaseUri` gebruikt de registry in plaats van `ZGW_ENDPOINT_OPENZAAK`. |
-| **Modellen** | .NET's `Uri` accepteert `urn:` als absolute URI, dus velden kunnen waarschijnlijk `Uri` blijven. Te verifiëren met `UriJsonConverter`. |
-| **`UnresolvableReferenceException`** (nieuw) | Permanente fout voor een verplichte referentie die niet te mappen is. Wordt niet opnieuw geprobeerd en komt met reden in het dashboard. |
-| **Schrijfplekken** | Open Klant (onderwerpobject-identificator, `ContactMoment.ReferenceUri`) en uitgaande CloudEvents gebruiken `TryGetUrn`. |
-| **Printstraat** | De SSRF-controle op `pdfurl` wordt vervangen door de controle "URL hoort bij een geregistreerde instantie die de Documenten API aanbiedt". |
-| **Configuratiecontrole** | `ConfigurationCheckService` en het dashboard tonen de geregistreerde instanties (zonder secrets) en de tellingen van niet-gemapte URN-prefixen. |
+## Stappen
 
----
+Elke stap is een eigen pull request, en na elke stap werkt alles nog zoals het werkte.
 
-## Implementatiestappen
-
-Elke stap is een aparte pull request en laat het bestaande gedrag intact.
-
-1. **Registry en configuratie.** `IInstanceRegistry`, het inlezen en valideren van de configuratie, de legacy-instanties uit `ZGW_*` en unit tests. Nog niet aangesloten, dus geen gedragswijziging.
-2. **Clients per instantie.** `HttpNetworkService` en `QueryBase` laten resolven via de registry; `IDomain.GetDomain()` vervangen. Met alleen legacy-instanties gedraagt het OMC zich exact als nu.
-3. **URN-resolutie.** URN's herkennen en mappen, `UriExtensions` aanpassen, `UnresolvableReferenceException` en de dashboardtellingen.
-4. **URL → URN** op de schrijfplekken.
-5. **Documentatie en chart-voorbeelden** bijwerken, inclusief `omgevingsvariabelen.md`.
-
----
+1. De registry en de config: inlezen, controleren, de oude variabelen omzetten naar instanties, en tests. Nog nergens aangesloten.
+2. Clients per instantie: `HttpNetworkService` en `QueryBase` via de registry, en `IDomain.GetDomain()` vervangen. Met alleen de oude variabelen doet de OMC precies hetzelfde als nu.
+3. URN's: herkennen en omzetten, `UriExtensions` aanpassen, de nieuwe exception en de tellingen in het dashboard.
+4. URL naar URN op de plekken waar we iets wegschrijven.
+5. Documentatie en chart-voorbeelden bijwerken, ook `omgevingsvariabelen.md`.
 
 ## Open punten
 
-* **Vaste paden bevestigen.** Voor Objecttypen komen in de huidige voorbeelden zowel `/api/v1` als `/api/v2` voor, en de paden van OpenVTB (met name voor verzoeken) moeten nog bevestigd worden. Omdat de paden een eis aan klanten worden, moeten ze vastliggen voordat stap 2 klaar is.
-* **Zoeken over meerdere instanties.** Moet een vraag als "alle zaken van deze persoon" naar alle instanties van een API gaan, of alleen naar de standaardinstantie?
-* **Meerdere Open Notificaties-instanties.** Inkomende notificaties worden via het `hoofdObject` aan de juiste instantie gekoppeld. Nog te bepalen is wie de abonnementen per bron beheert en welke callback-authenticatie per bron geldt.
-* **Cacheduur van zoekvragen.** Hoe lang mag de uitkomst van een zaaknummer- of zaaktype-zoekvraag bewaard worden?
-* **Uniforme URN-notatie.** De afwijkingen tussen gemeenten (componentsegment, BSN-notatie) moeten per gemeente in de URN-prefixen worden opgevangen. Een gedeeld overzicht van gebruikte prefixen per gemeente voorkomt verrassingen.
-* **`.well-known/systems`.** Als gemeenten hun systemen op die manier gaan publiceren, kan dat later een bron voor de instanties worden. De configuratie hierboven bevat alleen gegevens en geen code, zodat dat zonder grote wijzigingen kan.
+- De vaste paden moeten vastliggen voordat stap 2 af is. Bij Objecttypen zien we nu zowel `/api/v1` als `/api/v2` in de voorbeelden, en de paden van OpenVTB (vooral voor verzoeken) moeten nog bevestigd worden.
+- Moet een vraag als "alle zaken van deze persoon" naar alle zaaksystemen gaan, of alleen naar de standaard?
+- Als er meerdere Open Notificaties zijn: inkomend komt het goed via het `hoofdObject`, maar wie regelt de abonnementen per bron, en welke callback-auth hoort bij welke bron?
+- Hoe lang mogen we de uitkomst van een zoekvraag op zaaknummer of zaaktype bewaren?
+- De verschillen in URN-notatie tussen gemeenten vangen we op met de prefixen per instantie. Een gedeeld overzicht van welke gemeente welke prefixen gebruikt zou verrassingen schelen.
+- Als gemeenten hun systemen ooit op een `.well-known/systems` publiceren, kan dat later de bron van de instanties worden. De config is alleen data, dus dat kan zonder grote verbouwing.
+
+## TL;DR: overstappen
+
+Heeft een gemeente van elke registratie maar één installatie en gebruikt ze geen URN's? Dan hoeft ze niets te doen. Zonder `OMC_INSTANCES_PATH` werkt de OMC precies zoals nu.
+
+Wil een gemeente wel over, dan moet ze dit doen:
+
+1. Een lijstje maken van al haar registraties: elke Open Zaak, Open Klant, Objecten, Objecttypen, OpenVTB, Open Producten en Open Notificaties. Per stuk de basis-URL, dus zonder `/zaken/api/v1` en dergelijke.
+2. Checken dat elke installatie haar API's op de standaardpaden aanbiedt. Is dat niet zo, dan moet dat eerst gefixt worden.
+3. Per installatie uitzoeken welke URN-prefix er in haar registraties voor wordt gebruikt.
+4. Waar ze van een API meer dan één installatie heeft, kiezen welke de standaard is, en per zaaksysteem aangeven welke Open Klant erbij hoort.
+5. Zorgen dat de OMC in elke installatie als applicatie bekend is met de goede rechten, en per installatie een JWT-secret of API-key regelen.
+6. De sleutels in één Kubernetes Secret zetten, of per sleutel in Key Vault.
+7. De instanties in een ConfigMap zetten en beide koppelen in de values, met `OMC_INSTANCES_PATH` en `OMC_SECRETS_PATH`.
+8. `ZGW_ENDPOINT_*` en `ZGW_AUTH_*` uit de values halen. Ze doen niets meer en de OMC waarschuwt erover.
+9. Zorgen dat de Open Notificaties van elk zaaksysteem notificaties naar de OMC stuurt.
+10. Uitrollen en het opstartlog en het dashboard checken. Start de OMC niet, dan staat in het log precies wat er mis is.
+
+Wat een gemeente aanlevert, nu en straks:
+
+| | Nu | Straks |
+|---|---|---|
+| Waar registraties staan | Eén `ZGW_ENDPOINT_*` per API, met het API-pad erin | Per instantie een `baseUrl` zonder API-pad, zoveel instanties als nodig |
+| Credentials | Eén gedeelde JWT (`ZGW_AUTH_JWT_*`) en per soort één API-key (`ZGW_AUTH_KEY_*`), als losse omgevingsvariabelen | Per instantie een `auth`-blok in de config, met de geheime delen in één Secret |
+| URN's | Niet mogelijk | URN-prefixen per instantie |
+| Meer dan één zaaksysteem | Niet mogelijk | Een standaard per API en `links` tussen instanties |
+| Omgevingsvariabelen | Zo'n twintig `ZGW_*`-variabelen | Twee: `OMC_INSTANCES_PATH` en `OMC_SECRETS_PATH` |
+
+Nieuw voor gemeenten is dus vooral: de URN-prefixen, kiezen wat de standaard is en wat bij elkaar hoort, en de OMC als applicatie toevoegen in elke extra installatie. Wat wegvalt zijn de losse omgevingsvariabelen per endpoint en per sleutel.
