@@ -53,6 +53,7 @@
 * [KTO / Expoints](integraties/kto-expoints.md)
 * [BRP / Haal Centraal](integraties/brp-haalcentraal.md)
 * [PostGuard](integraties/postguard.md)
+* [URN-mapping en registratie-instanties](integraties/urn-mapping.md)
 
 ## API Referentie
 
