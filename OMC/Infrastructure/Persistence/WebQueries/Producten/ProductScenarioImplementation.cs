@@ -296,7 +296,7 @@ namespace WebQueries.Producten
 
             if (trimmedReason.Length > maxReasonLength)
             {
-                trimmedReason = $"{trimmedReason[..maxReasonLength]}…";
+                trimmedReason = $"{trimmedReason[..maxReasonLength]}...";
             }
 
             return string.IsNullOrWhiteSpace(failureBody)

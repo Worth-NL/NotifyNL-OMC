@@ -16,6 +16,7 @@ using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
 using WebQueries.Producten.Models;
 using WebQueries.MOBB.Models;
+using WebQueries.Register;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
@@ -343,6 +344,10 @@ namespace EventsHandler.Services.Responding.v2
         /// <remarks>
         ///   The status is the only reason a delivery receipt carries. Without it, a mailbox that does not exist
         ///   and a mailbox that was temporarily full both read as the same generic failure.
+        ///   <para>
+        ///     The body is cut, not the reason, so a long e-mail still fits <see cref="ContactMomentContent.MaxLength"/>
+        ///     with its reason intact.
+        ///   </para>
         /// </remarks>
         private static string AppendFailureReason(string body, FeedbackTypes feedbackType, DeliveryStatuses status)
         {
@@ -360,9 +365,14 @@ namespace EventsHandler.Services.Responding.v2
                 _ => $"bezorgstatus: {status}"
             };
 
-            return string.IsNullOrWhiteSpace(body)
-                ? $"Reden: {reason}"
-                : $"{body}\n\nReden: {reason}";
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                return $"Reden: {reason}";
+            }
+
+            string suffix = $"\n\nReden: {reason}";
+
+            return $"{ContactMomentContent.Truncate(body, ContactMomentContent.MaxLength - suffix.Length)}{suffix}";
         }
 
         /// <summary>
@@ -394,8 +404,8 @@ namespace EventsHandler.Services.Responding.v2
                 messages: [
                     DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Subject : string.Empty),
-                    TruncateContactMomentBody(DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
-                        notificationData.IsSuccess ? notificationData.Body : string.Empty)),
+                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
@@ -406,19 +416,6 @@ namespace EventsHandler.Services.Responding.v2
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Caps a MOBB contactmoment's "inhoud" (content) at <see cref="MaxContactMomentBodyLength"/>
-        /// characters, regardless of source channel (MOBB/e-mail/letter).
-        /// </summary>
-        private const int MaxContactMomentBodyLength = 1000;
-
-        private static string TruncateContactMomentBody(string messageText)
-        {
-            return messageText.Length > MaxContactMomentBodyLength
-                ? messageText[..MaxContactMomentBodyLength]
-                : messageText;
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
 using WebQueries.Producten.Models;
 using WebQueries.Register.Interfaces;
@@ -290,6 +291,51 @@ namespace WebQueries.Tests.Unit.Register.v2
                 Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
                 Assert.That(actualResult, Does.Contain(
                     "\"metadata\":{\"originalResourceUrl\":\"https://openzaak.test/zaken/api/v1/statussen/66666666-6666-6666-6666-666666666666\"}"));
+            });
+        }
+        #endregion
+
+        #region Inhoud length
+        private static readonly string s_longBody = new('x', 1500);
+
+        private static IEnumerable<TestCaseData> EveryContactMomentBuilder()
+        {
+            var zaakReference = new NotifyReference
+            {
+                CaseId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                PartyId = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") }
+            };
+
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetNewCreateContactMomentJsonBody(zaakReference, NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("Zaak");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetPrintContactMomentJsonBody(new PrintNotifyReference(), NotifyMethods.Letter, ["Subject", s_longBody, "true"])))
+                .SetName("Print");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("Product");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetMessageBoxContactMomentJsonBody(new MessageBoxNotifyReference(), NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("MOBB");
+        }
+
+        [TestCaseSource(nameof(EveryContactMomentBuilder))]
+        public void ContactMomentJsonBody_BodyLongerThan1000_IsCutTo1000EndingInThreeDots(Func<ITelemetryService, string> build)
+        {
+            // Act
+            string actualResult = build(CreateService());
+
+            // Assert
+            string inhoud = System.Text.Json.JsonDocument.Parse(actualResult)
+                .RootElement.GetProperty("klantcontact").GetProperty("inhoud").GetString()!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(inhoud, Has.Length.EqualTo(1000));
+                Assert.That(inhoud, Does.EndWith("..."));
+                Assert.That(inhoud, Does.Not.Contain("…"));
             });
         }
         #endregion

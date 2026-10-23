@@ -86,7 +86,7 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.Notification.ResourceUri.AbsoluteUri);
 
@@ -144,7 +144,7 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl.AbsoluteUri);
             string safeHoofdOnderwerpType = JsonSerializer.Serialize(reference.SubjectObjectTypeUri?.AbsoluteUri ?? string.Empty);
@@ -198,7 +198,7 @@ namespace WebQueries.Register.v2
             NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
-            string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
+            string userMessageBody    = messages.Count > 1 ? ContactMomentContent.Truncate(messages[1]) : string.Empty;
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
 
             return $"{{" +
@@ -229,7 +229,7 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl);
             string safeObjectId = JsonSerializer.Serialize(reference.ProductId.ToString());
@@ -315,7 +315,7 @@ namespace WebQueries.Register.v2
             // are clearly distinguishable in a portal listing a Bericht's contactmomenten - see the BPMN's
             // shared success-contactmoment step's own annotation ("meerdere outputs... duidelijk weergegeven").
             string safeSubject = JsonSerializer.Serialize($"[{BuildChannelLabel(reference, notificationMethod)}] {userMessageSubject}");
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
 
             return $"{{\"klantcontact\":{{" +
