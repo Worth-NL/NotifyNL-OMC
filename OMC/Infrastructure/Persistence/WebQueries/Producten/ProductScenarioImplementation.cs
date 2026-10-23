@@ -22,6 +22,7 @@ using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
 namespace WebQueries.Producten
@@ -51,7 +52,7 @@ namespace WebQueries.Producten
         ///   A product notification has no per-product address of its own to prefer, so the party's portal
         ///   preference is what it uses.
         /// </remarks>
-        private const string PortaalvoorkeurReference = "portaalvoorkeur";
+        private const string PortaalvoorkeurReference = PartyResults.PortaalvoorkeurReference;
 
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;

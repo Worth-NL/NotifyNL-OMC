@@ -105,7 +105,9 @@ Het OMC maakt daarbij onderscheid tussen **ontbrekende gegevens** en **een stori
 
 1. een digitaal adres met `referentie` = `portaalvoorkeur`;
 2. anders het voorkeursadres van de partij (`voorkeursDigitaalAdres`);
-3. anders het eerste e-mailadres dat de partij heeft.
+3. anders het e-mailadres met `isStandaardAdres: true`.
+
+Een e-mailadres dat aan geen van deze drie voldoet, wordt niet gebruikt. De eigenaar krijgt dan een mislukt contactmoment met als reden dat er geen e-mailadres bekend is.
 
 De zoektocht wordt daarbij beperkt tot het kanaal e-mail. Zonder die beperking zou een partij met een telefoonnummer als voorkeursadres gelezen worden als "geen e-mailadres bekend": de selectie stopt dan bij dat voorkeursadres en bereikt het e-mailadres daarachter nooit.
 
