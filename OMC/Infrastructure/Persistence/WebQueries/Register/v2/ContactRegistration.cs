@@ -89,6 +89,7 @@ namespace WebQueries.Register.v2
             string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.Notification.ResourceUri.AbsoluteUri);
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.SubjectTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
@@ -98,6 +99,7 @@ namespace WebQueries.Register.v2
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +                                 // Fixed: interpolated variable with ISO 8601 format
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The zaaktype of the onderwerpobject
                    $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The specific resource (e.g. status) the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
@@ -193,6 +195,16 @@ namespace WebQueries.Register.v2
         private static string Fallback(string supplied, string configured)
             => string.IsNullOrWhiteSpace(supplied) ? configured : supplied;
 
+        /// <summary>
+        /// The klantcontact's "hoofdOnderwerpType": the type's URL, or an empty string when there is none.
+        /// </summary>
+        /// <remarks>
+        ///   OpenKlant stores it as a URL field that may be blank, so an empty string is valid and anything that is
+        ///   not a URL is not. OpenKlant versions before 2.18.0 do not know the field and ignore it.
+        /// </remarks>
+        private static string HoofdOnderwerpType(Uri? typeUri)
+            => typeUri.IsNullOrDefault() ? string.Empty : typeUri.AbsoluteUri;
+
         /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
         string ITelemetryService.GetCreateContactMomentJsonBody(
             NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
@@ -239,6 +251,7 @@ namespace WebQueries.Register.v2
                 this._configuration.AppSettings.Variables.OpenKlant.CodeRegister_Product());
             string safeCodeSoortObjectId = JsonSerializer.Serialize(
                 this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId());
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.ProductTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
@@ -248,6 +261,7 @@ namespace WebQueries.Register.v2
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The producttype of the product
                    $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The product the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
@@ -317,6 +331,7 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize($"[{BuildChannelLabel(reference, notificationMethod)}] {userMessageSubject}");
             string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.MessageTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
@@ -325,7 +340,8 @@ namespace WebQueries.Register.v2
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
-                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}" +                      // The Bericht's BerichtType
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +

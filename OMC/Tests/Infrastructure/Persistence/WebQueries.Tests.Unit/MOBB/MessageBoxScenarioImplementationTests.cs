@@ -1,4 +1,4 @@
-// © 2026, Worth Systems.
+﻿// © 2026, Worth Systems.
 
 using Common.Settings.Configuration;
 using Common.Tests.Utilities._TestHelpers;
@@ -334,6 +334,31 @@ namespace WebQueries.Tests.Unit.MOBB
 
             // Act & Assert
             Assert.ThrowsAsync<HttpRequestException>(() => this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid)));
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_MobbEligible_ReferenceCarriesTheBerichtType_ForTheKlantcontactsHoofdOnderwerpType()
+        {
+            // Arrange
+            SetUpVtbMessage(BuildVtbMessage(attachments: []));
+            SetUpPartyData(BuildPartyData());
+
+            MessageBoxNotifyReference? serializedReference = null;
+            this._mockedSerializer
+                .Setup(mock => mock.Serialize(It.IsAny<MessageBoxNotifyReference>()))
+                .Callback<MessageBoxNotifyReference>(reference => serializedReference = reference)
+                .Returns("test-reference");
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            // Act
+            await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.That(serializedReference?.MessageTypeUri, Is.EqualTo(s_messageTypeUri));
         }
 
         [Test]

@@ -68,7 +68,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             CommonPartyData party = await this._queryContext.GetPartyDataAsync(this._case.Uri, caseIdentifier: this._case.Identification);
             TraceContext.Emit("openklant", "ok", $"klant for zaak with id {zaakId} retrieved");
 
-            return new PreparedData(party: party, caseUri: this._case.Uri);
+            return new PreparedData(party: party, caseUri: this._case.Uri, subjectTypeUri: this._case.CaseTypeUri);
         }
         #endregion
 

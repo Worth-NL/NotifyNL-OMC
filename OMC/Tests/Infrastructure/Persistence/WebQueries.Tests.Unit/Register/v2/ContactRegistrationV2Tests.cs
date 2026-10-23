@@ -293,6 +293,109 @@ namespace WebQueries.Tests.Unit.Register.v2
                     "\"metadata\":{\"originalResourceUrl\":\"https://openzaak.test/zaken/api/v1/statussen/66666666-6666-6666-6666-666666666666\"}"));
             });
         }
+
+        [Test]
+        public void GetNewCreateContactMomentJsonBody_SubjectTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            NotifyReference reference = s_reference;
+            reference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+            reference.SubjectTypeUri = new Uri("https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666");
+
+            // Act
+            string actualResult = CreateService().GetNewCreateContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666\""));
+            });
+        }
+
+        [Test]
+        public void GetNewCreateContactMomentJsonBody_SubjectTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Arrange
+            NotifyReference reference = s_reference;
+            reference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+
+            // Act
+            string actualResult = CreateService().GetNewCreateContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+        }
+        #endregion
+
+        #region GetProductContactMomentJsonBody (hoofdOnderwerpType)
+        [Test]
+        public void GetProductContactMomentJsonBody_ProductTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            ProductNotifyReference reference = s_productReference;
+            reference.ProductTypeUri = new Uri("https://test.domain/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444");
+
+            // Act
+            string actualResult = CreateService().GetProductContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://test.domain/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444\""));
+            });
+        }
+
+        [Test]
+        public void GetProductContactMomentJsonBody_ProductTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Act
+            string actualResult = CreateService().GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+        }
+        #endregion
+
+        #region GetMessageBoxContactMomentJsonBody
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_MessageTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            var reference = new MessageBoxNotifyReference
+            {
+                MessageTypeUri = new Uri("https://openvtb.test/berichten/api/v1/berichttypen/33333333-3333-3333-3333-333333333333")
+            };
+
+            // Act
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(reference, NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://openvtb.test/berichten/api/v1/berichttypen/33333333-3333-3333-3333-333333333333\""));
+            });
+        }
+
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_MessageTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Act: a reference minted before the BerichtType was carried along
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+            });
+        }
         #endregion
 
         #region Inhoud length

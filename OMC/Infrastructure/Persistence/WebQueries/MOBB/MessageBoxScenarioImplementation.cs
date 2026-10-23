@@ -268,7 +268,7 @@ namespace WebQueries.MOBB
             _logger.LogDebug("Message {MessageId}: {Count} usable attachment(s) collected.", messageUuid, notifyAttachments.Count);
 
             // Step 12: Build the reference (compressed & encoded CloudEvent + extras) and send via the MessageBox proxy
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: true);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: true);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -331,7 +331,7 @@ namespace WebQueries.MOBB
                 ["klant.achternaam"] = partyData.Surname
             };
 
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -436,7 +436,7 @@ namespace WebQueries.MOBB
 
             Dictionary<string, object> personalization = GetLetterPersonalization(adressering.Value, messageData, wasGefaaldeNotificatie);
 
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false, wasGefaaldeNotificatie);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false, wasGefaaldeNotificatie);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -638,13 +638,14 @@ namespace WebQueries.MOBB
         /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
         /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
         /// <param name="partyId">The resolved OpenKlant party GUID.</param>
+        /// <param name="messageTypeUri">The Bericht's BerichtType, registered as the klantcontact's "hoofdOnderwerpType".</param>
         /// <param name="mobb">Whether this particular send actually went out via MOBB.</param>
         /// <param name="wasGefaaldeNotificatie">
         ///   Whether a digitale-post (email) attempt failed before this send happened - only meaningful
         ///   for a letter fallback reference; see <see cref="MessageBoxNotifyReference.WasGefaaldeNotificatie"/>.
         /// </param>
         private async Task<string> BuildReferenceAsync(
-            JsonElement cloudEvent, Guid messageUuid, Guid partyId, bool mobb, bool wasGefaaldeNotificatie = false)
+            JsonElement cloudEvent, Guid messageUuid, Guid partyId, Uri messageTypeUri, bool mobb, bool wasGefaaldeNotificatie = false)
         {
             var referenceData = new MessageBoxNotifyReference
             {
@@ -652,7 +653,8 @@ namespace WebQueries.MOBB
                 MessageId = messageUuid,
                 PartyId = partyId,
                 Mobb = mobb,
-                WasGefaaldeNotificatie = wasGefaaldeNotificatie
+                WasGefaaldeNotificatie = wasGefaaldeNotificatie,
+                MessageTypeUri = messageTypeUri
             };
 
             return await _serializer.Serialize(referenceData).CompressGZipAsync(CancellationToken.None);

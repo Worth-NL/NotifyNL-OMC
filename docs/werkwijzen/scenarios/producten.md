@@ -121,6 +121,8 @@ Een geslaagde verzending (HTTP 201 van NotifyNL) betekent alleen dat NotifyNL he
 
 Er wordt één klantcontact per eigenaar geregistreerd, elk met een eigen `betrokkene.wasPartij`, en alle met hetzelfde product als `onderwerpobject`. Er komt geen zaak aan te pas.
 
+`hoofdOnderwerpType` is de URL van het producttype. Open Product geeft in het product alleen de uuid van het producttype, dus het OMC bouwt de URL zelf op: het vervangt `/producten/api/v1` aan het eind van `ZGW_ENDPOINT_OPENPRODUCTEN` door `/producttypen/api/v1` en zet daar `/producttypen/{uuid}` achter. Eindigt het endpoint niet op `/producten/api/v1`, of heeft het product geen producttype-uuid, dan blijft `hoofdOnderwerpType` leeg en logt het OMC een waarschuwing.
+
 | Uitkomst | Wanneer geregistreerd | Inhoud |
 |---|---|---|
 | Geen e-mailadres bekend | Direct | Mislukt contactmoment, met de `VARIABLES_UXMESSAGES_EMAIL_FAILURE_*`-teksten, gevolgd door de regel `Reden: Er is geen e-mailadres bekend om deze notificatie naar te versturen.` |

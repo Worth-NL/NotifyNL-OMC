@@ -6,6 +6,7 @@
 
 - **Vereist Open VTB 0.2.0; 0.1.0 wordt niet meer ondersteund.** Het `berichtType` van een Bericht is nu een link naar het BerichtType. Het OMC haalt dat berichttype op en leest daar de Berichtenbox-code (`mijnOverheidBerichtenboxType`) en de MOBB-geschiktheid (`mijnOverheidBerichtenbox`) uit. `ZGW_WHITELIST_VTBMESSAGE_TYPES` bevat nog steeds dezelfde codes van 8 tekens. Een Bericht zonder `berichtType` wordt verworpen met een 2xx; een berichttype dat niet opgehaald kan worden, wordt opnieuw geprobeerd
 - Alle bijlagen van een Bericht gaan nu mee: Open VTB 0.2.0 kent geen `isBerichtTypeBijlage` meer, dus er wordt niets meer op die vlag overgeslagen
+- Vult `hoofdOnderwerpType` op het klantcontact: de zaaktype-URL bij zaak aangemaakt, gewijzigd en afgesloten en bij taak toegewezen (het zaaktype van de gekoppelde zaak), de URL van het berichttype bij de Berichtenbox-flow en de terugval naar e-mail en brief, en de URL van het producttype bij producten. Open Product geeft alleen de uuid van het producttype, dus die URL wordt opgebouwd uit `ZGW_ENDPOINT_OPENPRODUCTEN` (`…/producten/api/v1` wordt `…/producttypen/api/v1/producttypen/{uuid}`). Zonder type is het een lege string. OpenKlant-versies vóór 2.18.0 negeren het veld
 
 ---
 
