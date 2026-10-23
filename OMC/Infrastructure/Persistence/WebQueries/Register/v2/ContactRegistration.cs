@@ -95,6 +95,7 @@ namespace WebQueries.Register.v2
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +                                 // Fixed: interpolated variable with ISO 8601 format
@@ -165,6 +166,7 @@ namespace WebQueries.Register.v2
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
@@ -239,6 +241,7 @@ namespace WebQueries.Register.v2
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
@@ -304,6 +307,10 @@ namespace WebQueries.Register.v2
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
             DateTime sentAt = messages.Count > 3 && DateTime.TryParse(messages[3], out DateTime parsedDate) ? parsedDate : DateTime.Now;
 
+            // "true" only when the caller is about to try the next channel for this Bericht; anything else,
+            // including a missing value, means OMC does nothing more of its own for this contact
+            string safeFurtherActionTaken = messages.Count > 4 && messages[4] == "true" ? "true" : "false";
+
             // Escape string values safely
             // Prefixes the subject with a short channel label (e.g. "[MOBB]", "[MOBB-fallback: e-mail]") so
             // the multiple possible outputs for the same Bericht (MOBB / e-mail fallback / letter fallback)
@@ -319,6 +326,7 @@ namespace WebQueries.Register.v2
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":{safeFurtherActionTaken}," +                // Whether OMC tries another channel next (MOBB fallback chain)
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +

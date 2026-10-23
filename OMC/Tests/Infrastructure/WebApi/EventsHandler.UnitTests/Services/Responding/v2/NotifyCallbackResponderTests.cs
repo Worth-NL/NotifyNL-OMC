@@ -142,6 +142,55 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
             });
         }
 
+        // NOTE: The letter rows are covered by IsFallbackFollowing_DecidesVerdereActieOndernomen below: the test
+        //       configuration has no letter UxMessages, so a letter callback cannot get as far as registering here.
+        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, "true")]   // e-mail or letter follows
+        [TestCase(NotificationTypes.Email, DeliveryStatuses.PermanentFailure, "true")]  // the letter follows
+        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.Delivered, "false")]
+        [TestCase(NotificationTypes.Email, DeliveryStatuses.Delivered, "false")]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_PassesVerdereActieOndernomen_ByWhetherAFallbackFollows(
+            NotificationTypes callbackType, DeliveryStatuses status, string expectedFurtherActionTaken)
+        {
+            // Arrange
+            var reference = new MessageBoxNotifyReference { MessageId = s_messageId, PartyId = s_partyId };
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<DeliveryReceipt>(It.IsAny<object>()))
+                .Returns(BuildDeliveryReceipt(s_compressedMessageBoxReference, status, callbackType));
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<MessageBoxNotifyReference>(It.IsAny<object>()))
+                .Returns(reference);
+
+            string[]? reportedMessages = null;
+            this._mockedTelemetry
+                .Setup(mock => mock.ReportMessageBoxCompletionAsync(
+                    It.IsAny<MessageBoxNotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string>(), It.IsAny<string[]>()))
+                .Callback<MessageBoxNotifyReference, NotifyMethods, string, string[]>((_, _, _, messages) => reportedMessages = messages)
+                .ReturnsAsync(HttpRequestResponse.Success("contactmoment created"));
+
+            this._mockedMessageBoxScenario
+                .Setup(mock => mock.HandleDeliveryFailureAsync(It.IsAny<MessageBoxNotifyReference>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(HttpRequestResponse.Success("fallback attempted"));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert
+            Assert.That(reportedMessages?.ElementAtOrDefault(4), Is.EqualTo(expectedFurtherActionTaken));
+        }
+
+        [TestCase(FeedbackTypes.Failure, NotifyMethods.Mobb, true)]
+        [TestCase(FeedbackTypes.Failure, NotifyMethods.Email, true)]
+        [TestCase(FeedbackTypes.Failure, NotifyMethods.Letter, false)]  // the last channel
+        [TestCase(FeedbackTypes.Success, NotifyMethods.Mobb, false)]
+        [TestCase(FeedbackTypes.Success, NotifyMethods.Email, false)]
+        [TestCase(FeedbackTypes.Success, NotifyMethods.Letter, false)]
+        public void IsFallbackFollowing_DecidesVerdereActieOndernomen(FeedbackTypes feedbackType, NotifyMethods channel, bool expected)
+        {
+            Assert.That(NotifyCallbackResponder.IsFallbackFollowing(feedbackType, channel), Is.EqualTo(expected));
+        }
+
         [Test]
         public async Task HandleNotifyCallbackAsync_MessageBoxCallback_Success_DoesNotInvokeFallback()
         {

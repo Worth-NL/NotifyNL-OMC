@@ -407,7 +407,8 @@ namespace EventsHandler.Services.Responding.v2
                     DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Body : string.Empty),
                     feedbackType == FeedbackTypes.Success ? True : False,
-                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty,
+                    IsFallbackFollowing(feedbackType, notificationMethod) ? True : False
                 ]);
 
             if (feedbackType == FeedbackTypes.Failure)
@@ -417,6 +418,18 @@ namespace EventsHandler.Services.Responding.v2
 
             return result;
         }
+
+        /// <summary>
+        /// Whether OMC tries another channel for this Bericht after this delivery receipt - the klantcontact's
+        /// "verdereActieOndernomen".
+        /// </summary>
+        /// <remarks>
+        ///   A failed MOBB or e-mail delivery continues the fallback chain right after its contactmoment is
+        ///   registered; a failed letter is the last channel, and a success ends the chain. Whether that next
+        ///   attempt then succeeds does not change it: OMC did take further action.
+        /// </remarks>
+        internal static bool IsFallbackFollowing(FeedbackTypes feedbackType, NotifyMethods notificationMethod)
+            => feedbackType == FeedbackTypes.Failure && notificationMethod != NotifyMethods.Letter;
 
         /// <summary>
         /// Attempts the next fallback channel for a MOBB Bericht after its delivery-receipt callback

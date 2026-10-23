@@ -131,6 +131,7 @@ Net als bij de overige scenario's wordt een contactmoment alleen geregistreerd b
 - `kanaal` volgt het daadwerkelijk gebruikte NotifyNL-kanaal: `Mobb`, `Email` of `Brief`.
 - `onderwerp` krijgt een label-voorvoegsel dat aangeeft via welke poging dit contactmoment ontstond — omdat één Bericht meerdere contactmomenten kan opleveren naarmate de terugvalketen wordt doorlopen: `[MOBB]`, `[MOBB-fallback: Email]`, `[MOBB-fallback: Email (na mislukte notificatie)]`, `[MOBB-fallback: Letter]`.
 - `onderwerpobject` verwijst naar het Bericht zelf via `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT`/`CODEREGISTER_BERICHT` — deze twee zijn, anders dan de `zaak`/`open-zaak`-constanten elders, nog **niet bevestigd** tegen een echte OpenKlant-omgeving.
+- `verdereActieOndernomen` geeft aan of het OMC na dit contact zelf nog een ander kanaal probeert: `true` bij een mislukte MOBB- of e-mailaflevering (daarna volgt e-mail of brief), `false` bij een mislukte brief (geen kanaal meer over) en bij elke geslaagde aflevering.
 - `hoofdOnderwerpType` is de URL van het berichttype (`berichtType` op het bericht). Dat geldt ook voor de contactmomenten van de terugval naar e-mail en brief.
 - `inhoud` wordt afgekapt op 1000 tekens.
 

@@ -398,6 +398,48 @@ namespace WebQueries.Tests.Unit.Register.v2
         }
         #endregion
 
+        #region verdereActieOndernomen
+        private static bool FurtherActionTaken(string json)
+            => System.Text.Json.JsonDocument.Parse(json).RootElement
+                .GetProperty("klantcontact").GetProperty("verdereActieOndernomen").GetBoolean();
+
+        [Test]
+        public void ContactMomentJsonBody_NonMobbFlows_VerdereActieOndernomen_IsAlwaysFalse()
+        {
+            // Arrange
+            NotifyReference zaakReference = s_reference;
+            zaakReference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+            ITelemetryService service = CreateService();
+
+            // Act & Assert: the zaak, taak, print and product flows never try another channel themselves
+            Assert.Multiple(() =>
+            {
+                Assert.That(FurtherActionTaken(service.GetNewCreateContactMomentJsonBody(zaakReference, NotifyMethods.Email, ["Subject", "Body", "false"])), Is.False);
+                Assert.That(FurtherActionTaken(service.GetPrintContactMomentJsonBody(new PrintNotifyReference(), NotifyMethods.Letter, ["Subject", "Body", "false"])), Is.False);
+                Assert.That(FurtherActionTaken(service.GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", "Body", "false"])), Is.False);
+            });
+        }
+
+        [TestCase("true", true)]
+        [TestCase("false", false)]
+        public void GetMessageBoxContactMomentJsonBody_VerdereActieOndernomen_FollowsTheCaller(string furtherActionTaken, bool expected)
+        {
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "false", string.Empty, furtherActionTaken]);
+
+            Assert.That(FurtherActionTaken(actualResult), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_VerdereActieOndernomenNotSupplied_IsFalse()
+        {
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            Assert.That(FurtherActionTaken(actualResult), Is.False);
+        }
+        #endregion
+
         #region Inhoud length
         private static readonly string s_longBody = new('x', 1500);
 
