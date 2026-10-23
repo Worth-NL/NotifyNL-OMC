@@ -1,3 +1,8 @@
+## 2.3.2
+
+- **Requires Open VTB 0.2.0; 0.1.0 is no longer supported.** A Bericht's `berichtType` is now a link to its BerichtType, so het OMC fetches that type and reads the Berichtenbox code (`mijnOverheidBerichtenboxType`) and the MOBB eligibility (`mijnOverheidBerichtenbox`) from it. `ZGW_WHITELIST_VTBMESSAGE_TYPES` still holds the same 8-character codes. A Bericht without a `berichtType` is dropped with a 2xx; a BerichtType that cannot be fetched is retried
+- Every attachment of a Bericht now goes along: Open VTB 0.2.0 no longer has `isBerichtTypeBijlage`, so nothing is skipped on that flag
+
 ## 2.3.1
 
 - Redesigns the `/status/flow` dashboard after the OMC3 "Stroom" view: fixed columns (Invoer → OMC → Uitvoer → Afleverbevestiging) with the registers in one row underneath, instead of an auto-laid-out graph whose lines crossed more with every scenario

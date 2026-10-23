@@ -80,11 +80,19 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
         public DateTime? OpenedOn { get; set; }
 
         /// <summary>
-        /// Code for technical identification of the message type/origin (max 8 characters).
+        /// The URL of the <see cref="VtbMessageType"/> (BerichtType) this message belongs to.
         /// </summary>
+        /// <remarks>
+        ///   Since Open VTB 0.2.0 this is a link, not the 8-character Berichtenbox code: that code, and whether
+        ///   the message may go to the Berichtenbox at all, now live on the BerichtType itself.
+        ///   <para>
+        ///     Deliberately not [JsonRequired], although Open VTB requires it: a Bericht without one is dropped by
+        ///     the scenario as a permanent condition, instead of failing to deserialize and being redelivered forever.
+        ///   </para>
+        /// </remarks>
         [JsonPropertyName("berichtType")]
         [JsonPropertyOrder(9)]
-        public string? MessageType { get; set; }
+        public Uri MessageTypeUri { get; set; } = CommonValues.Default.Models.EmptyUri;
 
         /// <summary>
         /// List of related objects (e.g., case or product URNs).
@@ -94,32 +102,17 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
         public RelatedObject[]? RelatedTo { get; set; }
 
         /// <summary>
-        /// The action to be performed by the assigned person or company (max 50 characters).
-        /// </summary>
-        [JsonPropertyName("handelingsPerspectief")]
-        [JsonPropertyOrder(11)]
-        public string? ActionsPerspective { get; set; }
-
-        /// <summary>
         /// Deadline for completing the action. Nullable.
         /// </summary>
         [JsonPropertyName("einddatumHandelingsTermijn")]
-        [JsonPropertyOrder(12)]
+        [JsonPropertyOrder(11)]
         public DateTime? ActionDeadline { get; set; }
-
-        /// <summary>
-        /// Indicates whether this message is suitable for publication in the MijnOverheid Berichtenbox.
-        /// </summary>
-        [JsonRequired]
-        [JsonPropertyName("mijnOverheidBerichtenbox")]
-        [JsonPropertyOrder(13)]
-        public bool IsInMyGovernmentMessageBox { get; set; }
 
         /// <summary>
         /// List of attachments for this message.
         /// </summary>
         [JsonPropertyName("bijlagen")]
-        [JsonPropertyOrder(14)]
+        [JsonPropertyOrder(12)]
         public Attachment[]? Attachments { get; set; }
 
         /// <summary>
@@ -166,12 +159,6 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenVtb
             /// </summary>
             [JsonPropertyName("omschrijving")]
             public string? Description { get; set; }
-
-            /// <summary>
-            /// Indicates whether this is a standard pre‑uploaded attachment (should be ignored for Berichtenbox).
-            /// </summary>
-            [JsonPropertyName("isBerichtTypeBijlage")]
-            public bool IsMessageTypeAttachment { get; set; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Attachment"/> struct.

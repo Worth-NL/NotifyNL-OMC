@@ -173,7 +173,7 @@ Alleen zaken waarvan het zaaktype overeenkomt met de whitelist worden verwerkt. 
 | `ZGW_WHITELIST_ZAAKCLOSE_IDS` | Ja | Toegestane zaaktype-identificaties voor het scenario Zaak afgesloten |
 | `ZGW_WHITELIST_TASKASSIGNED_IDS` | Ja | Toegestane objecttype-identificaties voor het scenario Taak toegewezen |
 | `ZGW_WHITELIST_DECISIONMADE_IDS` | Ja | Toegestane besluittype-identificaties voor het scenario Besluit genomen |
-| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Nee | Toegestane berichttypes voor de MOBB/Berichtenbox-flow |
+| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Nee | Toegestane Berichtenbox-codes (`mijnOverheidBerichtenboxType` van het Open VTB-berichttype) voor de MOBB/Berichtenbox-flow |
 | `ZGW_WHITELIST_MESSAGE_ALLOWED` | Ja | `true` of `false` — schakel het scenario Bericht ontvangen in of uit |
 | `ZGW_WHITELIST_PRINT_ALLOWED` | Ja | `true` of `false` — schakel het scenario Printen (printstraat) in of uit |
 | `ZGW_WHITELIST_PRODUCTCREATE_IDS` | Nee, alleen bij gebruik van Open Product | Toegestane **producttype-codes** voor het scenario Product aangemaakt (`*` = alle). Let op: dit zijn `producttype.code`-waarden uit Open Product, geen zaaktype-identificaties — Open Product kent geen `identificatie`-veld |

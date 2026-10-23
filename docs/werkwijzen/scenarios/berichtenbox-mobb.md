@@ -1,6 +1,6 @@
 # Berichtenbox (MOBB)
 
-Dit scenario stuurt een bericht uit OpenVTB (Open Verzend- en Toegangsbeheer Berichten) door naar de MijnOverheid Berichtenbox (MOBB) van de burger. Lukt dat niet — de burger heeft geen MOBB-abonnement, het bericht is er niet geschikt voor, of de verzending mislukt — dan valt het OMC automatisch terug op digitale post (e-mail) en vervolgens op een brief.
+Dit scenario stuurt een bericht uit OpenVTB (Open Verzend- en Toegangsbeheer Berichten, vanaf versie 0.2.0) door naar de MijnOverheid Berichtenbox (MOBB) van de burger. Lukt dat niet — de burger heeft geen MOBB-abonnement, het bericht is er niet geschikt voor, of de verzending mislukt — dan valt het OMC automatisch terug op digitale post (e-mail) en vervolgens op een brief.
 
 > **Status:** dit scenario draagt in de code meerdere `First-version draft`/`TODO (unconfirmed)`/`TODO (nog speculatief)`-markeringen (o.a. de `codeObjecttype`/`codeRegister` van de Bericht-koppeling in OpenKlant, en of NotifyNL brief-verzending al productierijp is). Behandel dit hoofdstuk als een werkbeschrijving van de huidige implementatie, niet als een bevestigd, volledig productierijp contract.
 
@@ -40,6 +40,8 @@ Het CloudEvent zelf bevat geen berichtinhoud — alleen de `subject` (het Berich
 
 Het OMC leest het Bericht-UUID uit `subject` en haalt het volledige bericht op bij OpenVTB (`GET {ZGW_ENDPOINT_OPENVTB}/berichten/{uuid}`). Ontbreekt `subject`, of is het geen geldige UUID, dan wordt verwerking afgebroken.
 
+Daarna haalt het OMC het berichttype op waar het bericht naar verwijst (`GET` op de URL in `berichtType`). Sinds Open VTB 0.2.0 staan de Berichtenbox-code (`mijnOverheidBerichtenboxType`) en de MOBB-geschiktheid (`mijnOverheidBerichtenbox`) op het berichttype, niet meer op het bericht. Heeft het bericht geen `berichtType`, dan wordt het verworpen (2xx, `Dropped: ...`). Mislukt het ophalen van het berichttype, dan is dat een fout en biedt Open VTB het bericht opnieuw aan.
+
 ### Stap 2 — Berichttekst-check
 
 Is `berichtTekst` leeg of ontbrekend, dan wordt het bericht zonder verdere verwerking (en zonder terugval) verworpen. Net als bij het niet-actiegevende event-type hierboven levert dit een **2xx** op en geen fout: de situatie is permanent, dus Open VTB moet het bericht niet opnieuw aanbieden. De reden staat in de responsbody (`Dropped: ...`) en wordt als waarschuwing gelogd.
@@ -57,14 +59,16 @@ Ook dit scenario garandeert niet dat er al een partij voor deze burger bestaat i
 ### Stap 5 — Whitelist-check
 
 ```
-ZGW_WHITELIST_VTBMESSAGE_TYPES bevat berichtType, of staat op *
+ZGW_WHITELIST_VTBMESSAGE_TYPES bevat berichttype.mijnOverheidBerichtenboxType, of staat op *
 ```
+
+De whitelist werkt dus op de Berichtenbox-code van 8 tekens van het berichttype, niet op de URL. Diezelfde code gaat ook als berichttype mee naar NotifyNL/Logius.
 
 Deze check geldt **ongeacht kanaal** — ook een terugval naar e-mail of brief wordt tegengehouden als het berichttype niet is toegestaan. Een afwijzing door de whitelist is, net als bij de zaaktype-whitelists van de overige scenario's, geen fout maar een bewuste afbreking: 2xx met `Dropped: ...`, dus geen herlevering. Net als bij de overige zaaktype-whitelists in het OMC betekent een **lege** waarde dat *niets* wordt toegestaan (niet "alles"): zonder deze variabele expliciet te zetten (naar `*` of een kommagescheiden lijst van berichttypes) verwerkt dit scenario dus geen enkel bericht.
 
 ### Stap 6 — MOBB-geschiktheid
 
-Is het bericht niet gemarkeerd als geschikt voor de Berichtenbox (`mijnOverheidBerichtenbox: false` — bijvoorbeeld omdat de burger geen MOBB-abonnement heeft), dan slaat het OMC de MOBB-verzending helemaal over en gaat direct naar de [digitale-post/brief-terugval](#terugvalketen).
+Is het berichttype niet gemarkeerd als geschikt voor de Berichtenbox (`mijnOverheidBerichtenbox: false` op het berichttype), dan slaat het OMC de MOBB-verzending helemaal over en gaat direct naar de [digitale-post/brief-terugval](#terugvalketen).
 
 ### Stap 7 — Verzending via MOBB
 
@@ -133,9 +137,8 @@ Net als bij de overige scenario's wordt een contactmoment alleen geregistreerd b
 
 ## Bijlagen
 
-Bijlagen (`bijlagen` op het Bericht) worden op volgorde doorlopen totdat er 2 bruikbare zijn gevonden (er is geen prioriteits-/volgordeveld, dus de volgorde van de bron wordt vertrouwd). Een bijlage wordt overgeslagen (zonder een slot te kosten) als:
+Bijlagen (`bijlagen` op het Bericht) worden op volgorde doorlopen totdat er 2 bruikbare zijn gevonden (er is geen prioriteits-/volgordeveld, dus de volgorde van de bron wordt vertrouwd). Open VTB 0.2.0 kent geen `isBerichtTypeBijlage` meer, dus elke bijlage telt mee. Een bijlage wordt alleen overgeslagen (zonder een slot te kosten) als:
 
-- deze een standaard, vooraf geüploade berichttype-bijlage is (`isBerichtTypeBijlage: true` — niet bedoeld voor de Berichtenbox),
 - het informatieobject-URN ontbreekt of geen geldig UUID bevat, of
 - het ophalen van de documentmetadata of -inhoud bij de Documenten API mislukt (gelogd, niet fataal voor de rest van het bericht).
 
@@ -147,7 +150,8 @@ De daadwerkelijke bestandsinhoud wordt in een tweede aparte aanroep opgehaald �
 
 | Conditie | Waarde |
 |---|---|
-| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Bevat `berichtType`, of staat op `*` — **leeg laten blokkeert alle berichten** |
+| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Bevat de `mijnOverheidBerichtenboxType` van het berichttype, of staat op `*` — **leeg laten blokkeert alle berichten** |
+| `bericht.berichtType` | Verwijst naar een bestaand berichttype |
 | CloudEvent `type` | `nl.overheid.berichten.bericht-gepubliceerd` |
 | `bericht.ontvanger` | BSN-URN (andere identificatietypes nog niet ondersteund) |
 | `bericht.berichtTekst` | Niet leeg |
@@ -167,15 +171,27 @@ De daadwerkelijke bestandsinhoud wordt in een tweede aparte aanroep opgehaald �
   "publicatiedatum": "2026-01-15T10:30:00Z",
   "referentie": "OMC-TEST-0001",
   "ontvanger": "urn:nld:bsn:nummer:123456789",
-  "berichtType": "statuswijziging",
-  "mijnOverheidBerichtenbox": true,
+  "berichtType": "https://openvtb.mijnstad.nl/berichten/api/v1/berichttypen/88888888-8888-8888-8888-888888888888",
+  "berichtTypeUrn": "urn:nld:oin:123456789000:berichttype:88888888-8888-8888-8888-888888888888",
   "bijlagen": [
     {
       "informatieObject": "urn:nld:oin:123456789000:uuid:77777777-7777-7777-7777-777777777777",
-      "omschrijving": "bijlage.pdf",
-      "isBerichtTypeBijlage": false
+      "omschrijving": "bijlage.pdf"
     }
   ]
+}
+```
+
+Het berichttype waar `berichtType` naar verwijst:
+
+```json
+{
+  "url": "https://openvtb.mijnstad.nl/berichten/api/v1/berichttypen/88888888-8888-8888-8888-888888888888",
+  "uuid": "88888888-8888-8888-8888-888888888888",
+  "handelingsPerspectief": "informatie_krijgen",
+  "mijnOverheidBerichtenbox": true,
+  "mijnOverheidBerichtenboxType": "STATUSWZ",
+  "verantwoordelijkeOrganisatie": "urn:nld:oin:123456789000"
 }
 ```
 
@@ -198,7 +214,7 @@ MOBB zelf verstuurt de ruwe berichttekst (geen `((placeholder))`-template). Alle
 |---|---|
 | `ZGW_ENDPOINT_OPENVTB` | Basis-URL van OpenVTB — ook vereist wanneer MOBB niet gebruikt wordt |
 | `ZGW_AUTH_KEY_OPENVTB` | API-sleutel voor OpenVTB — ook vereist wanneer MOBB niet gebruikt wordt |
-| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Toegestane berichttypes — leeg = alles geblokkeerd |
+| `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Toegestane Berichtenbox-codes (`mijnOverheidBerichtenboxType`) — leeg = alles geblokkeerd |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | NotifyNL template-UUID voor de digitale-post (e-mail) terugval |
 | `NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX` | NotifyNL template-UUID voor de brief-terugval |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT` | `codeObjecttype` voor de onderwerpobject-koppeling naar het Bericht (nog niet bevestigd in OpenKlant) |

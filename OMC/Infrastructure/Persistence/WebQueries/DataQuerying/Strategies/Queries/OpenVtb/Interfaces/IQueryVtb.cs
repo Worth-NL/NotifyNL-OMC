@@ -35,6 +35,17 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenVtb.Interfaces
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="JsonException"/>
         internal Task<VtbMessage> TryGetVtbMessageAsync(IQueryBase queryBase, Uri vtbMessageUri);
+
+        /// <summary>
+        /// Gets the details of a specific Message type (Vtb 'BerichtTypen') from "OpenVtb" Web API service.
+        /// </summary>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="vtbMessageTypeUri">The <see cref="Uri"/> of the BerichtType, as linked from the Bericht.</param>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="KeyNotFoundException"/>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<VtbMessageType> TryGetVtbMessageTypeAsync(IQueryBase queryBase, Uri vtbMessageTypeUri);
         #endregion
 
         #region Polymorphic (Domain)

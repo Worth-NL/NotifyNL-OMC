@@ -276,6 +276,12 @@ namespace WebQueries.DataQuerying.Adapter
         {
             return await this._queryVtb.TryGetVtbMessageAsync(this._queryBase, vtbMessageUri);
         }
+
+        /// <inheritdoc cref="IQueryContext.GetVtbMessageTypeAsync(Uri)"/>
+        async Task<VtbMessageType> IQueryContext.GetVtbMessageTypeAsync(Uri vtbMessageTypeUri)
+        {
+            return await this._queryVtb.TryGetVtbMessageTypeAsync(this._queryBase, vtbMessageTypeUri);
+        }
         #endregion
 
         #region IQueryDocumenten

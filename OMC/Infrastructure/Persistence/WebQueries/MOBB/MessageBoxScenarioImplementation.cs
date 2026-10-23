@@ -166,6 +166,28 @@ namespace WebQueries.MOBB
 
             TraceContext.Emit("vtbberichttekst", "ok", "bericht has text");
 
+            // Step 5b: Fetch its BerichtType - since Open VTB 0.2.0 the Bericht only links to it, while the
+            // Berichtenbox code and eligibility the steps below depend on live there
+            if (messageData.MessageTypeUri.IsNullOrDefault())
+            {
+                _logger.LogWarning("Message {MessageId}: has no berichtType; dropping (no fallback).", messageUuid);
+                TraceContext.Emit("vtbberichttype", "abort", "bericht has no berichttype");
+
+                // Permanent condition - see the comment on the empty-text drop above.
+                return HttpRequestResponse.Success("Dropped: message has no berichtType.");
+            }
+
+            VtbMessageType messageTypeData;
+            try
+            {
+                messageTypeData = await queryContext.GetVtbMessageTypeAsync(messageData.MessageTypeUri);
+            }
+            catch (Exception exception)
+            {
+                TraceContext.Emit("vtb", "fail", exception.Message);
+                throw;
+            }
+
             // Step 6: Resolve the recipient's BSN and OpenKlant party - needed regardless of MOBB vs. fallback
             string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
             if (recipientBsn == null)
@@ -203,7 +225,7 @@ namespace WebQueries.MOBB
                 messageUuid, recipientBsn.Length, partyId);
 
             // Step 7: Whitelist gate - applies regardless of delivery channel
-            string? messageType = messageData.MessageType;
+            string? messageType = messageTypeData.MessageBoxType;
             if (string.IsNullOrEmpty(messageType) ||
                 !_configuration.ZGW.Whitelist.VtbMessage_Types().IsAllowed(messageType))
             {
@@ -220,10 +242,10 @@ namespace WebQueries.MOBB
             TraceContext.Emit("vtbberichttype", "ok", $"berichttype '{messageType}' is whitelisted");
 
             // Step 8: MOBB? - if not eligible, fall back to digitale post (email) or a letter
-            TraceContext.Emit("mobbgeschiktheid", "ok", messageData.IsInMyGovernmentMessageBox
+            TraceContext.Emit("mobbgeschiktheid", "ok", messageTypeData.IsInMyGovernmentMessageBox
                 ? "bericht is for the Berichtenbox"
                 : "not for the Berichtenbox; falling back to digitale post or a letter");
-            if (!messageData.IsInMyGovernmentMessageBox)
+            if (!messageTypeData.IsInMyGovernmentMessageBox)
             {
                 _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
                 return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
@@ -680,10 +702,6 @@ namespace WebQueries.MOBB
             {
                 if (documents.Count == MaxAttachments)
                     break;
-
-                // Standard pre-uploaded attachments are not meant for the Berichtenbox
-                if (attachment.IsMessageTypeAttachment)
-                    continue;
 
                 if (string.IsNullOrEmpty(attachment.InformationObjectUrn))
                     continue;

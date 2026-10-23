@@ -88,21 +88,36 @@ namespace WebQueries.Tests.Unit.MOBB
         private static JsonElement BuildCloudEvent(object? subject, string type = BerichtGepubliceerdType)
             => JsonSerializer.SerializeToElement(new { type, subject });
 
-        private static VtbMessage BuildVtbMessage(
+        private static readonly Uri s_messageTypeUri = new("https://openvtb.test/berichten/api/v1/berichttypen/33333333-3333-3333-3333-333333333333");
+
+        /// <summary>
+        /// A Bericht and the BerichtType it links to: since Open VTB 0.2.0 the Berichtenbox code and eligibility
+        /// live on the type, so a test describing "a MOBB-eligible message" needs both.
+        /// </summary>
+        private readonly record struct TestBericht(VtbMessage Message, VtbMessageType MessageType);
+
+        private static TestBericht BuildVtbMessage(
             bool isInMobbInbox = true,
             string messageType = "allowed-type",
             string messageText = "Hello citizen",
             string? recipientUrn = null,
-            VtbMessage.Attachment[]? attachments = null)
+            VtbMessage.Attachment[]? attachments = null,
+            Uri? messageTypeUri = null)
         {
-            return new VtbMessage
-            {
-                MessageText = messageText,
-                RecipientUrn = recipientUrn ?? $"urn:nld:bsn:{TestBsn}",
-                MessageType = messageType,
-                IsInMyGovernmentMessageBox = isInMobbInbox,
-                Attachments = attachments
-            };
+            return new TestBericht(
+                new VtbMessage
+                {
+                    MessageText = messageText,
+                    RecipientUrn = recipientUrn ?? $"urn:nld:bsn:{TestBsn}",
+                    MessageTypeUri = messageTypeUri ?? s_messageTypeUri,
+                    Attachments = attachments
+                },
+                new VtbMessageType
+                {
+                    Url = s_messageTypeUri,
+                    MessageBoxType = messageType,
+                    IsInMyGovernmentMessageBox = isInMobbInbox
+                });
         }
 
         private static CommonPartyData BuildPartyData(string emailAddress = TestEmailAddress)
@@ -117,20 +132,23 @@ namespace WebQueries.Tests.Unit.MOBB
             };
         }
 
-        private static VtbMessage.Attachment BuildAttachment(Guid documentUuid, bool isMessageTypeAttachment = false)
+        private static VtbMessage.Attachment BuildAttachment(Guid documentUuid)
         {
             return new VtbMessage.Attachment
             {
-                InformationObjectUrn = $"urn:nld:informatieobject:uuid:{documentUuid}",
-                IsMessageTypeAttachment = isMessageTypeAttachment
+                InformationObjectUrn = $"urn:nld:informatieobject:uuid:{documentUuid}"
             };
         }
 
-        private void SetUpVtbMessage(VtbMessage message)
+        private void SetUpVtbMessage(TestBericht bericht)
         {
             this._mockedQueryContext
                 .Setup(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()))
-                .ReturnsAsync(message);
+                .ReturnsAsync(bericht.Message);
+
+            this._mockedQueryContext
+                .Setup(mock => mock.GetVtbMessageTypeAsync(s_messageTypeUri))
+                .ReturnsAsync(bericht.MessageType);
         }
 
         private void SetUpPartyData(CommonPartyData partyData)
@@ -283,6 +301,65 @@ namespace WebQueries.Tests.Unit.MOBB
                 Assert.That(result.JsonResponse, Does.Contain("whitelist"));
             });
         }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_NoMessageType_IsDropped_ReturnsSuccess()
+        {
+            // Arrange
+            SetUpVtbMessage(BuildVtbMessage(messageTypeUri: Common.Constants.CommonValues.Default.Models.EmptyUri));
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("no berichtType"));
+
+                this._mockedQueryContext.Verify(mock => mock.GetVtbMessageTypeAsync(It.IsAny<Uri>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public void ProcessCloudEventAsync_MessageTypeLookupFails_Throws_SoOpenVtbRedelivers()
+        {
+            // Arrange
+            this._mockedQueryContext
+                .Setup(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()))
+                .ReturnsAsync(BuildVtbMessage().Message);
+            this._mockedQueryContext
+                .Setup(mock => mock.GetVtbMessageTypeAsync(s_messageTypeUri))
+                .ThrowsAsync(new HttpRequestException("OpenVTB unavailable"));
+
+            // Act & Assert
+            Assert.ThrowsAsync<HttpRequestException>(() => this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid)));
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_MobbEligible_SendsTheBerichtTypeCode_NotItsUrl()
+        {
+            // Arrange: Logius knows the message by the BerichtType's 8-character code; the Bericht itself only links to it
+            SetUpVtbMessage(BuildVtbMessage(messageType: "MOBBCODE", attachments: []));
+            SetUpPartyData(BuildPartyData());
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), "MOBBCODE", It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+
+                this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
+                    TestBsn, It.IsAny<string>(), "MOBBCODE", It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Once);
+            });
+        }
         #endregion
 
         #region ProcessCloudEventAsync() - not eligible for MOBB inbox
@@ -339,10 +416,9 @@ namespace WebQueries.Tests.Unit.MOBB
         [Test]
         public async Task ProcessCloudEventAsync_MobbEligible_NoUsableAttachments_SendsWithEmptyAttachments_ReturnsSuccess()
         {
-            // Arrange: the only attachment present is a standard pre-uploaded one, which is always skipped -
-            // 0 to 2 attachments are allowed, so 0 usable attachments should still proceed to a MOBB send
-            // (matching the underlying GovukNotify client's own relaxed validation), not be dropped.
-            SetUpVtbMessage(BuildVtbMessage(attachments: [BuildAttachment(Guid.NewGuid(), isMessageTypeAttachment: true)]));
+            // Arrange: 0 to 2 attachments are allowed, so a message without any should still proceed to a MOBB
+            // send (matching the underlying GovukNotify client's own relaxed validation), not be dropped.
+            SetUpVtbMessage(BuildVtbMessage(attachments: []));
             SetUpPartyData(BuildPartyData());
 
             this._mockedNotifyClient

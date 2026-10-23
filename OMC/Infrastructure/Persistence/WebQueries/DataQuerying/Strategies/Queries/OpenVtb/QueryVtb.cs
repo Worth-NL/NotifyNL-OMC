@@ -46,6 +46,15 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenVtb
                 uri: vtbMessageUri,  // Request URL
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);//TODO Create new error message for OpenVtb
         }
+
+        /// <inheritdoc cref="IQueryVtb.TryGetVtbMessageTypeAsync(IQueryBase, Uri)"/>
+        public async Task<VtbMessageType> TryGetVtbMessageTypeAsync(IQueryBase queryBase, Uri vtbMessageTypeUri)
+        {
+            return await queryBase.ProcessGetAsync<VtbMessageType>(
+                httpClientType: HttpClientTypes.OpenVtb,
+                uri: vtbMessageTypeUri,  // Request URL
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoPartyResults);//TODO Create new error message for OpenVtb
+        }
         #endregion
 
         #region Polymorphic (Health Check)
