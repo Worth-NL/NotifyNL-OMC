@@ -143,7 +143,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     details: {
       what: "Is het CloudEvent een bericht-gepubliceerd? Alleen dan staat het bericht echt klaar. Een bericht-geregistreerd (of een toekomstig type) wordt genegeerd.",
       config: "Vast in de code: nl.overheid.berichten.bericht-gepubliceerd",
-      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open VTB biedt het niet opnieuw aan.",
+      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 0)",
     },
   },

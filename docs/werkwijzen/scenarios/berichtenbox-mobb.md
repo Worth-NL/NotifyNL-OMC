@@ -8,7 +8,7 @@ Dit scenario stuurt een bericht uit OpenVTB (Open Verzend- en Toegangsbeheer Ber
 
 ## Triggercondities
 
-Anders dan de overige scenario's wordt dit scenario **niet** geactiveerd via de Notificaties API (`kanaal`/`resource`/`actie`/`kenmerken`). OpenVTB's Berichten-component post rechtstreeks een [CloudEvent](https://github.com/cloudevents/spec) naar hetzelfde `POST /Events/Listen`-eindpunt. Het OMC herkent een CloudEvent aan de aanwezigheid van `specversion`, `type`, `source` en `id`, en routeert het — vóórdat er ook maar geprobeerd wordt het als een gewone `NotificationEvent` te deserialiseren — op basis van het `type`-veld:
+Ook dit scenario komt binnen via Open Notificaties, maar niet als gewone notificatie (`kanaal`/`resource`/`actie`/`kenmerken`): het Berichten-component van Open VTB publiceert een [CloudEvent](https://github.com/cloudevents/spec), dat Open Notificaties aflevert op hetzelfde `POST /Events/Listen`-eindpunt. Herlevering na een fout is dus, net als bij de andere scenario's, die van Open Notificaties. Het OMC herkent een CloudEvent aan de aanwezigheid van `specversion`, `type`, `source` en `id`, en routeert het — vóórdat er ook maar geprobeerd wordt het als een gewone `NotificationEvent` te deserialiseren — op basis van het `type`-veld:
 
 | Laag | Voorwaarde |
 |---|---|
@@ -40,11 +40,11 @@ Het CloudEvent zelf bevat geen berichtinhoud — alleen de `subject` (het Berich
 
 Het OMC leest het Bericht-UUID uit `subject` en haalt het volledige bericht op bij OpenVTB (`GET {ZGW_ENDPOINT_OPENVTB}/berichten/{uuid}`). Ontbreekt `subject`, of is het geen geldige UUID, dan wordt verwerking afgebroken.
 
-Daarna haalt het OMC het berichttype op waar het bericht naar verwijst (`GET` op de URL in `berichtType`). Sinds Open VTB 0.2.0 staan de Berichtenbox-code (`mijnOverheidBerichtenboxType`) en de MOBB-geschiktheid (`mijnOverheidBerichtenbox`) op het berichttype, niet meer op het bericht. Heeft het bericht geen `berichtType`, dan wordt het verworpen (2xx, `Dropped: ...`). Mislukt het ophalen van het berichttype, dan is dat een fout en biedt Open VTB het bericht opnieuw aan.
+Daarna haalt het OMC het berichttype op waar het bericht naar verwijst (`GET` op de URL in `berichtType`). Sinds Open VTB 0.2.0 staan de Berichtenbox-code (`mijnOverheidBerichtenboxType`) en de MOBB-geschiktheid (`mijnOverheidBerichtenbox`) op het berichttype, niet meer op het bericht. Heeft het bericht geen `berichtType`, dan wordt het verworpen (2xx, `Dropped: ...`). Mislukt het ophalen van het berichttype, dan is dat een fout en biedt Open Notificaties het CloudEvent opnieuw aan.
 
 ### Stap 2 — Berichttekst-check
 
-Is `berichtTekst` leeg of ontbrekend, dan wordt het bericht zonder verdere verwerking (en zonder terugval) verworpen. Net als bij het niet-actiegevende event-type hierboven levert dit een **2xx** op en geen fout: de situatie is permanent, dus Open VTB moet het bericht niet opnieuw aanbieden. De reden staat in de responsbody (`Dropped: ...`) en wordt als waarschuwing gelogd.
+Is `berichtTekst` leeg of ontbrekend, dan wordt het bericht zonder verdere verwerking (en zonder terugval) verworpen. Net als bij het niet-actiegevende event-type hierboven levert dit een **2xx** op en geen fout: de situatie is permanent, dus Open Notificaties moet het CloudEvent niet opnieuw aanbieden. De reden staat in de responsbody (`Dropped: ...`) en wordt als waarschuwing gelogd.
 
 ### Stap 3 — Ontvanger-BSN ontleden
 
@@ -133,7 +133,7 @@ Net als bij de overige scenario's wordt een contactmoment alleen geregistreerd b
 - `onderwerpobject` verwijst naar het Bericht zelf via `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT`/`CODEREGISTER_BERICHT` — deze twee zijn, anders dan de `zaak`/`open-zaak`-constanten elders, nog **niet bevestigd** tegen een echte OpenKlant-omgeving.
 - `verdereActieOndernomen` geeft aan of het OMC na dit contact zelf nog een ander kanaal probeert: `true` bij een mislukte MOBB- of e-mailaflevering (daarna volgt e-mail of brief), `false` bij een mislukte brief (geen kanaal meer over) en bij elke geslaagde aflevering.
 - `hoofdOnderwerpType` is de URL van het berichttype (`berichtType` op het bericht). Dat geldt ook voor de contactmomenten van de terugval naar e-mail en brief.
-- `inhoud` wordt afgekapt op 1000 tekens.
+- `inhoud` wordt afgekapt op 1000 tekens, eindigend op `...`.
 
 ---
 

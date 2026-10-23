@@ -159,7 +159,7 @@ namespace WebQueries.MOBB
                 TraceContext.Emit("vtbberichttekst", "abort", "bericht has no text");
 
                 // Reported as a (no-op) success, like the non-actionable CloudEvent type above: this is a
-                // permanent condition, so a Failure here would surface as HTTP 412 and make Open VTB
+                // permanent condition, so a Failure here would surface as HTTP 412 and make Open Notificaties
                 // redeliver the same Bericht forever. Only genuinely retryable problems return Failure.
                 return HttpRequestResponse.Success("Dropped: message text is empty or missing.");
             }
