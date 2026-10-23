@@ -2,6 +2,7 @@
 
 - **Requires Open VTB 0.2.0; 0.1.0 is no longer supported.** A Bericht's `berichtType` is now a link to its BerichtType, so het OMC fetches that type and reads the Berichtenbox code (`mijnOverheidBerichtenboxType`) and the MOBB eligibility (`mijnOverheidBerichtenbox`) from it. `ZGW_WHITELIST_VTBMESSAGE_TYPES` still holds the same 8-character codes. A Bericht without a `berichtType` is dropped with a 2xx; a BerichtType that cannot be fetched is retried
 - Every attachment of a Bericht now goes along: Open VTB 0.2.0 no longer has `isBerichtTypeBijlage`, so nothing is skipped on that flag
+- Adds `((zaak.resultaat.resultaatType.omschrijvingGeneriek))` to the zaak afgesloten personalisation, next to the existing `((zaak.resultaat.resultaatType.omschrijving))`, so a template can show the citizen-friendly description of the result instead of the internal one. Both are now also available in the letter. Existing templates keep working unchanged
 - Fills `hoofdOnderwerpType` on the klantcontact: the zaaktype URL for zaak created, updated and closed and for taak toegewezen (the linked zaak's zaaktype), the BerichtType URL for the Berichtenbox flow and its e-mail and letter fallbacks, and the producttype URL for products. Open Product only gives the producttype's uuid, so that URL is built from `ZGW_ENDPOINT_OPENPRODUCTEN` (`…/producten/api/v1` becomes `…/producttypen/api/v1/producttypen/{uuid}`). It is an empty string when there is none. OpenKlant versions before 2.18.0 ignore the field
 
 ## 2.3.1

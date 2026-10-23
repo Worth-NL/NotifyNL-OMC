@@ -187,6 +187,8 @@ Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template e
 | `((zaak.omschrijving))` | zaak | Omschrijving van de zaak |
 | `((zaak.einddatum))` | zaak | Einddatum van de zaak |
 | `((status.omschrijving))` | statustype | Omschrijving van de eindstatus |
+| `((zaak.resultaat.resultaatType.omschrijving))` | resultaattype | Interne omschrijving van het resultaat (leeg zonder resultaat) |
+| `((zaak.resultaat.resultaatType.omschrijvingGeneriek))` | resultaattype | Generieke, voor de burger leesbare omschrijving van het resultaat, zoals MijnDenHaag die toont (leeg zonder resultaat, of als de Catalogi API hem niet levert) |
 | `((klant.voornaam))` | klant | Voornaam van de klant |
 | `((klant.voorvoegselAchternaam))` | klant | Tussenvoegsel van de klant |
 | `((klant.achternaam))` | klant | Achternaam van de klant |
