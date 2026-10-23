@@ -15,7 +15,6 @@ using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
-using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.Interfaces
 {
@@ -257,22 +256,6 @@ namespace WebQueries.Register.Interfaces
         /// <summary>
         /// Prepares a dedicated JSON body.
         /// </summary>
-        /// <param name="reference"><inheritdoc cref="NotifyReference" path="/summary"/></param>
-        /// <param name="notificationMethod">The notification method.</param>
-        /// <param name="messages">The messages.</param>
-        /// <param name="caseStatus">The last case status. Is only used for v1 implementation.</param>
-        /// <returns>
-        ///   The JSON content for HTTP Request Body.
-        /// </returns>
-        protected string GetCreateContactMomentJsonBody(
-            [UsedImplicitly] NotifyReference reference,
-            NotifyMethods notificationMethod,
-            IReadOnlyList<string> messages,
-            CaseStatus? caseStatus = null);
-
-        /// <summary>
-        /// Prepares a dedicated JSON body.
-        /// </summary>
         /// <param name="actor"><inheritdoc cref="ContactMoment" path="/summary"/></param>
         /// <param name="customerContactMoment"><inheritdoc cref="NotifyReference" path="/summary"/></param>
         /// <returns>
@@ -283,7 +266,7 @@ namespace WebQueries.Register.Interfaces
         /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string GetNewCreateContactMomentJsonBody(
                 NotifyReference reference, NotifyMethods notificationMethod,
-                IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
+                IReadOnlyList<string> messages)
             ;
 
         /// <summary>

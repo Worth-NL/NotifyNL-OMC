@@ -12,7 +12,6 @@ using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
-using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v2
 {
@@ -49,16 +48,16 @@ namespace WebQueries.Register.v2
             Omc = omc;
         }
 
-        // TODO: Collapse the five Get*ContactMomentJsonBody builders onto one.
+        // TODO: Collapse the four Get*ContactMomentJsonBody builders onto one.
         //
         // They emit the same document. The klantcontact core, the betrokkene block, the positional
         // messages[] contract and the four-field onderwerpobjectidentificator are identical in all of
         // them; what actually varies is the objectId source, two configuration keys, whether
         // hoofdOnderwerpType is emitted, where originalResourceUrl comes from, and MOBB prefixing its
-        // subject with a channel label. That is a small record passed to one builder, not five copies.
+        // subject with a channel label. That is a small record passed to one builder, not four copies.
         //
         // The copies have already drifted, and none of it was decided:
-        //  - print, MOBB and product escape their values with JsonSerializer; the zaak and v1 bodies
+        //  - print and product escape their values with JsonSerializer; the zaak and MOBB bodies
         //    interpolate configuration straight into hand-written quotes, so a quote or backslash in
         //    VARIABLES_OPENKLANT_* silently produces malformed JSON
         //  - indicatieContactGelukt is emitted unquoted and defaults to "true" in print and product, and
@@ -70,14 +69,14 @@ namespace WebQueries.Register.v2
         // Each new scenario copies whichever neighbour it landed next to and inherits that neighbour's
         // accidents, so this gets worse per scenario rather than staying flat.
         //
-        // Order matters when picking this up: only GetPrintContactMomentJsonBody has tests. Characterise
-        // the other four first, or unifying them quietly changes what every existing scenario writes to
-        // OpenKlant.
+        // Order matters when picking this up: the builders' tests check single fields, not the whole document.
+        // Characterise each builder's full output first, or unifying them quietly changes what every
+        // existing scenario writes to OpenKlant.
 
         #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetNewCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;
@@ -204,24 +203,6 @@ namespace WebQueries.Register.v2
         /// </remarks>
         private static string HoofdOnderwerpType(Uri? typeUri)
             => typeUri.IsNullOrDefault() ? string.Empty : typeUri.AbsoluteUri;
-
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
-        string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
-        {
-            string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
-            string userMessageBody    = messages.Count > 1 ? ContactMomentContent.Truncate(messages[1]) : string.Empty;
-            string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
-
-            return $"{{" +
-                     $"\"kanaal\":\"{notificationMethod.ToKanaal()}\"," +              // ENG: Channel of communication (notification)
-                     $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
-                     $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user)
-                     $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
-                     $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
-                     $"\"vertrouwelijk\":false" +                           // ENG: Confidentiality (of the notification)
-                   $"}}";
-        }
 
         /// <inheritdoc cref="ITelemetryService.GetProductContactMomentJsonBody(ProductNotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         /// <remarks>
