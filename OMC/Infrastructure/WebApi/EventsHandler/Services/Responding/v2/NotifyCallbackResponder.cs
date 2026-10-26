@@ -414,8 +414,9 @@ namespace EventsHandler.Services.Responding.v2
         ///   </para>
         ///   <para>
         ///     The HTTP response still reflects whether the registration itself succeeded. When it failed,
-        ///     "Notify NL" retries this callback, and that retry runs the fallback again - nothing recognises the
-        ///     earlier send yet (#247).
+        ///     "Notify NL" retries this callback; the fallback then finds its own earlier send and does not send
+        ///     again (#247), and the registration finds the klantcontact it already wrote, so only what is still
+        ///     missing is done.
         ///   </para>
         /// </remarks>
         private async Task<HttpRequestResponse> InformUserAboutMessageBoxStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)

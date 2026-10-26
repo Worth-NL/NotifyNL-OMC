@@ -246,7 +246,7 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
         [Test]
         public async Task HandleNotifyCallbackAsync_MessageBoxCallback_RegistrationFails_Returns500_SoNotifyRetriesTheCallback()
         {
-            // Arrange: a failed registration is still reported, so Notify NL retries the callback
+            // Arrange: the retry is safe - the fallback finds its own earlier send and does not send again (#247)
             ArrangeMessageBoxCallback(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, [], registrationSucceeds: false);
 
             // Act
