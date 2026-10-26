@@ -142,16 +142,10 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
             });
         }
 
-        // NOTE: The letter rows are covered by IsFallbackFollowing_DecidesVerdereActieOndernomen below: the test
-        //       configuration has no letter UxMessages, so a letter callback cannot get as far as registering here.
-        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, "true")]   // e-mail or letter follows
-        [TestCase(NotificationTypes.Email, DeliveryStatuses.PermanentFailure, "true")]  // the letter follows
-        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.Delivered, "false")]
-        [TestCase(NotificationTypes.Email, DeliveryStatuses.Delivered, "false")]
-        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_PassesVerdereActieOndernomen_ByWhetherAFallbackFollows(
-            NotificationTypes callbackType, DeliveryStatuses status, string expectedFurtherActionTaken)
+        private void ArrangeMessageBoxCallback(
+            NotificationTypes callbackType, DeliveryStatuses status, List<string> calls,
+            Func<Task<HttpRequestResponse>>? fallback = null, bool registrationSucceeds = true)
         {
-            // Arrange
             var reference = new MessageBoxNotifyReference { MessageId = s_messageId, PartyId = s_partyId };
 
             this._mockedSerializer
@@ -162,33 +156,104 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
                 .Setup(mock => mock.Deserialize<MessageBoxNotifyReference>(It.IsAny<object>()))
                 .Returns(reference);
 
-            string[]? reportedMessages = null;
             this._mockedTelemetry
                 .Setup(mock => mock.ReportMessageBoxCompletionAsync(
                     It.IsAny<MessageBoxNotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string>(), It.IsAny<string[]>()))
-                .Callback<MessageBoxNotifyReference, NotifyMethods, string, string[]>((_, _, _, messages) => reportedMessages = messages)
-                .ReturnsAsync(HttpRequestResponse.Success("contactmoment created"));
+                .Callback<MessageBoxNotifyReference, NotifyMethods, string, string[]>((_, _, _, messages) =>
+                {
+                    calls.Add("register");
+                    this._reportedMessages = messages;
+                })
+                .ReturnsAsync(registrationSucceeds
+                    ? HttpRequestResponse.Success("contactmoment created")
+                    : HttpRequestResponse.Failure("OpenKlant unavailable"));
 
             this._mockedMessageBoxScenario
                 .Setup(mock => mock.HandleDeliveryFailureAsync(It.IsAny<MessageBoxNotifyReference>(), It.IsAny<NotifyMethods>()))
-                .ReturnsAsync(HttpRequestResponse.Success("fallback attempted"));
+                .Returns(() =>
+                {
+                    calls.Add("fallback");
+                    return fallback?.Invoke() ?? Task.FromResult(HttpRequestResponse.Success("fallback sent"));
+                });
+
+
+        }
+
+        private string[]? _reportedMessages;
+
+        // NOTE: Letter callbacks cannot get as far as registering here: the test configuration has no letter
+        //       UxMessages. A failed letter has no channel left, so its fallback reports Failure ("false") - see
+        //       MessageBoxScenarioImplementationTests.
+        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, "true")]   // e-mail or letter handed to Notify NL
+        [TestCase(NotificationTypes.Email, DeliveryStatuses.PermanentFailure, "true")]  // the letter handed to Notify NL
+        [TestCase(NotificationTypes.Mobb, DeliveryStatuses.Delivered, "false")]
+        [TestCase(NotificationTypes.Email, DeliveryStatuses.Delivered, "false")]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_PassesVerdereActieOndernomen_ByWhetherTheNextChannelWasSent(
+            NotificationTypes callbackType, DeliveryStatuses status, string expectedFurtherActionTaken)
+        {
+            // Arrange
+            ArrangeMessageBoxCallback(callbackType, status, []);
 
             // Act
             await this._responder.HandleNotifyCallbackAsync(new object());
 
             // Assert
-            Assert.That(reportedMessages?.ElementAtOrDefault(4), Is.EqualTo(expectedFurtherActionTaken));
+            Assert.That(this._reportedMessages?.ElementAtOrDefault(4), Is.EqualTo(expectedFurtherActionTaken));
         }
 
-        [TestCase(FeedbackTypes.Failure, NotifyMethods.Mobb, true)]
-        [TestCase(FeedbackTypes.Failure, NotifyMethods.Email, true)]
-        [TestCase(FeedbackTypes.Failure, NotifyMethods.Letter, false)]  // the last channel
-        [TestCase(FeedbackTypes.Success, NotifyMethods.Mobb, false)]
-        [TestCase(FeedbackTypes.Success, NotifyMethods.Email, false)]
-        [TestCase(FeedbackTypes.Success, NotifyMethods.Letter, false)]
-        public void IsFallbackFollowing_DecidesVerdereActieOndernomen(FeedbackTypes feedbackType, NotifyMethods channel, bool expected)
+        [Test]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_FallbackFailsOnTheSpot_RegistersNoFurtherAction()
         {
-            Assert.That(NotifyCallbackResponder.IsFallbackFollowing(feedbackType, channel), Is.EqualTo(expected));
+            // Arrange: e.g. no BRP address, or Notify NL refusing the letter - nothing more is coming for this Bericht
+            ArrangeMessageBoxCallback(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, [],
+                fallback: () => Task.FromResult(HttpRequestResponse.Failure("BRP returned no usable address")));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert: "false" is the record that calls for manual follow-up
+            Assert.That(this._reportedMessages?.ElementAtOrDefault(4), Is.EqualTo("false"));
+        }
+
+        [Test]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_FallbackThrows_RegistersNoFurtherAction()
+        {
+            // Arrange
+            ArrangeMessageBoxCallback(NotificationTypes.Email, DeliveryStatuses.PermanentFailure, [],
+                fallback: () => throw new HttpRequestException("OpenVTB unavailable"));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert
+            Assert.That(this._reportedMessages?.ElementAtOrDefault(4), Is.EqualTo("false"));
+        }
+
+        [Test]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_Failure_RunsTheFallbackBeforeRegistering()
+        {
+            // Arrange
+            List<string> calls = [];
+            ArrangeMessageBoxCallback(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, calls);
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert: the contactmoment can only say whether further action was taken once it was attempted
+            Assert.That(calls, Is.EqualTo(new[] { "fallback", "register" }));
+        }
+
+        [Test]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_RegistrationFails_Returns500_SoNotifyRetriesTheCallback()
+        {
+            // Arrange: a failed registration is still reported, so Notify NL retries the callback
+            ArrangeMessageBoxCallback(NotificationTypes.Mobb, DeliveryStatuses.PermanentFailure, [], registrationSucceeds: false);
+
+            // Act
+            IActionResult result = await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert
+            Assert.That((result as ObjectResult)?.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
         }
 
         [Test]

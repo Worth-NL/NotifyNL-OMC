@@ -383,9 +383,17 @@ namespace EventsHandler.Services.Responding.v2
         ///   chain (see <see cref="IMessageBoxScenario.HandleDeliveryFailureAsync"/>) - the "(Permanent)
         ///   Success?" / "Notificatie gelukt?" gateways in the BPMN evaluate this asynchronous delivery
         ///   status, not the synchronous send-call response already handled when the message was first sent.
-        ///   The fallback's own outcome is logged but does not change this method's return value: the HTTP
-        ///   response for this callback still reflects whether the contactmoment registration itself
-        ///   succeeded, independent of whether a fallback send was also attempted.
+        ///   <para>
+        ///     The fallback runs before the contactmoment is registered, so the contactmoment can say whether OMC
+        ///     really took further action ("verdereActieOndernomen"): only when the next channel was handed to
+        ///     "Notify NL". A fallback that fails on the spot - no BRP address, a refused letter, a recipient that
+        ///     does not resolve again - leaves "false", the record that calls for manual follow-up.
+        ///   </para>
+        ///   <para>
+        ///     The HTTP response still reflects whether the registration itself succeeded. When it failed,
+        ///     "Notify NL" retries this callback, and that retry runs the fallback again - nothing recognises the
+        ///     earlier send yet (#247).
+        ///   </para>
         /// </remarks>
         private async Task<HttpRequestResponse> InformUserAboutMessageBoxStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
@@ -397,7 +405,10 @@ namespace EventsHandler.Services.Responding.v2
 
             NotificationData notificationData = await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
 
-            HttpRequestResponse result = await _telemetry.ReportMessageBoxCompletionAsync(
+            bool furtherActionTaken = feedbackType == FeedbackTypes.Failure &&
+                                      await ContinueMessageBoxFallbackAsync(reference, notificationMethod);
+
+            return await _telemetry.ReportMessageBoxCompletionAsync(
                 reference,
                 notificationMethod,
                 callback.Recipient,
@@ -408,35 +419,20 @@ namespace EventsHandler.Services.Responding.v2
                         notificationData.IsSuccess ? notificationData.Body : string.Empty),
                     feedbackType == FeedbackTypes.Success ? True : False,
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty,
-                    IsFallbackFollowing(feedbackType, notificationMethod) ? True : False
+                    furtherActionTaken ? True : False
                 ]);
-
-            if (feedbackType == FeedbackTypes.Failure)
-            {
-                await ContinueMessageBoxFallbackAsync(reference, notificationMethod);
-            }
-
-            return result;
         }
-
-        /// <summary>
-        /// Whether OMC tries another channel for this Bericht after this delivery receipt - the klantcontact's
-        /// "verdereActieOndernomen".
-        /// </summary>
-        /// <remarks>
-        ///   A failed MOBB or e-mail delivery continues the fallback chain right after its contactmoment is
-        ///   registered; a failed letter is the last channel, and a success ends the chain. Whether that next
-        ///   attempt then succeeds does not change it: OMC did take further action.
-        /// </remarks>
-        internal static bool IsFallbackFollowing(FeedbackTypes feedbackType, NotifyMethods notificationMethod)
-            => feedbackType == FeedbackTypes.Failure && notificationMethod != NotifyMethods.Letter;
 
         /// <summary>
         /// Attempts the next fallback channel for a MOBB Bericht after its delivery-receipt callback
         /// reported failure, and logs the outcome. Never throws - a fallback failure must not break the
         /// callback's own HTTP response to Notify NL.
         /// </summary>
-        private async Task ContinueMessageBoxFallbackAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
+        /// <returns>
+        ///   <see langword="true"/> when the next channel was handed to "Notify NL" (now or by an earlier attempt);
+        ///   <see langword="false"/> when no channel is left or the attempt failed.
+        /// </returns>
+        private async Task<bool> ContinueMessageBoxFallbackAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
         {
             try
             {
@@ -450,6 +446,8 @@ namespace EventsHandler.Services.Responding.v2
                             ? StatusCodes.Status500InternalServerError
                             : StatusCodes.Status201Created
                     });
+
+                return fallbackResult.IsSuccess;
             }
             catch (Exception exception)
             {
@@ -459,6 +457,8 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         StatusCode = StatusCodes.Status500InternalServerError
                     });
+
+                return false;
             }
         }
 
