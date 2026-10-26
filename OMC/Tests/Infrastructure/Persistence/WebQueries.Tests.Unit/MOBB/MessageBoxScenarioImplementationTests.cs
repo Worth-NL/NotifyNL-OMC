@@ -65,6 +65,11 @@ namespace WebQueries.Tests.Unit.MOBB
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(this._mockedNotifyClient.Object);
 
+            // Nothing was sent before, unless a test says otherwise
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
+
             using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(
                 ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
@@ -360,6 +365,120 @@ namespace WebQueries.Tests.Unit.MOBB
             // Assert
             Assert.That(serializedReference?.MessageTypeUri, Is.EqualTo(s_messageTypeUri));
         }
+
+        #region Never sending the same Bericht twice (#247)
+        [Test]
+        public async Task ProcessCloudEventAsync_MobbAlreadySent_DoesNotSendItAgain()
+        {
+            // Arrange: Open Notificaties delivers the same Bericht a second time
+            SetUpVtbMessage(BuildVtbMessage(attachments: []));
+            SetUpPartyData(BuildPartyData());
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "delivered"));
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("Already sent"));
+
+                this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task ProcessCloudEventAsync_LookupFails_DoesNotSendBlindly()
+        {
+            // Arrange
+            SetUpVtbMessage(BuildVtbMessage(attachments: []));
+            SetUpPartyData(BuildPartyData());
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .ReturnsAsync(NotifyLookupResponse.Failure("Notify NL unavailable"));
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(BuildCloudEvent(s_messageUuid));
+
+            // Assert: a failure, so Open Notificaties redelivers once Notify NL can be asked again
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsFailure, Is.True);
+
+                this._mockedNotifyClient.Verify(mock => mock.SendMessageBoxNotificationAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Attachment>>(), It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task HandleDeliveryFailureAsync_EmailFallbackAlreadySent_DoesNotSendItAgain_AndReportsItAsSent()
+        {
+            // Arrange: the MOBB failure callback arrives a second time, e.g. because registering its contactmoment failed
+            SetUpVtbMessage(BuildVtbMessage());
+            SetUpPartyData(BuildPartyData(TestEmailAddress));
+
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .ReturnsAsync(NotifyLookupResponse.Found("55555555-5555-5555-5555-555555555555", "sending"));
+
+            var reference = new MessageBoxNotifyReference { MessageId = s_messageUuid, PartyId = Guid.NewGuid(), Mobb = true };
+
+            // Act
+            HttpRequestResponse result = await this._scenario.HandleDeliveryFailureAsync(reference, NotifyMethods.Mobb);
+
+            // Assert: reported as sent, so the contactmoment still says further action was taken
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("Already sent"));
+
+                this._mockedNotifyClient.Verify(mock => mock.SendEmailAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task HandleDeliveryFailureAsync_EmailFallbackNotSentBefore_SendsIt_WithTheReferenceItLookedUp()
+        {
+            // Arrange
+            SetUpVtbMessage(BuildVtbMessage());
+            SetUpPartyData(BuildPartyData(TestEmailAddress));
+
+            string? lookedUpReference = null;
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .Callback<string>(lookedUp => lookedUpReference = lookedUp)
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
+
+            string? sentReference = null;
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendEmailAsync(TestEmailAddress, It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()))
+                .Callback<string, string, Dictionary<string, object>, string>((_, _, _, sent) => sentReference = sent)
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            var reference = new MessageBoxNotifyReference { MessageId = s_messageUuid, PartyId = Guid.NewGuid(), Mobb = true };
+
+            // Act
+            HttpRequestResponse result = await this._scenario.HandleDeliveryFailureAsync(reference, NotifyMethods.Mobb);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+
+                Assert.That(sentReference, Is.Not.Null.And.EqualTo(lookedUpReference));  // checked for exactly what it sends
+
+                this._mockedNotifyClient.Verify(mock => mock.SendEmailAsync(
+                    TestEmailAddress, It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Once);
+            });
+        }
+        #endregion
 
         [Test]
         public async Task ProcessCloudEventAsync_MobbEligible_SendsTheBerichtTypeCode_NotItsUrl()

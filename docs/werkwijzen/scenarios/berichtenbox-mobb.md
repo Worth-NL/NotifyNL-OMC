@@ -84,6 +84,20 @@ Wordt de verzending geaccepteerd, dan wacht het OMC op de asynchrone afleverstat
 
 ---
 
+## Nooit twee keer versturen
+
+Hetzelfde Bericht kan het OMC vaker dan eens bereiken: Open Notificaties levert het CloudEvent opnieuw af na een fout, of NotifyNL stuurt een afleverstatus-callback opnieuw (tot 5 keer, om de 5 minuten) als het OMC daar een fout op teruggeeft. Vóór elke verzending (MOBB, e-mail en brief) vraagt het OMC daarom eerst bij NotifyNL na of er al een notificatie met precies dezelfde `reference` bestaat. De `reference` bevat alleen het CloudEvent, het Bericht, de partij en de kanaalvlaggen, dus dezelfde stap van hetzelfde Bericht levert altijd dezelfde `reference` op.
+
+- **Bestaat al:** het OMC verstuurt niets en antwoordt met succes (`Already sent: ...`). De afleverstatus-callback van die eerdere verzending regelt de rest van de keten.
+- **Bestaat niet:** het OMC verstuurt zoals gewoonlijk.
+- **Navragen lukt niet:** het OMC verstuurt niet blind, maar geeft een fout terug, zodat het later opnieuw geprobeerd wordt.
+
+Mislukt na een terugval het registreren van het contactmoment, dan krijgt NotifyNL een fout terug en stuurt het de callback opnieuw. Bij die nieuwe poging vindt het OMC de al verstuurde e-mail of brief, verstuurt het niets en registreert het alleen het contactmoment alsnog.
+
+Dit vangt herleveringen af, niet twee leveringen die binnen dezelfde (milli)seconden binnenkomen. Dat gebeurt alleen bij een dubbel abonnement in Open Notificaties. NotifyNL bewaart notificaties 7 dagen; een herlevering daarna zou niet meer herkend worden.
+
+---
+
 ## Terugvalketen
 
 Berichtenbox kent, anders dan de andere scenario's, een keten van tot drie kanalen in plaats van één bepaald kanaal:

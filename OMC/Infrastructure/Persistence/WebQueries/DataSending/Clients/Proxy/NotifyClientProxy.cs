@@ -145,5 +145,24 @@ namespace WebQueries.DataSending.Clients.Proxy
                 return NotificationData.Failure(exception.Message);
             }
         }
+
+        /// <inheritdoc cref="INotifyClient.FindNotificationByReferenceAsync(string)"/>
+        async Task<NotifyLookupResponse> INotifyClient.FindNotificationByReferenceAsync(string reference)
+        {
+            try
+            {
+                NotificationList notifications = await _notificationClient.GetNotificationsAsync(reference: reference);
+
+                Notification? existing = notifications.notifications?.FirstOrDefault(notification => notification.reference == reference);
+
+                return existing is null
+                    ? NotifyLookupResponse.NotFound()
+                    : NotifyLookupResponse.Found(existing.id, existing.status);
+            }
+            catch (Exception exception)  // Any failure means nothing is known, so the caller must not send blindly
+            {
+                return NotifyLookupResponse.Failure(exception.Message);
+            }
+        }
     }
 }

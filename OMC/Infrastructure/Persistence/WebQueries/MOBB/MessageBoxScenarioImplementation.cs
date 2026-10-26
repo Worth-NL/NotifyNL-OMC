@@ -272,6 +272,11 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "berichtenbox") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
+
             NotifySendResponse sendResponse = await notifyClient.SendMessageBoxNotificationAsync(
                 recipientBsn,
                 modifiedMessageText,
@@ -334,6 +339,11 @@ namespace WebQueries.MOBB
             string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
+
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "notify-email") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
 
             NotifySendResponse sendResponse = await notifyClient.SendEmailAsync(
                 partyData.EmailAddress,
@@ -439,6 +449,11 @@ namespace WebQueries.MOBB
             string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false, wasGefaaldeNotificatie);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
+
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "notify-post") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
 
             NotifySendResponse sendResponse = await notifyClient.SendLetterAsync(
                 _configuration.Notify.TemplateId.MessageBoxLetter().ToString(),
@@ -661,6 +676,50 @@ namespace WebQueries.MOBB
         }
 
         #region Private helpers
+
+        /// <summary>
+        /// Makes sure this exact send has not already been handed to "Notify NL", so the same Bericht delivered to OMC
+        /// more than once - a redelivery by Open Notificaties, a retried or duplicate delivery-receipt callback -
+        /// never reaches the citizen twice.
+        /// </summary>
+        /// <remarks>
+        ///   The reference holds only the CloudEvent, the Bericht, the partij and the channel flags, so the same step
+        ///   of the same Bericht always builds the same one; "Notify NL" matches it exactly. An earlier send that is
+        ///   found is left to its own delivery receipt, which drives the rest of the fallback chain.
+        ///   <para>
+        ///     A lookup that fails is not a reason to send anyway: nothing would be known about an earlier send.
+        ///   </para>
+        /// </remarks>
+        /// <returns>
+        ///   <see langword="null"/> when nothing was sent before and the caller should send; otherwise the response
+        ///   to return instead of sending.
+        /// </returns>
+        private async Task<HttpRequestResponse?> CheckNotAlreadySentAsync(
+            INotifyClient notifyClient, string reference, Guid messageUuid, string channelStage)
+        {
+            NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(reference);
+
+            if (lookup.IsFailure)
+            {
+                _logger.LogWarning("Message {MessageId}: could not check Notify NL for an earlier send ({Error}); not sending.",
+                    messageUuid, lookup.Error);
+                TraceContext.Emit(channelStage, "fail", $"could not check for an earlier send, not sending: {lookup.Error}");
+
+                return HttpRequestResponse.Failure($"Could not check Notify NL for an earlier send of this Bericht: {lookup.Error}");
+            }
+
+            if (!lookup.Exists)
+            {
+                return null;
+            }
+
+            _logger.LogInformation("Message {MessageId}: already sent as notification {NotificationId} ({Status}); not sending it again.",
+                messageUuid, lookup.NotificationId, lookup.Status);
+            TraceContext.Emit(channelStage, "ok", $"already sent as notification {lookup.NotificationId} ({lookup.Status}); not sent again");
+
+            return HttpRequestResponse.Success(
+                $"Already sent: notification {lookup.NotificationId} ({lookup.Status}); not sending it again.");
+        }
 
         /// <summary>
         /// Fetches document metadata for attachments (bijlagen) from the Documenten API.

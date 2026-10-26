@@ -136,5 +136,15 @@ namespace WebQueries.DataSending.Clients.Interfaces
         /// </summary>
         /// <param name="notificationId">The notification identifier.</param>
         public Task<NotificationData> GetNotificationDataAsync(Guid notificationId);
+
+        /// <summary>
+        /// Looks up whether NotifyNL already holds a notification with exactly this reference.
+        /// </summary>
+        /// <remarks>
+        ///   Used to never send the same notification twice when it is delivered to OMC more than once. NotifyNL
+        ///   matches the reference exactly and keeps notifications for 7 days.
+        /// </remarks>
+        /// <param name="reference">The reference the notification was (or would be) sent with.</param>
+        public Task<NotifyLookupResponse> FindNotificationByReferenceAsync(string reference);
     }
 }
