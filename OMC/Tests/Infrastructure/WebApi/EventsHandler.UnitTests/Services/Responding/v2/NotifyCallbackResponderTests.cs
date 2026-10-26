@@ -257,6 +257,34 @@ namespace EventsHandler.Tests.Unit.Services.Responding.v2
         }
 
         [Test]
+        public async Task HandleNotifyCallbackAsync_MessageBoxCallback_HandsTheReceiptsNotifyIdToTheRegistration()
+        {
+            // Arrange: the klantcontact carries the Notify NL id, so a retried receipt finds it instead of writing another
+            var reference = new MessageBoxNotifyReference { MessageId = s_messageId, PartyId = s_partyId };
+            DeliveryReceipt receipt = BuildDeliveryReceipt(s_compressedMessageBoxReference, DeliveryStatuses.Delivered, NotificationTypes.Mobb);
+
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<DeliveryReceipt>(It.IsAny<object>()))
+                .Returns(receipt);
+            this._mockedSerializer
+                .Setup(mock => mock.Deserialize<MessageBoxNotifyReference>(It.IsAny<object>()))
+                .Returns(reference);
+
+            MessageBoxNotifyReference registered = default;
+            this._mockedTelemetry
+                .Setup(mock => mock.ReportMessageBoxCompletionAsync(
+                    It.IsAny<MessageBoxNotifyReference>(), It.IsAny<NotifyMethods>(), It.IsAny<string>(), It.IsAny<string[]>()))
+                .Callback<MessageBoxNotifyReference, NotifyMethods, string, string[]>((registeredReference, _, _, _) => registered = registeredReference)
+                .ReturnsAsync(HttpRequestResponse.Success("contactmoment created"));
+
+            // Act
+            await this._responder.HandleNotifyCallbackAsync(new object());
+
+            // Assert
+            Assert.That(registered.NotifyNotificationId, Is.EqualTo(receipt.Id));
+        }
+
+        [Test]
         public async Task HandleNotifyCallbackAsync_MessageBoxCallback_Success_DoesNotInvokeFallback()
         {
             // Arrange

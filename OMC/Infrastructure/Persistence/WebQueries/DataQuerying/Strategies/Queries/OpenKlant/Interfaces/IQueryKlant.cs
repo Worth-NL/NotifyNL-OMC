@@ -9,6 +9,7 @@ using WebQueries.Exceptions;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
@@ -133,6 +134,20 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.Interfaces
         /// <exception cref="TelemetryException"/>
         /// <exception cref="JsonException"/>
         internal Task<MaakKlantContact> CreateNewContactMomentAsync(IQueryBase queryBase, string jsonBody);
+
+        /// <summary>
+        /// Lists the klantcontacten of a partij about one onderwerpobject over one kanaal, from "OpenKlant".
+        /// </summary>
+        /// <remarks>
+        ///   Used to find a klantcontact OMC already wrote for a delivery receipt, before writing another.
+        /// </remarks>
+        /// <param name="queryBase"><inheritdoc cref="IQueryBase" path="/summary"/></param>
+        /// <param name="partyId">The partij the klantcontact is with.</param>
+        /// <param name="subjectObjectId">The onderwerpobject's identifier (the zaak, product, Bericht or object).</param>
+        /// <param name="kanaal">The kanaal of the klantcontact.</param>
+        /// <exception cref="HttpRequestException"/>
+        /// <exception cref="JsonException"/>
+        internal Task<KlantcontactResults> FindKlantcontactenAsync(IQueryBase queryBase, Guid partyId, string subjectObjectId, string kanaal);
 
         /// <summary>
         /// Creates the <see cref="ContactMoment"/> in the register from "OpenKlant" Web API service.

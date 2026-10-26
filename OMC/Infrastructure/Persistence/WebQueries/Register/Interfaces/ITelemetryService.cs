@@ -9,12 +9,14 @@ using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
 using WebQueries.Producten.Models;
 using WebQueries.Properties;
+using WebQueries.Register.v2;
 using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Mapping.Enums.NotificatieApi;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 
 namespace WebQueries.Register.Interfaces
 {
@@ -54,15 +56,8 @@ namespace WebQueries.Register.Interfaces
 
                 string json = GetNewCreateContactMomentJsonBody(reference, notificationMethod, messages);
 
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
-
-                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
-                    GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
-
-                return linkResponse.IsFailure
-                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse) // Throw soft error to prevent retries
-                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return await RegisterOnceAsync(json, reference.PartyId, reference.CaseId?.ToString() ?? string.Empty,
+                    notificationMethod, reference.NotifyNotificationId);
             }
             catch (Exception ex)
             {
@@ -101,15 +96,8 @@ namespace WebQueries.Register.Interfaces
             {
                 string json = GetMessageBoxContactMomentJsonBody(reference, notificationMethod, messages);
 
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
-
-                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
-                    GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
-
-                return linkResponse.IsFailure
-                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse) // Throw soft error to prevent retries
-                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return await RegisterOnceAsync(json, reference.PartyId, reference.MessageId.ToString(),
+                    notificationMethod, reference.NotifyNotificationId);
             }
             catch (Exception ex)
             {
@@ -160,33 +148,11 @@ namespace WebQueries.Register.Interfaces
 
                 string json = GetPrintContactMomentJsonBody(reference, notificationMethod, messages);
 
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
-
-                Guid klantcontactUuid = contactMoment.ContactMoment.ReferenceUri.GetGuid();
-
-                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
-                    GetActorCustomerContactMomentJsonBody(this.Omc.OMC.Actor.Id(), klantcontactUuid));
-
-                if (linkResponse.IsFailure)
-                {
-                    return HttpRequestResponse.Failure(linkResponse.JsonResponse); // Throw soft error to prevent retries
-                }
-
                 // The printed PDF is attached in a second call: "maak-klantcontact" has no field for
                 // attachments (MBO-1025 - requested by Den Haag, deferred), so the klantcontact has to
                 // exist before its bijlage can point at it.
-                if (reference.AttachmentId != Guid.Empty)
-                {
-                    HttpRequestResponse bijlageResponse = await this.QueryContext.CreateBijlageAsync(
-                        GetBijlageJsonBody(klantcontactUuid, reference.AttachmentId));
-
-                    if (bijlageResponse.IsFailure)
-                    {
-                        return HttpRequestResponse.Failure(bijlageResponse.JsonResponse);
-                    }
-                }
-
-                return HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return await RegisterOnceAsync(json, reference.PartyId, reference.SubjectObject?.ObjectId ?? string.Empty,
+                    notificationMethod, reference.NotifyNotificationId, attachmentId: reference.AttachmentId);
             }
             catch (Exception ex)
             {
@@ -233,15 +199,8 @@ namespace WebQueries.Register.Interfaces
 
                 string json = GetProductContactMomentJsonBody(reference, notificationMethod, messages);
 
-                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
-
-                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
-                    GetActorCustomerContactMomentJsonBody(
-                        this.Omc.OMC.Actor.Id(), contactMoment.ContactMoment.ReferenceUri.GetGuid()));
-
-                return linkResponse.IsFailure
-                    ? HttpRequestResponse.Failure(linkResponse.JsonResponse)
-                    : HttpRequestResponse.Success(QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL);
+                return await RegisterOnceAsync(json, reference.PartyId, reference.ProductId.ToString(),
+                    notificationMethod, reference.NotifyNotificationId);
             }
             catch (Exception exception)
             {
@@ -249,6 +208,94 @@ namespace WebQueries.Register.Interfaces
                     ? HttpRequestResponse.Failure("Duplicate key conflict in OpenKlant API")
                     : HttpRequestResponse.Failure(exception.Message);
             }
+        }
+
+        /// <summary>
+        /// Writes a klantcontact once: a delivery receipt that "Notify NL" retries or sends twice finishes the
+        /// klantcontact it already wrote, instead of writing a second one.
+        /// </summary>
+        /// <remarks>
+        ///   Writing a klantcontact takes more than one call: create it, then link OMC's actor (and, for a printed
+        ///   letter, its PDF). When a later call fails, the receipt is answered with a failure so "Notify NL" retries
+        ///   it - safe, because the retry looks the klantcontact up by the "Notify NL" notification id in its metadata
+        ///   and only does what is still missing.
+        ///   <para>
+        ///     Without a notification id - a klantcontact for a send that never reached "Notify NL" - there is
+        ///     nothing to look up by, so it is simply written.
+        ///   </para>
+        /// </remarks>
+        private async Task<HttpRequestResponse> RegisterOnceAsync(
+            string json, Guid partyId, string subjectObjectId, NotifyMethods notificationMethod,
+            Guid notifyNotificationId, Guid attachmentId = default)
+        {
+            Guid actorId = this.Omc.OMC.Actor.Id();
+            ExistingKlantcontact? existing = null;
+
+            if (notifyNotificationId != Guid.Empty)
+            {
+                KlantcontactResults found = await this.QueryContext.FindKlantcontactenAsync(
+                    partyId, subjectObjectId, notificationMethod.ToKanaal());
+
+                string notificationId = notifyNotificationId.ToString();
+
+                foreach (ExistingKlantcontact klantcontact in found.Results)
+                {
+                    if (klantcontact.Metadata is { } metadata &&
+                        metadata.TryGetValue(ContactRegistration.NotifyNotificationIdKey, out string? value) &&
+                        string.Equals(value, notificationId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        existing = klantcontact;
+                        break;
+                    }
+                }
+            }
+
+            Guid klantcontactId;
+            bool isActorLinked;
+            bool isAttachmentLinked;
+
+            if (existing is { } earlier)
+            {
+                klantcontactId = earlier.Id;
+                isActorLinked = earlier.Actors?.Any(actor => actor.Id == actorId) == true;
+                isAttachmentLinked = earlier.Attachments is { Count: > 0 };
+            }
+            else
+            {
+                MaakKlantContact contactMoment = await this.QueryContext.CreateNewContactMomentAsync(json);
+
+                klantcontactId = contactMoment.ContactMoment.ReferenceUri.GetGuid();
+                isActorLinked = false;
+                isAttachmentLinked = false;
+            }
+
+            if (!isActorLinked)
+            {
+                HttpRequestResponse linkResponse = await this.QueryContext.LinkActorToContactMomentAsync(
+                    GetActorCustomerContactMomentJsonBody(actorId, klantcontactId));
+
+                if (linkResponse.IsFailure)
+                {
+                    // A retry finds this klantcontact and only links what is still missing
+                    return HttpRequestResponse.Failure(linkResponse.JsonResponse);
+                }
+            }
+
+            if (attachmentId != Guid.Empty && !isAttachmentLinked)
+            {
+                HttpRequestResponse bijlageResponse = await this.QueryContext.CreateBijlageAsync(
+                    GetBijlageJsonBody(klantcontactId, attachmentId));
+
+                if (bijlageResponse.IsFailure)
+                {
+                    // Same: a retry finds this klantcontact and only attaches what is still missing
+                    return HttpRequestResponse.Failure(bijlageResponse.JsonResponse);
+                }
+            }
+
+            return HttpRequestResponse.Success(existing is null
+                ? QueryResources.Registering_SUCCESS_NotificationSentToNotifyNL
+                : $"Klantcontact {klantcontactId} was already registered for this delivery receipt; completed what was missing.");
         }
 
         #region Abstract

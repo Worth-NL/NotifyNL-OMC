@@ -23,6 +23,7 @@ using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Task;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 using ZgwModels.Mapping.Models.POCOs.OpenVtb;
 using ZgwModels.Mapping.Models.POCOs.OpenZaak;
@@ -176,6 +177,10 @@ namespace WebQueries.DataQuerying.Adapter
         /// <inheritdoc cref="IQueryContext.CreateNewContactMomentAsync(string)"/>
         public async Task<MaakKlantContact> CreateNewContactMomentAsync(string jsonBody)
             => await this._queryKlant.CreateNewContactMomentAsync(this._queryBase, jsonBody);
+
+        /// <inheritdoc cref="IQueryContext.FindKlantcontactenAsync(Guid, string, string)"/>
+        async Task<KlantcontactResults> IQueryContext.FindKlantcontactenAsync(Guid partyId, string subjectObjectId, string kanaal)
+            => await this._queryKlant.FindKlantcontactenAsync(this._queryBase, partyId, subjectObjectId, kanaal);
 
         /// <inheritdoc cref="IQueryContext.CreateContactMomentAsync(string)"/>
         async Task<ContactMoment> IQueryContext.CreateContactMomentAsync(string jsonBody)

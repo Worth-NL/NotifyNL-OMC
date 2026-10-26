@@ -282,6 +282,26 @@ namespace WebQueries.DataQuerying.Strategies.Queries.OpenKlant.v2
                 fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
         }
 
+        /// <inheritdoc cref="IQueryKlant.FindKlantcontactenAsync(IQueryBase, Guid, string, string)"/>
+        async Task<KlantcontactResults> IQueryKlant.FindKlantcontactenAsync(IQueryBase queryBase, Guid partyId, string subjectObjectId, string kanaal)
+        {
+            // An onderwerpobject the payload left empty (print) is left out of the filter rather than sent empty
+            string subjectObjectFilter = string.IsNullOrEmpty(subjectObjectId)
+                ? string.Empty
+                : $"&onderwerpobject__onderwerpobjectidentificatorObjectId={Uri.EscapeDataString(subjectObjectId)}";
+
+            Uri klantcontactenUri = new(
+                $"{((IQueryKlant)this).Configuration.ZGW.Endpoint.OpenKlant()}/klantcontacten" +
+                $"?hadBetrokkene__wasPartij__uuid={partyId:D}" +
+                subjectObjectFilter +
+                $"&kanaal={Uri.EscapeDataString(kanaal)}");
+
+            return await queryBase.ProcessGetAsync<KlantcontactResults>(
+                httpClientType: HttpClientTypes.Telemetry_Klantinteracties,
+                uri: klantcontactenUri,  // Request URL
+                fallbackErrorMessage: ZgwResources.HttpRequest_ERROR_NoFeedbackKlant);
+        }
+
         /// <inheritdoc cref="IQueryKlant.CreateBijlageAsync(IHttpNetworkService, string)"/>
         async Task<HttpRequestResponse> IQueryKlant.CreateBijlageAsync(IHttpNetworkService networkService, string jsonBody)
         {

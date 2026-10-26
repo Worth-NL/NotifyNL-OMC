@@ -87,7 +87,6 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
-            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.Notification.ResourceUri.AbsoluteUri);
             string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.SubjectTypeUri));
 
             return $"{{\"klantcontact\":{{" +
@@ -100,7 +99,7 @@ namespace WebQueries.Register.v2
                    $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +                                 // Fixed: interpolated variable with ISO 8601 format
                    $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The zaaktype of the onderwerpobject
-                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The specific resource (e.g. status) the triggering notification was about
+                   $"\"metadata\":{Metadata(reference.Notification.ResourceUri.AbsoluteUri, reference.NotifyNotificationId)}" +  // originalResourceUrl: the specific resource (e.g. status) the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
@@ -148,7 +147,6 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
-            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl.AbsoluteUri);
             string safeHoofdOnderwerpType = JsonSerializer.Serialize(reference.SubjectObjectTypeUri?.AbsoluteUri ?? string.Empty);
 
             SubjectObjectIdentifier subjectObject = reference.SubjectObject ?? new SubjectObjectIdentifier();
@@ -171,7 +169,7 @@ namespace WebQueries.Register.v2
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
                    $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The zaaktype of the onderwerpobject, supplied by the caller
-                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The print-request object the triggering notification was about
+                   $"\"metadata\":{Metadata(reference.OriginalResourceUrl.AbsoluteUri, reference.NotifyNotificationId)}" +  // originalResourceUrl: the print-request object the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
@@ -195,6 +193,36 @@ namespace WebQueries.Register.v2
         /// </summary>
         private static string Fallback(string supplied, string configured)
             => string.IsNullOrWhiteSpace(supplied) ? configured : supplied;
+
+        /// <summary>
+        /// The metadata key holding the id "Notify NL" gave the notification a klantcontact records.
+        /// </summary>
+        /// <remarks>
+        ///   A retried or duplicate delivery receipt looks its klantcontact up by this key before writing one, so it
+        ///   finishes the one it wrote instead of writing a second (see ITelemetryService.RegisterOnceAsync).
+        /// </remarks>
+        internal const string NotifyNotificationIdKey = "notifyNotificationId";
+
+        /// <summary>
+        /// The klantcontact's "metadata": the resource the notification was about and the id "Notify NL" gave it,
+        /// each only when known. OpenKlant takes string values of at most 255 characters.
+        /// </summary>
+        private static string Metadata(string? originalResourceUrl, Guid notifyNotificationId)
+        {
+            Dictionary<string, string> metadata = [];
+
+            if (!string.IsNullOrEmpty(originalResourceUrl))
+            {
+                metadata["originalResourceUrl"] = originalResourceUrl;
+            }
+
+            if (notifyNotificationId != Guid.Empty)
+            {
+                metadata[NotifyNotificationIdKey] = notifyNotificationId.ToString();
+            }
+
+            return JsonSerializer.Serialize(metadata);
+        }
 
         /// <summary>
         /// The klantcontact's "hoofdOnderwerpType": the type's URL, or an empty string when there is none.
@@ -226,7 +254,6 @@ namespace WebQueries.Register.v2
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
             string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
-            string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl);
             string safeObjectId = JsonSerializer.Serialize(reference.ProductId.ToString());
             string safeCodeObjectType = JsonSerializer.Serialize(
                 this._configuration.AppSettings.Variables.OpenKlant.CodeObjectType_Product());
@@ -246,7 +273,7 @@ namespace WebQueries.Register.v2
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
                    $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The producttype of the product
-                   $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The product the triggering notification was about
+                   $"\"metadata\":{Metadata(reference.OriginalResourceUrl, reference.NotifyNotificationId)}" +  // originalResourceUrl: the product the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +
@@ -330,7 +357,8 @@ namespace WebQueries.Register.v2
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
-                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}" +                      // The Bericht's BerichtType
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The Bericht's BerichtType
+                   $"\"metadata\":{Metadata(originalResourceUrl: null, reference.NotifyNotificationId)}" +
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +

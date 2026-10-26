@@ -56,6 +56,8 @@ Dezelfde notificatie kan het OMC vaker dan eens bereiken, bijvoorbeeld als Open 
 
 Dat werkt omdat de `reference` bij elke aflevering van dezelfde notificatie gelijk is: er staat geen tijdstip in, en de trace-id van het dashboard wordt afgeleid van de notificatie zelf. Een herlevering verschijnt op het dashboard daardoor als dezelfde trace. De soort telt mee, omdat de e-mail en de sms van één notificatie dezelfde `reference` hebben.
 
+Hetzelfde geldt voor de klantcontacten. Elk klantcontact uit een afleverstatus krijgt het notificatie-id van NotifyNL in zijn `metadata` (`notifyNotificationId`). Komt dezelfde afleverstatus nog eens binnen, omdat NotifyNL hem na een fout opnieuw stuurt of hem dubbel stuurt, dan zoekt het OMC eerst het klantcontact van die partij, dat onderwerpobject en dat kanaal met dat id op. Bestaat dat al, dan maakt het OMC alleen af wat nog ontbrak: de koppeling met de actor van het OMC, en bij de printstraat de PDF als bijlage.
+
 Wat dit niet afvangt: twee afleveringen van dezelfde notificatie binnen dezelfde (milli)seconden, wat alleen bij een dubbel abonnement in Open Notificaties gebeurt, en een herlevering na meer dan 7 dagen, de bewaartermijn van NotifyNL.
 
 ---
