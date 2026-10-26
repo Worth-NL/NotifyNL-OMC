@@ -217,6 +217,9 @@ namespace EventsHandler.Tests.Unit.Services.DataSending
         private static Mock<INotifyClient> GetMockedNotifyClient()
         {
             Mock<INotifyClient> notificationClientMock = new(MockBehavior.Strict);
+            notificationClientMock  // Nothing was sent before (#247)
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
             notificationClientMock
                 .Setup(mock => mock.SendEmailAsync(
                     It.IsAny<string>(),

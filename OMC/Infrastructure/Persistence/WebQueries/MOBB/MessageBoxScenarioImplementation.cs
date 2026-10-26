@@ -272,7 +272,7 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
-            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "berichtenbox") is { } alreadyHandled)
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Mobb, messageUuid, "berichtenbox") is { } alreadyHandled)
             {
                 return alreadyHandled;
             }
@@ -340,7 +340,7 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
-            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "notify-email") is { } alreadyHandled)
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Email, messageUuid, "notify-email") is { } alreadyHandled)
             {
                 return alreadyHandled;
             }
@@ -450,7 +450,7 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
-            if (await CheckNotAlreadySentAsync(notifyClient, reference, messageUuid, "notify-post") is { } alreadyHandled)
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Letter, messageUuid, "notify-post") is { } alreadyHandled)
             {
                 return alreadyHandled;
             }
@@ -695,9 +695,9 @@ namespace WebQueries.MOBB
         ///   to return instead of sending.
         /// </returns>
         private async Task<HttpRequestResponse?> CheckNotAlreadySentAsync(
-            INotifyClient notifyClient, string reference, Guid messageUuid, string channelStage)
+            INotifyClient notifyClient, string reference, NotifyMethods notificationMethod, Guid messageUuid, string channelStage)
         {
-            NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(reference);
+            NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(reference, notificationMethod);
 
             if (lookup.IsFailure)
             {

@@ -148,8 +148,10 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // A real notification is entering the pipeline — start a trace for the dashboard
-                // (no-op if nobody is watching; cleared in the finally block below regardless).
-                TraceContext.Start(this._traceEmitter);
+                // (no-op if nobody is watching; cleared in the finally block below regardless). Its identifier
+                // is derived from the notification, because it ends up in the reference handed to "Notify NL"
+                // and that reference has to be the same on every delivery of this notification (#247).
+                TraceContext.Start(this._traceEmitter, seed: this._serializer.Serialize(notification));
                 TraceContext.Emit("opennotificaties", "ok");
                 TraceContext.Emit("output-patronen", "ok");
 

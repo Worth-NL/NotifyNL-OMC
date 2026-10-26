@@ -13,6 +13,7 @@ using EventsHandler.Services.DataProcessing.Strategy.Implementations.Products;
 using EventsHandler.Services.DataProcessing.Strategy.Manager.Interfaces;
 using EventsHandler.Services.Validation.Interfaces;
 using Moq;
+using WebQueries.DataSending.Models.Reponses;
 using System.Text.Json;
 using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.DataSending.Models.DTOs;
@@ -65,6 +66,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
         {
             // By default, Serializer would succeed
             this._mockedSerializer.Reset();
+            this._mockedSerializer  // The trace identifier is derived from the notification (#247)
+                .Setup(mock => mock.Serialize(It.IsAny<NotificationEvent>()))
+                .Returns("{}");
             this._mockedSerializer
                 .Setup(mock => mock.Deserialize<NotificationEvent>(
                     It.IsAny<object>()))

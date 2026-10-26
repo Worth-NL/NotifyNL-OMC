@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
+using ZgwModels.Enums;
 
 namespace WebQueries.DataSending.Clients.Proxy
 {
@@ -146,14 +147,24 @@ namespace WebQueries.DataSending.Clients.Proxy
             }
         }
 
-        /// <inheritdoc cref="INotifyClient.FindNotificationByReferenceAsync(string)"/>
-        async Task<NotifyLookupResponse> INotifyClient.FindNotificationByReferenceAsync(string reference)
+        /// <inheritdoc cref="INotifyClient.FindNotificationByReferenceAsync(string, NotifyMethods)"/>
+        async Task<NotifyLookupResponse> INotifyClient.FindNotificationByReferenceAsync(string reference, NotifyMethods notificationMethod)
         {
             try
             {
-                NotificationList notifications = await _notificationClient.GetNotificationsAsync(reference: reference);
+                string templateType = notificationMethod switch
+                {
+                    NotifyMethods.Email => "email",
+                    NotifyMethods.Sms => "sms",
+                    NotifyMethods.Letter => "letter",
+                    NotifyMethods.Mobb => "messagebox",
+                    _ => throw new ArgumentOutOfRangeException(nameof(notificationMethod), notificationMethod, "No NotifyNL notification type")
+                };
 
-                Notification? existing = notifications.notifications?.FirstOrDefault(notification => notification.reference == reference);
+                NotificationList notifications = await _notificationClient.GetNotificationsAsync(templateType: templateType, reference: reference);
+
+                Notification? existing = notifications.notifications?.FirstOrDefault(notification =>
+                    notification.reference == reference && notification.type == templateType);
 
                 return existing is null
                     ? NotifyLookupResponse.NotFound()

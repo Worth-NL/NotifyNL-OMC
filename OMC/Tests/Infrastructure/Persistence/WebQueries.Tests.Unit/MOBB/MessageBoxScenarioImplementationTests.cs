@@ -67,7 +67,7 @@ namespace WebQueries.Tests.Unit.MOBB
 
             // Nothing was sent before, unless a test says otherwise
             this._mockedNotifyClient
-                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
                 .ReturnsAsync(NotifyLookupResponse.NotFound());
 
             using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(
@@ -375,7 +375,7 @@ namespace WebQueries.Tests.Unit.MOBB
             SetUpPartyData(BuildPartyData());
 
             this._mockedNotifyClient
-                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
                 .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "delivered"));
 
             // Act
@@ -400,7 +400,7 @@ namespace WebQueries.Tests.Unit.MOBB
             SetUpPartyData(BuildPartyData());
 
             this._mockedNotifyClient
-                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
                 .ReturnsAsync(NotifyLookupResponse.Failure("Notify NL unavailable"));
 
             // Act
@@ -424,7 +424,7 @@ namespace WebQueries.Tests.Unit.MOBB
             SetUpPartyData(BuildPartyData(TestEmailAddress));
 
             this._mockedNotifyClient
-                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
                 .ReturnsAsync(NotifyLookupResponse.Found("55555555-5555-5555-5555-555555555555", "sending"));
 
             var reference = new MessageBoxNotifyReference { MessageId = s_messageUuid, PartyId = Guid.NewGuid(), Mobb = true };
@@ -452,8 +452,8 @@ namespace WebQueries.Tests.Unit.MOBB
 
             string? lookedUpReference = null;
             this._mockedNotifyClient
-                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>()))
-                .Callback<string>(lookedUp => lookedUpReference = lookedUp)
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .Callback<string, NotifyMethods>((lookedUp, _) => lookedUpReference = lookedUp)
                 .ReturnsAsync(NotifyLookupResponse.NotFound());
 
             string? sentReference = null;

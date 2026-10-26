@@ -86,7 +86,7 @@ Wordt de verzending geaccepteerd, dan wacht het OMC op de asynchrone afleverstat
 
 ## Nooit twee keer versturen
 
-Hetzelfde Bericht kan het OMC vaker dan eens bereiken: Open Notificaties levert het CloudEvent opnieuw af na een fout, of NotifyNL stuurt een afleverstatus-callback opnieuw (tot 5 keer, om de 5 minuten) als het OMC daar een fout op teruggeeft. Vóór elke verzending (MOBB, e-mail en brief) vraagt het OMC daarom eerst bij NotifyNL na of er al een notificatie met precies dezelfde `reference` bestaat. De `reference` bevat alleen het CloudEvent, het Bericht, de partij en de kanaalvlaggen, dus dezelfde stap van hetzelfde Bericht levert altijd dezelfde `reference` op.
+Hetzelfde Bericht kan het OMC vaker dan eens bereiken: Open Notificaties levert het CloudEvent opnieuw af na een fout, of NotifyNL stuurt een afleverstatus-callback opnieuw (tot 5 keer, om de 5 minuten) als het OMC daar een fout op teruggeeft. Vóór elke verzending (MOBB, e-mail en brief) vraagt het OMC daarom eerst bij NotifyNL na of er al een notificatie van dezelfde soort (`messagebox`, `email` of `letter`) met precies dezelfde `reference` bestaat. De `reference` bevat alleen het CloudEvent, het Bericht, de partij en de kanaalvlaggen, dus dezelfde stap van hetzelfde Bericht levert altijd dezelfde `reference` op.
 
 - **Bestaat al:** het OMC verstuurt niets en antwoordt met succes (`Already sent: ...`). De afleverstatus-callback van die eerdere verzending regelt de rest van de keten.
 - **Bestaat niet:** het OMC verstuurt zoals gewoonlijk.

@@ -86,6 +86,11 @@ namespace WebQueries.Tests.Unit.Producten
                 .Returns(this._mockedQueryContext.Object);
 
             this._mockedNotifyClient = new Mock<INotifyClient>(MockBehavior.Strict);
+
+            // Nothing was sent before, unless a test says otherwise (#247)
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
             this._mockedNotifyClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             this._mockedNotifyClientFactory
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
@@ -501,5 +506,52 @@ namespace WebQueries.Tests.Unit.Producten
                 VerifyContactMomentCount(Times.Never());
             });
         }
+
+        #region Never the same e-mail twice (#247)
+        [Test]
+        public async Task ProcessProductAsync_AlreadySentToThisOwner_DoesNotSendItAgainAsync()
+        {
+            // Arrange
+            SetupProductWithOwners("jane@example.com");
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "sending"));
+
+            // Act
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+
+                VerifySendCount(Times.Never());
+                VerifyContactMomentCount(Times.Never());
+            });
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_LookupFails_DoesNotSendBlindly_AndRegistersAFailedContactMomentAsync()
+        {
+            // Arrange
+            SetupProductWithOwners("jane@example.com");
+            SetupContactMomentSucceeds();
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .ReturnsAsync(NotifyLookupResponse.Failure("Notify NL unavailable"));
+
+            // Act
+            HttpRequestResponse response = await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            // Assert: the product notification has been accepted by now, so the owner is recorded for follow-up
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+
+                VerifySendCount(Times.Never());
+                VerifyContactMomentCount(Times.Once());
+            });
+        }
+        #endregion
     }
 }

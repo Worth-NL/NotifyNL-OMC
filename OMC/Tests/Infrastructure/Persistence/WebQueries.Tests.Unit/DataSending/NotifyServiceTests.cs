@@ -54,6 +54,12 @@ namespace WebQueries.Tests.Unit.DataSending
         public void SetUp()
         {
             _notifyClientMock = new Mock<INotifyClient>(MockBehavior.Strict);
+
+            // Nothing was sent before, unless a test says otherwise (#247)
+            _notifyClientMock
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
+
             _factoryMock = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             _serializerMock = new Mock<ISerializationService>(MockBehavior.Strict);
 
@@ -184,6 +190,86 @@ namespace WebQueries.Tests.Unit.DataSending
             NotificationData result = await _service.GetNotificationDataAsync(s_emailData, notificationId);
 
             Assert.That(result.IsSuccess, Is.False);
+        }
+        #endregion
+
+        #region Never the same notification twice (#247)
+        [Test]
+        public async Task SendEmailAsync_AlreadySent_DoesNotSendItAgain_AndReportsSuccessAsync()
+        {
+            _notifyClientMock
+                .Setup(c => c.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "delivered"));
+
+            NotifySendResponse result = await _service.SendEmailAsync(s_emailData);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+
+                _notifyClientMock.Verify(c => c.SendEmailAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task SendSmsAsync_OnlyTheEmailWasSent_StillSendsTheSmsAsync()
+        {
+            // "Both": the e-mail and the SMS of one notification carry the same reference, so the lookup is per kind
+            _notifyClientMock
+                .Setup(c => c.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "delivered"));
+            _notifyClientMock
+                .Setup(c => c.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            NotifySendResponse result = await _service.SendSmsAsync(s_smsData);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+
+                _notifyClientMock.Verify(c => c.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Sms), Times.Once);
+                _notifyClientMock.Verify(c => c.SendSmsAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task SendLetterAsync_LookupFails_DoesNotSendBlindly_AndReportsFailureAsync()
+        {
+            _notifyClientMock
+                .Setup(c => c.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Letter))
+                .ReturnsAsync(NotifyLookupResponse.Failure("Notify NL unavailable"));
+
+            NotifySendResponse result = await _service.SendLetterAsync(s_letterData);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsFailure, Is.True);
+
+                _notifyClientMock.Verify(c => c.SendLetterAsync(
+                    It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>?>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task SendEmailAsync_LooksUpExactlyTheReferenceItSendsAsync()
+        {
+            string? lookedUp = null;
+            string? sent = null;
+            _notifyClientMock
+                .Setup(c => c.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .Callback<string, NotifyMethods>((reference, _) => lookedUp = reference)
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
+            _notifyClientMock
+                .Setup(c => c.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()))
+                .Callback<string, string, Dictionary<string, object>, string>((_, _, _, reference) => sent = reference)
+                .ReturnsAsync(NotifySendResponse.Success());
+
+            await _service.SendEmailAsync(s_emailData);
+
+            Assert.That(sent, Is.Not.Null.And.EqualTo(lookedUp));
         }
         #endregion
     }
