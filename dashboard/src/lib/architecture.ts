@@ -28,22 +28,22 @@ export interface CheckDetails {
 }
 
 export const INPUT_NODES: ArchitectureNode[] = [
-  { key: "opennotificaties", name: "Open Notificaties", subtitle: "Notificatie-API — NL-GOV", version: "v1.4.2", active: true },
+  { key: "opennotificaties", name: "NotificatieAPI", subtitle: "Notificaties — NL-GOV", version: "v1.4.2", active: true },
   { key: "oneground", name: "Roxit Oneground", subtitle: "Zaaksysteem — MijnZaken events", active: true },
   { key: "mendix", name: "Mendix", subtitle: "Low-code app-events", version: "v2.6", active: false },
 ];
 
 export const REGISTER_NODES: ArchitectureNode[] = [
-  { key: "openklant", name: "KlantAPI (OpenKlant)", subtitle: "Klantinteracties — partij + digitaal adres", version: "v2.0", active: true },
-  { key: "openzaak", name: "ZaakAPI (OpenZaak)", subtitle: "Zaken, statussen, resultaten", version: "v1.3", active: true },
-  { key: "objecten", name: "ObjectenAPI (OpenObject)", subtitle: "Taken, berichten, KTO-triggers", version: "v2.0", active: true },
-  { key: "objecttypen", name: "ObjectTypen", subtitle: "Schema's voor Objecten API", version: "v1.1", active: true },
-  { key: "besluiten", name: "BesluitenAPI (OpenZaak)", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
+  { key: "openklant", name: "KlantAPI", subtitle: "Klantinteracties — partij + digitaal adres", version: "v2.0", active: true },
+  { key: "openzaak", name: "ZaakAPI", subtitle: "Zaken, statussen, resultaten", version: "v1.3", active: true },
+  { key: "objecten", name: "ObjectenAPI", subtitle: "Taken, berichten, KTO-triggers", version: "v2.0", active: true },
+  { key: "objecttypen", name: "ObjecttypenAPI", subtitle: "Schema's voor de ObjectenAPI", version: "v1.1", active: true },
+  { key: "besluiten", name: "BesluitenAPI", subtitle: "Besluitdocumenten en -typen", version: "v1.0", active: true },
   { key: "brp", name: "BRP", subtitle: "Haal Centraal — persoonsgegevens", version: "v2.2", active: true },
-  { key: "openproduct", name: "ProductenAPI (Open Product)", subtitle: "Producten, producttypen en eigenaren", version: "v1.7", active: true },
+  { key: "openproduct", name: "ProductenAPI", subtitle: "Producten, producttypen en eigenaren", version: "v1.7", active: true },
   { key: "documenten", name: "DocumentenAPI", subtitle: "Documenten en hun inhoud (pdf, bijlagen)", active: true },
   { key: "profielservice", name: "ProfielService (MoZa)", subtitle: "Voorkeuren per burger", active: false },
-  { key: "vtb", name: "BerichtenAPI (OpenVTB)", subtitle: "Berichten voor de Berichtenbox", active: true },
+  { key: "vtb", name: "BerichtenAPI", subtitle: "Berichten voor de Berichtenbox", active: true },
 ];
 
 // The checks each scenario runs before it sends anything, verified against the C# source (see
@@ -63,7 +63,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     details: {
       what: "Staat het zaaktype (de identificatie uit de catalogus) op de whitelist van dit scenario? Een * staat alles toe.",
       config: "ZGW_WHITELIST_ZAAKCREATE_IDS, _ZAAKUPDATE_IDS, _ZAAKCLOSE_IDS, _TASKASSIGNED_IDS of _DECISIONMADE_IDS — per scenario",
-      onFail: "Afgebroken (206): er wordt niets verstuurd en Open Notificaties biedt het event niet opnieuw aan. De reden noemt de env var.",
+      onFail: "Afgebroken (206): er wordt niets verstuurd en NotificatieAPI biedt het event niet opnieuw aan. De reden noemt de env var.",
       source: "BaseScenario.ValidateCaseId",
     },
   },
@@ -72,17 +72,17 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "IsNotificationExpected",
     details: {
       what: "Staat \"informeren\" aan op het statustype (zaakscenario's) of zaaktype? Alleen dan wil de gemeente dat de burger bericht krijgt.",
-      config: "Het veld informeren op het statustype/zaaktype in de OpenZaak-catalogus",
+      config: "Het veld informeren op het statustype/zaaktype in de CatalogiAPI",
       onFail: "Afgebroken (206): bewust niet versturen, geen herlevering.",
       source: "NotifyScenariosResolver, BaseScenario.ValidateNotifyPermit",
     },
   },
   {
     key: "kanaalresolutie", name: "Kanaalresolutie", short: "Kanaal", active: true,
-    subtitle: "OpenKlant adres/voorkeur — e-mail of sms",
+    subtitle: "KlantAPI adres/voorkeur — e-mail of sms",
     details: {
-      what: "Kiest e-mail of sms op basis van de digitale adressen van de partij in OpenKlant: eerst een adres waarvan de referentie gelijk is aan de zaak, dan het voorkeursadres, dan het eerste bruikbare adres.",
-      config: "Digitale adressen en voorkeursDigitaalAdres van de partij in OpenKlant",
+      what: "Kiest e-mail of sms op basis van de digitale adressen van de partij in KlantAPI: eerst een adres waarvan de referentie gelijk is aan de zaak, dan het voorkeursadres, dan het eerste bruikbare adres.",
+      config: "Digitale adressen en voorkeursDigitaalAdres van de partij in KlantAPI",
       onFail: "Mislukt (412) als er geen bruikbaar adres is; bestaat de partij niet, dan afgebroken (206).",
       source: "BaseScenario.TryGetDataAsync, PartyResults.Party",
     },
@@ -102,16 +102,16 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "Taak open + BSN/KVK",
     details: {
       what: "Is de taak nog open, en is de ontvanger geïdentificeerd met een BSN of KVK-nummer?",
-      config: "De taak in de Objecten API (status en identificatie)",
+      config: "De taak in de ObjectenAPI (status en identificatie)",
       onFail: "Afgebroken (206): een gesloten taak of een ander identificatietype krijgt geen bericht.",
       source: "TaskAssignedScenario.PrepareDataAsync",
     },
   },
   {
     key: "documentcheck", name: "Documentcheck", short: "Documentcheck", active: true,
-    subtitle: "Besluitdocument definitief/openbaar · pdfurl in eigen Documenten API",
+    subtitle: "Besluitdocument definitief/openbaar · pdfurl in eigen DocumentenAPI",
     details: {
-      what: "Besluit genomen: is het besluitdocument van een toegestaan informatieobjecttype, definitief en openbaar (niet vertrouwelijk)? Printstraat: wijst de pdfurl naar een document in de geconfigureerde Documenten API (zelfde schema, host en poort)?",
+      what: "Besluit genomen: is het besluitdocument van een toegestaan informatieobjecttype, definitief en openbaar (niet vertrouwelijk)? Printstraat: wijst de pdfurl naar een document in de geconfigureerde DocumentenAPI (zelfde schema, host en poort)?",
       config: "Besluit: ZGW_VARIABLE_OBJECTTYPE_DECISIONINFOOBJECTTYPE_UUIDS · Printstraat: ZGW_ENDPOINT_DOCUMENTEN",
       onFail: "Besluit genomen: afgebroken (206), de reden noemt wat niet klopt. Printstraat: mislukt (412).",
       source: "DecisionMadeScenario.PrepareDataAsync, PrintScenarioImplementation.TryResolveDocumentUuid",
@@ -132,7 +132,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "contact_betrokkene_urn moet een BSN dragen",
     details: {
       what: "Bevat contact_betrokkene_urn in het print-object een BSN? Alleen een BSN kan nu worden opgezocht; KVK volgt later.",
-      config: "contact_betrokkene_urn in het print-object (Objecten API)",
+      config: "contact_betrokkene_urn in het print-object (ObjectenAPI)",
       onFail: "Mislukt (412): de reden noemt welk soort URN het was.",
       source: "PrintScenarioImplementation.TryResolveBsn",
     },
@@ -143,7 +143,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     details: {
       what: "Is het CloudEvent een bericht-gepubliceerd? Alleen dan staat het bericht echt klaar. Een bericht-geregistreerd (of een toekomstig type) wordt genegeerd.",
       config: "Vast in de code: nl.overheid.berichten.bericht-gepubliceerd",
-      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
+      onFail: "Geen actie nodig: OMC antwoordt succes, dus NotificatieAPI biedt het niet opnieuw aan.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 0)",
     },
   },
@@ -151,7 +151,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     key: "vtbberichtid", name: "Bericht-ID", short: "Bericht-ID", active: true,
     subtitle: "subject van het CloudEvent is een bericht-UUID",
     details: {
-      what: "Heeft het CloudEvent een subject, en is dat een geldige UUID? Daarmee wordt het bericht bij Open VTB opgehaald.",
+      what: "Heeft het CloudEvent een subject, en is dat een geldige UUID? Daarmee wordt het bericht bij BerichtenAPI opgehaald.",
       config: "subject van het CloudEvent",
       onFail: "Mislukt (412).",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 1)",
@@ -161,8 +161,8 @@ export const CHECK_NODES: ArchitectureNode[] = [
     key: "vtbberichttekst", name: "Berichttekst", short: "Berichttekst", active: true,
     subtitle: "Het opgehaalde bericht heeft tekst",
     details: {
-      what: "Heeft het bericht uit Open VTB een tekst? Een leeg bericht wordt niet verstuurd, ook niet via een terugval.",
-      config: "Het bericht in Open VTB",
+      what: "Heeft het bericht uit BerichtenAPI een tekst? Een leeg bericht wordt niet verstuurd, ook niet via een terugval.",
+      config: "Het bericht in BerichtenAPI",
       onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus geen herlevering (opnieuw proberen verandert niets).",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 5)",
     },
@@ -172,18 +172,18 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "BSN in de ontvanger-URN",
     details: {
       what: "Draagt de ontvanger-URN van het bericht een BSN? Alleen burgers kunnen een bericht in de Berichtenbox krijgen.",
-      config: "De ontvanger (URN) van het bericht in Open VTB",
+      config: "De ontvanger (URN) van het bericht in BerichtenAPI",
       onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus geen herlevering.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 6)",
     },
   },
   {
     key: "vtbberichttype", name: "Berichttype whitelist", short: "Berichttype whitelist", active: true,
-    subtitle: "Berichtenbox-code van het berichttype in Open VTB",
+    subtitle: "Berichtenbox-code van het berichttype in BerichtenAPI",
     details: {
       what: "Staat de Berichtenbox-code (mijnOverheidBerichtenboxType) van het berichttype op de whitelist? Het OMC haalt het berichttype op via de link op het bericht. Geldt voor de Berichtenbox én de terugval.",
       config: "ZGW_WHITELIST_VTBMESSAGE_TYPES",
-      onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
+      onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus NotificatieAPI biedt het niet opnieuw aan.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 7)",
     },
   },
@@ -192,7 +192,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "mijnOverheidBerichtenbox op het berichttype → Berichtenbox, anders e-mail of brief",
     details: {
       what: "Hoort het bericht in de MijnOverheid Berichtenbox? Zo ja: naar de Berichtenbox. Zo nee: terugval naar digitale post (e-mail), en zonder e-mailadres een brief naar het adres uit de BRP.",
-      config: "Het berichttype in Open VTB; BRP voor het briefadres",
+      config: "Het berichttype in BerichtenAPI; BRP voor het briefadres",
       onFail: "Geen afkeuring: deze stap kiest alleen het kanaal. Weigert Notify NL de Berichtenbox-verzending, dan volgt dezelfde terugval.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 8), SendDigitalePostFallbackAsync",
     },
@@ -201,8 +201,8 @@ export const CHECK_NODES: ArchitectureNode[] = [
     key: "mobbemailadres", name: "E-mailadres bekend", short: "E-mailadres bekend", active: true,
     subtitle: "Terugval 1: digitale post per e-mail",
     details: {
-      what: "Heeft de partij een e-mailadres in OpenKlant? Dan gaat het bericht als digitale post per e-mail. Zo niet, of weigert Notify NL die e-mail, dan volgt een brief.",
-      config: "Digitale adressen van de partij in OpenKlant · NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",
+      what: "Heeft de partij een e-mailadres in KlantAPI? Dan gaat het bericht als digitale post per e-mail. Zo niet, of weigert Notify NL die e-mail, dan volgt een brief.",
+      config: "Digitale adressen van de partij in KlantAPI · NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX",
       onFail: "Geen afkeuring: terugval naar een brief.",
       source: "MessageBoxScenarioImplementation.SendDigitalePostFallbackAsync",
     },
@@ -222,7 +222,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "CheckIfInitiatorIsNaturalPersonAsync — MijnZaken",
     details: {
       what: "Is de initiator van de zaak een natuurlijk persoon? Alleen burgers krijgen MijnZaken-berichten.",
-      config: "De rol initiator van de zaak in OpenZaak",
+      config: "De rol initiator van de zaak in ZaakAPI",
       onFail: "Overgeslagen: het event wordt niet doorgestuurd naar MijnOverheid.",
       source: "MijnOverheidForwarder.VerifyNaturalPersonWithTraceAsync",
     },
@@ -232,7 +232,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "laatstGemuteerd/laatstGeopend vs. event-tijd",
     details: {
       what: "Is het event niet ouder dan de laatste wijziging (laatstGemuteerd) of opening (laatstGeopend) van de zaak? Zo komt een oud event nooit over een nieuwere stand heen.",
-      config: "laatstGemuteerd / laatstGeopend op de zaak in OpenZaak",
+      config: "laatstGemuteerd / laatstGeopend op de zaak in ZaakAPI",
       onFail: "Overgeslagen: het verouderde event wordt niet doorgestuurd.",
       source: "MijnOverheidForwarder.HandleMutatedAsync / HandleOpenedAsync",
     },
@@ -252,7 +252,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     subtitle: "product.gepubliceerd",
     details: {
       what: "Is het product gepubliceerd? Een product dat (nog) niet getoond wordt, wordt ook niet aangekondigd.",
-      config: "Het veld gepubliceerd op het product in Open Product",
+      config: "Het veld gepubliceerd op het product in ProductenAPI",
       onFail: "Afgebroken (206).",
       source: "ProductScenarioImplementation.ValidateProductIsPublished",
     },
@@ -291,7 +291,7 @@ export const CHANNEL_NODES: ArchitectureNode[] = [
 ];
 
 export const CONFIRMATION_NODES: ArchitectureNode[] = [
-  { key: "contactmoment", name: "Contactmoment", subtitle: "Vastgelegd in Open Klant", active: true },
+  { key: "contactmoment", name: "Contactmoment", subtitle: "Vastgelegd in de KlantAPI", active: true },
   { key: "archief", name: "Archief", subtitle: "Langetermijnopslag bevestigingen", active: false },
   { key: "contactherstel", name: "Contact herstel", subtitle: "Terugvalkanaal bij falen", active: false },
 ];
