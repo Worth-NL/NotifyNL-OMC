@@ -7,6 +7,7 @@ using NUnit.Framework;
 using WebQueries.DataQuerying.Adapter.Interfaces;
 using WebQueries.DataSending.Models.DTOs;
 using WebQueries.DataQuerying.Models.Responses;
+using WebQueries.MOBB.Models;
 using WebQueries.Print.Models;
 using WebQueries.Producten.Models;
 using WebQueries.Register.Interfaces;
@@ -290,6 +291,196 @@ namespace WebQueries.Tests.Unit.Register.v2
                 Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
                 Assert.That(actualResult, Does.Contain(
                     "\"metadata\":{\"originalResourceUrl\":\"https://openzaak.test/zaken/api/v1/statussen/66666666-6666-6666-6666-666666666666\"}"));
+            });
+        }
+
+        [Test]
+        public void GetNewCreateContactMomentJsonBody_SubjectTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            NotifyReference reference = s_reference;
+            reference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+            reference.SubjectTypeUri = new Uri("https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666");
+
+            // Act
+            string actualResult = CreateService().GetNewCreateContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666\""));
+            });
+        }
+
+        [Test]
+        public void GetNewCreateContactMomentJsonBody_SubjectTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Arrange
+            NotifyReference reference = s_reference;
+            reference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+
+            // Act
+            string actualResult = CreateService().GetNewCreateContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+        }
+        #endregion
+
+        #region GetProductContactMomentJsonBody (hoofdOnderwerpType)
+        [Test]
+        public void GetProductContactMomentJsonBody_ProductTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            ProductNotifyReference reference = s_productReference;
+            reference.ProductTypeUri = new Uri("https://test.domain/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444");
+
+            // Act
+            string actualResult = CreateService().GetProductContactMomentJsonBody(reference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://test.domain/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444\""));
+            });
+        }
+
+        [Test]
+        public void GetProductContactMomentJsonBody_ProductTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Act
+            string actualResult = CreateService().GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+        }
+        #endregion
+
+        #region GetMessageBoxContactMomentJsonBody
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_MessageTypeUriSupplied_IncludesHoofdOnderwerpType()
+        {
+            // Arrange
+            var reference = new MessageBoxNotifyReference
+            {
+                MessageTypeUri = new Uri("https://openvtb.test/berichten/api/v1/berichttypen/33333333-3333-3333-3333-333333333333")
+            };
+
+            // Act
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(reference, NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain(
+                    "\"hoofdOnderwerpType\":\"https://openvtb.test/berichten/api/v1/berichttypen/33333333-3333-3333-3333-333333333333\""));
+            });
+        }
+
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_MessageTypeUriAbsent_HoofdOnderwerpTypeIsEmptyString()
+        {
+            // Act: a reference minted before the BerichtType was carried along
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.DoesNotThrow(() => System.Text.Json.JsonDocument.Parse(actualResult));
+                Assert.That(actualResult, Does.Contain("\"hoofdOnderwerpType\":\"\""));
+            });
+        }
+        #endregion
+
+        #region verdereActieOndernomen
+        private static bool FurtherActionTaken(string json)
+            => System.Text.Json.JsonDocument.Parse(json).RootElement
+                .GetProperty("klantcontact").GetProperty("verdereActieOndernomen").GetBoolean();
+
+        [Test]
+        public void ContactMomentJsonBody_NonMobbFlows_VerdereActieOndernomen_IsAlwaysFalse()
+        {
+            // Arrange
+            NotifyReference zaakReference = s_reference;
+            zaakReference.Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") };
+            ITelemetryService service = CreateService();
+
+            // Act & Assert: the zaak, taak, print and product flows never try another channel themselves
+            Assert.Multiple(() =>
+            {
+                Assert.That(FurtherActionTaken(service.GetNewCreateContactMomentJsonBody(zaakReference, NotifyMethods.Email, ["Subject", "Body", "false"])), Is.False);
+                Assert.That(FurtherActionTaken(service.GetPrintContactMomentJsonBody(new PrintNotifyReference(), NotifyMethods.Letter, ["Subject", "Body", "false"])), Is.False);
+                Assert.That(FurtherActionTaken(service.GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", "Body", "false"])), Is.False);
+            });
+        }
+
+        [TestCase("true", true)]
+        [TestCase("false", false)]
+        public void GetMessageBoxContactMomentJsonBody_VerdereActieOndernomen_FollowsTheCaller(string furtherActionTaken, bool expected)
+        {
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "false", string.Empty, furtherActionTaken]);
+
+            Assert.That(FurtherActionTaken(actualResult), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_VerdereActieOndernomenNotSupplied_IsFalse()
+        {
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(
+                new MessageBoxNotifyReference(), NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            Assert.That(FurtherActionTaken(actualResult), Is.False);
+        }
+        #endregion
+
+        #region Inhoud length
+        private static readonly string s_longBody = new('x', 1500);
+
+        private static IEnumerable<TestCaseData> EveryContactMomentBuilder()
+        {
+            var zaakReference = new NotifyReference
+            {
+                CaseId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                PartyId = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Notification = new NotificationEvent { ResourceUri = new Uri("https://openzaak.test/zaken/api/v1/statussen/1") }
+            };
+
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetNewCreateContactMomentJsonBody(zaakReference, NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("Zaak");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetPrintContactMomentJsonBody(new PrintNotifyReference(), NotifyMethods.Letter, ["Subject", s_longBody, "true"])))
+                .SetName("Print");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetProductContactMomentJsonBody(s_productReference, NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("Product");
+            yield return new TestCaseData(new Func<ITelemetryService, string>(service =>
+                service.GetMessageBoxContactMomentJsonBody(new MessageBoxNotifyReference(), NotifyMethods.Email, ["Subject", s_longBody, "true"])))
+                .SetName("MOBB");
+        }
+
+        [TestCaseSource(nameof(EveryContactMomentBuilder))]
+        public void ContactMomentJsonBody_BodyLongerThan1000_IsCutTo1000EndingInThreeDots(Func<ITelemetryService, string> build)
+        {
+            // Act
+            string actualResult = build(CreateService());
+
+            // Assert
+            string inhoud = System.Text.Json.JsonDocument.Parse(actualResult)
+                .RootElement.GetProperty("klantcontact").GetProperty("inhoud").GetString()!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(inhoud, Has.Length.EqualTo(1000));
+                Assert.That(inhoud, Does.EndWith("..."));
+                Assert.That(inhoud, Does.Not.Contain("…"));
             });
         }
         #endregion

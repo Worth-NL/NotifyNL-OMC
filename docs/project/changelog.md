@@ -2,6 +2,18 @@
 
 ---
 
+## v2.3.2
+
+- **Vereist Open VTB 0.2.0; 0.1.0 wordt niet meer ondersteund.** Het `berichtType` van een Bericht is nu een link naar het BerichtType. Het OMC haalt dat berichttype op en leest daar de Berichtenbox-code (`mijnOverheidBerichtenboxType`) en de MOBB-geschiktheid (`mijnOverheidBerichtenbox`) uit. `ZGW_WHITELIST_VTBMESSAGE_TYPES` bevat nog steeds dezelfde codes van 8 tekens. Een Bericht zonder `berichtType` wordt verworpen met een 2xx; een berichttype dat niet opgehaald kan worden, wordt opnieuw geprobeerd
+- Alle bijlagen van een Bericht gaan nu mee: Open VTB 0.2.0 kent geen `isBerichtTypeBijlage` meer, dus er wordt niets meer op die vlag overgeslagen
+- Voegt `((zaak.resultaat.resultaatType.omschrijvingGeneriek))` toe aan de personalisatie van zaak afgesloten, naast de bestaande `((zaak.resultaat.resultaatType.omschrijving))`. Een template kan zo de voor de burger leesbare omschrijving van het resultaat tonen in plaats van de interne. Beide zijn nu ook beschikbaar in de brief. Bestaande templates blijven ongewijzigd werken
+- **Wijzigt welk digitaal adres gekozen wordt**, in elk scenario: een adres gekoppeld aan de zaak, dan het `voorkeursDigitaalAdres` van de partij, dan een adres met `isStandaardAdres`, dan een adres met `referentie` `portaalvoorkeur` (zoals Den Haag dat vastlegt). Bij de laatste twee wint een e-mailadres van een telefoonnummer. Een adres dat aan geen van deze voldoet, wordt niet meer gekozen omdat het toevallig het eerste e-mailadres of telefoonnummer is: zo'n partij heeft nu geen bruikbaar digitaal adres (Worth-NL/notifynl#100)
+- Vult `verdereActieOndernomen` op elk klantcontact. In de Berichtenbox-flow voert het OMC de terugval nu uit vóórdat het de mislukte aflevering registreert, en is het `true` alleen als NotifyNL het volgende kanaal heeft aangenomen; een terugval die meteen mislukt (geen BRP-adres, brief geweigerd) geeft `false`, het record dat om handmatige opvolging vraagt. Het is ook `false` zodra een brief mislukte of een aflevering slaagde. Alle andere flows sturen `false`: daar onderneemt het OMC zelf geen vervolgactie. OpenKlant-versies vóór 2.18.0 negeren het veld
+- Kapt de `inhoud` van een klantcontact in elke flow af op de 1000 tekens van OpenKlant, eindigend op drie gewone punten (`...`), in plaats van alleen in de Berichtenbox-flow en zonder markering. Een langer bericht liet de registratie mislukken. Bij een mislukte productlevering blijft de `Reden:` volledig staan; de berichttekst ervoor wordt ingekort
+- Vult `hoofdOnderwerpType` op het klantcontact: de zaaktype-URL bij zaak aangemaakt, gewijzigd en afgesloten en bij taak toegewezen (het zaaktype van de gekoppelde zaak), de URL van het berichttype bij de Berichtenbox-flow en de terugval naar e-mail en brief, en de URL van het producttype bij producten. Open Product geeft alleen de uuid van het producttype, dus die URL wordt opgebouwd uit `ZGW_ENDPOINT_OPENPRODUCTEN` (`…/producten/api/v1` wordt `…/producttypen/api/v1/producttypen/{uuid}`). Zonder type is het een lege string. OpenKlant-versies vóór 2.18.0 negeren het veld
+
+---
+
 ## v2.3.1
 
 - Herontwerpt het dashboard `/status/flow` naar de "Stroom"-weergave van OMC3: vaste kolommen (Invoer → OMC → Uitvoer → Afleverbevestiging) met de registers in één rij eronder, in plaats van een automatisch geplaatste graaf waarvan de lijnen met elk scenario meer kruisten

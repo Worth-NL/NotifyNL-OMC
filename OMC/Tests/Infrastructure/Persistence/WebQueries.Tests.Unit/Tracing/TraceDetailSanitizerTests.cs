@@ -57,7 +57,11 @@ namespace WebQueries.Tests.Unit.Tracing
 
             string? result = TraceDetailSanitizer.Sanitize(detail);
 
-            Assert.That(result!.Length, Is.LessThanOrEqualTo(301));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result!.Length, Is.EqualTo(303));
+                Assert.That(result, Does.EndWith("..."));
+            });
         }
 
         [TestCase(null)]

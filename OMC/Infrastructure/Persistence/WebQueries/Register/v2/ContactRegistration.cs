@@ -12,7 +12,6 @@ using WebQueries.Versioning.Interfaces;
 using ZgwModels.Enums;
 using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
-using ZgwModels.Mapping.Models.POCOs.OpenZaak;
 
 namespace WebQueries.Register.v2
 {
@@ -49,16 +48,16 @@ namespace WebQueries.Register.v2
             Omc = omc;
         }
 
-        // TODO: Collapse the five Get*ContactMomentJsonBody builders onto one.
+        // TODO: Collapse the four Get*ContactMomentJsonBody builders onto one.
         //
         // They emit the same document. The klantcontact core, the betrokkene block, the positional
         // messages[] contract and the four-field onderwerpobjectidentificator are identical in all of
         // them; what actually varies is the objectId source, two configuration keys, whether
         // hoofdOnderwerpType is emitted, where originalResourceUrl comes from, and MOBB prefixing its
-        // subject with a channel label. That is a small record passed to one builder, not five copies.
+        // subject with a channel label. That is a small record passed to one builder, not four copies.
         //
         // The copies have already drifted, and none of it was decided:
-        //  - print, MOBB and product escape their values with JsonSerializer; the zaak and v1 bodies
+        //  - print and product escape their values with JsonSerializer; the zaak and MOBB bodies
         //    interpolate configuration straight into hand-written quotes, so a quote or backslash in
         //    VARIABLES_OPENKLANT_* silently produces malformed JSON
         //  - indicatieContactGelukt is emitted unquoted and defaults to "true" in print and product, and
@@ -70,14 +69,14 @@ namespace WebQueries.Register.v2
         // Each new scenario copies whichever neighbour it landed next to and inherits that neighbour's
         // accidents, so this gets worse per scenario rather than staying flat.
         //
-        // Order matters when picking this up: only GetPrintContactMomentJsonBody has tests. Characterise
-        // the other four first, or unifying them quietly changes what every existing scenario writes to
-        // OpenKlant.
+        // Order matters when picking this up: the builders' tests check single fields, not the whole document.
+        // Characterise each builder's full output first, or unifying them quietly changes what every
+        // existing scenario writes to OpenKlant.
 
         #region Polymorphic
         /// <inheritdoc cref="ITelemetryService.GetNewCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         string ITelemetryService.GetNewCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages) // CaseStatus is only used for v1 implementation
+            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages)
         {
             string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
             string userMessageBody = messages.Count > 1 ? messages[1] : string.Empty;
@@ -86,18 +85,21 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.Notification.ResourceUri.AbsoluteUri);
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.SubjectTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +                                              // Fixed: added comma
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +                                 // Fixed: interpolated variable with ISO 8601 format
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The zaaktype of the onderwerpobject
                    $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The specific resource (e.g. status) the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
@@ -144,7 +146,7 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl.AbsoluteUri);
             string safeHoofdOnderwerpType = JsonSerializer.Serialize(reference.SubjectObjectTypeUri?.AbsoluteUri ?? string.Empty);
@@ -164,6 +166,7 @@ namespace WebQueries.Register.v2
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
@@ -193,23 +196,15 @@ namespace WebQueries.Register.v2
         private static string Fallback(string supplied, string configured)
             => string.IsNullOrWhiteSpace(supplied) ? configured : supplied;
 
-        /// <inheritdoc cref="ITelemetryService.GetCreateContactMomentJsonBody(NotifyReference, NotifyMethods, IReadOnlyList{string}, CaseStatus?)"/>
-        string ITelemetryService.GetCreateContactMomentJsonBody(
-            NotifyReference reference, NotifyMethods notificationMethod, IReadOnlyList<string> messages, CaseStatus? caseStatus) // CaseStatus is only used for v1 implementation
-        {
-            string userMessageSubject = messages.Count > 0 ? messages[0] : string.Empty;
-            string userMessageBody    = messages.Count > 1 ? messages[1] : string.Empty;
-            string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
-
-            return $"{{" +
-                     $"\"kanaal\":\"{notificationMethod.ToKanaal()}\"," +              // ENG: Channel of communication (notification)
-                     $"\"onderwerp\":\"{userMessageSubject}\"," +           // ENG: Subject (of the message to be sent to the user)
-                     $"\"inhoud\":\"{userMessageBody}\"," +                 // ENG: Content (of the message to be sent to the user)
-                     $"\"indicatieContactGelukt\":{isSuccessfullySent}," +  // ENG: Indication of successful contact
-                     $"\"taal\":\"nl\"," +                                  // ENG: Language (of the notification)
-                     $"\"vertrouwelijk\":false" +                           // ENG: Confidentiality (of the notification)
-                   $"}}";
-        }
+        /// <summary>
+        /// The klantcontact's "hoofdOnderwerpType": the type's URL, or an empty string when there is none.
+        /// </summary>
+        /// <remarks>
+        ///   OpenKlant stores it as a URL field that may be blank, so an empty string is valid and anything that is
+        ///   not a URL is not. OpenKlant versions before 2.18.0 do not know the field and ignore it.
+        /// </remarks>
+        private static string HoofdOnderwerpType(Uri? typeUri)
+            => typeUri.IsNullOrDefault() ? string.Empty : typeUri.AbsoluteUri;
 
         /// <inheritdoc cref="ITelemetryService.GetProductContactMomentJsonBody(ProductNotifyReference, NotifyMethods, IReadOnlyList{string})"/>
         /// <remarks>
@@ -229,7 +224,7 @@ namespace WebQueries.Register.v2
 
             // Escape string values safely
             string safeSubject = JsonSerializer.Serialize(userMessageSubject);
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
             string safeOriginalResourceUrl = JsonSerializer.Serialize(reference.OriginalResourceUrl);
             string safeObjectId = JsonSerializer.Serialize(reference.ProductId.ToString());
@@ -239,15 +234,18 @@ namespace WebQueries.Register.v2
                 this._configuration.AppSettings.Variables.OpenKlant.CodeRegister_Product());
             string safeCodeSoortObjectId = JsonSerializer.Serialize(
                 this._configuration.AppSettings.Variables.OpenKlant.CodeObjectTypeId());
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.ProductTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":false," +                                  // OMC takes no further action of its own after this contact
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
                    $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}," +                     // The producttype of the product
                    $"\"metadata\":{{\"originalResourceUrl\":{safeOriginalResourceUrl}}}" +   // The product the triggering notification was about
                    $"}}," +
                    $"\"betrokkene\":{{" +
@@ -309,23 +307,30 @@ namespace WebQueries.Register.v2
             string isSuccessfullySent = messages.Count > 2 ? messages[2] : string.Empty;
             DateTime sentAt = messages.Count > 3 && DateTime.TryParse(messages[3], out DateTime parsedDate) ? parsedDate : DateTime.Now;
 
+            // "true" only when the caller is about to try the next channel for this Bericht; anything else,
+            // including a missing value, means OMC does nothing more of its own for this contact
+            string safeFurtherActionTaken = messages.Count > 4 && messages[4] == "true" ? "true" : "false";
+
             // Escape string values safely
             // Prefixes the subject with a short channel label (e.g. "[MOBB]", "[MOBB-fallback: e-mail]") so
             // the multiple possible outputs for the same Bericht (MOBB / e-mail fallback / letter fallback)
             // are clearly distinguishable in a portal listing a Bericht's contactmomenten - see the BPMN's
             // shared success-contactmoment step's own annotation ("meerdere outputs... duidelijk weergegeven").
             string safeSubject = JsonSerializer.Serialize($"[{BuildChannelLabel(reference, notificationMethod)}] {userMessageSubject}");
-            string safeBody = JsonSerializer.Serialize(userMessageBody);
+            string safeBody = JsonSerializer.Serialize(ContactMomentContent.Truncate(userMessageBody));
             string safeKanaal = JsonSerializer.Serialize(notificationMethod.ToKanaal());
+            string safeHoofdOnderwerpType = JsonSerializer.Serialize(HoofdOnderwerpType(reference.MessageTypeUri));
 
             return $"{{\"klantcontact\":{{" +
                    $"\"kanaal\":{safeKanaal}," +                                             // ENG: Channel of communication (notification)
                    $"\"onderwerp\":{safeSubject}," +                                         // ENG: Subject (of the message to be sent to the user)
                    $"\"inhoud\":{safeBody}," +                                               // ENG: Content (of the message to be sent to the user)
                    $"\"indicatieContactGelukt\":{isSuccessfullySent}," +                     // ENG: Indication of successful contact
+                   $"\"verdereActieOndernomen\":{safeFurtherActionTaken}," +                // Whether OMC tries another channel next (MOBB fallback chain)
                    $"\"taal\":\"nl\"," +                                                     // ENG: Language (of the notification)
                    $"\"vertrouwelijk\":true," +
-                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"" +
+                   $"\"plaatsgevondenOp\":\"{sentAt:O}\"," +
+                   $"\"hoofdOnderwerpType\":{safeHoofdOnderwerpType}" +                      // The Bericht's BerichtType
                    $"}}," +
                    $"\"betrokkene\":{{" +
                    $"\"wasPartij\":{{\"uuid\":\"{reference.PartyId}\"}}," +

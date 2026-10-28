@@ -76,6 +76,17 @@ namespace WebQueries.DataSending.Models.DTOs
         public long? SentAtUnixMs { get; set; }
 
         /// <summary>
+        /// The type of the onderwerpobject (e.g. the zaaktype), registered as the klantcontact's "hoofdOnderwerpType".
+        /// </summary>
+        /// <remarks>
+        ///   Deliberately not [JsonRequired], for the same reason as <see cref="Mobb"/>: references minted before
+        ///   this field existed must keep deserializing on their later delivery callbacks.
+        /// </remarks>
+        [JsonInclude]
+        [JsonPropertyOrder(7)]
+        public Uri? SubjectTypeUri { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NotifyReference"/> struct.
         /// </summary>
         public NotifyReference()

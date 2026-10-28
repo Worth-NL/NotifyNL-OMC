@@ -149,6 +149,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         [TestCase(DistributionChannels.Sms, false)]
         [TestCase(DistributionChannels.Letter, false)]
         [TestCase(DistributionChannels.Email, true)]
+        [TestCase(DistributionChannels.Letter, true)]
         public async Task GetPersonalizationAsync_ReturnsExpectedPersonalization(
             DistributionChannels testDistributionChannel, bool hasResultType)
         {
@@ -167,8 +168,8 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
                 string actualSerialized = JsonSerializer.Serialize(actualResult.Content.First().Personalization);
                 string expectedResultTypeName = hasResultType ? "Gegrond" : string.Empty;
+                string expectedResultTypeGenericName = hasResultType ? "Toegekend" : string.Empty;
 
-                // NOTE: Letter personalization in CaseClosedScenario does NOT include the resultType key
                 bool isLetter = testDistributionChannel == DistributionChannels.Letter;
 
                 string expectedSerialized =
@@ -185,8 +186,9 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                           : "") +
                       $"\"zaak.identificatie\":\"{CaseId}\"," +
                       $"\"zaak.omschrijving\":\"\"," +
-                      $"\"status.omschrijving\":\"Afgehandeld\"" +
-                      (!isLetter ? $",\"zaak.resultaat.resultaatType.omschrijving\":\"{expectedResultTypeName}\"" : "") +
+                      $"\"status.omschrijving\":\"Afgehandeld\"," +
+                      $"\"zaak.resultaat.resultaatType.omschrijving\":\"{expectedResultTypeName}\"," +
+                      $"\"zaak.resultaat.resultaatType.omschrijvingGeneriek\":\"{expectedResultTypeGenericName}\"" +
                     $"}}";
 
                 Assert.That(actualSerialized, Is.EqualTo(expectedSerialized));
@@ -288,7 +290,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             {
                 this._mockedQueryContext
                     .Setup(mock => mock.GetCaseResultTypeAsync(It.IsAny<Uri>()))
-                    .ReturnsAsync(new CaseResultType { Name = "Gegrond" });
+                    .ReturnsAsync(new CaseResultType { Name = "Gegrond", GenericName = "Toegekend" });
             }
 
             this._mockedQueryContext

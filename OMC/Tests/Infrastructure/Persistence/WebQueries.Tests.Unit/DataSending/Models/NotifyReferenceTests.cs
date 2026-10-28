@@ -43,5 +43,22 @@ namespace WebQueries.Tests.Unit.DataSending.Models
             NotifyReference reference = new() { CaseId = null };
             Assert.That(reference.CaseId, Is.Null);
         }
+
+        [Test]
+        public void Deserialize_ReferenceMintedBeforeSubjectTypeUri_StillDeserializes()
+        {
+            // A reference echoed back by "Notify NL" for a notification sent before this field existed
+            System.Text.Json.Nodes.JsonObject json = System.Text.Json.JsonSerializer.SerializeToNode(
+                new NotifyReference { PartyId = Guid.Parse("11111111-2222-3333-4444-555555555555") })!.AsObject();
+            json.Remove(nameof(NotifyReference.SubjectTypeUri));
+
+            NotifyReference reference = System.Text.Json.JsonSerializer.Deserialize<NotifyReference>(json);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(reference.PartyId, Is.EqualTo(Guid.Parse("11111111-2222-3333-4444-555555555555")));
+                Assert.That(reference.SubjectTypeUri, Is.Null);
+            });
+        }
     }
 }

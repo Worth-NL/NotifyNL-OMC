@@ -8,14 +8,24 @@ Het OMC integreert met de Nederlandse ZGW (Zaakgericht Werken) standaard, gedefi
 
 | API | Doel | Authenticatie |
 |---|---|---|
-| **Open Notificaties** | Eventabonnementen en eventaflevering | JWT (inkomend) |
+| **Open Notificaties** | Eventabonnementen en eventaflevering, ook van de CloudEvents van Open VTB | JWT (inkomend) |
 | **Open Zaak** (Zaken) | Zaakgegevens, statussen, zaaktypen | JWT (uitgaand) |
 | **Open Zaak** (Besluiten) | Besluiten, besluittypen | JWT (uitgaand) |
 | **Open Klant** | Contactgegevens burgers, digitale adressen | API-sleutel (v2) |
 | **Objecten** | Taken, berichten, KTO-objecten | API-sleutel |
 | **ObjectTypen** | Objecttype-definities | API-sleutel |
 | **Open Product** | Producten en producttypen, inclusief de eigenaren van een product | API-sleutel |
+| **Open VTB** (Berichten) | Berichten en berichttypen voor de Berichtenbox (MOBB) | API-sleutel |
 | **Contactmomenten / Klantinteracties** | Aflevergeschiedenis terugschrijven | JWT (uitgaand) |
+
+### Vereiste versies
+
+| Component | Versie | Waarvoor |
+|---|---|---|
+| **Open VTB** | 0.2.0 of hoger | Berichtenbox (MOBB): het berichttype is een aparte resource met de Berichtenbox-code en de MOBB-geschiktheid. 0.1.0 wordt niet meer ondersteund |
+| **Open Klant** | 2.4.0 of hoger | `isStandaardAdres` bij de keuze van het digitale adres. Zonder dat veld slaat het OMC die stap over |
+| **Open Klant** | 2.16.0 of hoger | Vestigingen als eigenaar van een product (`subIdentificatorVan`) |
+| **Open Klant** | 2.18.0 of hoger | `hoofdOnderwerpType` en `verdereActieOndernomen` op het klantcontact. Oudere versies negeren deze velden; registratie werkt dan nog, maar zonder die twee |
 
 ---
 

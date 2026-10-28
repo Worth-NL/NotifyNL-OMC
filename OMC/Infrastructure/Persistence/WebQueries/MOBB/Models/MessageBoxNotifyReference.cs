@@ -67,6 +67,17 @@ namespace WebQueries.MOBB.Models
         public bool WasGefaaldeNotificatie { get; set; } = false;
 
         /// <summary>
+        /// The Bericht's BerichtType (Open VTB), registered as the klantcontact's "hoofdOnderwerpType".
+        /// </summary>
+        /// <remarks>
+        ///   Deliberately not [JsonRequired]: references minted before this field existed are still echoed back by
+        ///   "Notify NL" on later delivery callbacks, and must keep deserializing.
+        /// </remarks>
+        [JsonInclude]
+        [JsonPropertyOrder(5)]
+        public Uri? MessageTypeUri { get; set; } = null;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MessageBoxNotifyReference"/> struct.
         /// </summary>
         public MessageBoxNotifyReference()

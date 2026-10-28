@@ -50,6 +50,8 @@ Het OMC integreert met de volgende ZGW / Open Services:
 | **Besluiten** | Onderdeel van Open Zaak | Besluiten gekoppeld aan zaken |
 | **Objecten** | [maykinmedia/objects-api](https://github.com/maykinmedia/objects-api) | Taken, berichten, aangepaste objecten |
 | **ObjectTypen** | [maykinmedia/objecttypes-api](https://github.com/maykinmedia/objecttypes-api) | Objecttype-definities |
+| **Open VTB** | [maykinmedia/open-vtb](https://github.com/maykinmedia/open-vtb) | Berichten en berichttypen voor de Berichtenbox (vanaf 0.2.0) |
+| **Open Product** | [maykinmedia/open-producten](https://github.com/maykinmedia/open-producten) | Producten, producttypen en hun eigenaren |
 | **Klantinteracties** | [vng-realisatie/klantinteracties](https://vng-realisatie.github.io/klantinteracties/) | Contactmomenten (v2, gebruikt in werkwijze v2) |
 
 ---
@@ -64,6 +66,9 @@ Het OMC integreert met de volgende ZGW / Open Services:
 | **Taak toegewezen** | Een taak wordt toegewezen aan een burger of organisatie |
 | **Besluit genomen** | Een besluit dat een burger raakt wordt genomen |
 | **Bericht ontvangen** | Een bericht wordt geplaatst in de berichtenbox van de burger |
+| **Berichtenbox (MOBB)** | Open VTB publiceert een bericht; het OMC stuurt het naar de MijnOverheid Berichtenbox, met e-mail en brief als terugval |
+| **Print (printstraat)** | Een printopdracht wordt als object geregistreerd |
+| **Product aangemaakt** | Open Product maakt een product aan; elke eigenaar krijgt een e-mail |
 
 ---
 

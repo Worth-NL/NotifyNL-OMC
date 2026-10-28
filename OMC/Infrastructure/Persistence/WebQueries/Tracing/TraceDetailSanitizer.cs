@@ -52,7 +52,7 @@ namespace WebQueries.Tracing
             result = LongDigitRun().Replace(result, Masked);
 
             return result.Length > MaxLength
-                ? $"{result[..MaxLength]}…"
+                ? $"{result[..MaxLength]}..."
                 : result;
         }
 

@@ -159,12 +159,34 @@ namespace WebQueries.MOBB
                 TraceContext.Emit("vtbberichttekst", "abort", "bericht has no text");
 
                 // Reported as a (no-op) success, like the non-actionable CloudEvent type above: this is a
-                // permanent condition, so a Failure here would surface as HTTP 412 and make Open VTB
+                // permanent condition, so a Failure here would surface as HTTP 412 and make Open Notificaties
                 // redeliver the same Bericht forever. Only genuinely retryable problems return Failure.
                 return HttpRequestResponse.Success("Dropped: message text is empty or missing.");
             }
 
             TraceContext.Emit("vtbberichttekst", "ok", "bericht has text");
+
+            // Step 5b: Fetch its BerichtType - since Open VTB 0.2.0 the Bericht only links to it, while the
+            // Berichtenbox code and eligibility the steps below depend on live there
+            if (messageData.MessageTypeUri.IsNullOrDefault())
+            {
+                _logger.LogWarning("Message {MessageId}: has no berichtType; dropping (no fallback).", messageUuid);
+                TraceContext.Emit("vtbberichttype", "abort", "bericht has no berichttype");
+
+                // Permanent condition - see the comment on the empty-text drop above.
+                return HttpRequestResponse.Success("Dropped: message has no berichtType.");
+            }
+
+            VtbMessageType messageTypeData;
+            try
+            {
+                messageTypeData = await queryContext.GetVtbMessageTypeAsync(messageData.MessageTypeUri);
+            }
+            catch (Exception exception)
+            {
+                TraceContext.Emit("vtb", "fail", exception.Message);
+                throw;
+            }
 
             // Step 6: Resolve the recipient's BSN and OpenKlant party - needed regardless of MOBB vs. fallback
             string? recipientBsn = ExtractBsnFromUrn(messageData.RecipientUrn);
@@ -203,7 +225,7 @@ namespace WebQueries.MOBB
                 messageUuid, recipientBsn.Length, partyId);
 
             // Step 7: Whitelist gate - applies regardless of delivery channel
-            string? messageType = messageData.MessageType;
+            string? messageType = messageTypeData.MessageBoxType;
             if (string.IsNullOrEmpty(messageType) ||
                 !_configuration.ZGW.Whitelist.VtbMessage_Types().IsAllowed(messageType))
             {
@@ -220,10 +242,10 @@ namespace WebQueries.MOBB
             TraceContext.Emit("vtbberichttype", "ok", $"berichttype '{messageType}' is whitelisted");
 
             // Step 8: MOBB? - if not eligible, fall back to digitale post (email) or a letter
-            TraceContext.Emit("mobbgeschiktheid", "ok", messageData.IsInMyGovernmentMessageBox
+            TraceContext.Emit("mobbgeschiktheid", "ok", messageTypeData.IsInMyGovernmentMessageBox
                 ? "bericht is for the Berichtenbox"
                 : "not for the Berichtenbox; falling back to digitale post or a letter");
-            if (!messageData.IsInMyGovernmentMessageBox)
+            if (!messageTypeData.IsInMyGovernmentMessageBox)
             {
                 _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
                 return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
@@ -246,7 +268,7 @@ namespace WebQueries.MOBB
             _logger.LogDebug("Message {MessageId}: {Count} usable attachment(s) collected.", messageUuid, notifyAttachments.Count);
 
             // Step 12: Build the reference (compressed & encoded CloudEvent + extras) and send via the MessageBox proxy
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: true);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: true);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -309,7 +331,7 @@ namespace WebQueries.MOBB
                 ["klant.achternaam"] = partyData.Surname
             };
 
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -414,7 +436,7 @@ namespace WebQueries.MOBB
 
             Dictionary<string, object> personalization = GetLetterPersonalization(adressering.Value, messageData, wasGefaaldeNotificatie);
 
-            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, mobb: false, wasGefaaldeNotificatie);
+            string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false, wasGefaaldeNotificatie);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
@@ -616,13 +638,14 @@ namespace WebQueries.MOBB
         /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
         /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
         /// <param name="partyId">The resolved OpenKlant party GUID.</param>
+        /// <param name="messageTypeUri">The Bericht's BerichtType, registered as the klantcontact's "hoofdOnderwerpType".</param>
         /// <param name="mobb">Whether this particular send actually went out via MOBB.</param>
         /// <param name="wasGefaaldeNotificatie">
         ///   Whether a digitale-post (email) attempt failed before this send happened - only meaningful
         ///   for a letter fallback reference; see <see cref="MessageBoxNotifyReference.WasGefaaldeNotificatie"/>.
         /// </param>
         private async Task<string> BuildReferenceAsync(
-            JsonElement cloudEvent, Guid messageUuid, Guid partyId, bool mobb, bool wasGefaaldeNotificatie = false)
+            JsonElement cloudEvent, Guid messageUuid, Guid partyId, Uri messageTypeUri, bool mobb, bool wasGefaaldeNotificatie = false)
         {
             var referenceData = new MessageBoxNotifyReference
             {
@@ -630,7 +653,8 @@ namespace WebQueries.MOBB
                 MessageId = messageUuid,
                 PartyId = partyId,
                 Mobb = mobb,
-                WasGefaaldeNotificatie = wasGefaaldeNotificatie
+                WasGefaaldeNotificatie = wasGefaaldeNotificatie,
+                MessageTypeUri = messageTypeUri
             };
 
             return await _serializer.Serialize(referenceData).CompressGZipAsync(CancellationToken.None);
@@ -680,10 +704,6 @@ namespace WebQueries.MOBB
             {
                 if (documents.Count == MaxAttachments)
                     break;
-
-                // Standard pre-uploaded attachments are not meant for the Berichtenbox
-                if (attachment.IsMessageTypeAttachment)
-                    continue;
 
                 if (string.IsNullOrEmpty(attachment.InformationObjectUrn))
                     continue;

@@ -68,7 +68,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
             CommonPartyData party = await this._queryContext.GetPartyDataAsync(this._case.Uri, caseIdentifier: this._case.Identification);
             TraceContext.Emit("openklant", "ok", $"klant for zaak with id {zaakId} retrieved");
 
-            return new PreparedData(party: party, caseUri: this._case.Uri);
+            return new PreparedData(party: party, caseUri: this._case.Uri, subjectTypeUri: this._case.CaseTypeUri);
         }
         #endregion
 
@@ -96,6 +96,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 s_emailPersonalization["status.omschrijving"] = this._caseStatusType.Name;
 
                 s_emailPersonalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
+                s_emailPersonalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
                 return s_emailPersonalization;
             }
         }
@@ -136,6 +137,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
                 s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
 
                 s_letterPersonalization["status.omschrijving"] = this._caseStatusType.Name;
+
+                s_letterPersonalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
+                s_letterPersonalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
 
                 return s_letterPersonalization;
             }

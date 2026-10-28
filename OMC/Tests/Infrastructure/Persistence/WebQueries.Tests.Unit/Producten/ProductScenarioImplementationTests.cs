@@ -58,6 +58,8 @@ namespace WebQueries.Tests.Unit.Producten
         private const string Portaalvoorkeur = "portaalvoorkeur";
         #endregion
 
+        private Mock<ISerializationService> _mockedSerializer = null!;
+
         [OneTimeSetUp]
         public void SetupTests()
         {
@@ -89,8 +91,8 @@ namespace WebQueries.Tests.Unit.Producten
                 .Setup(mock => mock.GetHttpClient(It.IsAny<string>()))
                 .Returns(this._mockedNotifyClient.Object);
 
-            Mock<ISerializationService> mockedSerializer = new(MockBehavior.Strict);
-            mockedSerializer
+            this._mockedSerializer = new Mock<ISerializationService>(MockBehavior.Strict);
+            this._mockedSerializer
                 .Setup(mock => mock.Serialize(It.IsAny<ProductNotifyReference>()))
                 .Returns("{}");
 
@@ -103,7 +105,7 @@ namespace WebQueries.Tests.Unit.Producten
             this._scenario = new ProductScenarioImplementation(
                 this._mockedDataQuery.Object,
                 this._mockedNotifyClientFactory.Object,
-                mockedSerializer.Object,
+                this._mockedSerializer.Object,
                 this._mockedTelemetry.Object,
                 this._configuration,
                 NullLogger<ProductScenarioImplementation>.Instance);
@@ -604,5 +606,83 @@ namespace WebQueries.Tests.Unit.Producten
 
             Assert.That(exception!.Message, Does.Contain("not whitelisted"));
         }
+
+        #region BuildProductTypeUri
+        private static readonly Guid s_productTypeId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+
+        [TestCase("https://openproduct.test/producten/api/v1")]
+        [TestCase("https://openproduct.test/producten/api/v1/")]
+        [TestCase("https://openproduct.test/PRODUCTEN/api/v1")]
+        public void BuildProductTypeUri_ProductenEndpoint_PointsAtTheSiblingProducttypenApi(string endpoint)
+        {
+            Uri? result = ProductScenarioImplementation.BuildProductTypeUri(endpoint, s_productTypeId);
+
+            Assert.That(result?.AbsoluteUri, Is.EqualTo(
+                "https://openproduct.test/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444"));
+        }
+
+        [Test]
+        public void BuildProductTypeUri_EndpointUnderAPrefix_KeepsThePrefix()
+        {
+            Uri? result = ProductScenarioImplementation.BuildProductTypeUri("https://gemeente.test/openproduct/producten/api/v1", s_productTypeId);
+
+            Assert.That(result?.AbsoluteUri, Is.EqualTo(
+                "https://gemeente.test/openproduct/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444"));
+        }
+
+        [TestCase("https://openproduct.test/api/v1")]
+        [TestCase("https://openproduct.test/producten/api/v2")]
+        [TestCase("")]
+        public void BuildProductTypeUri_EndpointNotEndingInTheProductenPath_GivesNoUrl(string endpoint)
+        {
+            Assert.That(ProductScenarioImplementation.BuildProductTypeUri(endpoint, s_productTypeId), Is.Null);
+        }
+
+        [Test]
+        public async Task ProcessProductAsync_ReferenceCarriesTheProducttypeUrl_ForTheKlantcontactsHoofdOnderwerpTypeAsync()
+        {
+            // Arrange: the test configuration's ZGW_ENDPOINT_OPENPRODUCTEN is "https://test.domain/producten/api/v1"
+            Product product = GetProductWithOwners(new Owner { BsnNumber = TestBsn });
+            product.ProductType = new NestedProductType { Id = s_productTypeId, Code = WhitelistedProductTypeCode, Name = "Parkeervergunning" };
+            SetupProduct(product);
+            SetupPartyFound("bsn", TestBsn);
+
+            ProductNotifyReference? serializedReference = null;
+            this._mockedSerializer
+                .Setup(mock => mock.Serialize(It.IsAny<ProductNotifyReference>()))
+                .Callback<ProductNotifyReference>(reference => serializedReference = reference)
+                .Returns("{}");
+
+            // Act
+            await this._scenario.ProcessProductAsync(GetProductNotification());
+
+            // Assert
+            Assert.That(serializedReference?.ProductTypeUri?.AbsoluteUri, Is.EqualTo(
+                "https://test.domain/producttypen/api/v1/producttypen/44444444-4444-4444-4444-444444444444"));
+        }
+
+        [Test]
+        public void ProductNotifyReference_MintedBeforeProductTypeUri_StillDeserializes()
+        {
+            // A reference echoed back by "Notify NL" for a notification sent before this field existed
+            System.Text.Json.Nodes.JsonObject json = System.Text.Json.JsonSerializer.SerializeToNode(
+                new ProductNotifyReference { ProductId = s_productId, PartyId = Guid.NewGuid() })!.AsObject();
+            json.Remove(nameof(ProductNotifyReference.ProductTypeUri));
+
+            ProductNotifyReference reference = System.Text.Json.JsonSerializer.Deserialize<ProductNotifyReference>(json);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(reference.ProductId, Is.EqualTo(s_productId));
+                Assert.That(reference.ProductTypeUri, Is.Null);
+            });
+        }
+
+        [Test]
+        public void BuildProductTypeUri_NoProducttypeUuid_GivesNoUrl()
+        {
+            Assert.That(ProductScenarioImplementation.BuildProductTypeUri("https://openproduct.test/producten/api/v1", Guid.Empty), Is.Null);
+        }
+        #endregion
     }
 }

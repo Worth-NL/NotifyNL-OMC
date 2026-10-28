@@ -64,6 +64,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private const string TestEmailAddress = "test@email.com";
         private const string TestPhoneNumber = "911";
         private const string CaseId = "ZAAK-2024-00000000001";
+        private static readonly Uri s_caseTypeUri = new("https://openzaak.test/catalogi/api/v1/zaaktypen/66666666-6666-6666-6666-666666666666");
         #endregion
 
         #region TryGetDataAsync()
@@ -159,6 +160,22 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
                 VerifyGetDataMethodCalls(1, 1, 1);
             });
+        }
+
+        [TestCase(DistributionChannels.Email)]
+        [TestCase(DistributionChannels.Sms)]
+        [TestCase(DistributionChannels.Letter)]
+        public async Task TryGetDataAsync_CarriesTheZaaktype_ForTheKlantcontactsHoofdOnderwerpType(DistributionChannels testDistributionChannel)
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeCaseCreatedScenario_TryGetData(
+                s_whitelistedStatusType, testDistributionChannel);
+
+            // Act
+            QueryingDataResponse actualResult = await scenario.TryGetDataAsync(default);
+
+            // Assert
+            Assert.That(actualResult.Content.Single().Reference.SubjectTypeUri, Is.EqualTo(s_caseTypeUri));
         }
         #endregion
 
@@ -282,7 +299,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         {
             this._mockedQueryContext
                 .Setup(mock => mock.GetCaseAsync(It.IsAny<Uri?>()))
-                .ReturnsAsync(new Case { Identification = CaseId });
+                .ReturnsAsync(new Case { Identification = CaseId, CaseTypeUri = s_caseTypeUri });
 
             this._mockedQueryContext
                 .Setup(mock => mock.GetPartyDataAsync(It.IsAny<Uri?>(), It.IsAny<string?>(), It.IsAny<string?>()))

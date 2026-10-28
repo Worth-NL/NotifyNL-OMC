@@ -266,6 +266,13 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <param name="vtbMessageUri">The URI of the message to retrieve.</param>
         /// <returns>The deserialized VTB message data.</returns>
         Task<VtbMessage> GetVtbMessageAsync(Uri vtbMessageUri);
+
+        /// <summary>
+        /// Gets a message type (Vtb BerichtType) from the OpenVTB API by its URI.
+        /// </summary>
+        /// <param name="vtbMessageTypeUri">The URI of the message type to retrieve, as linked from <see cref="VtbMessage.MessageTypeUri"/>.</param>
+        /// <returns>The deserialized VTB message type data.</returns>
+        Task<VtbMessageType> GetVtbMessageTypeAsync(Uri vtbMessageTypeUri);
         #endregion
 
         #region IQueryDocumenten

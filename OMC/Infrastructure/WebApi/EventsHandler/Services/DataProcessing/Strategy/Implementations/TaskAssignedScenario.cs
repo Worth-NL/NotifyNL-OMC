@@ -103,7 +103,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
                 caseIdentifier: this._case.Identification);
             TraceContext.Emit("openklant", "ok", $"klant for zaak with id {taskCaseId} retrieved");
 
-            return new PreparedData(party: party, caseUri: this._case.Uri);
+            return new PreparedData(party: party, caseUri: this._case.Uri, subjectTypeUri: this._case.CaseTypeUri);
         }
         #endregion
 

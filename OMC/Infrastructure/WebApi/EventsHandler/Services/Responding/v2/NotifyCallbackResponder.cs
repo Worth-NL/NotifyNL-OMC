@@ -16,6 +16,7 @@ using WebQueries.Print.Interfaces;
 using WebQueries.Print.Models;
 using WebQueries.Producten.Models;
 using WebQueries.MOBB.Models;
+using WebQueries.Register;
 using WebQueries.Register.Interfaces;
 using WebQueries.Tracing;
 using ZgwModels.Enums;
@@ -343,6 +344,10 @@ namespace EventsHandler.Services.Responding.v2
         /// <remarks>
         ///   The status is the only reason a delivery receipt carries. Without it, a mailbox that does not exist
         ///   and a mailbox that was temporarily full both read as the same generic failure.
+        ///   <para>
+        ///     The body is cut, not the reason, so a long e-mail still fits <see cref="ContactMomentContent.MaxLength"/>
+        ///     with its reason intact.
+        ///   </para>
         /// </remarks>
         private static string AppendFailureReason(string body, FeedbackTypes feedbackType, DeliveryStatuses status)
         {
@@ -360,9 +365,14 @@ namespace EventsHandler.Services.Responding.v2
                 _ => $"bezorgstatus: {status}"
             };
 
-            return string.IsNullOrWhiteSpace(body)
-                ? $"Reden: {reason}"
-                : $"{body}\n\nReden: {reason}";
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                return $"Reden: {reason}";
+            }
+
+            string suffix = $"\n\nReden: {reason}";
+
+            return $"{ContactMomentContent.Truncate(body, ContactMomentContent.MaxLength - suffix.Length)}{suffix}";
         }
 
         /// <summary>
@@ -373,9 +383,17 @@ namespace EventsHandler.Services.Responding.v2
         ///   chain (see <see cref="IMessageBoxScenario.HandleDeliveryFailureAsync"/>) - the "(Permanent)
         ///   Success?" / "Notificatie gelukt?" gateways in the BPMN evaluate this asynchronous delivery
         ///   status, not the synchronous send-call response already handled when the message was first sent.
-        ///   The fallback's own outcome is logged but does not change this method's return value: the HTTP
-        ///   response for this callback still reflects whether the contactmoment registration itself
-        ///   succeeded, independent of whether a fallback send was also attempted.
+        ///   <para>
+        ///     The fallback runs before the contactmoment is registered, so the contactmoment can say whether OMC
+        ///     really took further action ("verdereActieOndernomen"): only when the next channel was handed to
+        ///     "Notify NL". A fallback that fails on the spot - no BRP address, a refused letter, a recipient that
+        ///     does not resolve again - leaves "false", the record that calls for manual follow-up.
+        ///   </para>
+        ///   <para>
+        ///     The HTTP response still reflects whether the registration itself succeeded. When it failed,
+        ///     "Notify NL" retries this callback, and that retry runs the fallback again - nothing recognises the
+        ///     earlier send yet (#247).
+        ///   </para>
         /// </remarks>
         private async Task<HttpRequestResponse> InformUserAboutMessageBoxStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)
         {
@@ -387,38 +405,22 @@ namespace EventsHandler.Services.Responding.v2
 
             NotificationData notificationData = await GetObjectScenarioNotificationDataAsync(notificationMethod, callback.Id);
 
-            HttpRequestResponse result = await _telemetry.ReportMessageBoxCompletionAsync(
+            bool furtherActionTaken = feedbackType == FeedbackTypes.Failure &&
+                                      await ContinueMessageBoxFallbackAsync(reference, notificationMethod);
+
+            return await _telemetry.ReportMessageBoxCompletionAsync(
                 reference,
                 notificationMethod,
                 callback.Recipient,
                 messages: [
                     DetermineUserMessageSubject(_configuration, feedbackType, notificationMethod,
                         notificationData.IsSuccess ? notificationData.Subject : string.Empty),
-                    TruncateContactMomentBody(DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
-                        notificationData.IsSuccess ? notificationData.Body : string.Empty)),
+                    DetermineUserMessageBody(_configuration, feedbackType, notificationMethod,
+                        notificationData.IsSuccess ? notificationData.Body : string.Empty),
                     feedbackType == FeedbackTypes.Success ? True : False,
-                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty
+                    notificationData.IsSuccess ? notificationData.SentAt : string.Empty,
+                    furtherActionTaken ? True : False
                 ]);
-
-            if (feedbackType == FeedbackTypes.Failure)
-            {
-                await ContinueMessageBoxFallbackAsync(reference, notificationMethod);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Caps a MOBB contactmoment's "inhoud" (content) at <see cref="MaxContactMomentBodyLength"/>
-        /// characters, regardless of source channel (MOBB/e-mail/letter).
-        /// </summary>
-        private const int MaxContactMomentBodyLength = 1000;
-
-        private static string TruncateContactMomentBody(string messageText)
-        {
-            return messageText.Length > MaxContactMomentBodyLength
-                ? messageText[..MaxContactMomentBodyLength]
-                : messageText;
         }
 
         /// <summary>
@@ -426,7 +428,11 @@ namespace EventsHandler.Services.Responding.v2
         /// reported failure, and logs the outcome. Never throws - a fallback failure must not break the
         /// callback's own HTTP response to Notify NL.
         /// </summary>
-        private async Task ContinueMessageBoxFallbackAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
+        /// <returns>
+        ///   <see langword="true"/> when the next channel was handed to "Notify NL" (now or by an earlier attempt);
+        ///   <see langword="false"/> when no channel is left or the attempt failed.
+        /// </returns>
+        private async Task<bool> ContinueMessageBoxFallbackAsync(MessageBoxNotifyReference reference, NotifyMethods failedChannel)
         {
             try
             {
@@ -440,6 +446,8 @@ namespace EventsHandler.Services.Responding.v2
                             ? StatusCodes.Status500InternalServerError
                             : StatusCodes.Status201Created
                     });
+
+                return fallbackResult.IsSuccess;
             }
             catch (Exception exception)
             {
@@ -449,6 +457,8 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         StatusCode = StatusCodes.Status500InternalServerError
                     });
+
+                return false;
             }
         }
 

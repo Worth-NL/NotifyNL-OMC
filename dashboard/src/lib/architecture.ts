@@ -143,7 +143,7 @@ export const CHECK_NODES: ArchitectureNode[] = [
     details: {
       what: "Is het CloudEvent een bericht-gepubliceerd? Alleen dan staat het bericht echt klaar. Een bericht-geregistreerd (of een toekomstig type) wordt genegeerd.",
       config: "Vast in de code: nl.overheid.berichten.bericht-gepubliceerd",
-      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open VTB biedt het niet opnieuw aan.",
+      onFail: "Geen actie nodig: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 0)",
     },
   },
@@ -179,9 +179,9 @@ export const CHECK_NODES: ArchitectureNode[] = [
   },
   {
     key: "vtbberichttype", name: "Berichttype whitelist", short: "Berichttype whitelist", active: true,
-    subtitle: "Berichttype van het Open VTB-bericht",
+    subtitle: "Berichtenbox-code van het berichttype in Open VTB",
     details: {
-      what: "Staat het berichttype van het Open VTB-bericht op de whitelist? Geldt voor de Berichtenbox én de terugval.",
+      what: "Staat de Berichtenbox-code (mijnOverheidBerichtenboxType) van het berichttype op de whitelist? Het OMC haalt het berichttype op via de link op het bericht. Geldt voor de Berichtenbox én de terugval.",
       config: "ZGW_WHITELIST_VTBMESSAGE_TYPES",
       onFail: "Bewust niet verstuurd: OMC antwoordt succes, dus Open Notificaties biedt het niet opnieuw aan.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 7)",
@@ -189,10 +189,10 @@ export const CHECK_NODES: ArchitectureNode[] = [
   },
   {
     key: "mobbgeschiktheid", name: "Berichtenbox of terugval", short: "Berichtenbox of terugval", active: true,
-    subtitle: "isInMijnOverheidBerichtenbox → Berichtenbox, anders e-mail of brief",
+    subtitle: "mijnOverheidBerichtenbox op het berichttype → Berichtenbox, anders e-mail of brief",
     details: {
       what: "Hoort het bericht in de MijnOverheid Berichtenbox? Zo ja: naar de Berichtenbox. Zo nee: terugval naar digitale post (e-mail), en zonder e-mailadres een brief naar het adres uit de BRP.",
-      config: "Het bericht in Open VTB; BRP voor het briefadres",
+      config: "Het berichttype in Open VTB; BRP voor het briefadres",
       onFail: "Geen afkeuring: deze stap kiest alleen het kanaal. Weigert Notify NL de Berichtenbox-verzending, dan volgt dezelfde terugval.",
       source: "MessageBoxScenarioImplementation.ProcessCloudEventAsync (stap 8), SendDigitalePostFallbackAsync",
     },

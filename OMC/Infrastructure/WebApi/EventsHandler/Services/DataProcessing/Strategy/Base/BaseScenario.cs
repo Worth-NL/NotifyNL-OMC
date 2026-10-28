@@ -148,6 +148,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     Notification = notification,
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
+                    SubjectTypeUri = preparedData.SubjectTypeUri,
                     TraceId = TraceContext.CurrentTraceId,
                     SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 }
@@ -177,6 +178,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     Notification = notification,
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
+                    SubjectTypeUri = preparedData.SubjectTypeUri,
                     TraceId = TraceContext.CurrentTraceId,
                     SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 }
@@ -206,6 +208,7 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     Notification = notification,
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
+                    SubjectTypeUri = preparedData.SubjectTypeUri,
                     TraceId = TraceContext.CurrentTraceId,
                     SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 }

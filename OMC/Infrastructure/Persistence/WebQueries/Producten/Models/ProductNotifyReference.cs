@@ -79,6 +79,17 @@ namespace WebQueries.Producten.Models
         public long? SentAtUnixMs { get; set; } = null;
 
         /// <summary>
+        /// The product's type in "Open Product", registered as the klantcontact's "hoofdOnderwerpType".
+        /// </summary>
+        /// <remarks>
+        ///   Deliberately not [JsonRequired]: references minted before this field existed are still echoed back by
+        ///   "Notify NL" on later delivery callbacks, and must keep deserializing.
+        /// </remarks>
+        [JsonInclude]
+        [JsonPropertyOrder(7)]
+        public Uri? ProductTypeUri { get; set; } = null;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ProductNotifyReference"/> struct.
         /// </summary>
         public ProductNotifyReference()

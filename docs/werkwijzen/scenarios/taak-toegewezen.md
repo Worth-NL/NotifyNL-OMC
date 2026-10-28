@@ -85,7 +85,7 @@ Het OMC haalt aanvullende gegevens op:
 
 ### Stap 6 — Notificatie versturen
 
-Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template en schrijft daarna een contactmoment terug naar OpenKlant.
+Het OMC verstuurt de notificatie via NotifyNL met het geconfigureerde template en schrijft daarna een contactmoment terug naar OpenKlant. Het klantcontact krijgt het zaaktype van de gekoppelde zaak als `hoofdOnderwerpType` (de URL).
 
 ---
 

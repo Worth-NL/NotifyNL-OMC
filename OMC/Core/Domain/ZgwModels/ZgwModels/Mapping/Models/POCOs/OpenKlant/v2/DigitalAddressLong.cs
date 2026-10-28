@@ -47,6 +47,16 @@ namespace ZgwModels.Mapping.Models.POCOs.OpenKlant.v2
         public string Reference { get; set; } = string.Empty;
 
         /// <summary>
+        /// Whether this is the party's default address of its kind (at most one e-mail and one phone number per party).
+        /// </summary>
+        /// <remarks>
+        ///   Not [JsonRequired]: OpenKlant only has it since 2.4.0.
+        /// </remarks>
+        [JsonPropertyName("isStandaardAdres")]
+        [JsonPropertyOrder(4)]
+        public bool IsStandardAddress { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DigitalAddressLong"/> struct.
         /// </summary>
         public DigitalAddressLong()

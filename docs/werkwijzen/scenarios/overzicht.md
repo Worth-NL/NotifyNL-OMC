@@ -33,11 +33,14 @@ De print- en Berichtenbox-flows maken een ontbrekende partij zelf aan; daar tree
 
 ## Adresselectie
 
-Het OMC bepaalt het contactkanaal en -adres in de volgende volgorde:
+Het OMC kiest het digitale adres van de partij in OpenKlant in deze volgorde:
 
-1. **E-mail** — als er een e-mailadres beschikbaar is in de klantregistratie
-2. **Sms** — als er een telefoonnummer beschikbaar is en geen e-mailadres
-3. **Brief (PostGuard)** — als PostGuard is geconfigureerd en de burger een Yivi-wallet heeft
+1. **Gekoppeld aan de zaak** — een digitaal adres waarvan de `referentie` de zaak is
+2. **Voorkeursadres** — het `voorkeursDigitaalAdres` van de partij
+3. **Standaardadres** — een digitaal adres met `isStandaardAdres: true`; zijn er zowel een e-mailadres als een telefoonnummer, dan wint het e-mailadres
+4. **Portaalvoorkeur** — een digitaal adres met `referentie` = `portaalvoorkeur` (zoals Den Haag dat vastlegt); ook hier wint het e-mailadres van het telefoonnummer
+
+Een adres dat aan geen van deze vier voldoet, wordt niet gekozen, ook als het het enige adres van de partij is. Het kanaal volgt uit het gekozen adres: een e-mailadres wordt een e-mail, een telefoonnummer een sms. Als PostGuard is geconfigureerd en de burger een Yivi-wallet heeft, kan ook een brief via PostGuard verstuurd worden.
 
 Als er geen contactgegevens beschikbaar zijn voor een burger, wordt de notificatie overgeslagen en wordt dit gelogd.
 

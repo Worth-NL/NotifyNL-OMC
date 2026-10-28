@@ -22,6 +22,7 @@ using ZgwModels.Extensions;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Enums.OpenKlant;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 using ZgwModels.Mapping.Models.POCOs.OpenProducten;
 
 namespace WebQueries.Producten
@@ -51,7 +52,7 @@ namespace WebQueries.Producten
         ///   A product notification has no per-product address of its own to prefer, so the party's portal
         ///   preference is what it uses.
         /// </remarks>
-        private const string PortaalvoorkeurReference = "portaalvoorkeur";
+        private const string PortaalvoorkeurReference = PartyResults.PortaalvoorkeurReference;
 
         private readonly IDataQueryService<NotificationEvent> _dataQuery;
         private readonly IHttpClientFactory<INotifyClient, string> _notifyClientFactory;
@@ -139,11 +140,22 @@ namespace WebQueries.Producten
             //       any lookup that needs the triggering notification has to happen before this point.
             int sent = 0;
 
+            string productenEndpoint = this._configuration.ZGW.Endpoint.OpenProducten();
+            Uri? productTypeUri = BuildProductTypeUri(productenEndpoint, product.ProductType.Id);
+
+            if (productTypeUri == null)
+            {
+                this._logger.LogWarning(
+                    "No producttype URL for product {ProductId}: ZGW_ENDPOINT_OPENPRODUCTEN does not end in \"{ProductenPath}\", " +
+                    "or the product has no producttype uuid. The klantcontact gets an empty hoofdOnderwerpType.",
+                    product.Id, ProductenApiPath);
+            }
+
             try
             {
                 foreach (ProductRecipient recipient in recipients)
                 {
-                    if (await DeliverToAsync(product, recipient, templateId))
+                    if (await DeliverToAsync(product, productTypeUri, recipient, templateId))
                     {
                         sent++;
                     }
@@ -171,7 +183,7 @@ namespace WebQueries.Producten
         /// Notifies one owner, or records why it could not.
         /// </summary>
         /// <returns><see langword="true"/> when "Notify NL" accepted the notification.</returns>
-        private async Task<bool> DeliverToAsync(Product product, ProductRecipient recipient, Guid templateId)
+        private async Task<bool> DeliverToAsync(Product product, Uri? productTypeUri, ProductRecipient recipient, Guid templateId)
         {
             ProductNotifyReference reference = new()
             {
@@ -180,6 +192,7 @@ namespace WebQueries.Producten
                 ProductName = product.Name,
                 ProductTypeCode = product.ProductType.Code,
                 OriginalResourceUrl = product.Uri?.AbsoluteUri ?? string.Empty,
+                ProductTypeUri = productTypeUri,
 
                 // Read from the ambient trace rather than passed in: delivery runs on the same call chain
                 // as the notification that started it, so this is that notification's own trace.
@@ -280,6 +293,35 @@ namespace WebQueries.Producten
             }
         }
 
+        private const string ProductenApiPath = "/producten/api/v1";
+        private const string ProductTypenApiPath = "/producttypen/api/v1";
+
+        /// <summary>
+        /// Builds the URL of a product's type in "Open Product", from the configured producten endpoint.
+        /// </summary>
+        /// <remarks>
+        ///   "Open Product" only nests the producttype's uuid in a product, not its URL, and serves producttypen from
+        ///   a sibling API: "…/producten/api/v1" next to "…/producttypen/api/v1". An endpoint that does not end in the
+        ///   producten path gives no URL at all, rather than a guessed one that OpenKlant would store as fact.
+        /// </remarks>
+        /// <returns>The producttype URL, or <see langword="null"/> when it cannot be derived.</returns>
+        internal static Uri? BuildProductTypeUri(string productenEndpoint, Guid productTypeId)
+        {
+            string endpoint = productenEndpoint.TrimEnd('/');
+
+            if (productTypeId == Guid.Empty ||
+                !endpoint.EndsWith(ProductenApiPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            string root = endpoint[..^ProductenApiPath.Length];
+
+            return Uri.TryCreate($"{root}{ProductTypenApiPath}/producttypen/{productTypeId:D}", UriKind.Absolute, out Uri? uri)
+                ? uri
+                : null;
+        }
+
         /// <summary>
         /// Appends the reason a notification failed to the configured failure wording.
         /// </summary>
@@ -296,7 +338,7 @@ namespace WebQueries.Producten
 
             if (trimmedReason.Length > maxReasonLength)
             {
-                trimmedReason = $"{trimmedReason[..maxReasonLength]}…";
+                trimmedReason = $"{trimmedReason[..maxReasonLength]}...";
             }
 
             return string.IsNullOrWhiteSpace(failureBody)
