@@ -89,6 +89,7 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in MessageReceivedChecks())  yield return r;
             foreach (var r in DecisionMadeChecks())     yield return r;
             foreach (var r in ProductCreatedChecks())   yield return r;
+            foreach (var r in MessageBoxChecks())       yield return r;
             foreach (var r in KtoChecks())              yield return r;
         }
 
@@ -115,6 +116,9 @@ namespace EventsHandler.Services.Configuration
             yield return IsOpenProductenConfigured()
                 ? Masked(g, ic, "OpenProducten API Key", () => config.ZGW.Auth.Key.OpenProducten(), "ZGW__Auth__Key__OpenProducten")
                 : new CheckResult(g, ic, "OpenProducten API Key", true, "(optional, not set)");
+            yield return IsOpenVtbConfigured()
+                ? Masked(g, ic, "OpenVTB API Key", () => config.ZGW.Auth.Key.OpenVtb(), "ZGW__Auth__Key__OpenVtb")
+                : new CheckResult(g, ic, "OpenVTB API Key", true, "(optional, not set)");
         }
 
         private IEnumerable<CheckResult> EndpointChecks()
@@ -127,6 +131,7 @@ namespace EventsHandler.Services.Configuration
             yield return Show(g, ic, "Objecten",         () => config.ZGW.Endpoint.Objecten(),         "ZGW__Endpoint__Objecten");
             yield return Show(g, ic, "ObjectTypen",      () => config.ZGW.Endpoint.ObjectTypen(),      "ZGW__Endpoint__ObjectTypen");
             yield return Option(g, ic, "OpenProducten",  () => config.ZGW.Endpoint.OpenProducten(),    "ZGW__Endpoint__OpenProducten");
+            yield return Option(g, ic, "OpenVTB",        () => config.ZGW.Endpoint.OpenVtb(),          "ZGW__Endpoint__OpenVtb");
         }
 
         private IEnumerable<CheckResult> NotifyConfigChecks()
@@ -218,6 +223,30 @@ namespace EventsHandler.Services.Configuration
         private bool IsOpenProductenConfigured()
         {
             try { return config.ZGW.Endpoint.IsOpenProductenConfigured(); } catch { return false; }
+        }
+
+        private IEnumerable<CheckResult> MessageBoxChecks()
+        {
+            const string g = "Berichtenbox (MOBB)", ic = "📮";
+
+            // Same shape as "Product Created": a flow a deployment has not opted into is reported as
+            // switched off, not as a column of missing settings.
+            if (!IsOpenVtbConfigured())
+            {
+                yield return new CheckResult(g, ic, "Open VTB", true,
+                    "disabled — set ZGW__Endpoint__OpenVtb to enable this scenario");
+                yield break;
+            }
+
+            yield return new CheckResult(g, ic, "Open VTB", true, "enabled");
+            yield return Whitelist(g, ic, "Allowed bericht types",        () => config.ZGW.Whitelist.VtbMessage_Types(),      "ZGW__Whitelist__VtbMessage_Types");
+            yield return Uuid(g,      ic, "Email notification template",  () => config.Notify.TemplateId.Email.MessageBox(),  "Notify__TemplateId__Email__MessageBox");
+            yield return Uuid(g,      ic, "Letter notification template", () => config.Notify.TemplateId.MessageBoxLetter(), "Notify__TemplateId__Letter__MessageBox");
+        }
+
+        private bool IsOpenVtbConfigured()
+        {
+            try { return config.ZGW.Endpoint.IsOpenVtbConfigured(); } catch { return false; }
         }
 
         private IEnumerable<CheckResult> KtoChecks()

@@ -6,6 +6,13 @@ Dit scenario stuurt een bericht uit OpenVTB (Open Verzend- en Toegangsbeheer Ber
 
 ---
 
+## Inschakelen
+
+De flow is **optioneel**. Een OMC zonder OpenVTB werkt zonder enige OpenVTB-variabele.
+
+- **Uit (standaard):** `ZGW_ENDPOINT_OPENVTB` is leeg. Het OMC maakt dan geen enkele aanroep naar OpenVTB; de statuspagina toont de flow als *disabled*. Komt er toch een `nl.overheid.berichten.`-CloudEvent binnen (bijvoorbeeld door een achtergebleven abonnement op het `berichten`-kanaal), dan wordt het afgebroken met `206` en niet opnieuw aangeboden.
+- **Aan:** stel `ZGW_ENDPOINT_OPENVTB` in, samen met `ZGW_AUTH_KEY_OPENVTB`, `ZGW_WHITELIST_VTBMESSAGE_TYPES`, `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` en `NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX`.
+
 ## Triggercondities
 
 Ook dit scenario komt binnen via Open Notificaties, maar niet als gewone notificatie (`kanaal`/`resource`/`actie`/`kenmerken`): het Berichten-component van Open VTB publiceert een [CloudEvent](https://github.com/cloudevents/spec), dat Open Notificaties aflevert op hetzelfde `POST /Events/Listen`-eindpunt. Herlevering na een fout is dus, net als bij de andere scenario's, die van Open Notificaties. Het OMC herkent een CloudEvent aan de aanwezigheid van `specversion`, `type`, `source` en `id`, en routeert het — vóórdat er ook maar geprobeerd wordt het als een gewone `NotificationEvent` te deserialiseren — op basis van het `type`-veld:
@@ -166,6 +173,7 @@ De daadwerkelijke bestandsinhoud wordt in een tweede aparte aanroep opgehaald �
 
 | Conditie | Waarde |
 |---|---|
+| `ZGW_ENDPOINT_OPENVTB` / `ZGW_AUTH_KEY_OPENVTB` | Ingesteld — een lege `ZGW_ENDPOINT_OPENVTB` schakelt de flow uit (zie [Inschakelen](#inschakelen)) |
 | `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Bevat de `mijnOverheidBerichtenboxType` van het berichttype, of staat op `*` — **leeg laten blokkeert alle berichten** |
 | `bericht.berichtType` | Verwijst naar een bestaand berichttype |
 | CloudEvent `type` | `nl.overheid.berichten.bericht-gepubliceerd` |

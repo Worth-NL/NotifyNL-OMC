@@ -260,6 +260,41 @@ namespace Common.Tests.Unit.Settings.Configuration
                 Assert.That(configuration.Notify.TemplateId.Email.ProductCreated(), Is.Not.EqualTo(Guid.Empty));
             });
         }
+
+        [Test]
+        public void OpenVtb_InEnvironmentMode_NotSet_IsOptional_AndReportsAsNotConfigured()
+        {
+            // NOTE: Deployments without "Open VTB" must keep working, so none of its settings may throw
+            //       when absent - the API key is read when the HTTP clients are built at startup.
+
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.InvalidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.OpenVtb(), Is.Empty);
+                Assert.That(configuration.ZGW.Auth.Key.OpenVtb(), Is.Empty);
+                Assert.That(configuration.Notify.TemplateId.Email.MessageBox(), Is.EqualTo(Guid.Empty));
+                Assert.That(configuration.Notify.TemplateId.MessageBoxLetter(), Is.EqualTo(Guid.Empty));
+                Assert.That(configuration.ZGW.Endpoint.IsOpenVtbConfigured(), Is.False);
+            });
+        }
+
+        [Test]
+        public void OpenVtb_InEnvironmentMode_Set_ReportsAsConfigured()
+        {
+            // Arrange
+            using OmcConfiguration configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
+
+            // Act & Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(configuration.ZGW.Endpoint.IsOpenVtbConfigured(), Is.True);
+                Assert.That(configuration.Notify.TemplateId.Email.MessageBox(), Is.Not.EqualTo(Guid.Empty));
+                Assert.That(configuration.Notify.TemplateId.MessageBoxLetter(), Is.Not.EqualTo(Guid.Empty));
+            });
+        }
         #endregion
 
         #region FallbackContextWrapper

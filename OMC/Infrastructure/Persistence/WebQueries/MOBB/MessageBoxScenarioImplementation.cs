@@ -13,6 +13,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Exceptions;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.MOBB.Models;
 using WebQueries.Tracing;
@@ -88,8 +89,11 @@ namespace WebQueries.MOBB
         /// </summary>
         /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
         /// <returns>An HTTP response wrapper indicating success or failure.</returns>
+        /// <exception cref="ProcessingAbortedException">"Open VTB" is not configured.</exception>
         public async Task<HttpRequestResponse> ProcessCloudEventAsync(JsonElement cloudEvent)
         {
+            ValidateOpenVtbIsConfigured();
+
             // Step 0: Only "bericht-gepubliceerd" means the message is actually active and ready to be
             // forwarded. Everything else (including "bericht-geregistreerd" and any not-yet-existing future
             // type) is intentionally ignored here - see the BerichtGepubliceerdType doc comment.
@@ -676,6 +680,32 @@ namespace WebQueries.MOBB
         }
 
         #region Private helpers
+
+        /// <summary>
+        /// Rejects every Bericht when this deployment does not use "Open VTB".
+        /// </summary>
+        /// <remarks>
+        ///   "Open VTB" is optional, and leaving its endpoint unset is how a deployment opts out. That is a
+        ///   decision, not a defect, so a CloudEvent that arrives anyway (e.g. a subscription to the "berichten"
+        ///   kanaal left in place) is aborted rather than failed: retrying it would only fail the same way.
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">"Open VTB" is not configured.</exception>
+        private void ValidateOpenVtbIsConfigured()
+        {
+            if (_configuration.ZGW.Endpoint.IsOpenVtbConfigured())
+            {
+                return;
+            }
+
+            const string reason =
+                "Open VTB is not configured (ZGW_ENDPOINT_OPENVTB is not set), " +
+                "so the Berichtenbox flow is disabled.";
+
+            TraceContext.Emit("vtb", "abort", reason);
+            _logger.LogInformation("{Reason} CloudEvent dropped without notifying anyone.", reason);
+
+            throw new ProcessingAbortedException(reason);
+        }
 
         /// <summary>
         /// Makes sure this exact send has not already been handed to "Notify NL", so the same Bericht delivered to OMC

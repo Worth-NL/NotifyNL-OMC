@@ -141,7 +141,7 @@ Burgergerichte fallback-tekst per kanaal en uitkomst, gebruikt wanneer de daadwe
 | `ZGW_AUTH_KEY_OBJECTEN` | Ja | API-sleutel voor de Objecten-API |
 | `ZGW_AUTH_KEY_OBJECTTYPEN` | Ja | API-sleutel voor de ObjectTypen-API |
 | `ZGW_AUTH_KEY_OPENPRODUCTEN` | Nee, alleen bij gebruik van Open Product | API-sleutel voor Open Product (scenario Product aangemaakt). Mag leeg blijven wanneer Open Product niet gebruikt wordt |
-| `ZGW_AUTH_KEY_OPENVTB` | Ja | API-sleutel voor OpenVTB (Berichtenbox/MOBB-brontrigger) — `HttpNetworkService` bouwt bij het opstarten een HttpClient voor elke `HttpClientTypes`-waarde, dus dit is ook vereist wanneer MOBB niet gebruikt wordt |
+| `ZGW_AUTH_KEY_OPENVTB` | Nee, alleen bij gebruik van OpenVTB | API-sleutel voor OpenVTB (Berichtenbox/MOBB-brontrigger). Mag leeg blijven wanneer OpenVTB niet gebruikt wordt |
 
 ---
 
@@ -158,7 +158,7 @@ Burgergerichte fallback-tekst per kanaal en uitkomst, gebruikt wanneer de daadwe
 | `ZGW_ENDPOINT_CONTACTMOMENTEN` | Ja | Basis-URL van de Contactmomenten API |
 | `ZGW_ENDPOINT_DOCUMENTEN` | Ja | Basis-URL van de Documenten API (OpenZaak) — gebruikt door de printstraat-flow om de PDF op te halen; de `pdfurl` uit het printobject moet dezelfde origin hebben (SSRF-check) |
 | `ZGW_ENDPOINT_OPENPRODUCTEN` | Nee | Basis-URL van de Open Producten API, inclusief pad — bijv. `https://openproduct.mijnstad.nl/producten/api/v1`. **Schakelt het scenario Product aangemaakt in:** zolang deze leeg is, staat het scenario uit en zijn ook de overige Open Product-variabelen niet nodig |
-| `ZGW_ENDPOINT_OPENVTB` | Ja | Basis-URL van OpenVTB (Berichtenbox/MOBB-brontrigger) — zie `ZGW_AUTH_KEY_OPENVTB` hierboven voor waarom dit ook vereist is wanneer MOBB niet gebruikt wordt |
+| `ZGW_ENDPOINT_OPENVTB` | Nee | Basis-URL van OpenVTB (Berichtenbox/MOBB-brontrigger). **Schakelt de Berichtenbox-flow in:** zolang deze leeg is, staat de flow uit en zijn ook de overige OpenVTB-variabelen niet nodig |
 
 ---
 
@@ -225,7 +225,7 @@ Het scenario Besluit genomen genereert alleen een template-preview (voor de Obje
 | `NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE` | Nee* | Template-UUID voor zaak afgesloten via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED` | Nee* | Template-UUID voor taak toegewezen via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED` | Nee* | Template-UUID voor bericht ontvangen via e-mail |
-| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | Nee* | Template-UUID voor de MOBB/Berichtenbox-fallback via e-mail |
+| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | Nee, alleen bij gebruik van OpenVTB | Template-UUID voor de MOBB/Berichtenbox-fallback via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` | Nee, alleen bij gebruik van Open Product | Template-UUID voor product aangemaakt via e-mail — dit scenario kent geen sms- of brief-variant |
 
 ---
@@ -253,7 +253,7 @@ Het scenario Besluit genomen genereert alleen een template-preview (voor de Obje
 | `NOTIFY_TEMPLATEID_LETTER_ZAAKCLOSE` | Nee* | **Genegeerd — zie waarschuwing hierboven.** Gebruik in plaats daarvan `NOTIFY_TEMPLATEID_SMS_ZAAKCLOSE` |
 | `NOTIFY_TEMPLATEID_LETTER_TASKASSIGNED` | Nee* | **Genegeerd — zie waarschuwing hierboven.** Gebruik in plaats daarvan `NOTIFY_TEMPLATEID_SMS_TASKASSIGNED` |
 | `NOTIFY_TEMPLATEID_LETTER_MESSAGERECEIVED` | Nee* | **Genegeerd — zie waarschuwing hierboven.** Gebruik in plaats daarvan `NOTIFY_TEMPLATEID_SMS_MESSAGERECEIVED` |
-| `NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX` | Nee* | Template-UUID voor de MOBB/Berichtenbox-fallback via brief — **werkt correct, niet door de bug getroffen** |
+| `NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX` | Nee, alleen bij gebruik van OpenVTB | Template-UUID voor de MOBB/Berichtenbox-fallback via brief — **werkt correct, niet door de bug getroffen** |
 
 > \* Als er geen template-ID is ingesteld voor een bepaald kanaal/scenario-combinatie, slaat het OMC dat kanaal over voor dat scenario. Stel minimaal één kanaal in per scenario dat je wilt activeren.
 

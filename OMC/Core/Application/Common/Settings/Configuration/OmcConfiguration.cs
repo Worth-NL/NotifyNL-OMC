@@ -857,9 +857,13 @@ namespace Common.Settings.Configuration
                         => GetCachedValue(this._loadersContext, this._currentPath, nameof(ObjectTypen));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    /// <remarks>
+                    ///   Optional: empty when not set. Only needed when "Open VTB" is used - see
+                    ///   <see cref="EndpointComponent.IsOpenVtbConfigured"/>.
+                    /// </remarks>
                     [Config]
                     public string OpenVtb()
-                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+                        => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb), disableValidation: true);
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     /// <remarks>
@@ -930,9 +934,22 @@ namespace Common.Settings.Configuration
                     => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(ContactMomenten));
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                /// <remarks>
+                ///   Optional: empty when not set. Leaving it out switches the Berichtenbox flow off,
+                ///   so deployments without "Open VTB" need none of its settings.
+                /// </remarks>
                 [Config]
                 public string OpenVtb()
-                    => GetCachedEndpointValue(this._loadersContext, this._currentPath, nameof(OpenVtb));
+                    => GetCachedValue(this._loadersContext, this._currentPath, nameof(OpenVtb), disableValidation: true);
+
+                /// <summary>
+                /// Whether "Open VTB" is used by this deployment at all.
+                /// </summary>
+                /// <remarks>
+                ///   Decided by <see cref="OpenVtb"/> alone, like <see cref="IsOpenProductenConfigured"/>.
+                /// </remarks>
+                public bool IsOpenVtbConfigured()
+                    => !string.IsNullOrWhiteSpace(OpenVtb());
 
                 /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                 /// <remarks>
@@ -1330,12 +1347,15 @@ namespace Common.Settings.Configuration
                 ///   its own, correctly-named "Letter" path node directly, resolving
                 ///   <c>NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX</c> - matching the same nesting convention already
                 ///   used by <see cref="EmailComponent.MessageBox"/> (<c>NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX</c>).
+                ///   <para>
+                ///     Optional: <see cref="Guid.Empty"/> when not set. Only needed when "Open VTB" is used.
+                ///   </para>
                 /// </remarks>
                 [Config]
                 public Guid MessageBoxLetter()
                 {
                     string letterPath = this._loadersContext.GetPathWithNode(this._currentPath, nameof(Letter));
-                    return GetCachedUuidValue(this._loadersContext, letterPath, nameof(EmailComponent.MessageBox));
+                    return GetCachedOptionalUuidValue(this._loadersContext, letterPath, nameof(EmailComponent.MessageBox));
                 }
 
                 /// <summary>
@@ -1381,9 +1401,12 @@ namespace Common.Settings.Configuration
                         => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageReceived));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
+                    /// <remarks>
+                    ///   Optional: <see cref="Guid.Empty"/> when not set. Only needed when "Open VTB" is used.
+                    /// </remarks>
                     [Config]
                     public Guid MessageBox()
-                        => GetCachedUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
+                        => GetCachedOptionalUuidValue(this._loadersContext, this._currentPath, nameof(MessageBox));
 
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     /// <remarks>
