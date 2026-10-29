@@ -240,7 +240,7 @@ namespace EventsHandler.Services.Configuration
 
             yield return new CheckResult(g, ic, "Open VTB", true, "enabled");
             yield return Whitelist(g, ic, "Allowed bericht types",        () => config.ZGW.Whitelist.VtbMessage_Types(),      "ZGW__Whitelist__VtbMessage_Types");
-            yield return Uuid(g,      ic, "Email notification template",  () => config.Notify.TemplateId.Email.MessageBox(),  "Notify__TemplateId__Email__MessageBox");
+            yield return SkippableUuid(g, ic, "Email notification template", () => config.Notify.TemplateId.Email.MessageBox(), "not set — e-mail step is skipped");
             yield return Uuid(g,      ic, "Letter notification template", () => config.Notify.TemplateId.MessageBoxLetter(), "Notify__TemplateId__Letter__MessageBox");
         }
 
@@ -302,6 +302,18 @@ namespace EventsHandler.Services.Configuration
                 return new CheckResult(group, icon, name, ok, ok ? g.ToString() : "not configured", ok ? null : hint);
             }
             catch { return new CheckResult(group, icon, name, false, "not configured", hint); }
+        }
+
+        /// <summary>
+        /// A template whose absence switches its step off rather than breaking the flow: unset is reported as ok,
+        /// with what that means.
+        /// </summary>
+        private static CheckResult SkippableUuid(string group, string icon, string name, Func<Guid> getter, string whenUnset)
+        {
+            Guid g;
+            try { g = getter(); } catch { g = Guid.Empty; }
+
+            return new CheckResult(group, icon, name, true, g != Guid.Empty ? g.ToString() : whenUnset);
         }
 
         private static CheckResult Whitelist(string group, string icon, string name,

@@ -1403,6 +1403,10 @@ namespace Common.Settings.Configuration
                     /// <inheritdoc cref="ILoadingService.GetData{TData}(string, bool)"/>
                     /// <remarks>
                     ///   Optional: <see cref="Guid.Empty"/> when not set. Only needed when "Open VTB" is used.
+                    ///   <para>
+                    ///     Not set means the Berichtenbox flow skips its e-mail step: it goes straight to the letter,
+                    ///     without a (failed) contactmoment for the e-mail step, and logs a warning each time.
+                    ///   </para>
                     /// </remarks>
                     [Config]
                     public Guid MessageBox()

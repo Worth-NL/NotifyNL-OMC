@@ -225,7 +225,7 @@ Het scenario Besluit genomen genereert alleen een template-preview (voor de Obje
 | `NOTIFY_TEMPLATEID_EMAIL_ZAAKCLOSE` | Nee* | Template-UUID voor zaak afgesloten via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_TASKASSIGNED` | Nee* | Template-UUID voor taak toegewezen via e-mail |
 | `NOTIFY_TEMPLATEID_EMAIL_MESSAGERECEIVED` | Nee* | Template-UUID voor bericht ontvangen via e-mail |
-| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | Nee, alleen bij gebruik van OpenVTB | Template-UUID voor de MOBB/Berichtenbox-fallback via e-mail |
+| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | Nee | Template-UUID voor de MOBB/Berichtenbox-fallback via e-mail. Niet ingesteld: de e-mailstap wordt overgeslagen en het OMC gaat meteen door naar de brief, zonder (gefaald) contactmoment voor de e-mailstap; elke keer komt er een waarschuwing in de log |
 | `NOTIFY_TEMPLATEID_EMAIL_PRODUCTCREATED` | Nee, alleen bij gebruik van Open Product | Template-UUID voor product aangemaakt via e-mail — dit scenario kent geen sms- of brief-variant |
 
 ---

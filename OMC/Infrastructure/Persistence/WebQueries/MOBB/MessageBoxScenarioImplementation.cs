@@ -323,6 +323,18 @@ namespace WebQueries.MOBB
             JsonElement cloudEvent, Guid messageUuid, string recipientBsn, CommonPartyData partyData, Guid partyId,
             IQueryContext queryContext, VtbMessage messageData)
         {
+            Guid emailTemplateId = _configuration.Notify.TemplateId.Email.MessageBox();
+            if (emailTemplateId == Guid.Empty)
+            {
+                // No e-mail template configured: this gemeente does not use the e-mail step. Skipped like "no
+                // e-mail address" - straight to the letter, and no (failed) contactmoment for the e-mail step.
+                _logger.LogWarning(
+                    "Message {MessageId}: e-mail step skipped, NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX is not set; going straight to letter fallback.",
+                    messageUuid);
+                TraceContext.Emit("notify-email", "abort", "e-mail step skipped: no e-mail template configured; falling back to a letter");
+                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: false);
+            }
+
             if (string.IsNullOrEmpty(partyData.EmailAddress))
             {
                 // BPMN: the digitale-post eligibility gateway ("Nee, geen digitale post") -> straight to letter.
@@ -351,7 +363,7 @@ namespace WebQueries.MOBB
 
             NotifySendResponse sendResponse = await notifyClient.SendEmailAsync(
                 partyData.EmailAddress,
-                _configuration.Notify.TemplateId.Email.MessageBox().ToString(),
+                emailTemplateId.ToString(),
                 personalization,
                 reference);
 

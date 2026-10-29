@@ -120,7 +120,7 @@ Deze keten wordt op twee verschillende momenten doorlopen:
 
 ### Digitale post (e-mail)
 
-Heeft de partij geen e-mailadres in OpenKlant, dan gaat het OMC direct naar de brief-terugval. Is er wel een e-mailadres, dan verstuurt het OMC een e-mail met template `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` en personalisatie `klant.voornaam`/`klant.voorvoegselAchternaam`/`klant.achternaam`. Wordt deze e-mail (synchroon of via de afleverstatus-callback) alsnog geweigerd, dan valt het OMC verder terug op de brief — met de vlag "was een mislukte notificatie" aan (zie hieronder).
+Is `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` niet ingesteld, dan gebruikt deze gemeente de e-mailstap niet: het OMC slaat die over en gaat direct naar de brief-terugval, zonder (gefaald) contactmoment voor de e-mailstap en met de vlag "was een mislukte notificatie" uit. Elke keer komt er een waarschuwing in de log. Heeft de partij geen e-mailadres in OpenKlant, dan gaat het OMC eveneens direct naar de brief-terugval. Is er wel een e-mailadres, dan verstuurt het OMC een e-mail met template `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` en personalisatie `klant.voornaam`/`klant.voorvoegselAchternaam`/`klant.achternaam`. Wordt deze e-mail (synchroon of via de afleverstatus-callback) alsnog geweigerd, dan valt het OMC verder terug op de brief — met de vlag "was een mislukte notificatie" aan (zie hieronder).
 
 ### Brief
 
@@ -239,7 +239,7 @@ MOBB zelf verstuurt de ruwe berichttekst (geen `((placeholder))`-template). Alle
 | `ZGW_ENDPOINT_OPENVTB` | Basis-URL van OpenVTB — ook vereist wanneer MOBB niet gebruikt wordt |
 | `ZGW_AUTH_KEY_OPENVTB` | API-sleutel voor OpenVTB — ook vereist wanneer MOBB niet gebruikt wordt |
 | `ZGW_WHITELIST_VTBMESSAGE_TYPES` | Toegestane Berichtenbox-codes (`mijnOverheidBerichtenboxType`) — leeg = alles geblokkeerd |
-| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | NotifyNL template-UUID voor de digitale-post (e-mail) terugval |
+| `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` | NotifyNL template-UUID voor de digitale-post (e-mail) terugval. Niet ingesteld: de e-mailstap wordt overgeslagen |
 | `NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX` | NotifyNL template-UUID voor de brief-terugval |
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_BERICHT` | `codeObjecttype` voor de onderwerpobject-koppeling naar het Bericht (nog niet bevestigd in OpenKlant) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_BERICHT` | `codeRegister` voor diezelfde koppeling |
