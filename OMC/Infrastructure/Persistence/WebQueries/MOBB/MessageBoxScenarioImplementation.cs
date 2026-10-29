@@ -315,6 +315,13 @@ namespace WebQueries.MOBB
         /// sends an email notification if the recipient has a usable email address, otherwise falls
         /// back to a letter.
         /// </summary>
+        /// <param name="cloudEvent">The CloudEvent; only its metadata goes into the reference, never its "data".</param>
+        /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
+        /// <param name="recipientBsn">The recipient's BSN, for the BRP address of a letter.</param>
+        /// <param name="partyData">The recipient's OpenKlant party, with the e-mail address to send to.</param>
+        /// <param name="partyId">The resolved OpenKlant party GUID.</param>
+        /// <param name="queryContext">The query context, for the Bericht's attachments on a letter.</param>
+        /// <param name="messageData">The Bericht itself.</param>
         /// <param name="isRedelivered">
         ///   Whether a failure returned from here makes the trigger come again: <see langword="true"/> on the CloudEvent
         ///   path (Open Notificaties delivers again), <see langword="false"/> on the delivery-receipt path, where a
