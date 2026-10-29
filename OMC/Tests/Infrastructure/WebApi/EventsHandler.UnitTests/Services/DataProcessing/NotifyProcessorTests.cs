@@ -91,6 +91,80 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing
             NotificationEventHandler.GetNotification_Real_CaseUpdateScenario_TheHague();
         #endregion
 
+        #region ProcessAsync() - no CloudEvent data in the result (#267)
+        // The result's description goes into the response to Open Notificaties and into Sentry, and an Open VTB
+        // event's "data" holds the citizen's BSN
+        private const string CloudEventId = "66666666-6666-6666-6666-666666666666";
+
+        private static readonly string s_berichtCloudEvent = JsonSerializer.Serialize(new
+        {
+            specversion = "1.0",
+            id = CloudEventId,
+            source = "urn:nld:oin:01823288444:berichtensysteem",
+            type = "nl.overheid.berichten.bericht-gepubliceerd",
+            subject = "55555555-5555-5555-5555-555555555555",
+            time = "2026-01-01T00:00:00Z",
+            datacontenttype = "application/json",
+            data = new { onderwerp = "Uw aanvraag", publicatiedatum = "2026-01-01T00:00:00Z", ontvanger = "urn:nld:bsn:nummer:123456789" }
+        });
+
+        private static void AssertShowsTheEventMetadataOnly(ProcessingResult result)
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Description, Does.Contain(CloudEventId));
+                Assert.That(result.Description, Does.Contain("55555555-5555-5555-5555-555555555555"), "subject");
+                Assert.That(result.Description, Does.Not.Contain("urn:nld:bsn"));
+                Assert.That(result.Description, Does.Not.Contain("ontvanger"));
+                Assert.That(result.Description, Does.Not.Contain("Uw aanvraag"));
+            });
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ProcessAsync_BerichtCloudEvent_ResultShowsTheEventMetadataOnly(bool isSuccess)
+        {
+            // Arrange
+            this._mockedMessageBoxScenario.Reset();
+            this._mockedMessageBoxScenario
+                .Setup(mock => mock.ProcessCloudEventAsync(It.IsAny<JsonElement>()))
+                .ReturnsAsync(isSuccess ? HttpRequestResponse.Success("Message forwarded to MOBB.") : HttpRequestResponse.Failure("MOBB send not accepted by Notify NL"));
+
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(s_berichtCloudEvent);
+
+            // Assert
+            AssertShowsTheEventMetadataOnly(result);
+        }
+
+        [Test]
+        public async Task ProcessAsync_BerichtCloudEvent_Exception_ResultShowsTheEventMetadataOnly()
+        {
+            // Arrange
+            this._mockedMessageBoxScenario.Reset();
+            this._mockedMessageBoxScenario
+                .Setup(mock => mock.ProcessCloudEventAsync(It.IsAny<JsonElement>()))
+                .ThrowsAsync(new HttpRequestException("Open VTB is not reachable"));
+
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(s_berichtCloudEvent);
+
+            // Assert
+            AssertShowsTheEventMetadataOnly(result);
+        }
+
+        [Test]
+        public async Task ProcessAsync_UnsupportedCloudEvent_ResultShowsTheEventMetadataOnly()
+        {
+            // Act
+            ProcessingResult result = await this._processor.ProcessAsync(
+                s_berichtCloudEvent.Replace("nl.overheid.berichten.bericht-gepubliceerd", "nl.overheid.unknown.something"));
+
+            // Assert
+            AssertShowsTheEventMetadataOnly(result);
+        }
+        #endregion
+
         #region ProcessAsync()
         [Test]
         public async Task ProcessAsync_Failed_Deserialization_ReturnsProcessingResult_Skipped()
