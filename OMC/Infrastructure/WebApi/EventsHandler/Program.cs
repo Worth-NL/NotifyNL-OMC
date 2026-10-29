@@ -14,6 +14,7 @@ using EventsHandler.Properties;
 using EventsHandler.Services.DataProcessing;
 using EventsHandler.Services.DataProcessing.Interfaces;
 using Sentry;
+using Sentry.Protocol;
 using EventsHandler.Services.DataProcessing.Strategy.Base.Interfaces;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations;
 using EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases;
@@ -42,6 +43,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using WebQueries.Logging;
 using WebQueries.Tracing;
 using WebQueries.BRP;
 using WebQueries.DataQuerying.Adapter;
@@ -225,6 +227,42 @@ namespace EventsHandler
             options.Environment = Environment.GetEnvironmentVariable(ConfigExtensions.SentryEnvironment) ??
                                   Environment.GetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment) ??
                                   CommonValues.Default.Models.DefaultStringValue;
+
+            // Safety net: whatever code sends to Sentry, now or later, a BSN or KVK number never leaves with it
+            options.SetBeforeSend((sentryEvent, _) => ScrubPersonalData(sentryEvent));
+            options.SetBeforeBreadcrumb((breadcrumb, _) => ScrubPersonalData(breadcrumb));
+        }
+
+        /// <summary>
+        /// Masks personal numbers (see <see cref="PersonalDataScrubber"/>) in a Sentry event's message and exceptions.
+        /// </summary>
+        internal static SentryEvent ScrubPersonalData(SentryEvent sentryEvent)
+        {
+            if (sentryEvent.Message is { } message)
+            {
+                message.Message = PersonalDataScrubber.Scrub(message.Message);
+                message.Formatted = PersonalDataScrubber.Scrub(message.Formatted);
+            }
+
+            foreach (SentryException exception in sentryEvent.SentryExceptions ?? [])
+            {
+                exception.Value = PersonalDataScrubber.Scrub(exception.Value);
+            }
+
+            return sentryEvent;
+        }
+
+        /// <summary>
+        /// Masks personal numbers (see <see cref="PersonalDataScrubber"/>) in a Sentry breadcrumb, e.g. a log line.
+        /// </summary>
+        internal static Breadcrumb ScrubPersonalData(Breadcrumb breadcrumb)
+        {
+            return new Breadcrumb(
+                PersonalDataScrubber.Scrub(breadcrumb.Message) ?? string.Empty,
+                breadcrumb.Type ?? string.Empty,
+                breadcrumb.Data?.ToDictionary(pair => pair.Key, pair => PersonalDataScrubber.Scrub(pair.Value) ?? string.Empty),
+                breadcrumb.Category,
+                breadcrumb.Level);
         }
         #endregion
 

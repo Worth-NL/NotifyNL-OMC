@@ -76,5 +76,29 @@ namespace WebQueries.Tests.Unit.DataQuerying.Strategies.Base
 
             Assert.That(exception!.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
+
+        [Test]
+        public void ProcessGetAsync_FailedPartySearchOnBsn_ExceptionKeepsTheError_WithoutTheBsn()
+        {
+            // NOTE: This message goes into the response to Open Notificaties and into Sentry (#260 review).
+
+            // Arrange
+            var partySearch = new Uri("https://openklant.test/klantinteracties/api/v2/partijen" +
+                "?partijIdentificator__codeSoortObjectId=bsn&partijIdentificator__objectId=123456789&expand=digitaleAdressen");
+            IQueryBase queryBase = GetQueryBase(HttpRequestResponse.Failure(
+                "{\"code\":\"invalid\",\"detail\":\"Geen partij met objectId 123456789\"}", HttpStatusCode.BadRequest));
+
+            // Act
+            HttpRequestException? exception = Assert.ThrowsAsync<HttpRequestException>(() =>
+                queryBase.ProcessGetAsync<PartyResults>(HttpClientTypes.OpenKlant_v2, partySearch, "fallback"));
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(exception!.Message, Does.Not.Contain("123456789"));
+                Assert.That(exception.Message, Does.Contain("partijIdentificator__objectId=[…]"));
+                Assert.That(exception.Message, Does.Contain("Geen partij met objectId […]"));
+            });
+        }
     }
 }

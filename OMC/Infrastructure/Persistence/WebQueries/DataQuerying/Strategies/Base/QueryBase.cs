@@ -6,6 +6,7 @@ using WebQueries.DataQuerying.Strategies.Interfaces;
 using WebQueries.DataSending.Clients.Enums;
 using WebQueries.DataSending.Interfaces;
 using WebQueries.Exceptions;
+using WebQueries.Logging;
 using ZgwModels.Mapping.Models.Interfaces;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Serialization.Interfaces;
@@ -91,14 +92,21 @@ namespace WebQueries.DataQuerying.Strategies.Base
                             GetMessage(response.JsonResponse, uri, fallbackErrorMessage), null, response.StatusCode);
         }
 
+        /// <remarks>
+        ///   This message ends up in the response to Open Notificaties and in Sentry, and the URI or response can
+        ///   carry a BSN (e.g. an OpenKlant party search), so personal numbers are masked; the rest stays readable.
+        /// </remarks>
         private static string GetMessage(string jsonResult, Uri uri, string fallbackErrorMessage)
         {
-            return $"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}";
+            return PersonalDataScrubber.Scrub($"{fallbackErrorMessage} | URI: {uri} | JSON response: {jsonResult}")!;
         }
 
+        /// <remarks>
+        ///   Masks personal numbers such as a BSN in the URI or response before it reaches Sentry.
+        /// </remarks>
         private static void LogToSentry(string message, SentryLevel level = SentryLevel.Info)
         {
-            SentrySdk.CaptureMessage(message, level);
+            SentrySdk.CaptureMessage(PersonalDataScrubber.Scrub(message)!, level);
         }
         #endregion
     }
