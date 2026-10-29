@@ -70,7 +70,8 @@ namespace Common.Settings.Extensions
         /// <remarks>
         ///   Off unless set to "true" (or "1"). For test environments without a BRP connection: BRP is then not
         ///   called and every letter goes to the Worth Systems address, so the letter flow can be tested end to
-        ///   end against a (test) printstraat. Never switch it on in production.
+        ///   end against a (test) printstraat. Refused in production (see <see cref="IsProductionEnvironment"/>): het OMC
+        ///   does not start, and no letter goes to the test address.
         /// </remarks>
         public static string BrpUseTestAddress => "BRP_GEBRUIK_TESTADRES";
 
@@ -79,6 +80,22 @@ namespace Common.Settings.Extensions
         /// </summary>
         public static bool IsBrpTestAddressEnabled()
             => IsSwitchedOn(Environment.GetEnvironmentVariable(BrpUseTestAddress));
+
+        /// <summary>
+        /// Whether this OMC runs in production, according to <see cref="AspNetCoreEnvironment"/>.
+        /// </summary>
+        /// <remarks>
+        ///   "Production" (case-insensitive) or unset is production: ASP.NET Core itself runs as "Production" when the
+        ///   variable is not set. A test environment that uses <see cref="BrpUseTestAddress"/> has to set another value,
+        ///   e.g. "Staging".
+        /// </remarks>
+        public static bool IsProductionEnvironment()
+        {
+            string? environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironment);
+
+            return string.IsNullOrWhiteSpace(environment) ||
+                   environment.Trim().Equals("Production", StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// The "MIJNOVERHEID_WEBHOOK_URL" environment variable.

@@ -438,6 +438,18 @@ namespace WebQueries.MOBB
             Adressering? adressering;
 
             TraceContext.Emit("brp", "start", "Attempting to retrieve the address for the letter");
+            if (ConfigExtensions.IsBrpTestAddressEnabled() && ConfigExtensions.IsProductionEnvironment())
+            {
+                // Hard stop, also here: het OMC does not start like this, but a letter in production must never go to
+                // the test address, whatever changed after startup.
+                _logger.LogError(
+                    "Message {MessageId}: {Variable} is switched on in production; refusing to send the letter to the test address.",
+                    messageUuid, ConfigExtensions.BrpUseTestAddress);
+                TraceContext.Emit("brp", "fail", $"{ConfigExtensions.BrpUseTestAddress} is switched on in production; letter not sent");
+                return HttpRequestResponse.Failure(
+                    $"{ConfigExtensions.BrpUseTestAddress} is switched on in production; the letter is not sent to the test address.");
+            }
+
             if (ConfigExtensions.IsBrpTestAddressEnabled())
             {
                 // Test environments without a BRP connection: BRP is not called, the letter goes to Worth Systems.

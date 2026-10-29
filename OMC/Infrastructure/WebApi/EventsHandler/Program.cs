@@ -515,6 +515,14 @@ namespace EventsHandler
 
             if (ConfigExtensions.IsBrpTestAddressEnabled())
             {
+                // Hard stop: letters in production must never go to the test address
+                if (ConfigExtensions.IsProductionEnvironment())
+                {
+                    throw new InvalidOperationException(
+                        $"{ConfigExtensions.BrpUseTestAddress} is switched on while {ConfigExtensions.AspNetCoreEnvironment} is Production (or not set). " +
+                        $"Unset {ConfigExtensions.BrpUseTestAddress}, or set {ConfigExtensions.AspNetCoreEnvironment} to e.g. \"Staging\" in a test environment.");
+                }
+
                 app.Logger.LogWarning(
                     "{Variable} is switched on: BRP is not called and every Berichtenbox letter goes to the Worth Systems test address. Never use this in production.",
                     ConfigExtensions.BrpUseTestAddress);

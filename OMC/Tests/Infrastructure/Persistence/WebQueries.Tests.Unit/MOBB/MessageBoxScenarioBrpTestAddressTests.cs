@@ -47,6 +47,7 @@ namespace WebQueries.Tests.Unit.MOBB
         public void SetupTests()
         {
             Environment.SetEnvironmentVariable(ConfigExtensions.BrpUseTestAddress, "true");
+            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, "Staging");  // The test address is refused in production
 
             this._configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
@@ -116,6 +117,7 @@ namespace WebQueries.Tests.Unit.MOBB
         public void CleanUpTests()
         {
             Environment.SetEnvironmentVariable(ConfigExtensions.BrpUseTestAddress, null);
+            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, null);
             this._configuration.Dispose();
         }
 
@@ -179,6 +181,45 @@ namespace WebQueries.Tests.Unit.MOBB
                 It.Is<Dictionary<string, object>>(personalization => (bool)personalization["wasNotificatie"] == false),
                 It.IsAny<string>(),
                 null), Times.Once);
+        }
+
+        [TestCase("Production")]
+        [TestCase(null)]
+        public async Task ProcessCloudEventAsync_TestAddressOnInProduction_RefusesTheLetter(string? environment)
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, environment);
+
+            JsonElement cloudEvent = JsonSerializer.SerializeToElement(new
+            {
+                type = "nl.overheid.berichten.bericht-gepubliceerd",
+                subject = s_messageUuid.ToString()
+            });
+
+            // Act
+            HttpRequestResponse result = await this._scenario.ProcessCloudEventAsync(cloudEvent);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsFailure, Is.True);
+                Assert.That(result.JsonResponse, Does.Contain("production"));
+                this._mockedNotifyClient.Verify(mock => mock.SendLetterAsync(
+                    It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>?>()), Times.Never);
+            });
+        }
+
+        [TestCase("Production", true)]
+        [TestCase(" production ", true)]
+        [TestCase(null, true)]
+        [TestCase("", true)]
+        [TestCase("Staging", false)]
+        [TestCase("Development", false)]
+        public void IsProductionEnvironment_ReadsAspNetCoreEnvironment(string? value, bool expected)
+        {
+            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, value);
+
+            Assert.That(ConfigExtensions.IsProductionEnvironment(), Is.EqualTo(expected));
         }
 
         [TestCase("1", true)]
