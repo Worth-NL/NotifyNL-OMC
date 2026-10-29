@@ -253,7 +253,7 @@ namespace WebQueries.MOBB
             if (!messageTypeData.IsInMyGovernmentMessageBox)
             {
                 _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
-                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
+                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData, isRedelivered: true);
             }
 
             // Step 9: Append hardcoded postfix to the message text
@@ -292,20 +292,15 @@ namespace WebQueries.MOBB
 
             if (sendResponse.IsFailure)
             {
-                // BPMN: the MOBB delivery-outcome gateway ("(Permanent) Success?") -> "Nee" -> the
-                // MOBB-technical-failure contactmoment step -> falls through to the same digitale-post/letter
-                // fallback chain as MOBB-ineligibility.
-                // TODO (treated uniformly for now, per instruction): the BPMN distinguishes "no MOBB
-                // subscription" (no separate failed-attempt contactmoment, just adjusted fallback text) from
-                // "technical failure" (a failed-attempt contactmoment IS created) - NotifySendResponse doesn't
-                // expose enough detail to tell these apart yet. This draft does not create a separate
-                // "failed MOBB attempt" contactmoment at all; it just falls through to the fallback chain.
-                TraceContext.Emit("berichtenbox", "fail", $"rejected by Notify NL, falling back: {sendResponse.Error}");
+                // Notify NL did not accept the send, so nothing is queued there and nothing reached Logius: this says
+                // nothing about the citizen's Berichtenbox, which is only known later, from the delivery-receipt
+                // callback. Like every other scenario (BaseScenario), a Failure lets Open Notificaties deliver the
+                // CloudEvent again (#243); the check against sending twice (#247) keeps that safe.
+                TraceContext.Emit("berichtenbox", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
                 _logger.LogWarning(
-                    "Message {MessageId}: MOBB send REJECTED synchronously ({Error}); falling back to digitale-post/letter. " +
-                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    "Message {MessageId}: MOBB send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
                     messageUuid, sendResponse.Error);
-                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
+                return HttpRequestResponse.Failure($"MOBB send not accepted by Notify NL: {sendResponse.Error}");
             }
 
             _logger.LogInformation("Message {MessageId}: MOBB send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
@@ -320,9 +315,15 @@ namespace WebQueries.MOBB
         /// sends an email notification if the recipient has a usable email address, otherwise falls
         /// back to a letter.
         /// </summary>
+        /// <param name="isRedelivered">
+        ///   Whether a failure returned from here makes the trigger come again: <see langword="true"/> on the CloudEvent
+        ///   path (Open Notificaties delivers again), <see langword="false"/> on the delivery-receipt path, where a
+        ///   failed fallback does not fail the callback. Decides what happens when Notify NL does not accept the
+        ///   e-mail (#243): fail and be delivered again, or go on to the letter rather than send nothing.
+        /// </param>
         private async Task<HttpRequestResponse> SendDigitalePostFallbackAsync(
             JsonElement cloudEvent, Guid messageUuid, string recipientBsn, CommonPartyData partyData, Guid partyId,
-            IQueryContext queryContext, VtbMessage messageData)
+            IQueryContext queryContext, VtbMessage messageData, bool isRedelivered)
         {
             Guid emailTemplateId = _configuration.Notify.TemplateId.Email.MessageBox();
             if (emailTemplateId == Guid.Empty)
@@ -368,16 +369,26 @@ namespace WebQueries.MOBB
                 personalization,
                 reference);
 
+            if (sendResponse.IsFailure && isRedelivered)
+            {
+                // Notify NL did not accept the e-mail: a technical problem, not a failed delivery. Delivered again by
+                // Open Notificaties rather than costing the citizen a paper letter (#243).
+                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
+                _logger.LogWarning(
+                    "Message {MessageId}: digitale-post (email) send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
+                    messageUuid, sendResponse.Error);
+                return HttpRequestResponse.Failure($"Digitale post (email) send not accepted by Notify NL: {sendResponse.Error}");
+            }
+
             if (sendResponse.IsFailure)
             {
-                // BPMN: the email delivery-outcome gateway ("Notificatie gelukt?") -> "Nee" -> the
-                // email-failure contactmoment step (flag "Was notificatie") -> falls through to letter.
-                TraceContext.Emit("notify-email", "fail", $"rejected by Notify NL, falling back to a letter: {sendResponse.Error}");
+                // Delivery-receipt path: nothing delivers this again, so the letter rather than nothing at all. Not
+                // as a failed notificatie: the e-mail was never sent, so the letter must not say it failed.
+                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL, falling back to a letter: {sendResponse.Error}");
                 _logger.LogWarning(
-                    "Message {MessageId}: digitale-post (email) send REJECTED synchronously ({Error}); falling back to letter. " +
-                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    "Message {MessageId}: digitale-post (email) send not accepted by Notify NL ({Error}); falling back to letter, as nothing delivers this again.",
                     messageUuid, sendResponse.Error);
-                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: true);
+                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: false);
             }
 
             _logger.LogInformation("Message {MessageId}: digitale-post (email) send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
@@ -632,7 +643,7 @@ namespace WebQueries.MOBB
                 // MOBB-technical-failure contactmoment step -> same digitale-post/letter fallback chain as
                 // MOBB-ineligibility or a synchronous send failure.
                 _logger.LogInformation("Message {MessageId}: MOBB delivery failed; attempting digitale-post/letter fallback.", reference.MessageId);
-                return await SendDigitalePostFallbackAsync(reference.CloudEvent, reference.MessageId, recipientBsn, partyData, reference.PartyId, queryContext, messageData);
+                return await SendDigitalePostFallbackAsync(reference.CloudEvent, reference.MessageId, recipientBsn, partyData, reference.PartyId, queryContext, messageData, isRedelivered: false);
             }
 
             // BPMN: the email delivery-outcome gateway ("Notificatie gelukt?") -> "Nee" -> the email-failure

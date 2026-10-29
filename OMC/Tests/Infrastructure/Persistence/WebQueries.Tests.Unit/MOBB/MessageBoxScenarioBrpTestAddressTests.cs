@@ -39,6 +39,7 @@ namespace WebQueries.Tests.Unit.MOBB
         private const string TestBsn = "123456789";
 
         private OmcConfiguration _configuration = null!;
+        private Mock<IQueryContext> _mockedQueryContext = null!;
         private Mock<INotifyClient> _mockedNotifyClient = null!;
         private IMessageBoxScenario _scenario = null!;
 
@@ -49,7 +50,7 @@ namespace WebQueries.Tests.Unit.MOBB
 
             this._configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
-            var mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
+            var mockedQueryContext = this._mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             mockedQueryContext
                 .Setup(mock => mock.GetVtbMessageAsync(It.IsAny<Uri>()))
                 .ReturnsAsync(new VtbMessage
@@ -139,6 +140,43 @@ namespace WebQueries.Tests.Unit.MOBB
                     (string)personalization["address_line_1"] == "Worth Systems t.a.v. OMC-test" &&
                     (string)personalization["address_line_2"] == "Laan van Vredenoord 11" &&
                     (string)personalization["address_line_3"] == "2289 DA Rijswijk"),
+                It.IsAny<string>(),
+                null), Times.Once);
+        }
+
+        [Test]
+        public async Task HandleDeliveryFailureAsync_MobbFailed_EmailNotAcceptedByNotify_LetterDoesNotSayTheEmailFailed()
+        {
+            // NOTE: Notify NL did not accept the e-mail, so it was never sent: the letter goes out (#243), but not as
+            //       a failed notificatie ("wasNotificatie"), which its template would tell the citizen.
+
+            // Arrange
+            this._mockedQueryContext
+                .Setup(mock => mock.GetPartyDataAsync(null, TestBsn, null, false, true))
+                .ReturnsAsync(new CommonPartyData
+                {
+                    Uri = new Uri("https://openklant.test/partijen/22222222-2222-2222-2222-222222222222"),
+                    Name = "Jane",
+                    Surname = "Doe",
+                    EmailAddress = "citizen@example.com"
+                });
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Email))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
+            this._mockedNotifyClient
+                .Setup(mock => mock.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()))
+                .ReturnsAsync(NotifySendResponse.Failure("503 Service Unavailable"));
+
+            var reference = new MessageBoxNotifyReference { MessageId = s_messageUuid, PartyId = Guid.NewGuid(), Mobb = true };
+
+            // Act
+            HttpRequestResponse result = await this._scenario.HandleDeliveryFailureAsync(reference, NotifyMethods.Mobb);
+
+            // Assert
+            Assert.That(result.IsSuccess, Is.True, result.JsonResponse);
+            this._mockedNotifyClient.Verify(mock => mock.SendLetterAsync(
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, object>>(personalization => (bool)personalization["wasNotificatie"] == false),
                 It.IsAny<string>(),
                 null), Times.Once);
         }
