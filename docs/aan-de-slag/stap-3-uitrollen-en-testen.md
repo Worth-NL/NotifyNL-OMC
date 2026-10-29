@@ -51,7 +51,7 @@ env:
   ZGW_WHITELIST_MESSAGE_ALLOWED: "false"
 ```
 
-`ASPNETCORE_ENVIRONMENT` is `Production` in productie. Gebruik in een testomgeving een andere waarde, bijvoorbeeld `Staging`: alleen dan kan `BRP_GEBRUIK_TESTADRES` aan (het testadres van Worth Systems in plaats van BRP). Met `Production`, of zonder `ASPNETCORE_ENVIRONMENT`, weigert het OMC te starten als `BRP_GEBRUIK_TESTADRES` aan staat. Zie [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md).
+`ASPNETCORE_ENVIRONMENT` is `Production` in productie. Gebruik in een testomgeving een andere waarde, bijvoorbeeld `Test`: alleen dan kan `BRP_GEBRUIK_TESTADRES` aan (het testadres van Worth Systems in plaats van BRP). Met `Production`, of zonder `ASPNETCORE_ENVIRONMENT`, weigert het OMC te starten als `BRP_GEBRUIK_TESTADRES` aan staat. Zie [Omgevingsvariabelen](../configuratie/omgevingsvariabelen.md).
 
 > `"*"` als whitelist-waarde accepteert alle zaaktypen. Vervang dit door specifieke zaaktype-identificaties (`zaaktypeIdentificatie`) zodra je hebt bevestigd dat de integratie werkt.
 

@@ -87,7 +87,7 @@ namespace Common.Settings.Extensions
         /// <remarks>
         ///   "Production" (case-insensitive) or unset is production: ASP.NET Core itself runs as "Production" when the
         ///   variable is not set. A test environment that uses <see cref="BrpUseTestAddress"/> has to set another value,
-        ///   e.g. "Staging".
+        ///   e.g. "Test".
         /// </remarks>
         public static bool IsProductionEnvironment()
         {
