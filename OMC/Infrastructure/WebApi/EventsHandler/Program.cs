@@ -558,7 +558,7 @@ namespace EventsHandler
                 {
                     throw new InvalidOperationException(
                         $"{ConfigExtensions.BrpUseTestAddress} is switched on while {ConfigExtensions.AspNetCoreEnvironment} is Production (or not set). " +
-                        $"Unset {ConfigExtensions.BrpUseTestAddress}, or set {ConfigExtensions.AspNetCoreEnvironment} to e.g. \"Staging\" in a test environment.");
+                        $"Unset {ConfigExtensions.BrpUseTestAddress}, or set {ConfigExtensions.AspNetCoreEnvironment} to e.g. \"Test\" in a test environment.");
                 }
 
                 app.Logger.LogWarning(
