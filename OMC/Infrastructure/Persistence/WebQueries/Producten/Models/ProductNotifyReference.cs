@@ -90,6 +90,17 @@ namespace WebQueries.Producten.Models
         public Uri? ProductTypeUri { get; set; } = null;
 
         /// <summary>
+        /// The id "Notify NL" gave this notification, filled in from the delivery receipt - never sent to "Notify NL".
+        /// </summary>
+        /// <remarks>
+        ///   Written into the klantcontact's metadata, so a retried or duplicate delivery receipt finds the klantcontact
+        ///   it already wrote instead of writing a second one. [JsonIgnore], because the reference handed to
+        ///   "Notify NL" has to stay the same on every delivery of a notification (#247).
+        /// </remarks>
+        [JsonIgnore]
+        public Guid NotifyNotificationId { get; set; } = Guid.Empty;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ProductNotifyReference"/> struct.
         /// </summary>
         public ProductNotifyReference()

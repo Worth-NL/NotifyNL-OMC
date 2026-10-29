@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Common.Extensions;
 using Common.Settings.Configuration;
+using Common.Settings.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Notify.Models;
@@ -13,6 +14,7 @@ using WebQueries.DataQuerying.Proxy.Interfaces;
 using WebQueries.DataSending.Clients.Factories.Interfaces;
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
+using WebQueries.Exceptions;
 using WebQueries.MOBB.Interfaces;
 using WebQueries.MOBB.Models;
 using WebQueries.Tracing;
@@ -88,8 +90,11 @@ namespace WebQueries.MOBB
         /// </summary>
         /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
         /// <returns>An HTTP response wrapper indicating success or failure.</returns>
+        /// <exception cref="ProcessingAbortedException">"Open VTB" is not configured.</exception>
         public async Task<HttpRequestResponse> ProcessCloudEventAsync(JsonElement cloudEvent)
         {
+            ValidateOpenVtbIsConfigured();
+
             // Step 0: Only "bericht-gepubliceerd" means the message is actually active and ready to be
             // forwarded. Everything else (including "bericht-geregistreerd" and any not-yet-existing future
             // type) is intentionally ignored here - see the BerichtGepubliceerdType doc comment.
@@ -248,7 +253,7 @@ namespace WebQueries.MOBB
             if (!messageTypeData.IsInMyGovernmentMessageBox)
             {
                 _logger.LogInformation("Message {MessageId}: not eligible for MOBB inbox; going straight to digitale-post/letter fallback.", messageUuid);
-                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
+                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData, isRedelivered: true);
             }
 
             // Step 9: Append hardcoded postfix to the message text
@@ -272,6 +277,11 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Mobb, messageUuid, "berichtenbox") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
+
             NotifySendResponse sendResponse = await notifyClient.SendMessageBoxNotificationAsync(
                 recipientBsn,
                 modifiedMessageText,
@@ -282,20 +292,15 @@ namespace WebQueries.MOBB
 
             if (sendResponse.IsFailure)
             {
-                // BPMN: the MOBB delivery-outcome gateway ("(Permanent) Success?") -> "Nee" -> the
-                // MOBB-technical-failure contactmoment step -> falls through to the same digitale-post/letter
-                // fallback chain as MOBB-ineligibility.
-                // TODO (treated uniformly for now, per instruction): the BPMN distinguishes "no MOBB
-                // subscription" (no separate failed-attempt contactmoment, just adjusted fallback text) from
-                // "technical failure" (a failed-attempt contactmoment IS created) - NotifySendResponse doesn't
-                // expose enough detail to tell these apart yet. This draft does not create a separate
-                // "failed MOBB attempt" contactmoment at all; it just falls through to the fallback chain.
-                TraceContext.Emit("berichtenbox", "fail", $"rejected by Notify NL, falling back: {sendResponse.Error}");
+                // Notify NL did not accept the send, so nothing is queued there and nothing reached Logius: this says
+                // nothing about the citizen's Berichtenbox, which is only known later, from the delivery-receipt
+                // callback. Like every other scenario (BaseScenario), a Failure lets Open Notificaties deliver the
+                // CloudEvent again (#243); the check against sending twice (#247) keeps that safe.
+                TraceContext.Emit("berichtenbox", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
                 _logger.LogWarning(
-                    "Message {MessageId}: MOBB send REJECTED synchronously ({Error}); falling back to digitale-post/letter. " +
-                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    "Message {MessageId}: MOBB send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
                     messageUuid, sendResponse.Error);
-                return await SendDigitalePostFallbackAsync(cloudEvent, messageUuid, recipientBsn, partyData, partyId, queryContext, messageData);
+                return HttpRequestResponse.Failure($"MOBB send not accepted by Notify NL: {sendResponse.Error}");
             }
 
             _logger.LogInformation("Message {MessageId}: MOBB send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
@@ -310,10 +315,35 @@ namespace WebQueries.MOBB
         /// sends an email notification if the recipient has a usable email address, otherwise falls
         /// back to a letter.
         /// </summary>
+        /// <param name="cloudEvent">The CloudEvent; only its metadata goes into the reference, never its "data".</param>
+        /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
+        /// <param name="recipientBsn">The recipient's BSN, for the BRP address of a letter.</param>
+        /// <param name="partyData">The recipient's OpenKlant party, with the e-mail address to send to.</param>
+        /// <param name="partyId">The resolved OpenKlant party GUID.</param>
+        /// <param name="queryContext">The query context, for the Bericht's attachments on a letter.</param>
+        /// <param name="messageData">The Bericht itself.</param>
+        /// <param name="isRedelivered">
+        ///   Whether a failure returned from here makes the trigger come again: <see langword="true"/> on the CloudEvent
+        ///   path (Open Notificaties delivers again), <see langword="false"/> on the delivery-receipt path, where a
+        ///   failed fallback does not fail the callback. Decides what happens when Notify NL does not accept the
+        ///   e-mail (#243): fail and be delivered again, or go on to the letter rather than send nothing.
+        /// </param>
         private async Task<HttpRequestResponse> SendDigitalePostFallbackAsync(
             JsonElement cloudEvent, Guid messageUuid, string recipientBsn, CommonPartyData partyData, Guid partyId,
-            IQueryContext queryContext, VtbMessage messageData)
+            IQueryContext queryContext, VtbMessage messageData, bool isRedelivered)
         {
+            Guid emailTemplateId = _configuration.Notify.TemplateId.Email.MessageBox();
+            if (emailTemplateId == Guid.Empty)
+            {
+                // No e-mail template configured: this gemeente does not use the e-mail step. Skipped like "no
+                // e-mail address" - straight to the letter, and no (failed) contactmoment for the e-mail step.
+                _logger.LogWarning(
+                    "Message {MessageId}: e-mail step skipped, NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX is not set; going straight to letter fallback.",
+                    messageUuid);
+                TraceContext.Emit("notify-email", "abort", "e-mail step skipped: no e-mail template configured; falling back to a letter");
+                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: false);
+            }
+
             if (string.IsNullOrEmpty(partyData.EmailAddress))
             {
                 // BPMN: the digitale-post eligibility gateway ("Nee, geen digitale post") -> straight to letter.
@@ -335,22 +365,37 @@ namespace WebQueries.MOBB
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
 
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Email, messageUuid, "notify-email") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
+
             NotifySendResponse sendResponse = await notifyClient.SendEmailAsync(
                 partyData.EmailAddress,
-                _configuration.Notify.TemplateId.Email.MessageBox().ToString(),
+                emailTemplateId.ToString(),
                 personalization,
                 reference);
 
+            if (sendResponse.IsFailure && isRedelivered)
+            {
+                // Notify NL did not accept the e-mail: a technical problem, not a failed delivery. Delivered again by
+                // Open Notificaties rather than costing the citizen a paper letter (#243).
+                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
+                _logger.LogWarning(
+                    "Message {MessageId}: digitale-post (email) send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
+                    messageUuid, sendResponse.Error);
+                return HttpRequestResponse.Failure($"Digitale post (email) send not accepted by Notify NL: {sendResponse.Error}");
+            }
+
             if (sendResponse.IsFailure)
             {
-                // BPMN: the email delivery-outcome gateway ("Notificatie gelukt?") -> "Nee" -> the
-                // email-failure contactmoment step (flag "Was notificatie") -> falls through to letter.
-                TraceContext.Emit("notify-email", "fail", $"rejected by Notify NL, falling back to a letter: {sendResponse.Error}");
+                // Delivery-receipt path: nothing delivers this again, so the letter rather than nothing at all. Not
+                // as a failed notificatie: the e-mail was never sent, so the letter must not say it failed.
+                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL, falling back to a letter: {sendResponse.Error}");
                 _logger.LogWarning(
-                    "Message {MessageId}: digitale-post (email) send REJECTED synchronously ({Error}); falling back to letter. " +
-                    "NOTE: unlike an async delivery-receipt failure, this synchronous rejection creates NO contactmoment record.",
+                    "Message {MessageId}: digitale-post (email) send not accepted by Notify NL ({Error}); falling back to letter, as nothing delivers this again.",
                     messageUuid, sendResponse.Error);
-                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: true);
+                return await SendLetterFallbackAsync(cloudEvent, messageUuid, partyId, recipientBsn, messageData, queryContext, wasGefaaldeNotificatie: false);
             }
 
             _logger.LogInformation("Message {MessageId}: digitale-post (email) send accepted by Notify NL; awaiting delivery-receipt callback.", messageUuid);
@@ -393,25 +438,49 @@ namespace WebQueries.MOBB
             Adressering? adressering;
 
             TraceContext.Emit("brp", "start", "Attempting to retrieve the address for the letter");
-            try
+            if (ConfigExtensions.IsBrpTestAddressEnabled() && ConfigExtensions.IsProductionEnvironment())
             {
-                // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
-                // environment (BRP integration is documented as optional), so this must not become a
-                // hard dependency of every MessageBox notification - only of the letter fallback.
-                BrpClient brpClient = _serviceProvider.GetRequiredService<BrpClient>();
-                string brpResponse = await brpClient.QueryPersonAsync(recipientBsn);
-
-                PersonenQueryResponse result = _serializer.Deserialize<PersonenQueryResponse>(brpResponse);
-                adressering = result.Personen is { Count: > 0 } personen ? personen[0].Adressering : null;
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
-                TraceContext.Emit("brp", "fail", exception.Message);
+                // Hard stop, also here: het OMC does not start like this, but a letter in production must never go to
+                // the test address, whatever changed after startup.
+                _logger.LogError(
+                    "Message {MessageId}: {Variable} is switched on in production; refusing to send the letter to the test address.",
+                    messageUuid, ConfigExtensions.BrpUseTestAddress);
+                TraceContext.Emit("brp", "fail", $"{ConfigExtensions.BrpUseTestAddress} is switched on in production; letter not sent");
                 return HttpRequestResponse.Failure(
-                    $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
+                    $"{ConfigExtensions.BrpUseTestAddress} is switched on in production; the letter is not sent to the test address.");
             }
-            TraceContext.Emit("brp", "ok", "person retrieved");
+
+            if (ConfigExtensions.IsBrpTestAddressEnabled())
+            {
+                // Test environments without a BRP connection: BRP is not called, the letter goes to Worth Systems.
+                _logger.LogWarning(
+                    "Message {MessageId}: {Variable} is switched on; BRP is not called and the letter goes to the Worth Systems test address.",
+                    messageUuid, ConfigExtensions.BrpUseTestAddress);
+                TraceContext.Emit("brp", "ok", $"test address used ({ConfigExtensions.BrpUseTestAddress}); BRP not called");
+                adressering = BrpTestAddress.Value;
+            }
+            else
+            {
+                try
+                {
+                    // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
+                    // environment (BRP integration is documented as optional), so this must not become a
+                    // hard dependency of every MessageBox notification - only of the letter fallback.
+                    BrpClient brpClient = _serviceProvider.GetRequiredService<BrpClient>();
+                    string brpResponse = await brpClient.QueryPersonAsync(recipientBsn);
+
+                    PersonenQueryResponse result = _serializer.Deserialize<PersonenQueryResponse>(brpResponse);
+                    adressering = result.Personen is { Count: > 0 } personen ? personen[0].Adressering : null;
+                    TraceContext.Emit("brp", "ok", "person retrieved");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
+                    TraceContext.Emit("brp", "fail", exception.Message);
+                    return HttpRequestResponse.Failure(
+                        $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
+                }
+            }
 
             // NOTE: Never include actual BRP field values (name, address lines, etc.) in a returned
             // message - BRP data must only ever be processed in memory, never logged or stored, and
@@ -439,6 +508,11 @@ namespace WebQueries.MOBB
             string reference = await BuildReferenceAsync(cloudEvent, messageUuid, partyId, messageData.MessageTypeUri, mobb: false, wasGefaaldeNotificatie);
 
             INotifyClient notifyClient = _notifyClientFactory.GetHttpClient(messageUuid.ToString());
+
+            if (await CheckNotAlreadySentAsync(notifyClient, reference, NotifyMethods.Letter, messageUuid, "notify-post") is { } alreadyHandled)
+            {
+                return alreadyHandled;
+            }
 
             NotifySendResponse sendResponse = await notifyClient.SendLetterAsync(
                 _configuration.Notify.TemplateId.MessageBoxLetter().ToString(),
@@ -588,7 +662,7 @@ namespace WebQueries.MOBB
                 // MOBB-technical-failure contactmoment step -> same digitale-post/letter fallback chain as
                 // MOBB-ineligibility or a synchronous send failure.
                 _logger.LogInformation("Message {MessageId}: MOBB delivery failed; attempting digitale-post/letter fallback.", reference.MessageId);
-                return await SendDigitalePostFallbackAsync(reference.CloudEvent, reference.MessageId, recipientBsn, partyData, reference.PartyId, queryContext, messageData);
+                return await SendDigitalePostFallbackAsync(reference.CloudEvent, reference.MessageId, recipientBsn, partyData, reference.PartyId, queryContext, messageData, isRedelivered: false);
             }
 
             // BPMN: the email delivery-outcome gateway ("Notificatie gelukt?") -> "Nee" -> the email-failure
@@ -635,7 +709,7 @@ namespace WebQueries.MOBB
         /// <summary>
         /// Builds the compressed &amp; Base64-encoded "reference" (CloudEvent + extras) to pass to NotifyNL.
         /// </summary>
-        /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
+        /// <param name="cloudEvent">The CloudEvent; only its metadata goes into the reference, never its "data".</param>
         /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
         /// <param name="partyId">The resolved OpenKlant party GUID.</param>
         /// <param name="messageTypeUri">The Bericht's BerichtType, registered as the klantcontact's "hoofdOnderwerpType".</param>
@@ -649,7 +723,8 @@ namespace WebQueries.MOBB
         {
             var referenceData = new MessageBoxNotifyReference
             {
-                CloudEvent = cloudEvent,
+                // Never the event's "data": it holds the citizen's BSN (#265)
+                CloudEvent = MessageBoxNotifyReference.EventMetadataOf(cloudEvent),
                 MessageId = messageUuid,
                 PartyId = partyId,
                 Mobb = mobb,
@@ -661,6 +736,76 @@ namespace WebQueries.MOBB
         }
 
         #region Private helpers
+
+        /// <summary>
+        /// Rejects every Bericht when this deployment does not use "Open VTB".
+        /// </summary>
+        /// <remarks>
+        ///   "Open VTB" is optional, and leaving its endpoint unset is how a deployment opts out. That is a
+        ///   decision, not a defect, so a CloudEvent that arrives anyway (e.g. a subscription to the "berichten"
+        ///   kanaal left in place) is aborted rather than failed: retrying it would only fail the same way.
+        /// </remarks>
+        /// <exception cref="ProcessingAbortedException">"Open VTB" is not configured.</exception>
+        private void ValidateOpenVtbIsConfigured()
+        {
+            if (_configuration.ZGW.Endpoint.IsOpenVtbConfigured())
+            {
+                return;
+            }
+
+            const string reason =
+                "Open VTB is not configured (ZGW_ENDPOINT_OPENVTB is not set), " +
+                "so the Berichtenbox flow is disabled.";
+
+            TraceContext.Emit("vtb", "abort", reason);
+            _logger.LogInformation("{Reason} CloudEvent dropped without notifying anyone.", reason);
+
+            throw new ProcessingAbortedException(reason);
+        }
+
+        /// <summary>
+        /// Makes sure this exact send has not already been handed to "Notify NL", so the same Bericht delivered to OMC
+        /// more than once - a redelivery by Open Notificaties, a retried or duplicate delivery-receipt callback -
+        /// never reaches the citizen twice.
+        /// </summary>
+        /// <remarks>
+        ///   The reference holds only the CloudEvent, the Bericht, the partij and the channel flags, so the same step
+        ///   of the same Bericht always builds the same one; "Notify NL" matches it exactly. An earlier send that is
+        ///   found is left to its own delivery receipt, which drives the rest of the fallback chain.
+        ///   <para>
+        ///     A lookup that fails is not a reason to send anyway: nothing would be known about an earlier send.
+        ///   </para>
+        /// </remarks>
+        /// <returns>
+        ///   <see langword="null"/> when nothing was sent before and the caller should send; otherwise the response
+        ///   to return instead of sending.
+        /// </returns>
+        private async Task<HttpRequestResponse?> CheckNotAlreadySentAsync(
+            INotifyClient notifyClient, string reference, NotifyMethods notificationMethod, Guid messageUuid, string channelStage)
+        {
+            NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(reference, notificationMethod);
+
+            if (lookup.IsFailure)
+            {
+                _logger.LogWarning("Message {MessageId}: could not check Notify NL for an earlier send ({Error}); not sending.",
+                    messageUuid, lookup.Error);
+                TraceContext.Emit(channelStage, "fail", $"could not check for an earlier send, not sending: {lookup.Error}");
+
+                return HttpRequestResponse.Failure($"Could not check Notify NL for an earlier send of this Bericht: {lookup.Error}");
+            }
+
+            if (!lookup.Exists)
+            {
+                return null;
+            }
+
+            _logger.LogInformation("Message {MessageId}: already sent as notification {NotificationId} ({Status}); not sending it again.",
+                messageUuid, lookup.NotificationId, lookup.Status);
+            TraceContext.Emit(channelStage, "ok", $"already sent as notification {lookup.NotificationId} ({lookup.Status}); not sent again");
+
+            return HttpRequestResponse.Success(
+                $"Already sent: notification {lookup.NotificationId} ({lookup.Status}); not sending it again.");
+        }
 
         /// <summary>
         /// Fetches document metadata for attachments (bijlagen) from the Documenten API.

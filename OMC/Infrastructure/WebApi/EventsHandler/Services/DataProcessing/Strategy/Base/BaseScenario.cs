@@ -149,8 +149,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
                     SubjectTypeUri = preparedData.SubjectTypeUri,
-                    TraceId = TraceContext.CurrentTraceId,
-                    SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    // NOTE: No SentAtUnixMs - a time differs on every run, and this reference has to be the same on
+                    //       every delivery of the notification (#247). The receipt's own "created_at" stands in.
+                    TraceId = TraceContext.CurrentTraceId
                 }
             );
         }
@@ -179,8 +180,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
                     SubjectTypeUri = preparedData.SubjectTypeUri,
-                    TraceId = TraceContext.CurrentTraceId,
-                    SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    // NOTE: No SentAtUnixMs - a time differs on every run, and this reference has to be the same on
+                    //       every delivery of the notification (#247). The receipt's own "created_at" stands in.
+                    TraceId = TraceContext.CurrentTraceId
                 }
             );
         }
@@ -209,8 +211,9 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Base
                     CaseId = preparedData.CaseUri.GetGuid(),
                     PartyId = preparedData.Party.Uri.GetGuid(),
                     SubjectTypeUri = preparedData.SubjectTypeUri,
-                    TraceId = TraceContext.CurrentTraceId,
-                    SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    // NOTE: No SentAtUnixMs - a time differs on every run, and this reference has to be the same on
+                    //       every delivery of the notification (#247). The receipt's own "created_at" stands in.
+                    TraceId = TraceContext.CurrentTraceId
                 }
             );
         }

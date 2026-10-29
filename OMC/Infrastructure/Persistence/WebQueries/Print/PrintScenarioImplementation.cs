@@ -206,8 +206,29 @@ namespace WebQueries.Print
                 OriginalResourceUrl = notification.MainObjectUri
             };
 
+            string encodedReference = await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None);
+
+            // Never the same letter twice when the print object reaches OMC more than once (#247): the reference holds
+            // only the object, the party and what the object says, so it is the same on every delivery.
+            NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(encodedReference, NotifyMethods.Letter);
+
+            if (lookup.IsFailure)
+            {
+                TraceContext.Emit("notifynl", "fail", $"could not check for an earlier send, not sending: {lookup.Error}");
+
+                return HttpRequestResponse.Failure($"Could not check Notify NL for an earlier send of this letter: {lookup.Error}");
+            }
+
+            if (lookup.Exists)
+            {
+                TraceContext.Emit("notifynl", "ok", $"already sent as notification {lookup.NotificationId} ({lookup.Status}); not sent again");
+
+                return HttpRequestResponse.Success(
+                    $"Already sent: notification {lookup.NotificationId} ({lookup.Status}); not sending the letter again.");
+            }
+
             NotifySendResponse sendResponse = await notifyClient.SendPrecompiledLetterAsync(
-                reference: await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None),
+                reference: encodedReference,
                 pdfContents: pdfContents);
 
             if (!sendResponse.IsSuccess)

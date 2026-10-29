@@ -13,8 +13,12 @@ namespace WebQueries.MOBB.Models
     public struct MessageBoxNotifyReference : IJsonSerializable
     {
         /// <summary>
-        /// The full CloudEvent that triggered this MOBB notification.
+        /// The metadata of the CloudEvent that triggered this MOBB notification (see <see cref="EventMetadataOf"/>).
         /// </summary>
+        /// <remarks>
+        ///   Its "id" tells a redelivery of the same event (not sent again, #247) apart from a new event about the
+        ///   same Bericht (sent). A reference from before #265 still holds the full CloudEvent and stays readable.
+        /// </remarks>
         [JsonRequired]
         [JsonInclude]
         [JsonPropertyOrder(0)]
@@ -78,10 +82,53 @@ namespace WebQueries.MOBB.Models
         public Uri? MessageTypeUri { get; set; } = null;
 
         /// <summary>
+        /// The id "Notify NL" gave this notification, filled in from the delivery receipt - never sent to "Notify NL".
+        /// </summary>
+        /// <remarks>
+        ///   Written into the klantcontact's metadata, so a retried or duplicate delivery receipt finds the klantcontact
+        ///   it already wrote instead of writing a second one. [JsonIgnore], because the reference handed to
+        ///   "Notify NL" has to stay the same on every delivery of a notification (#247).
+        /// </remarks>
+        [JsonIgnore]
+        public Guid NotifyNotificationId { get; set; } = Guid.Empty;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MessageBoxNotifyReference"/> struct.
         /// </summary>
         public MessageBoxNotifyReference()
         {
+        }
+
+        /// <summary>
+        /// The CloudEvent attributes kept in the reference; everything else is left out.
+        /// </summary>
+        private static readonly string[] s_eventMetadata = ["specversion", "id", "source", "type", "subject", "time"];
+
+        /// <summary>
+        /// Only the metadata of a CloudEvent, as kept in <see cref="CloudEvent"/>.
+        /// </summary>
+        /// <remarks>
+        ///   The reference goes to "Notify NL", and the event's "data" holds the Bericht's "ontvanger" (the citizen's
+        ///   BSN) and "onderwerp". OMC never reads "data": it fetches the Bericht itself. An allowlist, so a new
+        ///   attribute or extension Open VTB adds later is left out as well.
+        /// </remarks>
+        public static JsonElement EventMetadataOf(JsonElement cloudEvent)
+        {
+            if (cloudEvent.ValueKind != JsonValueKind.Object)
+            {
+                return cloudEvent;
+            }
+
+            Dictionary<string, JsonElement> metadata = [];
+            foreach (string name in s_eventMetadata)
+            {
+                if (cloudEvent.TryGetProperty(name, out JsonElement value))
+                {
+                    metadata[name] = value;
+                }
+            }
+
+            return JsonSerializer.SerializeToElement(metadata);
         }
     }
 }

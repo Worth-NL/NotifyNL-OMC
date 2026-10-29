@@ -15,6 +15,7 @@ using ZgwModels.Enums;
 using ZgwModels.Mapping.Models.POCOs.Objecten.Print;
 using ZgwModels.Mapping.Models.POCOs.NotificatieApi;
 using ZgwModels.Mapping.Models.POCOs.OpenKlant;
+using ZgwModels.Mapping.Models.POCOs.OpenKlant.v2;
 
 namespace WebQueries.Tests.Unit.Register.v2
 {
@@ -579,6 +580,206 @@ namespace WebQueries.Tests.Unit.Register.v2
                     ReferenceUri = new Uri($"https://openklant.test/klantinteracties/api/v1/klantcontacten/{Guid.NewGuid()}")
                 }
             };
+
+        #region Writing a klantcontact once per delivery receipt
+        private static readonly Guid s_notifyNotificationId = Guid.Parse("99999999-8888-7777-6666-555555555555");
+        private static readonly Guid s_existingKlantcontactId = Guid.Parse("12121212-3434-5656-7878-909090909090");
+
+        private static ProductNotifyReference ProductReferenceFromReceipt()
+        {
+            ProductNotifyReference reference = s_productReference;
+            reference.NotifyNotificationId = s_notifyNotificationId;
+            return reference;
+        }
+
+        private static KlantcontactResults Found(string notificationId, bool hasActor, Guid actorId, bool hasAttachment = false)
+            => new()
+            {
+                Results =
+                [
+                    new ExistingKlantcontact
+                    {
+                        Id = s_existingKlantcontactId,
+                        Metadata = new Dictionary<string, string> { ["notifyNotificationId"] = notificationId },
+                        Actors = hasActor ? [new LinkedResource { Id = actorId }] : [],
+                        Attachments = hasAttachment ? [new LinkedResource { Id = Guid.NewGuid() }] : []
+                    }
+                ]
+            };
+
+        [Test]
+        public async Task ReportProductCompletionAsync_FirstReceipt_LooksUp_CreatesWithTheNotifyIdInItsMetadata_AndLinksTheActor()
+        {
+            // Arrange
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new KlantcontactResults());
+            queryContext.Setup(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>())).ReturnsAsync(GetCreatedKlantcontact());
+            queryContext.Setup(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>())).ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+            // Act
+            HttpRequestResponse response = await service.ReportProductCompletionAsync(
+                ProductReferenceFromReceipt(), NotifyMethods.Email, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                queryContext.Verify(mock => mock.FindKlantcontactenAsync(
+                    s_productReference.PartyId, s_productReference.ProductId.ToString(), It.IsAny<string>()), Times.Once);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(
+                    It.Is<string>(json => json.Contains($"\"notifyNotificationId\":\"{s_notifyNotificationId}\""))), Times.Once);
+                queryContext.Verify(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>()), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task ReportProductCompletionAsync_RetriedReceipt_ActorMissing_OnlyLinksTheActor()
+        {
+            // Arrange: the earlier attempt created the klantcontact and then failed to link the actor
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(Found(s_notifyNotificationId.ToString(), hasActor: false, _configuration.OMC.Actor.Id()));
+            queryContext.Setup(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>())).ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+            // Act
+            HttpRequestResponse response = await service.ReportProductCompletionAsync(
+                ProductReferenceFromReceipt(), NotifyMethods.Email, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>()), Times.Never);
+                queryContext.Verify(mock => mock.LinkActorToContactMomentAsync(
+                    It.Is<string>(json => json.Contains(s_existingKlantcontactId.ToString()))), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task ReportProductCompletionAsync_RetriedReceipt_AlreadyComplete_WritesNothing()
+        {
+            // Arrange: a duplicate receipt for a klantcontact that is already complete
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(Found(s_notifyNotificationId.ToString(), hasActor: true, _configuration.OMC.Actor.Id()));
+
+            // Act
+            HttpRequestResponse response = await service.ReportProductCompletionAsync(
+                ProductReferenceFromReceipt(), NotifyMethods.Email, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>()), Times.Never);
+                queryContext.Verify(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task ReportProductCompletionAsync_OnlyAKlantcontactOfAnotherReceipt_CreatesANewOne()
+        {
+            // Arrange
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(Found(Guid.NewGuid().ToString(), hasActor: true, _configuration.OMC.Actor.Id()));
+            queryContext.Setup(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>())).ReturnsAsync(GetCreatedKlantcontact());
+            queryContext.Setup(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>())).ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+            // Act
+            HttpRequestResponse response = await service.ReportProductCompletionAsync(
+                ProductReferenceFromReceipt(), NotifyMethods.Email, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>()), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task ReportProductCompletionAsync_LookupFails_ReportsFailure_WithoutCreating()
+        {
+            // Arrange: not knowing is no reason to write a possibly second klantcontact; the receipt is retried
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ThrowsAsync(new HttpRequestException("OpenKlant unavailable"));
+
+            // Act
+            HttpRequestResponse response = await service.ReportProductCompletionAsync(
+                ProductReferenceFromReceipt(), NotifyMethods.Email, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsFailure, Is.True);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task ReportProductCompletionAsync_NoNotifyId_WritesWithoutLookingUp()
+        {
+            // Arrange: a klantcontact for a send that never reached Notify NL has no receipt to repeat
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>())).ReturnsAsync(GetCreatedKlantcontact());
+            queryContext.Setup(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>())).ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+            // Act
+            await service.ReportProductCompletionAsync(s_productReference, NotifyMethods.Email, "Subject", "Body", "false");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                queryContext.Verify(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(
+                    It.Is<string>(json => !json.Contains("notifyNotificationId"))), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task ReportPrintCompletionAsync_RetriedReceipt_BijlageMissing_OnlyAttachesIt()
+        {
+            // Arrange: the earlier attempt created and linked the klantcontact, then failed to attach the PDF
+            (ITelemetryService service, Mock<IQueryContext> queryContext) = CreateServiceWithQueryContext(_configuration);
+            queryContext.Setup(mock => mock.FindKlantcontactenAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(Found(s_notifyNotificationId.ToString(), hasActor: true, _configuration.OMC.Actor.Id(), hasAttachment: false));
+            queryContext.Setup(mock => mock.CreateBijlageAsync(It.IsAny<string>())).ReturnsAsync(HttpRequestResponse.Success("{}"));
+
+            var reference = new PrintNotifyReference
+            {
+                ObjectId = Guid.NewGuid(),
+                PartyId = Guid.NewGuid(),
+                AttachmentId = Guid.Parse("77777777-7777-7777-7777-777777777777"),
+                NotifyNotificationId = s_notifyNotificationId
+            };
+
+            // Act
+            HttpRequestResponse response = await service.ReportPrintCompletionAsync(reference, NotifyMethods.Letter, "Subject", "Body", "true");
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                queryContext.Verify(mock => mock.CreateNewContactMomentAsync(It.IsAny<string>()), Times.Never);
+                queryContext.Verify(mock => mock.LinkActorToContactMomentAsync(It.IsAny<string>()), Times.Never);
+                queryContext.Verify(mock => mock.CreateBijlageAsync(
+                    It.Is<string>(json => json.Contains(s_existingKlantcontactId.ToString()))), Times.Once);
+            });
+        }
+
+        [Test]
+        public void GetMessageBoxContactMomentJsonBody_FromAReceipt_CarriesTheNotifyIdInItsMetadata()
+        {
+            var reference = new MessageBoxNotifyReference { NotifyNotificationId = s_notifyNotificationId };
+
+            string actualResult = CreateService().GetMessageBoxContactMomentJsonBody(reference, NotifyMethods.Mobb, ["Subject", "Body", "true"]);
+
+            Assert.That(actualResult, Does.Contain($"\"metadata\":{{\"notifyNotificationId\":\"{s_notifyNotificationId}\"}}"));
+        }
+        #endregion
 
         [Test]
         public async Task ReportProductCompletionAsync_CreatesTheKlantcontact_LinksTheActor_AndSucceeds()

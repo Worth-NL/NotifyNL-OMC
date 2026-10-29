@@ -24,6 +24,10 @@ Als de BRP-integratie is ingeschakeld, haalt het OMC de volgende gegevens op:
 |---|---|
 | `BRP_BASEURL` | Basis-URL van de BRP / WS Gateway-dienst — vereist wanneer de BRP-integratie gebruikt wordt |
 
+## Testadres in plaats van BRP
+
+In een testomgeving zonder BRP-koppeling kan de Berichtenbox-brief toch verstuurd worden: zet `BRP_GEBRUIK_TESTADRES` op `true` (standaard `false`). Het OMC roept BRP dan niet aan en gebruikt het adres van Worth Systems ("Worth Systems t.a.v. OMC-test", Laan van Vredenoord 11, 2289 DA Rijswijk), zodat de brief tot en met de (test)printstraat gaat. Bij het opstarten en bij elke brief komt er een waarschuwing in de log, en het dashboard toont het als niet ok. Wordt geweigerd in productie: staat `ASPNETCORE_ENVIRONMENT` op `Production` of is hij niet gezet, dan start het OMC niet (en gaat er geen brief naar het testadres). Zet in een testomgeving dus bijvoorbeeld `ASPNETCORE_ENVIRONMENT=Staging`.
+
 ---
 
 ## Tweelaagse beveiliging

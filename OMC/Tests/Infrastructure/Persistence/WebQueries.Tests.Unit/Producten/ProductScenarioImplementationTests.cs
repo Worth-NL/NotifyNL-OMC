@@ -80,6 +80,11 @@ namespace WebQueries.Tests.Unit.Producten
             // once a working delivery is in place behind them. It is exercised in ProductDeliveryTests;
             // here it just has to not get in the way.
             this._mockedNotifyClient = new Mock<INotifyClient>(MockBehavior.Strict);
+
+            // Nothing was sent before, unless a test says otherwise (#247)
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
             this._mockedNotifyClient
                 .Setup(mock => mock.SendEmailAsync(
                     It.IsAny<string>(), It.IsAny<string>(),

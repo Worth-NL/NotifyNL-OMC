@@ -70,7 +70,7 @@ namespace Common.Tests.Utilities._TestHelpers
         /// <summary>
         /// Gets the mocked <see cref="EnvironmentLoader"/>.
         /// </summary>
-        private static EnvironmentLoader GetEnvironmentLoader(byte _, bool isValid = true)
+        private static EnvironmentLoader GetEnvironmentLoader(byte _, bool isValid = true, IReadOnlyDictionary<string, string?>? overrides = null)
         {
             var mockedEnvironmentReader = new Mock<IEnvironment>();
 
@@ -176,6 +176,11 @@ namespace Common.Tests.Utilities._TestHelpers
             static string? GetTestValue(bool isValid, string validString, string? invalidString = null)
             {
                 return isValid ? validString : invalidString;  // Simulates behavior of real Environment.GetEnvironmentVariable(string)
+            }
+
+            foreach (KeyValuePair<string, string?> keyValue in overrides ?? new Dictionary<string, string?>())
+            {
+                keyValueMapping[keyValue.Key] = keyValue.Value;
             }
 
             foreach (KeyValuePair<string, string?> keyValue in keyValueMapping)
@@ -308,6 +313,22 @@ namespace Common.Tests.Utilities._TestHelpers
 
         public static OmcConfiguration GetOmcConfigurationWith(TestLoaderTypesSetup testLoaderTypes)
             => s_presetConfigurations[testLoaderTypes];
+
+        /// <summary>
+        /// Gets a new <see cref="TestLoaderTypesSetup.ValidEnvironment_v2"/> configuration in which the given
+        /// environment variables have other values (<see langword="null"/> = not set).
+        /// </summary>
+        /// <remarks>
+        ///   The configuration caches its values statically: dispose it before and after use, so neither this
+        ///   configuration nor another fixture's sees the other's values.
+        /// </remarks>
+        public static OmcConfiguration GetValidEnvironmentConfigurationWith(IReadOnlyDictionary<string, string?> overrides)
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(GetEnvironmentLoader(2, isValid: true, overrides));
+
+            return GetOmcConfiguration(serviceCollection);
+        }
 
         /// <summary>
         /// The enum representing <see cref="LoaderTypes"/> in preconfigured setups used for testing.

@@ -106,10 +106,10 @@ namespace EventsHandler.Services.Responding.v2
                     {
                         (NotifyReference reference, NotifyMethods notificationMethod) = await ExtractCallbackDataAsync(callback);
 
-                        EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, status);
+                        EmitChannelConfirmationTrace(reference.TraceId, HandedOffAtUnixMs(reference.SentAtUnixMs, callback), notificationMethod, status);
 
                         HttpRequestResponse contactMomentResult = await InformUserAboutStatusAsync(callback, reference, notificationMethod, status);
-                        EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
+                        EmitContactMomentTrace(reference.TraceId, HandedOffAtUnixMs(reference.SentAtUnixMs, callback), contactMomentResult);
 
                         informResult = contactMomentResult;
                     }
@@ -270,6 +270,29 @@ namespace EventsHandler.Services.Responding.v2
         }
 
         /// <summary>
+        /// When the notification was handed to "Notify NL": from the reference when it still carries that moment
+        /// (sent before #247), otherwise the receipt's own "created_at" - when "Notify NL" accepted it.
+        /// </summary>
+        internal static long? HandedOffAtUnixMs(long? sentAtUnixMs, DeliveryReceipt callback)
+        {
+            if (sentAtUnixMs is not null)
+            {
+                return sentAtUnixMs;
+            }
+
+            if (callback.CreatedAt == default)
+            {
+                return null;
+            }
+
+            DateTime createdAt = callback.CreatedAt.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(callback.CreatedAt, DateTimeKind.Utc)  // "Notify NL" reports UTC
+                : callback.CreatedAt;
+
+            return new DateTimeOffset(createdAt).ToUnixTimeMilliseconds();
+        }
+
+        /// <summary>
         /// Computes how long it's been since the original scenario handed this notification off
         /// to "Notify NL" (if that moment was recorded), appending the elapsed time to
         /// <paramref name="outcomeText"/> for the trace's detail message.
@@ -309,7 +332,7 @@ namespace EventsHandler.Services.Responding.v2
 
             // The product reference carries the same trace correlation as a NotifyReference, so a receipt
             // closes its dashboard trace the same way the classic scenarios' receipts do.
-            EmitChannelConfirmationTrace(reference.TraceId, reference.SentAtUnixMs, notificationMethod, feedbackType);
+            EmitChannelConfirmationTrace(reference.TraceId, HandedOffAtUnixMs(reference.SentAtUnixMs, callback), notificationMethod, feedbackType);
 
             // A product notification has no NotifyReference of its own to hand to the notify service, and
             // resolving the client from a default one throws while the cached client is still empty - which
@@ -333,7 +356,7 @@ namespace EventsHandler.Services.Responding.v2
                     notificationData.IsSuccess ? notificationData.SentAt : string.Empty
                 ]);
 
-            EmitContactMomentTrace(reference.TraceId, reference.SentAtUnixMs, contactMomentResult);
+            EmitContactMomentTrace(reference.TraceId, HandedOffAtUnixMs(reference.SentAtUnixMs, callback), contactMomentResult);
 
             return contactMomentResult;
         }
@@ -391,8 +414,9 @@ namespace EventsHandler.Services.Responding.v2
         ///   </para>
         ///   <para>
         ///     The HTTP response still reflects whether the registration itself succeeded. When it failed,
-        ///     "Notify NL" retries this callback, and that retry runs the fallback again - nothing recognises the
-        ///     earlier send yet (#247).
+        ///     "Notify NL" retries this callback; the fallback then finds its own earlier send and does not send
+        ///     again (#247), and the registration finds the klantcontact it already wrote, so only what is still
+        ///     missing is done.
         ///   </para>
         /// </remarks>
         private async Task<HttpRequestResponse> InformUserAboutMessageBoxStatusAsync(DeliveryReceipt callback, FeedbackTypes feedbackType)

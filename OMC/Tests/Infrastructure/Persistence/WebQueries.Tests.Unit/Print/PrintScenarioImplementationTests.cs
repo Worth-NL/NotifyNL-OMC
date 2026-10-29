@@ -61,6 +61,11 @@ namespace WebQueries.Tests.Unit.Print
             this._mockedQueryContext = new Mock<IQueryContext>(MockBehavior.Strict);
             this._mockedNotifyClientFactory = new Mock<IHttpClientFactory<INotifyClient, string>>(MockBehavior.Strict);
             this._mockedNotifyClient = new Mock<INotifyClient>(MockBehavior.Strict);
+
+            // Nothing was sent before, unless a test says otherwise (#247)
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), It.IsAny<NotifyMethods>()))
+                .ReturnsAsync(NotifyLookupResponse.NotFound());
             this._mockedTelemetry = new Mock<ITelemetryService>(MockBehavior.Strict);
             this._mockedSerializer = new Mock<ISerializationService>(MockBehavior.Strict);
             this._mockedSerializer
@@ -602,6 +607,59 @@ namespace WebQueries.Tests.Unit.Print
             this._mockedNotifyClient
                 .Setup(mock => mock.SendPrecompiledLetterAsync(It.IsAny<string>(), It.IsAny<byte[]>(), null))
                 .ReturnsAsync(NotifySendResponse.Success());
+        }
+        #endregion
+
+        #region Never the same letter twice (#247)
+        [Test]
+        public async Task ProcessPrintAsync_AlreadySent_DoesNotSendTheLetterAgain()
+        {
+            // Arrange
+            IPrintScenario scenario = GetAllowedScenario();
+            SetupPrintObject(GetPrintData());
+            SetupParty();
+            SetupDocument();
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Letter))
+                .ReturnsAsync(NotifyLookupResponse.Found("44444444-4444-4444-4444-444444444444", "received"));
+
+            // Act
+            HttpRequestResponse actualResult = await scenario.ProcessPrintAsync(GetNotification());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.JsonResponse, Does.Contain("Already sent"));
+
+                this._mockedNotifyClient.Verify(
+                    mock => mock.SendPrecompiledLetterAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string?>()), Times.Never);
+            });
+        }
+
+        [Test]
+        public async Task ProcessPrintAsync_LookupFails_DoesNotSendBlindly()
+        {
+            // Arrange
+            IPrintScenario scenario = GetAllowedScenario();
+            SetupPrintObject(GetPrintData());
+            SetupParty();
+            SetupDocument();
+            this._mockedNotifyClient
+                .Setup(mock => mock.FindNotificationByReferenceAsync(It.IsAny<string>(), NotifyMethods.Letter))
+                .ReturnsAsync(NotifyLookupResponse.Failure("Notify NL unavailable"));
+
+            // Act
+            HttpRequestResponse actualResult = await scenario.ProcessPrintAsync(GetNotification());
+
+            // Assert: a failure, so Open Notificaties redelivers once Notify NL can be asked again
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult.IsFailure, Is.True);
+
+                this._mockedNotifyClient.Verify(
+                    mock => mock.SendPrecompiledLetterAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string?>()), Times.Never);
+            });
         }
         #endregion
     }

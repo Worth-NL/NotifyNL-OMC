@@ -2,6 +2,7 @@
 
 using Notify.Models;
 using WebQueries.DataSending.Models.Reponses;
+using ZgwModels.Enums;
 
 namespace WebQueries.DataSending.Clients.Interfaces
 {
@@ -136,5 +137,20 @@ namespace WebQueries.DataSending.Clients.Interfaces
         /// </summary>
         /// <param name="notificationId">The notification identifier.</param>
         public Task<NotificationData> GetNotificationDataAsync(Guid notificationId);
+
+        /// <summary>
+        /// Looks up whether NotifyNL already holds a notification of this kind with exactly this reference.
+        /// </summary>
+        /// <remarks>
+        ///   Used to never send the same notification twice when it is delivered to OMC more than once. NotifyNL
+        ///   matches the reference exactly and keeps notifications for 7 days.
+        ///   <para>
+        ///     The kind matters: an e-mail and an SMS for the same notification ("Both") carry the same reference,
+        ///     and finding the e-mail must not stop the SMS.
+        ///   </para>
+        /// </remarks>
+        /// <param name="reference">The reference the notification was (or would be) sent with.</param>
+        /// <param name="notificationMethod">The kind of notification: e-mail, SMS, letter or Berichtenbox.</param>
+        public Task<NotifyLookupResponse> FindNotificationByReferenceAsync(string reference, NotifyMethods notificationMethod);
     }
 }

@@ -19,6 +19,7 @@ using WebQueries.DataQuerying.Models.Responses;
 using WebQueries.Exceptions;
 using WebQueries.KTO.Interfaces;
 using WebQueries.MOBB.Interfaces;
+using WebQueries.MOBB.Models;
 using WebQueries.Print.Interfaces;
 using WebQueries.Producten.Interfaces;
 using WebQueries.Tracing;
@@ -79,6 +80,10 @@ namespace EventsHandler.Services.DataProcessing
         {
             BaseEnhancedDetails details = InfoDetails.Empty;
 
+            // What the result's description says about the incoming payload, and so what reaches the response to
+            // Open Notificaties and Sentry. The whole notification, except for a CloudEvent (see below).
+            object describedJson = json;
+
             try
             {
                 // Step 1: Convert incoming object to JsonElement for inspection
@@ -97,6 +102,9 @@ namespace EventsHandler.Services.DataProcessing
                     // Step 2a: CloudEvent handling – bypass NotificationEvent deserialization
                     string cloudEventType = jsonElement.GetProperty("type").GetString() ?? string.Empty;
 
+                    // Never the CloudEvent itself: an Open VTB event's "data" holds the citizen's BSN (#267)
+                    describedJson = DescribeCloudEvent(jsonElement);
+
                     // Route based on CloudEvent type – Open VTB's Berichten component emits types prefixed
                     // "nl.overheid.berichten." (confirmed against https://github.com/maykinmedia/open-vtb/blob/main/docs/installation/cloud_events.rst).
                     // Which specific type (e.g. "bericht-gepubliceerd" vs. "bericht-geregistreerd") actually
@@ -113,15 +121,15 @@ namespace EventsHandler.Services.DataProcessing
                         // Pass the entire CloudEvent (jsonElement) to the scenario
                         HttpRequestResponse response = await _messageBoxScenario.ProcessCloudEventAsync(jsonElement);
                         return response.IsFailure
-                            ? ProcessingResult.Failure(response.JsonResponse, json, details)
+                            ? ProcessingResult.Failure(response.JsonResponse, describedJson, details)
                             // Carry the scenario's own message through, so a deliberate drop ("Dropped: ...")
                             // stays visible in the response and logs instead of reading as a normal send.
-                            : ProcessingResult.Success(response.JsonResponse, json, details);
+                            : ProcessingResult.Success(response.JsonResponse, describedJson, details);
                     }
                     else
                     {
                         // Unsupported CloudEvent type – skip
-                        return ProcessingResult.Skipped($"Unsupported CloudEvent type: {cloudEventType}", json, details);
+                        return ProcessingResult.Skipped($"Unsupported CloudEvent type: {cloudEventType}", describedJson, details);
                     }
                 }
 
@@ -148,8 +156,10 @@ namespace EventsHandler.Services.DataProcessing
                 }
 
                 // A real notification is entering the pipeline — start a trace for the dashboard
-                // (no-op if nobody is watching; cleared in the finally block below regardless).
-                TraceContext.Start(this._traceEmitter);
+                // (no-op if nobody is watching; cleared in the finally block below regardless). Its identifier
+                // is derived from the notification, because it ends up in the reference handed to "Notify NL"
+                // and that reference has to be the same on every delivery of this notification (#247).
+                TraceContext.Start(this._traceEmitter, seed: this._serializer.Serialize(notification));
                 TraceContext.Emit("opennotificaties", "ok");
                 TraceContext.Emit("output-patronen", "ok");
 
@@ -232,7 +242,7 @@ namespace EventsHandler.Services.DataProcessing
                 // of showing the failure. The message is the same text already returned to the
                 // API caller below via HandleException, just surfaced live on the dashboard too.
                 TraceContext.EmitPendingFailure(exception.Message);
-                return HandleException(exception, json, details);
+                return HandleException(exception, describedJson, details);
             }
             finally
             {
@@ -263,6 +273,13 @@ namespace EventsHandler.Services.DataProcessing
             string.Equals(notification.MainObjectUri.AbsoluteUri, testUrl) &&
             string.Equals(notification.ResourceUri.AbsoluteUri, testUrl);
         }
+
+        /// <summary>
+        /// How a CloudEvent is shown in the processing result: the same metadata the Berichtenbox reference sends to
+        /// "Notify NL" (#265), so it can be found in Open Notificaties by its "subject", and nothing from its "data".
+        /// </summary>
+        internal static string DescribeCloudEvent(JsonElement cloudEvent)
+            => MessageBoxNotifyReference.EventMetadataOf(cloudEvent).GetRawText();
 
         private static ProcessingResult HandleException(Exception exception, object json, BaseEnhancedDetails details)
         {

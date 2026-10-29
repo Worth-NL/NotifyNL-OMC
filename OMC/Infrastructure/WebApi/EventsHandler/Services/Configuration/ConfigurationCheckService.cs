@@ -1,6 +1,7 @@
 // © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
+using Common.Settings.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using WebQueries.DataQuerying.Adapter.Interfaces;
@@ -89,6 +90,7 @@ namespace EventsHandler.Services.Configuration
             foreach (var r in MessageReceivedChecks())  yield return r;
             foreach (var r in DecisionMadeChecks())     yield return r;
             foreach (var r in ProductCreatedChecks())   yield return r;
+            foreach (var r in MessageBoxChecks())       yield return r;
             foreach (var r in KtoChecks())              yield return r;
         }
 
@@ -115,6 +117,9 @@ namespace EventsHandler.Services.Configuration
             yield return IsOpenProductenConfigured()
                 ? Masked(g, ic, "OpenProducten API Key", () => config.ZGW.Auth.Key.OpenProducten(), "ZGW__Auth__Key__OpenProducten")
                 : new CheckResult(g, ic, "OpenProducten API Key", true, "(optional, not set)");
+            yield return IsOpenVtbConfigured()
+                ? Masked(g, ic, "OpenVTB API Key", () => config.ZGW.Auth.Key.OpenVtb(), "ZGW__Auth__Key__OpenVtb")
+                : new CheckResult(g, ic, "OpenVTB API Key", true, "(optional, not set)");
         }
 
         private IEnumerable<CheckResult> EndpointChecks()
@@ -127,6 +132,7 @@ namespace EventsHandler.Services.Configuration
             yield return Show(g, ic, "Objecten",         () => config.ZGW.Endpoint.Objecten(),         "ZGW__Endpoint__Objecten");
             yield return Show(g, ic, "ObjectTypen",      () => config.ZGW.Endpoint.ObjectTypen(),      "ZGW__Endpoint__ObjectTypen");
             yield return Option(g, ic, "OpenProducten",  () => config.ZGW.Endpoint.OpenProducten(),    "ZGW__Endpoint__OpenProducten");
+            yield return Option(g, ic, "OpenVTB",        () => config.ZGW.Endpoint.OpenVtb(),          "ZGW__Endpoint__OpenVtb");
         }
 
         private IEnumerable<CheckResult> NotifyConfigChecks()
@@ -220,6 +226,36 @@ namespace EventsHandler.Services.Configuration
             try { return config.ZGW.Endpoint.IsOpenProductenConfigured(); } catch { return false; }
         }
 
+        private IEnumerable<CheckResult> MessageBoxChecks()
+        {
+            const string g = "Berichtenbox (MOBB)", ic = "📮";
+
+            // Same shape as "Product Created": a flow a deployment has not opted into is reported as
+            // switched off, not as a column of missing settings.
+            if (!IsOpenVtbConfigured())
+            {
+                yield return new CheckResult(g, ic, "Open VTB", true,
+                    "disabled — set ZGW__Endpoint__OpenVtb to enable this scenario");
+                yield break;
+            }
+
+            yield return new CheckResult(g, ic, "Open VTB", true, "enabled");
+            yield return Whitelist(g, ic, "Allowed bericht types",        () => config.ZGW.Whitelist.VtbMessage_Types(),      "ZGW__Whitelist__VtbMessage_Types");
+            yield return SkippableUuid(g, ic, "Email notification template", () => config.Notify.TemplateId.Email.MessageBox(), "not set — e-mail step is skipped");
+            yield return Uuid(g,      ic, "Letter notification template", () => config.Notify.TemplateId.MessageBoxLetter(), "Notify__TemplateId__Letter__MessageBox");
+
+            // Shown as not ok on purpose: a test address must stand out, so it is never left on unnoticed.
+            yield return ConfigExtensions.IsBrpTestAddressEnabled()
+                ? new CheckResult(g, ic, "Letter address", false, "TEST ADDRESS (Worth Systems) — BRP is not called",
+                    "Unset BRP_GEBRUIK_TESTADRES outside test environments")
+                : new CheckResult(g, ic, "Letter address", true, "BRP");
+        }
+
+        private bool IsOpenVtbConfigured()
+        {
+            try { return config.ZGW.Endpoint.IsOpenVtbConfigured(); } catch { return false; }
+        }
+
         private IEnumerable<CheckResult> KtoChecks()
         {
             const string g = "Customer Satisfaction (KTO)", ic = "⭐";
@@ -273,6 +309,18 @@ namespace EventsHandler.Services.Configuration
                 return new CheckResult(group, icon, name, ok, ok ? g.ToString() : "not configured", ok ? null : hint);
             }
             catch { return new CheckResult(group, icon, name, false, "not configured", hint); }
+        }
+
+        /// <summary>
+        /// A template whose absence switches its step off rather than breaking the flow: unset is reported as ok,
+        /// with what that means.
+        /// </summary>
+        private static CheckResult SkippableUuid(string group, string icon, string name, Func<Guid> getter, string whenUnset)
+        {
+            Guid g;
+            try { g = getter(); } catch { g = Guid.Empty; }
+
+            return new CheckResult(group, icon, name, true, g != Guid.Empty ? g.ToString() : whenUnset);
         }
 
         private static CheckResult Whitelist(string group, string icon, string name,

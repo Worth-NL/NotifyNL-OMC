@@ -46,6 +46,22 @@ Als er geen contactgegevens beschikbaar zijn voor een burger, wordt de notificat
 
 ---
 
+## Nooit twee keer versturen
+
+Dezelfde notificatie kan het OMC vaker dan eens bereiken, bijvoorbeeld als Open Notificaties hem na een fout opnieuw aflevert. Vóór elke verzending vraagt het OMC daarom bij NotifyNL na of er al een notificatie van dezelfde soort (e-mail, sms, brief of Berichtenbox) met precies dezelfde `reference` bestaat:
+
+- **Bestaat al:** het OMC verstuurt niets en gaat verder alsof de verzending gelukt is. Het contactmoment volgt uit de afleverstatus van die eerdere verzending.
+- **Bestaat niet:** het OMC verstuurt zoals gewoonlijk.
+- **Navragen lukt niet:** het OMC verstuurt niet blind. In de scenario's voor zaken, besluiten, taken, de printstraat en de Berichtenbox geeft het een fout terug, zodat het later opnieuw geprobeerd wordt; bij producten, waar het event dan al is aangenomen, registreert het een mislukt contactmoment voor die eigenaar.
+
+Dat werkt omdat de `reference` bij elke aflevering van dezelfde notificatie gelijk is: er staat geen tijdstip in, en de trace-id van het dashboard wordt afgeleid van de notificatie zelf. Een herlevering verschijnt op het dashboard daardoor als dezelfde trace. De soort telt mee, omdat de e-mail en de sms van één notificatie dezelfde `reference` hebben.
+
+Hetzelfde geldt voor de klantcontacten. Elk klantcontact uit een afleverstatus krijgt het notificatie-id van NotifyNL in zijn `metadata` (`notifyNotificationId`). Komt dezelfde afleverstatus nog eens binnen, omdat NotifyNL hem na een fout opnieuw stuurt of hem dubbel stuurt, dan zoekt het OMC eerst het klantcontact van die partij, dat onderwerpobject en dat kanaal met dat id op. Bestaat dat al, dan maakt het OMC alleen af wat nog ontbrak: de koppeling met de actor van het OMC, en bij de printstraat de PDF als bijlage.
+
+Wat dit niet afvangt: twee afleveringen van dezelfde notificatie binnen dezelfde (milli)seconden, wat alleen bij een dubbel abonnement in Open Notificaties gebeurt, en een herlevering na meer dan 7 dagen, de bewaartermijn van NotifyNL.
+
+---
+
 ## Templateplaceholders
 
 Elk scenario ondersteunt een set van `((placeholder))`-variabelen die kunnen worden gebruikt in NotifyNL-templates. Deze worden dynamisch gevuld door het OMC op basis van de opgehaalde ZGW-gegevens.

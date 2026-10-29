@@ -247,6 +247,7 @@ namespace EventsHandler.Services.Responding
 
             // Deserialize into object
             NotifyReference notification = this.Serializer.Deserialize<NotifyReference>(decodedReference);
+            notification.NotifyNotificationId = callback.Id;  // Lets the klantcontact be found again on a retried receipt
 
             // Convert enums
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
@@ -337,6 +338,7 @@ namespace EventsHandler.Services.Responding
             string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
 
             ProductNotifyReference reference = this.Serializer.Deserialize<ProductNotifyReference>(decodedReference);
+            reference.NotifyNotificationId = callback.Id;  // Lets the klantcontact be found again on a retried receipt
 
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
@@ -356,6 +358,7 @@ namespace EventsHandler.Services.Responding
             string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
 
             PrintNotifyReference reference = this.Serializer.Deserialize<PrintNotifyReference>(decodedReference);
+            reference.NotifyNotificationId = callback.Id;  // Lets the klantcontact be found again on a retried receipt
 
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 
@@ -375,6 +378,7 @@ namespace EventsHandler.Services.Responding
             string decodedReference = await (callback.Reference ?? string.Empty).DecompressGZipAsync(CancellationToken.None);
 
             MessageBoxNotifyReference reference = this.Serializer.Deserialize<MessageBoxNotifyReference>(decodedReference);
+            reference.NotifyNotificationId = callback.Id;  // Lets the klantcontact be found again on a retried receipt
 
             NotifyMethods notificationMethod = callback.Type.ConvertToNotifyMethod();
 

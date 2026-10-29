@@ -65,12 +65,23 @@ namespace ZgwModels.Mapping.Events
             if (notification.IsInvalidEvent(out int[] invalidPropertiesIndices))
             {
                 string invalidProperties = string.Join(", ", invalidPropertiesIndices.Select(index => s_invalidPropertyNames[index]));
-                reason = $"NotificationEvent is missing or has an invalid value for: {invalidProperties}. We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received: {payload}";
+                reason = $"NotificationEvent is missing or has an invalid value for: {invalidProperties}. We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received one with the attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
 
             return ConvertNotification(payload, notification, out reason);
+        }
+
+        /// <summary>
+        /// Names the top-level attributes of a rejected payload, never their values: a reason ends up in the response
+        /// and in Sentry, and a payload can hold a citizen's BSN (e.g. in a CloudEvent's "data", #267).
+        /// </summary>
+        private static string ReceivedAttributes(JObject payload)
+        {
+            string names = string.Join(", ", payload.Properties().Select(property => property.Name));
+
+            return names.Length > 0 ? names : "none";
         }
 
         /// <summary>
@@ -90,7 +101,7 @@ namespace ZgwModels.Mapping.Events
             string? specVersion = payload.Value<string>("specversion");
             if (string.IsNullOrWhiteSpace(specVersion))
             {
-                reason = $"CloudEvent is missing 'specversion'. Received: {payload}";
+                reason = $"CloudEvent is missing 'specversion'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -98,7 +109,7 @@ namespace ZgwModels.Mapping.Events
             string? type = payload.Value<string>("type");
             if (string.IsNullOrWhiteSpace(type))
             {
-                reason = $"CloudEvent is missing 'type'. Received: {payload}";
+                reason = $"CloudEvent is missing 'type'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -106,7 +117,7 @@ namespace ZgwModels.Mapping.Events
             string? source = payload.Value<string>("source");
             if (string.IsNullOrWhiteSpace(source))
             {
-                reason = $"CloudEvent is missing 'source'. Received: {payload}";
+                reason = $"CloudEvent is missing 'source'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -114,7 +125,7 @@ namespace ZgwModels.Mapping.Events
             string? subject = payload.Value<string>("subject");
             if (string.IsNullOrWhiteSpace(subject))
             {
-                reason = $"CloudEvent is missing 'subject'. Received: {payload}";
+                reason = $"CloudEvent is missing 'subject'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -122,7 +133,7 @@ namespace ZgwModels.Mapping.Events
             string? id = payload.Value<string>("id");
             if (string.IsNullOrWhiteSpace(id))
             {
-                reason = $"CloudEvent is missing 'id'. Received: {payload}";
+                reason = $"CloudEvent is missing 'id'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -130,7 +141,7 @@ namespace ZgwModels.Mapping.Events
             DateTime? time = payload.Value<DateTime?>("time");
             if (!time.HasValue)
             {
-                reason = $"CloudEvent is missing 'time'. Received: {payload}";
+                reason = $"CloudEvent is missing 'time'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -152,7 +163,7 @@ namespace ZgwModels.Mapping.Events
         /// <summary>
         /// Converts a <see cref="NotificationEvent"/> into a <see cref="CloudEvent"/>.
         /// </summary>
-        /// <param name="payload">The raw incoming JSON payload, used to echo back what was actually received when rejecting it.</param>
+        /// <param name="payload">The raw incoming JSON payload, whose attribute names are named when rejecting it.</param>
         /// <param name="notification">The incoming NotificationEvent.</param>
         /// <param name="reason">When the payload is rejected, describes specifically what was malformed or unsupported.</param>
         /// <returns>
@@ -167,7 +178,7 @@ namespace ZgwModels.Mapping.Events
             string? eventType = MapToCloudEventType(notification);
             if (eventType == null)
             {
-                reason = $"We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received: {payload}";
+                reason = $"We were expecting a notification in a format such as: {ExpectedNotificationFormats}, but we received one with the attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null; // unsupported mapping
             }
@@ -176,7 +187,7 @@ namespace ZgwModels.Mapping.Events
             Uri caseUri = notification.MainObjectUri;
             if (string.IsNullOrWhiteSpace(caseUri.ToString()))
             {
-                reason = $"NotificationEvent has an empty 'hoofdObject'. Received: {payload}";
+                reason = $"NotificationEvent has an empty 'hoofdObject'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -192,7 +203,7 @@ namespace ZgwModels.Mapping.Events
 
             if (caseUuid == null || !Guid.TryParse(caseUuid, out _))
             {
-                reason = $"Could not extract a UUID from 'hoofdObject' ({caseUri}). Received: {payload}";
+                reason = $"Could not extract a UUID from 'hoofdObject' ({caseUri}). Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }
@@ -201,7 +212,7 @@ namespace ZgwModels.Mapping.Events
             Uri resourceUri = notification.ResourceUri;
             if (string.IsNullOrWhiteSpace(resourceUri.ToString()))
             {
-                reason = $"NotificationEvent has an empty 'resourceUrl'. Received: {payload}";
+                reason = $"NotificationEvent has an empty 'resourceUrl'. Received attributes: {ReceivedAttributes(payload)}";
                 _logger.LogWarning("{Reason}", reason);
                 return null;
             }

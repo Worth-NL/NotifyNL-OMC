@@ -1,6 +1,8 @@
 // © 2026, Worth Systems.
 
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace WebQueries.Tracing
 {
@@ -43,10 +45,19 @@ namespace WebQueries.Tracing
         /// Starts a new trace for the current async call chain. Call once per incoming
         /// notification (skip test pings), before any scenario logic runs.
         /// </summary>
-        /// <returns>The generated trace identifier.</returns>
-        public static string Start(TraceEmitter emitter)
+        /// <param name="emitter">Where the trace's events go.</param>
+        /// <param name="seed">
+        ///   When given, the trace identifier is derived from it instead of being random, so the same seed always
+        ///   gives the same identifier. The identifier travels inside the reference handed to "Notify NL", and
+        ///   OMC looks that reference up to never send the same notification twice (#247), so it may only change
+        ///   when the notification does. A redelivery of the same notification therefore continues the same trace.
+        /// </param>
+        /// <returns>The trace identifier.</returns>
+        public static string Start(TraceEmitter emitter, string? seed = null)
         {
-            string traceId = Guid.NewGuid().ToString("N")[..12];
+            string traceId = seed is null
+                ? Guid.NewGuid().ToString("N")[..12]
+                : Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(seed)))[..12];
 
             s_current.Value = new State
             {

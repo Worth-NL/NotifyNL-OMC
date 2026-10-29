@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using WebQueries.DataSending.Clients.Interfaces;
 using WebQueries.DataSending.Models.Reponses;
+using ZgwModels.Enums;
 
 namespace WebQueries.DataSending.Clients.Proxy
 {
@@ -143,6 +144,35 @@ namespace WebQueries.DataSending.Clients.Proxy
             catch (NotifyClientException exception)  // On failure this method is throwing exception
             {
                 return NotificationData.Failure(exception.Message);
+            }
+        }
+
+        /// <inheritdoc cref="INotifyClient.FindNotificationByReferenceAsync(string, NotifyMethods)"/>
+        async Task<NotifyLookupResponse> INotifyClient.FindNotificationByReferenceAsync(string reference, NotifyMethods notificationMethod)
+        {
+            try
+            {
+                string templateType = notificationMethod switch
+                {
+                    NotifyMethods.Email => "email",
+                    NotifyMethods.Sms => "sms",
+                    NotifyMethods.Letter => "letter",
+                    NotifyMethods.Mobb => "messagebox",
+                    _ => throw new ArgumentOutOfRangeException(nameof(notificationMethod), notificationMethod, "No NotifyNL notification type")
+                };
+
+                NotificationList notifications = await _notificationClient.GetNotificationsAsync(templateType: templateType, reference: reference);
+
+                Notification? existing = notifications.notifications?.FirstOrDefault(notification =>
+                    notification.reference == reference && notification.type == templateType);
+
+                return existing is null
+                    ? NotifyLookupResponse.NotFound()
+                    : NotifyLookupResponse.Found(existing.id, existing.status);
+            }
+            catch (Exception exception)  // Any failure means nothing is known, so the caller must not send blindly
+            {
+                return NotifyLookupResponse.Failure(exception.Message);
             }
         }
     }

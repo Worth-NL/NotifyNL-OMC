@@ -196,8 +196,9 @@ namespace WebQueries.Producten
 
                 // Read from the ambient trace rather than passed in: delivery runs on the same call chain
                 // as the notification that started it, so this is that notification's own trace.
-                TraceId = TraceContext.CurrentTraceId,
-                SentAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                TraceId = TraceContext.CurrentTraceId
+                // NOTE: No SentAtUnixMs - a time differs on every run, and this reference has to be the same on
+                //       every delivery of the notification (#247). The receipt's own "created_at" stands in.
             };
 
             if (!recipient.IsReachable)
@@ -216,12 +217,34 @@ namespace WebQueries.Producten
                 // "Notify NL", the delivery receipt comes back unrecognisable and the contactmoment for a
                 // notification that did arrive would never be written. Same reason the print flow does it.
                 INotifyClient notifyClient = this._notifyClientFactory.GetHttpClient(product.Id.ToString());
+                string encodedReference = await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None);
+
+                // Never the same e-mail twice when the product notification reaches OMC more than once (#247): the
+                // reference is the same on every delivery, since it holds no time and a trace identifier derived
+                // from the notification. Not knowing is no reason to send anyway.
+                NotifyLookupResponse lookup = await notifyClient.FindNotificationByReferenceAsync(encodedReference, NotifyMethods.Email);
+
+                if (lookup.IsFailure)
+                {
+                    await RegisterFailureAsync(reference, $"Kon bij NotifyNL niet nagaan of deze notificatie al verstuurd was: {lookup.Error}");
+
+                    return false;
+                }
+
+                if (lookup.Exists)
+                {
+                    this._logger.LogInformation(
+                        "Notification for product {ProductId} was already sent to this eigenaar as {NotificationId}; not sending it again.",
+                        product.Id, lookup.NotificationId);
+
+                    return true;
+                }
 
                 response = await notifyClient.SendEmailAsync(
                     emailAddress: recipient.EmailAddress,
                     templateId: templateId.ToString(),
                     personalization: GetPersonalization(product, recipient.Party),
-                    reference: await this._serializer.Serialize(reference).CompressGZipAsync(CancellationToken.None));
+                    reference: encodedReference);
             }
             catch (Exception exception)
             {

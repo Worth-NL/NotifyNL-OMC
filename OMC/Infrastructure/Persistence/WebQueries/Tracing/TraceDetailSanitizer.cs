@@ -1,6 +1,7 @@
 // © 2026, Worth Systems.
 
 using System.Text.RegularExpressions;
+using WebQueries.Logging;
 
 namespace WebQueries.Tracing
 {
@@ -25,7 +26,6 @@ namespace WebQueries.Tracing
         private const string QueryBaseUriMarker = " | URI: ";
 
         private const int MaxLength = 300;
-        private const string Masked = "[…]";
 
         /// <summary>
         /// Returns the detail without anything that could identify a person: the request URI and
@@ -49,7 +49,7 @@ namespace WebQueries.Tracing
             }
 
             result = QueryString().Replace(result, "$1");
-            result = LongDigitRun().Replace(result, Masked);
+            result = PersonalDataScrubber.Scrub(result)!;
 
             return result.Length > MaxLength
                 ? $"{result[..MaxLength]}..."
@@ -59,12 +59,5 @@ namespace WebQueries.Tracing
         /// <summary>An http(s) URL followed by a query string or fragment; group 1 is the URL without it.</summary>
         [GeneratedRegex(@"(https?://[^\s?#]+)[?#]\S*", RegexOptions.IgnoreCase)]
         private static partial Regex QueryString();
-
-        /// <summary>
-        /// Eight or more digits not part of a larger word or of a hyphenated token — so a BSN, KVK or
-        /// vestigingsnummer is caught, but an all-digit segment of a UUID is not.
-        /// </summary>
-        [GeneratedRegex(@"(?<![\w-])\d{8,}(?![\w-])")]
-        private static partial Regex LongDigitRun();
     }
 }
