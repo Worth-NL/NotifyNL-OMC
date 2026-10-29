@@ -93,7 +93,7 @@ namespace EventsHandler.Tests.Unit.Services.DataSending
 
         private static Task<string> BuildMessageBoxReferenceAsync() => EncodeAsync(new MessageBoxNotifyReference
         {
-            CloudEvent = JsonSerializer.SerializeToElement(new
+            CloudEvent = MessageBoxNotifyReference.EventMetadataOf(JsonSerializer.SerializeToElement(new
             {
                 specversion = "1.0",
                 type = "nl.overheid.berichten.bericht-gepubliceerd",
@@ -102,8 +102,8 @@ namespace EventsHandler.Tests.Unit.Services.DataSending
                 id = "66666666-6666-6666-6666-666666666666",
                 time = "2026-10-26T10:15:30.123456Z",
                 datacontenttype = "application/json",
-                data = new { url = "https://openvtb.gemeente-voorbeeldstad.nl/berichten/api/v1/berichten/55555555-5555-5555-5555-555555555555" }
-            }),
+                data = new { onderwerp = "Uw aanvraag", publicatiedatum = "2026-10-26T10:15:30.123456Z", ontvanger = "urn:nld:bsn:nummer:123456789" }
+            })),
             MessageId = Guid.Parse("55555555-5555-5555-5555-555555555555"),
             PartyId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
             Mobb = false,

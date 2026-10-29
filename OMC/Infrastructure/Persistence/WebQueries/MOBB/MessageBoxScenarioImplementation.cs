@@ -679,7 +679,7 @@ namespace WebQueries.MOBB
         /// <summary>
         /// Builds the compressed &amp; Base64-encoded "reference" (CloudEvent + extras) to pass to NotifyNL.
         /// </summary>
-        /// <param name="cloudEvent">The full CloudEvent as a JsonElement.</param>
+        /// <param name="cloudEvent">The CloudEvent; only its metadata goes into the reference, never its "data".</param>
         /// <param name="messageUuid">The UUID of the VTB message (Bericht).</param>
         /// <param name="partyId">The resolved OpenKlant party GUID.</param>
         /// <param name="messageTypeUri">The Bericht's BerichtType, registered as the klantcontact's "hoofdOnderwerpType".</param>
@@ -693,7 +693,8 @@ namespace WebQueries.MOBB
         {
             var referenceData = new MessageBoxNotifyReference
             {
-                CloudEvent = cloudEvent,
+                // Never the event's "data": it holds the citizen's BSN (#265)
+                CloudEvent = MessageBoxNotifyReference.EventMetadataOf(cloudEvent),
                 MessageId = messageUuid,
                 PartyId = partyId,
                 Mobb = mobb,

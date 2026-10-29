@@ -24,7 +24,7 @@ Ook dit scenario komt binnen via Open Notificaties, maar niet als gewone notific
 
 Open VTB's Berichten-component kent op dit moment twee event-types: `bericht-geregistreerd` (bij het aanmaken, vóórdat het bericht per se al zichtbaar hoeft te zijn — bijvoorbeeld bij een toekomstige `publicatiedatum`) en `bericht-gepubliceerd` (zodra het bericht daadwerkelijk actief is). Alleen het laatste triggert verwerking; `bericht-geregistreerd` en elk toekomstig, nog niet bestaand type worden als veilige no-op behandeld (HTTP 202, niets verwerkt) in plaats van als fout — zodat een nieuw event-type dat Open VTB ooit toevoegt (Taken kent er bijvoorbeeld al 6) niet per ongeluk verkeerd wordt opgepikt.
 
-Het CloudEvent zelf bevat geen berichtinhoud — alleen de `subject` (het Bericht-UUID) wordt gebruikt om het volledige bericht bij OpenVTB op te halen.
+Het OMC gebruikt uit het CloudEvent alleen `type` en `subject` (het Bericht-UUID); daarmee haalt het het volledige bericht bij OpenVTB op. In `data` zet Open VTB het `onderwerp`, de `publicatiedatum` en de `ontvanger` van het bericht, dus de BSN van de burger. Het OMC leest `data` niet en neemt het ook niet mee in de `reference` naar NotifyNL (zie [Niet twee keer versturen](#nooit-twee-keer-versturen)).
 
 ### Voorbeeld payload
 
@@ -35,7 +35,14 @@ Het CloudEvent zelf bevat geen berichtinhoud — alleen de `subject` (het Berich
   "source": "urn:nld:oin:123456789000:openvtb",
   "subject": "55555555-5555-5555-5555-555555555555",
   "id": "66666666-6666-6666-6666-666666666666",
-  "time": "2026-01-15T10:30:00Z"
+  "time": "2026-01-15T10:30:00Z",
+  "dataref": null,
+  "datacontenttype": "application/json",
+  "data": {
+    "onderwerp": "Uw aanvraag is in behandeling",
+    "publicatiedatum": "2026-01-15T10:30:00Z",
+    "ontvanger": "urn:nld:bsn:nummer:123456789"
+  }
 }
 ```
 
@@ -93,7 +100,7 @@ Wordt de verzending geaccepteerd, dan wacht het OMC op de asynchrone afleverstat
 
 ## Nooit twee keer versturen
 
-Hetzelfde Bericht kan het OMC vaker dan eens bereiken: Open Notificaties levert het CloudEvent opnieuw af na een fout, of NotifyNL stuurt een afleverstatus-callback opnieuw (tot 5 keer, om de 5 minuten) als het OMC daar een fout op teruggeeft. Vóór elke verzending (MOBB, e-mail en brief) vraagt het OMC daarom eerst bij NotifyNL na of er al een notificatie van dezelfde soort (`messagebox`, `email` of `letter`) met precies dezelfde `reference` bestaat. De `reference` bevat alleen het CloudEvent, het Bericht, de partij en de kanaalvlaggen, dus dezelfde stap van hetzelfde Bericht levert altijd dezelfde `reference` op.
+Hetzelfde Bericht kan het OMC vaker dan eens bereiken: Open Notificaties levert het CloudEvent opnieuw af na een fout, of NotifyNL stuurt een afleverstatus-callback opnieuw (tot 5 keer, om de 5 minuten) als het OMC daar een fout op teruggeeft. Vóór elke verzending (MOBB, e-mail en brief) vraagt het OMC daarom eerst bij NotifyNL na of er al een notificatie van dezelfde soort (`messagebox`, `email` of `letter`) met precies dezelfde `reference` bestaat. De `reference` bevat alleen de metadata van het CloudEvent (`specversion`, `id`, `source`, `type`, `subject` en `time`, nooit `data`), het Bericht, de partij en de kanaalvlaggen. Dezelfde stap van hetzelfde event levert dus altijd dezelfde `reference` op, terwijl een nieuw event over hetzelfde Bericht (een ander `id`) wel opnieuw verstuurd wordt.
 
 - **Bestaat al:** het OMC verstuurt niets en antwoordt met succes (`Already sent: ...`). De afleverstatus-callback van die eerdere verzending regelt de rest van de keten.
 - **Bestaat niet:** het OMC verstuurt zoals gewoonlijk.
