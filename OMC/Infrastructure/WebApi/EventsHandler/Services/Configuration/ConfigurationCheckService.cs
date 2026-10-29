@@ -1,6 +1,7 @@
 // © 2024, Worth Systems.
 
 using Common.Settings.Configuration;
+using Common.Settings.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using WebQueries.DataQuerying.Adapter.Interfaces;
@@ -242,6 +243,12 @@ namespace EventsHandler.Services.Configuration
             yield return Whitelist(g, ic, "Allowed bericht types",        () => config.ZGW.Whitelist.VtbMessage_Types(),      "ZGW__Whitelist__VtbMessage_Types");
             yield return SkippableUuid(g, ic, "Email notification template", () => config.Notify.TemplateId.Email.MessageBox(), "not set — e-mail step is skipped");
             yield return Uuid(g,      ic, "Letter notification template", () => config.Notify.TemplateId.MessageBoxLetter(), "Notify__TemplateId__Letter__MessageBox");
+
+            // Shown as not ok on purpose: a test address must stand out, so it is never left on unnoticed.
+            yield return ConfigExtensions.IsBrpTestAddressEnabled()
+                ? new CheckResult(g, ic, "Letter address", false, "TEST ADDRESS (Worth Systems) — BRP is not called",
+                    "Unset BRP_GEBRUIK_TESTADRES outside test environments")
+                : new CheckResult(g, ic, "Letter address", true, "BRP");
         }
 
         private bool IsOpenVtbConfigured()

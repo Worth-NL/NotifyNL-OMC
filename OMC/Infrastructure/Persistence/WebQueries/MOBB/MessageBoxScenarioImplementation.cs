@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Common.Extensions;
 using Common.Settings.Configuration;
+using Common.Settings.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Notify.Models;
@@ -419,25 +420,37 @@ namespace WebQueries.MOBB
             Adressering? adressering;
 
             TraceContext.Emit("brp", "start", "Attempting to retrieve the address for the letter");
-            try
+            if (ConfigExtensions.IsBrpTestAddressEnabled())
             {
-                // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
-                // environment (BRP integration is documented as optional), so this must not become a
-                // hard dependency of every MessageBox notification - only of the letter fallback.
-                BrpClient brpClient = _serviceProvider.GetRequiredService<BrpClient>();
-                string brpResponse = await brpClient.QueryPersonAsync(recipientBsn);
+                // Test environments without a BRP connection: BRP is not called, the letter goes to Worth Systems.
+                _logger.LogWarning(
+                    "Message {MessageId}: {Variable} is switched on; BRP is not called and the letter goes to the Worth Systems test address.",
+                    messageUuid, ConfigExtensions.BrpUseTestAddress);
+                TraceContext.Emit("brp", "ok", $"test address used ({ConfigExtensions.BrpUseTestAddress}); BRP not called");
+                adressering = BrpTestAddress.Value;
+            }
+            else
+            {
+                try
+                {
+                    // Resolved lazily: BrpClient's constructor throws if BRP isn't configured for this
+                    // environment (BRP integration is documented as optional), so this must not become a
+                    // hard dependency of every MessageBox notification - only of the letter fallback.
+                    BrpClient brpClient = _serviceProvider.GetRequiredService<BrpClient>();
+                    string brpResponse = await brpClient.QueryPersonAsync(recipientBsn);
 
-                PersonenQueryResponse result = _serializer.Deserialize<PersonenQueryResponse>(brpResponse);
-                adressering = result.Personen is { Count: > 0 } personen ? personen[0].Adressering : null;
+                    PersonenQueryResponse result = _serializer.Deserialize<PersonenQueryResponse>(brpResponse);
+                    adressering = result.Personen is { Count: > 0 } personen ? personen[0].Adressering : null;
+                    TraceContext.Emit("brp", "ok", "person retrieved");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
+                    TraceContext.Emit("brp", "fail", exception.Message);
+                    return HttpRequestResponse.Failure(
+                        $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
+                }
             }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Message {MessageId}: BRP lookup for the letter fallback failed.", messageUuid);
-                TraceContext.Emit("brp", "fail", exception.Message);
-                return HttpRequestResponse.Failure(
-                    $"Could not retrieve address data from BRP for the letter fallback: {exception.Message}");
-            }
-            TraceContext.Emit("brp", "ok", "person retrieved");
 
             // NOTE: Never include actual BRP field values (name, address lines, etc.) in a returned
             // message - BRP data must only ever be processed in memory, never logged or stored, and

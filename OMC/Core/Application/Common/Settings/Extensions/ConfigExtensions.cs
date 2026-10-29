@@ -64,6 +64,23 @@ namespace Common.Settings.Extensions
         public static string BrpCertificateKey => "BRP_CLIENTKEY_PEM_PATH";
 
         /// <summary>
+        /// Uses a fixed test address instead of BRP for the Berichtenbox letter, provided via the
+        /// "BRP_GEBRUIK_TESTADRES" environment variable.
+        /// </summary>
+        /// <remarks>
+        ///   Off unless set to "true" (or "1"). For test environments without a BRP connection: BRP is then not
+        ///   called and every letter goes to the Worth Systems address, so the letter flow can be tested end to
+        ///   end against a (test) printstraat. Never switch it on in production.
+        /// </remarks>
+        public static string BrpUseTestAddress => "BRP_GEBRUIK_TESTADRES";
+
+        /// <summary>
+        /// Whether <see cref="BrpUseTestAddress"/> is switched on for this environment.
+        /// </summary>
+        public static bool IsBrpTestAddressEnabled()
+            => IsSwitchedOn(Environment.GetEnvironmentVariable(BrpUseTestAddress));
+
+        /// <summary>
         /// The "MIJNOVERHEID_WEBHOOK_URL" environment variable.
         /// </summary>
         public static string MijnOverheidWebHookUrl => "MIJNOVERHEID_WEBHOOK_URL";

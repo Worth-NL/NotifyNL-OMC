@@ -126,6 +126,8 @@ Is `NOTIFY_TEMPLATEID_EMAIL_MESSAGEBOX` niet ingesteld, dan gebruikt deze gemeen
 
 Anders dan bij de overige brief-verzendingen in het OMC (die het postadres uit OpenKlant halen) haalt deze terugval het postadres op bij **BRP** (Basisregistratie Personen, via Haal Centraal) — BRP is voor déze use case de bedoelde bron voor postadressen. Levert BRP geen bruikbaar adres (geen `adresregel1`), dan kan er geen brief verstuurd worden en stopt de keten hier zonder verdere terugval.
 
+Voor testomgevingen zonder BRP-koppeling is er `BRP_GEBRUIK_TESTADRES` (standaard `false`). Staat die aan, dan roept het OMC BRP niet aan en gaat de brief naar het testadres van Worth Systems ("Worth Systems t.a.v. OMC-test", Laan van Vredenoord 11, 2289 DA Rijswijk), zodat de brief tot en met de (test)printstraat getest kan worden. Elke keer komt er een waarschuwing in de log. Nooit aanzetten in productie.
+
 De brief wordt, zoals bij de klassieke ZGW-scenario's, **template-gebaseerd** verstuurd (`NOTIFY_TEMPLATEID_LETTER_MESSAGEBOX`/`MessageBoxLetter` — NotifyNL rendert de brief zelf uit de personalisatie) — dit is dus **niet** hetzelfde verzendmechanisme als de printstraat's *precompiled*-PDF-verzending (zie [Print (printstraat)](print-printstraat.md)). Eventuele bijlagen van het oorspronkelijke bericht worden wel meegestuurd (als ruwe Base64-inhoud, niet in de `{file, filename}`-vorm die MOBB gebruikt).
 
 Personalisatie-velden (bevestigd tegen een live 400-respons van de template zelf):
@@ -247,4 +249,4 @@ MOBB zelf verstuurt de ruwe berichttekst (geen `((placeholder))`-template). Alle
 | `VARIABLES_OPENKLANT_CODEOBJECTTYPE_PARTIJ` | `codeObjecttype` gebruikt bij het aanmaken van een ontbrekende partij (standaard: `natuurlijk_persoon`) |
 | `VARIABLES_OPENKLANT_CODEREGISTER_PARTIJ` | `codeRegister` gebruikt bij het aanmaken van een ontbrekende partij (standaard: `brp`) |
 
-De brief-terugval vereist daarnaast een werkende BRP/Haal Centraal-configuratie (`BRP_*`/`KEYCLOAK_*`, sectie "BRP / Haal Centraal") — zie [Omgevingsvariabelen](../../configuratie/omgevingsvariabelen.md) voor de volledige lijst.
+De brief-terugval vereist daarnaast een werkende BRP/Haal Centraal-configuratie (`BRP_*`/`KEYCLOAK_*`, sectie "BRP / Haal Centraal"), of in een testomgeving `BRP_GEBRUIK_TESTADRES=true` — zie [Omgevingsvariabelen](../../configuratie/omgevingsvariabelen.md) voor de volledige lijst.

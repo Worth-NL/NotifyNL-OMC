@@ -513,6 +513,13 @@ namespace EventsHandler
             // and its API endpoints answer 404 (see DashboardEnabledAttribute).
             bool isDashboardEnabled = ConfigExtensions.IsDashboardEnabled();
 
+            if (ConfigExtensions.IsBrpTestAddressEnabled())
+            {
+                app.Logger.LogWarning(
+                    "{Variable} is switched on: BRP is not called and every Berichtenbox letter goes to the Worth Systems test address. Never use this in production.",
+                    ConfigExtensions.BrpUseTestAddress);
+            }
+
             // Serves the statically-exported dashboard (wwwroot/status, wwwroot/status/flow,
             // wwwroot/_next/*) baked into this image at build time — see the explicit
             // /status and /status/flow routes below for the corresponding index.html files.

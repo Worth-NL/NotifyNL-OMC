@@ -308,6 +308,7 @@ Stel alle PostGuard-variabelen in op `-` als de integratie niet wordt gebruikt.
 | `KEYCLOAK_CLIENTSECRET` | Nee | OAuth2 clientgeheim voor Keycloak |
 | `KEYCLOAK_TOKENEXCHANGEAUDIENCE` | Nee | Doelgroep (audience) voor de Keycloak token-exchange (standaard: `haalcentraal`) |
 | `BRP_BASEURL` | Nee | Basis-URL van de BRP (Basisregistratie Personen) / WS Gateway-dienst — vereist wanneer de BRP-integratie gebruikt wordt |
+| `BRP_GEBRUIK_TESTADRES` | Nee | Standaard `false`. Op `true` (of `1`) roept het OMC BRP niet aan en gaat elke Berichtenbox-brief naar het testadres van Worth Systems ("Worth Systems t.a.v. OMC-test", Laan van Vredenoord 11, 2289 DA Rijswijk). Bedoeld voor testomgevingen zonder BRP-koppeling, zodat de brief tot en met de (test)printstraat getest kan worden. Bij het opstarten en bij elke brief komt er een waarschuwing in de log, en het dashboard toont het als niet ok. **Nooit aanzetten in productie** |
 
 ---
 
