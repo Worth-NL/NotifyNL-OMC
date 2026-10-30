@@ -1,4 +1,5 @@
 import { TraceLogLine } from "@/hooks/useOmcTelemetry";
+import { stageName } from "@/lib/architecture";
 
 export const STATUS_LABEL: Record<TraceLogLine["status"], string> = {
   start: "start",
@@ -36,7 +37,7 @@ export function LiveLogPanel({ log, connected }: { log: TraceLogLine[]; connecte
               <span className="shrink-0 text-arch-faint">{line.time}</span>
               <span className="shrink-0 text-arch-muted">#{line.traceId.slice(0, 8)}</span>
               {line.scenario && <span className="shrink-0 text-arch-teal">{line.scenario}</span>}
-              <span className="shrink-0 font-semibold">{line.stage}</span>
+              <span className="shrink-0 font-semibold">{stageName(line.stage)}</span>
               <span className={isError(line.status) ? "font-semibold" : "text-arch-muted"}>{STATUS_LABEL[line.status]}</span>
               {line.detail && (
                 <span className={isError(line.status) ? "font-semibold text-red" : "text-arch-faint"}>({line.detail})</span>
