@@ -1,5 +1,6 @@
 ## 2.4.1
 
+- The live trace-log on `/status/flow` names every step by its card, so by its API: KlantAPI, ZaakAPI, ObjectenAPI, ProductenAPI and so on instead of `openklant`, `openzaak`, `objecten` and `openproduct`. A Berichtenbox send Notify NL does not accept now says that NotificatieAPI delivers it again
 - Names `Test` instead of `Staging` as the example `ASPNETCORE_ENVIRONMENT` for a test environment that uses `BRP_GEBRUIK_TESTADRES`, in the error message het OMC refuses to start with, the code remarks and the docs: the `notifynl-omc-nodep` Helm chart only allows `Development`, `Test` and `Production`. Wording only; any value other than `Production` already worked
 
 ## 2.4.0

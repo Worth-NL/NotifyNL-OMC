@@ -2,6 +2,11 @@
 
 ---
 
+## v2.4.1
+
+- De live trace-log op `/status/flow` noemt elke stap bij de naam van zijn kaart, dus bij zijn API: KlantAPI, ZaakAPI, ObjectenAPI, ProductenAPI enzovoort in plaats van `openklant`, `openzaak`, `objecten` en `openproduct`. Een Berichtenbox-verzending die NotifyNL niet aanneemt, meldt nu dat de NotificatieAPI hem opnieuw aflevert
+- Noemt `Test` in plaats van `Staging` als voorbeeld van `ASPNETCORE_ENVIRONMENT` voor een testomgeving met `BRP_GEBRUIK_TESTADRES`; de Helm-chart staat alleen `Development`, `Test` en `Production` toe
+
 ## v2.4.0
 
 - OpenVTB is optioneel, net als Open Product: alle OpenVTB-variabelen mogen leeg blijven, en een lege `ZGW_ENDPOINT_OPENVTB` schakelt de Berichtenbox-flow uit (de statuspagina toont hem als uitgeschakeld, Berichten-CloudEvents worden afgebroken met `206`). Tot nu toe startte het OMC niet zonder `ZGW_AUTH_KEY_OPENVTB`, ook als de flow niet gebruikt werd
