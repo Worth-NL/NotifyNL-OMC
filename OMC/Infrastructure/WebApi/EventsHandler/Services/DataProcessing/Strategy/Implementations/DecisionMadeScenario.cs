@@ -166,46 +166,42 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.DecisionMade();  // NOTE: Decision has only one template
 
-        private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_emailPersonalization["klant.voornaam"] = partyData.Name;
-                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+            Dictionary<string, object> personalization = [];
 
-                s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
-                s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
-                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
-                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
-                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
-                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+            personalization["besluit.identificatie"] = this._decision.Identification;
+            personalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
+            personalization["besluit.toelichting"] = this._decision.Explanation;
+            personalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+            personalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+            personalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+            personalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+            personalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
 
-                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
+            personalization["besluittype.omschrijving"] = this._decisionType.Name;
+            personalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+            personalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+            personalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+            personalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+            personalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+            personalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
 
-                return s_emailPersonalization;
-            }
+            personalization["zaaktype.omschrijving"] = this._caseType.Name;
+            personalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+
+            return personalization;
         }
         #endregion
 
@@ -229,44 +225,43 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_letterPersonalization["klant.voornaam"] = partyData.Name;
-                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
-                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
-                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
-                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
-                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
-                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+            Dictionary<string, object> personalization = [];
 
-                s_letterPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_letterPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.toelichting"] = this._decision.Explanation;
-                s_letterPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_letterPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_letterPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
+            personalization["klant.street"] = partyData.LetterAddress.Street;
+            personalization["klant.number"] = partyData.LetterAddress.Number;
+            personalization["klant.zip"] = partyData.LetterAddress.Zip;
+            personalization["klant.city"] = partyData.LetterAddress.City;
+            personalization["klant.country"] = partyData.LetterAddress.Country;
 
-                s_letterPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
-                s_letterPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
-                s_letterPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
-                s_letterPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
-                s_letterPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
-                s_letterPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+            personalization["besluit.identificatie"] = this._decision.Identification;
+            personalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
+            personalization["besluit.toelichting"] = this._decision.Explanation;
+            personalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+            personalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+            personalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+            personalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+            personalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
 
-                s_letterPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_letterPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
+            personalization["besluittype.omschrijving"] = this._decisionType.Name;
+            personalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+            personalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+            personalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+            personalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+            personalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_letterPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_letterPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+            personalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
 
-                return s_letterPersonalization;
-            }
+            personalization["zaaktype.omschrijving"] = this._caseType.Name;
+            personalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+
+            return personalization;
         }
         #endregion
 

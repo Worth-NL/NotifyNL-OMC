@@ -183,6 +183,24 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         [TestCase(DistributionChannels.Email)]
         [TestCase(DistributionChannels.Sms)]
         [TestCase(DistributionChannels.Letter)]
+        public async Task GetPersonalizationAsync_CalledTwice_ReturnsSeparatePersonalizations(DistributionChannels testDistributionChannel)
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeCaseCreatedScenario_TryGetData(s_whitelistedStatusType, testDistributionChannel);
+
+            // Act
+            QueryingDataResponse firstResult = await scenario.TryGetDataAsync(default);
+            QueryingDataResponse secondResult = await scenario.TryGetDataAsync(default);
+
+            // Assert
+            // NOTE: A personalization shared between notifications lets a later one overwrite the name and text of an earlier one
+            Assert.That(secondResult.Content.First().Personalization,
+                Is.Not.SameAs(firstResult.Content.First().Personalization));
+        }
+
+        [TestCase(DistributionChannels.Email)]
+        [TestCase(DistributionChannels.Sms)]
+        [TestCase(DistributionChannels.Letter)]
         public async Task GetPersonalizationAsync_ReturnsExpectedPersonalization(DistributionChannels testDistributionChannel)
         {
             // Arrange

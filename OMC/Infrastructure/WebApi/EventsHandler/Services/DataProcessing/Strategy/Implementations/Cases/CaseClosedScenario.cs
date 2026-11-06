@@ -77,28 +77,23 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.Email.ZaakClose();
 
-        private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
-
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_emailPersonalization["klant.voornaam"] = partyData.Name;
-                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+            Dictionary<string, object> personalization = [];
 
-                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["status.omschrijving"] = this._caseStatusType.Name;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
 
-                s_emailPersonalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
-                s_emailPersonalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
-                return s_emailPersonalization;
-            }
+            personalization["status.omschrijving"] = this._caseStatusType.Name;
+
+            personalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
+            personalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
+            return personalization;
         }
         #endregion
 
@@ -122,27 +117,26 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations.Cases
         /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_letterPersonalization["klant.voornaam"] = partyData.Name;
-                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
-                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
-                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
-                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
-                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
-                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+            Dictionary<string, object> personalization = [];
 
-                s_letterPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
+            personalization["klant.street"] = partyData.LetterAddress.Street;
+            personalization["klant.number"] = partyData.LetterAddress.Number;
+            personalization["klant.zip"] = partyData.LetterAddress.Zip;
+            personalization["klant.city"] = partyData.LetterAddress.City;
+            personalization["klant.country"] = partyData.LetterAddress.Country;
 
-                s_letterPersonalization["status.omschrijving"] = this._caseStatusType.Name;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
 
-                s_letterPersonalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
-                s_letterPersonalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
+            personalization["status.omschrijving"] = this._caseStatusType.Name;
 
-                return s_letterPersonalization;
-            }
+            personalization["zaak.resultaat.resultaatType.omschrijving"] = this._resultType?.Name ?? string.Empty;
+            personalization["zaak.resultaat.resultaatType.omschrijvingGeneriek"] = this._resultType?.GenericName ?? string.Empty;
+
+            return personalization;
         }
         #endregion
 
