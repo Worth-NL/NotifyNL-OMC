@@ -2,6 +2,11 @@
 
 ---
 
+## v2.4.1
+
+- Elke notificatie krijgt een eigen personalisatie en een eigen querystatus, ook als het OMC meerdere notificaties tegelijk verwerkt
+- **Besluit genomen maakt het berichtobject maar één keer per notificatie aan.** Het object krijgt een UUID op basis van het `besluitinformatieobject` waar de notificatie over gaat. Levert Open Notificaties dezelfde notificatie opnieuw af (bijvoorbeeld omdat het OMC na de time-out antwoordt), dan maakt het OMC geen tweede bericht meer aan, en dus ook geen tweede e-mail. Weigert Open Objecten het aanmaken, dan zoekt het OMC het object op en geldt de notificatie als verwerkt als het object bestaat. Elk document bij een besluit krijgt nog steeds een eigen bericht. Bewaart Open Objecten de UUID die het OMC meestuurt niet, dan logt het OMC een waarschuwing: een nieuwe aflevering maakt dan alsnog een tweede bericht aan
+
 ## v2.4.0
 
 - OpenVTB is optioneel, net als Open Product: alle OpenVTB-variabelen mogen leeg blijven, en een lege `ZGW_ENDPOINT_OPENVTB` schakelt de Berichtenbox-flow uit (de statuspagina toont hem als uitgeschakeld, Berichten-CloudEvents worden afgebroken met `206`). Tot nu toe startte het OMC niet zonder `ZGW_AUTH_KEY_OPENVTB`, ook als de flow niet gebruikt werd
