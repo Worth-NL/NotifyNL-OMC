@@ -302,6 +302,16 @@ export const PATTERN_ENGINE_KEY = "output-patronen";
  * reports its hand-off to Notify NL as "notifynl"; on the diagram that is the Printstraat. */
 export const STAGE_ALIASES: Record<string, string> = { notifynl: "printstraat" };
 
+const STAGE_NAMES = new Map(
+  [...INPUT_NODES, ...REGISTER_NODES, ...CHECK_NODES, ...CHANNEL_NODES, ...CONFIRMATION_NODES].map((n) => [n.key, n.name]),
+);
+
+/** The name a trace stage is shown under in the log: the card's name (e.g. "KlantAPI" for the
+ * "openklant" stage), so the log speaks the same API names as the diagram. */
+export function stageName(stage: string): string {
+  return STAGE_NAMES.get(stage) ?? stage;
+}
+
 export type EdgeCategory = "invoer" | "verrijking" | "uitvoer" | "bevestiging";
 
 export const EDGE_CATEGORY_COLOR: Record<EdgeCategory, string> = {

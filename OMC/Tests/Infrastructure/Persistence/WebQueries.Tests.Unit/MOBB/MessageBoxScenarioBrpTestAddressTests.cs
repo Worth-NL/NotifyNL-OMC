@@ -47,7 +47,7 @@ namespace WebQueries.Tests.Unit.MOBB
         public void SetupTests()
         {
             Environment.SetEnvironmentVariable(ConfigExtensions.BrpUseTestAddress, "true");
-            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, "Staging");  // The test address is refused in production
+            Environment.SetEnvironmentVariable(ConfigExtensions.AspNetCoreEnvironment, "Test");  // The test address is refused in production
 
             this._configuration = ConfigurationHandler.GetOmcConfigurationWith(ConfigurationHandler.TestLoaderTypesSetup.ValidEnvironment_v2);
 
@@ -213,6 +213,7 @@ namespace WebQueries.Tests.Unit.MOBB
         [TestCase(" production ", true)]
         [TestCase(null, true)]
         [TestCase("", true)]
+        [TestCase("Test", false)]
         [TestCase("Staging", false)]
         [TestCase("Development", false)]
         public void IsProductionEnvironment_ReadsAspNetCoreEnvironment(string? value, bool expected)

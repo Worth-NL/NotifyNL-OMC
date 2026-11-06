@@ -19,7 +19,7 @@ namespace EventsHandler.Services.Responding.Results.Builder.Interface
         /// </param>
         /// <param name="cases">The specific case of rule(s) violation to be included in details.</param>
         internal TDetails Get<TDetails>(Reasons reason, string cases)
-            where TDetails : BaseEnhancedDetails;
+            where TDetails : BaseEnhancedDetails, new();
 
         /// <summary>
         /// Gets the specific type of <see cref="BaseSimpleDetails"/> with proper content.
@@ -29,6 +29,6 @@ namespace EventsHandler.Services.Responding.Results.Builder.Interface
         ///   <inheritdoc cref="Reasons" path="/summary"/>
         /// </param>
         internal TDetails Get<TDetails>(Reasons reason)
-            where TDetails : BaseSimpleDetails;
+            where TDetails : BaseSimpleDetails, new();
     }
 }

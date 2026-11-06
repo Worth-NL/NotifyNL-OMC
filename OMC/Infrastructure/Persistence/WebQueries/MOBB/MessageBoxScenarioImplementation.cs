@@ -296,7 +296,7 @@ namespace WebQueries.MOBB
                 // nothing about the citizen's Berichtenbox, which is only known later, from the delivery-receipt
                 // callback. Like every other scenario (BaseScenario), a Failure lets Open Notificaties deliver the
                 // CloudEvent again (#243); the check against sending twice (#247) keeps that safe.
-                TraceContext.Emit("berichtenbox", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
+                TraceContext.Emit("berichtenbox", "fail", $"not accepted by Notify NL; NotificatieAPI delivers again: {sendResponse.Error}");
                 _logger.LogWarning(
                     "Message {MessageId}: MOBB send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
                     messageUuid, sendResponse.Error);
@@ -380,7 +380,7 @@ namespace WebQueries.MOBB
             {
                 // Notify NL did not accept the e-mail: a technical problem, not a failed delivery. Delivered again by
                 // Open Notificaties rather than costing the citizen a paper letter (#243).
-                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL; Open Notificaties delivers again: {sendResponse.Error}");
+                TraceContext.Emit("notify-email", "fail", $"not accepted by Notify NL; NotificatieAPI delivers again: {sendResponse.Error}");
                 _logger.LogWarning(
                     "Message {MessageId}: digitale-post (email) send not accepted by Notify NL ({Error}); returning a failure so Open Notificaties delivers the CloudEvent again.",
                     messageUuid, sendResponse.Error);

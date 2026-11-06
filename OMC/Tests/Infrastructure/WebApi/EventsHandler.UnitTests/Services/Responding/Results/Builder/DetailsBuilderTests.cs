@@ -23,6 +23,22 @@ namespace EventsHandler.Tests.Unit.Services.Responding.Results.Builder
 
         #region Get<T>
         [Test]
+        public void DetailsBuilder_CalledTwice_ReturnsSeparateDetails()
+        {
+            // Act
+            ErrorDetails firstDetails = this._detailsBuilder!.Get<ErrorDetails>(Reasons.InvalidJson, "first");
+            ErrorDetails secondDetails = this._detailsBuilder!.Get<ErrorDetails>(Reasons.InvalidJson, "second");
+
+            // Assert
+            // NOTE: Details shared between calls let one response pick up the details of another
+            Assert.Multiple(() =>
+            {
+                Assert.That(secondDetails, Is.Not.SameAs(firstDetails));
+                Assert.That(firstDetails.Cases, Is.EqualTo("first"));
+            });
+        }
+
+        [Test]
         public void DetailsBuilder_ForInvalidJson_ReturnsErrorDetails_WithExpectedStrings()
         {
             // Act
