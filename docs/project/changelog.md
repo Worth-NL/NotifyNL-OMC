@@ -4,6 +4,7 @@
 
 ## v2.4.2
 
+- Elk antwoord aan Open Notificaties krijgt eigen details (melding, cases en redenen), ook als het OMC meerdere notificaties tegelijk beantwoordt
 - De live trace-log op `/status/flow` noemt elke stap bij de naam van zijn kaart, dus bij zijn API: KlantAPI, ZaakAPI, ObjectenAPI, ProductenAPI enzovoort in plaats van `openklant`, `openzaak`, `objecten` en `openproduct`. Een Berichtenbox-verzending die NotifyNL niet aanneemt, meldt nu dat de NotificatieAPI hem opnieuw aflevert
 - Noemt `Test` in plaats van `Staging` als voorbeeld van `ASPNETCORE_ENVIRONMENT` voor een testomgeving met `BRP_GEBRUIK_TESTADRES`; de Helm-chart staat alleen `Development`, `Test` en `Production` toe
 
