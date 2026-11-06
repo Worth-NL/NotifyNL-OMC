@@ -243,6 +243,9 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IQueryObjecten.CreateObjectAsync(IHttpNetworkService, string)"/>
         public Task<HttpRequestResponse> CreateObjectAsync(string objectJsonBody);
 
+        /// <inheritdoc cref="IQueryObjecten.ObjectExistsAsync(IHttpNetworkService, Guid)"/>
+        public Task<bool> ObjectExistsAsync(Guid objectUuid);
+
         /// <inheritdoc cref="IQueryObjecten.DeleteObjectAsync(IHttpNetworkService, Guid)"/>
         public Task<HttpRequestResponse> DeleteObjectAsync(Guid objectUuid);
 
@@ -254,8 +257,8 @@ namespace WebQueries.DataQuerying.Adapter.Interfaces
         /// <inheritdoc cref="IDomain.GetHealthCheckAsync(IHttpNetworkService)"/>
         public Task<HttpRequestResponse> GetObjectTypenHealthCheckAsync();
 
-        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string)"/>
-        public string PrepareObjectJsonBody(string dataJson);
+        /// <inheritdoc cref="IQueryObjectTypen.PrepareObjectJsonBody(string, Guid)"/>
+        public string PrepareObjectJsonBody(string dataJson, Guid objectUuid);
         #endregion
 
         #region IQueryCustomerSatisfactionSurvey

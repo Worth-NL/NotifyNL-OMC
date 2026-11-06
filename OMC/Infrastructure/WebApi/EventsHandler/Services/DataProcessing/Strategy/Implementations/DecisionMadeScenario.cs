@@ -312,15 +312,87 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // that goes. This POST to Objecten (for the citizen portal to read) is its real
             // "output" step, standing in for a channel send.
             Guid processBesluitId = this._decisionResource.DecisionUri.GetGuid();
-            TraceContext.Emit("objecten", "start", $"Attempting to create object for besluit with id {processBesluitId}");
-            HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
-                                                        this._queryContext.PrepareObjectJsonBody(dataJson));
-            TraceContext.Emit("objecten", requestResponse.IsFailure ? "fail" : "ok",
-                requestResponse.IsFailure ? requestResponse.JsonResponse : $"object for besluit with id {processBesluitId} created");
+            Guid objectUuid = GetObjectUuid(notification);
 
-            return requestResponse.IsFailure
-                ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
-                : ProcessingDataResponse.Success();
+            TraceContext.Emit("objecten", "start", $"Attempting to create object {objectUuid} for besluit with id {processBesluitId}");
+            HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
+                                                        this._queryContext.PrepareObjectJsonBody(dataJson, objectUuid));
+
+            if (requestResponse.IsFailure)
+            {
+                // A redelivery of this notification finds the object of an earlier delivery. Open Objecten refuses the
+                // second create (a 400 from 4.0.0 on, a 500 before that, and also a 500 when two deliveries arrive at the
+                // same moment), so whether the object exists is looked up instead of being read from the error
+                if (await this._queryContext.ObjectExistsAsync(objectUuid))
+                {
+                    TraceContext.Emit("objecten", "ok", $"object {objectUuid} for besluit with id {processBesluitId} already exists; not created again");
+
+                    return ProcessingDataResponse.Success();
+                }
+
+                TraceContext.Emit("objecten", "fail", requestResponse.JsonResponse);
+
+                return ProcessingDataResponse.Failure(requestResponse.JsonResponse);
+            }
+
+            WarnWhenUuidIgnored(requestResponse.JsonResponse, objectUuid);
+            TraceContext.Emit("objecten", "ok", $"object {objectUuid} for besluit with id {processBesluitId} created");
+
+            return ProcessingDataResponse.Success();
+        }
+
+        /// <summary>
+        /// The namespace of the UUIDs of the message objects het OMC creates for a decision.
+        /// </summary>
+        /// <remarks>
+        ///   UUID version 5 of "https://github.com/Worth-NL/NotifyNL-OMC/objects/decision-message" in the URL namespace.
+        /// </remarks>
+        private static readonly Guid s_decisionMessageNamespace = new("002ecb34-986e-52ef-82c1-351b80a13c47");
+
+        /// <summary>
+        /// Gets the UUID of the message object for this notification: the same on every delivery of it.
+        /// </summary>
+        /// <remarks>
+        ///   Based on the "besluitinformatieobject" the notification is about, so every document linked to a decision still
+        ///   gets its own message. No personal data goes into it: the name could be found back from the UUID.
+        /// </remarks>
+        internal static Guid GetObjectUuid(NotificationEvent notification)
+            => s_decisionMessageNamespace.CreateNameBased(notification.ResourceUri.AbsoluteUri);
+
+        /// <summary>
+        /// Warns when Open Objecten gave the created object a different UUID than het OMC asked for: a redelivery of the
+        /// notification then creates another message object, as no second create is refused.
+        /// </summary>
+        private static void WarnWhenUuidIgnored(string createdObjectJson, Guid expectedUuid)
+        {
+            Guid? actualUuid = null;
+
+            try
+            {
+                using JsonDocument document = JsonDocument.Parse(createdObjectJson);
+
+                if (document.RootElement.TryGetProperty("uuid", out JsonElement uuidElement) &&
+                    uuidElement.TryGetGuid(out Guid uuid))
+                {
+                    actualUuid = uuid;
+                }
+            }
+            catch (JsonException)
+            {
+                // NOTE: Not a reason to fail the notification: the object was created
+            }
+
+            if (actualUuid == expectedUuid)
+            {
+                return;
+            }
+
+            string message = $"Open Objecten created the message object with UUID {actualUuid?.ToString() ?? "(unknown)"} " +
+                             $"instead of {expectedUuid}; a redelivery of this notification will create another message object. " +
+                             "Use Open Objecten 4.0.0 or later.";
+
+            TraceContext.Emit("objecten", "ok", message);
+            SentrySdk.CaptureMessage(message, SentryLevel.Warning);
         }
 
         /// <summary>

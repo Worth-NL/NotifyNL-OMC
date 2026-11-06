@@ -428,7 +428,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, false);
 
             // Act
-            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(s_testNotification, GetNotifyData());
 
             // Assert
             Assert.Multiple(() =>
@@ -436,7 +436,27 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResult.IsFailure, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(TestCreationError));
 
-                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1);
+                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1, 1);
+            });
+        }
+
+        [Test]
+        public async Task ProcessDataAsync_ValidNotifyData_GenerationSucceeded_HasDocuments_CreationFailed_ObjectExists_ReturnsSuccess()
+        {
+            // Arrange
+            INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, false, objectExists: true);
+
+            // Act
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(s_testNotification, GetNotifyData());
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                // NOTE: A redelivery of the notification: the object of an earlier delivery is not created a second time
+                Assert.That(actualResult.IsSuccess, Is.True);
+                Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataProcessed));
+
+                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1, 1);
             });
         }
 
@@ -447,7 +467,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             INotifyScenario scenario = ArrangeDecisionScenario_ProcessData(true, true, true);
 
             // Act
-            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(default, GetNotifyData());
+            ProcessingDataResponse actualResult = await scenario.ProcessDataAsync(s_testNotification, GetNotifyData());
 
             // Assert
             Assert.Multiple(() =>
@@ -455,8 +475,36 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
                 Assert.That(actualResult.IsSuccess, Is.True);
                 Assert.That(actualResult.Message, Is.EqualTo(ApiResources.Processing_SUCCESS_Scenario_DataProcessed));
 
-                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1);
+                this._mockedQueryContext.Verify(mock => mock.PrepareObjectJsonBody(
+                    It.IsAny<string>(), DecisionMadeScenario.GetObjectUuid(s_testNotification)), Times.Once);
+
+                VerifyProcessDataMethodCalls(1, 1, 1, 5, 1, 0);
             });
+        }
+        #endregion
+
+        #region GetObjectUuid()
+        [Test]
+        public void GetObjectUuid_SameResource_ReturnsSameUuid()
+        {
+            // Arrange
+            NotificationEvent redelivery = new() { ResourceUri = s_testNotification.ResourceUri };
+
+            // Act & Assert
+            Assert.That(DecisionMadeScenario.GetObjectUuid(redelivery),
+                Is.EqualTo(DecisionMadeScenario.GetObjectUuid(s_testNotification)));
+        }
+
+        [Test]
+        public void GetObjectUuid_OtherResource_ReturnsOtherUuid()
+        {
+            // Arrange
+            NotificationEvent otherDocument = new() { ResourceUri = new Uri($"https://openzaak.test/besluiten/api/v1/besluitinformatieobjecten/{Guid.NewGuid()}") };
+
+            // Act & Assert
+            // NOTE: Every document linked to a decision is a notification of its own, and gets a message of its own
+            Assert.That(DecisionMadeScenario.GetObjectUuid(otherDocument),
+                Is.Not.EqualTo(DecisionMadeScenario.GetObjectUuid(s_testNotification)));
         }
         #endregion
 
@@ -583,7 +631,12 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         private static readonly Uri s_fourthDocumentObjectUri = new($"https://www.test4.nl/{new Guid()}");
         private static readonly Uri s_fifthDocumentObjectUri = new($"https://www.test5.nl/{new Guid()}");
 
-        private DecisionMadeScenario ArrangeDecisionScenario_ProcessData(bool isGenerateSuccessful, bool hasValidUris, bool isCreationSuccessful)
+        private static readonly NotificationEvent s_testNotification = new()
+        {
+            ResourceUri = new Uri("https://openzaak.test/besluiten/api/v1/besluitinformatieobjecten/11111111-1111-1111-1111-111111111111")
+        };
+
+        private DecisionMadeScenario ArrangeDecisionScenario_ProcessData(bool isGenerateSuccessful, bool hasValidUris, bool isCreationSuccessful, bool objectExists = false)
         {
             // INotifyService
             this._mockedNotifyService
@@ -622,8 +675,12 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
             }
 
             this._mockedQueryContext
-                .Setup(mock => mock.PrepareObjectJsonBody(It.IsAny<string>()))
+                .Setup(mock => mock.PrepareObjectJsonBody(It.IsAny<string>(), It.IsAny<Guid>()))
                 .Returns(string.Empty);
+
+            this._mockedQueryContext
+                .Setup(mock => mock.ObjectExistsAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(objectExists);
 
             this._mockedQueryContext
                 .Setup(mock => mock.CreateObjectAsync(It.IsAny<string>()))
@@ -725,7 +782,7 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
         }
 
         private void VerifyProcessDataMethodCalls(int fromInvokeCount, int generateInvokeCount,
-            int getDocumentsInvokeCount, int getInfoObjectInvokeCount, int createInvokeCount)
+            int getDocumentsInvokeCount, int getInfoObjectInvokeCount, int createInvokeCount, int objectExistsInvokeCount = 0)
         {
             if (this._processDataVerified)
             {
@@ -751,8 +808,12 @@ namespace EventsHandler.Tests.Unit.Services.DataProcessing.Strategy.Implementati
 
             this._mockedQueryContext  // Dependent queries
                 .Verify(mock => mock.PrepareObjectJsonBody(
-                    It.IsAny<string>()),
+                    It.IsAny<string>(), It.IsAny<Guid>()),
                 Times.Exactly(createInvokeCount));
+            this._mockedQueryContext
+                .Verify(mock => mock.ObjectExistsAsync(
+                    It.IsAny<Guid>()),
+                Times.Exactly(objectExistsInvokeCount));
             this._mockedQueryContext
                 .Verify(mock => mock.CreateObjectAsync(
                     It.IsAny<string>()),

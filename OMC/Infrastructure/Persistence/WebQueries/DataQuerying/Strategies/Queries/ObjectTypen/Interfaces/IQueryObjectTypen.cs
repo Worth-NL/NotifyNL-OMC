@@ -26,13 +26,15 @@ namespace WebQueries.DataQuerying.Strategies.Queries.ObjectTypen.Interfaces
         /// Prepares an object type JSON representation following a schema from "ObjectTypen" Web API service.
         /// </summary>
         /// <param name="dataJson">The data JSON (without outer curly brackets).</param>
+        /// <param name="objectUuid">The UUID the object gets, so a second create of the same object is refused.</param>
         /// <returns>
         ///   The JSON representation of object type.
         /// </returns>
         /// <exception cref="KeyNotFoundException"/>
-        internal string PrepareObjectJsonBody(string dataJson)
+        internal string PrepareObjectJsonBody(string dataJson, Guid objectUuid)
         {
             return $"{{" +
+                     $"\"uuid\":\"{objectUuid}\"," +
                      $"\"type\":\"{GetDomain()}/objecttypes/{Configuration.ZGW.Variable.ObjectType.MessageObjectType_Uuid()}\"," +
                      $"\"record\":{{" +
                        $"\"typeVersion\":\"{Configuration.ZGW.Variable.ObjectType.MessageObjectType_Version()}\"," +
