@@ -467,7 +467,8 @@ namespace EventsHandler
         private static void RegisterOpenServices(this IServiceCollection services)
         {
             // Common query methods
-            services.AddSingleton<IQueryBase, QueryBase>();
+            // NOTE: Scoped, not singleton - QueryBase holds the notification of the request being processed
+            services.AddScoped<IQueryBase, QueryBase>();
 
             // Strategies
             services.AddSingleton<OpenZaak.Interfaces.IQueryZaak, OpenZaak.QueryZaak>();
