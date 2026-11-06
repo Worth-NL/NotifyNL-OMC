@@ -166,46 +166,42 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.DecisionMade();  // NOTE: Decision has only one template
 
-        private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];  // Cached dictionary no need to be initialized every time
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];  // Cached dictionary no need to be initialized every time
 
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_emailPersonalization["klant.voornaam"] = partyData.Name;
-                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+            Dictionary<string, object> personalization = [];
 
-                s_emailPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_emailPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.toelichting"] = this._decision.Explanation;
-                s_emailPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_emailPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_emailPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
-                s_emailPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
-                s_emailPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
-                s_emailPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
-                s_emailPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
-                s_emailPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
-                s_emailPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+            personalization["besluit.identificatie"] = this._decision.Identification;
+            personalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
+            personalization["besluit.toelichting"] = this._decision.Explanation;
+            personalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+            personalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+            personalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+            personalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+            personalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
 
-                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_emailPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
+            personalization["besluittype.omschrijving"] = this._decisionType.Name;
+            personalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+            personalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+            personalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+            personalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+            personalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_emailPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_emailPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+            personalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
 
-                return s_emailPersonalization;
-            }
+            personalization["zaaktype.omschrijving"] = this._caseType.Name;
+            personalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+
+            return personalization;
         }
         #endregion
 
@@ -229,44 +225,43 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         /// <inheritdoc cref="BaseScenario.GetLetterPersonalization(ZgwModels.Mapping.Models.POCOs.OpenKlant.CommonPartyData)"/>
         protected override Dictionary<string, object> GetLetterPersonalization(CommonPartyData partyData)
         {
-            lock (s_padlock)
-            {
-                s_letterPersonalization["klant.voornaam"] = partyData.Name;
-                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
-                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
-                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
-                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
-                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
-                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+            Dictionary<string, object> personalization = [];
 
-                s_letterPersonalization["besluit.identificatie"] = this._decision.Identification;
-                s_letterPersonalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.toelichting"] = this._decision.Explanation;
-                s_letterPersonalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
-                s_letterPersonalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.vervalreden"] = this._decision.ExpirationReason;
-                s_letterPersonalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
-                s_letterPersonalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
+            personalization["klant.street"] = partyData.LetterAddress.Street;
+            personalization["klant.number"] = partyData.LetterAddress.Number;
+            personalization["klant.zip"] = partyData.LetterAddress.Zip;
+            personalization["klant.city"] = partyData.LetterAddress.City;
+            personalization["klant.country"] = partyData.LetterAddress.Country;
 
-                s_letterPersonalization["besluittype.omschrijving"] = this._decisionType.Name;
-                s_letterPersonalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
-                s_letterPersonalization["besluittype.besluitcategorie"] = this._decisionType.Category;
-                s_letterPersonalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
-                s_letterPersonalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
-                s_letterPersonalization["besluittype.toelichting"] = this._decisionType.Explanation;
+            personalization["besluit.identificatie"] = this._decision.Identification;
+            personalization["besluit.datum"] = $"{this._decision.Date.ConvertToDutchDateString()}";
+            personalization["besluit.toelichting"] = this._decision.Explanation;
+            personalization["besluit.bestuursorgaan"] = this._decision.GoverningBody;
+            personalization["besluit.ingangsdatum"] = $"{this._decision.EffectiveDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervaldatum"] = $"{this._decision.ExpirationDate.ConvertToDutchDateString()}";
+            personalization["besluit.vervalreden"] = this._decision.ExpirationReason;
+            personalization["besluit.publicatiedatum"] = $"{this._decision.PublicationDate.ConvertToDutchDateString()}";
+            personalization["besluit.verzenddatum"] = $"{this._decision.ShippingDate.ConvertToDutchDateString()}";
+            personalization["besluit.uiterlijkereactiedatum"] = $"{this._decision.ResponseDate.ConvertToDutchDateString()}";
 
-                s_letterPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
-                s_letterPersonalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
+            personalization["besluittype.omschrijving"] = this._decisionType.Name;
+            personalization["besluittype.omschrijvingGeneriek"] = this._decisionType.Description;
+            personalization["besluittype.besluitcategorie"] = this._decisionType.Category;
+            personalization["besluittype.publicatieindicatie"] = this._decisionType.PublicationIndicator;
+            personalization["besluittype.publicatietekst"] = this._decisionType.PublicationText;
+            personalization["besluittype.toelichting"] = this._decisionType.Explanation;
 
-                s_letterPersonalization["zaaktype.omschrijving"] = this._caseType.Name;
-                s_letterPersonalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+            personalization["zaak.registratiedatum"] = $"{this._case.RegistrationDate.ConvertToDutchDateString()}";
 
-                return s_letterPersonalization;
-            }
+            personalization["zaaktype.omschrijving"] = this._caseType.Name;
+            personalization["zaaktype.omschrijvingGeneriek"] = this._caseType.Description;
+
+            return personalization;
         }
         #endregion
 
@@ -317,15 +312,87 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             // that goes. This POST to Objecten (for the citizen portal to read) is its real
             // "output" step, standing in for a channel send.
             Guid processBesluitId = this._decisionResource.DecisionUri.GetGuid();
-            TraceContext.Emit("objecten", "start", $"Attempting to create object for besluit with id {processBesluitId}");
-            HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
-                                                        this._queryContext.PrepareObjectJsonBody(dataJson));
-            TraceContext.Emit("objecten", requestResponse.IsFailure ? "fail" : "ok",
-                requestResponse.IsFailure ? requestResponse.JsonResponse : $"object for besluit with id {processBesluitId} created");
+            Guid objectUuid = GetObjectUuid(notification);
 
-            return requestResponse.IsFailure
-                ? ProcessingDataResponse.Failure(requestResponse.JsonResponse)
-                : ProcessingDataResponse.Success();
+            TraceContext.Emit("objecten", "start", $"Attempting to create object {objectUuid} for besluit with id {processBesluitId}");
+            HttpRequestResponse requestResponse = await this._queryContext.CreateObjectAsync(
+                                                        this._queryContext.PrepareObjectJsonBody(dataJson, objectUuid));
+
+            if (requestResponse.IsFailure)
+            {
+                // A redelivery of this notification finds the object of an earlier delivery. Open Objecten refuses the
+                // second create (a 400 from 4.0.0 on, a 500 before that, and also a 500 when two deliveries arrive at the
+                // same moment), so whether the object exists is looked up instead of being read from the error
+                if (await this._queryContext.ObjectExistsAsync(objectUuid))
+                {
+                    TraceContext.Emit("objecten", "ok", $"object {objectUuid} for besluit with id {processBesluitId} already exists; not created again");
+
+                    return ProcessingDataResponse.Success();
+                }
+
+                TraceContext.Emit("objecten", "fail", requestResponse.JsonResponse);
+
+                return ProcessingDataResponse.Failure(requestResponse.JsonResponse);
+            }
+
+            WarnWhenUuidIgnored(requestResponse.JsonResponse, objectUuid);
+            TraceContext.Emit("objecten", "ok", $"object {objectUuid} for besluit with id {processBesluitId} created");
+
+            return ProcessingDataResponse.Success();
+        }
+
+        /// <summary>
+        /// The namespace of the UUIDs of the message objects het OMC creates for a decision.
+        /// </summary>
+        /// <remarks>
+        ///   UUID version 5 of "https://github.com/Worth-NL/NotifyNL-OMC/objects/decision-message" in the URL namespace.
+        /// </remarks>
+        private static readonly Guid s_decisionMessageNamespace = new("002ecb34-986e-52ef-82c1-351b80a13c47");
+
+        /// <summary>
+        /// Gets the UUID of the message object for this notification: the same on every delivery of it.
+        /// </summary>
+        /// <remarks>
+        ///   Based on the "besluitinformatieobject" the notification is about, so every document linked to a decision still
+        ///   gets its own message. No personal data goes into it: the name could be found back from the UUID.
+        /// </remarks>
+        internal static Guid GetObjectUuid(NotificationEvent notification)
+            => s_decisionMessageNamespace.CreateNameBased(notification.ResourceUri.AbsoluteUri);
+
+        /// <summary>
+        /// Warns when Open Objecten gave the created object a different UUID than het OMC asked for: a redelivery of the
+        /// notification then creates another message object, as no second create is refused.
+        /// </summary>
+        private static void WarnWhenUuidIgnored(string createdObjectJson, Guid expectedUuid)
+        {
+            Guid? actualUuid = null;
+
+            try
+            {
+                using JsonDocument document = JsonDocument.Parse(createdObjectJson);
+
+                if (document.RootElement.TryGetProperty("uuid", out JsonElement uuidElement) &&
+                    uuidElement.TryGetGuid(out Guid uuid))
+                {
+                    actualUuid = uuid;
+                }
+            }
+            catch (JsonException)
+            {
+                // NOTE: Not a reason to fail the notification: the object was created
+            }
+
+            if (actualUuid == expectedUuid)
+            {
+                return;
+            }
+
+            string message = $"Open Objecten created the message object with UUID {actualUuid?.ToString() ?? "(unknown)"} " +
+                             $"instead of {expectedUuid}; a redelivery of this notification will create another message object. " +
+                             "Use Open Objecten 4.0.0 or later.";
+
+            TraceContext.Emit("objecten", "ok", message);
+            SentrySdk.CaptureMessage(message, SentryLevel.Warning);
         }
 
         /// <summary>

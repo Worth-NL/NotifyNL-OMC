@@ -114,10 +114,6 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
         protected override Guid GetEmailTemplateId()
             => this.Configuration.Notify.TemplateId.Email.TaskAssigned();
 
-        private static readonly object s_padlock = new();
-        private static readonly Dictionary<string, object> s_emailPersonalization = [];
-        private static readonly Dictionary<string, object> s_letterPersonalization = [];
-
         /// <inheritdoc cref="BaseScenario.GetEmailPersonalization(CommonPartyData)"/>
         protected override Dictionary<string, object> GetEmailPersonalization(CommonPartyData partyData)
         {
@@ -125,21 +121,20 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(isValid);
 
-            lock (s_padlock)
-            {
-                s_emailPersonalization["klant.voornaam"] = partyData.Name;
-                s_emailPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_emailPersonalization["klant.achternaam"] = partyData.Surname;
+            Dictionary<string, object> personalization = [];
 
-                s_emailPersonalization["taak.verloopdatum"] = formattedExpirationDate;
-                s_emailPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
-                s_emailPersonalization["taak.record.data.title"] = this._taskData.Title;
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
 
-                s_emailPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_emailPersonalization["zaak.omschrijving"] = this._case.Name;
+            personalization["taak.verloopdatum"] = formattedExpirationDate;
+            personalization["taak.heeft_verloopdatum"] = expirationDateProvided;
+            personalization["taak.record.data.title"] = this._taskData.Title;
 
-                return s_emailPersonalization;
-            }
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+
+            return personalization;
         }
         #endregion
 
@@ -167,26 +162,25 @@ namespace EventsHandler.Services.DataProcessing.Strategy.Implementations
             string formattedExpirationDate = GetFormattedExpirationDate(isValid, this._taskData.ExpirationDate);
             string expirationDateProvided = GetExpirationDateProvided(isValid);
 
-            lock (s_padlock)
-            {
-                s_letterPersonalization["klant.voornaam"] = partyData.Name;
-                s_letterPersonalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
-                s_letterPersonalization["klant.achternaam"] = partyData.Surname;
-                s_letterPersonalization["klant.street"] = partyData.LetterAddress.Street;
-                s_letterPersonalization["klant.number"] = partyData.LetterAddress.Number;
-                s_letterPersonalization["klant.zip"] = partyData.LetterAddress.Zip;
-                s_letterPersonalization["klant.city"] = partyData.LetterAddress.City;
-                s_letterPersonalization["klant.country"] = partyData.LetterAddress.Country;
+            Dictionary<string, object> personalization = [];
 
-                s_letterPersonalization["taak.verloopdatum"] = formattedExpirationDate;
-                s_letterPersonalization["taak.heeft_verloopdatum"] = expirationDateProvided;
-                s_letterPersonalization["taak.record.data.title"] = this._taskData.Title;
+            personalization["klant.voornaam"] = partyData.Name;
+            personalization["klant.voorvoegselAchternaam"] = partyData.SurnamePrefix;
+            personalization["klant.achternaam"] = partyData.Surname;
+            personalization["klant.street"] = partyData.LetterAddress.Street;
+            personalization["klant.number"] = partyData.LetterAddress.Number;
+            personalization["klant.zip"] = partyData.LetterAddress.Zip;
+            personalization["klant.city"] = partyData.LetterAddress.City;
+            personalization["klant.country"] = partyData.LetterAddress.Country;
 
-                s_letterPersonalization["zaak.identificatie"] = this._case.Identification;
-                s_letterPersonalization["zaak.omschrijving"] = this._case.Name;
+            personalization["taak.verloopdatum"] = formattedExpirationDate;
+            personalization["taak.heeft_verloopdatum"] = expirationDateProvided;
+            personalization["taak.record.data.title"] = this._taskData.Title;
 
-                return s_letterPersonalization;
-            }
+            personalization["zaak.identificatie"] = this._case.Identification;
+            personalization["zaak.omschrijving"] = this._case.Name;
+
+            return personalization;
         }
         #endregion
 

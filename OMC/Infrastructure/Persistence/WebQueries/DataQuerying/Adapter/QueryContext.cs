@@ -246,6 +246,10 @@ namespace WebQueries.DataQuerying.Adapter
         Task<PrintObject> IQueryContext.GetPrintObjectAsync()
             => this._queryObjecten.GetPrintObjectAsync(this._queryBase);
 
+        /// <inheritdoc cref="IQueryContext.ObjectExistsAsync(Guid)"/>
+        async Task<bool> IQueryContext.ObjectExistsAsync(Guid objectUuid)
+            => await this._queryObjecten.ObjectExistsAsync(this._networkService, objectUuid);
+
         /// <inheritdoc cref="IQueryContext.CreateObjectAsync(string)"/>
         async Task<HttpRequestResponse> IQueryContext.CreateObjectAsync(string objectJsonBody)
             => await this._queryObjecten.CreateObjectAsync(this._networkService, objectJsonBody);
@@ -264,9 +268,9 @@ namespace WebQueries.DataQuerying.Adapter
         async Task<HttpRequestResponse> IQueryContext.GetObjectTypenHealthCheckAsync()
             => await this._queryObjectTypen.GetHealthCheckAsync(this._networkService);
 
-        /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string)"/>
-        string IQueryContext.PrepareObjectJsonBody(string dataJson)
-            => this._queryObjectTypen.PrepareObjectJsonBody(dataJson);
+        /// <inheritdoc cref="IQueryContext.PrepareObjectJsonBody(string, Guid)"/>
+        string IQueryContext.PrepareObjectJsonBody(string dataJson, Guid objectUuid)
+            => this._queryObjectTypen.PrepareObjectJsonBody(dataJson, objectUuid);
         #endregion
 
         #region Kto

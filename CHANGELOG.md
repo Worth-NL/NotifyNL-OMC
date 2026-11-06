@@ -1,3 +1,8 @@
+## 2.4.1
+
+- Every notification gets its own personalisation and its own query state, also when het OMC processes several notifications at the same time
+- **Decision Made creates its message object only once per notification.** The object gets a UUID based on the `besluitinformatieobject` the notification is about, so a redelivery from Open Notificaties (for example when het OMC answers after its time-out) no longer creates, and e-mails, a second message. When Open Objecten refuses the create, het OMC looks the object up and treats the notification as processed when it exists. Every document linked to a besluit still gets its own message. When Open Objecten does not keep the UUID het OMC sends, het OMC logs a warning: a redelivery then still creates a second message
+
 ## 2.4.0
 
 - The `/status/flow` dashboard names every register by its API instead of its product: NotificatieAPI, ZaakAPI, KlantAPI, ObjectenAPI, ObjecttypenAPI, BesluitenAPI, ProductenAPI, BerichtenAPI and CatalogiAPI, also in the check details. OpenZaak, OpenKlant, Open Notificaties, Open VTB and Open Product are no longer mentioned there

@@ -133,6 +133,24 @@ namespace WebQueries.DataQuerying.Strategies.Queries.Objecten.Interfaces
         }
         #endregion
 
+        #region Parent (Object exists)
+        /// <summary>
+        /// Checks whether an object with the given UUID exists in "Objecten" Web API service.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> when the object was found; <see langword="false"/> when it was not, or when the lookup failed.
+        /// </returns>
+        /// <exception cref="KeyNotFoundException"/>
+        internal sealed async Task<bool> ObjectExistsAsync(IHttpNetworkService networkService, Guid objectUuid)
+        {
+            Uri getObjectUri = new($"{GetDomain()}/objects/{objectUuid}");
+
+            HttpRequestResponse response = await networkService.GetAsync(HttpClientTypes.Objecten, getObjectUri);
+
+            return response.IsSuccess;
+        }
+        #endregion
+
         #region Parent (Get object)        
         /// <summary>
         /// Retrieves an object in "Objecten" Web API service.
