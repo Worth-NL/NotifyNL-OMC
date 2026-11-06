@@ -24,21 +24,6 @@ namespace EventsHandler.Services.Responding.Results.Builder
     /// <seealso cref="IDetailsBuilder"/>
     internal sealed class DetailsBuilder : IDetailsBuilder
     {
-        private static readonly object s_lock = new();
-
-        #region Cached details (objects)
-        private static readonly Dictionary<Type, BaseEnhancedDetails> s_cachedEnhancedDetails = new()
-        {
-            { typeof(ErrorDetails), new ErrorDetails() },
-            { typeof(InfoDetails), new InfoDetails() }
-        };
-
-        private static readonly Dictionary<Type, BaseSimpleDetails> s_cachedSimpleDetails = new()
-        {
-            { typeof(UnknownDetails), new UnknownDetails() }
-        };
-        #endregion
-
         #region Cached details (content)
         private static readonly Dictionary<Reasons, (string Message, string[] Reasons)> s_cachedDetailsContents = new()
         {
@@ -109,29 +94,22 @@ namespace EventsHandler.Services.Responding.Results.Builder
         /// <inheritdoc cref="IDetailsBuilder.Get{TDetails}(Reasons, string)"/>
         TDetails IDetailsBuilder.Get<TDetails>(Reasons reason, string cases)
         {
-            lock (s_lock)
+            // NOTE: A new object on every call - the builder is a singleton, and a shared object let one response pick up the details of another
+            return new TDetails
             {
-                var details = (TDetails)s_cachedEnhancedDetails[typeof(TDetails)];
-
-                details.Message = s_cachedDetailsContents[reason].Message;
-                details.Cases   = cases;
-                details.Reasons = s_cachedDetailsContents[reason].Reasons;
-
-                return details;
-            }
+                Message = s_cachedDetailsContents[reason].Message,
+                Cases   = cases,
+                Reasons = s_cachedDetailsContents[reason].Reasons
+            };
         }
 
         /// <inheritdoc cref="IDetailsBuilder.Get{TDetails}(Reasons)"/>
         TDetails IDetailsBuilder.Get<TDetails>(Reasons reason)
         {
-            lock (s_lock)
+            return new TDetails
             {
-                var details = (TDetails)s_cachedSimpleDetails[typeof(TDetails)];
-
-                details.Message = s_cachedDetailsContents[reason].Message;
-
-                return details;
-            }
+                Message = s_cachedDetailsContents[reason].Message
+            };
         }
     }
 }
